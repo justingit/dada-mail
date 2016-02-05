@@ -6,6 +6,8 @@ use lib qw(./ ../ ../../ ../../../ ./../../DADA ../../perllib);
 
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts;  # For now, my dear. 
+use Try::Tiny; 
+
 
 my $t = 0; 
 
@@ -176,13 +178,17 @@ sub save {
         $c->flush;
 
         $self->{RAW_DB_HASH} = undef;
-		
-		for(@$also_save_for){ 
-			my $other_ls = DADA::MailingList::Settings->new({-list => $_}); 
-			   $other_ls->save({
-			   		-also_save_for => [],
-					-settings      => $args->{-settings}, 
-			   }); 
+
+		for my $other_list(@$also_save_for){ 
+			try {
+				my $other_ls = DADA::MailingList::Settings->new({-list => $other_list}); 
+				$other_ls->save({
+				-also_save_for => [],
+				-settings      => $args->{-settings}, 
+				}); 
+			} catch { 
+				warn 'problem saving settings for, ' . $other_list . ' because:' . $_; 
+			};
 		}
         return 1;
     }
