@@ -1629,7 +1629,9 @@ function toggle_schedule_options() {
 var mmsp = '';
 function mass_mailing_schedules_preview(skip_stale_check) {
 	var new_mmsp = $('.schedule_field').serialize();
-
+    
+	var target_id = 'mass_mailing_schedules_preview_results'; 
+	
 	if(skip_stale_check !== 1) {
 		if(mmsp == new_mmsp){
 			return false;
@@ -1638,9 +1640,8 @@ function mass_mailing_schedules_preview(skip_stale_check) {
 			mmsp = new_mmsp;
 		}
 	}
-	$("#mass_mailing_schedules_preview_results").hide().html('<p>&nbsp;</p><p class="text-align:center"><strong>Loading...</strong></p><p>&nbsp;</p>').show('fade');
-
-
+	var target  = document.getElementById('view_list_viewport');
+	var spinner = new Spinner(spinner_opts).spin(target);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		data: $('.schedule_field').serialize() + '&flavor=mass_mailing_schedules_preview',
@@ -1648,13 +1649,11 @@ function mass_mailing_schedules_preview(skip_stale_check) {
 		dataType: "html",
 		async: true,
 		success: function(content) {
-			$("#mass_mailing_schedules_preview_results").hide("fade", function() {
-				$("#mass_mailing_schedules_preview_results").html(content);
-				$("#mass_mailing_schedules_preview_results").show('fade');
+			$("#" + target_id).fadeTo(200, 0, function() {		
+				$("#" + target_id).html(content)
+				$("#" + target_id).fadeTo(200, 1);
+				spinner.stop();
 			});
-
-
-
 		}
 	});
 }

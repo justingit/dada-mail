@@ -752,7 +752,7 @@ sub edit_prefs {
             geoip_data_type => $geoip_data_type,
         };
     }
-    warn '$ls->_dd_freeze($tracker_update_profiles_geo_ip_data)'
+#    warn '$ls->_dd_freeze($tracker_update_profiles_geo_ip_data)'
       . $ls->_dd_freeze($tracker_update_profiles_geo_ip_data);
     $ls->save({ -settings =>
         {
