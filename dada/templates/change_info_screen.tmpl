@@ -99,7 +99,7 @@
 <!--/tmpl_if-->
 
 <!-- tmpl_if expr="(using_ses eq '1') && (list_owner_ses_verified ne '1')" -->
-    <div class="alert-box alert radius">
+    <div class="alert-box warning radius">
 	    <p>
 	        Your current <strong>List Owner</strong>, <!-- tmpl_var list_owner_email escape="HTML" --> has not been verified through <strong>Amazon SES</strong>.
 	    </p>
@@ -122,7 +122,7 @@
 	</div>
 
    <!-- tmpl_if expr="(using_ses eq '1') && (list_admin_ses_verified ne '1')" -->
-       <div class="alert-box alert radius">
+       <div class="alert-box warning radius">
    	    <p>
    	        Your current <strong>List Administrator</strong>, <!-- tmpl_var admin_email escape="HTML" -->has not been verified through <strong>Amazon SES</strong>.
    	    </p>
