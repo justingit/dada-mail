@@ -10,13 +10,13 @@
 
 =head3 Save to Multiple Lists at Once
 
-One frustration of administrating a large collection of mailing lists with Dada Mail 
+B<Previously:> One frustration of working with a large collection of different mailing lists with Dada Mail 
 is that each mailing list must be administrated one at a time, so it was not possible to make
-changes to mailing list settings fo all mailig lists at once. 
+changes to mailing list settings fo all mailing lists at once. 
 
-With v9.1.0, we've introduced the ability to saving the List Settings to multiple mailing lists at once. 
+B<Now:> with v9.1.0, we've introduced the ability to saving List Settings to multiple mailing lists at once. 
 
-The following List Control Panel screens support this feature: 
+The following list control panel screens support this feature: 
 
 =over
 
@@ -40,8 +40,8 @@ The following List Control Panel screens support this feature:
 
 =back
 
-You will need to be logged into a mailing list with the Dada Root Password, otherwise the feature will not be available. 
-Look for the button labeled, B<Save For Multiple Lists...> When clicked, a modal window will open, allowing you to select the mailing lists that you would like to save the list settings to. 
+To use this feature, log into a mailing list with your B<Dada Root Password>, otherwise the feature will not be available. Look for the button labeled, B<Save For Multiple Lists...>. When clicked, a modal window will open allowing you to select the mailing lists that you would like to save the list settings for that list control panel to. 
+
 By default, all the available mailing lists are selected, but you may customize this if you would like. 
 
 =head2 Bugfixes
