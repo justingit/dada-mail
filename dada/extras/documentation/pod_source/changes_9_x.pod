@@ -6,8 +6,51 @@
 
 =head1 9.1.0
 
+=head2 Features
 
+=head3 Save to Multiple Lists at Once
 
+One frustration of administrating a large collection of mailing lists with Dada Mail 
+is that each mailing list must be administrated one at a time, so it was not possible to make
+changes to mailing list settings fo all mailig lists at once. 
+
+With v9.1.0, we've introduced the ability to saving the List Settings to multiple mailing lists at once. 
+
+The following List Control Panel screens support this feature: 
+
+=over
+
+=item * Mass Mailing - Options
+
+=item * Membership - Options
+
+=item * Sending - Options
+
+=item * Sending - Mass Mailing Options
+
+=item * Archives - Options
+
+=item * Archives - Advanced Options
+
+=item * Appearance - Email Message Template 
+
+=item * Appearance - HTML Screen Template 
+
+=item * Plugins/Extensions - Tracker
+
+=back
+
+You will need to be logged into a mailing list with the Dada Root Password, otherwise the feature will not be available. 
+Look for the button labeled, B<Save For Multiple Lists...> When clicked, a modal window will open, allowing you to select the mailing lists that you would like to save the list settings to. 
+By default, all the available mailing lists are selected, but you may customize this if you would like. 
+
+=head2 Bugfixes
+
+=head3  Login Switch links sometimes hit server security filters 
+
+L<https://github.com/justingit/dada-mail/issues/542>
+
+=head3 
 
 =head1 9.0.3
 
@@ -18,7 +61,6 @@ This is mostly a bug-fix release, fixing bugs found in the v9.0.2 release
 We've made some changes in the B<Membership - View> screen to make loading a bit more apparrent, stopping the user from guessing if things are working correctly. We're utilizing a JavaScript library called, spin.js (L<http://spin.js.org/>) to help out on making the loading screen. Thanks, min.js! 
 
 We've also made similar changes to the Tracker plugin's default screen, as well as preloading some of the easier-to-create data before the rest of the data is availabl. 
-
 Crunching the numbers to show the table of analytics may take a while, if you have busy lists! Now, you'll have access to the individual message reports before the index report is ready. 
 
 =head2 Bugfixes
