@@ -392,7 +392,11 @@ sub update_settings {
        $settings = $json->decode($settings);
         
     try {
-        $self->{ls}->save($settings);  
+        $self->{ls}->save(
+			{
+				-settings => $settings
+			}
+		);  
         $r = {
             status  => 1,
             results => {saved => 1},

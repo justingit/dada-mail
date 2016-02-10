@@ -47,7 +47,13 @@ sub _init {
     $self->{ls_obj} =  DADA::MailingList::Settings->new( { -list => $self->{list}  } );
     if(!defined($self->{ls_obj}->param('schedule_last_checked_time')) 
     || $self->{ls_obj}->param('schedule_last_checked_time') <= 0){ 
-        $self->{ls_obj}->save({schedule_last_checked_time => time});
+        $self->{ls_obj}->save(
+			{
+				-settings  => {
+					schedule_last_checked_time => time
+				}
+			}
+		);
         undef($self->{ls_obj}); 
         $self->{ls_obj} =  DADA::MailingList::Settings->new( { -list => $self->{list}  } );
     }
@@ -309,7 +315,13 @@ sub run_schedules {
         }
     }
     
-    $self->{ls_obj}->save({schedule_last_checked_time => time});
+    $self->{ls_obj}->save(
+		{
+			-settings  => {
+				schedule_last_checked_time => time
+			}
+		}
+	);
 
     $r .= "\n"; 
     

@@ -94,11 +94,11 @@ sub _init {
           . $self->ctime_2_archive_time( int( $self->{ctime} ) - int( $self->{ls_obj}->param('digest_schedule') ) )
           if $t;
         $self->{ls_obj}->save(
-            {
-                digest_last_archive_id_sent => $self->ctime_2_archive_time(
-                    int( $self->{ctime} ) - int( $self->{ls_obj}->param('digest_schedule') )
-                )
-            }
+			{
+            	-settings  => {
+	                digest_last_archive_id_sent => $self->ctime_2_archive_time(int( $self->{ctime} ) - int( $self->{ls_obj}->param('digest_schedule') ))
+          	   }
+			}
         );
         undef( $self->{ls_obj} );
         $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
@@ -187,7 +187,7 @@ sub send_digest {
 
         require DADA::App::FormatMessages;
         my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-        $fm->mass_mailing(1);
+           $fm->mass_mailing(1);
 
         my $entity = $self->create_digest_msg_entity();
 
@@ -239,14 +239,15 @@ sub send_digest {
             }
         );
 
-        # Then, reset the digest, where we left off,
-
-        my $keys = $self->archive_ids_for_digest();
+		# Then, reset the digest, where we left off,
+		my $keys = $self->archive_ids_for_digest();
 
         $self->{ls_obj}->save(
-            {
-                digest_last_archive_id_sent => $keys->[-1], 
-            }
+			{
+				-settings  => {
+              	  digest_last_archive_id_sent => $keys->[-1], 
+            	}
+			}
         );
     }
     else {
