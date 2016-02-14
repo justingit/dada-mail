@@ -6,7 +6,7 @@
 
 =head1 9.1.1
 
-This is mostly a bug-fix release, fixing bugs found in the v9.1.0 release - of note, we broke the Tracker plugin, with the v9.1.0 release. We've also added some additional .htaccess files in directories of Dada Mail that you may not want snooping in. 
+This is mostly a bug-fix release, fixing bugs found in the v9.1.1 release - of note, we broke the Tracker plugin, with the v9.1.0 release. We've also added some additional .htaccess files in directories of Dada Mail that you may not want snooping in. 
 
 =head2 Bugfixes
 
