@@ -10,6 +10,7 @@ Key:
 [*] Naw...
 [?] Someday
 
+Take subscription size into consideration when making auto adjut batch seding speed thing
 
 Update CKEditor for the drag n drop image feature. new branch!
 
