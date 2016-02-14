@@ -11,6 +11,7 @@ my $type;
 my $backend; 
 use DADA::Config qw(!:DEFAULT); 	
 use DADA::App::Guts; 
+use DADA::Template::Widgets; 
 
 BEGIN { 
     
@@ -378,7 +379,11 @@ sub _fill_in_html_settings {
 	}; 
 	
     if(exists($message_settings->{$name})) { 
-        my $raw_screen = DADA::Template::Widgets::_raw_screen( { -screen => 'list/' . $message_settings->{$name} } );
+        my $raw_screen = DADA::Template::Widgets::_raw_screen( 
+			{ 
+				-screen => 'list/' . $message_settings->{$name} 
+			} 
+		);
         return $raw_screen; 
 	}
 	else { 
