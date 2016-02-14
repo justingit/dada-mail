@@ -75,9 +75,26 @@
 	
 
 <fieldset> 
- <legend>Export Logs</legend> 
+ <legend>Export Logs (.csv)</legend> 
 
 <ul class="button-group right">
+
+	<li>
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+			<input type="hidden" name="flavor" value="plugins" > 
+			<input type="hidden" name="plugin" value="tracker" > 
+			<input type="hidden" name="prm" value="message_history_csv" > 
+			<button 
+				type="submit" 
+				 class="button small success" 
+			>
+				<i class="fi-page-export-csv"></i> Message History Summary
+			</button>
+		</form> 
+	</li>
+
+
+
 	<li>
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 			<input type="hidden" name="flavor" value="plugins" > 
@@ -88,7 +105,7 @@
 				type="submit" 
 				 class="button small success" 
 			>
-				<i class="fi-page-export-csv"></i> Download Clickthrough Logs (.csv)
+				<i class="fi-page-export-csv"></i> Raw Clickthrough Logs
 			</button>
 		</form> 
 	</li>
@@ -101,7 +118,7 @@
 			<button
 			 type="submit" 
 			 class="button small success" >
-			 	<i class="fi-page-export-csv"></i> Download Mass Mailing Event Logs (.csv)
+			 	<i class="fi-page-export-csv"></i> Raw Mass Mailing Event Logs
 			</button>
 		</form>
 	</li>

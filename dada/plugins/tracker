@@ -93,6 +93,7 @@ sub run {
         'ajax_delete_log'                       => \&ajax_delete_log,
         'message_history_html'                  => \&message_history_html,
         'message_history_json'                  => \&message_history_json,
+        'message_history_csv'                   => \&message_history_csv,
         'delete_msg_id_data'                    => \&delete_msg_id_data,
         'download_clickthrough_logs'            => \&download_clickthrough_logs,
         'download_activity_logs'                => \&download_activity_logs,
@@ -301,6 +302,20 @@ sub message_history_json {
         }
     );
 }
+
+sub message_history_csv {
+    my $q = shift;
+
+    my $headers = {
+        'Content-disposition' => 'attachment; filename=' . 'message_history.csv',
+        -type                 => 'text/csv',
+    };
+    return ( 
+		$headers, 
+		$rd->message_history_csv()
+	);
+}
+
 
 sub delete_msg_id_data {
 

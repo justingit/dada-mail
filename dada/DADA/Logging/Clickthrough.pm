@@ -834,7 +834,72 @@ sub redirect_tagify {
 }
 
 
+sub message_history_csv {
 
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	my ($total, $msg_ids) = $self->get_all_mids(
+		{ 
+			-page    => 1, 
+			-entries => 1000000,  
+		}
+	);
+ 	my $report_by_message_index = $self->report_by_message_index(
+		{
+			-all_mids => $msg_ids
+		}
+	) || [];
+		
+    require Text::CSV;
+    my $csv = Text::CSV->new(
+		$DADA::Config::TEXT_CSV_PARAMS
+	);
+	
+	
+    my $body;
+	# DEV TODO: would really be to make the default keys be something useful, and not 'count' for clickthroughs. Just a thought. 
+    my @labels = qw(
+		mid
+	    num_subscribers   
+	    opens         
+	    errors_sending_to         
+	    clickthroughs
+	    unsubscribes 
+	    soft_bounces 
+	    hard_bounces 
+    );
+
+    my @cols = qw(
+		mid
+	    num_subscribers   
+	    open         
+	    errors_sending_to         
+	    count
+	    unsubscribe 
+	    soft_bounce 
+	    hard_bounce 
+    );
+
+    my $status = $csv->combine(@labels);
+       $body  .= $csv->string() . "\n";
+	for my $mid_report(@$report_by_message_index){ 
+		if($self->verified_mid($mid_report->{mid})){
+			if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
+				next unless exists($mid_report->{num_subscribers}) && $mid_report->{num_subscribers} =~ m/^\d+$/
+			}
+            my @vals = ();
+            foreach (@cols) {
+                push( @vals, $mid_report->{$_} );
+            }
+            $status = $csv->combine(@vals);
+            $body .= $csv->string() . "\n";
+		}
+	}
+	
+	return $body;	
+        
+}
 
 sub message_history_json {
 	
