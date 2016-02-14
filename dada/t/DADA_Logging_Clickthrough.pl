@@ -291,7 +291,7 @@ my $r = $lc->num_subscribers_log(
 		-num => 5, 
 	}
 ); 
-ok($r == 1, "num_subscribers_log returns 1!"); 
+ok($r == 1, "num_subscribers_log returns 1!a"); 
 
 $test_mid = $test_mid + 10; 
 $r = $lc->num_subscribers_log(
@@ -300,7 +300,7 @@ $r = $lc->num_subscribers_log(
 		-num => 6, 
 	}
 );
-ok($r == 1, "num_subscribers_log returns 1!"); 
+ok($r == 1, "num_subscribers_log returns 1!b"); 
 ($total, $mids) = $lc->get_all_mids(); 
 
 #diag "look!"; 
@@ -338,7 +338,7 @@ my $r = $lc->num_subscribers_log(
 		-num => 5, 
 	}
 ); 
-ok($r == 1, "num_subscribers_log returns 1!");
+ok($r == 1, "num_subscribers_log returns 1!c");
 
 ($total, $mids) = $lc->get_all_mids(); 
 ok($total == 1, "total equals 1 ($total)"); 
@@ -379,7 +379,7 @@ my $r = $lc->num_subscribers_log(
 		-num => 5, 
 	}
 ); 
-ok($r == 1, "num_subscribers_log returns 1!");
+ok($r == 1, "num_subscribers_log returns 1!d");
 $report = $lc->report_by_message_index; 
 ok($report->[0]->{hard_bounce} == 1); 
 
