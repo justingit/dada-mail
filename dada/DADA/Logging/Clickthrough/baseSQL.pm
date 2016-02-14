@@ -790,7 +790,7 @@ sub _recorded_open_recently {
 
     my $query;
 
-	if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' || $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite'){ 
+	if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql'){ 
 		    if ( $args->{-timestamp} ) {
 		        $query =
 		            'SELECT COUNT(*) from '
@@ -828,8 +828,8 @@ sub _recorded_open_recently {
 	    }
 		
 	}
-	else { 
-		 # I'm not sure if I want to tackle SQLite, atm... 
+	elsif($DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite') { 
+		warn 'method not supported in SQLite';
 		return 1; 
 	}
 	
