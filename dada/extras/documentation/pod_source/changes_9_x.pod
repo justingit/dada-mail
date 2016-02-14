@@ -4,6 +4,16 @@
 
 =head1 Dada Mail Changelog for v9.x
 
+=head1 9.1.1
+
+This is mostly a bug-fix release, fixing bugs found in the v9.1.0 release - of note, we broke the Tracker plugin, with the v9.1.0 release. We've also added some additional .htaccess files in directories of Dada Mail that you may not want snooping in. 
+
+=head2 Bugfixes
+
+=head3 Tracker plugin does not run
+
+https://github.com/justingit/dada-mail/issues/543
+
 =head1 9.1.0
 
 =head2 Features
