@@ -10,6 +10,9 @@ Key:
 [*] Naw...
 [?] Someday
 
+# Tracker internal: # DEV TODO: would really be to make the default keys be something useful, and not 'count' for clickthroughs. Just a thought. 
+
+
 Take subscription size into consideration when making auto adjut batch seding speed thing
 
 Update CKEditor for the drag n drop image feature. new branch!
