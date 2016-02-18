@@ -57,6 +57,7 @@ sub send_generic_email {
     }
 
     # We'll use this, later
+	# DEV: strange - passing the -list param should probably be requird... 
     require DADA::Mail::Send;
     my $mh = DADA::Mail::Send->new(
         {
