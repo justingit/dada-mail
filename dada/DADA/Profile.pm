@@ -1335,19 +1335,27 @@ sub _config_profile_email {
 }
 
 sub _config_profile_host_list { 
-    my $self = shift; 
-    if ( length($DADA::Config::PROFILE_OPTIONS->{profile_host_list}) > 0) {
+	
+    my $self      = shift; 
+    my $host_list = undef; 
+	
+	if ( length($DADA::Config::PROFILE_OPTIONS->{profile_host_list}) > 0) {
         if(check_if_list_exists(-List => $DADA::Config::PROFILE_OPTIONS->{profile_host_list}) == 1){ 
             return $DADA::Config::PROFILE_OPTIONS->{profile_host_list};
         }
         else { 
             warn 'list, ' . $DADA::Config::PROFILE_OPTIONS->{profile_host_list} . ' does not exist.'; 
-            return undef; 
+           # return undef; 
         }
     }
     else { 
-        return undef; 
+        #return undef; 
     }
+	if(! defined($host_list)) { 
+        require DADA::App::Guts;
+        my @l = DADA::App::Guts::available_lists();
+		return $l[0];
+	}
 }
 
 sub _magic_config_profile_email { 
