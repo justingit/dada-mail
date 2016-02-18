@@ -31,12 +31,7 @@ use CGI qw(:standard);
 
 
 if(param('process')){ 
-	print list_template(
-		-Part => "header", 
-		-vars       => { 
-			show_profile_widget => 0, 
-		}
-	); 
+	print header();
 	if(step1()) { 
 		if(step2()) { 
 			if(step3()) {  
@@ -50,14 +45,10 @@ if(param('process')){
 			}
 		}	
 	} 
-	print list_template(-Part => "footer"); 
 	
 }
 else { 
-	print list_template(-Part => "header",-vars       => { 
-			show_profile_widget => 0, 
-				}); 
-	
+	print header();
                
 	print h1($DADA::Config::PROGRAM_NAME . ' 3.x to 4.x Migration Assistant '); 
 	if(step1()){ 
@@ -79,8 +70,6 @@ EOF
 ; 
 	}
 	
-	print list_template(-Part => "footer"); 
-
 	
 }
 
