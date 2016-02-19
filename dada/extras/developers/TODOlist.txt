@@ -10,6 +10,10 @@ Key:
 [*] Naw...
 [?] Someday
 
+Make IP Address check an option, not mandatory
+
+Change default subscription form to jsonp mode as json mode is whackin' out 
+
 Take subscription size into consideration when making auto adjut batch seding speed thing
 
 Update CKEditor for the drag n drop image feature. new branch!
