@@ -2713,6 +2713,7 @@ sub mailhide_encode {
             carp "Wasn't able to successfully Mailhide encode the email address: $_";
         };
 
+		$addy = quotemeta($addy);
         $str =~ s/$addy/$mh_addy/g;
 
     }
