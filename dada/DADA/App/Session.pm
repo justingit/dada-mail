@@ -501,7 +501,8 @@ sub check_admin_cgi_security {
 	
 	if($DADA::Config::CP_SESSION_PARAMS->{check_matching_ip_addresses} == 1) {
 		if($ENV{REMOTE_ADDR} ne $args{-ip_address}){ 
-			warn '$ENV{REMOTE_ADDR:'  . $ENV{REMOTE_ADDR; 
+			
+			warn '$ENV{REMOTE_ADDR:'  . $ENV{REMOTE_ADDR}; 
 			warn '$args{-ip_address}' . $args{-ip_address}; 
 
 	        $problems++;
