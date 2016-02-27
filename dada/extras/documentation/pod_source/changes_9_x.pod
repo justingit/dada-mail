@@ -4,9 +4,56 @@
 
 =head1 Dada Mail Changelog for v9.x
 
+=head1 9.1.2
+
+This is mostly a bug-fix release, fixing bugs found in the v9.1.1 release.
+
+=head2 Bugfixes
+
+=head3 Incorrect .htaccess in the dada/extensions directory 
+
+There was an errant .htaccess file in the dada/extensions directory, disallowing access to any of the directory contents, including extensions you may have been running. This has been removed!
+
+=head3 Mailhide encode sometimes fails with strange input 
+
+L<https://github.com/justingit/dada-mail/issues/548> 
+
+=head3 Sending / Options - "Save For Selected Mailing Lists" button is editable not clickable
+
+L<https://github.com/justingit/dada-mail/issues/547>
+
+=head3 https://github.com/justingit/dada-mail/issues/546
+
+This is a very strange, and quite large bug. It basically affects anything where you need an email sent for Profile work: registering, retrieving a new password, etc, 
+
+L<https://github.com/justingit/dada-mail/issues/546>
+
+=head3 Dada 3 -> 4 utility script was broken
+
+Looks like the following script was not working for v9 of Dada Mail: 
+
+Lhttp://dadamailproject.com/d/dada3_to_dada4_sql.pl.html>
+
+This script is still useful, if you're upgrading from v3 of Dada Mail, are using the SQL backend, and also have profile fields. We've updated it to work correctly with v9. 
+
+=head3 Subscription forms in Dada Mail using JSONP, rather than JSON
+
+Dada Mail's subscrption forms that you see on the default screen, as well as the list screen's now use JSONP in the background to do their work. This is to workaround Same Origin Policies, that even effect calls from diffrent subdomains of the same domain (ie: example.com and www.example.com)
+
+=head2 Changes
+
+=head3 Disabling IP Check in List Control Panel sessions
+
+By default, Dada Mail will look at the IP address that a user is said to be logged in from, and compare it to the IP address in the session data. If they do not match, the session will fail, and you will be booted out of the session. 
+
+Sometimes, this does not work as expected, so we've now allowed you to disable this feature: 
+
+In the Installer under, B<Advanced Configuration>, check, B<Configure Security Options>. Then, I<uncheck> the option, B<Check for Matching IP Addresses>. Done! 
+
+
 =head1 9.1.1
 
-This is mostly a bug-fix release, fixing bugs found in the v9.1.1 release - of note, we broke the Tracker plugin, with the v9.1.0 release. We've also added some additional .htaccess files in directories of Dada Mail that you may not want snooping in. 
+This is mostly a bug-fix release, fixing bugs found in the v9.1.0 release - of note, we broke the Tracker plugin, with the v9.1.0 release. We've also added some additional .htaccess files in directories of Dada Mail that you may not want snooping in. 
 
 =head2 Bugfixes
 
