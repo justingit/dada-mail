@@ -241,6 +241,10 @@ $SHOW_ADMIN_LINK        = <!-- tmpl_var security_SHOW_ADMIN_LINK  default="1" --
 $DISABLE_OUTSIDE_LOGINS = <!-- tmpl_var security_DISABLE_OUTSIDE_LOGINS  default="0" -->;
 $ADMIN_FLAVOR_NAME      = '<!-- tmpl_var security_ADMIN_FLAVOR_NAME  default="admin" -->'; 
 $SIGN_IN_FLAVOR_NAME    = '<!-- tmpl_var security_SIGN_IN_FLAVOR_NAME  default="sign_in" -->'; 
+
+$CP_SESSION_PARAMS = { 
+	check_matching_ip_addresses => <!-- tmpl_var security_session_params_check_matching_ip_addresses default="0" -->, 
+};
 <!-- /tmpl_if -->
 
 

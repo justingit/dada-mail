@@ -1209,7 +1209,9 @@ sub grab_former_config_vals {
     if (   defined($BootstrapConfig::SHOW_ADMIN_LINK)
         || defined($BootstrapConfig::DISABLE_OUTSIDE_LOGINS)
         || defined($BootstrapConfig::ADMIN_FLAVOR_NAME)
-        || defined($BootstrapConfig::SIGN_IN_FLAVOR_NAME) )
+        || defined($BootstrapConfig::SIGN_IN_FLAVOR_NAME) 
+		|| keys    %$BootstrapConfig::CP_SESSION_PARAMS
+	)
     {
         $opt->{'configure_security'} = 1;
         if ( $BootstrapConfig::SHOW_ADMIN_LINK == 2 ) {
@@ -1221,7 +1223,11 @@ sub grab_former_config_vals {
         $opt->{'security_DISABLE_OUTSIDE_LOGINS'} = $BootstrapConfig::DISABLE_OUTSIDE_LOGINS;
         $opt->{'security_ADMIN_FLAVOR_NAME'}      = $BootstrapConfig::ADMIN_FLAVOR_NAME;
         $opt->{'security_SIGN_IN_FLAVOR_NAME'}    = $BootstrapConfig::SIGN_IN_FLAVOR_NAME;
-
+		
+		if(keys    %$BootstrapConfig::CP_SESSION_PARAMS) { 
+			$opt->{'security_session_params_check_matching_ip_addresses'} 
+				= $BootstrapConfig::CP_SESSION_PARAMS->{security_session_params_check_matching_ip_addresses};
+		}
     }
 
     # Configure CAPTCHA
@@ -1592,6 +1598,8 @@ sub query_params_to_install_params {
       security_DISABLE_OUTSIDE_LOGINS
       security_ADMIN_FLAVOR_NAME
       security_SIGN_IN_FLAVOR_NAME
+	  
+	  security_session_params_check_matching_ip_addresses
 
       configure_captcha
       captcha_type
@@ -2237,6 +2245,13 @@ sub create_dada_config_file {
             $security_params->{security_SIGN_IN_FLAVOR_NAME} =
               clean_up_var( $ip->{-security_SIGN_IN_FLAVOR_NAME} );
         }
+		
+        if ( length( $ip->{-security_session_params_check_matching_ip_addresses} ) > 0 ) {
+            $security_params->{security_session_params_check_matching_ip_addresses} =
+              clean_up_var( $ip->{-security_session_params_check_matching_ip_addresses} );
+        }
+		
+		
     }
 
     my $captcha_params = {};
