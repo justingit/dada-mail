@@ -620,32 +620,35 @@
 			<legend>
 				Control Panel
 		</legend>
-			<!-- Allow Subscriptions in the List Control Panel, Without Confirmation --> 
-	        <div class="row"> 
-	  		 <div class="small-12  columns"> 
-			
-	            <input type="checkbox" name="enable_mass_subscribe" id="enable_mass_subscribe" <!-- tmpl_if list_settings.enable_mass_subscribe -->checked="checked"<!-- /tmpl_if --> value="1" >     
-	            <label for="enable_mass_subscribe">
-	            Allow subscriptions in the List Control Panel, without confirmation
-	           </label>      		
+		<!-- Allow Subscriptions in the List Control Panel, Without Confirmation --> 
+		<div class="row"> 
+			<div class="small-12  columns"> 
+				<input type="checkbox" name="enable_mass_subscribe" id="enable_mass_subscribe" <!-- tmpl_if list_settings.enable_mass_subscribe -->checked="checked"<!-- /tmpl_if --> value="1" >     
+				<label for="enable_mass_subscribe">
+					Allow subscriptions in the List Control Panel, without confirmation
+				</label>      		
 			</div>
 		</div>
-        <div class="row"> 
-		 <div class="small-1  columns"></div>
-  		 <div class="small-11  columns"> 
-			 
-            <input type="checkbox" name="enable_mass_subscribe_only_w_root_login" id="enable_mass_subscribe_only_w_root_login" value="1" <!-- tmpl_if list_settings.enable_mass_subscribe_only_w_root_login -->checked="checked"<!-- /tmpl_if --> >
-			<label for="enable_mass_subscribe_only_w_root_login">
-				Only Allow when logged in with the Pro Dada Root Password
-			</label>
-	   	   <div class="alert-box info radius">  
-	   		   (Inviting subscribers will always be available)
-	           </div
-		 </div>
-		</div>
-	   
+		<div class="row"> 
+			<div class="small-1 columns">
+			</div>
+			<div class="small-11 columns"> 
+				<input 
+					type="checkbox" 
+					name="enable_mass_subscribe_only_w_root_login" 
+					id="enable_mass_subscribe_only_w_root_login" 
+					value="1" 
+					<!-- tmpl_if list_settings.enable_mass_subscribe_only_w_root_login -->checked="checked"<!-- /tmpl_if -->
+				>
+				<label for="enable_mass_subscribe_only_w_root_login">
+					Only Allow when logged in with the <!-- tmpl_var PROGRAM_NAME --> Root Password
+				</label>
+				<div class="alert-box info radius">  
+					(Inviting subscribers will always be available)
+				</div>
+			</div>
+		</div> 
 		
-
         <div class="row"> 	  		 
   		 <div class="small-12  columns"> 
             <input type="checkbox" name="send_subscribed_by_list_owner_message" id="send_subscribed_by_list_owner_message" <!-- tmpl_if list_settings.send_subscribed_by_list_owner_message -->checked="checked"<!-- /tmpl_if --> value="1" >     
