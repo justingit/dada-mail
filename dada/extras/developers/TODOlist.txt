@@ -10,17 +10,15 @@ Key:
 [*] Naw...
 [?] Someday
 
-Make IP Address check an option, not mandatory
+BRIDGE: Tag for original From: header
 
-Change default subscription form to jsonp mode as json mode is whackin' out 
+Syntax check for (at least) email message templates. 
 
 Take subscription size into consideration when making auto adjut batch seding speed thing
 
 Update CKEditor for the drag n drop image feature. new branch!
 
-
 does email protect only work for the first address in archie message bodies ?
-
 
 [ ] My bet is that I'm not the only impatient list admin out there and that there a lot of admins who would like to see (maybe even expect) the names to disappear off the bounce list as soon as the manual deletions are done. I haven't checked the existing SQL, but I would think that should be possible.
 
@@ -50,10 +48,6 @@ Agreement step on subscription (by checking this box, you agree to the following
 email list owner about new list being created. 
 
 Broke KCFinder too?!
-
-Social buttons use fi-fonts? Custom buttons with custom background colors? 
-
-http://dadamailproject.com/support/boards/viewtopic.php?t=4586&p=17188#p17188
 
 Installer - create cli args when setting up DM in web installer, save those are in .dada_config file, 
 along with date of configuration creation and v. of app that created it. 
