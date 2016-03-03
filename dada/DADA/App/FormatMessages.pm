@@ -385,12 +385,31 @@ sub _format_text {
     if (@parts) {
         my $i;
         for $i ( 0 .. $#parts ) {
-            $parts[$i] = $self->_format_text( $parts[$i] );
+			my $n_entity = undef; 
+			
+			try { 
+				$n_entity = $self->_format_text( $parts[$i] ); 
+				
+			} catch { 
+				warn 'Formatting single entity failed!' . $_; 
+				next; 
+			};
+			
+			if($n_entity) {
+				$parts[$i] = $n_entity;
+			}
+			else{ 
+				warn 'no $n_entity returned?!';
+			}			
+			
         }
+		
         $entity->sync_headers(
             'Length'      => 'COMPUTE',
             'Nonstandard' => 'ERASE'
         );
+		
+		return $entity; 
     }
     else {
 
@@ -600,10 +619,8 @@ sub _format_text {
             }
 
         }
-        return $entity;
+		return $entity;
     }
-
-    return $entity;
 }
 
 
