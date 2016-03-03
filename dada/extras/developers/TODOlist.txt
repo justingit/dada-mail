@@ -10,7 +10,11 @@ Key:
 [*] Naw...
 [?] Someday
 
+Upgrade to new reCATPCHA system. 
+
 BRIDGE: Tag for original From: header
+
+Tag View of profile fields? 
 
 Syntax check for (at least) email message templates. 
 
