@@ -1782,7 +1782,7 @@ $PIN_NUM //= unpack( "%32C*", $FILES );
 
 $TEXT_CSV_PARAMS //= {
     binary              => 1,
-    allow_loose_escapes => 1,
+  #  allow_loose_escapes => 1,
     always_quote        => 1,
   #  auto_diag           => 1,
 };
