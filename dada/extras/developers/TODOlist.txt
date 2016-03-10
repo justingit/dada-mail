@@ -10,19 +10,28 @@ Key:
 [*] Naw...
 [?] Someday
 
-Upgrade to new reCATPCHA system. 
+Bounce Handler is checked by default in Installer? 
 
+Revisit new security options - does setting up no ip check have side affect of setting othe rthings (hiding the security link, etc?)
+
+[ ] Upgrade to new reCATPCHA system. 
+	https://metacpan.org/pod/Google::reCAPTCHA
+	Looks easy! 
+
+does email protect only work for the first address in archie message bodies ?
+	
 BRIDGE: Tag for original From: header
 
 Tag View of profile fields? 
 
-Syntax check for (at least) email message templates. 
+[ ] Syntax check for (at least) email message templates. 
+	Already a, DADA::Template::Widgets::validate_screen method to use
+
 
 Take subscription size into consideration when making auto adjut batch seding speed thing
 
 Update CKEditor for the drag n drop image feature. new branch!
 
-does email protect only work for the first address in archie message bodies ?
 
 [ ] My bet is that I'm not the only impatient list admin out there and that there a lot of admins who would like to see (maybe even expect) the names to disappear off the bounce list as soon as the manual deletions are done. I haven't checked the existing SQL, but I would think that should be possible.
 
