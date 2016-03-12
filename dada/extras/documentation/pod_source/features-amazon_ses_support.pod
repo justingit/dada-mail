@@ -125,7 +125,7 @@ Click on the user you just created (for us, this is: B<DadaDemo>).
 
 =end html 
 
-You should then see the user's details. Click on the B<Permissions> tab. 
+You should then see the user's details. Click on the B<Permissions> tab and in that tab, click on the button labeled, B<Attach Policy>.
 
 =begin html 
 
@@ -136,7 +136,6 @@ You should then see the user's details. Click on the B<Permissions> tab.
 
 =end html 
 
-In that tab, click on the button labeled, B<Attach Policy>.
 
 You should now see a table of available policies. Scroll through them, and find the one labeled, B<AmazonSESFullAccess> and B<check> the policy. 
 
@@ -159,6 +158,10 @@ We can now use the B<Access Key ID> and B<Secret Access Key> in Dada Mail.
 
 In the Dada Mail Installer, click the button labeled, B<Show/Hide Advanced Options>, then check the checkbox labeled, B<Configure Amazon SES>. 
 
+Textboxes to paste in the B<Endpoint>, B<Access Key ID> and B<Secret Access Key> we just retrieved will be revealed. 
+Paste in those two keys, and test them by clicking the button labeled, B<Test Your AWS Credentials>.
+We'll talk about endpoints a little later, when we talk about Production Access. 
+
 =begin html 
 
 <p style="text-align:center">
@@ -168,9 +171,7 @@ In the Dada Mail Installer, click the button labeled, B<Show/Hide Advanced Optio
 
 =end html
 
-Textboxes to plug in the B<Endpoint>, B<Access Key ID> and B<Secret Access Key> we just retrieved will be revealed. 
-Paste in those two keys, and test them by clicking the button labeled, B<Test Your AWS Credentials>.
-We'll talk about endpoints a little later, when we talk about Production Access. 
+
 
 Remember: you can drop into the installer to make additional global configurations, without having to reinstall or upgrade Dada Mail. See: 
 
