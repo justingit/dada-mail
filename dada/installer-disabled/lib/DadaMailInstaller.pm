@@ -169,7 +169,6 @@ show_cache_options                  => 1,
 show_debugging_options              => 1,
 show_confirmation_token_options     => 1,
 show_amazon_ses_options             => 1,
-show_mandrill_options               => 1,
 show_program_name_options           => 1,
 show_s_program_url_options          => 0,
 show_annoying_whiny_pro_dada_notice => 0,
@@ -265,7 +264,6 @@ sub setup {
         cgi_test_magic_template           => \&cgi_test_magic_template, 
         cgi_test_magic_template_diag_box => \&cgi_test_magic_template_diag_box, 
         cgi_test_amazon_ses_configuration => \&cgi_test_amazon_ses_configuration,
-        cgi_test_mandrill_configuration   => \&cgi_test_mandrill_configuration,
         cgi_test_CAPTCHA_reCAPTCHA        => \&cgi_test_CAPTCHA_reCAPTCHA,
         
         #cgi_test_CAPTCHA_reCAPTCHA_iframe  => \&cgi_test_CAPTCHA_reCAPTCHA_iframe,
@@ -750,14 +748,6 @@ sub scrn_configure_dada_mail {
 	        default => $DADA::Config::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage},
 		}
     );
-    my $mandrill_Allowed_Sending_Quota_Percentage_popup_menu = HTML::Menu::Select::popup_menu(
-        {
-			name    => 'mandrill_Allowed_Sending_Quota_Percentage',
-	        id      => 'mandrill_Allowed_Sending_Quota_Percentage',
-	        values  => [ reverse( ( 1 .. 100 ) ) ],
-	        default => $DADA::Config::MADRILL->{Allowed_Sending_Quota_Percentage},
-		}
-    );
 
     my $install_dada_files_dir_at = $self->install_dada_files_dir_at_from_params(
         {
@@ -829,8 +819,6 @@ sub scrn_configure_dada_mail {
 
                 amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu =>
                   $amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu,
-                mandrill_Allowed_Sending_Quota_Percentage_popup_menu =>
-                  $mandrill_Allowed_Sending_Quota_Percentage_popup_menu,
                 Big_Pile_Of_Errors => $Big_Pile_Of_Errors,
                 Trace              => $Trace,
             },
@@ -1317,12 +1305,6 @@ sub grab_former_config_vals {
         }
     }
 
-    # Mandrill
-    if ( keys %$BootstrapConfig::MANDRILL_OPTIONS ) {
-        $opt->{'configure_mandrill'} = 1;
-        $opt->{'mandrill_api_key'}   = 1;
-    }
-
     my $dash_opt = {};
     for ( keys %$opt ) {
         $dash_opt->{ '-' . $_ } = $opt->{$_};
@@ -1629,11 +1611,6 @@ sub query_params_to_install_params {
       amazon_ses_AWSAccessKeyId
       amazon_ses_AWSSecretKey
       amazon_ses_Allowed_Sending_Quota_Percentage
-
-      configure_mandrill
-      mandrill_api_key
-      mandrill_Allowed_Sending_Quota_Percentage
-
     );
 	#       s_program_url_S_PROGRAM_URL
 
@@ -2318,14 +2295,6 @@ sub create_dada_config_file {
         $amazon_ses_params->{Allowed_Sending_Quota_Percentage} =
           strip( $ip->{-amazon_ses_Allowed_Sending_Quota_Percentage} );
     }
-    my $mandrill_params = {};
-    if ( $ip->{-configure_mandrill} == 1 ) {
-        $mandrill_params->{configure_mandrill} = 1;
-        $mandrill_params->{mandrill_api_key}   = clean_up_var( strip( $ip->{-mandrill_api_key} ) );
-        $mandrill_params->{mandrill_Allowed_Sending_Quota_Percentage} =
-          strip( $ip->{-mandrill_Allowed_Sending_Quota_Percentage} );
-    }
-
     my $bounce_handler_params = {};
     if ( $ip->{-install_bounce_handler} == 1 ) {
         $cut_tag_params->{cut_list_settings_default} = 0;
@@ -2390,7 +2359,6 @@ sub create_dada_config_file {
                 %{$confirmation_token_params},
                 %{$program_name_params},
                 %{$amazon_ses_params},
-                %{$mandrill_params},
                 %{$bounce_handler_params},
                 %{$bridge_params},
             }
@@ -3876,48 +3844,8 @@ sub cgi_test_amazon_ses_configuration {
     return $r;
 }
 
-sub cgi_test_mandrill_configuration {
 
-    my $self = shift;
-    my $q    = $self->query();
 
-    my $mandrill_api_key                          = strip( scalar $q->param('mandrill_api_key') );
-    my $mandrill_Allowed_Sending_Quota_Percentage = strip( scalar $q->param('mandrill_Allowed_Sending_Quota_Percentage') );
-
-    my ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
-
-    eval {
-        require DADA::App::Mandrill;
-        my $man = DADA::App::Mandrill->new;
-        ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->get_stats(
-            {
-                api_key                          => $mandrill_api_key,
-                Allowed_Sending_Quota_Percentage => $mandrill_Allowed_Sending_Quota_Percentage,
-            }
-        );
-    };
-
-    my $r;
-    require DADA::Template::Widgets;
-    $r = DADA::Template::Widgets::screen(
-        {
-            -screen => 'amazon_ses_get_stats_widget.tmpl',
-            -expr   => 1,
-            -vars   => {
-                using_man                        => 1,
-                status                           => $status,
-                MaxSendRate                      => $MaxSendRate,
-                Max24HourSend                    => $Max24HourSend,
-                SentLast24Hours                  => $SentLast24Hours,
-                allowed_sending_quota_percentage => $mandrill_Allowed_Sending_Quota_Percentage,
-
-            }
-        }
-    );
-
-    return $r;
-
-}
 
 sub cgi_test_default_CAPTCHA {
 

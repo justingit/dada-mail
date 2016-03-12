@@ -251,7 +251,6 @@ sub batch_params {
 
     # Amazon SES:
     my $using_amazon_ses = 0;
-    my $using_mandrill   = 0;
 
     if (
         $sending_method eq 'amazon_ses' && $amazon_ses_auto_batch_settings == 1
@@ -262,19 +261,12 @@ sub batch_params {
     {
         $using_amazon_ses = 1;
     }
-    elsif ($self->{ls}->param('sending_method') eq 'smtp'
-        && $self->{ls}->param('smtp_server') =~ m/smtp\.mandrillapp\.com/
-        && $amazon_ses_auto_batch_settings == 1 )
-    {
-        $using_mandrill = 1;
-    }
-
+ 
     require POSIX;
     my $batch_size = 0;
     my $batch_wait = 0;
 
-    if (   $using_amazon_ses == 1
-        || $using_mandrill == 1 )
+    if (   $using_amazon_ses == 1)
     {
 
         my $status              = undef;
@@ -304,26 +296,6 @@ sub batch_params {
 			
 						
 			#warn q{$quota_Max24HourSend} . $quota_Max24HourSend; 
-        }
-        elsif ( $using_mandrill == 1 ) {
-            require DADA::App::Mandrill;
-            my $man = DADA::App::Mandrill->new;
-
-            # Save stats, between executions:
-            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
-            if ( $man->_should_get_saved_man_stats == 1 ) {
-                ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->_get_saved_man_stats;
-            }
-            else {
-                ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->get_stats;
-            #                  0          10_000             5
-                #use Data::Dumper; 
-                #warn Dumper([( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate )]); 
-            
-                 $man->_save_man_stats($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate);
-            }    
-            $quota_Max24HourSend = ($Max24HourSend * $man->allowed_sending_quota_percentage) / 100;
-
         }
         else {
             die "what?";

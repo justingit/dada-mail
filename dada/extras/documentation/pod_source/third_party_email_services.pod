@@ -86,10 +86,6 @@ L<https://elasticemail.com/>
 
 L<http://www.socketlabs.com/>
 
-=head3 Mandrill
-
-L<http://mandrill.com/>
-
 =head3 turboSMTP 
 
 L<http://www.serversmtp.com/en/smtp-mailing-list-distributors>

@@ -2976,20 +2976,13 @@ sub mailing_sending_mass_mailing_options {
         my $type_of_service         = 'ses';
 
         if (
-
             (
                 $ls->param('sending_method') eq 'amazon_ses' || ( $ls->param('sending_method') eq 'smtp'
                     && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
             )
-            || ( ( $ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/smtp\.mandrillapp\.com/ ) )
           )
         {
             $show_amazon_ses_options = 1;
-            if (   $ls->param('sending_method') eq 'smtp'
-                && $ls->param('smtp_server') =~ m/smtp\.mandrillapp\.com/ )
-            {
-                $type_of_service = 'mandrill';
-            }
         }
 
         my @message_amount = ( 1 .. 180 );
@@ -3139,8 +3132,6 @@ sub amazon_ses_get_stats {
         $ls->param('sending_method') eq 'amazon_ses'
         || (   $ls->param('sending_method') eq 'smtp'
             && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
-        || (   $ls->param('sending_method') eq 'smtp'
-            && $ls->param('smtp_server') =~ m/smtp\.mandrillapp\.com/ )
       )
     {
 
@@ -3162,16 +3153,6 @@ sub amazon_ses_get_stats {
             ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
             $allowed_sending_quota_percentage = $ses->allowed_sending_quota_percentage;
             $using_ses                        = 1;
-
-        }
-        elsif ($ls->param('sending_method') eq 'smtp'
-            && $ls->param('smtp_server') =~ m/smtp\.mandrillapp\.com/ )
-        {
-            require DADA::App::Mandrill;
-            my $man = DADA::App::Mandrill->new;
-            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->get_stats;
-            $allowed_sending_quota_percentage = 100;
-            $using_man                        = 1;
 
         }
 
