@@ -10,10 +10,6 @@ Key:
 [*] Naw...
 [?] Someday
 
-Bounce Handler is checked by default in Installer? 
-
-Revisit new security options - does setting up no ip check have side affect of setting othe rthings (hiding the security link, etc?)
-
 [ ] Upgrade to new reCATPCHA system. 
 	https://metacpan.org/pod/Google::reCAPTCHA
 	Looks easy! 
