@@ -241,11 +241,11 @@ Many of the mail filtering software used looks for keywords that will trigger yo
 
 Lyris provides a free content check at: 
 
-http://lyris.com/contentchecker/
+L<http://lyris.com/contentchecker/>
 
 It's somewhat barebones, and you'll receive some marketing information from the company once you're done, but it uses a similar backend to what I test Dada Mail with, which, if you're interested, is a fine program called, SpamAssassin: 
 
-http://spamassassin.org
+L<http://spamassassin.org>
 
 I'm personally very happy with Spam Assassin's development and thank my lucky stars each time it blocks the billions of SPAM I personally receive a day. Mail filtering software like SpamAssassin is not going to go away any time soon and the best thing to do is work in conjunction with it, rather than to try to find holes in which to get past it. 
 
@@ -257,27 +257,27 @@ Other reasources dealing with the content of your message, primarily:
 
 =item * Some Tips for Legitimate Senders to Avoid False Positives
 
-http://wiki.apache.org/spamassassin/AvoidingFpsForSenders?highlight=%28CategoryFaq%29
+L<http://wiki.apache.org/spamassassin/AvoidingFpsForSenders?highlight=%28CategoryFaq%29>
 
 =item * HTML Emails - Taming the Beast
 
-http://www.thinkvitamin.com/features/design/html-emails
+L<http://www.thinkvitamin.com/features/design/html-emails>
 
 =item * CSS and Email, Kissing in a Tree
 
-http://www.alistapart.com/articles/cssemail/
+L<http://www.alistapart.com/articles/cssemail/>
 
 =item *  Frugal Marketing: That's not Spam, That's My Newsletter!
 
-http://www.frugalmarketing.com/dtb/notspamnews.shtml
+L<http://www.frugalmarketing.com/dtb/notspamnews.shtml>
 
 =item *  SpamCon Foundation: Best practices for marketers
 
-http://www.spamcon.org/directories/best-practices.shtml
+L<http://www.spamcon.org/directories/best-practices.shtml>
 
 =item * Bulk e-mail HOWTO:
 
-http://spam.abuse.net/marketerhelp/bulk-howto.shtml 
+L<http://spam.abuse.net/marketerhelp/bulk-howto.shtml>
 
 =back
 
@@ -293,13 +293,13 @@ Resources to check:
 
 SpamCop receives individual reports of spam from its users and keeps a database of abusive activity based on the IP address the mail originates from. If you have setup an abuse email address for you domain (usually, abuse@example.com, where example.com is your domain name), you should receive a copy of the complaint. If not, you can check your status at: 
 
-http://www.spamcop.net/bl.shtml
+L<http://www.spamcop.net/bl.shtml>
 
 I belive SpamCop's blacklist is one that expires over time and if you reply to the abuse emails, you can come to a conclusion that may get you off quicker. 	
 
 =item * mx toolbox Blacklist Check
 
-http://www.mxtoolbox.com/blacklists.aspx 
+L<http://www.mxtoolbox.com/blacklists.aspx>
 
 Searches through many, many email blacklists at one time. 
 
