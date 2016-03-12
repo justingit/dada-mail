@@ -856,7 +856,7 @@ sub _massage_fields_for_amazon_ses {
     my $fields      = $args->{-fields};
     my $admin_email = $args->{-admin_email},
 
-      $fields->{'X-Message-ID'} = $fields->{'Message-ID'};
+    $fields->{'X-Message-ID'} = $fields->{'Message-ID'};
     $fields->{'Return-Path'} = '<' . $args->{-admin_email} . '>';
 
     for my $field (@default_headers) {
@@ -875,6 +875,24 @@ sub mail_sending_options_test {
 
     my $self = shift;
 
+    my $report = [];
+
+	my ($n_p_t_status, $n_p_t_msg);
+	try {
+		($n_p_t_status, $n_p_t_msg) 
+			= $self->net_ping_test(
+				$self->{ls}->param('smtp_server'), 
+				$self->{ls}->param('smtp_port')
+		);
+	} catch { 
+		warn $_;
+	};
+	
+	push(@$report, { 
+    	line    => '',
+        message => $n_p_t_msg,
+	});
+	
     require DADA::Security::Password;
 
     my $filename =
@@ -932,7 +950,6 @@ sub mail_sending_options_test {
 
     my @r_l = split( "\n", $smtp_msg );
 
-    my $report = [];
 
     my @munged_l = ();
     for my $l (@r_l) {
@@ -1007,6 +1024,37 @@ m/Authentication succeeded|OK Authenticated|Authentication successful/i
     }
 
     return ( $smtp_msg, \@r_l, $report );
+
+}
+
+sub net_ping_test { 
+	
+	my $self = shift; 
+	my $host = shift; 
+	my $port = shift; 
+	
+	my $status = 1; 
+	try {
+		require Net::Ping;
+	} catch { 
+		$status = 0; 
+		return (1, "Net::Ping not available.");
+	};
+	
+	my $timeout = 60;
+	my $p = Net::Ping->new("tcp");
+	   $p->port_number($port);
+
+	# perform the ping
+	if( $p->ping($host, $timeout) )
+	{
+		$p->close();
+	    return(1, "Host $host successfully pinged at port $port.");
+	}
+	else {
+		$p->close();
+        return(0, "Host $host could not be  pinged at port $port. Outbound port may be blocked, or host is down at specified port");
+	}
 
 }
 
