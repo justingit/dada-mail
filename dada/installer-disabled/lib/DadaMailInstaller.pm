@@ -664,7 +664,7 @@ sub scrn_configure_dada_mail {
         $q->param( 'install_multiple_subscribe',    1 );
         $q->param( 'install_blog_index',            1 );
         $q->param( 'install_bridge',                1 );
-        $q->param( 'install_bounce_handler',        1 );
+        $q->param( 'install_bounce_handler',        0 );
         $q->param( 'install_change_list_shortname', 1 );
         $q->param( 'install_global_config',         0 );
 
@@ -1657,7 +1657,8 @@ sub query_params_to_install_params {
 
 
     for (@install_param_names) {
-        $ip->{ '-' . $_ } = $q->param($_);
+		my $val = $q->param($_) // undef;
+        $ip->{ '-' . $_ } = $val;
     }
 
 
@@ -2230,11 +2231,12 @@ sub create_dada_config_file {
     my $security_params = {};
     if ( $ip->{-configure_security} == 1 ) {
         $security_params->{configure_security} = 1;
+		# Switcheroo
         if ( $ip->{-security_no_show_admin_link} == 1 ) {
-            $security_params->{security_SHOW_ADMIN_LINK} = 2;
+            $security_params->{security_SHOW_ADMIN_LINK} = 0;
         }
         else {
-            $security_params->{security_SHOW_ADMIN_LINK} = 0;
+            $security_params->{security_SHOW_ADMIN_LINK} = 1;
         }
         $security_params->{security_DISABLE_OUTSIDE_LOGINS} =
           clean_up_var( $ip->{-security_DISABLE_OUTSIDE_LOGINS} );
