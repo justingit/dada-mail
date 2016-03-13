@@ -6,6 +6,58 @@
 
 =head1 9.1.2
 
+This is mostly a bug-fix release, fixing bugs found in the v9.1.2 release.
+
+Of note were several minor bugs found in the Installer - some of which are documented below, but other small bugs include: 
+
+=over
+
+=item * Bounce Handler always being enabled to be installed
+
+=item * The, "Hide Administration Link" always set, even if the option is not enabled. 
+
+=back
+
+=head2 Changes
+
+=head3 Mandrill API support dropped
+
+Mandrill has changed their ToS to disallow bulk mailing, so this service is a bad fit for something like Dada Mail. We've removed the API to streamline the underlying codebase. 
+
+=head3 Amazon SES docs expanded
+
+We love Amazon SES! We've updated and expanded the docs to help you better set up Amazon SES in Dada Mail. Docs can be found here: 
+
+L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+
+=head3 Ping Test in Sending Options Test for SMTP
+
+We've added a simple ping test to see if the host at the port you've specified can be reached. Many times, problems sending via SMTP are because the outgoing port on the server Dada Mail is installed on is blocked, rather than the SMTP credentials being wrong, or there's a bug in Dada Mail. This small enhancement will help clarify where the problem may be. 
+
+=head3 Added .htaccess file in, "dada" directory
+
+We've added a simple .htaccess file in the main B<dada> directory to set the DirectoryIndex to the mail.cgi script. That way, one can just visit, 
+
+	http://example.com/dada
+	
+and will see Dada Mail's default screen instead of nothing, or the underlying directory structure. 
+
+=head2 Bugfixes
+
+=head3 Installer: SQL database port value not being read correctly? 
+
+L<https://github.com/justingit/dada-mail/issues/551>
+
+=head3 Hide Disabled Screens not working with classic side bar
+
+L<https://github.com/justingit/dada-mail/issues/549>
+
+=head3 Installer: SQL database port value not being read correctly? 
+
+L<https://github.com/justingit/dada-mail/issues/551>
+
+=head1 9.1.2
+
 This is mostly a bug-fix release, fixing bugs found in the v9.1.1 release.
 
 =head2 Bugfixes
