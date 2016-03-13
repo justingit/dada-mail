@@ -2066,7 +2066,10 @@ sub create_dada_config_file {
         $SQL_params->{backend}      = $ip->{-backend};
         $SQL_params->{sql_server}   = $ip->{-sql_server};
         $SQL_params->{sql_database} = clean_up_var( $ip->{-sql_database} );
-        $SQL_params->{sql_port}     = clean_up_var( $ip->{-sql_port} );
+        $SQL_params->{sql_port}     = $self->sql_port_from_params(
+										$ip->{-backend}, 
+										$ip->{-sql_port},
+									  );
         $SQL_params->{sql_username} = clean_up_var( $ip->{-sql_username} );
         $SQL_params->{sql_password} = clean_up_var( $ip->{-sql_password} );
     }
@@ -2405,7 +2408,13 @@ sub create_sql_tables {
 
         my $dbtype   = strip( xss_filter( $ip->{-backend} ) );
         my $dbserver = strip( xss_filter( $ip->{-sql_server} ) );
-        my $port     = strip( xss_filter( $ip->{-sql_port} ) );
+       # my $port     = strip( xss_filter( $ip->{-sql_port} ) );
+	   
+       my $port = $self->sql_port_from_params(
+	   		$ip->{-backend}, 
+			$ip->{-sql_port},
+		  );
+
         my $database = strip( xss_filter( $ip->{-sql_database} ) );
         my $user     = strip( xss_filter( $ip->{-sql_username} ) );
         my $pass     = strip( xss_filter( $ip->{-sql_password} ) );
@@ -2453,17 +2462,19 @@ sub create_sql_tables {
 sub sql_port_from_params {
 
     my $self = shift;
-    my $ip   = $self->param('install_params');
+    #my $ip   = $self->param('install_params');
 
-    my $port = $ip->{-sql_port};
-    if ( $ip->{-sql_port} eq 'auto' ) {
-        if ( $ip->{-backend} =~ /mysql/i ) {
-            $port = 3306;
+	my $backend = shift; 
+    my $port    = shift; #$ip->{-sql_port};
+	
+    if ( $port eq 'auto' ) {
+        if ( $backend =~ /mysql/i ) {
+            $port = '3306';
         }
-        elsif ( $ip->{-backend} =~ /Pg/i ) {
-            $port = 5432;
+        elsif ( $backend =~ /Pg/i ) {
+            $port = '5432';
         }
-        elsif ( $ip->{-backend} =~ /SQLite/i ) {
+        elsif ( $backend =~ /SQLite/i ) {
             $port = '';
         }
         else {
@@ -2565,8 +2576,15 @@ sub check_setup {
 
                 if (
                     test_database_has_all_needed_tables(
-                        $ip->{-backend},      $ip->{-sql_server},   $self->sql_port_from_params(),
-                        $ip->{-sql_database}, $ip->{-sql_username}, $ip->{-sql_password},
+                        $ip->{-backend},      
+						$ip->{-sql_server},   
+						$self->sql_port_from_params(
+							$ip->{-backend}, 
+							$ip->{-sql_port},
+						),
+                        $ip->{-sql_database}, 
+						$ip->{-sql_username}, 
+						$ip->{-sql_password},
                     ) == 1
                   )
                 {
@@ -3699,7 +3717,14 @@ sub cgi_test_sql_connection {
 
     my $dbtype   = strip( xss_filter( scalar $q->param('backend') ) );
     my $dbserver = strip( xss_filter( scalar $q->param('sql_server') ) );
-    my $port     = strip( xss_filter( scalar $q->param('sql_port') ) );
+   # my $port     = strip( xss_filter( scalar $q->param('sql_port') ) );
+   
+   
+	my $port     = $self->sql_port_from_params(
+								$q->param('backend'),
+								$q->param('sql_port'),
+							  );
+   
     my $database = strip( xss_filter( scalar $q->param('sql_database') ) );
     my $user     = strip( xss_filter( scalar $q->param('sql_username') ) );
     my $pass     = strip( xss_filter( scalar $q->param('sql_password') ) );
