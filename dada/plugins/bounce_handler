@@ -176,17 +176,23 @@ sub cgi_main {
         return ( {}, cgi_manual_start() );
     }
     else {
-
-        ( $admin_list, $root_login ) = check_list_security(
-            -cgi_obj  => $q,
-            -Function => 'bounce_handler'
-        );
+		
+        my $prm = $q->param('prm') || 'cgi_default';
+		my $function = 'bounce_handler'; 
+		
+		if($prm eq "cgi_bounce_score_search"){ 
+			$function .= ' tracker';
+		}
+		( $admin_list, $root_login ) = check_list_security(
+		    -cgi_obj  => $q,
+		    -Function => $function,
+		);
+		
         $list = $admin_list;
         
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
         my $li = $ls->get();
 
-        my $prm = $q->param('prm') || 'cgi_default';
         my %Mode = (
 
             'cgi_default'                => \&cgi_default,
