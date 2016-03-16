@@ -101,8 +101,9 @@ sub run_schedules {
         if($sched->{schedule_activated} != 1){ 
             $r .= "\t\t* Schedule is NOT Activated.\n"; 
             next SCHEDULES; 
+        } else { 
             $r .= "\t\t* Schedule is Activated!\n"; 
-        }
+		}
         
         my $schedule_times = []; 
         
