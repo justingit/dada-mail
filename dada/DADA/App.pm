@@ -13450,14 +13450,14 @@ sub schedules {
     my $dast = DADA::App::ScheduledTasks->new;
 
     if ( $schedule eq '_all' ) {
-        $r .= "\n\nMonitor:\n" . '-' x 72 . "\n\n";
+        $r .= "\nMonitor:\n" . '-' x 72 . "\n";
         try {
             $r .= $dast->mass_mailing_monitor($list);
         } catch {
             $r .= "* Error: $_\n";
         };
 
-        $r .= "\n\nMass Mailing Schedules:\n" . '-' x 72 . "\n\n";
+        $r .= "Mass Mailing Schedules:\n" . '-' x 72 . "\n";
         try {
             $r .= $dast->scheduled_mass_mailings($list);
         } catch {
@@ -13470,7 +13470,7 @@ sub schedules {
             if ( exists( $DADA::Config::PLUGINS_ENABLED->{$plugin} ) ) {
                 next if ( $DADA::Config::PLUGINS_ENABLED->{$plugin} != 1 );
                 next if !exists( $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run} );
-                $r .= "\n\nPlugin: $plugin\n" . '-' x 72 . "\n\n";
+                $r .= "Plugin: $plugin\n" . '-' x 72 . "\n";
                 try {
                     require 'plugins/' . $plugin;
                     $r .= $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run}->($list);
@@ -13481,7 +13481,7 @@ sub schedules {
         }
     }
     elsif ( $schedule eq 'mass_mailing_monitor' ) {
-        $r .= "\n\nMonitor:\n" . '-' x 72 . "\n\n";
+        $r .= "Monitor:\n" . '-' x 72 . "\n";
         try {
             $r .= $dast->mass_mailing_monitor($list);
         } catch {
@@ -13489,7 +13489,7 @@ sub schedules {
         };
     }
     elsif ( $schedule eq 'scheduled_mass_mailings' ) {
-        $r .= "\n\nMass Mailing Schedules:\n" . '-' x 72 . "\n\n";
+        $r .= "Mass Mailing Schedules:\n" . '-' x 72 . "\n";
         try {
             $r .= $dast->scheduled_mass_mailings($list);
         } catch {
@@ -13506,7 +13506,7 @@ sub schedules {
         else {
 			
 			
-            $r .= "\n\nPlugin: $schedule\n" . '-' x 72 . "\n\n";
+            $r .= "Plugin: $schedule\n" . '-' x 72 . "\n";
 			
             try {
                 require 'plugins/' . $schedule;
@@ -13535,9 +13535,9 @@ sub schedules {
     if ( $output_mode ne '_silent' ) {
         $self->header_props( { -type => 'text/plain' } );
         if ( $for_colorbox == 1 ) {
-            return '<pre>' . 
+            return '<pre><small>' . 
 					$r . 
-					'</pre>';
+					'</small></pre>';
         }
         else {
            # $ENV{CGI_APP_RETURN_ONLY} = 1;
