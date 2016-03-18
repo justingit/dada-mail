@@ -265,6 +265,7 @@ sub setup {
         cgi_test_magic_template_diag_box => \&cgi_test_magic_template_diag_box, 
         cgi_test_amazon_ses_configuration => \&cgi_test_amazon_ses_configuration,
         cgi_test_CAPTCHA_reCAPTCHA        => \&cgi_test_CAPTCHA_reCAPTCHA,
+        cgi_test_CAPTCHA_Google_reCAPTCHA => \&cgi_test_CAPTCHA_Google_reCAPTCHA,
         
         #cgi_test_CAPTCHA_reCAPTCHA_iframe  => \&cgi_test_CAPTCHA_reCAPTCHA_iframe,
         cgi_test_default_CAPTCHA            => \&cgi_test_default_CAPTCHA,
@@ -784,6 +785,8 @@ sub scrn_configure_dada_mail {
                 can_use_SQLite                     => scalar test_can_use_SQLite(),
                 can_use_GD                         => scalar test_can_use_GD(),
                 can_use_CAPTCHA_reCAPTCHA          => scalar test_can_use_CAPTCHA_reCAPTCHA(),
+                can_use_CAPTCHA_Google_reCAPTCHA   => scalar test_can_use_CAPTCHA_Google_reCAPTCHA(),
+
                 can_use_CAPTCHA_reCAPTCHA_Mailhide => scalar test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
                 can_use_HTML_Tree                  => scalar can_use_HTML_Tree(), 
                 error_cant_read_config_dot_pm      => scalar $self->test_can_read_config_dot_pm(),
@@ -1232,9 +1235,6 @@ sub grab_former_config_vals {
             $opt->{'captcha_type'} = 'reCAPTCHA';
         }
 
-        if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{remote_address} ) ) {
-            $opt->{'captcha_reCAPTCHA_remote_addr'} = $BootstrapConfig::RECAPTCHA_PARAMS->{remote_address};
-        }
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{public_key} ) ) {
             $opt->{'captcha_reCAPTCHA_public_key'} = $BootstrapConfig::RECAPTCHA_PARAMS->{public_key};
         }
@@ -3610,6 +3610,19 @@ sub test_can_use_CAPTCHA_reCAPTCHA {
     }
 }
 
+sub test_can_use_CAPTCHA_Google_reCAPTCHA {
+    eval { require Google::reCAPTCHA; };
+    if ($@) {
+        carp $@;
+        $Big_Pile_Of_Errors .= $@;
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+
+
 sub test_can_use_CAPTCHA_reCAPTCHA_Mailhide {
     eval { require Captcha::reCAPTCHA::Mailhide; };
     if ($@) {
@@ -3955,6 +3968,49 @@ sub cgi_test_CAPTCHA_reCAPTCHA {
     return $r;
 
 }
+
+
+sub cgi_test_CAPTCHA_Google_reCAPTCHA {
+
+    my $self = shift;
+    my $q    = $self->query();
+
+    my $captcha_reCAPTCHA_public_key  = $q->param('captcha_reCAPTCHA_public_key');
+    my $captcha_reCAPTCHA_private_key = $q->param('captcha_reCAPTCHA_private_key');
+
+
+    my $captcha = '';
+    my $errors  = undef;
+    eval {
+        require Google::reCAPTCHA;
+        my $c = Google::reCAPTCHA->new(
+			secret => $captcha_reCAPTCHA_private_key
+		);
+        #$captcha = $c->get_html($captcha_reCAPTCHA_public_key);
+    };
+    if ($@) {
+        $errors = $@;
+    }
+    my $r;
+
+    require DADA::Template::Widgets;
+    $r = DADA::Template::Widgets::screen(
+        {
+            -screen => 'captcha_google_recaptcha_test_widget.tmpl',
+            -expr   => 1,
+            -vars   => {
+                errors                       => $errors,
+                Self_URL                     => $Self_URL,
+                captcha                      => $captcha,
+                captcha_reCAPTCHA_public_key => $captcha_reCAPTCHA_public_key,
+            }
+        }
+    );
+
+    return $r;
+
+}
+
 
 sub cgi_test_FastCGI {
     my $self = shift;

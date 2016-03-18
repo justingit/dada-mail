@@ -9074,7 +9074,6 @@ sub resend_conf_captcha {
         my $cap    = DADA::Security::AuthenCAPTCHA->new;
         my $result = $cap->check_answer(
             $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
-			$DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
             $ccf,
 			$crf,
         );
@@ -10722,7 +10721,6 @@ sub email_password {
 			
             my $result = $cap->check_answer(
                 $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
-				$DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
                 $ccf,
 				$crf
             );

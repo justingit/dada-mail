@@ -46,11 +46,6 @@ jQuery(document).ready(function($){
 		$("body").on("click", '.test_amazon_ses_configuration', function(event) {
 			test_amazon_ses_configuration();
 		});
-		$("body").on("click", '.test_mandrill_configuration', function(event) {
-			test_mandrill_configuration();
-		});
-
-
 		$.validator.addMethod("alphanumericunderscore", function(value, element) {
 	    return this.optional(element) || value == value.match(/^[-a-zA-Z0-9_]+$/);
 	    }, "Only letters, Numbers and Underscores Allowed.");
@@ -184,7 +179,6 @@ jQuery(document).ready(function($){
 			"test_user_template_results",
 			"test_CAPTCHA_configuration_results",
 			"test_amazon_ses_configuration_results",
-			"test_mandrill_configuration_results",
        ];
 		$.each(hiding, function(index, value) {
 			$("#" + value).hide(); 
@@ -285,33 +279,6 @@ function test_amazon_ses_configuration() {
 			amazon_ses_AWSSecretKey:                     $("#amazon_ses_AWSSecretKey").val(),
 			amazon_ses_AWSAccessKeyId:                   $("#amazon_ses_AWSAccessKeyId").val(),
 			amazon_ses_Allowed_Sending_Quota_Percentage: amazon_ses_Allowed_Sending_Quota_Percentage
-		},
-		dataType: "html"
-	});
-	request.done(function(content) {
-		$("#" + target_div).html(content);
-	});
-}
-
-
-
-
-function test_mandrill_configuration() {
-	var target_div = 'test_mandrill_configuration_results';
-	$("#" + target_div).html('<p class="label info">Loading...</p>');
-	if ($("#" + target_div).is(':hidden')) {
-		$("#" + target_div).show();
-	}
-	
-	var mandrill_Allowed_Sending_Quota_Percentage = $("#mandrill_Allowed_Sending_Quota_Percentage option:selected").val();
-	var request = $.ajax({
-		url: $("#self_url").val(),
-		type: "POST",
-		cache: false,
-		data: {
-			flavor:                                    'cgi_test_mandrill_configuration',
-			mandrill_api_key:                          $("#mandrill_api_key").val(),
-			mandrill_Allowed_Sending_Quota_Percentage: mandrill_Allowed_Sending_Quota_Percentage
 		},
 		dataType: "html"
 	});
@@ -442,6 +409,9 @@ function test_CAPTCHA_configuration() {
 	if($("#captcha_type_default").prop("checked") === true) { 
 		flavor = 'default'; 
 	}
+	else if($("#captcha_type_google_recaptcha").prop("checked") === true) { 
+		flavor = 'google_recaptcha'; 
+	}		
 	else if($("#captcha_type_recaptcha").prop("checked") === true) { 
 		flavor = 'recaptcha'; 		
 	}
@@ -461,6 +431,40 @@ function test_CAPTCHA_configuration() {
 		request.done(function(content) {
 			$("#" + target_div).html(content);
 		});
+	}
+	else if(flavor == 'google_recaptcha'){ 
+		
+		
+		var request = $.ajax({
+			url: $("#self_url").val(),
+			type: "POST",
+			cache: false,
+			data: {
+				flavor: 'cgi_test_CAPTCHA_Google_reCAPTCHA',
+				captcha_reCAPTCHA_public_key: $("#captcha_reCAPTCHA_public_key").val(),
+				captcha_reCAPTCHA_private_key: $("#captcha_reCAPTCHA_private_key").val()
+			},
+			dataType: "html"
+		});
+		
+		request.done(function(content) {
+			//alert("done!"); 
+			$("#" + target_div).html(content);
+			
+			var captchaWidgetId = grecaptcha.render( 'google_recaptcha_example', {
+			  'sitekey' : $("#captcha_reCAPTCHA_public_key").val()
+			});
+			
+			
+		});
+		request.error(function(xhr, ajaxOptions, thrownError) {
+			alert('status: ' + xhr.status);
+			alert('thrownError:' + thrownError);
+			console.log('status: ' + xhr.status);
+			console.log('thrownError:' + thrownError);
+		}); 
+
+		
 	}
 	else { 
 		var request = $.ajax({

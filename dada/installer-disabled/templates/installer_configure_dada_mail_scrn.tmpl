@@ -1690,20 +1690,32 @@
 									The <strong>GD</strong> CPAN module needs to be installed, for reCAPTCHA support. 
 								</li> 
 							<!-- /tmpl_if --> 
+							
+							<!-- tmpl_if can_use_CAPTCHA_Google_reCAPTCHA --> 
+								<li>
+									<strong>reCAPTCHA v2</strong> is supported.
+								</li>
+							<!-- tmpl_else --> 
+								<li>
+									The <strong>Google::reCAPTCHA</strong> CPAN module needs to be installed, for reCAPTCHA v2support. 
+								</li>
+							<!-- /tmpl_if -->
+							
+							
 		
 							<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA --> 
 								<li>
-									<strong>reCAPTCHA</strong> is Supported.
+									<strong>reCAPTCHA v1</strong> is supported.
 								</li>
 							<!-- tmpl_else --> 
 								<li>
 									The <strong>CAPTCHA::reCAPTCHA</strong> CPAN module needs to be installed, for reCAPTCHA support. 
 								</li> 
 							<!-- /tmpl_if --> 
-		
+							
 							<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA_Mailhide --> 
 								<li> 
-									<strong>reCAPTCHA Mailhide</strong> is Supported.
+									<strong>reCAPTCHA Mailhide</strong> is supported.
 								</li>
 							<!-- tmpl_else --> 
 								<li>
@@ -1716,44 +1728,78 @@
 					<h4>CAPTCHA Type</h4>
 
 					<label for="captcha_type_default">
-						<input type="radio" name="captcha_type" id="captcha_type_default" value="Default" checked="checked" class="radiochangeDisplayState" data-target="recaptcha_settings" data-state="hide">
+						<input 
+							type="radio" 
+							name="captcha_type" 
+							id="captcha_type_default" 
+							value="Default" 
+							checked="checked" 
+							class="radiochangeDisplayState" 
+							data-target="recaptcha_settings" 
+							data-state="hide"
+						>
 						Default CAPTCHA Type
 					</label>
 
+					<label for="captcha_type_google_recaptcha">
+						<input 
+							type="radio" 
+							name="captcha_type" 
+							id="captcha_type_google_recaptcha" 
+							value="Google_reCAPTCHA" 
+							class="radiochangeDisplayState" 
+							data-target="recaptcha_settings"
+							data-state="show"
+						>
+						reCAPTCHA v2 (recommended)
+					</label>
+
+
 					<label for="captcha_type_recaptcha">
-						<input type="radio" name="captcha_type" id="captcha_type_recaptcha" value="reCAPTCHA" class="radiochangeDisplayState" data-target="recaptcha_settings" data-state="show">
-						reCAPTCHA (Recommended)
+						<input 
+							type="radio"
+							name="captcha_type"
+							id="captcha_type_recaptcha"
+							value="reCAPTCHA"
+							class="radiochangeDisplayState"
+							data-target="recaptcha_settings"
+							data-state="show"
+						>
+						reCAPTCHA v1
 					</label>
 
 					<div id="recaptcha_settings"> 
 						More Information: 
-						<a href="http://www.google.com/recaptcha" target="_blank">
-						http://www.google.com/recaptcha
+						<a href="https://www.google.com/recaptcha" target="_blank">
+							https://www.google.com/recaptcha
 						</a>
 
-						<label  for="captcha_reCAPTCHA_remote_addr">
-						Remote Address
-						</label> 
-						<input type="text" name="captcha_reCAPTCHA_remote_addr" id="captcha_reCAPTCHA_remote_addr" value="">
-
-
 						<label  for="captcha_reCAPTCHA_public_key">
-						reCPATCHA Public Key
+							reCPATCHA Site key:
 						</label> 
 						<input type="text" name="captcha_reCAPTCHA_public_key" id="captcha_reCAPTCHA_public_key" value="">
 
 
 						<label  for="captcha_reCAPTCHA_private_key">
-						reCPATCHA Private Key
+							reCPATCHA Secret key:
 						</label> 
-						<input type="text" name="captcha_reCAPTCHA_private_key" id="captcha_reCAPTCHA_private_key" value="">
-
+						<input
+							type="text"
+							name="captcha_reCAPTCHA_private_key"
+							id="captcha_reCAPTCHA_private_key"
+							value=""
+						>
 					</div> 
 		
-					<input type="button" class="processing test_CAPTCHA_configuration small button expand" value="Test CAPTCHA Configuration">
+					<input
+						type="button"
+						class="processing test_CAPTCHA_configuration small button expand" 
+						value="Test CAPTCHA Configuration..."
+					>
+		
 		
 					<div id="test_CAPTCHA_configuration_results"></div> 
-
+					<script src="https://www.google.com/recaptcha/api.js?render=explicit"></script>
 
 					<h4>reCAPTCHA Mailhide Settings</h4>
 

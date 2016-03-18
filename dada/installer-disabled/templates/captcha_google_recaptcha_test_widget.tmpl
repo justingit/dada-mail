@@ -1,0 +1,25 @@
+<!-- begin captcha_recaptcha_test_widget.tmpl --> 
+	<!-- tmpl_if errors --> 
+		<div class="alert-box info radius"> 
+			<p>
+				<strong>
+					reCAPTCHA v2 Configuration Failed:
+				</strong>
+			</p>
+			<p><code><!-- tmpl_var errors escape="HTML" --></code></p>
+		</div> 
+		
+	<!-- tmpl_else --> 
+		<div class="alert-box info radius"> 
+			<p>
+				If you see the reCAPTCHA widget below, 
+				<strong>reCAPTCHA v2</strong> Configuration Worked!
+			</p>
+		
+		<div id="google_recaptcha_example"></div>		
+		
+		</div>
+	
+	<!-- /tmpl_if --> 
+	
+<!-- end captcha_recaptcha_test_widget.tmpl --> 

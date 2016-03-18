@@ -1,4 +1,4 @@
-package DADA::Security::AuthenCAPTCHA::GooglereCAPTCHA;
+package DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
 use lib qw(../../../ ../../../DADA/perllib); 
 use DADA::Config qw(!:DEFAULT); 
 
@@ -44,7 +44,7 @@ sub check_answer {
 
     my $self = shift; 
     
-    my ($private_key, $remote_address, $captcha_challenge_field, $recaptcha_response_field) = @_; 
+    my ($private_key, $captcha_challenge_field, $recaptcha_response_field) = @_; 
 		
 	use Google::reCAPTCHA;
 	my $c = Google::reCAPTCHA->new(

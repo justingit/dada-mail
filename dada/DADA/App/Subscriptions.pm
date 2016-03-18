@@ -745,7 +745,6 @@ sub confirm {
                 my $cap    = DADA::Security::AuthenCAPTCHA->new;
                 my $result = $cap->check_answer(
                     $DADA::Config::RECAPTCHA_PARAMS->{private_key},
-                    $DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
                     $q->param('recaptcha_challenge_field'),
                     $crf,
                 );

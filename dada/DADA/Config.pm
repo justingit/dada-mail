@@ -446,7 +446,7 @@ $CP_SESSION_PARAMS //= {
 
 
 
-# Set to Either, "Default", "reCAPTCHA", of GooglereCAPTCHA;
+# Set to Either, "Default", "reCAPTCHA", of Google_reCAPTCHA;
 $CAPTCHA_TYPE //= 'Default';
 $GD_SECURITYIMAGE_PARAMS //= {
     'rand_string_from' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZaeiouy',

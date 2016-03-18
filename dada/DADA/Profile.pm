@@ -852,7 +852,6 @@ sub is_valid_registration {
 	        $cap = DADA::Security::AuthenCAPTCHA->new;
 	        my $result = $cap->check_answer(
 	            $DADA::Config::RECAPTCHA_PARAMS->{private_key},
-	            $DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
 	            $args->{ -recaptcha_challenge_field },
 	            $args->{ -recaptcha_response_field },
 	        );
