@@ -9059,15 +9059,24 @@ sub resend_conf_captcha {
 
     my $captcha_worked = 0;
     my $captcha_auth   = 1;
-    if ( !xss_filter( scalar $q->param('recaptcha_response_field') ) ) {
+	
+	my $crf = xss_filter( scalar $q->param('recaptcha_response_field') ) 
+	|| xss_filter( scalar $q->param('g-recaptcha-response') ) 
+	|| undef; 
+	
+	my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || undef; 
+	
+    if ( ! $crf ) {
         $captcha_worked = 0;
     }
     else {
         require DADA::Security::AuthenCAPTCHA;
         my $cap    = DADA::Security::AuthenCAPTCHA->new;
         my $result = $cap->check_answer(
-            $DADA::Config::RECAPTCHA_PARAMS->{private_key}, $DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
-            $q->param('recaptcha_challenge_field'),         $q->param('recaptcha_response_field')
+            $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
+			$DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
+            $ccf,
+			$crf,
         );
         if ( $result->{is_valid} == 1 ) {
             $captcha_auth   = 1;
@@ -9103,7 +9112,14 @@ sub resend_conf_captcha {
             );
             $q->param( 'list',  $list );
             $q->param( 'email', $email );
-            $q->delete( 'flavor', 'rm', 'recaptcha_challenge_field', 'recaptcha_response_field', 'token' );
+            $q->delete( 
+				'flavor', 
+				'rm',
+				'recaptcha_challenge_field',
+				'recaptcha_response_field',
+				'g-recaptcha-response',
+				'token'
+			);
             $q->param( 'flavor', 's' );
             $self->subscribe();
 
@@ -10369,11 +10385,19 @@ sub send_archive {
     if ( $ls->param('captcha_archive_send_form') == 1 && $can_use_captcha == 1 ) {
         require DADA::Security::AuthenCAPTCHA;
         my $cap = DADA::Security::AuthenCAPTCHA->new;
-
-        if ( xss_filter( scalar $q->param('recaptcha_response_field') ) ) {
+		
+		my $crf = xss_filter( scalar $q->param('recaptcha_response_field') ) 
+		|| xss_filter( scalar $q->param('g-recaptcha-response') ) 
+		|| undef; 
+		
+		my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || undef; 
+		
+        if ( $crf) {
             my $result = $cap->check_answer(
-                $DADA::Config::RECAPTCHA_PARAMS->{private_key}, $DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
-                $q->param('recaptcha_challenge_field'),         $q->param('recaptcha_response_field')
+                $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
+				$ENV{REMOVE_HOST},
+                $ccf,         
+				$crf,
             );
 
             if ( $result->{is_valid} != 1 ) {
@@ -10689,10 +10713,18 @@ sub email_password {
             my $cap = DADA::Security::AuthenCAPTCHA->new;
 
             my $captcha_worked;
-
+			
+			my $crf = xss_filter( scalar $q->param('recaptcha_response_field') ) 
+			|| xss_filter( scalar $q->param('g-recaptcha-response') ) 
+			|| undef; 
+			
+			my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || undef; 
+			
             my $result = $cap->check_answer(
-                $DADA::Config::RECAPTCHA_PARAMS->{private_key}, $DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
-                $q->param('recaptcha_challenge_field'),         $q->param('recaptcha_response_field')
+                $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
+				$DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
+                $ccf,
+				$crf
             );
             if ( $result->{is_valid} == 1 ) {
                 $captcha_worked = 1;
@@ -12262,14 +12294,19 @@ sub profile_register {
         $prof->remove();
     }
 
+	my $crf = xss_filter( scalar $q->param('recaptcha_response_field') ) 
+	|| xss_filter( scalar $q->param('g-recaptcha-response') ) 
+	|| undef; 
     
+	my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || undef; 
+	
     my ( $status, $errors ) = $prof->is_valid_registration(
         {
             -email                     => $register_email,
             -email_again               => $register_email_again,
             -password                  => $register_password,
-            -recaptcha_challenge_field => scalar $q->param('recaptcha_challenge_field'),
-            -recaptcha_response_field  => scalar $q->param('recaptcha_response_field'),
+            -recaptcha_challenge_field => $ccf,
+            -recaptcha_response_field  => $crf,
         }
     );
     

@@ -446,7 +446,7 @@ $CP_SESSION_PARAMS //= {
 
 
 
-# Set to Either, "Default" or, "reCAPTCHA";
+# Set to Either, "Default", "reCAPTCHA", of GooglereCAPTCHA;
 $CAPTCHA_TYPE //= 'Default';
 $GD_SECURITYIMAGE_PARAMS //= {
     'rand_string_from' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZaeiouy',
@@ -474,7 +474,6 @@ $GD_SECURITYIMAGE_PARAMS //= {
     particle => [ 500, undef ],
 };
 $RECAPTCHA_PARAMS //= {
-    remote_address => $ENV{'REMOTE_ADDR'},
     public_key     => undef,
     private_key    => undef,
 };
