@@ -12292,11 +12292,12 @@ sub profile_register {
         $prof->remove();
     }
 
+	my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || undef; 
+
 	my $crf = xss_filter( scalar $q->param('recaptcha_response_field') ) 
 	|| xss_filter( scalar $q->param('g-recaptcha-response') ) 
 	|| undef; 
     
-	my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || undef; 
 	
     my ( $status, $errors ) = $prof->is_valid_registration(
         {

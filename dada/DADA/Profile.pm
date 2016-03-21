@@ -849,25 +849,35 @@ sub is_valid_registration {
 
 	if($DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1){
 	    if ( can_use_AuthenCAPTCHA() == 1 ) {
-	        $cap = DADA::Security::AuthenCAPTCHA->new;
-	        my $result = $cap->check_answer(
-	            $DADA::Config::RECAPTCHA_PARAMS->{private_key},
-	            $args->{ -recaptcha_challenge_field },
-	            $args->{ -recaptcha_response_field },
-	        );
-	        if ( $result->{is_valid} == 1 ) {
-
-	            # ...
-	        }
-	        else {
+						
+			my $ccf = $args->{ -recaptcha_challenge_field } || undef;
+			my $crf = $args->{ -recaptcha_response_field }  || undef;
+		   
+		    if ( ! $crf ) {
 	            $errors->{captcha_failed} = 1;
 	            $status = 0;
-	        }
+		    }
+		    else {				
+		        $cap = DADA::Security::AuthenCAPTCHA->new;
+		        my $result = $cap->check_answer(
+	            	$DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
+		            $ccf,
+					$crf,
+		        );
+		        if ( $result->{is_valid} == 1 ) {
+		            # ...
+		        }
+		        else {
+		            $errors->{captcha_failed} = 1;
+		            $status = 0;
+		        }
+			}
 	    }
 	}
     return ( $status, $errors );
 
 }
+
 
 sub is_valid_update_profile_email { 
 	
