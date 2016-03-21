@@ -1234,6 +1234,10 @@ sub grab_former_config_vals {
         elsif ( $BootstrapConfig::CAPTCHA_TYPE eq 'reCAPTCHA' ) {
             $opt->{'captcha_type'} = 'reCAPTCHA';
         }
+        elsif ( $BootstrapConfig::CAPTCHA_TYPE eq 'Google_reCAPTCHA' ) {
+            $opt->{'captcha_type'} = 'Google_reCAPTCHA';
+        }
+
 
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{public_key} ) ) {
             $opt->{'captcha_reCAPTCHA_public_key'} = $BootstrapConfig::RECAPTCHA_PARAMS->{public_key};
