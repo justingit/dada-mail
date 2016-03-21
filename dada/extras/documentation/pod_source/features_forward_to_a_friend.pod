@@ -28,7 +28,7 @@ There is an option to attach a CAPTCHA challenge/response to the form to stop ab
 itself and we absolutely suggest using it. You may enable CAPTCH in the list control panel, on that same screen
 by enabling the option: 
 
-B<Enable CAPTCHA'ing on the, "Forward to a Friend" Form>
+B<Enable CAPTCHA on the, "Forward to a Friend" Form>
 
 =head4 More Information
 
