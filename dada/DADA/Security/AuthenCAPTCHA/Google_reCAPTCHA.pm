@@ -37,7 +37,7 @@ sub check_answer {
     
     my (
 		$private_key, 
-		$remoteip
+		$remoteip,
 		$captcha_challenge_field, 
 		$response,
 	) = @_; 
@@ -47,7 +47,8 @@ sub check_answer {
 	if(!defined($private_key)){ 
 		$result->{is_valid} = 0;
 		return $result; 
-	}elsif(!defined($response)){ 
+	}
+	elsif(!defined($response)){ 
 		$result->{is_valid} = 0;
 		return $result; 		
 	}
