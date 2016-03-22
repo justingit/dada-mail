@@ -4,6 +4,25 @@
 
 =head1 Dada Mail Changelog for v9.x
 
+=head1 9.2.0
+
+=head2 Features
+
+=head2 No CAPTCHA reCAPTCHA support
+
+Dada Mail now support's Google's new reCAPTHCA service, aka reCAPTCHA v2 aka No CAPTCHA reCAPTCHA. v1 reCAPTCHA is still currently supported, but you may want to move over to v2. 
+
+More information on how to setup and utilize the CAPTCHA system in Dada Mail can be found at, 
+
+L<http://dadamailproject.com/d/features-CAPTCHA.pod.html>
+
+=head2 Bugfixes
+
+=head3  Tracker: Bounce Handler individual email reports not accessble if Bounce Handler itself is not activated, when logged in via the List Password
+
+L<https://github.com/justingit/dada-mail/issues/552>
+
+
 =head1 9.1.3
 
 This is mostly a bug-fix release, fixing bugs found in the v9.1.2 release.
