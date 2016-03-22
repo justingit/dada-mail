@@ -446,7 +446,7 @@ $CP_SESSION_PARAMS //= {
 
 
 
-# Set to Either, "Default" or, "reCAPTCHA";
+# Set to Either, "Default", "reCAPTCHA", of Google_reCAPTCHA;
 $CAPTCHA_TYPE //= 'Default';
 $GD_SECURITYIMAGE_PARAMS //= {
     'rand_string_from' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZaeiouy',
@@ -474,7 +474,6 @@ $GD_SECURITYIMAGE_PARAMS //= {
     particle => [ 500, undef ],
 };
 $RECAPTCHA_PARAMS //= {
-    remote_address => $ENV{'REMOTE_ADDR'},
     public_key     => undef,
     private_key    => undef,
 };
@@ -1219,7 +1218,7 @@ $MIME_OPTIMIZE     //= 'no tmp files';
 
 %LIST_SETUP_DEFAULTS = (
 
-    # Your Mailing List >> List Information
+    # Mailing List >> List Information
     
     list             => '',    # don't default...
     list_name        => '',
@@ -1231,11 +1230,11 @@ $MIME_OPTIMIZE     //= 'no tmp files';
         # (Dummy)
         list_info => undef,
 
-    # Your Mailing List >> List Password
+    # Mailing List >> List Password
     password         => '',      # you'll need to encrypt it to use this...
     cipher_key       => undef,
 
-    # Your Mailing List >> Options
+    # Mailing List >> Options
     private_list     => 0,
     
     #mailing list options
@@ -1460,7 +1459,7 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     invites_check_for_already_invited => 1,
     invites_prohibit_reinvites        => 1,
 
-    # Your Mailing List Template Prefs
+    #  Mailing List Template Prefs
 
     get_template_data => 'from_default_template',
     url_template      => '',

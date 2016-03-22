@@ -732,7 +732,12 @@ sub confirm {
               if $t;
             my $captcha_worked = 0;
             my $captcha_auth   = 1;
-            if ( !xss_filter( scalar $q->param('recaptcha_response_field') ) ) {
+			
+			my $crf = xss_filter( scalar $q->param('recaptcha_response_field') ) 
+			|| xss_filter( scalar $q->param('g-recaptcha-response') ) 
+			|| undef; 
+			
+            if ( !$crf ) {
                 $captcha_worked = 0;
             }
             else {
@@ -740,9 +745,8 @@ sub confirm {
                 my $cap    = DADA::Security::AuthenCAPTCHA->new;
                 my $result = $cap->check_answer(
                     $DADA::Config::RECAPTCHA_PARAMS->{private_key},
-                    $DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
                     $q->param('recaptcha_challenge_field'),
-                    $q->param('recaptcha_response_field')
+                    $crf,
                 );
                 if ( $result->{is_valid} == 1 ) {
                     $captcha_auth   = 1;

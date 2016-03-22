@@ -275,7 +275,7 @@ sub check_answer {
 
     my $self = shift; 
     
-    my ($private_key, $remote_address, $captcha_challenge_field, $recaptcha_response_field) = @_; 
+    my ($private_key, $captcha_challenge_field, $recaptcha_response_field) = @_; 
     
     my $result = {}; 
     
