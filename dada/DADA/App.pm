@@ -9064,7 +9064,7 @@ sub resend_conf_captcha {
 	|| xss_filter( scalar $q->param('g-recaptcha-response') ) 
 	|| undef; 
 	
-	my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || undef; 
+	my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || ''; 
 	
     if ( ! $crf ) {
         $captcha_worked = 0;
@@ -9074,6 +9074,7 @@ sub resend_conf_captcha {
         my $cap    = DADA::Security::AuthenCAPTCHA->new;
         my $result = $cap->check_answer(
             $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
+			$ENV{'REMOTE_ADDR'}, 
             $ccf,
 			$crf,
         );
@@ -10389,12 +10390,12 @@ sub send_archive {
 		|| xss_filter( scalar $q->param('g-recaptcha-response') ) 
 		|| undef; 
 		
-		my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || undef; 
+		my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || ''; 
 		
         if ( $crf) {
             my $result = $cap->check_answer(
                 $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
-				$ENV{REMOVE_HOST},
+				$ENV{'REMOTE_ADDR'}, 
                 $ccf,         
 				$crf,
             );
@@ -10713,14 +10714,15 @@ sub email_password {
 
             my $captcha_worked;
 			
+			my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || ''; 
 			my $crf = xss_filter( scalar $q->param('recaptcha_response_field') ) 
 			|| xss_filter( scalar $q->param('g-recaptcha-response') ) 
 			|| undef; 
 			
-			my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || undef; 
 			
             my $result = $cap->check_answer(
                 $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
+				$ENV{'REMOTE_ADDR'}, 
                 $ccf,
 				$crf
             );
@@ -12292,7 +12294,7 @@ sub profile_register {
         $prof->remove();
     }
 
-	my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || undef; 
+	my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || ''; 
 
 	my $crf = xss_filter( scalar $q->param('recaptcha_response_field') ) 
 	|| xss_filter( scalar $q->param('g-recaptcha-response') ) 

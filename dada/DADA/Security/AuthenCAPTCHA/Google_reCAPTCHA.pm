@@ -3,17 +3,8 @@ use lib qw(../../../ ../../../DADA/perllib);
 use DADA::Config qw(!:DEFAULT); 
 
 use strict; 
-use Fcntl qw(
-O_WRONLY 
-O_TRUNC 
-O_CREAT 
-O_CREAT 
-O_RDWR
-O_RDONLY
-LOCK_EX
-LOCK_SH 
-LOCK_NB); 
 use Carp qw(croak); 
+use Try::Tiny; 
 
 
 sub new {
@@ -44,24 +35,43 @@ sub check_answer {
 
     my $self = shift; 
     
-    my ($private_key, $captcha_challenge_field, $recaptcha_response_field) = @_; 
+    my (
+		$private_key, 
+		$remoteip
+		$captcha_challenge_field, 
+		$response,
+	) = @_; 
+	
+	my $result = {}; 
 		
-	use Google::reCAPTCHA;
-	my $c = Google::reCAPTCHA->new(
-		secret => $private_key
-	);
- 
-	# Verifying the user's response 
-	my $success = $c->siteverify( 
-		response => $recaptcha_response_field, 
-		remoteip => $ENV{REMOTE_ADDR},
-	);
- 
- 	my $result = {}; 
-	if( $success ) {
-	    $result->{is_valid} = 1;
+	if(!defined($private_key)){ 
+		$result->{is_valid} = 0;
+		return $result; 
+	}elsif(!defined($response)){ 
+		$result->{is_valid} = 0;
+		return $result; 		
 	}
-
+	else {
+		try {
+		
+			require Google::reCAPTCHA;
+			my $c = Google::reCAPTCHA->new(
+				secret => $private_key,
+			);
+		
+			# Verifying the user's response 
+			my $success = $c->siteverify( 
+				response => $response, 
+				remoteip => $remoteip,
+			);
+			if( $success ) {
+			    $result->{is_valid} = 1;
+			}
+		} catch { 
+			warn "Problem with Google reCAPTCHA (v2):" . $_; 
+			 $result->{is_valid} = 0;
+		};
+	}
     return $result;
 
 }

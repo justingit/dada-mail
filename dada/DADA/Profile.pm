@@ -850,7 +850,7 @@ sub is_valid_registration {
 	if($DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1){
 	    if ( can_use_AuthenCAPTCHA() == 1 ) {
 						
-			my $ccf = $args->{ -recaptcha_challenge_field } || undef;
+			my $ccf = $args->{ -recaptcha_challenge_field } || '';
 			my $crf = $args->{ -recaptcha_response_field }  || undef;
 		   
 		    if ( ! $crf ) {
@@ -861,6 +861,7 @@ sub is_valid_registration {
 		        $cap = DADA::Security::AuthenCAPTCHA->new;
 		        my $result = $cap->check_answer(
 	            	$DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
+					$ENV{'REMOTE_ADDR'}, 
 		            $ccf,
 					$crf,
 		        );

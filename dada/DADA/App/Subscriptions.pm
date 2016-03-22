@@ -13,7 +13,7 @@ use Try::Tiny;
 
 use vars qw($AUTOLOAD);
 use strict;
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
+my $t =  $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
 
 my %allowed = ( test => 0, );
 
@@ -727,12 +727,14 @@ sub confirm {
     warn 'captcha_sub set to: ' . $ls->param('captcha_sub')
       if $t;
     if ( $ls->param('captcha_sub') == 1 ) {
+		
         if ( can_use_AuthenCAPTCHA() == 1 ) {
             warn '>>>> Captcha step is enabled...'
               if $t;
             my $captcha_worked = 0;
             my $captcha_auth   = 1;
 			
+			my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field') ) || ''; 
 			my $crf = xss_filter( scalar $q->param('recaptcha_response_field') ) 
 			|| xss_filter( scalar $q->param('g-recaptcha-response') ) 
 			|| undef; 
@@ -745,7 +747,8 @@ sub confirm {
                 my $cap    = DADA::Security::AuthenCAPTCHA->new;
                 my $result = $cap->check_answer(
                     $DADA::Config::RECAPTCHA_PARAMS->{private_key},
-                    $q->param('recaptcha_challenge_field'),
+					$ENV{'REMOTE_ADDR'}, 
+                    $ccf,
                     $crf,
                 );
                 if ( $result->{is_valid} == 1 ) {
