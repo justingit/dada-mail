@@ -277,7 +277,7 @@ sub check_answer {
     
     my (
 		$private_key, 
-		$remoteip
+		$remoteip,
 		$captcha_challenge_field, 
 		$recaptcha_response_field,
 	) = @_; 
