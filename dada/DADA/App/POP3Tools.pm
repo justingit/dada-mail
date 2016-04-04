@@ -89,7 +89,7 @@ sub mail_pop3client_login {
            $pop->Connect() >= 0 || die $pop->Message();
        
            if($pop->Count == -1){ 
-                $r .= "\t*Connection to '" . $args->{server} . "' wasn't successful: " . $pop->Message() . "\n";
+                $r .= "\t* Connection to '" . $args->{server} . "' wasn't successful: " . $pop->Message() . "\n";
            	   return ( undef, 0, $r );
 	    
     		}
