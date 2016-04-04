@@ -103,7 +103,7 @@ L<https://github.com/justingit/dada-mail/issues/546>
 
 Looks like the following script was not working for v9 of Dada Mail: 
 
-Lhttp://dadamailproject.com/d/dada3_to_dada4_sql.pl.html>
+L<http://dadamailproject.com/d/dada3_to_dada4_sql.pl.html>
 
 This script is still useful, if you're upgrading from v3 of Dada Mail, are using the SQL backend, and also have profile fields. We've updated it to work correctly with v9. 
 
