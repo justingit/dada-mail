@@ -10,11 +10,8 @@ Key:
 [*] Naw...
 [?] Someday
 
-[ ] Upgrade to new reCATPCHA system. 
-	https://metacpan.org/pod/Google::reCAPTCHA
-	Looks easy! 
 
-does email protect only work for the first address in archie message bodies ?
+I WANT TO SEE THE DIGEST PREFS (AND PERHAPS IMPORT THAT)
 	
 BRIDGE: Tag for original From: header
 
@@ -22,7 +19,6 @@ Tag View of profile fields?
 
 [ ] Syntax check for (at least) email message templates. 
 	Already a, DADA::Template::Widgets::validate_screen method to use
-
 
 Take subscription size into consideration when making auto adjut batch seding speed thing
 
