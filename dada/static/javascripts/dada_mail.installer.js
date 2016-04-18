@@ -9,8 +9,7 @@ jQuery(document).ready(function($){
 		$("#install_or_upgrade_form").validate({
 			rules: {
 				current_dada_files_parent_location: { 
-					required: true,
-					minlength: 5
+					required: true
 				}
 			}
 		});
