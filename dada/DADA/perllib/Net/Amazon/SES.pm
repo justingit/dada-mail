@@ -185,6 +185,19 @@ sub sender_verified {
     my $email = shift; 
     
     my ($name, $domain) = split('@', $email, 2); 
+	
+	# This is very limited and contrived
+	# See: https://metacpan.org/pod/Domain::PublicSuffix
+	if($domain =~ m/\.(com|net|org|edu|gov)$/){
+		#subdomain? 
+		my $count = ($domain =~ tr/\.//);
+		if($count > 1){ 
+			my @p = split(/\./, $domain);
+			$domain = $p[-2] . '.' . $p[-1];
+		}
+	}
+	
+	
 	my $params = {
 	    Action                   => 'GetIdentityVerificationAttributes', 
 	    'Identities.member.1'    => $email, 
