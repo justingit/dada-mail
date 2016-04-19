@@ -874,24 +874,24 @@ sub _massage_fields_for_amazon_ses {
 sub mail_sending_options_test {
 
     my $self = shift;
-
     my $report = [];
 
-	my ($n_p_t_status, $n_p_t_msg);
-	try {
-		($n_p_t_status, $n_p_t_msg) 
-			= $self->net_ping_test(
-				$self->{ls}->param('smtp_server'), 
-				$self->{ls}->param('smtp_port')
-		);
-	} catch { 
-		warn $_;
-	};
-	
-	push(@$report, { 
-    	line    => '',
-        message => $n_p_t_msg,
-	});
+	if($self->{ls}->param('sending_method') eq 'smtp' ) {
+		my ($n_p_t_status, $n_p_t_msg);
+		try {
+			($n_p_t_status, $n_p_t_msg) 
+				= $self->net_ping_test(
+					$self->{ls}->param('smtp_server'), 
+					$self->{ls}->param('smtp_port')
+			);
+		} catch { 
+			warn $_;
+		};
+		push(@$report, { 
+	    	line    => '',
+	        message => $n_p_t_msg,
+		});
+	}
 	
     require DADA::Security::Password;
 
