@@ -511,14 +511,14 @@ sub construct_from_text {
         $text_message_body = safely_encode($text_message_body);
         $html_message_body = safely_encode($html_message_body);
 
-        my ( $status, $errors ) = $self->redirect_tag_check($text_message_body);
+        my ( $status, $errors ) = $self->message_tag_check($text_message_body);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef );
         }
         undef($status);
         undef($errors);
 
-        my ( $status, $errors ) = $self->redirect_tag_check($html_message_body);
+        my ( $status, $errors ) = $self->message_tag_check($html_message_body);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef );
         }
@@ -548,7 +548,7 @@ sub construct_from_text {
 
         $html_message_body = safely_encode($html_message_body);
 
-        my ( $status, $errors ) = $self->redirect_tag_check($html_message_body);
+        my ( $status, $errors ) = $self->message_tag_check($html_message_body);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef );
         }
@@ -567,7 +567,7 @@ sub construct_from_text {
 
         $text_message_body = safely_encode($text_message_body);
 
-        my ( $status, $errors ) = $self->redirect_tag_check($text_message_body);
+        my ( $status, $errors ) = $self->message_tag_check($text_message_body);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef );
         }
@@ -723,7 +723,7 @@ sub construct_from_url {
         ( $text_message, $res, $md5 ) = grab_url({-url => $draft_q->param('plaintext_url') });
     }
 
-    my ( $status, $errors ) = $self->redirect_tag_check($text_message);
+    my ( $status, $errors ) = $self->message_tag_check($text_message);
     if ( $status == 0 ) {
         return ( $status, $errors, undef, undef, undef );
     }
@@ -741,7 +741,7 @@ sub construct_from_url {
         # AWKWARD.
         # Redirect tag check
         my ( $rtc, $res, $md5 ) = grab_url({-url => $draft_q->param('plaintext_url') });
-        my ( $status, $errors ) = $self->redirect_tag_check($rtc);
+        my ( $status, $errors ) = $self->message_tag_check($rtc);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef, undef );
         }
@@ -775,7 +775,7 @@ sub construct_from_url {
 	          DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
 		}
 		
-        my ( $status, $errors ) = $self->redirect_tag_check($html_message);
+        my ( $status, $errors ) = $self->message_tag_check($html_message);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef, undef );
         }
@@ -1500,14 +1500,14 @@ sub list_invite {
             $text_message_body = safely_encode($text_message_body);
             $html_message_body = safely_encode($html_message_body);
 
-            my ( $status, $errors ) = $self->redirect_tag_check($text_message_body);
+            my ( $status, $errors ) = $self->message_tag_check($text_message_body);
             if ( $status == 0 ) {
                 return $self->report_mass_mail_errors( $errors, $root_login );
             }
             undef($status);
             undef($errors);
 
-            my ( $status, $errors ) = $self->redirect_tag_check($html_message_body);
+            my ( $status, $errors ) = $self->message_tag_check($html_message_body);
             if ( $status == 0 ) {
                 return $self->report_mass_mail_errors( $errors, $root_login );
             }
@@ -1536,7 +1536,7 @@ sub list_invite {
 
             $html_message_body = safely_encode($html_message_body);
 
-            my ( $status, $errors ) = $self->redirect_tag_check($html_message_body);
+            my ( $status, $errors ) = $self->message_tag_check($html_message_body);
             if ( $status == 0 ) {
                 return $self->report_mass_mail_errors( $errors, $root_login );
             }
@@ -1554,7 +1554,7 @@ sub list_invite {
         elsif ($text_message_body) {
             $text_message_body = safely_encode($text_message_body);
 
-            my ( $status, $errors ) = $self->redirect_tag_check($text_message_body);
+            my ( $status, $errors ) = $self->message_tag_check($text_message_body);
             if ( $status == 0 ) {
                 return $self->report_mass_mail_errors( $errors, $root_login );
             }
@@ -1574,7 +1574,7 @@ sub list_invite {
             warn
 "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning: both text and html versions of invitation message blank?!";
 
-            my ( $status, $errors ) = $self->redirect_tag_check( $ls->param('invite_message_text') );
+            my ( $status, $errors ) = $self->message_tag_check( $ls->param('invite_message_text') );
             if ( $status == 0 ) {
                 return $self->report_mass_mail_errors( $errors, $root_login );
             }
@@ -1999,12 +1999,86 @@ sub mass_mailout_info {
     return ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued );
 }
 
+sub message_tag_check { 
+    my $self   = shift;
+    my $str    = shift; 
+	
+    my ($status, $errors) = $self->valid_template_markup_check($str); 
+	if($status == 0){ 
+		return (0, $errors);
+	}
+
+    ($status, $errors) = $self->redirect_tag_check($str); 
+	if($status == 0){ 
+		return (0, $errors);
+	}
+	else { 
+		return (1, undef);
+	}
+	
+}
+
+sub valid_template_markup_check { 
+    my $self   = shift;
+	my $str    = shift; 
+	my $expr   = shift || 1; # probably just going to be 1...
+	my $error_str = undef; 
+	
+	require DADA::Template::Widgets;
+    my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
+        {
+            -data => \$str,
+            -expr => $expr,
+        }
+    );
+    if ( $valid == 0 ) {
+        my $munge = quotemeta('/fake/path/for/non/file/template');
+        $errors =~ s/$munge/line/;
+        $error_str = $errors . "\n"
+          . '-' x 72 . "\n"
+          . $str;
+    	  return (0, $errors);
+	}
+	
+	undef $valid; 
+	undef $errors; 
+	
+	my $new_data; 
+	try {
+		require DADA::App::FormatMessages::Filters::UnescapeTemplateTags; 
+		my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new; 
+		$new_data = $utt->filter({-html_msg => $str});
+	} catch {
+		 return (0, $_);
+	};
+	require DADA::Template::Widgets;
+    my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
+        {
+            -data => \$new_data,
+            -expr => $expr,
+        }
+    );
+    if ( $valid == 0 ) {
+        my $munge = quotemeta('/fake/path/for/non/file/template');
+        $errors =~ s/$munge/line/;
+        $error_str = $errors . "\n"
+          . '-' x 72 . "\n"
+          . $str;
+    	  return (0, $errors);
+	}
+	
+	# Or, everything is cool, 
+	return (1, undef)
+	
+	
+}
 sub redirect_tag_check {
 
     my $self   = shift;
+	my $str    = shift; 
+	
     my $errors = undef;
-
-    my ( $str, $root_login ) = @_;
+	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     require DADA::Logging::Clickthrough;
@@ -2014,14 +2088,14 @@ sub redirect_tag_check {
             -ls   => $ls,
         }
     );
-    eval { $ct->check_redirect_urls( { -str => $str, -raise_error => 1, } ); };
-    if ($@) {
-        return ( 0, $@ );
-    }
-    else {
-        return ( 1, undef );
-    }
-
+    try { 
+		$ct->check_redirect_urls( { -str => $str, -raise_error => 1, } );
+	} catch {
+        return ( 0, $_ );
+    };
+	
+    return ( 1, undef );
+ 
 }
 
 sub report_mass_mail_errors {
