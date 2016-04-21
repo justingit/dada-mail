@@ -26,7 +26,7 @@ L<https://github.com/justingit/dada-mail/issues/559>
 
 L<https://github.com/justingit/dada-mail/issues/560>
 
-=head3 List Control Panel table/mobile view does not show a "log out" button, if there is < 2 mailing lists 
+=head3 List Control Panel tablet/mobile view does not show a "log out" button, if there is < 2 mailing lists 
 
 L<https://github.com/justingit/dada-mail/issues/562>
 
