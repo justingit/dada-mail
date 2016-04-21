@@ -1079,31 +1079,28 @@ sub login_switch_popup_menu_widget {
 	$label{$args->{-list}} = '----------'; 
 	
 	require HTML::Menu::Select;
-	if($lists[1]){ 
-		my $login_switch_popup_menu = HTML::Menu::Select::popup_menu(
-			{
-				name    => 'change_to_list', 
-				id      => 'change_to_list', 
-				value   => [@lists], 
-				default => $args->{-list},
-				labels  => {%label}, 
-			}
-		);
+	my $login_switch_popup_menu = HTML::Menu::Select::popup_menu(
+		{
+			name    => 'change_to_list', 
+			id      => 'change_to_list', 
+			value   => [@lists], 
+			default => $args->{-list},
+			labels  => {%label}, 
+		}
+	);
 		
-		return DADA::Template::Widgets::screen(
-					{
-					    -screen => 'login_switch_popup_menu_widget.tmpl',
-					    -vars   => { 
-							login_switch_popup_menu => $login_switch_popup_menu, 
-					        location                => $location, 
-					    },
-					}
-				);
-			}else{ 
-		$scrn = '';
-	}
-
-    return $scrn; 
+	my $num_lists = scalar @lists; 
+	return DADA::Template::Widgets::screen(
+		{
+		    -screen => 'login_switch_popup_menu_widget.tmpl',
+			-expr   => 1, 
+		    -vars   => { 
+				num_lists               => $num_lists, 
+				login_switch_popup_menu => $login_switch_popup_menu, 
+		        location                => $location, 
+		    },
+		}
+	);
 }
 
 

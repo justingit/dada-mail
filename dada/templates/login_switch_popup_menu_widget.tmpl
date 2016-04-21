@@ -1,5 +1,6 @@
 <!-- begin login_switch_popup_menu_widget.tmpl -->
 
+	<!-- tmpl_if expr="(num_lists > 1)" --> 
 		<li>
 			<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="change_to_list_form" method="post">
 		
@@ -17,7 +18,7 @@
 				</form>
 				
 			</li>
-
+	<!-- /tmpl_if -->
 
 			<li>
 				<div class="row">
