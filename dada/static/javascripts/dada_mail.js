@@ -1097,11 +1097,6 @@ jQuery(document).ready(function($){
 		});
 	}
 
-	// Plugins/Extensions >> Beatitude
-	if ($("#plugins_beatitude_schedule_form").length) {
-		datetimesetupstuff();
-	}
-
 	// Plugins/Extensions >> Bridge
 	if ($("#plugins_bridge_default").length) {
 
@@ -1216,16 +1211,6 @@ jQuery(document).ready(function($){
 			plugins_mailing_monitor();
 		});
 
-	}
-
-
-
-	// Plugins/Extensions >> Beatitude
-	if ($("#plugins_beatitude_schedule_form").length) {
-		$("body").on("click", ".preview_message_receivers", function(event) {
-			event.preventDefault();
-			preview_message_receivers();
-		});
 	}
 
 	// do not like globals...

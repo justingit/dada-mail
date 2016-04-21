@@ -302,17 +302,6 @@ $PLUGIN_CONFIGS //= {
 		Rules                       => undef,
 
 	},
-
-	Beatitude => {
-
-		Plugin_Name                 => undef,
-		Plugin_URL                  => undef,
-		Allow_Manual_Run            => undef,
-		Manual_Run_Passcode         => undef,
-		Log                         => undef,
-
-	},
-	
 	Bridge => {
 
 		Plugin_Name                         => undef,

@@ -802,8 +802,6 @@ Dada Mail does have some modes where it can be run from a command line/cron job,
 
 No. Dada Mail is not an autoresponder.
 
-The closet thing in Dada Mail is going to be B<Beatitude>, which allows you to set mass mailings on a preset schedule, but it does not keep track, on a subscriber-by-subscriber basis, which messages an individual subscriber has received. 
-
 =head2 What is Dada Mail? 
 
 Dada Mail is a light-weight, fully featured announce-only Mailing List Manager. It does also support discussion lists, with the help of the Bridge Plugin. Discussion support is minimal, compared to its announce-only capabilities. 

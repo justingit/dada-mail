@@ -136,10 +136,6 @@ This screen also gives you the option to embed the various resources used by thi
 
 You can also just send messages through your mail reader, to a special List Address. You'll need to install a plugin called, "Bridge" to have this functionality. This plugin also supports Discussion Lists. 
 
-=head3 Via Beatitude, the Scheduled Mailer
-
-You can also send messages on a schedule, either one-time or repeating using the plugin called, "Beatitude". Beatitude has many similar options as the, "Send a Webpage" screen and also has options to only send when the various resources it polls are updated. 
-
 =head2 The Mailing List Sending Monitor
 
 A super fancy feature in Dada Mail is its Sending Monitor. The Sending Monitor will give you insight on how many messages are being sent at once, and what the details are on each individual mailing. You have the option to pause, manually restart and remove a mailing. Mailings are also monitored for health, so if for some reason the process of sending has ceased, they'll be restarted automatically. If the information that Dada Mail uses to keep track of a mailing is seen as corrupted, Dada Mail will also automatically stop a mailing, so that something horrible won't happen (for example, having the mailing restart from the very start of your mailing. 
