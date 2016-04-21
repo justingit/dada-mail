@@ -4,6 +4,36 @@
 
 =head1 Dada Mail Changelog for v9.x
 
+=head1 9.2.1
+
+This is mostly a bug-fix release, fixing bugs found in the v9.2.0 release.
+
+=head2 Bugfixes
+
+=head3 Default, "Break" email protection does not work on publically viewed archived messages 
+
+L<https://github.com/justingit/dada-mail/issues/556>
+
+=head3 Plugin: password_protected_directories: Submission redirects to public Dada page  
+
+L<https://github.com/justingit/dada-mail/issues/558>
+
+=head3 Amazon SES "Verify" will give false negative if email address belongs to a subdomain, and only domain is verified #559 
+
+L<https://github.com/justingit/dada-mail/issues/559>
+
+=head3 Plugin: password_protected_directories: .htpasswd/.htaccess file not updated via cron 
+
+L<https://github.com/justingit/dada-mail/issues/560>
+
+=head3 List Control Panel table/mobile view does not show a "log out" button, if there is < 2 mailing lists 
+
+L<https://github.com/justingit/dada-mail/issues/562>
+
+=head3 Sending messages via the List Control Panel does not look for validity in template tags 
+
+L<https://github.com/justingit/dada-mail/issues/563>
+
 =head1 9.2.0
 
 =head2 Features
