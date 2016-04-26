@@ -643,17 +643,19 @@ sub enforce_admin_cgi_security {
 				# rather than a specific screen for each eerror message
 				# which would really cut down on how many error screens I have!
 				
+				$add_vars->{selected_list}   = $args{-Admin_List};
+				
 				if($_ eq 'invalid_password'){ 
 			        my $can_use_captcha = 0;
 			        my $CAPTCHA_string  = '';
 			        my $cap; 
+		            	
 			        if ( can_use_AuthenCAPTCHA() == 1 ) {
 			            require DADA::Security::AuthenCAPTCHA;
 			            $cap    = DADA::Security::AuthenCAPTCHA->new;
 			            $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
 			            $add_vars->{captcha_string}  = $CAPTCHA_string;
 			            $add_vars->{can_use_captcha} = 1;
-			            $add_vars->{selected_list}   = $args{-Admin_List};
 			        }
 				}
 				require DADA::Template::Widgets; 
