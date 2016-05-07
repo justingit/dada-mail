@@ -1912,9 +1912,9 @@ sub edit_config_dot_pm {
     installer_rm($Config_LOC);
 
     open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $Config_LOC
-      or croak $!;
-    print $config_fh $config or croak $!;
-    close $config_fh or croak $!;
+      or warn $!;
+    print $config_fh $config or warn $!;
+    close $config_fh or warn $!;
 
     installer_chmod( $DADA::Config::FILE_CHMOD, $Config_LOC );
     installer_chmod( $DADA::Config::DIR_CHMOD,  make_safer('../DADA') );
