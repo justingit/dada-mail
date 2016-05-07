@@ -2912,6 +2912,8 @@ sub mail_sending_options {
             $q->param( 'sasl_smtp_password',
                 DADA::Security::Password::cipher_encrypt( $ls->param('cipher_key'), $sasl_smtp_password ) );
         }
+		
+		my $also_save_for_list = $ls->also_save_for_list($q);
 
         $ls->save_w_params(
             {
@@ -2933,7 +2935,8 @@ sub mail_sending_options {
                     sasl_smtp_username  => undef,
                     sasl_smtp_password  => undef,
                     smtp_port           => undef,
-                }
+                },
+				-also_save_for => $also_save_for_list,
             }
         );
         if ( $q->param('no_redirect') == 1 ) {
