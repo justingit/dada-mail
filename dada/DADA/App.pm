@@ -2974,11 +2974,14 @@ sub mailing_sending_mass_mailing_options {
 
         my $show_amazon_ses_options = 0;
         my $type_of_service         = 'ses';
-
+		my $can_use_Amazon_SES      = DADA::App::Guts::can_use_Amazon_SES();
         if (
             (
-                $ls->param('sending_method') eq 'amazon_ses' || ( $ls->param('sending_method') eq 'smtp'
-                    && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
+                $can_use_Amazon_SES == 1
+				&& (
+					$ls->param('sending_method') eq 'amazon_ses' 
+					|| ( $ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
+				)
             )
           )
         {

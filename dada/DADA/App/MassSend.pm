@@ -1170,12 +1170,17 @@ sub ses_params {
     my $self = shift;
     my ($args) = @_;
 
+	my $can_use_Amazon_SES      = DADA::App::Guts::can_use_Amazon_SES();
+	
     my $ses_params = {};
     if (
+		$can_use_Amazon_SES 
+		&& (
         $self->{ls_obj}->param('sending_method') eq 'amazon_ses'
         || (   $self->{ls_obj}->param('sending_method') eq 'smtp'
             && $self->{ls_obj}->param('smtp_server') =~ m/amazonaws\.com/ )
       )
+	  )
     {
         $ses_params->{using_ses} = 1;
         require DADA::App::AmazonSES;

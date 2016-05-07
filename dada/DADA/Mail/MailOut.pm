@@ -209,7 +209,9 @@ sub batch_params {
     if ( exists( $args->{-enable_bulk_batching} ) ) {
         $enable_bulk_batching = $args->{-enable_bulk_batching};
     }
-
+	
+	my $can_use_Amazon_SES      = DADA::App::Guts::can_use_Amazon_SES();
+	
     # Amazon SES:
     if (
         (
@@ -217,6 +219,7 @@ sub batch_params {
                 && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ )
         )
         && $amazon_ses_auto_batch_settings == 1
+		&& $can_use_Amazon_SES             == 1
       )
     {
         if ( exists( $self->{_cache}->{batch_params} ) ) {

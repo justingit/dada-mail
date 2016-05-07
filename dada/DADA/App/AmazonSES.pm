@@ -126,7 +126,7 @@ sub get_stats {
 		($status, $result) = $ses_obj->get_stats();
 	}
 	catch { 
-		die $_; 
+		warn $_; 
 		return (undef, undef, undef, undef); 
 	};
 	

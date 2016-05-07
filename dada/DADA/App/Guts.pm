@@ -3202,7 +3202,6 @@ sub can_use_JSON {
 }
 
 
-
 sub can_use_HTML_Tree {
     my $can_use_HTML_Tree = 1; 
     try { 
@@ -3214,6 +3213,17 @@ sub can_use_HTML_Tree {
         $can_use_HTML_Tree = 0;
     };
     return $can_use_HTML_Tree;
+}
+
+sub can_use_Amazon_SES {
+    my $can_use_Amazon_SES = 1; 
+    try { 
+        require Net::Amazon::SES;        
+    } catch { 
+		warn 'Amazon SES is not supported:' . $_; 
+        $can_use_Amazon_SES = 0;
+    };
+    return $can_use_Amazon_SES;
 }
 
 
