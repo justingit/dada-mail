@@ -2,6 +2,20 @@
 
 =encoding utf-8
 
+=head1 9.2.2
+
+This is mostly a bug-fix release, fixing bugs found in the v9.2.1 release.
+
+=head2 Bugfixes
+
+=head3 Resetting List Password after incorrect login attempt creates Server Error
+
+L<https://github.com/justingit/dada-mail/issues/566>
+
+=head3 Save for Multiple Lists does not work for Sending >> Options
+
+L<https://github.com/justingit/dada-mail/issues/569>
+
 =head1 Dada Mail Changelog for v9.x
 
 =head1 9.2.1
