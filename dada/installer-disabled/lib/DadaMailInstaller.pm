@@ -2801,6 +2801,12 @@ sub setup_support_files_dir {
             $DADA::Config::DIR_CHMOD );
     }
 
+	if(! -e $support_files_dir_path . '/' . $Support_Files_Dir_Name . '/.htaccess'){ 
+		$self->create_htaccess_no_directory_index(
+			make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name)
+		);			
+	}
+
     my $install_path = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name;
 
     my $source_package = make_safer('../static');
@@ -4591,6 +4597,15 @@ sub create_htaccess_no_script_execution {
     open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
     print $htaccess q|Options -ExecCGI
 AddType text/plain .php .phtml .php3 .pl .cgi| or croak $!;
+    close $htaccess or croak $!;
+    installer_chmod( 0644, $htaccess_file );
+}
+
+sub create_htaccess_no_directory_index {
+    my $loc           = shift;
+    my $htaccess_file = make_safer( $loc . '/.htaccess' );
+    open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
+    print $htaccess q|Options -Indexes| or croak $!;
     close $htaccess or croak $!;
     installer_chmod( 0644, $htaccess_file );
 }
