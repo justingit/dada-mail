@@ -10,6 +10,9 @@ Key:
 [*] Naw...
 [?] Someday
 
+Make prntng out delivery prefs optional
+Make exported CSV something that you ca easily import (timestamp at the end, then?)
+
 
 I WANT TO SEE THE DIGEST PREFS (AND PERHAPS IMPORT THAT)
 	

@@ -6,7 +6,7 @@ use DADA::App::Guts;
 use Carp qw(carp croak); 
 use Try::Tiny; 
 
-my $t = 1;# $DADA::Config::DEBUG_TRACE->{DADA_MailingList_Archives};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_Archives};
 
 
 BEGIN {
@@ -1872,9 +1872,7 @@ sub massaged_msg_for_display {
     $body = scrub_js($body)
       if $self->{ls}->param('disable_archive_js') == 1;
 
-	  warn 'entity_protect:' . $args->{-entity_protect}; 
 	if ($args->{-entity_protect} == 1) {
-		warn 'email_protecting...';
 		$body = $self->_email_protect( $b_entity, $body )
 	}
 
