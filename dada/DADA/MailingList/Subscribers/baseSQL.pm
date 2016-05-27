@@ -162,9 +162,12 @@ sub search_list {
 
         my $info = {};
         
-        $info->{timestamp} = $row->{timestamp};
-        $info->{email}     = $row->{email};
-        $info->{type}     = $args->{-type};    # Whazza?!
+        $info->{timestamp}            = $row->{timestamp};
+        $info->{email}                = $row->{email};
+		$info->{delivery_prefs_value} = $row->{delivery_prefs_value};
+        
+		
+		$info->{type}     = $args->{-type};    # Whazza?!
 
         delete( $row->{email} ); #?
         

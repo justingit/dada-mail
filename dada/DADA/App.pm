@@ -5362,32 +5362,69 @@ sub admin_profile_delivery_preferences {
         -cgi_obj  => $q,
         -Function => 'membership'
     );
-    if ( !$checksout ) { return $error_msg; }
 
     my $email          = xss_filter( scalar $q->param('email') );
-    my $list           = xss_filter( scalar $q->param('list') );
+    my $list           = $admin_list; #xss_filter( scalar $q->param('list') );
     my $delivery_prefs = xss_filter( scalar $q->param('delivery_prefs') );
     my $type           = xss_filter( scalar $q->param('type') );
+	my $process        = xss_filter( scalar $q->param('process') );
+	
+	if ( !$checksout ) { 
+		
+		if($process eq 'ajax') { 
+		warn 'here.';
+		
+	    require JSON;
+	    my $json = JSON->new->allow_nonref;
 
-    require DADA::Profile::Settings;
-    my $dps = DADA::Profile::Settings->new;
-    my $r   = $dps->save(
-        {
+	    $self->header_props( -type => 'application/json' );
+	    my $r =  $json->encode({
+	    	status => 0, 
+			error  => $error_msg
+	    });
+		warn $r; 
+		return $r; 
+		
+		}
+	    else {
+			return $error_msg;
+		}
+	}
+	
+	my $params =  {
             -email   => $email,
             -list    => $list,
             -setting => 'delivery_prefs',
             -value   => $delivery_prefs,
-        }
-    );
+        };
+	
+	use Data::Dumper; 
+	warn 'params:' . Dumper($params); 
+		
+    require DADA::Profile::Settings;
+    my $dps = DADA::Profile::Settings->new;
+    my $r   = $dps->save($params);
 
-    $self->header_type('redirect');
-    $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
-          . '?flavor=membership&email='
-          . uriescape($email)
-          . '&type='
-          . $type
-          . '&done=1' );
+	if($process eq 'ajax') { 
+	    require JSON;
+	    my $json = JSON->new->allow_nonref;
 
+	    $self->header_props( -type => 'application/json' );
+	    return $json->encode({
+	    	status => 1, 
+	    });
+
+	}
+	else { 
+			
+	    $self->header_type('redirect');
+	    $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
+	          . '?flavor=membership&email='
+	          . uriescape($email)
+	          . '&type='
+	          . $type
+	          . '&done=1' );
+	}
 }
 
 sub add {
