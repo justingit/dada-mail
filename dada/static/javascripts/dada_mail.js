@@ -4014,6 +4014,15 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 		}
 	}
 	else if(itsatest === false) {
+		
+		if (has_html === 1 && $("#html_message_body").val().length > 1000000) {
+			var large_html_msg = "Your HTML Message is over 1 megabyte in size! This could cause problems with mail sending, viewing, and/or archiving. Submit anyways?";
+			if (!confirm(large_html_msg)) {
+				alert('Mass Mailing canceled.');
+				return false;
+			}
+		}
+		
 		if ($("#archive_no_send").prop("checked") === true) {
 			if (!confirm('Archive Message?')) {
 				return false;
