@@ -1,3 +1,5 @@
+<<<<<<< Local Changes
+<<<<<<< Local Changes
 Justin's Personal TODO List
 ========================================================================
 DADA TO DO: 
@@ -10,9 +12,23 @@ Key:
 [*] Naw...
 [?] Someday
 
+<<<<<<< Local Changes
+<<<<<<< Local Changes
+<<<<<<< Local Changes
+<<<<<<< Local Changes
+are images found embedded in HTML messages saved that way, when they're archived? If so, they should't be... 
+
 Make prntng out delivery prefs optional
 Make exported CSV something that you ca easily import (timestamp at the end, then?)
 
+=======
+>>>>>>> External Changes
+=======
+>>>>>>> External Changes
+=======
+>>>>>>> External Changes
+=======
+>>>>>>> External Changes
 
 I WANT TO SEE THE DIGEST PREFS (AND PERHAPS IMPORT THAT)
 	
@@ -1151,3 +1167,7 @@ delete list should have to use a password too?
 
 Why isn't File::Spec a part of the perllib?!
 
+=======
+>>>>>>> External Changes
+=======
+>>>>>>> External Changes
