@@ -4602,11 +4602,13 @@ AddType text/plain .php .phtml .php3 .pl .cgi| or croak $!;
 }
 
 sub create_htaccess_no_directory_index {
+	
+	my $self = shift; 
     my $loc           = shift;
     my $htaccess_file = make_safer( $loc . '/.htaccess' );
-    open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
-    print $htaccess q|Options -Indexes| or croak $!;
-    close $htaccess or croak $!;
+    open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or warn $!;
+    print $htaccess q|Options -Indexes| or warn $!;
+    close $htaccess or warn $!;
     installer_chmod( 0644, $htaccess_file );
 }
 
