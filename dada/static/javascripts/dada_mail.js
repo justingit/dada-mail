@@ -942,6 +942,8 @@ jQuery(document).ready(function($){
 		event.preventDefault();
 	});
 
+/* 
+	
 	$('body').on('keydown', '#search_query', function(event){
 		$("#search_query").autocomplete({
 			source: function(request, response) {
@@ -976,6 +978,41 @@ jQuery(document).ready(function($){
 			}
 		});
 	});
+
+*/
+		
+	$('body').on('change', '.delivery_prefs', function(event){
+		var dp_email = $(this).attr("data-email");
+		console.log('email: '           + $(this).attr("data-email"));
+		console.log('change_pref_to: '	+ $(this).val());
+	
+		var request = $.ajax({
+			url:       $("#s_program_url").val(),
+			type:      "POST",
+			dataType: "json",
+			cache:     false,
+			data: { 
+				flavor: 'admin_profile_delivery_preferences',
+				email: dp_email, 
+				delivery_prefs: $(this).val(),
+				process: 'ajax'
+			},
+			success: function(content) {
+				
+				console.log('content.status:' + content.status);
+				if(content.status == 0){
+					alert('Problems saving preference:' . content.error)
+				} else { 
+					alert('Preference Saved');
+				}
+			},
+			error: function(xhr, ajaxOptions, thrownError) {
+				alert('Problems saving preference: ' + thrownError);
+				console.log('status: ' + xhr.status);
+				console.log('thrownError:' + thrownError);
+			},
+		});	
+	}); 
 
 	// Membership >> user@example.com
 

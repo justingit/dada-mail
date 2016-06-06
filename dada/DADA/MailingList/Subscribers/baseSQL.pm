@@ -162,9 +162,12 @@ sub search_list {
 
         my $info = {};
         
-        $info->{timestamp} = $row->{timestamp};
-        $info->{email}     = $row->{email};
-        $info->{type}     = $args->{-type};    # Whazza?!
+        $info->{timestamp}            = $row->{timestamp};
+        $info->{email}                = $row->{email};
+		$info->{delivery_prefs_value} = $row->{delivery_prefs_value};
+        
+		
+		$info->{type}     = $args->{-type};    # Whazza?!
 
         delete( $row->{email} ); #?
         
@@ -345,10 +348,16 @@ sub SQL_subscriber_profile_join_statement {
             push(@merge_fields, $profile_fields_table . '.' . $_)
         }
     }
-
+	
+	# Delivery Prefs
+    if($ls->param('digest_enable') == 1){ 
+		push(@merge_fields, $profile_settings_table . '.value as delivery_prefs_value');
+	}
+	
     $query .= join(', ', @merge_fields); 
 
-# And we need to match this with the info in $profile_fields_table - this fast/slow?
+
+	# And we need to match this with the info in $profile_fields_table - this fast/slow?
     $query .=
         ' FROM '
       . $subscriber_table
@@ -358,8 +367,11 @@ sub SQL_subscriber_profile_join_statement {
       . $subscriber_table
       . '.email' . ' = '
       . $profile_fields_table
-      . '.email';
+      . '.email';	
 
+      if($ls->param('digest_enable') == 1){ 
+	  	$query .= ' LEFT JOIN ' . $profile_settings_table . ' ON ' . $subscriber_table .'.email = ' . $profile_settings_table . '.email ';
+	}
     # Global Black List spans across all lists (yes, we're still using this).
     $query .= ' WHERE  ';
     if (   $DADA::Config::GLOBAL_BLACK_LIST
@@ -611,6 +623,13 @@ sub SQL_subscriber_profile_join_statement {
               . $subscriber_table
               . '.timestamp';
         }
+        elsif ( $args->{-order_by} eq 'delivery_prefs_value' ) {
+            $query .=
+            ' ORDER BY '
+          . $subscriber_table
+          . '.list, '
+          . $profile_settings_table . '.value '
+		}
         else {
             $query .=
                 ' ORDER BY '
@@ -777,6 +796,8 @@ sub print_out_list {
 
     my $self = shift;
 	my ($args) = @_; 
+
+    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}}); 
 	
 #	use Data::Dumper; 
 #	warn 'args!' . Dumper($args); 
@@ -886,6 +907,10 @@ sub print_out_list {
     for (@$fields) {
         push ( @header, $_ );
     }
+	
+    if($ls->param('digest_enable') == 1){ 
+		push(@header, 'delivery_prefs_value');
+	}
 
     if ( $csv->combine(@header) ) {
 
@@ -905,7 +930,10 @@ sub print_out_list {
         if($args->{-show_timestamp_column} == 1){ 
             unshift(@info, $hashref->{timestamp}); 
         }
-        
+	    if($ls->param('digest_enable') == 1){ 
+			push(@info, $hashref->{delivery_prefs_value});
+        }
+		
         for (@$fields) {
 
 # DEV: Do we remove newlines here? Huh?
@@ -1032,6 +1060,8 @@ sub subscription_list {
 
     while ( $hashref = $sth->fetchrow_hashref ) {
 
+		use Data::Dumper; 
+		# warn '$hashref' . Dumper($hashref);
         # Probably, just add it here?
         $hashref->{type} = $args->{-type};
 

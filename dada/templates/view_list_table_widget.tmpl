@@ -40,6 +40,7 @@
     
    </th>
    
+  	
    <!-- tmpl_if show_timestamp_column --> 
    	<th width="225">
    	    <!-- tmpl_if expr="(order_by ne 'timestamp')" -->
@@ -68,6 +69,31 @@
    		<!-- /tmpl_if -->     
         </a> 
    	</th>
+<!-- /tmpl_if -->
+	
+<!-- tmpl_if list_settings.digest_enable -->
+   	<th width="225">
+   	    <!-- tmpl_if expr="(order_by ne 'delivery_prefs_value')" -->
+   			<a href="#" class="change_order" data-by="delivery_prefs_value" data-dir="asc">
+   		<!-- /tmpl_if --> 
+
+   		<!-- tmpl_if expr="(order_by eq 'delivery_prefs_value') && (order_dir eq 'asc')" -->
+   			<a href="#" class="change_order" data-by="delivery_prefs_value" data-dir="desc">
+   		<!-- /tmpl_if --> 
+
+   		<!-- tmpl_if expr="(order_by eq 'delivery_prefs_value') && (order_dir eq 'desc')" -->
+   			<a href="#" class="change_order" data-by="delivery_prefs_value" data-dir="asc">
+   		<!-- /tmpl_if -->
+        	Delivery Preferences
+       	<!-- tmpl_if expr="(order_by eq 'delivery_prefs_value') && (order_dir eq 'asc')" -->
+   			<sub>&#x25B2;</sub>
+   		<!-- /tmpl_if -->
+
+   		<!-- tmpl_if expr="(order_by eq 'delivery_prefs_value') && (order_dir eq 'desc')" -->
+   			<sub>&#x25BC;</sub>
+   		<!-- /tmpl_if -->     
+        </a> 
+    </th>
 <!-- /tmpl_if -->
 	
   <!-- tmpl_loop field_names --> 
@@ -127,12 +153,48 @@
  	 	
 	    </td>
 		
+		
         <!-- tmpl_if show_timestamp_column --> 
     		<td width="225">    		    
     		      <!-- tmpl_var timestamp --> 
     		</td>
 	    <!-- /tmpl_if --> 
 
+		<!-- tmpl_if list_settings.digest_enable -->
+			<td width="225">    
+					  <select 
+					  	name="delivery_prefs_<!-- tmpl_var email escape="HTML" -->" 
+					  	id="delivery_prefs_<!-- tmpl_var email escape="HTML" -->" 
+						class="delivery_prefs" 
+						data-email="<!-- tmpl_var email escape="HTML" -->">
+							  <option 
+							  	value="individual"
+								<!-- tmpl_if expr="((delivery_prefs_value ne 'indvidual') || (delivery_prefs_value ne 'hold'))" -->	
+									selected="selected"
+								<!-- /tmpl_if -->
+							  >
+							  	individual
+						 	 </option>
+							  <option 
+							  	value="digest"
+								<!-- tmpl_if expr="(delivery_prefs_value eq 'digest')" -->	
+									selected="selected"
+								<!-- /tmpl_if -->
+							   >
+							   		digest
+							  </option>
+							  <option 
+							  	value="hold"
+								<!-- tmpl_if expr="(delivery_prefs_value eq 'hold')" -->	
+									selected="selected"
+								<!-- /tmpl_if -->
+								>
+								hold/vacation
+							</option>
+					  </select>
+			</td>
+		<!-- /tmpl_if -->
+		
 	    <!-- tmpl_loop fields --> 
 		    <td>
 				<!-- tmpl_var value -->
