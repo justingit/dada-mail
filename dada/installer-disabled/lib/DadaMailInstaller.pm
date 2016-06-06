@@ -2806,6 +2806,12 @@ sub setup_support_files_dir {
 			make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name)
 		);			
 	}
+	if(! -e $support_files_dir_path . '/' . $Support_Files_Dir_Name . '/index.html'){ 
+		$self->create_blank_index_file(
+			make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name)
+		);			
+		
+	}
 
     my $install_path = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name;
 
@@ -4610,6 +4616,17 @@ sub create_htaccess_no_directory_index {
     print $htaccess q|Options -Indexes| or warn $!;
     close $htaccess or warn $!;
     installer_chmod( 0644, $htaccess_file );
+	
+}
+
+sub create_blank_index_file { 
+	my $self = shift; 
+    my $loc           = shift;
+    my $index = make_safer( $loc . '/index.html' );
+    open my $index, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $index_file or warn $!;
+    print $index '' or warn $!;
+    close $index    or warn $!;
+    installer_chmod( 0644, $index_file );
 }
 
 sub guess_home_dir {
