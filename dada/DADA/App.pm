@@ -5381,8 +5381,7 @@ sub admin_profile_delivery_preferences {
 	    my $r =  $json->encode({
 	    	status => 0, 
 			error  => $error_msg
-	    });
-		warn $r; 
+	    }); 
 		return $r; 
 		
 		}
@@ -5397,10 +5396,7 @@ sub admin_profile_delivery_preferences {
             -setting => 'delivery_prefs',
             -value   => $delivery_prefs,
         };
-	
-	use Data::Dumper; 
-	warn 'params:' . Dumper($params); 
-		
+	 	
     require DADA::Profile::Settings;
     my $dps = DADA::Profile::Settings->new;
     my $r   = $dps->save($params);

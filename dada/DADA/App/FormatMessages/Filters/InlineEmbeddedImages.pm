@@ -18,7 +18,6 @@ use URI;
 use File::Slurp;
 use DADA::Security::Password;
 use DADA::App::Guts;
-use Data::Dumper;
 
 use MIME::Parser;
 use MIME::Entity;
