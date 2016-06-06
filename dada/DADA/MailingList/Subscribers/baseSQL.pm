@@ -1059,9 +1059,6 @@ sub subscription_list {
     }
 
     while ( $hashref = $sth->fetchrow_hashref ) {
-
-		use Data::Dumper; 
-		# warn '$hashref' . Dumper($hashref);
         # Probably, just add it here?
         $hashref->{type} = $args->{-type};
 
