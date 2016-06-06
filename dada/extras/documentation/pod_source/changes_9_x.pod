@@ -2,6 +2,26 @@
 
 =encoding utf-8
 
+=head1 9.3.0
+
+=head2 Features
+
+=head3 Subscriber Delivery Preferences editing on Membership - View screen
+
+For discussion lists that have digest enabled, editing indivual delivery preferences can be done on the I<Membership - View screen>, rather than have to visit the individual subscriber's membership screen to make the edit. 
+
+Delivery Preferences are now exported, when you export Subscriber data via csv.
+
+=head2 Changes
+
+=head3 No Directory Listing in dada_mail_support_files directory
+
+During installation/upgrade and when using the included Dada Mail Installer, the Installer will now create a .htacess file, with the following directive: 
+
+	Options -Indexes
+
+This stops a directory listing to be returned for anyone/anything visting the root of this directory. Since files/directories of older installs are backed up, and since some of the files in these backed-up directories could have exploits fixed in the more recent versions being installed, this simple removal of the directory index may stop these potential exploits. 
+
 =head1 9.2.2
 
 This is mostly a bug-fix release, fixing bugs found in the v9.2.1 release.
