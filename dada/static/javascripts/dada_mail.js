@@ -982,11 +982,9 @@ jQuery(document).ready(function($){
 */
 		
 	$('body').on('change', '.delivery_prefs', function(event){
-		alert('email: ' + $(this).attr("data-email"));
 		var dp_email = $(this).attr("data-email");
-		alert('change_pref_to: ' 
-		+ $(this).val()
-	);
+		console.log('email: '           + $(this).attr("data-email"));
+		console.log('change_pref_to: '	+ $(this).val());
 	
 		var request = $.ajax({
 			url:       $("#s_program_url").val(),
@@ -1001,15 +999,15 @@ jQuery(document).ready(function($){
 			},
 			success: function(content) {
 				
-				alert('content.status:' + content.status);
+				console.log('content.status:' + content.status);
 				if(content.status == 0){
-					alert('problems saving preference:' . content.error)
+					alert('Problems saving preference:' . content.error)
 				} else { 
-					alert('Preference Saved!');
+					alert('Preference Saved');
 				}
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
-				alert('Error: ' + thrownError);
+				alert('Problems saving preference: ' + thrownError);
 				console.log('status: ' + xhr.status);
 				console.log('thrownError:' + thrownError);
 			},

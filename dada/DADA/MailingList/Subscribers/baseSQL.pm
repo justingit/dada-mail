@@ -796,6 +796,8 @@ sub print_out_list {
 
     my $self = shift;
 	my ($args) = @_; 
+
+    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}}); 
 	
 #	use Data::Dumper; 
 #	warn 'args!' . Dumper($args); 
@@ -905,7 +907,10 @@ sub print_out_list {
     for (@$fields) {
         push ( @header, $_ );
     }
-	push(@header, 'delivery_prefs_value');
+	
+    if($ls->param('digest_enable') == 1){ 
+		push(@header, 'delivery_prefs_value');
+	}
 
     if ( $csv->combine(@header) ) {
 
@@ -925,8 +930,10 @@ sub print_out_list {
         if($args->{-show_timestamp_column} == 1){ 
             unshift(@info, $hashref->{timestamp}); 
         }
-		push(@info, $hashref->{delivery_prefs_value});
-        
+	    if($ls->param('digest_enable') == 1){ 
+			push(@info, $hashref->{delivery_prefs_value});
+        }
+		
         for (@$fields) {
 
 # DEV: Do we remove newlines here? Huh?
