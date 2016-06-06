@@ -4622,7 +4622,7 @@ sub create_htaccess_no_directory_index {
 sub create_blank_index_file { 
 	my $self = shift; 
     my $loc           = shift;
-    my $index = make_safer( $loc . '/index.html' );
+    my $index_file = make_safer( $loc . '/index.html' );
     open my $index, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $index_file or warn $!;
     print $index '' or warn $!;
     close $index    or warn $!;
