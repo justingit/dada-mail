@@ -276,7 +276,6 @@ BEGIN { use_ok('DADA::App::MyMIMELiteHTML'); }
 # Since it relies on the above. 
 
 BEGIN{ use_ok('MIME::Tools'); }
-BEGIN{ use_ok('MLDBM'); }
 BEGIN{ use_ok('Net::SMTP'); }
 BEGIN{ use_ok('Parse::RecDescent'); }
 BEGIN{ use_ok('Text::Balanced'); }

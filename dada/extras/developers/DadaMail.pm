@@ -144,8 +144,6 @@ MIME::Lite::HTML
 
 MIME::Tools
 
-MLDBM
-
 Net::SMTP
 
 Net::SMTP_auth 
