@@ -1194,8 +1194,7 @@ sub inject_msg {
     my $filename = $args->{-filename};
     
     if(! -e $filename){ 
-        $r .= "No file found at, $filename\n"; 
-        warn $r; 
+        $r .= "No file found at, $filename\n";  
         return $r; 
     }
         
@@ -1262,8 +1261,7 @@ sub inject_msg {
             );
             $r .= $msg;
         }
-    }
-    # warn $r; 
+    } 
     return $r;
 }
 
