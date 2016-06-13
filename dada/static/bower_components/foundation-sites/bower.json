@@ -1,0 +1,26 @@
+{
+  "name": "foundation-sites",
+  "version": "6.0.3",
+  "main": [
+    "scss/foundation.scss",
+    "js/foundation.js"
+  ],
+  "ignore": [
+    "config",
+    "docs",
+    "gulp",
+    "lib",
+    "test",
+    "composer.json",
+    "CONTRIBUTING.md",
+    "gulpfile.js",
+    "meteor-README.md",
+    "package.js",
+    "package.json",
+    "sache.json"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.0",
+    "what-input": "~1.1.2"
+  }
+}

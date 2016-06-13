@@ -1,14 +1,17 @@
 <!-- begin admin_top_bar_menu.tmpl -->
-<nav class="top-bar" data-topbar role="navigation" id="admin_top_bar_menu">
-	<section class="top-bar-section">
+
+<div class="top-bar" id="admin_top_bar_menu">
+  <div class="top-bar-left">
+	<ul class="dropdown menu" data-dropdown-menu>
 		<!-- tmpl_loop NAV -->
 			<!-- tmpl_if Activated -->
-				<ul class="left">
-					<li class="has-dropdown">
-						<a href="#">
-							<!-- tmpl_var Title -->
-						</a>						
-						<ul class="dropdown">
+
+			        <li>
+			          <a href="#">
+			          	<!-- tmpl_var Title -->
+			          </a>
+					  <ul class="menu vertical">
+
 							<!-- tmpl_loop SUBNAV -->
 							
 								<!-- tmpl_if Activated --> 
@@ -34,9 +37,10 @@
 							<!--/tmpl_loop-->
 						</ul>
 					</li>
-				</ul>				
+			
 			<!-- /tmpl_if -->
 		<!--/tmpl_loop-->
-	</section>
-</nav>
+		</ul>	
+	</div>
+</div>
 <!-- end admin_top_bar_menu.tmpl -->

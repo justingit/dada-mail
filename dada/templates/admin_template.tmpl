@@ -12,8 +12,7 @@
 
   <title><!-- tmpl_var title --> - <!-- tmpl_var list_settings.list_name --> - <!-- tmpl_var PROGRAM_NAME --></title>
 
-
-  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/app.css?v=<!-- tmpl_var VER escape=URL -->" />
+  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/app.css?v=<!-- tmpl_var VER escape=URL -->" />  
   <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/foundation-icons/foundation-icons.css?v=<!-- tmpl_var VER escape=URL -->" />
 
 
@@ -77,112 +76,135 @@
 	
 </head>
 <body id="Dada"> 
-	<div class="off-canvas-wrap" data-offcanvas>
-		<div class="inner-wrap">       
-			<!-- mobile navigation -->
-			<nav class="tab-bar hide-for-large-up" role="navigation">
-				<section class="left-medium">
-					<a class="left-off-canvas-toggle menu-icon" href="#">
-						<span>
-						</span>
-					</a>
-				</section>
-				<section class="middle tab-bar-section">
+	
+
+
+<div class="top-bar">
+	<div class="top-bar-title">
+				<h3>
 					<a href="<!-- tmpl_var PROGRAM_URL -->">
-						<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/<!-- tmpl_var PROGRAM_IMG_FILENAME default="dada_mail_logo.png" -->" alt="<!-- tmpl_var PROGRAM_NAME -->">
-					</a>             
-				</section>
-			</nav>
-			<aside class="left-off-canvas-menu">
-				<!-- tmpl_var mobile_admin_menu -->
-			</aside>
-			<!-- /mobile navigation -->
-			
-		<section class="main-section">
-			<nav class="top-bar show-for-large-up" data-topbar role="navigation" id="admin_header">
-				<ul class="title-area">
-					<li class="name">
-						<h3>
-							<a href="<!-- tmpl_var PROGRAM_URL -->">
-								<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/<!-- tmpl_var PROGRAM_IMG_FILENAME default="dada_mail_logo.png"-->" alt="<!-- tmpl_var PROGRAM_NAME -->">
-							</a>
-						</h3>
-					</li>
-				</ul>
-				<section class="top-bar-section">
-				<!-- tmpl_if GIVE_PROPS_IN_ADMIN -->
-					<ul class="left">
-							<li  class="has-form">
-								<a 
-									href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=transform_to_pro" 
-									class="button round alert" 
-									style="font-weight:bold; box-shadow: 0px -2px 14px 0px  rgba(255, 102, 204, 1);"
-								>
-									Transform This Install Into Pro Dada!
-								</a>
-							</li>
-						</ul>
-					<!-- /tmpl_if -->
-					
-					<ul class="right">
-						<li class="divider">
-						</li>
-						<li>
-							<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
-								Logged in as 
-								<!-- tmpl_if root_login --> 
-									<strong>
-										<!-- tmpl_var PROGRAM_NAME --> Root
-									</strong>
-								<!-- tmpl_else --> 
-									<strong>
-										List Owner
-									</strong>
-								<!-- /tmpl_if -->
-								of  
-								<strong>
-									<!-- tmpl_var list_settings.list_name -->
-								</strong>
-									 (
-									 <em>
-										 <!-- tmpl_var list_settings.list -->
-									</em>
-									)
-							</a>   
-						</li>
-						<!-- tmpl_if login_switch_widget --> 
-							<!-- tmpl_if root_login --> 
-								<li class="divider">
-								</li>
-								<!-- tmpl_var login_switch_widget -->
-								<li class="divider">
-								</li>
-							<!-- /tmpl_if -->
-						<!-- /tmpl_if -->
-						<li class="has-form">
-							<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout" class="button alert">
-								Log Out
+						<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/<!-- tmpl_var PROGRAM_IMG_FILENAME default="dada_mail_logo.png"-->" alt="<!-- tmpl_var PROGRAM_NAME -->">
+					</a>
+				</h3>
+		
+	</div>
+	
+  <div class="top-bar-left">
+    <ul class="menu">
+      <li>
+		  
+		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
+			Logged in as 
+			<!-- tmpl_if root_login --> 
+				<strong>
+					<!-- tmpl_var PROGRAM_NAME --> Root
+				</strong>
+			<!-- tmpl_else --> 
+				<strong>
+					List Owner
+				</strong>
+			<!-- /tmpl_if -->
+			of  
+			<strong>
+				<!-- tmpl_var list_settings.list_name -->
+			</strong>
+				 (
+				 <em>
+					 <!-- tmpl_var list_settings.list -->
+				</em>
+				)
+		</a>
+	  
+	  
+	  </li>
+      <li>
+		  
+		<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout" class="button alert">
+			Log Out
+		</a>
+	  
+	  
+	  </li>
+    </ul>
+    <div class="top-bar-right">
+  </div>
+</div>
+
+
+
+<!-- tmpl_if comment -->
+<div class="top-bar" id="example-menu">
+  <div class="top-bar-left">
+	  <ul >
+	        <li class="menu-text">
+				<h3>
+					<a href="<!-- tmpl_var PROGRAM_URL -->">
+						<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/<!-- tmpl_var PROGRAM_IMG_FILENAME default="dada_mail_logo.png"-->" alt="<!-- tmpl_var PROGRAM_NAME -->">
+					</a>
+				</h3>
+			</li>
+
+
+			<!-- tmpl_if GIVE_PROPS_IN_ADMIN -->
+						<li  class="has-form">
+							<a 
+								href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=transform_to_pro" 
+								class="button round alert" 
+								style="font-weight:bold; box-shadow: 0px -2px 14px 0px  rgba(255, 102, 204, 1);"
+							>
+								Transform This Install Into Pro Dada!
 							</a>
 						</li>
 					</ul>
-				</section> 
-			</nav>
-		<!-- tmpl_if expr="(list_settings.list_control_panel_style eq 'top_bar')" -->	
-			<div class="show-for-large-up">
-				<!-- tmpl_var admin_top_bar_menu -->
-			</div>
-		<!-- tmpl_else -->
-			<div class="row"  style="width: 100%; margin-left: auto; margin-right: auto; max-width: initial;">
-				<div class="large-2 medium-3 columns">
-					<div class="show-for-large-up">
-						<div class="sidebar">
-							<nav>
-								<!-- tmpl_var admin_menu -->
-							</nav> 
-						</div> 
-					</div> 
-				</div>
-		<!-- /tmpl_if -->	
+				<!-- /tmpl_if -->
+	
+				 <ul class="menu vertical">
+					<li class="divider">
+					</li>
+					<li>
+						<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
+							Logged in as 
+							<!-- tmpl_if root_login --> 
+								<strong>
+									<!-- tmpl_var PROGRAM_NAME --> Root
+								</strong>
+							<!-- tmpl_else --> 
+								<strong>
+									List Owner
+								</strong>
+							<!-- /tmpl_if -->
+							of  
+							<strong>
+								<!-- tmpl_var list_settings.list_name -->
+							</strong>
+								 (
+								 <em>
+									 <!-- tmpl_var list_settings.list -->
+								</em>
+								)
+						</a>   
+					</li>
+					<!-- tmpl_if login_switch_widget --> 
+						<!-- tmpl_if root_login --> 
+							<li class="divider">
+							</li>
+							<!-- tmpl_var login_switch_widget -->
+							<li class="divider">
+							</li>
+						<!-- /tmpl_if -->
+					<!-- /tmpl_if -->
+					<li class="has-form">
+						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout" class="button alert">
+							Log Out
+						</a>
+					</li>
+				</ul>
+			</div> 
+
+<!-- /tmpl_if -->
+			
+	
+<!-- tmpl_var admin_top_bar_menu -->
 
 		<!-- tmpl_if expr="(list_settings.list_control_panel_style eq 'top_bar')" -->	
 			<div class="row">
@@ -196,10 +218,6 @@
 			</div>
 		</section>
 	
-			<a class="exit-off-canvas"></a>
-		</div>
-	</div>
-
 
 	<!-- tmpl_if footer_props -->
 		<div class="row">
@@ -209,13 +227,23 @@
 		</div>
 	<!-- /tmpl_if -->
 
-
+<!-- tmpl_if comment -->
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation.min.js?v=<!-- tmpl_var VER escape=URL -->"></script>
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/foundation.offcanvas.js?v=<!-- tmpl_var VER escape=URL -->"></script>
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/foundation.magellan.js?v=<!-- tmpl_var VER escape=URL -->"></script>
 	<script>
 		$(document).foundation();
 	</script>
+<!-- /tmpl_if -->
+		
+		
+<!-- tmpl_if comment --><script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/bower_components/jquery/dist/jquery.js"></script><!-- /tmpl_if -->
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/bower_components/what-input/what-input.js"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/bower_components/foundation-sites/dist/foundation.js"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/app.js"></script>
+		
+		
+		
 
 	</body>
 </html>

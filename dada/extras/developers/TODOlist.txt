@@ -12,6 +12,10 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+ "There is a set limit of 1000 addresses you may import at one time. " is, "1000" corect?!
+ 
+ 
 are images found embedded in HTML messages saved that way, when they're archived? If so, they should't be... 
 
 Make prntng out delivery prefs optional
