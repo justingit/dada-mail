@@ -2,6 +2,8 @@
 package DADA::App;
 use base 'CGI::Application';
 
+use CGI::Application::Plugin::RateLimit;
+
 #use CGI::Application::Plugin::DebugScreen;
 
 use strict;
@@ -223,6 +225,7 @@ sub setup {
         'profile'                                     => \&profile,
 		'also_save_for_settings'                      => \&also_save_for_settings, 
 		'transform_to_pro'						      => \&transform_to_pro, 
+		'yikes'						                  => \&yikes, 
 
         # These handled the oldstyle confirmation. For some backwards compat, I've changed
         # them so that there's at least a shim to the new system,
@@ -271,6 +274,37 @@ sub setup {
             # Do watcha did before.
         }
     }
+	
+	
+ 
+	require DADA::App::DBIHandle; 
+	my $dbi_handle = DADA::App::DBIHandle->new; 
+	my $dbh = $dbi_handle->dbh_obj; 
+	
+    # call this in your setup routine to set
+    my $rate_limit = $self->rate_limit();
+       $rate_limit->identity_callback(sub { return $ENV{REMOTE_ADDR} });
+   
+    # set the database handle to use
+    $rate_limit->dbh($dbh);
+ 
+    # set the table name to use for storing hits, the default is
+    # 'rate_limit_hits'
+    $rate_limit->table('rate_limit_hits');
+ 
+    # keep people from calling 'send' more often than 5 times in 10
+    # minutes and 'list' more often than once every 5 seconds.
+    $rate_limit->protected_modes(
+		subscribe => {
+			timeframe => '1m',
+            max_hits  => 10
+		}
+	);
+		
+ 
+    # call this runmode when a violation is detected
+    $rate_limit->violation_mode('yikes');
+ 
 
 }
 
