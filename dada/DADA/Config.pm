@@ -1992,6 +1992,7 @@ sub _config_import {
         password_protect_directories_table => 'dada_password_protect_directories',
         confirmation_tokens_table          => 'dada_confirmation_tokens',
 		message_drafts_table               => 'dada_message_drafts', 
+		rate_limit_hits_table              => 'dada_rate_limit_hits',
 		
 		dbtype => 'SQLite',
 		database => 'dadamail',

@@ -109,6 +109,22 @@ sub scheduled_mass_mailings {
     return $r; 
 }
 
+sub expire_rate_limit_checks {
+    my $self = shift; 
+	my $tbl = $DADA::Config::SQL_PARAMS{rate_limit_hits_table}; 
+	my $yesterday = (time - 86400); 
+	
+	require DADA::App::DBIHandle; 
+	my $dbi_handle = DADA::App::DBIHandle->new; 
+	my $dbh = $dbi_handle->dbh_obj; 
+	
+	my $query = 'DELETE FROM ' . $tbl . ' WHERE timestamp <= ?'; 
+	$dbh->do($query, {}, ($yesterday))
+		or die "cannot do statement $DBI::errstr\n"; 
+		
+	return " Done!\n";
+}
+
 sub DESTORY {}
 sub END {}
 

@@ -34,8 +34,7 @@ $TEST_SQL_PARAMS = {
 		password_protect_directories_table => 'test_dada_password_protect_directories', 
 		confirmation_tokens_table          => 'test_dada_confirmation_tokens',
 		message_drafts_table               => 'test_dada_message_drafts',
-		
-		
+		rate_limit_hits_table              => 'test_dada_rate_limit_hits',
 	}, 
 
 	PostgreSQL => { 
@@ -63,8 +62,7 @@ $TEST_SQL_PARAMS = {
 		password_protect_directories_table    => 'test_dada_password_protect_directories', 
 		confirmation_tokens_table             => 'test_dada_confirmation_tokens',
 		message_drafts_table               => 'test_dada_message_drafts',
-		
-
+		rate_limit_hits_table              => 'test_dada_rate_limit_hits',
 
 	}, 
 
@@ -88,7 +86,7 @@ $TEST_SQL_PARAMS = {
 		password_protect_directories_table    => 'test_dada_password_protect_directories', 
 		confirmation_tokens_table          => 'test_dada_confirmation_tokens',
 		message_drafts_table               => 'test_dada_message_drafts',
-				
+		rate_limit_hits_table              => 'test_dada_rate_limit_hits',			
 	},
 	
 
