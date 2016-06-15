@@ -1202,6 +1202,7 @@ sub grab_former_config_vals {
         || defined($BootstrapConfig::ADMIN_FLAVOR_NAME)
         || defined($BootstrapConfig::SIGN_IN_FLAVOR_NAME) 
 		|| keys    %$BootstrapConfig::CP_SESSION_PARAMS
+        || defined($BootstrapConfig::RATE_LIMITING) 
 	)
     {
         $opt->{'configure_security'} = 1;
@@ -1219,6 +1220,12 @@ sub grab_former_config_vals {
 			$opt->{'security_session_params_check_matching_ip_addresses'} 
 				= $BootstrapConfig::CP_SESSION_PARAMS->{security_session_params_check_matching_ip_addresses};
 		}
+		if(keys    %$BootstrapConfig::RATE_LIMITING) { 
+			$opt->{'security_rate_limiting_enabled'} = $BootstrapConfig::RATE_LIMITING->{enabled};
+			$opt->{'security_rate_limiting_max_hits'} = $BootstrapConfig::RATE_LIMITING->{max_hits};
+			$opt->{'security_rate_limiting_timeframe'} = $BootstrapConfig::RATE_LIMITING->{timeframe};
+		}
+
     }
 
     # Configure CAPTCHA
@@ -1583,9 +1590,11 @@ sub query_params_to_install_params {
       security_no_show_admin_link
       security_DISABLE_OUTSIDE_LOGINS
       security_ADMIN_FLAVOR_NAME
-      security_SIGN_IN_FLAVOR_NAME
-	  
+      security_SIGN_IN_FLAVOR_NAME	  
 	  security_session_params_check_matching_ip_addresses
+	  security_rate_limiting_enabled
+	  security_rate_limiting_max_hits
+	  security_rate_limiting_timeframe
 
       configure_captcha
       captcha_type
@@ -2237,7 +2246,9 @@ sub create_dada_config_file {
               clean_up_var( $ip->{-security_session_params_check_matching_ip_addresses} );
         }
 		
-		
+        $security_params->{security_rate_limiting_enabled} = clean_up_var( $ip->{-security_rate_limiting_enabled} ) || 0;
+        $security_params->{security_rate_limiting_max_hits} = clean_up_var( $ip->{-security_rate_limiting_max_hits} ) || 0;
+        $security_params->{security_rate_limiting_timeframe} = clean_up_var( $ip->{-security_rate_limiting_timeframe} ) || 0;
     }
 
     my $captcha_params = {};

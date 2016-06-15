@@ -245,6 +245,13 @@ $SIGN_IN_FLAVOR_NAME    = '<!-- tmpl_var security_SIGN_IN_FLAVOR_NAME  default="
 $CP_SESSION_PARAMS = { 
 	check_matching_ip_addresses => <!-- tmpl_var security_session_params_check_matching_ip_addresses default="0" -->, 
 };
+
+$RATE_LIMITING = { 
+	enabled   => <!-- tmpl_var security_rate_limiting_enabled default="0" -->,
+	max_hits  => <!-- tmpl_var security_rate_limiting_max_hits -->, 
+	timeframe => <!-- tmpl_var security_rate_limiting_timeframe -->,
+};
+
 <!-- /tmpl_if -->
 
 

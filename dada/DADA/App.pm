@@ -277,67 +277,59 @@ sub setup {
     }
 	
 	
- 
-	require DADA::App::DBIHandle; 
-	my $dbi_handle = DADA::App::DBIHandle->new; 
-	my $dbh = $dbi_handle->dbh_obj; 
+ 	my $rate_limit = undef; 
 	
-    # call this in your setup routine to set
-    my $rate_limit = $self->rate_limit();
-       $rate_limit->identity_callback(sub { return $ENV{REMOTE_ADDR} });
+	if($DADA::Config::RATE_LIMITING->{enabled} == 1){ 
+		
+		require DADA::App::DBIHandle; 
+		my $dbi_handle = DADA::App::DBIHandle->new; 
+		my $dbh = $dbi_handle->dbh_obj; 
+	    # call this in your setup routine to set
+	    my $rate_limit = $self->rate_limit();
+	       $rate_limit->identity_callback(sub { return $ENV{REMOTE_ADDR} });
    
-    # set the database handle to use
-    $rate_limit->dbh($dbh);
+	    # set the database handle to use
+	    $rate_limit->dbh($dbh);
+	    $rate_limit->table($DADA::Config::SQL_PARAMS{rate_limit_hits_table});
  
-    # set the table name to use for storing hits, the default is
-    # 'rate_limit_hits'
-    $rate_limit->table($DADA::Config::SQL_PARAMS{rate_limit_hits_table});
- 
-    # keep people from calling 'send' more often than 5 times in 10
-    # minutes and 'list' more often than once every 5 seconds.
+		my $pm_prefs = {
+			timeframe => $DADA::Config::RATE_LIMITING->{timeframe} . 'm',
+	        max_hits  => $DADA::Config::RATE_LIMITING->{max_hits},
+		};
 	
-	my $timeframe = '5m';
-	my $maxhits   = 10; 
-	my $pm_prefs = {
-		timeframe => $timeframe,
-        max_hits  => $maxhits
-	};
-	
-    $rate_limit->protected_modes(
-        $sched_flavor                      => $pm_prefs,
-        subscribe                          => $pm_prefs,
-        restful_subscribe                  => $pm_prefs,
-        token                              => $pm_prefs,
-        unsubscribe                        => $pm_prefs,
-        unsubscription_request             => $pm_prefs,
-        login                              => $pm_prefs,
-        log_into_another_list              => $pm_prefs,
-        pass_gen                           => $pm_prefs,
-        list                               => $pm_prefs,
-		list_archive                       => $pm_prefs,
-        archive_rss                        => $pm_prefs,
-        archive_atom                       => $pm_prefs,
-        file_attachment                    => $pm_prefs,
-        profile_activate                   => $pm_prefs,
-        profile_register                   => $pm_prefs,
-        profile_reset_password             => $pm_prefs,
-        profile_update_email               => $pm_prefs,
-        profile_login                      => $pm_prefs,
-        profile_logout                     => $pm_prefs,
-        profile                            => $pm_prefs,
-        's'                                => $pm_prefs,
-        u                                  => $pm_prefs,
-        outdated_subscription_urls         => $pm_prefs,
-        t                                  => $pm_prefs,
-        ur                                 => $pm_prefs,
-        $DADA::Config::ADMIN_FLAVOR_NAME   => $pm_prefs,
-        $DADA::Config::SIGN_IN_FLAVOR_NAME => $pm_prefs,
-    );
-
-    # call this runmode when a violation is detected
-    $rate_limit->violation_mode('rate_limit_reached');
- 
-
+	    $rate_limit->protected_modes(
+	        $sched_flavor                      => $pm_prefs,
+	        subscribe                          => $pm_prefs,
+	        restful_subscribe                  => $pm_prefs,
+	        token                              => $pm_prefs,
+	        unsubscribe                        => $pm_prefs,
+	        unsubscription_request             => $pm_prefs,
+	        login                              => $pm_prefs,
+	        log_into_another_list              => $pm_prefs,
+	        pass_gen                           => $pm_prefs,
+	        list                               => $pm_prefs,
+			list_archive                       => $pm_prefs,
+	        archive_rss                        => $pm_prefs,
+	        archive_atom                       => $pm_prefs,
+	        file_attachment                    => $pm_prefs,
+	        profile_activate                   => $pm_prefs,
+	        profile_register                   => $pm_prefs,
+	        profile_reset_password             => $pm_prefs,
+	        profile_update_email               => $pm_prefs,
+	        profile_login                      => $pm_prefs,
+	        profile_logout                     => $pm_prefs,
+	        profile                            => $pm_prefs,
+	        's'                                => $pm_prefs,
+	        u                                  => $pm_prefs,
+	        outdated_subscription_urls         => $pm_prefs,
+	        t                                  => $pm_prefs,
+	        ur                                 => $pm_prefs,
+	        $DADA::Config::ADMIN_FLAVOR_NAME   => $pm_prefs,
+	        $DADA::Config::SIGN_IN_FLAVOR_NAME => $pm_prefs,
+	    );
+	    # call this runmode when a violation is detected
+	    $rate_limit->violation_mode('rate_limit_reached');
+	}
 }
 
 sub yikes {
