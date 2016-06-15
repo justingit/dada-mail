@@ -412,6 +412,52 @@ etc.
 
 B<Global Variable:> C<$SIGN_IN_FLAVOR_NAME>
 
+=head3 Rate Limiting 
+
+When enabled, rate limiting keeps track of the requests of certain features in Dada Mail - features like trying to log into the list control panel, or subscribing to a mailing list. Dada Mail keeps track of these requests by IP Address and can be configured to have a maximum amount of requests per timeframe. If more than the maximum amount of requests are made within the timeframe, the rate limit is said to be B<exceeded>, and further requests will be denied. 
+
+This feature is especially important in any feature that involves filling out a form, then having that feature send out an email, like a subscription confirmation. Potentially nefarious bots may be filling out your subscription form quite blindly, with various bogus email addresses, causing all this unneeded email to be sent, then bounced back. If you're using a third party email sending service, like Amazon SES, this out of control behaviour could potentially lead to problems with you not following their Terms of Service. 
+
+Although rate limiting in Dada Mail was first implemeted for the above scenario, it's used in many other places: 
+
+=over
+
+=item * Running the Cronjob Schedule
+
+=item * Subscription by the classic subscription form
+
+=item * Subscription via the RESTful API
+
+=item * Subscription and Unsubscription Confirmation via the token URL (or any URL with a token in it)
+
+=item * Logging in and out
+
+=item * Encrypting a password
+
+=item * Requesting to download a file attachment 
+
+=item * Profile activation/registering/resetting password/login and out
+
+=item * Accessing the list control panel login screen
+
+=back
+
+=head4 Enable Rate Limiting 
+
+Check this option to enable Rate Limiting. B<Enabled by default>
+
+=head4 Timeframe (in minutes): 
+
+Timeframe is the amount of time a number of requests for a certain feature/function can be made
+
+=head4 Max Hits
+
+Max Hits are the amount of requests for a certain feature/function that may be done in the Timeframe set above. 
+
+If more requests than the Max Hits happens within the Timeframe, the feature/function will be inaccessible, until the number of requests is below the Max Hits threshold. Any other feature mentioned will still be available to the user, and any other users of the app will not be affected (unless of course they're being tied to that same IP Address)
+
+B<Config Variable:> C<$RATE_LIMITING>. 
+
 =head2 Configure CAPTCHA
 
 Dada Mail uses CAPTCHA challenge-response tests optionally for many things: as a additional step to confirm a subscription, for the Forward a Friend form, and other places. 
@@ -509,5 +555,3 @@ You may set up Dada Mail to send via Amazon's Simple Email Service. This is a th
 Amazon SES does have a long list of required Perl CPAN modules that need to be installed, before SES sending will work. If any modules are not installed, the installer will list which CPAN modules are still needed. 
 
 To configure Dada Mail to use SES sending, first check the checkbox labeled,B< Configure Amazon SES>  Then, you will need to give the installer your B<AWS Access Key ID> and a B<AWS Secret Access Key>. To test your information, click the, B<Test Your AWS Credentials> button. 
-
-=head2 Configure Mandrill
