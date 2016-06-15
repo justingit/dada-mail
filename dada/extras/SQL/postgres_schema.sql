@@ -1,3 +1,5 @@
+-- no indexes?
+
 CREATE TABLE dada_settings (
 list                             varchar(16),
 setting                          varchar(64),
@@ -143,6 +145,5 @@ draft text
 CREATE TABLE dada_rate_limit_hits ( 
 user_id VARCHAR(255) NOT NULL,
 action VARCHAR(255) NOT NULL, 
-timestamp INT UNSIGNED NOT NULL,
-INDEX (user_id, action, timestamp)
+timestamp INT NOT NULL
 );
