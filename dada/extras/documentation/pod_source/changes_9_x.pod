@@ -8,11 +8,11 @@
 
 =head3 Rate Limiting
 
-We've enabled a B<Rate Limiting> in Dada Mail! This is a safegaurd against perhaps nefarious attempts at attacking the app when there are requests information done many times in a given time frame. Before this version, Dada Mail would happily try to serve each request, and sometimes this can cause problems. One scenario:
+We've enabled a B<Rate Limiting> in Dada Mail! This is a safegaurd against perhaps nefarious attempts at attacking the Dada Mail when there are many requests done in a short space of time. Before v9.4.0, Dada Mail would happily try to serve each request, and sometimes this would cause problems. One scenario:
 
-Say you have a subscrption form, and say that form has been targeted by a bot to attempt to exploit it. There currently are I<not> any known exploits out there in the wild for Dada Mail, but perhaps the bot doesn't know that, so it just tries to fill out your form multiple times a I<second>. This can cause problems with resources on your hosting account reaching their limit, and also cause multiple emails to be sent to bogus addresses, and probably bounce back, which cause an annoyance. If you have a third party email service, like Amazon SES (which we highly recommend!), this can work against you, as the service monitors bounce rates closely, and will not allow the rate to go too high. If it does, you're in hot water.
+Say you have a subscrption form, and say that form has been targeted by a bot in an attempt to exploit it. There currently aren't any known exploits out there in the wild for Dada Mail, but perhaps the bot doesn't know that, so it just tries to fill out your form multiple times a I<second>. This can cause problems with resources on your hosting account reaching their limit, and cann also cause multiple emails to be sent to bogus addresses, and probably bounce back, which cause much annoyance. If you utilize a third party email service, like Amazon SES (which we highly recommend!), this can work against you, as this service monitors bounce rates closely and will not allow the rate to go too high. If it does, you're in hot water with Amazon AWS.
 
-Rate Limiting monitors why is requesting what, and how many times. If it notices what could potentially be abuse, it'll deny the request for a small amount of time. This stops flagrant and out of control abuse of the app, easily. 
+Dada Mail's Rate Limiting now monitors who is requesting what, and how many times. If it notices what could potentially be signs of abuse, it'll deny the request for a small amount of time. This stops flagrant and out-of-control abuse of the app and does so easily.
 
 Rate Limiting is enabled by default, and its options can be customized in Dada Mail's included installer. B<More Information:> L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Rate-Limiting>
 

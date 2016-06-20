@@ -12,6 +12,9 @@ Key:
 [*] Naw...
 [?] Someday
 
+be prtty sweet to view to-be moderated messages in the web admin, yeah? 
+and/or after x days, messages are automatically approved/denied, 
+
 are images found embedded in HTML messages saved that way, when they're archived? If so, they should't be... 
 
 Make prntng out delivery prefs optional
