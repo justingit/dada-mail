@@ -12,6 +12,9 @@ Key:
 [*] Naw...
 [?] Someday
 
+Lt's double-check the new index I've made is gooder. for the rate limit stuff. 
+
+
 be prtty sweet to view to-be moderated messages in the web admin, yeah? 
 and/or after x days, messages are automatically approved/denied, 
 
