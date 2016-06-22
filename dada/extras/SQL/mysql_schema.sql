@@ -144,6 +144,6 @@ draft mediumtext
 CREATE TABLE IF NOT EXISTS dada_rate_limit_hits ( 
 user_id VARCHAR(255) NOT NULL,
 action VARCHAR(255) NOT NULL, 
-timestamp INT UNSIGNED NOT NULL,
-INDEX (user_id, action, timestamp)
+timestamp INT UNSIGNED NOT NULL
 );
+CREATE INDEX dada_rate_limit_hits_all_index ON dada_rate_limit_hits (user_id, action, timestamp);
