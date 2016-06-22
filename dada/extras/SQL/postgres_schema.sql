@@ -143,7 +143,7 @@ draft text
 );
 
 CREATE TABLE dada_rate_limit_hits ( 
-user_id VARCHAR(255) NOT NULL,
-action VARCHAR(255) NOT NULL, 
+user_id VARCHAR(225) NOT NULL,
+action VARCHAR(225) NOT NULL, 
 timestamp INT NOT NULL
 );

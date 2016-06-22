@@ -127,8 +127,8 @@ draft text
 );
 
 CREATE TABLE IF NOT EXISTS dada_rate_limit_hits ( 
-user_id VARCHAR(255) NOT NULL,
-action VARCHAR(255) NOT NULL, 
+user_id VARCHAR(225) NOT NULL,
+action VARCHAR(225) NOT NULL, 
 timestamp INT UNSIGNED NOT NULL
 );
 
