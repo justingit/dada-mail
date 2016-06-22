@@ -2,7 +2,15 @@
 
 =encoding utf-8
 
-=head1 9.3.0
+=head1 9.4.1
+
+This is a bugfix release for a problem found in the v9.4.0 release. 
+
+We've slightly tweaked the schema for the new C<dada_rate_limit_hits> table, making some of the columns smaller, so that they'll better fit in the index for some MySQL configurations. 
+
+If you're running Dada Mail v9.4.0 without problem, you won't have any need to upgrade to this version. 
+
+=head1 9.4.0
 
 =head2 Features
 
