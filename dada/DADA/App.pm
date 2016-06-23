@@ -3583,8 +3583,30 @@ sub view_list {
     my $updated_addresses                = xss_filter( scalar $q->param('updated_addresses') )                || 0;
     my $type                             = xss_filter( scalar $q->param('type') )                             || 'list';
     my $query                            = xss_filter( scalar $q->param('query') )                            || undef;
-    my $order_by        = $q->param('order_by')           || $ls->param('view_list_order_by');
-    my $order_dir       = $q->param('order_dir')          || lc( $ls->param('view_list_order_by_direction') );
+
+    my $order_by        = $q->param('order_by')  || undef;          
+    my $order_dir       = $q->param('order_dir') || undef;         
+
+	warn '$type:'      . $type; 
+	warn '$order_by:'  . $order_by; 
+	warn '$order_dir:' . $order_dir; 
+	if($type eq 'list') { 
+		if(! defined $order_by) { 
+		 	$order_by = $ls->param('view_list_order_by');
+		}
+	    if(! defined $order_dir) { 
+			$order_dir = lc( $ls->param('view_list_order_by_direction') );
+		}
+	}
+	else { 
+		if(length($order_by) <= 1) { 
+		 	$order_by = 'timestamp';
+		}
+	    if(length($order_dir) <= 1) { 
+			$order_dir = 'desc';
+		}
+	}
+	
     my $mode            = xss_filter( scalar $q->param('mode') ) || 'view';
     my $page            = xss_filter( scalar $q->param('page') ) || 1;
     my $advanced_search = $q->param('advanced_search')    || 0;
@@ -3832,16 +3854,18 @@ sub view_list {
                     can_filter_subscribers_through_blacklist => $lh->can_filter_subscribers_through_blacklist,
 
                     flavor_is_view_list        => 1,
-                    list_subscribers_num       => commify( $lh->num_subscribers( { -type => 'list' } ) ),
-                    black_list_subscribers_num => commify( $lh->num_subscribers( { -type => 'black_list' } ) ),
-                    white_list_subscribers_num => commify( $lh->num_subscribers( { -type => 'white_list' } ) ),
-                    authorized_senders_num     => commify( $lh->num_subscribers( { -type => 'authorized_senders' } ) ),
-                    moderators_num             => commify( $lh->num_subscribers( { -type => 'moderators' } ) ),
+                    list_subscribers_num       => scalar commify( $lh->num_subscribers( { -type => 'list' } ) ),
+                    black_list_subscribers_num => scalar commify( $lh->num_subscribers( { -type => 'black_list' } ) ),
+                    white_list_subscribers_num => scalar commify( $lh->num_subscribers( { -type => 'white_list' } ) ),
+                    authorized_senders_num     => scalar commify( $lh->num_subscribers( { -type => 'authorized_senders' } ) ),
+                    moderators_num             => scalar commify( $lh->num_subscribers( { -type => 'moderators' } ) ),
                     sub_request_list_subscribers_num =>
-                      commify( $lh->num_subscribers( { -type => 'sub_request_list' } ) ),
+                      scalar commify( $lh->num_subscribers( { -type => 'sub_request_list' } ) ),
                     unsub_request_list_subscribers_num =>
-                      commify( $lh->num_subscribers( { -type => 'unsub_request_list' } ) ),
-                    bounced_list_num => commify( $lh->num_subscribers( { -type => 'bounced_list' } ) ),
+                      scalar commify( $lh->num_subscribers( { -type => 'unsub_request_list' } ) ),
+                    bounced_list_num		 => scalar commify( $lh->num_subscribers( { -type => 'bounced_list' } ) ),
+                    sub_confirm_list_num     => scalar commify( $lh->num_subscribers( { -type => 'sub_confirm_list' } ) ),
+					
                 },
                 -list_settings_vars_param => {
                     -list   => $list,

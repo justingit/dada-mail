@@ -348,8 +348,58 @@ sub _remove_expired_tokens {
 		if $t; 
 		
     my $self = shift;
-    my $query;
+	
+	
+	# This doesn't remove tokens, it removes records out of the
+	# sub_confirm_list sublist, or addresses that have been hanging around in
+	#it for > $DADA::Config::CONFIRMATION_TOKEN_OPTIONS->{expires} days
+	my $query; 
+	
+    if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
+		$query = 'SELECT email, list FROM ' . $self->{sql_params}->{subscriber_table} 
+        . ' WHERE timestamp <= DATE_SUB(NOW(), INTERVAL ' . $DADA::Config::CONFIRMATION_TOKEN_OPTIONS->{expires} . ' DAY)'
+		. " AND list_type = 'sub_confirm_list'";		
+	    my $sth = $self->{dbh}->prepare($query);
 
+    }
+    elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
+		$query = 'SELECT email, list FROM ' . $self->{sql_params}->{subscriber_table} 
+		. " WHERE timestamp <= NOW() - INTERVAL '" . $DADA::Config::CONFIRMATION_TOKEN_OPTIONS->{expires} . " DAY'"
+		. " AND list_type = 'sub_confirm_list'";		
+	    my $sth = $self->{dbh}->prepare($query);
+	}
+	
+    warn 'QUERY: ' . $query
+		if $t; 
+		
+	my $removal_list = {};  
+
+	$sth->execute( )
+		or croak "cannot do statement: $DBI::errstr\n";
+	
+	while ( my ( $email, $list) = $sth->fetchrow_array ) {
+		push(@{$removal_list->{$list}}, $email );
+	}
+	$sth->finish;
+		 		
+	undef $sth; 
+	undef $query; 
+    
+	for my $r_list(keys %$removal_list) {
+        require DADA::MailingList::Subscribers;
+        my $lh = DADA::MailingList::Subscribers->new( { -list => $r_list } );
+        my ( $removed_email_count, $blacklisted_count ) = $lh->admin_remove_subscribers(
+            {
+                -addresses => $removal_list->{$r_list},
+                -type      => 'sub_confirm_list',
+            }
+        );
+	}
+	# and, end that. 
+	
+	
+	
+    my $query;
     if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
         $query =
             'DELETE FROM '
@@ -362,7 +412,6 @@ sub _remove_expired_tokens {
             'DELETE FROM '
           . $self->{sql_params}->{confirmation_tokens_table}
           . " WHERE timestamp <= NOW() - INTERVAL '" . $DADA::Config::CONFIRMATION_TOKEN_OPTIONS->{expires} . " DAY'";
-
     }
 
 	warn 'QUERY:' . $query
