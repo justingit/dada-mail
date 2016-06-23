@@ -88,7 +88,7 @@ Download it here, it's a small CGI Perl script - so you will want to save the so
 <a 
 	class="button success expand" 
 	target="_blank"
-	href="https://raw.github.com/justingit/dada-mail/v9_4_1-stable_2016_06_22/uncompress_dada.cgi"
+	href="https://raw.github.com/justingit/dada-mail/v9_4_1-stable_2016_06_22.2/uncompress_dada.cgi"
 >
 	uncompress_dada.cgi for v9.4.1 (Save Page/Link As...)
 </a>
