@@ -291,8 +291,8 @@
                  
                 
                 <div class="row"> 
-					 <div class="small-1  columns"></div>
-                     <div class="small-11 columns">                          
+					 <div class="small-2 columns"></div>
+                     <div class="small-10 columns">                          
                         <input type="checkbox" name="limit_sub_confirm_use_captcha" id="limit_sub_confirm_use_captcha" value="1" <!-- tmpl_if list_settings.limit_sub_confirm_use_captcha -->checked="checked"<!--/tmpl_if--> >                        
                         <label for="limit_sub_confirm_use_captcha" <!-- tmpl_unless can_use_captcha -->class="disabled"<!-- /tmpl_unless -->>
                             Enable CAPTCHA
@@ -316,8 +316,8 @@
                 </div>
 
                 <div class="row"> 
-					 <div class="small-1  columns"></div>
-                     <div class="small-11 columns">                          
+					 <div class="small-2  columns"></div>
+                     <div class="small-10 columns">                          
                         
 						<input type="checkbox" name="email_your_subscribed_msg" id="email_your_subscribed_msg" value="1" <!-- tmpl_if list_settings.email_your_subscribed_msg -->checked="checked"<!--/tmpl_if--> >
                          <label for="email_your_subscribed_msg">
@@ -337,6 +337,39 @@
 						 
                      </div> 
                  </div>
+
+                  <div class="row"> 
+					 <div class="small-1 columns"></div>
+                     <div class="small-11 columns">  
+                         <input 
+						 	type="checkbox" 
+							name="enable_sub_confirm_stopforumspam_protection"
+							id="enable_sub_confirm_stopforumspam_protection" value="1" 
+							<!-- tmpl_if list_settings.enable_sub_confirm_stopforumspam_protection -->checked="checked"<!--/tmpl_if-->
+						>
+                         <label for="enable_sub_confirm_stopforumspam_protection">
+                          		Enable StopForumSpam Protection
+                          </label>
+						  
+						  <!-- tmpl_unless can_use_StopForumSpam -->
+	                        <div class="alert-box info radius">
+	                          <p>
+	                           <strong>
+	                            Disabled.
+	                           </strong> 
+							   The CPAN module, <code>WWW::StopForumSpam</code> 
+							   will need to be installed before this feature can be utilized.
+	                         </p>
+	                        </div>
+						  <!-- /tmpl_unless -->
+						  
+						  <p>
+							  StopForumSpam blocks known IP addresses and email addresses reported widely as abusive. 
+							  (<a href="http://stopforumspam.com" target="_blank">More Information</a>)
+						  </p>
+					</div>                        
+				</div>
+
 
                   <div class="row"> 
 					 <div class="small-1  columns"></div>

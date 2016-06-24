@@ -249,6 +249,38 @@ sub pretty {
 }
 
 
+sub ping_test { 
+	
+	my $host = shift; 
+	my $port = shift; 
+	
+	my $status = 1; 
+	try {
+		require Net::Ping;
+	} catch { 
+		$status = 0; 
+		return (1, "Net::Ping not available.");
+	};
+	
+	my $timeout = 60;
+	my $p = Net::Ping->new("tcp");
+	   $p->port_number($port);
+
+	# perform the ping
+	if( $p->ping($host, $timeout) )
+	{
+		$p->close();
+	    return(1, "Host $host successfully pinged at port $port.");
+	}
+	else {
+		$p->close();
+        return(0, "Host $host could not be  pinged at port $port. Outbound port may be blocked, or host is down at specified port");
+	}
+
+}
+
+
+
 
 
 sub partial_sending_query_to_params {

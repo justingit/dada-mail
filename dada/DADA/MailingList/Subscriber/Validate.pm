@@ -5,6 +5,7 @@ use strict;
 use Carp qw(carp croak);
 use DADA::App::Guts; 
 use Try::Tiny; 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
 
 sub new {
 
@@ -212,20 +213,21 @@ sub subscription_check {
     }
 	
 	if (
-		   $args->{-type} eq 'list'
+		$args->{-type}    eq 'list'
 		&& $args->{-mode} eq 'user'
 	){ 
-		 if ($self->sfs_check($email) == 1) { 
-			 $errors->{stop_forum_spam_check_failed} = 1;
-		 }
+		if($ls->param('enable_sub_confirm_stopforumspam_protection') == 1) {
+			warn '$self->sfs_check($email)' . $self->sfs_check($email); 
+			if ($self->sfs_check($email) == 0) { 
+				 $errors->{stop_forum_spam_check_failed} = 1;
+			}
+		}
 	}
 	
-    
     if ( $args->{-type} eq 'list') {
         # Profile Fields
         if(!$skip{profile_fields}) { 
-        
-            
+                
             require DADA::ProfileFieldsManager; 
             my $dpfm = DADA::ProfileFieldsManager->new; 
             my $dpf_att = $dpfm->get_all_field_attributes;        
@@ -380,6 +382,8 @@ sub unsubscription_check {
 
 sub sfs_check { 
 
+	# Pass: 1
+	# Fail: 0; 
 	my $self  = shift; 
 	my $email = shift; 
 	
@@ -396,26 +400,45 @@ sub sfs_check {
 	); 
 	
 	if($r_ip == 1){ 
-		warn 'sfs_check FAIL ip lookup: ' . $ENV{'REMOTE_ADDR'};
+		warn 'sfs_check FAIL ip lookup: ' . $ENV{'REMOTE_ADDR'}
+			if $t; 
 	}
 	else { 
-		warn 'sfs_check PASS ip lookup: ' . $ENV{'REMOTE_ADDR'};
+		warn 'sfs_check PASS ip lookup: ' . $ENV{'REMOTE_ADDR'}
+			if $t; 
 	}
 	
 	my $r_email = $sfs->check(
 		email => $email
 	); 
 	if($r_email == 1){ 
-		warn 'sfs_check FAIL email lookup: ' . $email;
+		warn 'sfs_check FAIL email lookup: ' . $email
+			if $t; 
 	}
 	else { 
-		warn 'sfs_check PASS email lookup: ' . $email;
+		warn 'sfs_check PASS email lookup: ' . $email
+			if $t; 
 	}
 	
 	if($r_ip == 1 || $r_email == 1){ 
+		if($r_ip == 1 && $r_email == 1) {  # both fail? Seems suspicious...
+			my ($ping_test, $ping_r) = ping_test('api.stopforumspam.org', 80);
+			if($ping_test == 1) { 
+				return 0;		
+			}
+			else {
+				warn 'cannot successfully ping ' . 'api.stopforumspam.org:' . $ping_r
+					if $t; 
+				return 1;
+			} 
+		}
+		else { 
+			return 0; 
+		}
+	}
+	else { 
 		return 1; 
 	}
-
 }
 
 1;

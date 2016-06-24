@@ -1273,6 +1273,9 @@ $MIME_OPTIMIZE     //= 'no tmp files';
 
     limit_sub_confirm             => 1,
     limit_sub_confirm_use_captcha => 1,
+	
+	enable_sub_confirm_stopforumspam_protection => 1, 
+	
 
     use_alt_url_sub_confirm_success  => 0,
     alt_url_sub_confirm_success_w_qs => 0,
