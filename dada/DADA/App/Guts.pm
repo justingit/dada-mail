@@ -86,6 +86,7 @@ require Exporter;
   can_use_JSON
   can_use_datetime
   can_use_HTML_Tree
+  can_use_StopForumSpam
   formatted_runtime
   commify
   generate_rand_string_md5
@@ -3222,6 +3223,18 @@ sub can_use_Amazon_SES {
         $can_use_Amazon_SES = 0;
     };
     return $can_use_Amazon_SES;
+}
+
+sub can_use_StopForumSpam { 
+
+    my $can_use_StopForumSpam = 1; 
+    try { 
+        require WWW::StopForumSpam;        
+    } catch { 
+		warn 'WWW::StopForumSpam is not supported:' . $_; 
+        $can_use_StopForumSpam = 0;
+    };
+    return $can_use_StopForumSpam;
 }
 
 

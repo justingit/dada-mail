@@ -3,6 +3,8 @@ package DADA::MailingList::Subscriber::Validate;
 use lib qw (../../../ ../../../DADA/perllib);
 use strict;
 use Carp qw(carp croak);
+use DADA::App::Guts; 
+use Try::Tiny; 
 
 sub new {
 
@@ -208,6 +210,16 @@ sub subscription_check {
             $errors->{settings_possibly_corrupted} = 1;
         }
     }
+	
+	if (
+		   $args->{-type} eq 'list'
+		&& $args->{-mode} eq 'user'
+	){ 
+		 if ($self->sfs_check($email) == 1) { 
+			 $errors->{stop_forum_spam_check_failed} = 1;
+		 }
+	}
+	
     
     if ( $args->{-type} eq 'list') {
         # Profile Fields
@@ -363,6 +375,46 @@ sub unsubscription_check {
     }
 
     return ( $status, \%errors );
+
+}
+
+sub sfs_check { 
+
+	my $self  = shift; 
+	my $email = shift; 
+	
+	my $can_use_StopForumSpam = can_use_StopForumSpam(); 
+	if($can_use_StopForumSpam == 0){ 
+		return 1;
+	}
+	require WWW::StopForumSpam;
+
+	my $sfs = WWW::StopForumSpam->new();
+	my $r_ip = 
+	my $r_ip = $sfs->check(
+		ip => $ENV{'REMOTE_ADDR'},
+	); 
+	
+	if($r_ip == 1){ 
+		warn 'sfs_check FAIL ip lookup: ' . $ENV{'REMOTE_ADDR'};
+	}
+	else { 
+		warn 'sfs_check PASS ip lookup: ' . $ENV{'REMOTE_ADDR'};
+	}
+	
+	my $r_email = $sfs->check(
+		email => $email
+	); 
+	if($r_email == 1){ 
+		warn 'sfs_check FAIL email lookup: ' . $email;
+	}
+	else { 
+		warn 'sfs_check PASS email lookup: ' . $email;
+	}
+	
+	if($r_ip == 1 || $r_email == 1){ 
+		return 1; 
+	}
 
 }
 
