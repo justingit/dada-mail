@@ -9485,6 +9485,11 @@ sub text_list {
     my $order_by        = $q->param('order_by')                      || $ls->param('view_list_order_by');
     my $order_dir = $q->param('order_dir') || lc( $ls->param('view_list_order_by_direction') );
 
+	my $show_timestamp_column      = $q->param('show_timestamp_column')      || 0; 
+	my $show_delivery_prefs_column = $q->param('show_delivery_prefs_column') || 0; 
+	my $show_profile_fields         = $q->param('show_profile_fields')        || 0;
+
+
     my $partial_listing = {};
     if ($advanced_query) {
         if ( $advanced_search == 1 ) {
@@ -9507,24 +9512,28 @@ sub text_list {
     if ($advanced_query) {
         $body = $lh->print_out_list(
             {
-                -type                  => $type,
-                -order_by              => $order_by,
-                -order_dir             => $order_dir,
-                -partial_listing       => $partial_listing,
-                -show_timestamp_column => 1,
-                -print_out             => 0,
+                -type                       => $type,
+                -order_by                   => $order_by,
+                -order_dir                  => $order_dir,
+                -partial_listing            => $partial_listing,
+                -show_timestamp_column      => $show_timestamp_column,
+                -show_delivery_prefs_column => $show_delivery_prefs_column,
+				-show_profile_fields        => $show_profile_fields, 
+                -print_out                  => 0,
             }
         );
     }
     else {
         $body = $lh->print_out_list(
-            {
-                -type                  => $type,
-                -query                 => $query,
-                -order_by              => $order_by,
-                -order_dir             => $order_dir,
-                -show_timestamp_column => 1,
-                -print_out             => 0,
+            {                              
+                -type                       => $type,
+                -query                      => $query,
+                -order_by                   => $order_by,
+                -order_dir                  => $order_dir,
+                -show_timestamp_column      => $show_timestamp_column,
+                -show_delivery_prefs_column => $show_delivery_prefs_column,
+				-show_profile_fields        => $show_profile_fields, 
+                -print_out                  => 0,
             }
         );
     }

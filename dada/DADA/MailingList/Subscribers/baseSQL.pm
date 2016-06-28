@@ -301,6 +301,12 @@ sub SQL_subscriber_profile_join_statement {
             delete( $args->{-include_from} );
         }
     }
+	
+    if(!exists($args->{-show_delivery_prefs_column})){ 
+        $args->{-show_delivery_prefs_column} = 1; 
+    }
+	
+	
 
     my $query_type = 'AND';
     if ( !$args->{-search_type} ) {
@@ -349,9 +355,11 @@ sub SQL_subscriber_profile_join_statement {
         }
     }
 	
-	# Delivery Prefs
-    if($ls->param('digest_enable') == 1){ 
-		push(@merge_fields, $profile_settings_table . '.value as delivery_prefs_value');
+	if($args->{-show_delivery_prefs_column} == 1) {
+		# Delivery Prefs
+	    if($ls->param('digest_enable') == 1){ 
+			push(@merge_fields, $profile_settings_table . '.value as delivery_prefs_value');
+		}
 	}
 	
     $query .= join(', ', @merge_fields); 
@@ -819,10 +827,15 @@ sub print_out_list {
 	}	
 
 	if(! exists($args->{-show_timestamp_column})){ 
-		$args->{-show_timestamp_column} = 0; 
+		$args->{-show_timestamp_column} = 1; 
 	}	
-	if(! exists($args->{-order_dir})){ 
-		$args->{-order_dir} = undef; 
+
+	if(! exists($args->{-show_profile_fields})){ 
+		$args->{-show_profile_fields} = 1; 
+	}	
+		
+	if(! exists($args->{-show_delivery_prefs_column})){ 
+		$args->{-show_delivery_prefs_column} = 1; 
 	}
 	
 	# DEV: There's a reason for this tmp var, correct?
@@ -837,12 +850,13 @@ sub print_out_list {
                 
         $query = $self->SQL_subscriber_profile_join_statement(  
 			{ 
-		    -partial_listing       => $args->{-partial_listing},
-	        -search_type           => 'all',
-			-type                  => $args->{-type},
-			-order_by              => $args->{-order_by},
-			-order_dir             => $args->{-order_dir},
-			-show_timestamp_column => $args->{-show_timestamp_column}, 
+		    -partial_listing            => $args->{-partial_listing},
+	        -search_type                => 'all',
+			-type                       => $args->{-type},
+			-order_by                   => $args->{-order_by},
+			-order_dir                  => $args->{-order_dir},
+			-show_timestamp_column      => $args->{-show_timestamp_column}, 
+			-show_delivery_prefs_column => $args->{-show_delivery_prefs_column},
 			}
 		);  
 		
@@ -864,13 +878,15 @@ sub print_out_list {
 
 		$query = $self->SQL_subscriber_profile_join_statement(  
 			{ 
-		    -partial_listing       => $partial_listing,
-	        -search_type           => 'any',
-			-type                  => $args->{-type},
-			-query                 => $args->{-query},
-			-order_by              => $args->{-order_by},
-			-order_dir             => $args->{-order_dir},
-			-show_timestamp_column => $args->{-show_timestamp_column}, 
+		    -partial_listing            => $partial_listing,
+	        -search_type                => 'any',
+			-type                       => $args->{-type},
+			-query                      => $args->{-query},
+			-order_by                   => $args->{-order_by},
+			-order_dir                  => $args->{-order_dir},
+			-show_timestamp_column      => $args->{-show_timestamp_column}, 
+			-show_delivery_prefs_column => $args->{-show_delivery_prefs_column},
+			
             
 			}
 		);
@@ -879,8 +895,10 @@ sub print_out_list {
 	    $query =
 	      $self->SQL_subscriber_profile_join_statement(
 	        { 
-				-type                  => $args->{-type}, 
-				-show_timestamp_column => $args->{-show_timestamp_column},
+				-type                       => $args->{-type}, 
+				-show_timestamp_column      => $args->{-show_timestamp_column},
+				-show_delivery_prefs_column => $args->{-show_delivery_prefs_column},
+				
 			} 
 		);
 	}
@@ -892,28 +910,34 @@ sub print_out_list {
 
     my $fields = $self->subscriber_fields;
 
+	# $DADA::Config::TEXT_CSV_PARAMS->{sep_char} = "\t";
     require Text::CSV;
-    my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+    my $csv = Text::CSV->new(
+		$DADA::Config::TEXT_CSV_PARAMS, 
+	);
 
     my $hashref = {};
 
 
     my @header = ('email');
+	
     if($args->{-show_timestamp_column} == 1){ 
         unshift(@header, 'timestamp'); 
     }
     
-    
-    for (@$fields) {
-        push ( @header, $_ );
-    }
-	
-    if($ls->param('digest_enable') == 1){ 
-		push(@header, 'delivery_prefs_value');
+    if($args->{-show_profile_fields} == 1){
+	    for (@$fields) {
+	        push ( @header, $_ );
+	    }
 	}
-
+	
+	if($args->{-show_delivery_prefs_column} == 1) {
+	    if($ls->param('digest_enable') == 1){ 
+			push(@header, 'delivery_prefs_value');
+		}
+	}
+	
     if ( $csv->combine(@header) ) {
-
         my $hstring = $csv->string;
         $r .= $hstring . "\n";
 
@@ -926,23 +950,30 @@ sub print_out_list {
     }
 
     while ( $hashref = $sth->fetchrow_hashref ) {
-        my @info = ( $hashref->{email} );
+        
+		# Email!
+		my @info = ( $hashref->{email} );
+		
+		# Timestamp!
         if($args->{-show_timestamp_column} == 1){ 
             unshift(@info, $hashref->{timestamp}); 
         }
-	    if($ls->param('digest_enable') == 1){ 
-			push(@info, $hashref->{delivery_prefs_value});
-        }
 		
-        for (@$fields) {
-
-# DEV: Do we remove newlines here? Huh?
-# BUG: [ 2147102 ] 3.0.0 - "Open List in New Window" has unwanted linebreak?
-# https://sourceforge.net/tracker/index.php?func=detail&aid=2147102&group_id=13002&atid=113002
-            $hashref->{$_} =~ s/\n|\r/ /gi;
-            push ( @info, $hashref->{$_} );
-        }
-
+		# Profile Fields!
+		if($args->{-show_profile_fields} == 1){
+	        for (@$fields) {
+	            $hashref->{$_} =~ s/\n|\r/ /gi;
+	            push ( @info, $hashref->{$_} );
+	        }
+		}
+		
+		# Delivery Prefs!
+		if($args->{-show_delivery_prefs_column} == 1) {		
+		    if($ls->param('digest_enable') == 1){ 
+				push(@info, $hashref->{delivery_prefs_value});
+	        }
+		}
+		
         if ( $csv->combine(@info) ) {
             my $string = $csv->string;
             $r .= $string . "\n";

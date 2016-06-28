@@ -397,6 +397,10 @@ jQuery(document).ready(function($){
 			show_update_profile_form();
 		});
 
+		$("body").on("click", "#show_export_options", function(event) {
+			show_export_options();
+		});
+
 
 	}
 
@@ -2032,6 +2036,42 @@ function show_update_profile_form(){
 	});
 
 }
+
+function show_export_options(){
+
+	var $form = $("#export_options");
+
+	var responsive_options = {
+	  width: '95%',
+	  height: '95%',
+	  maxWidth: '640px',
+	  maxHeight: '480px'
+	};
+	$.colorbox({
+		inline:true,
+		href:$form,
+		top: 0,
+		fixed: true,
+		initialHeight: 50,
+		maxWidth: '640px',
+		maxHeight: '480px',
+		width: '95%',
+		height: '95%',		
+		opacity: 0.50,
+		onComplete: function(){
+			//...
+		}
+	});
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
+	});
+
+}
+
+
 
 function turn_page(page_to_turn_to) {
 	$("#page").val(page_to_turn_to);
