@@ -135,6 +135,37 @@
 				</fieldset>
 			<!-- /tmpl_if -->
 		<!-- /tmpl_if -->
+		
+		<!-- tmpl_if list_settings.enable_closed_loop_opt_in -->
+			<!-- tmpl_if subscribed_to_sub_confirm_list --> 
+				<fieldset>
+					<legend>
+						Not Yet Confirmed
+					</legend>
+					<p>
+						<!-- tmpl_var email escape="HTML" --> has started the process to be subscribed to your mailing list, 
+						but has not yet confirmed this subscription by clicking the confirmation link in the email they were sent.
+						
+					</p>
+					
+					<p><a class="button resend_confirmation_email"
+						title="Resend Confirmation Email"
+						data-list="<!-- tmpl_var list_settings.list escape="HTML" -->"
+						data-email="<!-- tmpl_var email escape="HTML" -->"
+					
+					>
+						<i class="fi-plus"></i>
+						<i class="fi-mail"></i>
+						<i class="fi-arrow-right"></i> Resend Confirmation Email
+					</a>
+				</p>
+					
+					
+				</fieldset>
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
+		
+		
 
 		<!-- tmpl_if list_settings.private_list -->
 			<!-- tmpl_if subscribed_to_unsub_request_list --> 

@@ -112,15 +112,16 @@
 			
 			
 			<!-- tmpl_if flavor_is_view_list --> 
-				<li  class="tab-title <!-- tmpl_if EXPR="(type eq 'sub_confirm_list')" -->active<!-- /tmpl_if -->">
+				<!-- tmpl_if list_settings.view_list_show_sub_confirm_list -->
+					<li  class="tab-title <!-- tmpl_if EXPR="(type eq 'sub_confirm_list')" -->active<!-- /tmpl_if -->">
 				
-					<a href="#" class="change_type" data-type="sub_confirm_list">
-					 <span>
-						Not Yet Confirmed (<!-- tmpl_var sub_confirm_list_num -->)
-					</span>  
-					</a>
-				</li>
-					
+						<a href="#" class="change_type" data-type="sub_confirm_list">
+						 <span>
+							Not Yet Confirmed (<!-- tmpl_var sub_confirm_list_num -->)
+						</span>  
+						</a>
+					</li>
+				<!-- /tmpl_if -->
 			<!-- /tmpl_if -->
 			
 			

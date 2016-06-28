@@ -403,26 +403,8 @@ jQuery(document).ready(function($){
 		
 		$("body").on("click", ".resend_confirmation_email", function(event) {
 			event.preventDefault();
-			var confirm_msg = "Resend subscription confirmation email?";
-			if (!confirm(confirm_msg)) {
-				return false;
-			} else {
-				
-				var sub_confirm_href = $("#s_program_url").val() 
-				+ "?flavor=resend_conf&email=" + $(this).attr("data-email") 
-				+ "&list=" + $(this).attr("data-list") 
-				+ "&rm=s"
-				+ "&admin_override=1";
-			    window.open(sub_confirm_href, "confirmation_window", "width=640,height=480,scrollbars=yes");
-			}
+			resend_confirmation_email($("#s_program_url").val(), $(this).attr("data-email"), $(this).attr("data-list")); 
 		});
-		
-		
-		
-		
-		
-
-
 	}
 
 	// Membership >> List Activity
@@ -440,6 +422,12 @@ jQuery(document).ready(function($){
 			});
 		}
 
+		$("body").on("click", ".resend_confirmation_email", function(event) {
+			event.preventDefault();
+			resend_confirmation_email($("#s_program_url").val(), $(this).attr("data-email"), $(this).attr("data-list")); 
+		});
+		
+		
 		if($("#membership_activity").length) {
 			membership_activity();
 		}
@@ -1929,7 +1917,23 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 
 
 /* Membership >> View List */
+function resend_confirmation_email(s_program_url, email, list){ 
 
+	var confirm_msg = "Resend subscription confirmation email?";
+	if (!confirm(confirm_msg)) {
+		return false;
+	} else {
+		
+		var sub_confirm_href = s_program_url
+		+ "?flavor=resend_conf&email=" + email 
+		+ "&list=" + list 
+		+ "&rm=s"
+		+ "&admin_override=1";
+	    window.open(sub_confirm_href, "confirmation_window", "width=640,height=480,scrollbars=yes");
+	}
+
+
+}
 function view_list_viewport(initial) {
 	//alert('$("#advanced_search").val() ' + $("#advanced_search").val());
 	//alert(' $("#advanced_query").val() ' +  $("#advanced_query").val());

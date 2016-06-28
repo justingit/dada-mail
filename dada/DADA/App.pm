@@ -3584,29 +3584,9 @@ sub view_list {
     my $type                             = xss_filter( scalar $q->param('type') )                             || 'list';
     my $query                            = xss_filter( scalar $q->param('query') )                            || undef;
 
-    my $order_by        = $q->param('order_by')  || undef;          
-    my $order_dir       = $q->param('order_dir') || undef;         
+    my $order_by        = $q->param('order_by')  || $ls->param('view_list_order_by');;          
+    my $order_dir       = $q->param('order_dir') || lc( $ls->param('view_list_order_by_direction') );         
 
-	warn '$type:'      . $type; 
-	warn '$order_by:'  . $order_by; 
-	warn '$order_dir:' . $order_dir; 
-	if($type eq 'list') { 
-		if(! defined $order_by) { 
-		 	$order_by = $ls->param('view_list_order_by');
-		}
-	    if(! defined $order_dir) { 
-			$order_dir = lc( $ls->param('view_list_order_by_direction') );
-		}
-	}
-	else { 
-		if(length($order_by) <= 1) { 
-		 	$order_by = 'timestamp';
-		}
-	    if(length($order_dir) <= 1) { 
-			$order_dir = 'desc';
-		}
-	}
-	
     my $mode            = xss_filter( scalar $q->param('mode') ) || 'view';
     my $page            = xss_filter( scalar $q->param('page') ) || 1;
     my $advanced_search = $q->param('advanced_search')    || 0;
@@ -4721,7 +4701,7 @@ sub membership {
         my $list_types  = DADA::App::Guts::list_types();
 
         foreach (%$subscribed_to_lt) {
-            if ( $_ =~ m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list)$/ ) {
+            if ( $_ =~ m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list|sub_confirm_list)$/ ) {
                 push( @$member_of, { type => $_, type_title => $list_types->{$_} } );
                 push( @$remove_from, $_ );
             }
@@ -4756,7 +4736,11 @@ sub membership {
         my $subscribed_to_sub_request_list = 0;
         if ( $subscribed_to_lt->{sub_request_list} == 1 ) {
             $subscribed_to_sub_request_list = 1;
+        }
 
+        my $subscribed_to_sub_confirm_list = 0;
+        if ( $subscribed_to_lt->{sub_confirm_list} == 1 ) {
+            $subscribed_to_sub_confirm_list = 1;
         }
 
         require DADA::Profile::Settings;
@@ -4802,6 +4786,7 @@ sub membership {
                     add_to_num                     => scalar( keys %$add_to ),
                     subscribed_to_list             => $subscribed_to_list,
                     subscribed_to_sub_request_list => $subscribed_to_sub_request_list,
+					subscribed_to_sub_confirm_list => $subscribed_to_sub_confirm_list,
 
                     add_email_count                  => $add_email_count,
                     delete_email_count               => $delete_email_count,
@@ -5079,7 +5064,7 @@ sub validate_remove_email {
             my @also_subscribed_to = $lh->also_subscribed_to(
                 {
                     -email => $email,
-                    -types => [qw(list black_list white_list authorized_senders moderators)],
+                    -types => [qw(list black_list white_list authorized_senders moderators sub_confirm_list)],
                 }
             );
             @lists = ( @lists, @also_subscribed_to );
@@ -5099,7 +5084,7 @@ sub validate_remove_email {
                     $tmp_lh->member_of(
                         {
                             -email => $email,
-                            -types => [qw(list black_list white_list authorized_senders moderators)],
+                            -types => [qw(list black_list white_list authorized_senders moderators  sub_confirm_list)],
                         }
                     )
                 }
@@ -6551,6 +6536,7 @@ sub subscription_options {
                     view_list_show_timestamp_col         => 0,
                     view_list_order_by                   => undef,
                     view_list_order_by_direction         => undef,
+					view_list_show_sub_confirm_list      => 0, 
                     use_add_list_import_limit            => 0,
                     add_list_import_limit                => undef,
                     allow_profile_editing                => 0,

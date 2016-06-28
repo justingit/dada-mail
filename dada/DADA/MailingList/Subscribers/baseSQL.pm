@@ -922,7 +922,7 @@ sub print_out_list {
     my @header = ('email');
 	
     if($args->{-show_timestamp_column} == 1){ 
-        unshift(@header, 'timestamp'); 
+        push(@header, 'timestamp'); 
     }
     
     if($args->{-show_profile_fields} == 1){
@@ -956,7 +956,7 @@ sub print_out_list {
 		
 		# Timestamp!
         if($args->{-show_timestamp_column} == 1){ 
-            unshift(@info, $hashref->{timestamp}); 
+            push(@info, $hashref->{timestamp}); 
         }
 		
 		# Profile Fields!
