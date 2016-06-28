@@ -8,11 +8,31 @@
 	
 	      <input type="hidden" name="flavor"    value="text_list" >
 	      <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
-		  
+   		<!-- tmpl_if expr="defined(query) || defined(advanced_query)" --> 
+		
+   			<input type="hidden" name="query"           value="<!-- tmpl_var query -->" >
+   			<input type="hidden" name="advanced_search" value="<!-- tmpl_var advanced_search -->" >
+   			<input type="hidden" name="advanced_query"  value="<!-- tmpl_var advanced_query -->" >
+		
+   			<input type="hidden" name="order_by" value="<!-- tmpl_var order_by -->" >
+   			<input type="hidden" name="order_dir" value="<!-- tmpl_var order_dir -->" >
+   		<!-- /tmpl_if -->
+		
 		  <p>Export with columns:</p>
-		  <div class="row">
-			  
-			  <div class="small-12 columns">
+		  
+		<ul style="list-style-type:none">
+		 <li>
+			<input 
+				type="checkbox" 
+				checked="checked"
+				disabled="disabled"
+			>
+			<span class="success label">
+				Email Address
+			</span>
+		</li>
+				 <li>
+		
 				  <label>
 					  <input 
 					  	type="checkbox" 
@@ -20,11 +40,8 @@
 						value="1"
 					> Timestamp
 				  </label>
-			  </div>
-		</div>
-		
-		<div class="row">
-			<div class="small-12 columns">
+	    </li>
+		<li>
 				<label>
 					<input 
 						type="checkbox" 
@@ -33,50 +50,49 @@
 						checked="checked"
 					> Profile Fields
 				</label>
-			</div>
-		</div>
+	    </li>
 		
-	    <div class="row">
-			  <div class="small-12 columns">
-				  <label>
-					  <input 
-					  	type="checkbox" 
-						name="show_delivery_prefs_column" 
-						value="1"
-						<!-- tmpl_unless list_settings.digest_enable -->
-							disabled="disabled"
-						<!-- /tmpl_unless -->
-					>
-					Delivery Preferences 
-					<!-- tmpl_unless list_settings.digest_enable -->
-						(disabled)
-					<!-- /tmpl_unless -->
+		
+		<!-- tmpl_unless list_settings.digest_enable -->
+		
+				<li>
+	 
+						  <label>
+							  <input 
+							  	type="checkbox" 
+								name="show_delivery_prefs_column" 
+								value="1"
+								<!-- tmpl_unless list_settings.digest_enable -->
+									disabled="disabled"
+								<!-- /tmpl_unless -->
+							>
+							Delivery Preferences 
+							<!-- tmpl_unless list_settings.digest_enable -->
+								(disabled)
+							<!-- /tmpl_unless -->
 					
-				  </label>
-			  </div>
-		</div>
+						  </label>
+			    </li>
+			<!-- /tmpl_unless -->
+	</ul>
 		
 
 		 		  		
-		<!-- tmpl_if expr="defined(query) || defined(advanced_query)" --> 
-		
-			<input type="hidden" name="query"           value="<!-- tmpl_var query -->" >
-			<input type="hidden" name="advanced_search" value="<!-- tmpl_var advanced_search -->" >
-			<input type="hidden" name="advanced_query"  value="<!-- tmpl_var advanced_query -->" >
-		
-			<input type="hidden" name="order_by" value="<!-- tmpl_var order_by -->" >
-			<input type="hidden" name="order_dir" value="<!-- tmpl_var order_dir -->" >
-		<!-- /tmpl_if -->
-		
 
 		
-		<button 
-			type="submit" 
-			class="button large" 
-		>
-			<i class="fi-page-export-csv"></i> Export
-		</button>
 
+		<div class="row">
+			<div class="small-12 columns">
+				<button 
+					type="submit" 
+					class="button large expand" 
+				>
+					<i class="fi-page-export-csv"></i> Export
+				</button>
+	</div>
+		
+		
+	</div>
 		
 	</div>
 		
@@ -87,7 +103,8 @@
 
 
 		<button 
-			type="submit" 
+			id="show_export_options"
+			type="button" 
 			class="button small" 
 		>
 			<i class="fi-page-export-csv"></i> Export Search Results (.csv)

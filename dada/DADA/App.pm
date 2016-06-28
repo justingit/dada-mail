@@ -9185,7 +9185,8 @@ sub resend_conf {
     my $q     = $self->query();
     my $list  = $q->param('list');
     my $email = $q->param('email');
-
+	
+	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
@@ -9209,7 +9210,24 @@ sub resend_conf_captcha {
     my $q     = $self->query();
     my $list  = $q->param('list');
     my $email = $q->param('email');
-
+	
+	my $admin_override = $q->param('admin_override') || 0; 
+	my $admin_override_enabled = 0; 	
+    my ( $admin_list, $root_login, $checksout, $error_msg );
+	if($admin_override == 1){ 
+	    ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+	        -cgi_obj  => $q,
+	        -Function => 'view_list'
+	    );
+	    if ( !$checksout ) { 
+			return $error_msg; 
+		}
+		else { 
+			$admin_override_enabled = 1; 
+		}
+	}
+	
+	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
@@ -9223,28 +9241,30 @@ sub resend_conf_captcha {
 	
 	my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || ''; 
 	
-    if ( ! $crf ) {
-        $captcha_worked = 0;
-    }
-    else {
-        require DADA::Security::AuthenCAPTCHA;
-        my $cap    = DADA::Security::AuthenCAPTCHA->new;
-        my $result = $cap->check_answer(
-            $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
-			$ENV{'REMOTE_ADDR'}, 
-            $ccf,
-			$crf,
-        );
-        if ( $result->{is_valid} == 1 ) {
-            $captcha_auth   = 1;
-            $captcha_worked = 1;
-        }
-        else {
-            $captcha_worked = 0;
-            $captcha_auth   = 0;
-        }
-    }
-    if ( $captcha_worked == 1 ) {
+	if($admin_override_enabled != 1) {
+	    if ( ! $crf ) {
+	        $captcha_worked = 0;
+	    }
+	    else {
+	        require DADA::Security::AuthenCAPTCHA;
+	        my $cap    = DADA::Security::AuthenCAPTCHA->new;
+	        my $result = $cap->check_answer(
+	            $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
+				$ENV{'REMOTE_ADDR'}, 
+	            $ccf,
+				$crf,
+	        );
+	        if ( $result->{is_valid} == 1 ) {
+	            $captcha_auth   = 1;
+	            $captcha_worked = 1;
+	        }
+	        else {
+	            $captcha_worked = 0;
+	            $captcha_auth   = 0;
+	        }
+	    }
+	}
+    if ( $captcha_worked == 1 || $admin_override_enabled == 1) {
         if ( $q->param('rm') eq 's' ) {
 
             # so, what's $sub_info for?!
@@ -9328,6 +9348,24 @@ sub resend_conf_no_captcha {
 
     my $list_exists = check_if_list_exists( -List => $list, );
 
+
+	my $admin_override = $q->param('admin_override') || 0; 
+	my $admin_override_enabled = 0; 	
+    my ( $admin_list, $root_login, $checksout, $error_msg );
+	if($admin_override == 1){ 
+	    ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+	        -cgi_obj  => $q,
+	        -Function => 'view_list'
+	    );
+	    if ( !$checksout ) { 
+			return $error_msg; 
+		}
+		else { 
+			$admin_override_enabled = 1; 
+		}
+	}
+
+
     if ( $list_exists == 0 ) {
         return $self->default();
     }
@@ -9340,7 +9378,7 @@ sub resend_conf_no_captcha {
     {
         return $self->default();
     }
-    if ( $q->request_method() !~ m/POST/i ) {
+    if ( $q->request_method() !~ m/POST/i && $admin_override_enabled != 1) {
         return $self->default();
     }
 
@@ -9353,14 +9391,14 @@ sub resend_conf_no_captcha {
     # This is just really broken... should be a CAPTCHA...
     # I'm assuming this happens if we FAILED this test below (1 = failure for check_email_pin)
     #
-
-    if (
-        DADA::App::Guts::check_email_pin(
+	
+	my $cep_results =  DADA::App::Guts::check_email_pin(
             -Email => $month . '.' . $day . '.' . $email,
             -Pin   => xss_filter( scalar $q->param('auth_code') ),
             -List  => $list,
-        ) == 0
-      )
+        );
+
+    if ($cep_results == 0 && $admin_override_enabled != 1)
     {
         my ( $e_day, $e_month, $e_stuff ) = split( '.', $email );
 

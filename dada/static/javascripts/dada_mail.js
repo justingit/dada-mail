@@ -400,6 +400,27 @@ jQuery(document).ready(function($){
 		$("body").on("click", "#show_export_options", function(event) {
 			show_export_options();
 		});
+		
+		$("body").on("click", ".resend_confirmation_email", function(event) {
+			event.preventDefault();
+			var confirm_msg = "Resend subscription confirmation email?";
+			if (!confirm(confirm_msg)) {
+				return false;
+			} else {
+				
+				var sub_confirm_href = $("#s_program_url").val() 
+				+ "?flavor=resend_conf&email=" + $(this).attr("data-email") 
+				+ "&list=" + $(this).attr("data-list") 
+				+ "&rm=s"
+				+ "&admin_override=1";
+			    window.open(sub_confirm_href, "confirmation_window", "width=640,height=480,scrollbars=yes");
+			}
+		});
+		
+		
+		
+		
+		
 
 
 	}
