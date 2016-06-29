@@ -3434,7 +3434,7 @@ sub list_types {
         sub_request_list   => 'Subscription Requests',
         unsub_request_list => 'Unsubscription Requests',
         bounced_list       => 'Bouncing Addresses',
-		sub_confirm_list   => 'Not Yet Confirmed',
+		sub_confirm_list   => 'Unconfirmed Subscribers',
     	
 	};
 }

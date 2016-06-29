@@ -391,7 +391,7 @@ $MASS_MAIL_SETTINGS //= "|$MAILPROG -t";
 
 
 $LIST_TYPES //= {
-	sub_confirm_list   => 'Not Yet Confirmed',
+	sub_confirm_list   => 'Unconfirmed Subscribers',
     list               => 'Subscribers',
     black_list         => 'Black Listed',
     white_list         => 'White Listed',     
@@ -1790,8 +1790,8 @@ $ATTACHMENT_TEMPFILE //= 0;
 $MAIL_VERP_SEPARATOR //= '-';
 
 
-$VERSION = 9.4.1;
-$VER     = '9.4.1 06/22/16';
+$VERSION = 9.5.0;
+$VER     = '9.5.0 Beta 1 06/30/16';
 
 #
 #

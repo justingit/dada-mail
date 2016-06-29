@@ -2,6 +2,60 @@
 
 =encoding utf-8
 
+=head1 9.5.0
+
+=head2 Features
+
+=head3 StopForumSpam Integration
+
+The B<StopForumSpam> service (L<http://stopforumspam.com/>) keeps a list of email addresses, locations, and usernames known to be used for abuse attempts of web apps like forums, blogs, and mailing lists. 
+
+Dada Mail now has support to look up this information when a user goes through the subscription process. If the IP address or email address of the user is returned by the StopForumSpam service as being known to be abusive, the first step subscription process fails.
+
+This new feature can help stop your mailing list from being abused, curbs the wasting of server resources, and keeps your mailing list cleaner. This integration should I<definitely> be seen as a B<security enhancement>, as these users being marked as abusive are most likely part of a botnet, trying to find vectors for attack. 
+
+This integration of StopForumSpam is currently enabled by default, but it does require the additional installation of a Perl CPAN module named, C<WWW::StopForumSpam>. This module, as well as other CPAN modules can be installed using the following instructions, 
+
+L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+
+Options to enable/disable StopForumSpam integration can be found in the list control panel under B<Mailing List - Options>. Look for the checkbox labeled, B<Enable StopForumSpam Protection>.
+
+If C<WWW::StopForumSpam> needs to be installed, a notification will be shown below this option to alert you. 
+
+=head3 Viewing the Unconfirmed Subscribers sublist
+
+Dada Mail keeps track of subscribers that have started the subscription process, but haven't yet confirmed their subscription by clicking the confirmation link that's sent to them via email. Internally, this sublist type is called, C<sub_confirm_list> (catchy name, huh?). It's used primarily to make sure the same address isn't repeatedly submitted to be subscribed again and again by some automated process. Curbing abuse is a big part of web apps like Dada Mail!
+
+We've now added the ability to view and interact with this sublist. In the, B<Membership - View> screen, you will see a new tab labled, B<Unconfirmed Subscribers>. You may view, search, delete, and export addresses from this sublist. You may also I<resend> the subscription confirmation email message: look for the button to the left of the email address. Pressing the button will resend the confirmation email message. 
+
+This sublist is tightly coupled with the subscription confirmation process itself. Dada Mail's subscription confirmation system works with a unqiue token embedded in the confirmation email that corresponds with records in its database. These records do expire after a while (60 days by default). When these tokens expire, addresses in this sublist will also automatically be removed, keeping your mailing list tidy, and your database trimmed and fast, without any additional work by you.
+
+Viewing this tab can be enabled/disabled in the list control panel under, B<Membership - Options>. Look for the checkbox labeled, B<Show "Unconfirmed Subscribers" sublist>.
+
+=head3 New Subscriber Export Options
+
+In previous versions, Dada Mail could export your Subscribers (as well as other sublists), but the data it exports is not customizable. It would include the added/subscribed date (timestamp), the email address itself, profile fields, as well as the delivery preferences (if that option is enabled). Some users have problems then utilizing this information as-is, since some of the information is not needed. 
+
+This exported informaton is in CSV format, which you can open the exported file into a spreadsheet app, and do more manipulation, but many users are having trouble with this cumbersome extra step.
+
+Now, Dada Mail also allows you to specify what information you would like exported: 
+
+=over
+
+=item * Email Address (always exported)
+
+=item * Date Added
+
+=item * Profile Fields
+
+=item * Delivery Preferences (if enabled)
+
+=back
+
+Among other things, this allows  Dada Mail's exported data to be easily read and imported back into Dada Mail itself - something it couldn't do (embarrassingly) before!
+
+Using this new functionality is simple: instead of exporting the data right away, after you click the Export button, a modal menu will open up, allowing you to choose what data you would like the exported data to hold. 
+
 =head1 9.4.1
 
 This is a bugfix release for a problem found in the v9.4.0 release. 

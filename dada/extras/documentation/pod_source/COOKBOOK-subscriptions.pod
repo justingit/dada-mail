@@ -580,7 +580,7 @@ Here's an example for a php script, that uses php's C<shell_exec> function (make
 
 To make things easier I<while testing>, you may wish to disable Dada Mail's feature of limiting Subscription Confirmations. This feature disallows someone to continually attempt to subscribe the same email address. In testing, this may be exactly what you'd like to do. 
 
-In, I<Your Mailing List - Options> 
+In, I<Mailing List - Options> 
 
 Uncheck the option, I<Limit Subscription Confirmation Sending>. Once done testing, you may want to re-enable this option. 
 
