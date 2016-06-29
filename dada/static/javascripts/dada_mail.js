@@ -397,7 +397,14 @@ jQuery(document).ready(function($){
 			show_update_profile_form();
 		});
 
-
+		$("body").on("click", "#show_export_options", function(event) {
+			show_export_options();
+		});
+		
+		$("body").on("click", ".resend_confirmation_email", function(event) {
+			event.preventDefault();
+			resend_confirmation_email($("#s_program_url").val(), $(this).attr("data-email"), $(this).attr("data-list")); 
+		});
 	}
 
 	// Membership >> List Activity
@@ -415,6 +422,12 @@ jQuery(document).ready(function($){
 			});
 		}
 
+		$("body").on("click", ".resend_confirmation_email", function(event) {
+			event.preventDefault();
+			resend_confirmation_email($("#s_program_url").val(), $(this).attr("data-email"), $(this).attr("data-list")); 
+		});
+		
+		
 		if($("#membership_activity").length) {
 			membership_activity();
 		}
@@ -1904,7 +1917,23 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 
 
 /* Membership >> View List */
+function resend_confirmation_email(s_program_url, email, list){ 
 
+	var confirm_msg = "Resend subscription confirmation email?";
+	if (!confirm(confirm_msg)) {
+		return false;
+	} else {
+		
+		var sub_confirm_href = s_program_url
+		+ "?flavor=resend_conf&email=" + email 
+		+ "&list=" + list 
+		+ "&rm=s"
+		+ "&admin_override=1";
+	    window.open(sub_confirm_href, "confirmation_window", "width=640,height=480,scrollbars=yes");
+	}
+
+
+}
 function view_list_viewport(initial) {
 	//alert('$("#advanced_search").val() ' + $("#advanced_search").val());
 	//alert(' $("#advanced_query").val() ' +  $("#advanced_query").val());
@@ -2032,6 +2061,42 @@ function show_update_profile_form(){
 	});
 
 }
+
+function show_export_options(){
+
+	var $form = $("#export_options");
+
+	var responsive_options = {
+	  width: '95%',
+	  height: '95%',
+	  maxWidth: '640px',
+	  maxHeight: '480px'
+	};
+	$.colorbox({
+		inline:true,
+		href:$form,
+		top: 0,
+		fixed: true,
+		initialHeight: 50,
+		maxWidth: '640px',
+		maxHeight: '480px',
+		width: '95%',
+		height: '95%',		
+		opacity: 0.50,
+		onComplete: function(){
+			//...
+		}
+	});
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
+	});
+
+}
+
+
 
 function turn_page(page_to_turn_to) {
 	$("#page").val(page_to_turn_to);

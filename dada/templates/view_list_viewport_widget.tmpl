@@ -8,7 +8,10 @@
     <!-- tmpl_if expr="defined(advanced_query) && (total_num > 0)" --> 
         <!-- tmpl_if expr="((root_login == 1) || (list_settings.allow_profile_editing == 1))" --> 
             <div class="text-center">
-                <input type="button" class="show_update_profile_form success bigger_button" value="Update Search Results...">
+                <input 
+					type="button" 
+					class="show_update_profile_form success large button" 
+					value="Update Search Results...">
             </div> 
         <!-- /tmpl_if --> 
     <!-- /tmpl_if --> 
@@ -134,7 +137,7 @@
         <div class="small-11 columns">
             <ul class="button-group">
                 
-     		 <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
+     		 <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list') || (type eq 'sub_confirm_list'))" -->
 
              <input type="hidden" name="process" value="delete" >
              <input type="hidden" name="flavor"       value="remove_subscribers" >
@@ -198,7 +201,7 @@
     
         </form>
 		
-        <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
+        <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list') || (type eq 'sub_confirm_list'))" -->
         
             <!-- tmpl_unless query -->
 			    <li>

@@ -391,6 +391,7 @@ $MASS_MAIL_SETTINGS //= "|$MAILPROG -t";
 
 
 $LIST_TYPES //= {
+	sub_confirm_list   => 'Not Yet Confirmed',
     list               => 'Subscribers',
     black_list         => 'Black Listed',
     white_list         => 'White Listed',     
@@ -1384,23 +1385,24 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     charset_value => 'UTF-8',
     priority      => 3,
 
-    plaintext_encoding           => 'quoted-printable',
-    html_encoding                => 'quoted-printable',
-    strip_message_headers        => 0,
-    add_sendmail_f_flag          => 1,
-    verp_return_path             => 0,
-    mime_encode_words_in_headers => 1,
+    plaintext_encoding                     => 'quoted-printable',
+    html_encoding                          => 'quoted-printable',
+    strip_message_headers                  => 0,
+    add_sendmail_f_flag                    => 1,
+    verp_return_path                       => 0,
+    mime_encode_words_in_headers           => 1,
 
     # view list prefs
 
-    view_list_subscriber_number  => 100,
-    view_list_show_timestamp_col => 1, 
-    view_list_order_by           => 'email', 
-    view_list_order_by_direction => 'ASC', 
+    view_list_subscriber_number            => 100,
+    view_list_show_timestamp_col           => 1, 
+	view_list_show_sub_confirm_list        => 1, 
+    view_list_order_by                     => 'email', 
+    view_list_order_by_direction           => 'ASC', 
 
     # add list prefs
-    use_add_list_import_limit               => 1, 
-    add_list_import_limit                   => 1000, 
+    use_add_list_import_limit              => 1, 
+    add_list_import_limit                  => 1000, 
     allow_profile_editing => 0, 
     
     # archive prefs
@@ -1413,25 +1415,24 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     captcha_archive_send_form              => 0,
     archive_send_form                      => 0,
     send_newest_archive                    => 0,
-
-    archive_show_second          => 0,
-    archive_show_hour_and_minute => 0,
-    archive_show_month           => 1,
-    archive_show_day             => 1,
-    archive_show_year            => 1,
-    archive_index_count          => 10,
-
-    sort_archives_in_reverse    => 1,
-    disable_archive_js          => 1,
-    style_quoted_archive_text   => 1,
-    stop_message_at_sig         => 1,
-    publish_archives_rss        => 1,
-    ping_archives_rss           => 0,
-    html_archives_in_iframe     => 0,
-    display_attachments         => 1,
-    add_subscribe_form_to_feeds => 1,
-
-    add_social_bookmarking_badges => 1,
+                                          
+    archive_show_second                    => 0,
+    archive_show_hour_and_minute           => 0,
+    archive_show_month                     => 1,
+    archive_show_day                       => 1,
+    archive_show_year                      => 1,
+    archive_index_count                    => 10,
+                                          
+    sort_archives_in_reverse              => 1,
+    disable_archive_js                    => 1,
+    style_quoted_archive_text             => 1,
+    stop_message_at_sig                   => 1,
+    publish_archives_rss                  => 1,
+    ping_archives_rss                     => 0,
+    html_archives_in_iframe               => 0,
+    display_attachments                   => 1,
+    add_subscribe_form_to_feeds           => 1,
+    add_social_bookmarking_badges         => 1,
 
     # Can be set to, "none","break", "spam_me_not", or, "recaptcha_mailhide"
     archive_protect_email => 'break',

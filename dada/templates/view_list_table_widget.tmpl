@@ -16,6 +16,16 @@
 			List
 		</th>
 	<!-- /tmpl_if --> 
+	
+	
+	<!-- tmpl_if list_settings.enable_closed_loop_opt_in -->
+	    <!-- tmpl_if expr="(type eq 'sub_confirm_list')" -->
+	    <th>
+		
+	 	</th>
+	    <!-- /tmpl_if -->
+	<!-- /tmpl_if -->
+	
    <th>
 		<!-- tmpl_if expr="(order_by ne 'email')" -->
 			<a href="#" class="change_order" data-by="email" data-dir="asc">
@@ -40,7 +50,7 @@
     
    </th>
    
-  	
+   
    <!-- tmpl_if show_timestamp_column --> 
    	<th width="225">
    	    <!-- tmpl_if expr="(order_by ne 'timestamp')" -->
@@ -134,6 +144,24 @@
 				<input type="checkbox" name="address" class="address" value="<!-- tmpl_var email escape="HTML" -->" >
 			</td>
 		<!-- /tmpl_unless --> 
+
+		   <!-- tmpl_if list_settings.enable_closed_loop_opt_in -->
+			   <!-- tmpl_if expr="(type eq 'sub_confirm_list')" -->
+			   	<td>
+					<a class="tiny button resend_confirmation_email"
+						title="Resend Confirmation Email"
+						data-list="<!-- tmpl_var list escape="HTML" -->"
+						data-email="<!-- tmpl_var email escape="HTML" -->"
+					
+					>
+						<i class="fi-plus"></i>
+						<i class="fi-mail"></i>
+						<i class="fi-arrow-right"></i>
+					</a>
+				</td>
+			   <!-- /tmpl_if -->
+		    <!-- /tmpl_if -->
+
 
 		<!-- tmpl_if show_list_column --> 
 			<td>			    

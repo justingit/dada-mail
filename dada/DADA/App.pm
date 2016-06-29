@@ -3586,8 +3586,10 @@ sub view_list {
     my $updated_addresses                = xss_filter( scalar $q->param('updated_addresses') )                || 0;
     my $type                             = xss_filter( scalar $q->param('type') )                             || 'list';
     my $query                            = xss_filter( scalar $q->param('query') )                            || undef;
-    my $order_by        = $q->param('order_by')           || $ls->param('view_list_order_by');
-    my $order_dir       = $q->param('order_dir')          || lc( $ls->param('view_list_order_by_direction') );
+
+    my $order_by        = $q->param('order_by')  || $ls->param('view_list_order_by');;          
+    my $order_dir       = $q->param('order_dir') || lc( $ls->param('view_list_order_by_direction') );         
+
     my $mode            = xss_filter( scalar $q->param('mode') ) || 'view';
     my $page            = xss_filter( scalar $q->param('page') ) || 1;
     my $advanced_search = $q->param('advanced_search')    || 0;
@@ -3835,16 +3837,18 @@ sub view_list {
                     can_filter_subscribers_through_blacklist => $lh->can_filter_subscribers_through_blacklist,
 
                     flavor_is_view_list        => 1,
-                    list_subscribers_num       => commify( $lh->num_subscribers( { -type => 'list' } ) ),
-                    black_list_subscribers_num => commify( $lh->num_subscribers( { -type => 'black_list' } ) ),
-                    white_list_subscribers_num => commify( $lh->num_subscribers( { -type => 'white_list' } ) ),
-                    authorized_senders_num     => commify( $lh->num_subscribers( { -type => 'authorized_senders' } ) ),
-                    moderators_num             => commify( $lh->num_subscribers( { -type => 'moderators' } ) ),
+                    list_subscribers_num       => scalar commify( $lh->num_subscribers( { -type => 'list' } ) ),
+                    black_list_subscribers_num => scalar commify( $lh->num_subscribers( { -type => 'black_list' } ) ),
+                    white_list_subscribers_num => scalar commify( $lh->num_subscribers( { -type => 'white_list' } ) ),
+                    authorized_senders_num     => scalar commify( $lh->num_subscribers( { -type => 'authorized_senders' } ) ),
+                    moderators_num             => scalar commify( $lh->num_subscribers( { -type => 'moderators' } ) ),
                     sub_request_list_subscribers_num =>
-                      commify( $lh->num_subscribers( { -type => 'sub_request_list' } ) ),
+                      scalar commify( $lh->num_subscribers( { -type => 'sub_request_list' } ) ),
                     unsub_request_list_subscribers_num =>
-                      commify( $lh->num_subscribers( { -type => 'unsub_request_list' } ) ),
-                    bounced_list_num => commify( $lh->num_subscribers( { -type => 'bounced_list' } ) ),
+                      scalar commify( $lh->num_subscribers( { -type => 'unsub_request_list' } ) ),
+                    bounced_list_num		 => scalar commify( $lh->num_subscribers( { -type => 'bounced_list' } ) ),
+                    sub_confirm_list_num     => scalar commify( $lh->num_subscribers( { -type => 'sub_confirm_list' } ) ),
+					
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -4700,7 +4704,7 @@ sub membership {
         my $list_types  = DADA::App::Guts::list_types();
 
         foreach (%$subscribed_to_lt) {
-            if ( $_ =~ m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list)$/ ) {
+            if ( $_ =~ m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list|sub_confirm_list)$/ ) {
                 push( @$member_of, { type => $_, type_title => $list_types->{$_} } );
                 push( @$remove_from, $_ );
             }
@@ -4735,7 +4739,11 @@ sub membership {
         my $subscribed_to_sub_request_list = 0;
         if ( $subscribed_to_lt->{sub_request_list} == 1 ) {
             $subscribed_to_sub_request_list = 1;
+        }
 
+        my $subscribed_to_sub_confirm_list = 0;
+        if ( $subscribed_to_lt->{sub_confirm_list} == 1 ) {
+            $subscribed_to_sub_confirm_list = 1;
         }
 
         require DADA::Profile::Settings;
@@ -4781,6 +4789,7 @@ sub membership {
                     add_to_num                     => scalar( keys %$add_to ),
                     subscribed_to_list             => $subscribed_to_list,
                     subscribed_to_sub_request_list => $subscribed_to_sub_request_list,
+					subscribed_to_sub_confirm_list => $subscribed_to_sub_confirm_list,
 
                     add_email_count                  => $add_email_count,
                     delete_email_count               => $delete_email_count,
@@ -5058,7 +5067,7 @@ sub validate_remove_email {
             my @also_subscribed_to = $lh->also_subscribed_to(
                 {
                     -email => $email,
-                    -types => [qw(list black_list white_list authorized_senders moderators)],
+                    -types => [qw(list black_list white_list authorized_senders moderators sub_confirm_list)],
                 }
             );
             @lists = ( @lists, @also_subscribed_to );
@@ -5078,7 +5087,7 @@ sub validate_remove_email {
                     $tmp_lh->member_of(
                         {
                             -email => $email,
-                            -types => [qw(list black_list white_list authorized_senders moderators)],
+                            -types => [qw(list black_list white_list authorized_senders moderators  sub_confirm_list)],
                         }
                     )
                 }
@@ -6530,6 +6539,7 @@ sub subscription_options {
                     view_list_show_timestamp_col         => 0,
                     view_list_order_by                   => undef,
                     view_list_order_by_direction         => undef,
+					view_list_show_sub_confirm_list      => 0, 
                     use_add_list_import_limit            => 0,
                     add_list_import_limit                => undef,
                     allow_profile_editing                => 0,
@@ -9164,7 +9174,8 @@ sub resend_conf {
     my $q     = $self->query();
     my $list  = $q->param('list');
     my $email = $q->param('email');
-
+	
+	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
@@ -9188,7 +9199,24 @@ sub resend_conf_captcha {
     my $q     = $self->query();
     my $list  = $q->param('list');
     my $email = $q->param('email');
-
+	
+	my $admin_override = $q->param('admin_override') || 0; 
+	my $admin_override_enabled = 0; 	
+    my ( $admin_list, $root_login, $checksout, $error_msg );
+	if($admin_override == 1){ 
+	    ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+	        -cgi_obj  => $q,
+	        -Function => 'view_list'
+	    );
+	    if ( !$checksout ) { 
+			return $error_msg; 
+		}
+		else { 
+			$admin_override_enabled = 1; 
+		}
+	}
+	
+	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
@@ -9202,28 +9230,30 @@ sub resend_conf_captcha {
 	
 	my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field')) || ''; 
 	
-    if ( ! $crf ) {
-        $captcha_worked = 0;
-    }
-    else {
-        require DADA::Security::AuthenCAPTCHA;
-        my $cap    = DADA::Security::AuthenCAPTCHA->new;
-        my $result = $cap->check_answer(
-            $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
-			$ENV{'REMOTE_ADDR'}, 
-            $ccf,
-			$crf,
-        );
-        if ( $result->{is_valid} == 1 ) {
-            $captcha_auth   = 1;
-            $captcha_worked = 1;
-        }
-        else {
-            $captcha_worked = 0;
-            $captcha_auth   = 0;
-        }
-    }
-    if ( $captcha_worked == 1 ) {
+	if($admin_override_enabled != 1) {
+	    if ( ! $crf ) {
+	        $captcha_worked = 0;
+	    }
+	    else {
+	        require DADA::Security::AuthenCAPTCHA;
+	        my $cap    = DADA::Security::AuthenCAPTCHA->new;
+	        my $result = $cap->check_answer(
+	            $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
+				$ENV{'REMOTE_ADDR'}, 
+	            $ccf,
+				$crf,
+	        );
+	        if ( $result->{is_valid} == 1 ) {
+	            $captcha_auth   = 1;
+	            $captcha_worked = 1;
+	        }
+	        else {
+	            $captcha_worked = 0;
+	            $captcha_auth   = 0;
+	        }
+	    }
+	}
+    if ( $captcha_worked == 1 || $admin_override_enabled == 1) {
         if ( $q->param('rm') eq 's' ) {
 
             # so, what's $sub_info for?!
@@ -9307,6 +9337,24 @@ sub resend_conf_no_captcha {
 
     my $list_exists = check_if_list_exists( -List => $list, );
 
+
+	my $admin_override = $q->param('admin_override') || 0; 
+	my $admin_override_enabled = 0; 	
+    my ( $admin_list, $root_login, $checksout, $error_msg );
+	if($admin_override == 1){ 
+	    ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+	        -cgi_obj  => $q,
+	        -Function => 'view_list'
+	    );
+	    if ( !$checksout ) { 
+			return $error_msg; 
+		}
+		else { 
+			$admin_override_enabled = 1; 
+		}
+	}
+
+
     if ( $list_exists == 0 ) {
         return $self->default();
     }
@@ -9319,7 +9367,7 @@ sub resend_conf_no_captcha {
     {
         return $self->default();
     }
-    if ( $q->request_method() !~ m/POST/i ) {
+    if ( $q->request_method() !~ m/POST/i && $admin_override_enabled != 1) {
         return $self->default();
     }
 
@@ -9332,14 +9380,14 @@ sub resend_conf_no_captcha {
     # This is just really broken... should be a CAPTCHA...
     # I'm assuming this happens if we FAILED this test below (1 = failure for check_email_pin)
     #
-
-    if (
-        DADA::App::Guts::check_email_pin(
+	
+	my $cep_results =  DADA::App::Guts::check_email_pin(
             -Email => $month . '.' . $day . '.' . $email,
             -Pin   => xss_filter( scalar $q->param('auth_code') ),
             -List  => $list,
-        ) == 0
-      )
+        );
+
+    if ($cep_results == 0 && $admin_override_enabled != 1)
     {
         my ( $e_day, $e_month, $e_stuff ) = split( '.', $email );
 
@@ -9464,6 +9512,11 @@ sub text_list {
     my $order_by        = $q->param('order_by')                      || $ls->param('view_list_order_by');
     my $order_dir = $q->param('order_dir') || lc( $ls->param('view_list_order_by_direction') );
 
+	my $show_timestamp_column      = $q->param('show_timestamp_column')      || 0; 
+	my $show_delivery_prefs_column = $q->param('show_delivery_prefs_column') || 0; 
+	my $show_profile_fields         = $q->param('show_profile_fields')        || 0;
+
+
     my $partial_listing = {};
     if ($advanced_query) {
         if ( $advanced_search == 1 ) {
@@ -9486,24 +9539,28 @@ sub text_list {
     if ($advanced_query) {
         $body = $lh->print_out_list(
             {
-                -type                  => $type,
-                -order_by              => $order_by,
-                -order_dir             => $order_dir,
-                -partial_listing       => $partial_listing,
-                -show_timestamp_column => 1,
-                -print_out             => 0,
+                -type                       => $type,
+                -order_by                   => $order_by,
+                -order_dir                  => $order_dir,
+                -partial_listing            => $partial_listing,
+                -show_timestamp_column      => $show_timestamp_column,
+                -show_delivery_prefs_column => $show_delivery_prefs_column,
+				-show_profile_fields        => $show_profile_fields, 
+                -print_out                  => 0,
             }
         );
     }
     else {
         $body = $lh->print_out_list(
-            {
-                -type                  => $type,
-                -query                 => $query,
-                -order_by              => $order_by,
-                -order_dir             => $order_dir,
-                -show_timestamp_column => 1,
-                -print_out             => 0,
+            {                              
+                -type                       => $type,
+                -query                      => $query,
+                -order_by                   => $order_by,
+                -order_dir                  => $order_dir,
+                -show_timestamp_column      => $show_timestamp_column,
+                -show_delivery_prefs_column => $show_delivery_prefs_column,
+				-show_profile_fields        => $show_profile_fields, 
+                -print_out                  => 0,
             }
         );
     }

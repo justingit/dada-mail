@@ -1,21 +1,110 @@
 <!-- begin list_download_widget.tmpl -->
 
-  <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-	
-    <input type="hidden" name="flavor"    value="text_list" >
-    <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
 
-	<!-- tmpl_if expr="defined(query) || defined(advanced_query)" --> 
+    <div id="export_options_form" style="display:none"> 
+
+    <div id="export_options"> 		
+	    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	
+	      <input type="hidden" name="flavor"    value="text_list" >
+	      <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
+   		<!-- tmpl_if expr="defined(query) || defined(advanced_query)" --> 
 		
-		<input type="hidden" name="query"           value="<!-- tmpl_var query -->" >
-		<input type="hidden" name="advanced_search" value="<!-- tmpl_var advanced_search -->" >
-		<input type="hidden" name="advanced_query"  value="<!-- tmpl_var advanced_query -->" >
+   			<input type="hidden" name="query"           value="<!-- tmpl_var query -->" >
+   			<input type="hidden" name="advanced_search" value="<!-- tmpl_var advanced_search -->" >
+   			<input type="hidden" name="advanced_query"  value="<!-- tmpl_var advanced_query -->" >
 		
-		<input type="hidden" name="order_by" value="<!-- tmpl_var order_by -->" >
-		<input type="hidden" name="order_dir" value="<!-- tmpl_var order_dir -->" >
+   			<input type="hidden" name="order_by" value="<!-- tmpl_var order_by -->" >
+   			<input type="hidden" name="order_dir" value="<!-- tmpl_var order_dir -->" >
+   		<!-- /tmpl_if -->
+		
+		  <p>Export with columns:</p>
+		  
+		<ul style="list-style-type:none">
+		 <li>
+			<input 
+				type="checkbox" 
+				checked="checked"
+				disabled="disabled"
+			>
+			<span class="success label">
+				Email Address
+			</span>
+		</li>
+				 <li>
+		
+				  <label>
+					  <input 
+					  	type="checkbox" 
+						name="show_timestamp_column" 
+						value="1"
+					> Timestamp
+				  </label>
+	    </li>
+		<li>
+				<label>
+					<input 
+						type="checkbox" 
+						name="show_profile_fields" 
+						value="1"
+						checked="checked"
+					> Profile Fields
+				</label>
+	    </li>
+		
+		
+		<!-- tmpl_unless list_settings.digest_enable -->
+		
+				<li>
+	 
+						  <label>
+							  <input 
+							  	type="checkbox" 
+								name="show_delivery_prefs_column" 
+								value="1"
+								<!-- tmpl_unless list_settings.digest_enable -->
+									disabled="disabled"
+								<!-- /tmpl_unless -->
+							>
+							Delivery Preferences 
+							<!-- tmpl_unless list_settings.digest_enable -->
+								(disabled)
+							<!-- /tmpl_unless -->
+					
+						  </label>
+			    </li>
+			<!-- /tmpl_unless -->
+	</ul>
+		
+
+		 		  		
+
+		
+
+		<div class="row">
+			<div class="small-12 columns">
+				<button 
+					type="submit" 
+					class="button large expand" 
+				>
+					<i class="fi-page-export-csv"></i> Export
+				</button>
+	</div>
+		
+		
+	</div>
+		
+	</div>
+		
+		
+	</div>
+
+		<!-- tmpl_if expr="defined(query) || defined(advanced_query)" --> 
+
 
 		<button 
-			type="submit" 
+			id="show_export_options"
+			type="button" 
 			class="button small" 
 		>
 			<i class="fi-page-export-csv"></i> Export Search Results (.csv)
@@ -24,7 +113,8 @@
 	<!-- tmpl_else --> 
 	
 		<button
-			type="submit" 
+			type="button"
+			id="show_export_options"
 			class="button small"
 			>
 			<i class="fi-page-export-csv"></i> Export <!-- tmpl_var type_title --> (.csv)
