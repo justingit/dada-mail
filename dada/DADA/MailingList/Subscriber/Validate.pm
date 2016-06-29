@@ -386,7 +386,7 @@ sub sfs_check {
 	# Fail: 0; 
 	my $self  = shift; 
 	my $email = shift; 
-	
+		
 	my $can_use_StopForumSpam = can_use_StopForumSpam(); 
 	if($can_use_StopForumSpam == 0){ 
 		return 1;
@@ -394,11 +394,13 @@ sub sfs_check {
 	require WWW::StopForumSpam;
 
 	my $sfs = WWW::StopForumSpam->new();
-	my $r_ip = 
-	my $r_ip = $sfs->check(
-		ip => $ENV{'REMOTE_ADDR'},
-	); 
-	
+
+	my $r_ip = 0; 
+	if(length($ENV{'REMOTE_ADDR'}) >= 1) {
+		$r_ip = $sfs->check(
+			ip => $ENV{'REMOTE_ADDR'},
+		); 
+	}
 	if($r_ip == 1){ 
 		warn 'sfs_check FAIL ip lookup: ' . $ENV{'REMOTE_ADDR'}
 			if $t; 
