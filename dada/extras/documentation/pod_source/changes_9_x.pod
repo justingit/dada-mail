@@ -8,15 +8,13 @@
 
 =head3 StopForumSpam Integration
 
-The B<StopForumSpam> service (L<http://stopforumspam.com/>) keeps a list of email addresses, locations, and usernames known to be used for abuse attempts of web apps like forums, blogs, and mailing lists. 
+The B<StopForumSpam> service (L<http://stopforumspam.com/>) keeps a database of email addresses, locations, and usernames known to be used for abuse attempts on web apps like forums, blogs, and mailing lists. 
 
-Dada Mail now has support to look up this information when a user goes through the subscription process. If the IP address or email address of the user is returned by the StopForumSpam service as being known to be abusive, the first step subscription process fails.
+Dada Mail now has support to look up this information when a user goes through the subscription process. If the IP address or email address of the user is returned by the StopForumSpam service as being known to be abusive, the first step of the subscription process fails.
 
-This new feature can help stop your mailing list from being abused, curbs the wasting of server resources, and keeps your mailing list cleaner. This integration should I<definitely> be seen as a B<security enhancement>, as these users being marked as abusive are most likely part of a botnet, trying to find vectors for attack. 
+This new feature can help stop your mailing list from being abused, curbs the wasting of server resources, and keeps your mailing list cleaner. This integration should I<definitely> be seen as a B<security enhancement>, as these users being marked as abusive are possible part of a botnet, trying to find vectors for attack. 
 
-This integration of StopForumSpam is currently enabled by default, but it does require the additional installation of a Perl CPAN module named, C<WWW::StopForumSpam>. This module, as well as other CPAN modules can be installed using the following instructions, 
-
-L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+This integration of StopForumSpam is currently enabled by default, and requires the LWP Perl library - if you can send a webpage using Dada Mail, you most likley have this library installed. 
 
 Options to enable/disable StopForumSpam integration can be found in the list control panel under B<Mailing List - Options>. Look for the checkbox labeled, B<Enable StopForumSpam Protection>.
 
@@ -26,7 +24,7 @@ If C<WWW::StopForumSpam> needs to be installed, a notification will be shown bel
 
 Dada Mail keeps track of subscribers that have started the subscription process, but haven't yet confirmed their subscription by clicking the confirmation link that's sent to them via email. Internally, this sublist type is called, C<sub_confirm_list> (catchy name, huh?). It's used primarily to make sure the same address isn't repeatedly submitted to be subscribed again and again by some automated process. Curbing abuse is a big part of web apps like Dada Mail!
 
-We've now added the ability to view and interact with this sublist. In the, B<Membership - View> screen, you will see a new tab labled, B<Unconfirmed Subscribers>. You may view, search, delete, and export addresses from this sublist. You may also I<resend> the subscription confirmation email message: look for the button to the left of the email address. Pressing the button will resend the confirmation email message. 
+We've now added the ability to view and interact with this sublist. In the, B<Membership - View> screen, you will see a new tab labeled, B<Unconfirmed Subscribers>. You may view, search, delete, and export addresses from this sublist. You may also I<resend> the subscription confirmation email message: look for the button to the left of the email address. Pressing the button will resend the confirmation email message. 
 
 This sublist is tightly coupled with the subscription confirmation process itself. Dada Mail's subscription confirmation system works with a unqiue token embedded in the confirmation email that corresponds with records in its database. These records do expire after a while (60 days by default). When these tokens expire, addresses in this sublist will also automatically be removed, keeping your mailing list tidy, and your database trimmed and fast, without any additional work by you.
 
@@ -34,11 +32,9 @@ Viewing this tab can be enabled/disabled in the list control panel under, B<Memb
 
 =head3 New Subscriber Export Options
 
-In previous versions, Dada Mail could export your Subscribers (as well as other sublists), but the data it exports is not customizable. It would include the added/subscribed date (timestamp), the email address itself, profile fields, as well as the delivery preferences (if that option is enabled). Some users have problems then utilizing this information as-is, since some of the information is not needed. 
+In previous versions, Dada Mail could export your Subscribers (as well as other sublists), but the data it exports is not customizable. It would include the added/subscribed date (timestamp), the email address itself, profile fields, as well as the delivery preferences (if that option is enabled). Some users have problems then utilizing this information as-is, since some of the information is not needed. Although this exported informaton is in CSV format, which you can open the exported file into a spreadsheet app, and do more manipulation, but many users were having trouble with this cumbersome extra step.
 
-This exported informaton is in CSV format, which you can open the exported file into a spreadsheet app, and do more manipulation, but many users are having trouble with this cumbersome extra step.
-
-Now, Dada Mail also allows you to specify what information you would like exported: 
+Now, Dada Mail also allows you to specify what data you would like exported: 
 
 =over
 
