@@ -157,6 +157,12 @@ sub _init {
         undef $lh;
         undef $pfm;
     }
+	
+    require MIME::Parser;
+    my $parser = new MIME::Parser;
+       $parser = DADA::App::Guts::optimize_mime_parser($parser);
+	$self->{parser} = $parser; 
+
 }
 
 sub return_headers {
@@ -1844,7 +1850,7 @@ sub mass_send {
 
                 my %nfields = $self->_mail_merge(
                     {
-                        -entity => $entity->dup,
+                        -entity => $entity,
                         -data   => \@ml_info,
                         -fm_obj => $fm,
                     }
@@ -2475,7 +2481,7 @@ sub mass_send {
                 $self->ses_obj(undef);
             }
 
-			$entity->purge; 
+		    $entity->purge; 
 			
             warn '['
               . $self->{list}
@@ -2736,10 +2742,6 @@ sub _content_transfer_encode {
     $fields->{Body} = undef;
     delete $fields->{Body};
 
-    require MIME::Parser;
-    my $parser = new MIME::Parser;
-       $parser = DADA::App::Guts::optimize_mime_parser($parser);
-
     my $encoding = $self->{ls}->param('plaintext_encoding');
     if ( $fields->{'Content-type'} =~ m{html} ) {
         $encoding = $self->{ls}->param('html_encoding');
@@ -2768,7 +2770,7 @@ sub _content_transfer_encode {
         );
 
         my $head = $entity->head->as_string;
-        $head = safely_decode($head);
+           $head = safely_decode($head);
 
         # encoded. YES.
         my $body = $entity->body_as_string;
@@ -2790,8 +2792,8 @@ sub _content_transfer_encode {
         return %new_fields;
     }
 	
-	$parser->filer->purge
-		if $parser;
+	$self->{parser}->filer->purge
+		if $self->{parser};
 }
 
 sub _domain_for_smtp {
@@ -3278,7 +3280,7 @@ sub _email_batched_finished_notification {
         $self->return_headers( safely_decode( $n_entity->head->as_string ), ),
         Body => $body, );
 	
-	$n_entity->purge;
+#	$n_entity->purge;
 	
 	return 1; 
 
@@ -3314,7 +3316,7 @@ sub _verp {
 sub _mail_merge {
 
     my $self = shift;
-    my $orig_entity;
+    my $entity;
 
     my ($args) = @_;
 
@@ -3322,7 +3324,7 @@ sub _mail_merge {
         croak 'you need to pass the -entity parameter';
     }
     else {
-        $orig_entity = $args->{-entity};
+        $entity = $args->{-entity};
     }
 
     if ( !exists( $args->{-data} ) ) {
@@ -3336,7 +3338,12 @@ sub _mail_merge {
     else {
         croak "you MUST pass the -fm_obj parameter!";
     }
-
+	
+	   
+	   
+	   my $entity_cp = $self->copy_entity($entity);
+#	my $entity_cp = $entity->dup; 
+		
 # So all we really have to do is label and arrange the values we have and populate the email message.
 # Here we go:
 
@@ -3404,30 +3411,31 @@ sub _mail_merge {
             $self->{ls}->param('mailing_list_message_to_phrase'),
             $subscriber_vars->{'subscriber.email'} );
     }
-    if ( $orig_entity->head->get( 'To', 0 ) ) {
-        $orig_entity->head->delete('To');
+    if ( $entity_cp->head->get( 'To', 0 ) ) {
+        $entity_cp->head->delete('To');
     }
-    $orig_entity->head->add( 'To', $To_header );
+    $entity_cp->head->add( 'To', $To_header );
 
     my $expr = 0;
     if ( $self->{ls}->param('enable_email_template_expr') == 1 ) {
         $expr = 1;
     }
+=cut	
+    carp "ORIGINAL ENTITY: \n";
+    carp '-' x 72 . "\n";
+    carp $entity->as_string;
+    carp '-' x 72 . "\n";
 
-    #carp "ORIGINAL ENTITY: \n";
-    #carp '-' x 72 . "\n";
-    #carp $orig_entity->as_string;
-    #carp '-' x 72 . "\n";
-
-    #carp "LABELED DATA\n" ;
-    #carp '-' x 72 . "\n";
-    #use Data::Dumper;
-    #carp Dumper({%labeled_data});
-    #carp '-' x 72 . "\n";
-
-    my $entity = $args->{-fm_obj}->email_template(
+    carp "LABELED DATA\n" ;
+    carp '-' x 72 . "\n";
+    use Data::Dumper;
+    carp Dumper({%labeled_data});
+    carp '-' x 72 . "\n";
+=cut
+	
+    my $entity_cp = $args->{-fm_obj}->email_template(
         {
-            -entity                   => $orig_entity,
+            -entity                   => $entity_cp,
             -list_settings_vars       => $self->{ls}->params,
             -list_settings_vars_param => { -dot_it => 1 },
             -subscriber_vars          => $subscriber_vars,
@@ -3441,15 +3449,17 @@ sub _mail_merge {
         }
     );
 
-    #carp "MODIFIED ENTITY\n";
-    #carp '-' x 72 . "\n";
-    #carp $entity->as_string;
-    #carp '-' x 72 . "\n";
+=cut
+	
+    carp "MODIFIED ENTITY\n";
+    carp '-' x 72 . "\n";
+    carp $entity_cp->as_string;
+    carp '-' x 72 . "\n";
+=cut
+	
+    my $msg = $entity_cp->as_string;
+       $msg = safely_decode($msg);
 
-    my $msg = $entity->as_string;
-    $msg = safely_decode($msg);
-
-   
     my ( $h, $b ) = split( "\n\n", $msg, 2 );
     undef($msg);
 
@@ -3458,13 +3468,46 @@ sub _mail_merge {
 		Body => $b
 	);
 
-	$orig_entity->purge; 
-	$entity->purge;
+	$entity_cp->purge; 
+	#$entity->purge;
 	
-    undef($orig_entity);
-    undef($entity);
+     undef($entity_cp);
+     #undef($entity);
 
     return %final;
+}
+
+sub copy_entity { 
+	my $self = shift; 
+	my $entity = shift;
+	my $entity_cp = $self->{parser}->parse_data($entity->as_string);
+	return $entity_cp;
+
+
+=cut
+	
+	my $filename = $DADA::Config::TMP 
+	. '/mime_cache/mime_tmp-' 
+	. time
+	. '-' 
+	. DADA::Security::Password::generate_rand_string_md5() . '.mime';
+	
+	  $filename = make_safe($filename);
+    
+	  warn '$filename' . $filename; 
+	  
+	open my $tmp_file, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $filename or die $!;
+	$entity->print($tmp_file) or die; 
+	close($tmp_file) or die;
+	
+    require MIME::Parser;
+    my $parser = new MIME::Parser;
+       $parser = DADA::App::Guts::optimize_mime_parser($parser);
+	
+	my $new_entity = $parser->parse_open($filename);
+	return $new_entity; 
+=cut
+		
 }
 
 sub _make_token {
