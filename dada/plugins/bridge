@@ -3020,7 +3020,7 @@ sub find_return_path {
 
         my $entity = $parser->parse_data($msg);
         $rp = $entity->head->get( 'Return-Path', 0 );
-
+		$entity->purge; 
     };
     if ( !$@ ) {
         chomp $rp;
@@ -3211,6 +3211,7 @@ sub inject {
         my $entity = $parser->parse_data(safely_encode($msg)); 
            $entity = $dfm->change_content_transfer_encoding({-entity => $entity}); 
            $msg    = safely_decode($entity->as_string); 
+		   $entity->purge;
            undef $entity; 
            # warn 'Hey Hey! $msg ' . safely_encode($msg); 
     } catch { 
@@ -3548,6 +3549,10 @@ sub moderation_msg {
             }
         );
     }
+	
+	$entity->purge;
+	$reply->purge;
+	 
     return $r; 
 }
 
@@ -3587,8 +3592,8 @@ sub send_moderation_msg {
     my $dfm = DADA::App::FormatMessages->new( -List => $self->{list} );
 
     my $subject = $entity->head->get( 'Subject', 0 );
-    $subject =~ s/\n//g;
-    $subject = $dfm->_decode_header($subject);
+       $subject =~ s/\n//g;
+       $subject = $dfm->_decode_header($subject);
 
     my $from = $entity->head->get( 'From', 0 );
     $from =~ s/\n//g;
@@ -3626,6 +3631,9 @@ sub send_moderation_msg {
             },
         }
     );
+	
+	$reply->purge; 
+	$entity->purge;
 }
 
 sub send_accept_msg {
@@ -3698,6 +3706,10 @@ sub send_accept_msg {
             },
         }
     );
+	
+	$reply->purge; 
+	$entity->purge;
+	
 }
 
 sub send_reject_msg {
@@ -3774,6 +3786,10 @@ sub send_reject_msg {
             },
         }
     );
+	
+	$reply->purge; 
+	$entity->purge;
+	
 }
 
 sub is_moderated_msg {
