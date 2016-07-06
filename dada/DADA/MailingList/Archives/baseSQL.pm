@@ -488,9 +488,9 @@ sub uses_backupDirs {
 
 
 sub DESTROY { 
-	my $self = shift; 
-	$self->{parser}->filer->purge
-		if $self->{parser};
+	#my $self = shift; 
+	#$self->{parser}->filer->purge
+	#	if $self->{parser};
 }
 
 

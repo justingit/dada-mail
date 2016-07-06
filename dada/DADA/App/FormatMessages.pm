@@ -2747,9 +2747,9 @@ sub pre_process_msg_strings {
 
 sub DESTROY {
 
-	my $self = shift; 
-    $self->{parser}->filer->purge
-		if $self->{parser};
+	#my $self = shift; 
+    #$self->{parser}->filer->purge
+	#	if $self->{parser};
 }
 
 

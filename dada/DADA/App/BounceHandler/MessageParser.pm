@@ -1868,7 +1868,7 @@ sub DESTROY {
 	
 	my $self = shift; 
 
-    $self->{parser}->filer->purge
-		if $self->{parser};
+#    $self->{parser}->filer->purge
+#		if $self->{parser};
 }
 1;
