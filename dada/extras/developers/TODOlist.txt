@@ -12,6 +12,11 @@ Key:
 [*] Naw...
 [?] Someday
 
+TMP files for MIME Parser - use ENV var for TMP (probably /tmp), if not... choose?
+MIME::Parser::Filer -> purge()
+bascically after as_string, eh? 
+
+
 Can the encrypted password be exportable (and also importable?)
 
 Lt's double-check the new index I've made is gooder. for the rate limit stuff. 
