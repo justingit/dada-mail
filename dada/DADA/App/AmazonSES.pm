@@ -11,54 +11,22 @@ use vars qw($AUTOLOAD);
 use Carp qw(croak carp);
 use Try::Tiny; 
 
-my %allowed = (); 
 
 sub new {
 
-	my $that = shift; 
-	my $class = ref($that) || $that; 
-	
-	my $self = {
-		_permitted => \%allowed, 
-		%allowed,
-	};
-	
-	bless $self, $class;
-	
+	my $class = shift;
 	my %args = (@_); 
-		
-   $self->_init(\%args); 
-   return $self;
+
+	my $self = {};
+	bless $self, $class;
+	$self->_init(\%args); 
+	return $self;
 }
-
-
-
-
-sub AUTOLOAD { 
-    my $self = shift; 
-    my $type = ref($self) 
-    	or croak "$self is not an object"; 
-    	
-    my $name = $AUTOLOAD;
-       $name =~ s/.*://; #strip fully qualifies portion 
-    
-    unless (exists  $self -> {_permitted} -> {$name}) { 
-    	croak "Can't access '$name' field in object of class $type"; 
-    }    
-    if(@_) { 
-        return $self->{$name} = shift; 
-    } else { 
-        return $self->{$name}; 
-    }
-}
-
 
 
 
 sub _init { 
-
 	my $self = shift; 
-		
 }
 
 sub verify_sender { 
@@ -83,27 +51,27 @@ sub verify_sender {
 
 
 sub sender_verified { 
-    	my $self  = shift; 
-    	my $email = shift; 
+	my $self  = shift; 
+	my $email = shift; 
 
-    	my $status = undef; 
-    	my $result = undef; 
+	my $status = undef; 
+	my $result = undef; 
 
-    	try { 
-    		require Net::Amazon::SES; 
-    		my $ses_obj = Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
-    		($status, $result) = $ses_obj->sender_verified($email);
-    	}
-    	catch { 
-    		carp $_; 
-    	};
-        if($result eq 'Success'){ 
-            return 1; 
-        }
-        else { 
-            return 0; 
-        }
+	try { 
+		require Net::Amazon::SES; 
+		my $ses_obj = Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
+		($status, $result) = $ses_obj->sender_verified($email);
+	}
+	catch { 
+		carp $_; 
+	};
+    if($result eq 'Success'){ 
+        return 1; 
     }
+    else { 
+        return 0; 
+    }
+}
 
 
 
@@ -221,6 +189,7 @@ sub _save_ses_stats {
     close $fh or die $!; 
 }
 
+sub END {}
 sub DESTROY {}
     
 1;

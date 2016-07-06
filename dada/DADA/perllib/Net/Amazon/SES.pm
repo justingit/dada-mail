@@ -74,6 +74,10 @@ sub new {
 
 sub AUTOLOAD {
     my $self = shift;
+    
+	# don't do any work if we are being called for DESTROY
+    return if(substr($AUTOLOAD, -7) eq 'DESTROY');
+	
     my $type = ref($self)
       or croak "$self is not an object";
 
@@ -819,6 +823,9 @@ sub get_response {
 
 
 
-sub DESTORY {}
+#sub DESTORY {}
+	
 
 1;
+
+__END__

@@ -40,6 +40,8 @@ sub AUTOLOAD {
     my $type = ref($self)
       or croak "$self is not an object";
 
+	return if(substr($AUTOLOAD, -7) eq 'DESTROY');
+
     my $name = $AUTOLOAD;
     $name =~ s/.*://;    #strip fully qualifies portion
 
@@ -58,12 +60,16 @@ sub _init {
 
     my $self = shift;
     my $args = shift;
+	
+    require MIME::Parser;
+    $self->{parser} = new MIME::Parser;
+    $self->{parser} = optimize_mime_parser($self->{parser});
 }
 
 sub run_all_parses {
 
     my $self        = shift;
-    my ($entity)    = shift;
+    my $entity      = shift;
     my $email       = '';
     my $list        = '';
     my $diagnostics = {};
@@ -525,12 +531,9 @@ sub find_list_in_list_headers {
     }
 	elsif($entity->head->mime_type eq 'text/rfc822-headers'){ 
 
-	    require MIME::Parser;
-	    my $parser = new MIME::Parser;
-	    $parser = optimize_mime_parser($parser);
 
 	    eval {
-	        $orig_msg_copy = $parser->parse_data( $entity->bodyhandle->as_string );
+	        $orig_msg_copy = $self->{parser}->parse_data( $entity->bodyhandle->as_string );
 	    };
 	    if ($@) {
 	        warn "Trouble parsing text/rfc822-headers message. $@";
@@ -592,12 +595,9 @@ sub find_message_id_in_headers {
     
     if ( $entity->head->mime_type eq 'message/rfc822' || $entity->head->mime_type eq 'text/rfc822-headers') {
         my $orig_msg_copy = ''; 
-		require MIME::Parser;
-        my $parser = new MIME::Parser;
-        $parser = optimize_mime_parser($parser);
 
 		if($entity->head->mime_type eq 'text/rfc822-headers') { 			
-			eval { $orig_msg_copy = $parser->parse_data($entity->bodyhandle->as_string) };
+			eval { $orig_msg_copy = $self->{parser}->parse_data($entity->bodyhandle->as_string) };
 			if ( $@ ) {
 				warn "Trouble parsing text/rfc822-headers message. $@"; 
 			}
@@ -610,7 +610,7 @@ sub find_message_id_in_headers {
            my $munge = $orig_msg_copy->as_string; 
            if($munge =~ m/^\n/) { # you've got to be kidding me...
                 $munge =~ s/^\n//; 
-                $orig_msg_copy = $parser->parse_data($munge);
+                $orig_msg_copy = $self->{parser}->parse_data($munge);
             }
             
             undef $munge; 
@@ -626,6 +626,8 @@ sub find_message_id_in_headers {
 		else { 
         	$mid = $orig_msg_copy->head->get( 'Message-ID', 0 );
         }
+		
+		$orig_msg_copy->purge; 
         
 		$mid = strip($mid);
         chomp($mid);
@@ -1143,13 +1145,10 @@ sub parse_for_secureserver_dot_net {
 		}
 		undef $IO; 
 		# And then, just do a generic parse on the original message: 
-		require MIME::Parser;
-	    my $parser = new MIME::Parser;
-	    $parser = optimize_mime_parser($parser);
 	    
 	   	my $copy_entity;
 		$stuff =~ s/^(\n|\r)//ms; 
-       eval { $copy_entity = $parser->parse_data($stuff) };
+       eval { $copy_entity = $self->{parser}->parse_data($stuff) };
 		if($@){ 
 			carp "problems with parsing entity: $@";
 		}
@@ -1455,16 +1454,13 @@ sub parse_for_exim {
                         }
                     }
 					$IO->close;  
-                    require MIME::Parser;
-                    my $parser = new MIME::Parser;
-                    $parser = optimize_mime_parser($parser);
                     my $orig_entity;
 					
 					
 					$copy =~ s/^\r|\n//; 
 					$copy =~ s/^\r|\n//; 
 					
-                    eval { $orig_entity = $parser->parse_data($copy) };
+                    eval { $orig_entity = $self->{parser}->parse_data($copy) };
                     if ( !$@ ) {
 					$list = $self->list_in_list_headers($orig_entity); 
 					}
@@ -1868,5 +1864,11 @@ sub parse_using_m_ds_bp {
 
 }
 
-sub DESTROY { }
+sub DESTROY {
+	
+	my $self = shift; 
+
+    $self->{parser}->filer->purge
+		if $self->{parser};
+}
 1;

@@ -128,6 +128,8 @@ sub AUTOLOAD {
     my $self = shift; 
     my $type = ref($self) 
     	or croak "$self is not an object"; 
+
+	return if(substr($AUTOLOAD, -7) eq 'DESTROY');
     	
     my $name = $AUTOLOAD;
        $name =~ s/.*://; #strip fully qualifies portion 
@@ -307,9 +309,15 @@ sub format_headers_and_body {
     	if $entity->head->get('X-Mailer', 0); 
 		# or how about, count?
 
+	my $has = $entity->head->as_string;
+	my $bas = $entity->body_as_string; 
+	
+	$entity->purge;
+	undef($entity);
+	
 	return (
-	    safely_decode($entity->head->as_string), 
-	    safely_decode($entity->body_as_string)
+	    safely_decode($has), 
+	    safely_decode($bas)
 	);
 
 }
@@ -2740,7 +2748,8 @@ sub pre_process_msg_strings {
 sub DESTROY {
 
 	my $self = shift; 
-	$self->{parser}->filer->purge;
+    $self->{parser}->filer->purge
+		if $self->{parser};
 }
 
 

@@ -118,6 +118,8 @@ sub AUTOLOAD {
     my $type = ref($self)
       or croak "$self is not an object";
 
+	return if(substr($AUTOLOAD, -7) eq 'DESTROY');
+
     my $name = $AUTOLOAD;
     $name =~ s/.*://;    #strip fully qualifies portion
 
@@ -2473,6 +2475,8 @@ sub mass_send {
                 $self->ses_obj(undef);
             }
 
+			$entity->purge; 
+			
             warn '['
               . $self->{list}
               . '] Mass Mailing:'
@@ -2734,7 +2738,7 @@ sub _content_transfer_encode {
 
     require MIME::Parser;
     my $parser = new MIME::Parser;
-    $parser = DADA::App::Guts::optimize_mime_parser($parser);
+       $parser = DADA::App::Guts::optimize_mime_parser($parser);
 
     my $encoding = $self->{ls}->param('plaintext_encoding');
     if ( $fields->{'Content-type'} =~ m{html} ) {
@@ -2783,10 +2787,11 @@ sub _content_transfer_encode {
         return %{ $args{-fields} };
     }
     else {
-
         return %new_fields;
     }
-
+	
+	$parser->filer->purge
+		if $parser;
 }
 
 sub _domain_for_smtp {
@@ -3272,6 +3277,10 @@ sub _email_batched_finished_notification {
     $self->send(
         $self->return_headers( safely_decode( $n_entity->head->as_string ), ),
         Body => $body, );
+	
+	$n_entity->purge;
+	
+	return 1; 
 
 }
 
@@ -3440,12 +3449,20 @@ sub _mail_merge {
     my $msg = $entity->as_string;
     $msg = safely_decode($msg);
 
-    undef($entity);
-    undef($orig_entity);
+   
     my ( $h, $b ) = split( "\n\n", $msg, 2 );
     undef($msg);
 
-    my %final = ( $self->return_headers($h), Body => $b, );
+    my %final = ( 
+		$self->return_headers($h), 
+		Body => $b
+	);
+
+	$orig_entity->purge; 
+	$entity->purge;
+	
+    undef($orig_entity);
+    undef($entity);
 
     return %final;
 }

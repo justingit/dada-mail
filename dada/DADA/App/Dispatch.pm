@@ -58,6 +58,8 @@ sub AUTOLOAD {
     my $type = ref($self)
       or croak "$self is not an object";
 
+	return if(substr($AUTOLOAD, -7) eq 'DESTROY');
+
     my $name = $AUTOLOAD;
     $name =~ s/.*://;    #strip fully qualifies portion
 

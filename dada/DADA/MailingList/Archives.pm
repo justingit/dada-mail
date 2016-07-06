@@ -308,6 +308,11 @@ sub get_header {
 		$header = $self->strip_subjects_appended_list_name($header)
 			if $self->{ls}->param('no_prefix_list_name_to_subject_in_archives') == 1; 
 	}
+	
+	
+	$entity->purge;
+	undef($entity);
+	
 	return $header; 
 	
 }
@@ -785,6 +790,8 @@ sub _email_protect {
         }
 	}
  
+	$entity->purge;
+ 	undef($entity); 
 	
    return $body; 
 
@@ -1034,6 +1041,9 @@ sub attachment_list {
 	my $entity      = $self->_entity_from_raw_msg($raw_msg);
 	my $attachments = $self->find_attachment_list($entity, $key); 
 
+	$entity->purge;
+ 	undef($entity); 
+
 	return $attachments; 
 }
 
@@ -1082,6 +1092,10 @@ sub find_attachment_list {
 			#warn "no name?!"; 
 		}	
 	}
+	
+	$entity->purge;
+ 	undef($entity); 
+	
 	return $attachment_list; 
 }
 
@@ -1150,7 +1164,11 @@ sub view_file_attachment {
 	my $h = {}; 
 	    
 	if($args{-mode} eq 'inline'){ 
+		# ?
 		$h->{-type} = $a_entity->head->mime_type; 
+		
+		return ($h, $body->as_string);
+		
 	}else{ 
 	    $h->{'-Content-disposition'} = 'attachment; filename="' . $filename . '"';
 #	   	$h->{-type}                  = 'application/octet-stream';
@@ -1160,6 +1178,9 @@ sub view_file_attachment {
 	#	# encoded. Yes or no?
 	#	$r .=  $body->as_string; 
 	
+		$a_entity->purge;
+ 		undef($a_entity); 
+
 		return ($h, $body->as_string);	
 	}
 
@@ -1204,6 +1225,8 @@ sub _find_filename_attachment_entity {
 		}
 	}
 	
+	$entity->purge;
+	undef($entity); 
 	# If we get here, it means we weren't able to find the attachment, sadly. 
 	return undef; 
 }
@@ -1360,6 +1383,9 @@ EOF
  
 	   $r =  $body->as_string; 
 	  
+	   $entity->purge;
+	   undef($entity); 
+		
 	   return ($h, $r); 	
 }
 
@@ -1518,12 +1544,22 @@ sub _faked_oldstyle_message {
 	
 	if(!$entity){
 		warn "Something's wrong $!"; 
+		
+ 	   $entity->purge;
+ 	   undef($entity); 
+		
 		return ('', ''); 	
 	}else{ 
 		$entity = $self->_get_body_entity($entity); 
-		
+			
 		# UnEncoded. YES. 
-		return ($entity->bodyhandle->as_string, $entity->head->mime_type); 
+		my $bas = $entity->bodyhandle->as_string;
+		my $mt  = $entity->head->mime_type;
+ 	   
+	   $entity->purge;
+ 	   undef($entity); 
+		
+		return ($bas, $mt); 
 	}
 }
 
@@ -1639,13 +1675,23 @@ sub massage_msg_for_resending {
 	if($args{'-split'} == 1){ 
 		# Not sure about this one - probably want it unencoded, so that we can resend it? Meh?
 		
+		my $has = $entity->head->as_string;
+		my $bas = $entity->body_as_string; 
+		
+ 	   $entity->purge;
+  	   undef($entity); 
+		
 		return (
-			 safely_decode($entity->head->as_string),
-		   	 safely_decode($entity->body_as_string), 
+			 safely_decode($has),
+		   	 safely_decode($bas), 
 		) ;
 	}else{
 		my $str =  safely_decode($entity->as_string);
 		$str = $self->massage($str); 
+		
+  	   $entity->purge;
+   	   undef($entity); 
+		
 		return $str; 
 	}
 }
@@ -1824,7 +1870,7 @@ sub massaged_msg_for_display {
             $body = $self->_highlight_quoted_text($body)
               unless $args->{-plain_text} == 1;
         }
-        $content_type = 'text/plain';
+        $content_type = 'text/plain'; 		
 
     }
     elsif ( $b_entity->head->mime_type eq 'text/html' ) {
@@ -1846,8 +1892,6 @@ sub massaged_msg_for_display {
 
         $body = $self->massage($body);
 		
-		
-		
         $body = $self->_parse_in_list_info(
             -data => $body,
             (
@@ -1865,6 +1909,7 @@ sub massaged_msg_for_display {
           . $args->{-key}
           . ', list: '
           . $self->{list_info}->{list};
+		  
     }
 
 	$body = $self->_neuter_confirmation_token_links($body);
@@ -1875,9 +1920,11 @@ sub massaged_msg_for_display {
 	if ($args->{-entity_protect} == 1) {
 		$body = $self->_email_protect( $b_entity, $body )
 	}
-
-
-
+	
+    if($b_entity) {
+		$b_entity->purge;
+	    undef($b_entity); 		
+	}
 
     if ( $args->{-body_only} == 1 ) {
         $body = $self->_chomp_off_body($body);
@@ -1907,8 +1954,10 @@ sub massaged_msg_for_display {
 		$body       =~ s/$closing/\]/g; 
 		
     }
-
 	
+   $entity->purge;
+   undef($entity); 
+		
     return wantarray ? ( $body, $content_type ) : $body;
 }
 
@@ -2663,6 +2712,12 @@ sub _decode_header {
 	else { 
 		return $header; 
 	}
+}
+
+sub DESTROY { 
+	my $self = shift; 
+    $self->{parser}->filer->purge
+		if $self->{parser};
 }
 
 
