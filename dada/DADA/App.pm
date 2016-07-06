@@ -61,7 +61,8 @@ sub cgiapp_init {
     # Kinda Weird.
     $DADA::Template::Widgets::q = $self->query;
     $DADA::Template::HTML::q    = $self->query;
-
+	
+    
 }
 
 sub cgiapp_postrun {
@@ -325,6 +326,41 @@ sub setup {
 	    );
 	    # call this runmode when a violation is detected
 	    $rate_limit->violation_mode('rate_limit_reached');
+	}
+}
+
+sub teardown { 
+
+    my $dir = make_safer($DADA::Config::TMP . '/mime_cache');
+    my $file = undef;
+    my @files;
+
+	if(-d $dir) {
+	    opendir( DIR, $dir ) or die "$!";
+	    while ( defined( $file = readdir DIR ) ) {
+	        next if $file =~ /^\.\.?$/;
+	        $file =~ s(^.*/)();
+			$file = make_safer($dir . '/' . $file);
+	        if ( -f  $file) {
+				if(-M $file > 1){ 
+					warn 'deleting file:' . $file; 
+			        my $unlink_check = unlink($file);
+			        if ( $unlink_check != 1 ) {
+			            warn "deleting tmp file didn't work for: " . $file;
+			        }
+				}
+	        }
+
+	    }
+	    closedir(DIR);
+	}
+	else { 
+    	if(mkdir( $dir, $DADA::Config::DIR_CHMOD )) { 
+			# good! 
+		}
+		else { 
+			warn "couldn't make dir, $dir";
+		}
 	}
 }
 
@@ -597,9 +633,9 @@ sub sign_in {
         return user_error( { -error => 'install_dir_still_around' } );
     }
 
-    my $list = $q->param('list');
-
-    my $list_exists = check_if_list_exists( -List => $list, );
+    my $list                = $q->param('list');
+	my $list_password_reset = $q->param("list_password_reset") || 0; 
+    my $list_exists  = check_if_list_exists( -List => $list, );
 
     if ( $list_exists >= 1 ) {
 
@@ -632,10 +668,11 @@ sub sign_in {
                         -Use_Custom => 0,
                     },
                     -vars => {
-                        flavor_sign_in => 1,
-                        auth_state     => $auth_state,
-						login_widget   => 'hidden_field',
-						selected_list  => $list,
+                        flavor_sign_in      => 1,
+                        auth_state          => $auth_state,
+						login_widget        => 'hidden_field',
+						selected_list       => $list,
+						list_password_reset => $list_password_reset, 
                     },
                     -list_settings_vars_param => {
                         -list   => $list,
@@ -10846,7 +10883,9 @@ sub email_password {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     require DADA::Security::Password;
-
+	warn q{$q->param('pass_auth_id')}  .   $q->param('pass_auth_id');
+	warn q{$ls->param('pass_auth_id')} .  $ls->param('pass_auth_id'); 
+	
     if (   ( $ls->param('pass_auth_id') ne "" )
         && ( defined( $ls->param('pass_auth_id') ) )
         && ( $q->param('pass_auth_id') eq $ls->param('pass_auth_id') ) )
@@ -10897,7 +10936,11 @@ sub email_password {
 
         $self->header_type('redirect');
         $self->header_props(
-            -url => $DADA::Config::S_PROGRAM_URL . '?flavor=' . $DADA::Config::SIGN_IN_FLAVOR_NAME . '&list=' . $list );
+            -url => $DADA::Config::S_PROGRAM_URL 
+			. '?flavor=' . $DADA::Config::SIGN_IN_FLAVOR_NAME 
+			. '&list='   . $list 
+		    . '&list_password_reset=1'
+		);
     }
     else {
 
@@ -10966,7 +11009,9 @@ sub email_password {
 
         my $random_string = DADA::Security::Password::generate_rand_string();
 
-        $ls->save({ -setttings => { pass_auth_id => $random_string, } });
+		warn '$random_string' . $random_string; 
+		
+        $ls->save({ -settings => { pass_auth_id => $random_string, } });
 
         require DADA::App::ReadEmailMessages;
         my $rm       = DADA::App::ReadEmailMessages->new;

@@ -2820,7 +2820,30 @@ sub optimize_mime_parser {
 	
 	# what's going on - 
 	# http://search.cpan.org/~dskoll/MIME-tools-5.502/lib/MIME/Parser.pm#OPTIMIZING_YOUR_PARSER
+
+    my $dir = make_safer($DADA::Config::TMP . '/mime_cache');
+	if(! -d $dir) {
+		if(mkdir( $dir, $DADA::Config::DIR_CHMOD )) { 
+			# good! 
+		}
+		else { 
+			warn "couldn't make dir, $dir";
+		}
+	}
 	
+	$parser->output_to_core(0);
+	$parser->tmp_to_core(0);
+	$parser->output_dir(make_safer($DADA::Config::TMP . '/mime_cache') );
+	$parser->tmp_dir(   make_safer($DADA::Config::TMP . '/mime_cache') );
+
+	
+	# warn q{$parser->output_to_core} . $parser->output_to_core; 
+	# warn '$parser->tmp_to_core' . $parser->tmp_to_core; 
+	# warn q{$parser->output_dir} . $parser->output_dir; 	
+	# warn q{$parser->tmp_dir} . $parser->tmp_dir; 
+	
+=cut
+		
 	if($DADA::Config::MIME_OPTIMIZE eq 'faster'){
 	
 		$parser->output_to_core(0);
@@ -2849,7 +2872,8 @@ sub optimize_mime_parser {
 	
 		croak 'bad $DADA::Config::MIME_OPTIMIZE setting! (' . $DADA::Config::MIME_OPTIMIZE . ')'; 
 	}
-	
+=cut
+		
 	return $parser; 
 }
 
