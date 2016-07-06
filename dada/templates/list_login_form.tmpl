@@ -4,9 +4,17 @@
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
 
+
+
+
 <div class="row">
 	<div class="small-10 medium-5 large-4 small-centered medium-centered large-centered columns">
 
+		<!-- tmpl_if list_password_reset -->
+			<div class="alert-box info radius">
+				Password reset. A new List Password has been sent to the List Owner via email.
+			</div>
+		<!-- /tmpl_if -->
 		<ul class="tabs" data-tab>
 			<li class="tab-title active">
 				<a href="#logintab" target="_self">
