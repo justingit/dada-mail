@@ -217,7 +217,8 @@ sub subscription_check {
 		&& $args->{-mode} eq 'user'
 	){ 
 		if($ls->param('enable_sub_confirm_stopforumspam_protection') == 1) {
-			warn '$self->sfs_check($email)' . $self->sfs_check($email); 
+			warn '$self->sfs_check($email)' . $self->sfs_check($email)
+				if $t; 
 			if ($self->sfs_check($email) == 0) { 
 				 $errors->{stop_forum_spam_check_failed} = 1;
 			}
@@ -383,7 +384,11 @@ sub unsubscription_check {
 sub sfs_check { 
 
 	# Pass: 1
-	# Fail: 0; 
+	# Fail: 0;
+	if($ENV{NO_DADA_MAIL_CONFIG_IMPORT} == 1){ 
+		return 1;
+	} 
+	
 	my $self  = shift; 
 	my $email = shift; 
 		
