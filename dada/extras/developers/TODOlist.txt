@@ -12,6 +12,9 @@ Key:
 [*] Naw...
 [?] Someday
 
+During pgrade, If, " reCAPTCHA v2 (recommended) " is selected, you do nont see the ReCAPTCHA public/private key. You should!
+
+
 TMP files for MIME Parser - use ENV var for TMP (probably /tmp), if not... choose?
 MIME::Parser::Filer -> purge()
 bascically after as_string, eh? 

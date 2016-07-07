@@ -1329,6 +1329,87 @@
 
 		<!-- /tmpl_if --> 
 
+
+			<label for="configure_mime_tools">
+				<input type="checkbox" name="configure_mime_tools" id="configure_mime_tools" value="1">			
+				Configure Email Parsing Engine
+			</label>
+	
+			<div id="configure_mime_tools_options">
+				<div class="panel"> 
+					<h4>Parser Optimiztion</h4>
+					<div class="row">
+						<div class="small-12 columns">
+							<label for="mime_tools_options_tmp_to_core_0">
+								<input 
+									type="radio" 
+									name="mime_tools_options_tmp_to_core"
+									id="mime_tools_options_tmp_to_core_0"
+									value="1"
+									checked="checked"
+								>
+								Parse Messages in Memory 
+							</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="small-12 columns">
+							<label for="mime_tools_options_tmp_to_core_1">
+								<input 
+									type="radio" 
+									name="mime_tools_options_tmp_to_core"
+									id="mime_tools_options_tmp_to_core_1"
+									value="0"
+								>
+								Parse Messags using Tempory Files
+							</label>
+							<div class="row">
+								<div class="small-1 columns">
+								</div>
+								<div class="small-11 columns">
+									<h4>
+										Temporary Files Location
+									</h4>
+									<div class="row">
+										<div class="small-12 columns">
+											<label for="mime_tools_options_tmp_dir_server_default">
+												<input 
+													type="radio" 
+													name="mime_tools_options_tmp_dir"
+													id="mime_tools_options_tmp_dir_server_default"
+													value="server_default"
+												>
+												Server's Temporary Directory (<!-- tmpl_var Server_TMP_dir -->)
+											</label>
+										</div>
+									</div>
+									
+									<div class="row">
+										<div class="small-12 columns">
+											<label for="mime_tools_options_tmp_dir_app_default">
+												<input 
+													type="radio" 
+													name="mime_tools_options_tmp_dir"
+													id="mime_tools_options_tmp_dir_app_default"
+													value="app_default"
+													checked="checked"
+												>
+												Dada Mail's Temporary Directory
+											</label>
+										</div>
+									</div>
+									
+								</div>
+							</div>
+							
+						</div>
+					</div>
+						
+
+				</div>
+			</div> 
+			
+			
 		<!-- tmpl_if show_debugging_options --> 
 	
 			<label for="configure_debugging">

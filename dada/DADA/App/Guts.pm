@@ -2816,66 +2816,42 @@ sub optimize_mime_parser {
 	
 	croak 'need a MIME::Parser object...' 
 		if ! $parser; 
-		
 	
-	# what's going on - 
-	# http://search.cpan.org/~dskoll/MIME-tools-5.502/lib/MIME/Parser.pm#OPTIMIZING_YOUR_PARSER
+	if($DADA::Config::MIME_TOOLS_PARAMS->{tmp_to_core} == 1){ 
+		$parser->tmp_to_core(1); 
+		$parser->output_to_core(1);
+	}
+	else { 
+		$parser->tmp_to_core(0);
+		$parser->output_to_core(0);
+		
+		if($DADA::Config::MIME_TOOLS_PARAMS->{tmp_dir} eq 'app_default' ) {
+			
+		    my $dir = make_safer($DADA::Config::TMP . '/mime_cache');
+			if(! -d $dir) {
+				if(mkdir( $dir, $DADA::Config::DIR_CHMOD )) { 
+					# good! 
+				}
+				else { 
+					warn "couldn't make dir, $dir";
+				}
+			}
 
-    my $dir = make_safer($DADA::Config::TMP . '/mime_cache');
-	if(! -d $dir) {
-		if(mkdir( $dir, $DADA::Config::DIR_CHMOD )) { 
-			# good! 
+			$parser->output_dir(make_safer($DADA::Config::TMP . '/mime_cache') );
+			$parser->tmp_dir(   make_safer($DADA::Config::TMP . '/mime_cache') );
 		}
 		else { 
-			warn "couldn't make dir, $dir";
+			my $Server_TMP_dir          = $ENV{TMP} // '/tmp';
+			$parser->output_dir(make_safer($Server_TMP_dir) );
+			$parser->tmp_dir(   make_safer($Server_TMP_dir) );			
 		}
 	}
-	
-	$parser->output_to_core(0);
-	$parser->tmp_to_core(0);
-	$parser->output_dir(make_safer($DADA::Config::TMP . '/mime_cache') );
-	$parser->tmp_dir(   make_safer($DADA::Config::TMP . '/mime_cache') );
-
-	
-	# warn q{$parser->output_to_core} . $parser->output_to_core; 
-	# warn '$parser->tmp_to_core' . $parser->tmp_to_core; 
-	# warn q{$parser->output_dir} . $parser->output_dir; 	
-	# warn q{$parser->tmp_dir} . $parser->tmp_dir; 
-	
-=cut
-		
-	if($DADA::Config::MIME_OPTIMIZE eq 'faster'){
-	
-		$parser->output_to_core(0);
-		$parser->tmp_to_core(0);
-		# MIME::Parser no longer supports IO::InnerFile, but this method is retained 
-		# for backwards compatibility. It does nothing.
-		#
-		# $parser->use_inner_files(0);
-		#
-		$parser->output_dir($DADA::Config::TMP );
-	
-	}elsif($DADA::Config::MIME_OPTIMIZE eq 'less memory'){ 
-	
-		$parser->output_to_core(0);
-		$parser->tmp_to_core(0);
-		$parser->output_dir($DADA::Config::TMP );
-	
-	}elsif($DADA::Config::MIME_OPTIMIZE eq 'no tmp files'){ 
-	
-		$parser->tmp_to_core(1); 
-		$parser->output_to_core(1); # pretty bad when it comes to large files...
-		$parser->output_dir($DADA::Config::TMP );	# uneeded, but just in case?
-
-		
-	}else{ 
-	
-		croak 'bad $DADA::Config::MIME_OPTIMIZE setting! (' . $DADA::Config::MIME_OPTIMIZE . ')'; 
-	}
-=cut
 		
 	return $parser; 
 }
+
+
+
 
 sub csv_subscriber_parse {
 

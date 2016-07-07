@@ -45,6 +45,7 @@ my $Dada_Files_Dir_Name = '.dada_files';
 my $Config_LOC             = '../DADA/Config.pm';
 my $Support_Files_Dir_Name = 'dada_mail_support_files';
 my $File_Upload_Dir        = 'file_uploads';
+my $Server_TMP_dir          = $ENV{TMP} // '/tmp';
 
 # Save the errors this creates in a variable
 #
@@ -822,6 +823,7 @@ sub scrn_configure_dada_mail {
 
                 amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu =>
                   $amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu,
+				Server_TMP_dir => $Server_TMP_dir, 
                 Big_Pile_Of_Errors => $Big_Pile_Of_Errors,
                 Trace              => $Trace,
             },
@@ -1315,7 +1317,25 @@ sub grab_former_config_vals {
               $BootstrapConfig::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage};
         }
     }
+	
+	if(keys %$BootstrapConfig::MIME_TOOLS_PARAMS){ 
+		
+        $opt->{'mime_tools_options_tmp_to_core'} 
+			= $BootstrapConfig::MIME_TOOLS_PARAMS->{tmp_to_core};
 
+        $opt->{'mime_tools_options_tmp_dir_'} 
+			= $BootstrapConfig::MIME_TOOLS_PARAMS->{tmp_dir_};
+	}
+	
+=cut
+	
+	// { 
+	tmp_to_core    => 0, 
+	tmp_dir        => 'server_default', #server_default, #app_default
+};)
+
+=cut
+	
     my $dash_opt = {};
     for ( keys %$opt ) {
         $dash_opt->{ '-' . $_ } = $opt->{$_};
@@ -1548,6 +1568,7 @@ sub query_params_to_install_params {
       configure_scheduled_jobs
       scheduled_jobs_flavor
       scheduled_jobs_log
+	  
 
       configure_profiles
       profile_enabled
@@ -1596,6 +1617,10 @@ sub query_params_to_install_params {
 	  security_rate_limiting_max_hits
 	  security_rate_limiting_timeframe
 
+	  configure_mime_tools
+	  mime_tools_options_tmp_to_core
+	  mime_tools_options_tmp_dir
+	  
       configure_captcha
       captcha_type
       captcha_reCAPTCHA_remote_addr
@@ -2263,7 +2288,17 @@ sub create_dada_config_file {
         $captcha_params->{captcha_reCAPTCHA_Mailhide_private_key} =
           clean_up_var( $ip->{-captcha_reCAPTCHA_Mailhide_private_key} );
     }
-
+	
+	my $mime_tools_params = {}; 
+	if($ip->{configure_mime_tools}) { 
+        $mime_tools_params->{configure_mime_tools}             = 1;
+		$mime_tools_params->{mime_tools_options_tmp_to_core} = $ip->{-mime_tools_options_tmp_to_core};
+		$mime_tools_params->{mime_tools_options_tmp_dir}     = $ip->{-mime_tools_options_tmp_dir};
+	}
+  
+  mime_tools_options_tmp_to_core
+  mime_tools_options_tmp_dir
+  
     my $global_mailing_list_options = {};
     if ( $ip->{-configure_global_mailing_list_options} == 1 ) {
         $global_mailing_list_options->{configure_global_mailing_list_options} = 1;
@@ -2372,6 +2407,7 @@ sub create_dada_config_file {
                 %{$profiles_params},
                 %{$security_params},
                 %{$captcha_params},
+				%{$mime_tools_params},
                 %{$global_mailing_list_options},
                 %{$mass_mailing_params},
                 %{$confirmation_token_params},
