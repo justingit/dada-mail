@@ -3482,32 +3482,6 @@ sub copy_entity {
 	my $entity = shift;
 	my $entity_cp = $self->{parser}->parse_data($entity->as_string);
 	return $entity_cp;
-
-
-=cut
-	
-	my $filename = $DADA::Config::TMP 
-	. '/mime_cache/mime_tmp-' 
-	. time
-	. '-' 
-	. DADA::Security::Password::generate_rand_string_md5() . '.mime';
-	
-	  $filename = make_safe($filename);
-    
-	  warn '$filename' . $filename; 
-	  
-	open my $tmp_file, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $filename or die $!;
-	$entity->print($tmp_file) or die; 
-	close($tmp_file) or die;
-	
-    require MIME::Parser;
-    my $parser = new MIME::Parser;
-       $parser = DADA::App::Guts::optimize_mime_parser($parser);
-	
-	my $new_entity = $parser->parse_open($filename);
-	return $new_entity; 
-=cut
-		
 }
 
 sub _make_token {

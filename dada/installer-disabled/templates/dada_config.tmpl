@@ -274,10 +274,12 @@ $RECAPTHCA_MAILHIDE_PARAMS = {
 #---------------------------------------------------------------------#
 # MIME_TOOLS Options 
 
-$MIME_TOOLS_PARAMS //= { 
+$MIME_TOOLS_PARAMS = { 
 	tmp_to_core    => '<!-- tmpl_var mime_tools_options_tmp_to_core default="0" -->', 
 	tmp_dir        => '<!-- tmpl_var mime_tools_options_tmp_dir -->'
 };
+<!-- tmpl_else -->
+
 <!-- /tmpl_if -->
 
 <!-- tmpl_if configure_global_mailing_list_options --> 

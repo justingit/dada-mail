@@ -2289,15 +2289,13 @@ sub create_dada_config_file {
           clean_up_var( $ip->{-captcha_reCAPTCHA_Mailhide_private_key} );
     }
 	
+	
 	my $mime_tools_params = {}; 
-	if($ip->{configure_mime_tools}) { 
-        $mime_tools_params->{configure_mime_tools}             = 1;
+	if($ip->{-configure_mime_tools} == 1) { 
+        $mime_tools_params->{configure_mime_tools}           = 1;
 		$mime_tools_params->{mime_tools_options_tmp_to_core} = $ip->{-mime_tools_options_tmp_to_core};
 		$mime_tools_params->{mime_tools_options_tmp_dir}     = $ip->{-mime_tools_options_tmp_dir};
 	}
-  
-  mime_tools_options_tmp_to_core
-  mime_tools_options_tmp_dir
   
     my $global_mailing_list_options = {};
     if ( $ip->{-configure_global_mailing_list_options} == 1 ) {
