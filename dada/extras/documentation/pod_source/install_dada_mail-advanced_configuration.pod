@@ -183,6 +183,46 @@ The Data Cache caches mostly JSON data created by Dada Mail for the graphs and c
 
 B<Config Variable:> C<$DATA_CACHE>
 
+=head2 Configure Email Parsing Engine 
+
+Dada Mail uses the, C<MIME::Tools> collection of Perl CPAN modules to do much of it's email creation and parsing. More information on MIME::Tools: 
+
+L<https://metacpan.org/pod/MIME::Tools> 
+
+More information on how we're optimizing the parser: 
+
+L<https://metacpan.org/pod/MIME::Parser#OPTIMIZING-YOUR-PARSER>
+
+We've made it easy to do some simple tuning of the parser, to either make it run faster, or to use less memory. 
+
+=head3 Parse Messages in Memory 
+
+This has been the default setting for many versions of Dada Mail. It's generally faster, but can lead to problems if the message Dada Mail is trying to work with is too large. 
+
+There also may be problems if you run Dada Mail as a long running process (via PSGI support), if there is a memory leak. 
+
+If these are issues you're face, you may want to use the next option, 
+
+=head3 Parse Messags using Temporary Files 
+
+This setting is usually not used, as it could potentially be slower (more IO done), but has the added benefit of using less RAM. The downside is that it creates temporary files, which may add up and impact free disk space after a while. Dada Mail does its best to clean up after itself as soon as these temporary files are not needed, and does a sweep of any unused temporary files afterwards, but these files will be created, nonetheless. 
+
+If you do choose to use temporary files, these files can live in one of two locations: 
+
+=head4 Server's Temporary Directory (/tmp) 
+
+This usuallly means in your C</tmp> directory, but Dada Mail will honor a different value if set in the, C<TMP> environment variable.
+
+=head4 Dada Mail's Temporary Directory 
+
+Dada Mail can also use it's own temporary directory, which will be located in, 
+
+C<.dada_files/.tmp/_mime_cache>
+
+If any files are not removed automatically by the app after its done utilizing them, they will be removed three days after their creation date. 
+
+B<Config Variable:> C<$MIME_TOOLS_PARAMS>
+
 =head2 Configure Debugging
 
 Dada Mail's log tracing and debugging options can be configured in this section. Tracing writes extra lines to your error log, in an attempt to provide extra information about the workings of Dada Mail, that you can then go through, to make sure the app is working as it's supposed to. 

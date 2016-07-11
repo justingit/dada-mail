@@ -305,6 +305,8 @@ sub setup {
             'amazon_ses_AWSSecretKey=s',
             'amazon_ses_AWS_endpoint=s',
             'amazon_ses_Allowed_Sending_Quota_Percentage=s',
+			'mime_tools_options_tmp_to_core=s',
+			'mime_tools_options_tmp_dir=s',
             'help', 
         );
         

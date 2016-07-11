@@ -1,1 +1,14 @@
-<!-- tmpl_include error_undefined_screen.tmpl -->
+<!-- begin error_stop_forum_spam_check_failed_screen.tmpl -->
+
+<!-- tmpl_set name="title" value="You're Already Subscribed!" -->
+<!-- tmpl_set name="show_profile_widget" value="0" -->
+
+<!-- tmpl_unless chrome --> 
+	<h3>Blocked.</h3>
+<!-- /tmpl_unless --> 
+
+Your email address or location has been blocked from using this app.
+
+<!-- tmpl_include error_footer_widget.tmpl -->
+
+<!-- end error_stop_forum_spam_check_failed_screen.tmpl -->

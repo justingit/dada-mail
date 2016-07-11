@@ -331,7 +331,7 @@ sub setup {
 
 sub teardown { 
 
-    my $dir = make_safer($DADA::Config::TMP . '/mime_cache');
+    my $dir = make_safer($DADA::Config::TMP . '/_mime_cache');
     my $file = undef;
     my @files;
 
@@ -342,7 +342,7 @@ sub teardown {
 	        $file =~ s(^.*/)();
 			$file = make_safer($dir . '/' . $file);
 	        if ( -f  $file) {
-				if(-M $file > 1){ 
+				if(-M $file > 3){ 
 					warn 'deleting file:' . $file; 
 			        my $unlink_check = unlink($file);
 			        if ( $unlink_check != 1 ) {

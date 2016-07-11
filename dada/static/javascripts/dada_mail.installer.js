@@ -131,6 +131,7 @@ jQuery(document).ready(function($){
 			"profiles",
 			"templates", 
 			"cache",
+			"mime_tools",
 			"debugging", 
 			"security", 
 			"captcha", 

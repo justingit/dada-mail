@@ -14,7 +14,7 @@ Dada Mail now has support to look up this information when a user goes through t
 
 This new feature can help stop your mailing list from being abused, curbs the wasting of server resources, and keeps your mailing list cleaner. This integration should I<definitely> be seen as a B<security enhancement>, as these users being marked as abusive are possible part of a botnet, trying to find vectors for attack. 
 
-This integration of StopForumSpam is currently enabled by default, and requires the LWP Perl library - if you can send a webpage using Dada Mail, you most likley have this library installed. 
+This integration of StopForumSpam is currently enabled by default, and requires the LWP Perl CPAN library - if you can send a webpage using Dada Mail, you most likley have this library installed!
 
 Options to enable/disable StopForumSpam integration can be found in the list control panel under B<Mailing List - Options>. Look for the checkbox labeled, B<Enable StopForumSpam Protection>.
 
@@ -51,6 +51,16 @@ Now, Dada Mail also allows you to specify what data you would like exported:
 Among other things, this allows  Dada Mail's exported data to be easily read and imported back into Dada Mail itself - something it couldn't do (embarrassingly) before!
 
 Using this new functionality is simple: instead of exporting the data right away, after you click the Export button, a modal menu will open up, allowing you to choose what data you would like the exported data to hold. 
+
+=head3 Email Parsing Engine Advanced Tuning Options
+
+Dada Mail now allows you to easily tune the underlying email parsing engine (called, C<MIME::Tools>), so that you can either have a faster parser that's more memory intensive (the default), or a somewhat slower parser that uses less memory. 
+
+We'll be experimenting with the latter, as it should help with working with large, complex email messages with large attachments, as well as running Dada Mail as a long-running process. 
+
+More information on how to change these options are available at, 
+
+L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Email-Parsing-Engine>
 
 =head1 9.4.1
 

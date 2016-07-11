@@ -2827,7 +2827,7 @@ sub optimize_mime_parser {
 		
 		if($DADA::Config::MIME_TOOLS_PARAMS->{tmp_dir} eq 'app_default' ) {
 			
-		    my $dir = make_safer($DADA::Config::TMP . '/mime_cache');
+		    my $dir = make_safer($DADA::Config::TMP . '/_mime_cache');
 			if(! -d $dir) {
 				if(mkdir( $dir, $DADA::Config::DIR_CHMOD )) { 
 					# good! 
@@ -2837,8 +2837,8 @@ sub optimize_mime_parser {
 				}
 			}
 
-			$parser->output_dir(make_safer($DADA::Config::TMP . '/mime_cache') );
-			$parser->tmp_dir(   make_safer($DADA::Config::TMP . '/mime_cache') );
+			$parser->output_dir(make_safer($DADA::Config::TMP . '/_mime_cache') );
+			$parser->tmp_dir(   make_safer($DADA::Config::TMP . '/_mime_cache') );
 		}
 		else { 
 			my $Server_TMP_dir          = $ENV{TMP} // '/tmp';
