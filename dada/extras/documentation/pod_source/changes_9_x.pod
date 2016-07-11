@@ -10,9 +10,9 @@
 
 The B<StopForumSpam> service (L<http://stopforumspam.com/>) keeps a database of email addresses, locations, and usernames known to be used for abuse attempts on web apps like forums, blogs, and mailing lists. 
 
-Dada Mail now has support to look up this information when a user goes through the subscription process. If the IP address or email address of the user is returned by the StopForumSpam service as being known to be abusive, the first step of the subscription process fails.
+Dada Mail now supports looking up this information when a user goes through the subscription process. If the IP address or email address of the user is returned by the StopForumSpam service as being known to be abusive, the first step of the subscription process fails.
 
-This new feature can help stop your mailing list from being abused, curbs the wasting of server resources, and keeps your mailing list cleaner. This integration should I<definitely> be seen as a B<security enhancement>, as these users being marked as abusive are possible part of a botnet, trying to find vectors for attack. 
+This new feature can help stop your mailing list from being abused, curbs the wasting of server resources, and keeps your mailing list cleaner. StopForumSpam integration should I<definitely> be seen as a B<security enhancement>, as these users being marked as abusive are possibly part of a botnet, trying to find vectors for attack. 
 
 This integration of StopForumSpam is currently enabled by default, and requires the LWP Perl CPAN library - if you can send a webpage using Dada Mail, you most likley have this library installed!
 
