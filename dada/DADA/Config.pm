@@ -1214,8 +1214,8 @@ $MIME_PARANOID     //= 0;
 $MIME_HUSH         //= 0;
 $MIME_OPTIMIZE     = undef; #noop
 $MIME_TOOLS_PARAMS //= { 
-	tmp_to_core    => 0, 
-	tmp_dir        => 'server_default', #server_default, #app_default
+	tmp_to_core    => 1, 
+	tmp_dir        => 'app_default', #server_default, #app_default
 };
 
 %LIST_SETUP_DEFAULTS = (
