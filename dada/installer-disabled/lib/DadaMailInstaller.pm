@@ -1086,7 +1086,10 @@ sub grab_former_config_vals {
     }
 
     # CGI/FastCGI/PSGI
-    if ( defined($BootstrapConfig::RUNNING_UNDER) && $BootstrapConfig::RUNNING_UNDER =~ m/^(CGI|FastCGI|PSGI)$/ ) {
+    if ( defined($BootstrapConfig::RUNNING_UNDER) 
+		&& $BootstrapConfig::RUNNING_UNDER 
+		=~ m/^(CGI|FastCGI|PSGI)$/ 
+	) {
         $opt->{'configure_deployment'}                 = 1;
         $opt->{'deployment_running_under'}             = $BootstrapConfig::RUNNING_UNDER;
     }
@@ -1322,6 +1325,7 @@ sub grab_former_config_vals {
 	
 	if(keys %$BootstrapConfig::MIME_TOOLS_PARAMS){ 
 		
+		$opt->{'configure_mime_tools'} = 1; 
         $opt->{'mime_tools_options_tmp_to_core'} 
 			= $BootstrapConfig::MIME_TOOLS_PARAMS->{tmp_to_core};
 
