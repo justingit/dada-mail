@@ -3,7 +3,7 @@ package WWW::StopForumSpam;
 use 5.010;
 use strict;
 use warnings;
-use autodie;
+#use autodie;
 use Carp qw(carp croak);
 use URI::Escape;
 use Digest::MD5 qw(md5_hex);
