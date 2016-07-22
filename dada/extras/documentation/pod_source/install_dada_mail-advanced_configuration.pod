@@ -518,7 +518,7 @@ Once you've made your selection of what type of CAPTCHA system to use, and input
 
 =head3 reCAPTCHA Mailhide
 
-reCAPTCHA Mailhide is also supported, and also needs a Public and Private API key, which can be created here: L<http://www.google.com/recaptcha/mailhide/> - NOTE! That this API key pair is different from your reCAPTHCA public/private key - they're not interchangeable. 
+reCAPTCHA Mailhide is also supported, and also needs a Public and Private API key, which can be created here: L<https://www.google.com/recaptcha/admin#mailhide> - NOTE! That this API key pair is different from your reCAPTHCA public/private key - they're not interchangeable. 
 
 =head4 Test reCAPTCHA Mailhide Configuration
 

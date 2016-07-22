@@ -249,7 +249,7 @@ This installer features support for a large subset of the global configuration v
 
 =head4 CAPTCHA Options
 
-Dada Mail has shipped with support for its own CAPTCHA system, as well as support for the reCAPTCHA service (L<http://www.google.com/recaptcha>). Dada Mail also has support for the related reCAPTCHA Mailhide system (L<http://www.google.com/recaptcha/mailhide/>), to protect email addresses in its public message archives. 
+Dada Mail has shipped with support for its own CAPTCHA system, as well as support for the reCAPTCHA service (L<http://www.google.com/recaptcha>). Dada Mail also has support for the related reCAPTCHA Mailhide system (L<https://www.google.com/recaptcha/admin#mailhide>), to protect email addresses in its public message archives. 
 
 The included Dada Mail Installer now allows you to configure the CAPTCHA system that comes with Dada Mail. These options are located under the, B<Advanced Configuration (Optional)> heading, and is available in our Pro Dada distribution. 
 
