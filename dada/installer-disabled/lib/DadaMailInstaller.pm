@@ -1083,8 +1083,10 @@ sub grab_former_config_vals {
             my $ran_str = '_sched' . uc( substr( DADA::App::Guts::generate_rand_string_md5(), 0, 16 ) );
             $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor} = $ran_str;
         }
-        $opt->{'scheduled_jobs_flavor'} = $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor};
-        $opt->{'scheduled_jobs_log'}    = $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{log};
+        $opt->{'scheduled_jobs_flavor'}         = $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor};
+        $opt->{'scheduled_jobs_log'}            = $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{log};
+        $opt->{'scheduled_jobs_run_at_teardown'} = $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{run_at_teardown};
+		
     }
     else {
         # Kind of a weird place to find this:
@@ -1581,6 +1583,7 @@ sub query_params_to_install_params {
       configure_scheduled_jobs
       scheduled_jobs_flavor
       scheduled_jobs_log
+	  scheduled_jobs_run_at_teardown
 	  
 
       configure_profiles
@@ -2140,8 +2143,10 @@ sub create_dada_config_file {
     }
     if ( $ip->{-configure_scheduled_jobs} == 1 ) {
         $scheduled_jobs_params->{configure_scheduled_jobs} = 1;
-        $scheduled_jobs_params->{scheduled_jobs_flavor}    = $ip->{-scheduled_jobs_flavor} || '_schedules';
-        $scheduled_jobs_params->{scheduled_jobs_log}       = $ip->{-scheduled_jobs_log} || 0;
+        $scheduled_jobs_params->{scheduled_jobs_flavor}          = $ip->{-scheduled_jobs_flavor} || '_schedules';
+        $scheduled_jobs_params->{scheduled_jobs_log}             = $ip->{-scheduled_jobs_log} || 0;
+        $scheduled_jobs_params->{scheduled_jobs_run_at_teardown} = $ip->{-scheduled_jobs_run_at_teardown} || 0;
+		
     }
     my $deployment_params = {};
     if ( $ip->{-configure_deployment} == 1 ) {

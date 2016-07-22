@@ -106,7 +106,8 @@ $FILE_BROWSER_OPTIONS = {
 <!-- tmpl_if configure_scheduled_jobs -->
 $SCHEDULED_JOBS_OPTIONS = { 
    scheduled_jobs_flavor => '<!-- tmpl_var scheduled_jobs_flavor default="_schedules" -->', 
-   log                   =>  <!-- tmpl_var scheduled_jobs_log    default="0" -->, 
+   log                   => <!-- tmpl_var scheduled_jobs_log    default="0" -->, 
+   run_at_teardown       => <!-- tmpl_var scheduled_jobs_run_at_teardown default="0" -->,
 };
 <!-- /tmpl_if -->
 

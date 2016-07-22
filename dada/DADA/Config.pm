@@ -130,6 +130,8 @@ $SCHEDULED_JOBS_OPTIONS //= {
 #   enabled               => 1, 
    scheduled_jobs_flavor => '_schedules', 
    log                   => 0, 
+   run_at_teardown       => 1, 
+   
 };
 
 
@@ -1722,6 +1724,8 @@ $MIME_TOOLS_PARAMS //= {
     
     
     schedule_last_checked_time => undef, 
+
+    scheduled_jobs_last_ran => undef, 
 
 ) unless keys %LIST_SETUP_DEFAULTS;
 

@@ -330,6 +330,15 @@ sub setup {
 }
 
 sub teardown { 
+	my $self = shift;
+	$self->clean_out_mime_cache(); 
+	$self->run_pseudo_cron(); 
+		
+}
+
+sub clean_out_mime_cache { 
+
+	my $self = shift; 
 
     my $dir = make_safer($DADA::Config::TMP . '/_mime_cache');
     my $file = undef;
@@ -361,6 +370,32 @@ sub teardown {
 		else { 
 			warn "couldn't make dir, $dir";
 		}
+	}
+}
+
+sub run_pseudo_cron {
+
+	my $self = shift; 
+
+	return 
+		if $DADA::Config::SCHEDULED_JOBS_OPTIONS != 1;
+		
+	# should this be something that's forked? 
+	my @lists = available_lists( -In_Order => 1 );
+	my $ls = DADA::MailingList::Settings->new({ -list => $lists[0]});
+	
+	my $scheduled_jobs_last_ran = $ls->param('scheduled_jobs_last_ran') || 0;
+	my $time = time; 
+	
+	if(
+		int($time) > (int($scheduled_jobs_last_ran) + (7.5 * 60))
+		|| $scheduled_jobs_last_ran == 0
+	) { 
+		warn 'running scheduled jobs at teardown @ ' . scalar( localtime() );
+		$self->schedules;
+	}
+	else { 
+		#...
 	}
 }
 
@@ -13821,6 +13856,16 @@ sub schedules {
         my $log = new DADA::Logging::Usage;
         $log->cron_log($r);
     }
+	
+	my @lists = available_lists( -In_Order => 1 );
+	my $ls = DADA::MailingList::Settings->new({ -list => $lists[0]});
+    $ls->save( 
+		{ 
+			-settings => {
+				scheduled_jobs_last_ran => time, 
+			} 
+		}
+	);
 
     
     if ( $output_mode ne '_silent' ) {
