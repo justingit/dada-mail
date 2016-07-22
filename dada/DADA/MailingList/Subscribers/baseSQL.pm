@@ -292,15 +292,6 @@ sub SQL_subscriber_profile_join_statement {
         }; 
     }
 
-    if ( exists( $args->{-include_from} ) ) {
-        if ( exists( $args->{-include_from}->[0] ) ) {
-
-            # ...
-        }
-        else {
-            delete( $args->{-include_from} );
-        }
-    }
 	
     if(!exists($args->{-show_delivery_prefs_column})){ 
         $args->{-show_delivery_prefs_column} = 1; 
@@ -328,15 +319,7 @@ sub SQL_subscriber_profile_join_statement {
     my $profile_settings_table = $self->{sql_params}->{profile_settings_table};
     # We need the email and list from $subscriber_table
     my $query;
-
-    if ( exists( $args->{-include_from} )
-        && $self->{sql_params}->{dbtype} eq 'Pg' )
-    {
-        $query .= ' SELECT DISTINCT ON(' . $subscriber_table . '.email) ';
-    }
-    else {
-        $query = 'SELECT ';
-    }
+	   $query = 'SELECT DISTINCT ';
 
     # This is to select which Profile Fields to return with our query
     my @merge_fields = (); 
@@ -389,24 +372,10 @@ sub SQL_subscriber_profile_join_statement {
         #... Nothin'
     }
     else {
-
-        if ( exists( $args->{-include_from} ) ) {
-            my @include_from = ( $self->{list}, @{ $args->{-include_from} } );
-            @include_from = map( $self->{dbh}->quote($_), @include_from );
-            @include_from =
-              map( $_ = $subscriber_table . '.list = ' . $_, @include_from );
-
-            my $include_from_query = join( ' OR ', @include_from );
-            $include_from_query = '( ' . $include_from_query . ' )';
-            $include_from_query .= ' AND ';
-            $query .= $include_from_query;
-        }
-        else {
-            $query .=
-                $subscriber_table
-              . '.list = '
-              . $self->{dbh}->quote( $self->{list} ) . ' AND ';
-        }
+	    $query .=
+	        $subscriber_table
+	      . '.list = '
+	      . $self->{dbh}->quote( $self->{list} ) . ' AND ';
     }
 
     # list_status is almost always 1
@@ -603,14 +572,6 @@ sub SQL_subscriber_profile_join_statement {
         && $ls->param('digest_enable') == 1
     ){        
         $query .= $individual_subq; 
-    }
-
-
-
-    if ( exists( $args->{-include_from} )
-        && $self->{sql_params}->{dbtype} =~ m/^mysql$|^SQLite$/ )
-    {
-        $query .= ' GROUP BY ' . $subscriber_table . '.email ';
     }
 
     if($args->{-user_order_by} == 1){ 
@@ -1553,7 +1514,6 @@ sub create_mass_sending_file {
                 -partial_listing     => $args{-partial_sending},
                 -mass_mailing_params => $args{-mass_mailing_params},
                 -exclude_from        => $args{-exclude_from},
-                -include_from        => $args{-include_from},
             }
         );
 
