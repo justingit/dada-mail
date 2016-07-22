@@ -84,7 +84,12 @@ sub filter {
 	if(exists($args->{-html_msg})){ 
 	#	try{ 
 	#		require CSS::Inliner; 
-			my $inliner = CSS::Inliner->new();
+			my $inliner = CSS::Inliner->new(
+				{
+					leave_style => 1,
+					relaxed     => 1
+				}
+			);
 			$inliner->read({html => $args->{-html_msg}});
 			$html = $inliner->inlinify();
 	#	}
