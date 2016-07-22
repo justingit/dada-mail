@@ -1068,8 +1068,15 @@ sub grab_former_config_vals {
           $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{connector};
     }
 
-    # $SCHEDULED_JOBS_OPTIONS
+    if ( defined($BootstrapConfig::MAILOUT_STALE_AFTER) 
+	||   defined($BootstrapConfig::MAILOUT_AT_ONCE_LIMIT)) { 
+        $opt->{'configure_mass_mailing'} = 1;
+        $opt->{'mass_mailing_MAILOUT_STALE_AFTER'} = $BootstrapConfig::MAILOUT_STALE_AFTER;
+        $opt->{'mass_mailing_MAILOUT_AT_ONCE_LIMIT'} = $BootstrapConfig::MAILOUT_AT_ONCE_LIMIT;
+	}
 
+
+    # $SCHEDULED_JOBS_OPTIONS
     if ( keys( %{$BootstrapConfig::SCHEDULED_JOBS_OPTIONS} ) ) {
         $opt->{'configure_scheduled_jobs'} = 1;
         if ( !exists( $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor} ) ) {
@@ -1641,6 +1648,7 @@ sub query_params_to_install_params {
 
       configure_mass_mailing
       mass_mailing_MAILOUT_STALE_AFTER
+      mass_mailing_MAILOUT_AT_ONCE_LIMIT
 
       configure_confirmation_token
       confirmation_token_expires
