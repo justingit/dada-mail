@@ -12,6 +12,12 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+
+some alt. to cronjob - just run something @ teardow, make sure it's no more than 5 per run
+pull msg from rss feed
+
+
 During pgrade, If, " reCAPTCHA v2 (recommended) " is selected, you do nont see the ReCAPTCHA public/private key. You should!
 
 
