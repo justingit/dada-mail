@@ -382,6 +382,10 @@ sub run_pseudo_cron {
 		
 	# should this be something that's forked? 
 	my @lists = available_lists( -In_Order => 1 );
+	
+	return 
+		unless scalar @lists >= 1; 
+		
 	my $ls = DADA::MailingList::Settings->new({ -list => $lists[0]});
 	
 	my $scheduled_jobs_last_ran = $ls->param('scheduled_jobs_last_ran') || 0;
@@ -13858,15 +13862,16 @@ sub schedules {
     }
 	
 	my @lists = available_lists( -In_Order => 1 );
-	my $ls = DADA::MailingList::Settings->new({ -list => $lists[0]});
-    $ls->save( 
-		{ 
-			-settings => {
-				scheduled_jobs_last_ran => time, 
-			} 
-		}
-	);
-
+	if(scalar @lists >= 1) {
+		my $ls = DADA::MailingList::Settings->new({ -list => $lists[0]});
+	    $ls->save( 
+			{ 
+				-settings => {
+					scheduled_jobs_last_ran => time, 
+				} 
+			}
+		);
+	}
     
     if ( $output_mode ne '_silent' ) {
         $self->header_props( { -type => 'text/plain' } );
