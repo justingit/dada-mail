@@ -569,8 +569,16 @@ function installer_toggle_captcha_type_options() {
 	else if($("#captcha_type_recaptcha").prop("checked") === true) { 
 		selected = 'captcha_type_recaptcha'; 		
 	}
+	else if($("#captcha_type_google_recaptcha").prop("checked") === true) { 
+		selected = 'captcha_type_google_recaptcha'; 			
+	}
+	
 
-	if (selected == 'captcha_type_recaptcha') {
+	if (
+		selected == 'captcha_type_recaptcha'
+		|| 
+		selected == 'captcha_type_google_recaptcha'		
+	) {
 		if ($('#recaptcha_settings').is(':hidden')) {
 			$('#recaptcha_settings').show('blind');
 		}
