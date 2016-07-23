@@ -38,7 +38,7 @@ If you would like to use the bundled WYSIWYG editors with Dada Mail, check the o
 
 =head2 Configure Scheduled Jobs 
 
-Dada Mail requires a cronjob to run for some of its more advanced features: keeping tabs on mass mailings going out, sending out scheduled mailings, Bridge, etc. 
+Dada Mail requires a cronjob to run for some of its more advanced features: keeping tabs on mass mailings going out, sending out scheduled mailings, the Bridge plugin (discussion lists, and announcement messages sent via email), etc. 
 
 More on Scheduled Jobs and Dada Mail: 
 
@@ -55,6 +55,14 @@ The Scheduled Jobs Flavor should be unqiue, and not be the value of another flav
 =head3 Log Job Output
 
 When checked, B<Log Job Output> will log anything returned by the jobs run. You'll find this log in the C<.dada_files/.logs/cronjob_output.txt> file. This is helpful with debugging a problem, but this file can get potentially large, quickly, so think of either using this option temporarily, or schedule a cronjob to either rotate, or delete this log periodically. 
+
+=head3 Run Periodically After App Execution 
+
+When checked (the default), B<Run Periodically After App Execution> will run the scheduled jobs usually handled by the cronjob simply after a normal execution of the app. This will facilitate using Dada Mail for many of the tasks required of the cronjob if the cronjob itself has not been set. 
+
+This running of the scheduled jobs will only happen in this manner no more than every 7 minutes, and won't run if the scheduled jobs are run in any other way, like when the actual cronjob runs, or if the scheduled jobs are run manually. This backround running also happen only if the app is itself executed (by visiting the app in a browser, for example). Thus, it's a good safeguard, but it can't completely replace setting up the cronjob. 
+
+B<Config Variable:> C<$SCHEDULED_JOBS_OPTIONS>
 
 =head2 Configure Deployment Options
 
