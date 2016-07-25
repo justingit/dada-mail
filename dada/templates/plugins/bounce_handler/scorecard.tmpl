@@ -71,24 +71,44 @@
 		</div>		
 	</div> 
 
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
-		<input type="hidden" name="prm" value="cgi_erase_scorecard" > 
-		<input type="hidden" name="flavor" value="plugins" > 
-		<input type="hidden" name="plugin" value="bounce_handler" > 
 		<div class="clearfix">
 			<ul class="button-group right">
+				
 			    <li>
-					<input 
-						type="submit" 
-						class="alert button" 
-						onclick="if(!confirm('Are you sure you want to Erase the Bounce Scorecard? This cannot be undone.')){alert('Scorecard Not Erased.');return false;}" 
-						name="process" 
-						value="Erase Score Card"
-					>
+					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+						<input type="hidden" name="prm" value="export_scorecard_csv" > 
+						<input type="hidden" name="flavor" value="plugins" > 
+						<input type="hidden" name="plugin" value="bounce_handler" > 
+					
+						<button
+							class="success button" 
+							type="submit" 
+						>
+							<i class="fi-page-export-csv"></i> Export Score Card
+						</button>
+					</form>
 				</li>
+				
+				
+			    <li>
+					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+						<input type="hidden" name="prm" value="cgi_erase_scorecard" > 
+						<input type="hidden" name="flavor" value="plugins" > 
+						<input type="hidden" name="plugin" value="bounce_handler" > 
+					
+						<input 
+							type="submit" 
+							class="alert button" 
+							onclick="if(!confirm('Are you sure you want to Erase the Bounce Scorecard? This cannot be undone.')){alert('Scorecard Not Erased.');return false;}" 
+							name="process" 
+							value="Erase Score Card"
+						>
+						</form> 
+					</li>
+
 			</ul>
 		</div>
-	</form> 
+
 
 <!-- tmpl_else --> 
 	<div class="alert-box info radius"> 

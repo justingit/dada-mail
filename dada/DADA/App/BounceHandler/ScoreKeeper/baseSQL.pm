@@ -300,6 +300,8 @@ sub csv_scorecard {
     }
 
     $sth->finish;
+	
+	return $r; 
     
 }
 

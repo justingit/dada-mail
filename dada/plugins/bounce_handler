@@ -536,6 +536,9 @@ sub cgi_erase_scorecard {
 
 }
 
+
+
+
 sub cgi_show_plugin_config {
 
     my $configs = [];
