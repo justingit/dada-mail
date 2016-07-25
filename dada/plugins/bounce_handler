@@ -315,7 +315,7 @@ sub cgi_default {
                 bounce_handler_hardbounce_score_popup_menu => $bounce_handler_hardbounce_score_popup_menu,
                 bounce_handler_decay_score_popup_menu      => $bounce_handler_decay_score_popup_menu,
                 bounce_handler_threshold_score_popup_menu  => $bounce_handler_threshold_score_popup_menu,
-
+				root_login                                 => $root_login, 
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -330,6 +330,8 @@ sub edit_prefs {
 
     my $q = shift;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+	
+	my $also_save_for_list = $ls->also_save_for_list($q);
     $ls->save_w_params(
         {
             -associate => $q,
@@ -340,7 +342,8 @@ sub edit_prefs {
                 bounce_handler_threshold_score            => undef,
                 bounce_handler_forward_msgs_to_list_owner => 0,
                 bounce_handler_when_threshold_reached     => undef,
-            }
+            },
+			-also_save_for => $also_save_for_list,
         }
     );
     return ( { -redirect_uri => $Plugin_Config->{Plugin_URL} . '&done=1' }, undef );

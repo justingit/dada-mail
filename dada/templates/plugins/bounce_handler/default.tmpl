@@ -57,7 +57,7 @@
 		Manually Run <!-- tmpl_var Plugin_Name -->
 	</legend> 
 
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="parse_bounces_form">
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="parse_bounces_form">		
 		<input type="hidden" name="prm" id="prm" value="cgi_parse_bounce" > 
 		<input type="hidden" name="flavor" value="plugins" > 
 		<input type="hidden" name="plugin" value="bounce_handler" > 
@@ -91,7 +91,7 @@
 		Scorecard Preferences
 	</legend> 
 
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="bounce_handler_prefs">
 
 		<input type="hidden" name="flavor" value="plugins" > 
 		<input type="hidden" name="plugin" value="bounce_handler" > 
@@ -197,18 +197,9 @@
 		</label>
 	</div> 
 </div> 
-	
-	<div class="clearfix">
-		<ul class="button-group right">
-		    <li>
-				<input 
-					type="submit" 
-					class="success button" 
-					value="Save Preferences"
-				> 
-			</li>
-		</ul>
-	</div>
+
+<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
+
 </form> 
 </fieldset>
 
