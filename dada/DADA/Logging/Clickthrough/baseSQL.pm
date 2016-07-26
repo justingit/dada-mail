@@ -1014,7 +1014,7 @@ sub report_by_message_index {
 				-entries => $self->{ls}->param('tracker_record_view_count')
 				}
 			)){
-				# warn 'creating message_history_json JSON ffrom report_by_message_index'; 
+				# warn 'creating message_history_json JSON from report_by_message_index'; 
 				$self->message_history_json(
 					{
 						-report_by_message_index_data => $sorted_report,
