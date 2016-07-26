@@ -12,16 +12,13 @@ Key:
 [*] Naw...
 [?] Someday
 
-
+Add SES support to the CL installer...
 
 pull msg from rss feed
-
-During pgrade, If, " reCAPTCHA v2 (recommended) " is selected, you do nont see the ReCAPTCHA public/private key. You should!
 
 Can the encrypted password be exportable (and also importable?)
 
 Lt's double-check the new index I've made is gooder. for the rate limit stuff. 
-
 
 be prtty sweet to view to-be moderated messages in the web admin, yeah? 
 and/or after x days, messages are automatically approved/denied, 
