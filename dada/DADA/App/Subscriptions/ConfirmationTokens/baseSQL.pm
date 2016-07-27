@@ -70,7 +70,6 @@ sub _backend_specific_save {
 		warn "email:  $email"; 
 		warn "token:  $token"; 
 		warn "frozen: $frozen"; 
-		
 	}
 
     my $sth = $self->{dbh}->prepare($query);
@@ -328,6 +327,35 @@ sub exists {
     }
 }
 
+
+sub get_all_tokens { 
+	
+	my $self = shift; 
+	my $query = 'SELECT timestamp, token FROM ' . $self->{sql_params}->{confirmation_tokens_table} . ' ORDER BY timestamp DESC';
+    my $sth = $self->{dbh}->prepare($query);
+
+    warn 'QUERY: ' . $query
+      if $t;
+
+    $sth->execute()
+      or croak "cannot do statement $DBI::errstr\n";
+
+	  my @tokens = (); 
+      while ( my ($timestamp, $token) = $sth->fetchrow_array ) {
+          push( 
+		  	@tokens, 
+			{
+				token     => $token,  
+				timestamp => $timestamp
+			}
+		);
+      }
+      $sth->finish;
+
+      return @tokens;
+	
+	
+}
 
 sub remove_all_tokens { 
 	my $self = shift; 
