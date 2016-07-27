@@ -12,6 +12,9 @@ Key:
 [*] Naw...
 [?] Someday
 
+Problems w/Safari in the Membership >> View screen. 
+
+
 Add SES support to the CL installer...
 
 pull msg from rss feed
