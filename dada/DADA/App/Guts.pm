@@ -26,6 +26,7 @@ require Exporter;
   check_for_valid_email
   strip
   pretty
+  ping_test
   partial_sending_query_to_params
   make_pin
   check_email_pin
