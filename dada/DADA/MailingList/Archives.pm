@@ -837,6 +837,10 @@ sub _zap_sig_plaintext {
 	my $message     = shift; 
 	my @msg_lines   = split(/\n/, $message);
 
+	# This message is blank,
+	return $message 
+		if scalar @msg_lines <= 0; 
+		
 	my $new_message = undef; 
 	
 	my $start       = 0; 
