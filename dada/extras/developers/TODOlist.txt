@@ -12,6 +12,8 @@ Key:
 [*] Naw...
 [?] Someday
 
+why is the bridge plugin sched job taking so much processing time, when all the lists are using mail fowards?!
+
 Problems w/Safari in the Membership >> View screen. 
 
 

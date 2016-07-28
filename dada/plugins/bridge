@@ -922,22 +922,26 @@ sub start {
 
         if ( $ls->param('disable_discussion_sending') == 1 ) {
             $r .= "\t* Bridge is not enabled for, $list \n";
+			undef($ls);
             next LIST_QUEUE;
         }
         if ( $ls->param('bridge_list_email_type') eq "mail_forward_pipe" ) {
             $r .= "\t* List Email is set up as a Email Forward to Pipe to Bridge \n";
+			undef($ls);
             next LIST_QUEUE;
         }
         if ( $ls->param('discussion_pop_email') eq $ls->param('list_owner_email') ) {
             $r .=
 "\t\t***Warning!*** Misconfiguration of plugin! The List Owner email cannot be the same address as the list email address!\n\t\tSkipping $list...\n";
+			undef($ls);
             next LIST_QUEUE;
         }
 
         if ( !valid_login_information($ls) ) {
             $r .=
 "\t\tLogin information doesn't seem to be valid. Make sure you've supplied everything needed: List Email, POP3 Server, POP3 Username, POP3 Password";
-            next LIST_QUEUE;
+            undef($ls);
+			next LIST_QUEUE;
         }
 
         my $lock_file_fh = undef;
