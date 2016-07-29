@@ -225,11 +225,7 @@ sub subscription_check {
 				 $errors->{stop_forum_spam_check_failed} = 1;
 			}
 		}
-		
-		if($ls->param('enable_sub_confirm_') == 1) {
-			
-		}
-		
+				
 		# If StopForumSpam is showing a hit, no need to do this... 
 		if($errors->{stop_forum_spam_check_failed} != 1){
 			if($ls->param('enable_sub_confirm_suspicious_activity_by_ip_protection') == 1) {
@@ -494,13 +490,15 @@ sub suspicious_activity_by_ip {
 	);
 	
 	require Data::Dumper; 
-	warn '$tokens' . Data::Dumper::Dumper($tokens);
+	#warn '$tokens' . Data::Dumper::Dumper($tokens);
+	warn (scalar @$tokens) . " returned";
 	
 	my $r = {}; 
 	
 	foreach my $t(@$tokens){ 
 			
 		my $data = $ct->fetch($t->{token});
+		warn '$data->{data}->{flavor}' . $data->{data}->{flavor}; 
 		next 
 			if $data->{data}->{flavor} ne 'sub_confirm'; 
 		push(
