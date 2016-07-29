@@ -493,16 +493,17 @@ sub suspicious_activity_by_ip {
 		}
 	);
 	
-	require Data::Dumper; 
+	#require Data::Dumper; 
 	#warn '$tokens' . Data::Dumper::Dumper($tokens);
-	warn (scalar @$tokens) . " returned";
+	warn (scalar @$tokens) . " returned"
+		if $t; 
 	
 	my $r = {}; 
 	
 	foreach my $t(@$tokens){ 
 			
 		my $data = $ct->fetch($t->{token});
-		warn '$data->{data}->{flavor}' . $data->{data}->{flavor}; 
+		#warn '$data->{data}->{flavor}' . $data->{data}->{flavor}; 
 		next 
 			if $data->{data}->{flavor} ne 'sub_confirm'; 
 		push(
@@ -515,7 +516,7 @@ sub suspicious_activity_by_ip {
 		); 
 	}
 
-	warn '$r' . Data::Dumper::Dumper($r);
+	# warn '$r' . Data::Dumper::Dumper($r);
 	
 	for my $c(keys %$r){ 
 		my $unique_count = 0; 
@@ -530,10 +531,10 @@ sub suspicious_activity_by_ip {
 			}
 		}
 		
-		warn '$tmp_l' . Data::Dumper::Dumper($tmp_l);
+		# warn '$tmp_l' . Data::Dumper::Dumper($tmp_l);
 		$unique_count = scalar keys %$tmp_l;
 		
-		warn '$unique_count' . $unique_count; 
+		# warn '$unique_count' . $unique_count; 
 		
 		next if($unique_count < 3);
 		warn '$c'  . $c; 
@@ -543,8 +544,7 @@ sub suspicious_activity_by_ip {
 			return 0;
 		}
 		else { 
-			warn 'IP Address: ' . $ip . ' check out!';
-			
+			# warn 'IP Address: ' . $ip . ' check out!';
 		}
 	}
 	return 1; 

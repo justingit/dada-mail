@@ -1310,7 +1310,6 @@ jQuery(document).ready(function($){
 		});
 		
 		$("body").on("click", '.tracker_export_page', function(event) {
-			alert('tracker_export_page clicked');
 			tracker_export_page($(this).attr("data-page"));
 			event.preventDefault();
 		});
@@ -3699,8 +3698,6 @@ function tracker_turn_page(page_to_turn_to) {
 }
 
 function tracker_export_page(page){ 
-
-	alert('page:' + page);
 	window.location.replace(
 			$("#s_program_url").val() 
 		+ '?flavor=plugins&plugin=tracker&prm=export_page&page=' 

@@ -60,7 +60,7 @@ When checked, B<Log Job Output> will log anything returned by the jobs run. You'
 
 When checked (the default), B<Run Periodically After App Execution> will run the scheduled jobs usually handled by the cronjob simply after a normal execution of the app. This will facilitate using Dada Mail for many of the tasks required of the cronjob if the cronjob itself has not been set. 
 
-This running of the scheduled jobs will only happen in this manner no more than every 7 minutes, and won't run if the scheduled jobs are run in any other way, like when the actual cronjob runs, or if the scheduled jobs are run manually. This backround running also happen only if the app is itself executed (by visiting the app in a browser, for example). Thus, it's a good safeguard, but it can't completely replace setting up the cronjob. 
+This running of the scheduled jobs will only happen in this manner no more than every 7 minutes, and won't run if the scheduled jobs are run in any other way, like when the actual cronjob runs, or if the scheduled jobs are run manually. This backround running also happens only if the app is itself executed (by visiting the app in a browser, for example). Thus, it's a good safeguard, but it can't completely replace setting up the cronjob. 
 
 B<Config Variable:> C<$SCHEDULED_JOBS_OPTIONS>
 

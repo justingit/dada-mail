@@ -2,6 +2,70 @@
 
 =encoding utf-8
 
+=head1 9.6.0
+
+=head2 Features
+
+=head3 Bounce Handler 
+
+=head4 Bounce Scorecard now easily exportable 
+
+In the Bounce Handler's control panel, look for the new button labeled, B<Export Scorecard>. 
+
+=head4 Save For Multiple Lists... support
+
+Save Bounce Handler preferences for multiple mailing lists at once. 
+
+=head3 Scheduled Jobs now can be run without a crojob
+
+The Scheduled Jobs require a cronjob to be set up, but many times this cronjob is not correctly set up or is removed by accident, causing some of Dada Mail's advanced functonality to not work correctly. Now, Dada Mail will periodically run the required Schduled Jobs, if it thinks the jobs have not been run recently. We still strongly suggest to set up the cronjob to have the best exprience with usig Dada Mail. 
+
+More information on Dada Mail's Scheduled Jobs (cronjob)
+L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
+
+This option can be enabled/disabled in the included installer and is enabled by default. More information: L>http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Run-Periodically-After-App-Execution>
+
+=head3 Tracker
+
+=head4 Trend data now exportable
+
+On the default screen of the Tracker plugin, you'll see a tabl and line graph of basic informaton about the performanc of your mass mailings, allowing you to easily to see trends over time. This data can do be exported per page presented. Look for the link labeled, B<export page (.csv) > to the right of the page navigation. 
+
+=head3 Abuse Protection: Detect and Stop Suspicious Activity by IP Address
+
+Dada Mail has may systems to help prevent abuse of it's subscripton system: 
+
+=over
+
+=item * Limiting double subcription confirmations
+
+=item * Rate Limiting attempts by IP Address in a short amount of time
+
+=item * StopForumSpam Integration
+
+=back
+
+Now Dada Mail can also detect possible suspicious activity by IP Address during a subscription request by looking at trends over time of previous requests. If multiple subscription requests are happening from the same IP Address, using different email addresses, the subscription request is blocked. 
+
+This new feature works well with the current systems: StopForumSpam doesn't always lists every email address/IP Address that causes abuse, and Dada Mail's own Rate Limiting feature works best for Denial of Service attempts, and not suspicious activity that happens slowly over the course of days. That's where this new feature comes in. 
+
+Enabled by default, you may enable/disable the feature in the List Control Panel, in B<Mailing List - Options>, Look for the checkbox labeled, B<Enable Suspicious IP Address Activity Protection>
+
+=head2 Bugfixes
+
+=head3 Multiple Entries returned for same address if Delivery Preferences are used 
+
+L<https://github.com/justingit/dada-mail/issues/579>
+
+=head3 Installer: Global Mass Mailing Options not read during upgrade 
+
+L<https://github.com/justingit/dada-mail/issues/580>
+
+=head3 Blank PlainText archived messages can cause infinite loop when publicly accessed 
+
+L<https://github.com/justingit/dada-mail/issues/581>
+
+
 =head1 9.5.0
 
 =head2 Features
