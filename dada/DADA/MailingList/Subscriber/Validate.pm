@@ -489,8 +489,12 @@ sub suspicious_activity_by_ip {
 	my $tokens = $ct->get_all_tokens(
 		{
 			-limit => 5000, 
+			-flavor => 'sub_confirm',
 		}
 	);
+	
+	require Data::Dumper; 
+	warn '$tokens' . Data::Dumper::Dumper($tokens);
 	
 	my $r = {}; 
 	
@@ -509,13 +513,36 @@ sub suspicious_activity_by_ip {
 		); 
 	}
 
+	warn '$r' . Data::Dumper::Dumper($r);
+	
 	for my $c(keys %$r){ 
-		next if(scalar(@{$r->{$c}}) < 3);
+		my $unique_count = 0; 
+		my $tmp_l = {}; 
+
+		for my $ucl( @{$r->{$c}} ){ 
+			if(!exists($tmp_l->{$ucl})){ 
+				$tmp_l->{$ucl} = 1;
+			}
+			else {		
+				$tmp_l->{$ucl}++; 
+			}
+		}
+		
+		warn '$tmp_l' . Data::Dumper::Dumper($tmp_l);
+		$unique_count = scalar keys %$tmp_l;
+		
+		warn '$unique_count' . $unique_count; 
+		
+		next if($unique_count < 3);
 		warn '$c'  . $c; 
 		warn '$ip' . $ip; 
 		if($c eq $ip) { 
 			warn 'IP Address: ' . $ip . ' flagged for subspicious activity in, suspicious_activity_by_ip()';
 			return 0;
+		}
+		else { 
+			warn 'IP Address: ' . $ip . ' check out!';
+			
 		}
 	}
 	return 1; 

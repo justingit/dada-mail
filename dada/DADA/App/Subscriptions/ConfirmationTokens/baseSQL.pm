@@ -333,7 +333,7 @@ sub get_all_tokens {
 	my $self = shift; 
 	my $query = 'SELECT timestamp, token FROM ' 
 	. $self->{sql_params}->{confirmation_tokens_table} 
-	. ' ORDER BY timestamp DESC LIMIT 5000';
+	. ' WHERE data LIKE %sub_confirm% ORDER BY timestamp DESC LIMIT 5000';
 	
     my $sth = $self->{dbh}->prepare($query);
 
