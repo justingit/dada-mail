@@ -378,7 +378,7 @@ sub run_pseudo_cron {
 	my $self = shift; 
 
 	return 
-		if $DADA::Config::SCHEDULED_JOBS_OPTIONS != 1;
+		if $DADA::Config::SCHEDULED_JOBS_OPTIONS->{run_at_teardown} != 1;
 		
 	# should this be something that's forked? 
 	my @lists = available_lists( -In_Order => 1 );
