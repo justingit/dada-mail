@@ -331,7 +331,10 @@ sub exists {
 sub get_all_tokens { 
 	
 	my $self = shift; 
-	my $query = 'SELECT timestamp, token FROM ' . $self->{sql_params}->{confirmation_tokens_table} . ' ORDER BY timestamp DESC';
+	my $query = 'SELECT timestamp, token FROM ' 
+	. $self->{sql_params}->{confirmation_tokens_table} 
+	. ' ORDER BY timestamp DESC LIMIT 5000';
+	
     my $sth = $self->{dbh}->prepare($query);
 
     warn 'QUERY: ' . $query
@@ -340,10 +343,10 @@ sub get_all_tokens {
     $sth->execute()
       or croak "cannot do statement $DBI::errstr\n";
 
-	  my @tokens = (); 
+	  my $tokens = []; 
       while ( my ($timestamp, $token) = $sth->fetchrow_array ) {
           push( 
-		  	@tokens, 
+		  	@$tokens, 
 			{
 				token     => $token,  
 				timestamp => $timestamp
@@ -352,8 +355,7 @@ sub get_all_tokens {
       }
       $sth->finish;
 
-      return @tokens;
-	
+      return $tokens;
 	
 }
 

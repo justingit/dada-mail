@@ -271,8 +271,8 @@
 					   
                     </div> 
                 </div>
-                
- 
+
+				   
                 <div class="row"> 
 					 <div class="small-1 columns"></div>
                      <div class="small-11 columns">                          
@@ -369,6 +369,34 @@
 						  </p>
 					</div>                        
 				</div>
+				
+				
+                  <div class="row"> 
+					 <div class="small-1 columns"></div>
+                     <div class="small-11 columns">  
+                         <input 
+						 	type="checkbox" 
+							name="enable_sub_confirm_suspicious_activity_by_ip_protection"
+							  id="enable_sub_confirm_suspicious_activity_by_ip_protection" value="1" 
+							<!-- tmpl_if list_settings.enable_sub_confirm_suspicious_activity_by_ip_protection -->
+								checked="checked"
+							<!--/tmpl_if-->
+						>
+                         <label for="enable_sub_confirm_suspicious_activity_by_ip_protection">
+                          		Enable Suspicious IP Address Activity Protection
+                          </label>
+						  <p>
+							  When enabled, subscription requests will be blocked, 
+							  if multiple subscription requests have been
+							  made with varying email addresses from the same IP Address. 
+							  This option works well working along StopForumSpam and Rate Limiting, as it 
+							  fills the nitch between IP/email addresses not yet listed on 
+							  StopForumSpam, and requests that happen over a longer period than Rate Limiting.
+						  </p>
+						 
+					</div>                        
+				</div>
+				
 
 
                   <div class="row"> 

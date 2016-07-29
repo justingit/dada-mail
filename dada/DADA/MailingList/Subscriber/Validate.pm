@@ -216,6 +216,8 @@ sub subscription_check {
 		$args->{-type}    eq 'list'
 		&& $args->{-mode} eq 'user'
 	){ 
+		
+		$errors->{stop_forum_spam_check_failed} = 0;
 		if($ls->param('enable_sub_confirm_stopforumspam_protection') == 1) {
 			warn '$self->sfs_check($email)' . $self->sfs_check($email)
 				if $t; 
@@ -223,7 +225,23 @@ sub subscription_check {
 				 $errors->{stop_forum_spam_check_failed} = 1;
 			}
 		}
+		
+		if($ls->param('enable_sub_confirm_') == 1) {
+			
+		}
+		
+		# If StopForumSpam is showing a hit, no need to do this... 
+		if($errors->{stop_forum_spam_check_failed} != 1){
+			if($ls->param('enable_sub_confirm_suspicious_activity_by_ip_protection') == 1) {
+				if (
+					$self->suspicious_activity_by_ip({-ip => $ENV{'REMOTE_ADDR'}}) == 0
+				){ 
+					 $errors->{suspicious_activity_by_ip_check_failed} = 1;
+				}
+			}
+		}
 	}
+	
 	
     if ( $args->{-type} eq 'list') {
         # Profile Fields
@@ -446,6 +464,62 @@ sub sfs_check {
 	else { 
 		return 1; 
 	}
+}
+
+sub suspicious_activity_by_ip {
+	 
+	my $self = shift; 
+	my ($args) = @_; 
+	my $ip = undef; 
+	
+	if(exists($args->{-ip})){
+		$ip = $args->{-ip};
+	}	
+	else { 
+		warn "you need to pass the ip address to check in, '-ip'";
+	}
+	
+	if(! defined($ip) || length($ip) == 0) {
+		warn 'no ip found.';
+		return 1; 
+	}
+	
+	require DADA::App::Subscriptions::ConfirmationTokens;
+	my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
+	my $tokens = $ct->get_all_tokens(
+		{
+			-limit => 5000, 
+		}
+	);
+	
+	my $r = {}; 
+	
+	foreach my $t(@$tokens){ 
+			
+		my $data = $ct->fetch($t->{token});
+		next 
+			if $data->{data}->{flavor} ne 'sub_confirm'; 
+		push(
+			@{
+				$r->{
+					$data->{data}->{remote_addr}
+				}
+			}, 
+			$data->{email}
+		); 
+	}
+
+	for my $c(keys %$r){ 
+		next if(scalar(@{$r->{$c}}) < 3);
+		warn '$c'  . $c; 
+		warn '$ip' . $ip; 
+		if($c eq $ip) { 
+			warn 'IP Address: ' . $ip . ' flagged for subspicious activity in, suspicious_activity_by_ip()';
+			return 0;
+		}
+	}
+	return 1; 
+
 }
 
 1;
