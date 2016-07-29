@@ -236,6 +236,10 @@ sub subscription_check {
 				}
 			}
 		}
+		
+		if($errors->{stop_forum_spam_check_failed} == 0) { 
+			delete($errors->{stop_forum_spam_check_failed});
+		}
 	}
 	
 	
