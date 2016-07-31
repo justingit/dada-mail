@@ -385,7 +385,8 @@ sub run_pseudo_cron {
 	
 	return 
 		unless scalar @lists >= 1; 
-		
+	
+	require DADA::MailingList::Settings;
 	my $ls = DADA::MailingList::Settings->new({ -list => $lists[0]});
 	
 	my $scheduled_jobs_last_ran = $ls->param('scheduled_jobs_last_ran') || 0;
@@ -13744,7 +13745,7 @@ sub bridge_inject {
 }
 
 sub schedules {
-
+	
     # Just need to document this
     # and figure out inject stuff.... sigh.
 
@@ -13864,6 +13865,7 @@ sub schedules {
 	
 	my @lists = available_lists( -In_Order => 1 );
 	if(scalar @lists >= 1) {
+		require DADA::MailingList::Settings;
 		my $ls = DADA::MailingList::Settings->new({ -list => $lists[0]});
 	    $ls->save( 
 			{ 
