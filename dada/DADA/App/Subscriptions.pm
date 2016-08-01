@@ -814,8 +814,8 @@ sub confirm {
         {
             -email => $email,
             ( $ls->param('allow_blacklisted_to_subscribe') == 1 )
-            ? ( -skip => [ 'black_listed', 'already_sent_sub_confirmation', 'invite_only_list', 'profile_fields' ], )
-            : ( -skip => [ 'already_sent_sub_confirmation', 'invite_only_list', 'profile_fields' ], ),
+            ? ( -skip => [ 'black_listed', 'already_sent_sub_confirmation', 'invite_only_list', 'profile_fields', 'stop_forum_spam_check_failed', 'suspicious_activity_by_ip_check_failed'], )
+            : ( -skip => [                 'already_sent_sub_confirmation', 'invite_only_list', 'profile_fields', 'stop_forum_spam_check_failed', 'suspicious_activity_by_ip_check_failed' ], ),
         }
     );
 

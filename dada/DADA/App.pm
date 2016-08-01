@@ -4986,6 +4986,8 @@ sub validate_update_email {
                             'already_sent_sub_confirmation',
                             'invite_only_list',
                             'profile_fields',
+							'stop_forum_spam_check_failed', 
+							'suspicious_activity_by_ip_check_failed'
                             ( $ls->param('allow_admin_to_subscribe_blacklisted') == 1 ) ? ( 'black_listed', ) : (),
                         ],
                     }

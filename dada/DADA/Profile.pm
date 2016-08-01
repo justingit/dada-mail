@@ -577,6 +577,8 @@ sub profile_update_email_report {
                     'already_sent_sub_confirmation',
                     'no_list',
                     'profile_fields',
+					'stop_forum_spam_check_failed', 
+					'suspicious_activity_by_ip_check_failed',
                 ],
             }
         );

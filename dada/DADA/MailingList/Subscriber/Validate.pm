@@ -216,23 +216,27 @@ sub subscription_check {
 		$args->{-type}    eq 'list'
 		&& $args->{-mode} eq 'user'
 	){ 
-		
+
 		$errors->{stop_forum_spam_check_failed} = 0;
-		if($ls->param('enable_sub_confirm_stopforumspam_protection') == 1) {
-			warn '$self->sfs_check($email)' . $self->sfs_check($email)
-				if $t; 
-			if ($self->sfs_check($email) == 0) { 
-				 $errors->{stop_forum_spam_check_failed} = 1;
+	    if ( !$skip{stop_forum_spam_check_failed} ) {		
+			if($ls->param('enable_sub_confirm_stopforumspam_protection') == 1) {
+				warn '$self->sfs_check($email)' . $self->sfs_check($email)
+					if $t; 
+				if ($self->sfs_check($email) == 0) { 
+					 $errors->{stop_forum_spam_check_failed} = 1;
+				}
 			}
 		}
-				
 		# If StopForumSpam is showing a hit, no need to do this... 
 		if($errors->{stop_forum_spam_check_failed} != 1){
-			if($ls->param('enable_sub_confirm_suspicious_activity_by_ip_protection') == 1) {
-				if (
-					$self->suspicious_activity_by_ip({-ip => $ENV{'REMOTE_ADDR'}}) == 0
-				){ 
-					 $errors->{suspicious_activity_by_ip_check_failed} = 1;
+			
+		    if ( !$skip{suspicious_activity_by_ip_check_failed} ) {		
+				if($ls->param('enable_sub_confirm_suspicious_activity_by_ip_protection') == 1) {
+					if (
+						$self->suspicious_activity_by_ip({-ip => $ENV{'REMOTE_ADDR'}}) == 0
+					){ 
+						 $errors->{suspicious_activity_by_ip_check_failed} = 1;
+					}
 				}
 			}
 		}
