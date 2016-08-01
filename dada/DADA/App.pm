@@ -332,8 +332,10 @@ sub setup {
 sub teardown { 
 	my $self = shift;
 	$self->clean_out_mime_cache(); 
-	$self->run_pseudo_cron(); 
-		
+	
+	if($DADA::Config::SCHEDULED_JOBS_OPTIONS->{run_at_teardown} == 1) {
+		$self->run_pseudo_cron(); 
+	}	
 }
 
 sub clean_out_mime_cache { 
@@ -377,8 +379,8 @@ sub run_pseudo_cron {
 
 	my $self = shift; 
 
-	return 
-		if $DADA::Config::SCHEDULED_JOBS_OPTIONS->{run_at_teardown} != 1;
+#	return 
+#		if $DADA::Config::SCHEDULED_JOBS_OPTIONS->{run_at_teardown} != 1;
 		
 	# should this be something that's forked? 
 	my @lists = available_lists( -In_Order => 1 );
