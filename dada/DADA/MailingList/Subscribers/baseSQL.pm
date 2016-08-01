@@ -318,6 +318,8 @@ sub SQL_subscriber_profile_join_statement {
     my $profile_fields_table   = $self->{sql_params}->{profile_fields_table};
     my $profile_settings_table = $self->{sql_params}->{profile_settings_table};
     # We need the email and list from $subscriber_table
+	
+	# I'm not sure if "DISTINCT" is needed, anymore. 
     my $query;
 	   $query = 'SELECT DISTINCT ';
 
@@ -360,9 +362,14 @@ sub SQL_subscriber_profile_join_statement {
       . $profile_fields_table
       . '.email';	
 
+
       if($ls->param('digest_enable') == 1){ 
-	  	$query .= ' LEFT JOIN ' . $profile_settings_table . ' ON ' . $subscriber_table .'.email = ' . $profile_settings_table . '.email ';
+	  	$query .= ' LEFT JOIN ' 
+		. $profile_settings_table . ' ON (' 
+		. $subscriber_table .'.email = ' . $profile_settings_table . '.email AND '
+		. $subscriber_table .'.list = ' . $profile_settings_table . '.list) ';
 	}
+	
     # Global Black List spans across all lists (yes, we're still using this).
     $query .= ' WHERE  ';
     if (   $DADA::Config::GLOBAL_BLACK_LIST
