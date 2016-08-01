@@ -916,6 +916,8 @@ sub available_lists {
     if ( $in_order == 1 ) {
          my $labels = {};
          for my $l (@available_lists) {
+			 
+			 require DADA::MailingList::Settings; 
              my $ls =
                DADA::MailingList::Settings->new( { -list => $l } );
              my $li = $ls->get;
