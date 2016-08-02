@@ -745,42 +745,6 @@ sub export_page {
 	    $r        .= $csv->string();   # get the combined string
 		$r        .= "\n";
 	}
-	
-
-#	use Data::Dumper; 	
-#	my $r = Dumper($report_by_message_id);
-=cut
-#'unique_open' => 908,
-#'date' => 'July 11th 2016 ',
-#'unique_clickthroughs_percent' => '0.8',
-#'abuse_report' => 1,
-#'S_PROGRAM_URL' => 'http://dadamailproject.com/cgi-bin/dada/mail.cgi',
-#'num_subscribers' => '7278',
-#'mid' => '20160711224539',
-#'errors_sending_to' => 0,
-#'hard_bounce' => 127,
-#'unique_soft_bounces_percent' => '2.8',
-#'msg_id' => '20160711224539',
-#'received' => 6946,
-#'list' => 'dada_announce',
-#'view_archive' => 108,
-#'message_subject' => 'v9.5.0 Released - Get the protection you need against bot attacks',
-#'count' => 82, # clickthorughs
-#'unique_bounces_percent' => '4.5',
-#'unsubscribe' => 16,
-#'unique_clickthroughs' => 55,
-#'delivered_to' => 7279,
-#'total_recipients' => 7279,
-#'open' => 1912,
-#'unique_unsubscribes_percent' => '0.2',
-#'unique_hard_bounces_percent' => '1.7',
-#'received_percent' => '95.4',
-#'forward_to_a_friend' => 0,
-#'soft_bounce' => 206,
-#'errors_sending_to_percent' => '0.0',
-'unique_opens_percent' => '13.1'
-=cut
-
  
     return ( $headers, $r );
 }

@@ -1798,8 +1798,8 @@ $ATTACHMENT_TEMPFILE //= 0;
 $MAIL_VERP_SEPARATOR //= '-';
 
 
-$VERSION = 9.5.0;
-$VER     = '9.5.0 07/11/16';
+$VERSION = 9.6.0;
+$VER     = '9.6.0 08/02/16';
 
 #
 #
