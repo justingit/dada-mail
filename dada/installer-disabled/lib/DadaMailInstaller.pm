@@ -200,6 +200,7 @@ my @Debug_Option_Names = qw(
   DADA_App_DBIHandle
   DADA_App_FormatMessages
   DADA_App_Subscriptions
+  DADA_App_WebServices
   DADA_Logging_Clickthrough
   DADA_Mail_MailOut
   DADA_Mail_Send
