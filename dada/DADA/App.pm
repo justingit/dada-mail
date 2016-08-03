@@ -2818,15 +2818,21 @@ sub api {
     # seriously, this shouldn't be needed:
     $info =~ s/^dada\/mail\.cgi//;
 
-    my ( $pi_flavor, $pi_list, $pi_service, $pi_public_key, $pi_digest ) = split( '/', $info );
+    my ( $pi_flavor, $pi_list, $pi_service, $pi_public_key, $pi_digest ) 
+		= split( '/', $info );
 
     # https://metacpan.org/pod/distribution/CGI/lib/CGI.pod#FETCHING-ENVIRONMENT-VARIABLES
     # http://stackoverflow.com/questions/7362932/perl-equivalent-of-php-auth-pw
     # HTTP_AUTHORIZATION
-    my %incoming_headers = map { $_ => $q->http($_) } $q->http();
-    #use Data::Dumper;
-    #warn Dumper( {%incoming_headers} );
-
+    my %incoming_headers = map { 
+			$_ => $q->http($_) 
+	} $q->http();
+    if($DADA::Config::DEBUG_TRACE->{DADA_App_WebServices} == 1) { 
+		warn "Incoming Headers for API call:";
+		use Data::Dumper;
+	    warn Dumper( {%incoming_headers} );
+	}
+	
     if ( !defined($pi_public_key) && !defined($pi_digest) ) {
         my $auth_h = $incoming_headers{HTTP_AUTHORIZATION};
         $auth_h =~ s/^hmac //;
