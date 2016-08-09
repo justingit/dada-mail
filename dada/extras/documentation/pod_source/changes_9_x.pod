@@ -16,14 +16,14 @@ In the Bounce Handler's control panel, look for the new button labeled, B<Export
 
 Save Bounce Handler preferences for multiple mailing lists at once. 
 
-=head3 Scheduled Jobs now can be run without a crojob
+=head3 Scheduled Jobs now can be run without a cronjob
 
 The Scheduled Jobs require a cronjob to be set up, but many times this cronjob is not correctly set up or is removed by accident, causing some of Dada Mail's advanced functonality to not work correctly. Now, Dada Mail will periodically run the required Scheduled Jobs, if it thinks the jobs have not been run recently. We still strongly suggest to set up the cronjob to have the best experience with using Dada Mail. 
 
 More information on Dada Mail's Scheduled Jobs (cronjob)
 L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
-This option can be enabled/disabled in the included installer and is enabled by default. More information: L>http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Run-Periodically-After-App-Execution>
+This option can be enabled/disabled in the included installer and is enabled by default. More information: L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Run-Periodically-After-App-Execution>
 
 =head3 Tracker
 
