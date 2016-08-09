@@ -475,29 +475,6 @@ sub check_admin_cgi_security {
 
     }
 
-    if ( $DADA::Config::REFERER_CHECK == 1 ) {
-        if ( check_referer( CGI::referer() ) != 1 ) {
-            $problems++;
-            $flags{"need_to_login"} = 1;
-            return ( $problems, \%flags, 0 );
-        }
-    }
-
-    if (@DADA::Config::ALLOWED_IP_ADDRESSES) {
-        my $ip_check = 0;
-        for (@DADA::Config::ALLOWED_IP_ADDRESSES) {
-            if ( $_ eq $ENV{REMOTE_ADDR} ) {
-                $ip_check = 1;
-                last;
-            }
-        }
-
-        #error! no ip!
-        if ( $ip_check == 0 ) {
-            $problems++;
-            $flags{"bad_ip"} = 1;
-        }
-    }
 	
 	if($DADA::Config::CP_SESSION_PARAMS->{check_matching_ip_addresses} == 1) {
 		if($ENV{REMOTE_ADDR} ne $args{-ip_address}){ 
@@ -630,12 +607,12 @@ sub enforce_admin_cgi_security {
     my $flags = $args{-Flags};
     require DADA::App::Error;
 
-    my @error_precedence = qw(need_to_login mismatching_ip_address bad_ip no_list invalid_password no_admin_permissions);
+    my @error_precedence = qw(need_to_login mismatching_ip_address no_list invalid_password no_admin_permissions);
     for (@error_precedence) {
         if ( $flags->{$_} == 1 ) {
 			
 			my $add_vars = {}; 
-			if($_  =~ m/need_to_login|mismatching_ip_address|bad_ip|invalid_password/){ 
+			if($_  =~ m/need_to_login|mismatching_ip_address|invalid_password/){ 
 				
 				# I could probably just pass the flags, here, eh? 
 				# Then, just show the various different error messages 

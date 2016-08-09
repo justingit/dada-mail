@@ -10642,11 +10642,6 @@ sub send_archive {
     if ( check_for_valid_email($from_email) == 1 ) {
         $errors++;
     }
-    if ( $DADA::Config::REFERER_CHECK == 1 ) {
-        if ( check_referer( $q->referer() ) != 1 ) {
-            $errors++;
-        }
-    }
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 

@@ -64,7 +64,6 @@ require Exporter;
   xss_filter
   isa_ip_address
   isa_url
-  check_referer
   escape_for_sending
   entity_protected_str
   spam_me_not_encode
@@ -2516,68 +2515,6 @@ sub isa_url {
 	
 }
 
-
-
-=pod
-
-=head2 check_referer
-
- check_referer($q->referer());
-
-Checks to see if the referer is the same as what's set in $DADA::Config::PROGRAM_URL
-
-
-=cut
-
-
-sub check_referer {
-  require Socket; 
-  
-  my $check_referer;
-  my ($referer) = @_;
-
-
-  if ($referer && ($referer =~ m!^https?://([^/]*\@)?([\w\-\.]+)!i)) {
-    my $refHost;
-
-    $refHost = $2;
-	
-	
-	my @referers;
-
- 	if ($DADA::Config::PROGRAM_URL && ($DADA::Config::PROGRAM_URL =~ m!^https?://([^/]*\@)?([\w\-\.]+)!i)) {
-    	push(@referers, $2);
-    }
-	
-	if ($DADA::Config::S_PROGRAM_URL && ($DADA::Config::S_PROGRAM_URL =~ m!^https?://([^/]*\@)?([\w\-\.]+)!i)) {
-    	push(@referers, $2);
-    }
-	
-	
-    for my $test_ref (@referers) {
-      if ($refHost =~ m|\Q$test_ref\E$|i) {
-        $check_referer = 1;
-        last;
-      }
-      elsif ($test_ref =~ /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/ ) {
-        if ( my $ref_host = Socket::inet_aton($refHost) ) {
-          $ref_host = unpack "l", $ref_host;
-          if ( my $test_ref_ip = Socket::inet_aton($test_ref) ) {
-            $test_ref_ip = unpack "l", $test_ref_ip;
-            if ( $test_ref_ip == $ref_host ) {
-              $check_referer = 1;
-              last;
-            }
-          }
-        }
-      }
-    }
-  } else {
-    return 0;
-  }
-
-  return $check_referer;
-}
 
 
 sub escape_for_sending { 

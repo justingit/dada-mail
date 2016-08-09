@@ -665,28 +665,6 @@ can be accessed with the same password and that password is
 written plainly in this file, unless! you encrypt it (see below).
 
 
-=head2 @ALLOWED_IP_ADDRESSES
-
-You can block anyone from using any list control panel by 
-specifying exactly what IP addresses are allowed. Leave the 
-@ALLOWED_IP_ADDRESSES blank:
-
-	@ALLOWED_IP_ADDRESSES = qw(); 
-
-to disable this security measure. 
-
-To add an address, just list it, like this: 
-	
-	@ALLOWED_IP_ADDRESSES = qw(123.456.67.678 
-	                           215.234.56.9 
-	                           783.456.9.2);
-
-
-
-Please note that crafty people can spoof what IP address they're 
-coming from, and dial-up accounts and connections using DHCP may
-not have the same IP address per session.  
-
 
 =head2 $REFERER_CHECK
 
