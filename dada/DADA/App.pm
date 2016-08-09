@@ -280,7 +280,10 @@ sub setup {
 	
  	my $rate_limit = undef; 
 	
-	if($DADA::Config::RATE_LIMITING->{enabled} == 1){ 
+	if(
+		$DADA::Config::RATE_LIMITING->{enabled} == 1
+		&& exists($ENV{GATEWAY_INTERFACE})
+	) {	 
 		
 		require DADA::App::DBIHandle; 
 		my $dbi_handle = DADA::App::DBIHandle->new; 
