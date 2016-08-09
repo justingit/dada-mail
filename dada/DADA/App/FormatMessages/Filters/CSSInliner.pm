@@ -90,13 +90,28 @@ sub filter {
 					relaxed     => 1
 				}
 			);
-			$inliner->read({html => $args->{-html_msg}});
+			$inliner->read(
+				{
+					html => $args->{-html_msg}
+				}
+			);
 			$html = $inliner->inlinify();
 	#	}
 	#	catch { 
 	#		carp 'Problems using CSS::Inliner: ' . $_; 
 	#		return $args->{-html_msg};
 	#	};
+	
+	# Soon. Soon!
+	#use HTML::Packer;
+	#use CSS::Packer;
+	#my $minified = $PACKER->minify( \$inlined, {
+	#    remove_comments => 1,
+	#    remove_newlines => 1,
+	#    do_stylesheet   => 'minify', # needs CSS::Packer
+	#});
+	
+	
 		return $html; 
 	}
 	else { 
