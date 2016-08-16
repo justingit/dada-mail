@@ -544,7 +544,7 @@ sub suspicious_activity_by_ip {
 		warn '$c'  . $c; 
 		warn '$ip' . $ip; 
 		if($c eq $ip) { 
-			warn 'IP Address: ' . $ip . ' flagged for subspicious activity in, suspicious_activity_by_ip()';
+			warn 'IP Address: ' . $ip . ' flagged for suspicious activity in, suspicious_activity_by_ip()';
 			return 0;
 		}
 		else { 
