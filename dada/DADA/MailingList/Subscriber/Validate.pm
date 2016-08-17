@@ -221,9 +221,13 @@ sub subscription_check {
 	    if ( !$skip{stop_forum_spam_check_failed} ) {		
 			if($ls->param('enable_sub_confirm_stopforumspam_protection') == 1) {
 				warn '$self->sfs_check($email)' . $self->sfs_check($email)
-					if $t; 
-				if ($self->sfs_check($email) == 0) { 
-					 $errors->{stop_forum_spam_check_failed} = 1;
+					if $t;
+				try {
+					if ($self->sfs_check($email) == 0) { 
+						 $errors->{stop_forum_spam_check_failed} = 1;
+					}
+				} catch { 
+					warn "something wrong with stopforumspam check?: $_";
 				}
 			}
 		}

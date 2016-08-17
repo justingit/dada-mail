@@ -17,7 +17,7 @@ use Try::Tiny;
 use Carp qw(croak carp); 
 use vars qw($AUTOLOAD); 
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
 
 
 =pod
@@ -215,14 +215,20 @@ sub format_message {
 
 	my $self = shift; 
 	
-	my %args = (-msg  => undef, 
-				@_); 
+	my %args = @_; 
 	
-	die "no msg!"  if ! $args{-msg};
-	
-	
-    my ($h, $b) = $self->format_headers_and_body(%args);
-    return $h . "\n" . $b; 
+	if(exists($args{-msg})) { 
+		warn 'args -msg';
+	    my ($h, $b) = $self->format_headers_and_body(%args);
+	    return $h . "\n" . $b; 
+	}
+	elsif(exists($args{-entity})) { 
+		warn 'args -entity';
+		return $self->format_headers_and_body(%args);
+	}
+	else { 
+		die "you must pass either a -msg or an -entity";
+	}
 }
 
 
@@ -259,23 +265,29 @@ sub format_headers_and_body {
 
 	my $self = shift; 
 	
-	my %args = (
-		-msg                 => undef, 
-		-convert_charset     => 0,  
-		@_
-		  	   ); 
-
-	die "no msg!"  if ! $args{-msg};
+	my %args = @_; 
 	
-	my $msg        = $args{-msg}; 
+	my $entity; 
+	my $msg = undef; 
 	
+	if(exists($args{-msg})) { 
+		warn 'args -msg';
+		
+		$entity     = $self->{parser}->parse_data(
+		    safely_encode(
+		        $msg
+		    )
+		);
+	}
+	elsif(exists($args{-entity})) { 
+		warn 'args -entity';
+		
+		$entity = $args{-entity};
+	}
+	else { 
+		die "you must pass either a -msg or an -entity";
+	}
 	
-	# Guessing, really. 
-	my $entity     = $self->{parser}->parse_data(
-	    safely_encode(
-	        $msg
-	    )
-	);
 	
 	if($args{-convert_charset} == 1){ 
 		eval { 
@@ -309,16 +321,26 @@ sub format_headers_and_body {
     	if $entity->head->get('X-Mailer', 0); 
 		# or how about, count?
 
-	my $has = $entity->head->as_string;
-	my $bas = $entity->body_as_string; 
+
+	if(exists($args{-msg})) { 		
+		warn 'returning -msg';
+		
+		my $has = $entity->head->as_string;
+		my $bas = $entity->body_as_string; 
 	
-	$entity->purge;
-	undef($entity);
+		$entity->purge;
+		undef($entity);
 	
-	return (
-	    safely_decode($has), 
-	    safely_decode($bas)
-	);
+		return (
+		    safely_decode($has), 
+		    safely_decode($bas)
+		);
+	}
+	else { 
+		warn 'returning -entity';
+		
+		return $entity; 
+	}
 
 }
 
@@ -2457,6 +2479,9 @@ sub email_template {
     if ( !exists( $args->{-entity} ) ) {
         croak 'did not pass an entity in, "-entity"!';
     }
+	
+	use Data::Dumper; 
+	warn Data::Dumper::Dumper($args->{-entity}); 
 
     my @parts = $args->{-entity}->parts;
 
