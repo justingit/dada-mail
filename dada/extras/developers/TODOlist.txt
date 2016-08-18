@@ -12,6 +12,12 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+* Make using Email::MIME::CreateHTML an option if available - and maybe the dfault, unless NOT avalable, 
+	* make slight tweak so that LWP resolver doesn't die with unfound resource 
+		- just a warning is just fine... 
+
+
 why is the bridge plugin sched job taking so much processing time, when all the lists are using mail fowards?!
 
 Problems w/Safari in the Membership >> View screen. 

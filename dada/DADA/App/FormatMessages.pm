@@ -17,7 +17,7 @@ use Try::Tiny;
 use Carp qw(croak carp); 
 use vars qw($AUTOLOAD); 
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
 
 
 =pod
@@ -2479,9 +2479,6 @@ sub email_template {
     if ( !exists( $args->{-entity} ) ) {
         croak 'did not pass an entity in, "-entity"!';
     }
-	
-	use Data::Dumper; 
-	warn Data::Dumper::Dumper($args->{-entity}); 
 
     my @parts = $args->{-entity}->parts;
 
@@ -2603,6 +2600,7 @@ sub email_template {
     }
     $screen_vars{-dada_pseudo_tag_filter} = 1; 
     
+	#warn 'all headers:' . $args->{-entity}->head->as_string;
 	for my $header(
 	    'Subject', 
 	    'From', 
@@ -2615,7 +2613,15 @@ sub email_template {
 	    'List-Subscribe', 
 	    'List-Unsubscribe'
 	    ){ 
-						
+			
+		#warn '$header:' . $header; 
+		#if($args->{-entity}->head->get($header, 0)){ 
+		#	warn '$header value:' .$args->{-entity}->head->get($header, 0); 
+		#}
+		#else { 
+		#	warn 'header has no value.';
+		#}
+							
 	    if($args->{-entity}->head->get($header, 0)){ 
 			warn "looking at header:" . $header
     			if $t;

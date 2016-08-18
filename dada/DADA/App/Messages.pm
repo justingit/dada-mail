@@ -141,6 +141,7 @@ sub send_generic_email {
             -entity => $fm->get_entity( { -data => safely_encode($email_str), } ),
             -expr   => $expr,
             %{ $args->{-tmpl_params} },    # note: this may have -expr param.
+			
         }
     );
     my $msg = $entity->as_string;
@@ -160,7 +161,7 @@ sub send_generic_email {
 
 sub send_multipart_email {
 	
-	Confirmaiton link still not showig up correctly in email message? 
+	# Confirmaiton link still not showig up correctly in email message? 
 	
 	
     my ($args) = @_;
@@ -192,8 +193,9 @@ sub send_multipart_email {
 		if !exists( $args->{-headers} );
 	
 
-	$args->{-tmpl_params} = { -list_settings_vars_param => { -list => $list } },   
+	#$args->{-tmpl_params} = { -list_settings_vars_param => { -list => $list } },   
 	
+			
   #  try { 
  	  require  DADA::App::MyMIMELiteHTML; 
       my $mailHTML = new DADA::App::MyMIMELiteHTML(
@@ -222,85 +224,27 @@ sub send_multipart_email {
 	
 	my $entity = $parser->parse_data($MIMELiteObj->as_string);
 	
+	my %lh = $mh->list_headers; 
+	for my $h(keys %lh){ 
+		$entity->head->add(   $h, safely_encode($lh{$h}));
+	}
+	
+	
+	
     my $fm = DADA::App::FormatMessages->new( -List => $list );
     $fm->use_header_info(1);
     $fm->use_email_templates(0);
+	
 
     if ( $args->{-tmpl_params}->{-expr} == 1 ) {
         $fm->override_validation_type('expr');
     }
+	
     $entity = $fm->format_message( 
 		-entity => $entity,
 	);
 	
-	
-   # } catch {}
-=cut
-	
-    require MIME::Entity;
-    my $entity;
-    if ( 
-			exists($args->{-plaintext_body}) 
-		 && exists($args->{-html_body}) 
-	 ) {
-
-        $args->{-plaintext_body} = safely_encode($args->{-plaintext_body});
-        $args->{-html_body} = safely_encode($args->{-html_body});
-
-        $entity = MIME::Entity->build(
-            Type    => 'multipart/alternative',
-            Charset => $ls->param('charset_value'),
-            %{$args->{-headers}},
-        );
-        $entity->attach(
-            Type     => 'text/plain',
-            Data     => $args->{-plaintext_body},
-            Encoding => $ls->param('plaintext_encoding'),
-            Charset  => $ls->param('charset_value'),
-        );
-        $entity->attach(
-            Type     => 'text/html',
-            Data     => $args->{-html_body},
-            Encoding => $ls->param('html_encoding'),
-            Charset  => $ls->param('charset_value'),
-        );
-    }
-    elsif ( 
-			! exists($args->{-plaintext_body}) 
-		   && exists($args->{-html_body}) 
-	 ) {
-
-        $args->{-html_body} = safely_encode($args->{-html_body});
-
-           $entity = MIME::Entity->build(
-            Type     => 'text/html',
-            Data     => $args->{-html_body},
-            Encoding => $ls->param('html_encoding'),
-            Charset  => $ls->param('charset_value'),
-            %{$args->{-headers}},
-        );
-    }
-    elsif ( 
-			    exists($args->{-plaintext_body}) 
-		   && ! exists($args->{-html_body}) 
-	 ) {
-		 
-       $args->{-plaintext_body} = safely_encode($args->{-plaintext_body});
-
-        $entity = MIME::Entity->build(
-            Type     => 'text/plain',
-            Data     => $args->{-plaintext_body},
-            Encoding => $ls->param('plaintext_encoding'),
-            Charset  => $ls->param('charset_value'),
-            %{$args->{-headers}},
-        );
-    }
-    else {
-		die "you will need to pass at lease a plaitext or html version of the message you would like send.";
-    }
-=cut
-	
-    $entity = $fm->email_template(
+	    $entity = $fm->email_template(
         {
             -entity => $entity,
             -expr   => $expr,
