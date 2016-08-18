@@ -17,6 +17,7 @@ Key:
 	* make slight tweak so that LWP resolver doesn't die with unfound resource 
 		- just a warning is just fine... 
 
+* Does format_headers_and_body with -msg param. still... work?
 
 why is the bridge plugin sched job taking so much processing time, when all the lists are using mail fowards?!
 

@@ -373,10 +373,6 @@ sub construct_and_send {
     my $final_header = safely_decode( $entity->head->as_string );
     my $final_body   = safely_decode( $entity->body_as_string );
 	
-	warn '$entity->as_string' . $entity->as_string;
-	warn '$final_header; ' . $final_header; 
-	warn '$final_body; '   . $final_body; 
-
     if($dry_run != 1) { 
         require DADA::Mail::Send;
         my $mh = DADA::Mail::Send->new(
@@ -1657,18 +1653,29 @@ sub list_invite {
 
         }
 
-        my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;
-        $msg_as_string = safely_encode($msg_as_string);
+
         $fm->Subject( $headers{Subject} );
         $fm->mass_mailing(1);
         $fm->use_email_templates(0);
         $fm->list_type('invitelist');
-        my ( $header_glob, $message_string );
-        eval { ( $header_glob, $message_string ) = $fm->format_headers_and_body( -msg => $msg_as_string ); };
 
-        if ($@) {
-            return $self->report_mass_mail_errors( $@, $root_login );
-        }
+        try { 
+			$entity = $fm->format_headers_and_body( -entity => $entity ); 
+		
+		} catch { 
+            return $self->report_mass_mail_errors( $_, $root_login );
+		};
+
+	    my $final_header = safely_decode( $entity->head->as_string );
+	    my $final_body   = safely_decode( $entity->body_as_string );
+
+        require DADA::Mail::Send;
+        my $mh = DADA::Mail::Send->new(
+            {
+                -list   => $self->{list},
+                -ls_obj => $self->{ls_obj},
+            }
+        );
 
         require DADA::Mail::Send;
         my $mh = DADA::Mail::Send->new(
@@ -1693,7 +1700,10 @@ sub list_invite {
             $mh->mass_test_recipient( strip( scalar $q->param('test_recipient') ) );
             $test_recipient = $mh->mass_test_recipient;
         }
-        my $message_id = $mh->mass_send( $mh->return_headers($header_glob), Body => $message_string, );
+        my $message_id = $mh->mass_send(
+			$mh->return_headers($final_header), 
+			Body => $final_body
+		);
         my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=invitelist&id=' . $message_id;
         return ( { -redirect_uri => $uri }, undef );
 

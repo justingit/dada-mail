@@ -193,16 +193,15 @@ sub send_digest {
 
         my $entity = $self->create_digest_msg_entity();
 
-        my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;
-           $msg_as_string = safely_decode($msg_as_string);
+        try { 
+			$entity = $fm->format_headers_and_body( -entity => $entity ); 
+		
+		} catch { 
+			warn $_; 
+		};
 
-        my ( $final_header, $final_body );
-        eval { ( $final_header, $final_body ) = $fm->format_headers_and_body( -msg => $msg_as_string ); };
-
-        #        if ($@) {
-        #            report_mass_mail_errors( $@, $list, $root_login );
-        #            return;
-        #        }
+	    my $final_header = safely_decode( $entity->head->as_string );
+	    my $final_body   = safely_decode( $entity->body_as_string );
 
         require DADA::Mail::Send;
         my $mh = DADA::Mail::Send->new(
@@ -212,13 +211,8 @@ sub send_digest {
             }
         );
 
-        #
-        #
-        #
         $mh->test( $self->test );
-        #
-        #
-        #
+
         my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
 
         my $message_id;
