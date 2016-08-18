@@ -364,18 +364,18 @@ sub construct_and_send {
         return ( 0, $errors, undef, undef );
     }
 
-    # Good? Alright.
-    my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;
-    $msg_as_string = safely_decode($msg_as_string);
-
-    #    $fm->Subject( $headers{Subject} );
-
-    my ( $final_header, $final_body );
-    try { 
-        ( $final_header, $final_body ) = $fm->format_headers_and_body( -msg => $msg_as_string ); 
-    } catch { 
-        return ( 0, $@, undef, undef );
-    };
+	try {
+		$entity = $fm->format_headers_and_body( -entity => $entity );
+	} catch { 
+	        return ( 0, $@, undef, undef );
+	};
+	
+    my $final_header = safely_decode( $entity->head->as_string );
+    my $final_body   = safely_decode( $entity->body_as_string );
+	
+	warn '$entity->as_string' . $entity->as_string;
+	warn '$final_header; ' . $final_header; 
+	warn '$final_body; '   . $final_body; 
 
     if($dry_run != 1) { 
         require DADA::Mail::Send;
@@ -588,28 +588,16 @@ sub construct_from_text {
         return ( 0, "There's no text in either the PlainText or HTML version of your email message!", undef, undef );
     }
 
-    my @compl_att = ();
-    if (@attachments) {
-        my @compl_att = ();
-        for (@attachments) {
-            my ($attach_entity) = $self->make_attachment( { -name => $_, -cgi_obj => $draft_q } );
-            push( @compl_att, $attach_entity )
-              if $attach_entity;
-        }
-        if ( $compl_att[0] ) {
-            my $mpm_entity = MIME::Entity->build(
-                Type => 'multipart/mixed',
-                %headers
-            );
-            $mpm_entity->add_part($entity);
-            for (@compl_att) {
-
-                #  warn 'add part
-                $mpm_entity->add_part($_);
-            }
-            $entity = $mpm_entity;
-        }
-    }
+	if($num_attachments > 0) {
+		$entity = $self->_add_attachments(
+			{
+				-entity  => $entity, 
+				-headers => {%headers}, 
+				-cgi_obj => $draft_q,
+			}
+		); 
+	}
+		
     return ( 1, undef, $entity, $fm );
 }
 
@@ -640,6 +628,9 @@ sub construct_from_url {
     my $url_options       = $draft_q->param('url_options') || undef;
     my $remove_javascript = $draft_q->param('remove_javascript') || 0;
 
+    my @attachments       = $self->has_attachments( { -cgi_obj => $draft_q } );
+    my $num_attachments   = scalar(@attachments);
+	
     my %headers = ();
     for my $h (
         qw(
@@ -680,7 +671,7 @@ sub construct_from_url {
             ? ( Debug => 1, )
             : ()
         ),
-        %headers,
+		( ( $num_attachments < 1 ) ? (%headers) : () ),
     );
 
     my $text_message = undef; 
@@ -830,8 +821,65 @@ sub construct_from_url {
     my $parser = new MIME::Parser;
        $parser = optimize_mime_parser($parser);
     my $entity = $parser->parse_data($source);
+	
+	if($num_attachments > 0) {
+		$entity = $self->_add_attachments(
+			{
+				-entity  => $entity, 
+				-headers => {%headers}, 
+				-cgi_obj => $draft_q,
+			}
+		); 
+	}
 
     return ( 1, undef, $entity, $fm, $md5 );
+
+}
+
+sub _add_attachments { 
+	my $self = shift; 
+	my ($args) = @_; 
+	
+	my $q       = $args->{-cgi_obj};
+    my $entity  = $args->{-entity};
+	my $headers = $args->{-headers};
+	
+	my @attachments = $self->has_attachments( { -cgi_obj => $q } );
+	
+	use Data::Dumper; 
+	
+	warn 'attachments:' . Data::Dumper::Dumper([@attachments]); 
+	
+    require MIME::Entity;
+	
+    my @compl_att = ();
+    if (@attachments) {
+        my @compl_att = ();
+        for (@attachments) {
+            my $attach_entity = $self->make_attachment(
+				{ 
+					-name    => $_, 
+					-cgi_obj => $q 
+				} 
+			);
+            push( @compl_att, $attach_entity )
+              if $attach_entity;
+        }
+        if ( $compl_att[0] ) {
+            my $mpm_entity = MIME::Entity->build(
+                Type => 'multipart/mixed',
+                %{$headers},
+            );
+            $mpm_entity->add_part($entity);
+            for (@compl_att) {
+                #  warn 'add part
+                $mpm_entity->add_part($_);
+            }
+            $entity = $mpm_entity;
+        }
+    }
+	
+	return $entity; 
 
 }
 
@@ -984,6 +1032,17 @@ sub send_url_email {
                     draft_role         => $draft_role,
                     restore_from_draft => $restore_from_draft,
                     done               => $done,
+
+
+                    kcfinder_url          => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{url},
+                    kcfinder_upload_dir   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir},
+                    kcfinder_upload_url   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url},
+                    core5_filemanager_url => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{url},
+                    core5_filemanager_upload_dir =>
+                      $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_dir},
+                    core5_filemanager_upload_url =>
+                      $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_url},
+
 
                     test_sent      => $test_sent,
                     test_recipient => $test_recipient,
