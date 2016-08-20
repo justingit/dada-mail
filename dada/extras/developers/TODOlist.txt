@@ -12,6 +12,24 @@ Key:
 [*] Naw...
 [?] Someday
 
+Send a Webpage 
+	Grab Webpage
+	Apply Template
+		- do we just take the <body> content? 
+		- or, attempt to inject our own css into the page (we need our own css...)
+			- but template now comprised both a <head> and a <body> so results are goign to be WEIRD
+				- vote for taking just content from body... BUT: 
+		- We can also make it an option: 
+			- Apply template (using only the <body> of the template...)
+			- do NOT apply template (use this for Send a Webpage screen, as well...)
+			- and then we can have > 1 templates too choose from: the all-encompassing template, and a bare bones template, 
+			that just has unsub/pysical address information. 
+	THEN make into multipart/related mime message
+	
+	WHATEVER we do, we probably need to a preview button, that also allows you to send a test message out? 
+	(or two buttons, whatever - next to the template picker?)
+
+
 
 * So mailing list mssage content: 
 Inject stylesheet into start of <head>, or right before body, or if there's o body, well, you gotta make one ,inlinify (removing stylesheet) - if CSS::Inliner isk avalable, then add to already inlined template.
