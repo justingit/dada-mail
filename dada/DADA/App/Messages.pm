@@ -511,17 +511,25 @@ sub send_subscription_request_approved_message {
 	if(!exists($args->{-vars})){ 
 		$args->{-vars} = {};
 	}
-
+	
+	if(!exists($args->{-email})){ 
+		warn 'you MUST pass the -email param to use this method!';
+		return undef;
+	}
+	
 	require DADA::App::Subscriptions::Unsub; 
 	my $dasu = DADA::App::Subscriptions::Unsub->new({-list => $args->{-list}});
 	my $unsub_link = $dasu->unsub_link({-email => $args->{-email}, -mid => '00000000000000'}); 
 	$args->{-vars}->{list_unsubscribe_link} = $unsub_link; 
 
+
+	my $to_header = '"'. escape_for_sending($ls->param('list_name')) .'" <'. $args->{-email} .'>'; 
+	
 	send_generic_email (
 		{
 			-list         => $args->{-list}, 
 			-headers      => {
-					To      => '"'. escape_for_sending($ls->param('list_name')) .'" <'. $args->{-email} .'>',
+					To      => $to_header,
 					Subject => $ls->param('subscription_request_approved_message_subject'),
 			}, 
 			-body         => $ls->param('subscription_request_approved_message'),

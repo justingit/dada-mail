@@ -149,4 +149,12 @@ sub subject_from_title_tag {
 
 
 
+
+sub app_css { 
+	my $self = shift; 
+	return $self->slurp($self->theme_dir . '/' . $self->name . '/dist/css/app.css');
+}
+
+
+
 1; 

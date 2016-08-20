@@ -671,6 +671,8 @@ sub construct_from_url {
     );
 
     my $text_message = undef; 
+    my $html_message = undef; 
+	
     if ( defined(scalar $draft_q->param('text_message_body')) ) {
         $text_message = $draft_q->param('text_message_body');
     }
@@ -682,7 +684,7 @@ sub construct_from_url {
             if ( length($url) <= 0 ) {
                 croak "You did not fill out a URL!";
             }
-            my ( $good_try, $res, $md5 ) = grab_url({-url => $draft_q->param('url') });
+            my ( $good_try, $res, $md5 ) = grab_url({-url => $url });
 
             $text_message = html_to_plaintext(
                 {
@@ -724,37 +726,27 @@ sub construct_from_url {
     my $mlo_status = 1; 
     my $mlo_errors = undef; 
    	
-	
     if ( $draft_q->param('content_from') eq 'url' ) {
-
-        # AWKWARD.
+		
         # Redirect tag check
-        my ( $rtc, $res, $md5 ) = grab_url({-url => $draft_q->param('plaintext_url') });
+        my ( $rtc, $res, $md5 ) = grab_url({-url => $url });
         my ( $status, $errors ) = $self->message_tag_check($rtc);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef, undef );
         }
+		
+		$html_message = $rtc;
+		
         undef($status);
         undef($errors);
-
-        # Redirect tag check
-
-        my $errors = undef;
-        try { 
-            ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) 
-				= $mailHTML->parse( $url, safely_encode($text_message) );
-        } catch { 
-            $errors .= "Problems with sending a webpage! Make sure you've correctly entered the URL to your webpage!\n";
-            $errors .= "* Returned Error: $_";
-            return ( 0, $errors, undef, undef, undef );  
-        };
-        if($mlo_status == 0){ 
-            return ( 0, $mlo_errors, undef, undef, undef );  
-        }
+		undef($rtc); 
+		undef($res);
+		undef($md5);
+        #/ Redirect tag check
+		
+		
     }
     else {
-		
-        my $html_message; 
 	    if ( $draft_q->param('content_from') eq 'none' ) {
 			# ...
 		}
@@ -770,24 +762,36 @@ sub construct_from_url {
         }
         undef($status);
         undef($errors);
-		
-        try { 
-            ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) 
-				= $mailHTML->parse( safely_encode($html_message), safely_encode($text_message) ); 
-        } catch { 
-            my $errors = "Problems sending HTML! \n
-            * Are you trying to send a webpage via URL instead?
-            * Have you entered anything in the, HTML Version?
-            * Returned Error: $_
-            ";
-            return ( 0, $errors, undef, undef, undef );
-        }; 
-        if($mlo_status == 0){ 
-            return ( 0, $mlo_errors, undef, undef, undef );  
-        }
     }
-
+	
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
+	
+	warn '$html_message before:' . $html_message; 
+	
+	$html_message = $fm->format_mlm( $html_message, 'text/html' );
+	$text_message = $fm->format_mlm( $text_message, 'text/plain' );
+	
+	warn '$html_message after:' . $html_message; 
+	
+	
+    try { 
+        ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) 
+			= $mailHTML->parse(
+				safely_encode($html_message), 
+				safely_encode($text_message)
+			); 
+    } catch { 
+        my $errors = "Problems sending HTML! \n
+        * Are you trying to send a webpage via URL instead?
+        * Have you entered anything in the, HTML Version?
+        * Returned Error: $_
+        ";
+        return ( 0, $errors, undef, undef, undef );
+    }; 
+    if($mlo_status == 0){ 
+        return ( 0, $mlo_errors, undef, undef, undef );  
+    }
+	
     $fm->mass_mailing(1);
     $fm->originating_message_url($url);
     $fm->Subject( $headers{Subject} );
@@ -844,7 +848,7 @@ sub _add_attachments {
 	
 	use Data::Dumper; 
 	
-	warn 'attachments:' . Data::Dumper::Dumper([@attachments]); 
+	#warn 'attachments:' . Data::Dumper::Dumper([@attachments]); 
 	
     require MIME::Entity;
 	

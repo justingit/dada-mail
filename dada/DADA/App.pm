@@ -4205,6 +4205,8 @@ sub view_bounce_history {
 
 sub subscription_requests {
 
+	warn 'here: subscription_requests'; 
+	
     my $self = shift;
     my $q    = $self->query();
 
@@ -4240,7 +4242,14 @@ sub subscription_requests {
 
     if ( $q->param('process') =~ m/approve/i ) {
 
+		warn 'approve!';
+		use Data::Dumper; 
+		warn '@address' . Dumper(@address);
+		
         for my $email (@address) {
+			
+			warn 'email:' . $email; 
+			
             $lh->move_subscriber(
                 {
                     -email     => $email,
@@ -4265,7 +4274,7 @@ sub subscription_requests {
 
                 # Make a profile, if needed,
                 require DADA::Profile;
-                my $prof = DADA::Profile->new( { -email => scalar $q->param('email') } );
+                my $prof = DADA::Profile->new( { -email => $email } );
                 if ( !$prof->exists ) {
                     $new_profile = 1;
                     $new_pass    = $prof->_rand_str(8);
@@ -4279,17 +4288,18 @@ sub subscription_requests {
 
                 # / Make a profile, if needed,
             }
+			warn 'sending, send_subscription_request_approved_message to' . $email;
             require DADA::App::Messages;
             DADA::App::Messages::send_subscription_request_approved_message(
                 {
                     -list   => $list,
-                    -email  => scalar $q->param('email'),
+                    -email  => $email,
                     -ls_obj => $ls,
 
                     #-test   => $self->test,
                     -vars => {
                         new_profile        => $new_profile,
-                        'profile.email'    => scalar $q->param('email'),
+                        'profile.email'    => $email,
                         'profile.password' => $new_pass,
 
                     }

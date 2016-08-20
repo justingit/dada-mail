@@ -8,6 +8,7 @@ use lib qw(
 
 use vars qw($AUTOLOAD); 
 use DADA::Config qw(!:DEFAULT);
+use DADA::App::Guts; 
 
 use Carp qw(croak carp); 
 #use Try::Tiny; 
@@ -16,7 +17,7 @@ use CSS::Inliner;
 # Need to ship with: 
 use DADA::App::Guts; 
 
-my $t = 0; 
+my $t = 1; 
 
 my %allowed = (
 
@@ -82,20 +83,30 @@ sub filter {
 	my $html;
 	
 	if(exists($args->{-html_msg})){ 
+		
+		
+		$html = $args->{-html_msg};
+		#warn '$html.0' . $html; 
+		
+		$html = $self->inject_stylesheet($html); 
+		#warn '$html.1' . $html; 
+		
 	#	try{ 
 	#		require CSS::Inliner; 
-			my $inliner = CSS::Inliner->new(
-				{
-					leave_style => 1,
-					relaxed     => 1
-				}
-			);
-			$inliner->read(
-				{
-					html => $args->{-html_msg}
-				}
-			);
-			$html = $inliner->inlinify();
+		my $inliner = CSS::Inliner->new(
+			{
+				leave_style => 0,
+				relaxed     => 1
+			}
+		);
+		$inliner->read(
+			{
+				html => $html,
+			}
+		);
+		$html = $inliner->inlinify();
+		$html = $self->only_body($html); 
+		
 	#	}
 	#	catch { 
 	#		carp 'Problems using CSS::Inliner: ' . $_; 
@@ -111,12 +122,138 @@ sub filter {
 	#    do_stylesheet   => 'minify', # needs CSS::Packer
 	#});
 	
+		#$html =~ m/body(.*?)>(.*?)<\/body>/;
+		#my $body = $2; 
+		#warn 'BODY:' . $body; 
 	
 		return $html; 
 	}
 	else { 
 		croak "you MUST pass your HTML message in, 'html_msg'!"; 
 	}
+}
+
+
+sub inject_stylesheet { 
+	my $self = shift; 
+	my $html = shift;
+	
+	my $css = $self->grab_css(); 
+	
+	$css = qq{ 
+		<!-- start injected css -->
+		<style type="text/css"> 
+			$css
+		</style> 
+		<!-- end injected css -->
+	};
+	
+	# NAIVE:
+	# Well, does it have a body?  
+	if($html =~ m/\<body/i){ 
+		$html =~ s/\<body/\n$css\n<body/i;
+	}
+	else { 
+		$html = qq{
+			<html> 
+				<head> 
+					$css
+				</head>
+				<body>
+					$html
+				</body 
+			</html> 
+		};
+	}
+	
+	return $html;
+
+}
+
+
+
+
+sub grab_css { 
+	my $self = shift;
+	
+	require  DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-name => 'default',
+			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+		}
+	);
+	
+	return $em->app_css();
+
+}
+
+
+
+
+sub only_body { 
+	
+	my $self = shift; 
+	my $html = shift; 
+	
+	try {
+		require HTML::Parser; 
+	}
+	catch { 
+		warn 'HTML::Parser not present? ' . $_;
+		return $self->only_body_naive($html);
+	};
+	
+	my $body = undef; 
+	my $p = HTML::Parser->new( api_version => 3 );
+	$p->handler( start => \&start_handler, "self,tagname,attr" );
+	$p->parse($html);
+	sub start_handler {
+	    my $self = shift;
+	    my $tagname  = shift;
+	    my $attr = shift;
+	    my $text = shift;
+	    return unless ( $tagname eq 'body' );
+	    $self->handler( start => sub { $body .= shift }, "text" );
+	    $self->handler( text =>  sub { $body .= shift }, "text" );
+	    $self->handler( default =>  sub { $body .= shift }, "text" );
+	    $self->handler( comment =>  sub { $body .= shift }, "text" );
+	    $self->handler( end  => sub {
+	    my ($endtagname, $self, $text) = @_;
+	         if($endtagname eq $tagname) {
+	         $self->eof;
+	         } else {
+	              $body .= $text;
+	        }
+	    }, "tagname,self,text");
+	 }
+	 
+	 if(! defined($body)){ 
+		 warn "couldn't find body!";
+		 return $html; 
+	 }
+	 else {
+		 return $body; 
+	 }
+}
+
+sub only_body_naive { 
+
+	my $self = shift; 
+	my $html = shift; 
+
+	my $result = '';
+
+	$html =~ s/\n//g; 
+	if (
+		$html =~ m/\<(.*?)body(.*?)\>(.*?)\<\/body\>/m
+	) {
+	    $result = $3;
+	}
+	$html = $result; 
+	
+	return $result; 
+
 }
 
 

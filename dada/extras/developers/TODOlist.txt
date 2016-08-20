@@ -13,6 +13,15 @@ Key:
 [?] Someday
 
 
+* So mailing list mssage content: 
+Inject stylesheet into start of <head>, or right before body, or if there's o body, well, you gotta make one ,inlinify (removing stylesheet) - if CSS::Inliner isk avalable, then add to already inlined template.
+
+Sigh! 
+Guess we'll have to figure out a policy on what to do with the full HTML document, if we're just taking what's in the body tag?
+
+
+Should CKEdit have the stylesheet already loaded in? What happens if you edit the underlying HTML?
+
 * Make using Email::MIME::CreateHTML an option if available - and maybe the dfault, unless NOT avalable, 
 	* make slight tweak so that LWP resolver doesn't die with unfound resource 
 		- just a warning is just fine... 

@@ -481,11 +481,11 @@ sub sub_unsub_trends_json {
 		my $datatable = Data::Google::Visualization::DataTable->new();
 
 		$datatable->add_columns(
-			   { id => 'date',                    label => 'Date',                    type => 'string'}, 
-			   { id => 'cumulative_subscribed',   label => 'Cumulative Subscriptions',   type => 'number',},
+			   { id => 'date',                    label => 'Date',                      type => 'string'}, 
+			   { id => 'cumulative_subscribed',   label => 'Cumulative Subscriptions',  type => 'number',},
 			   { id => 'cumulative_unsubscribed', label => 'Cumulative Unubscriptions', type => 'number',},
-			   { id => 'subscribed',              label => 'Subscriptions',   type => 'number',},
-			   { id => 'unsubscribed',            label => 'Unubscriptions', type => 'number',},
+			   { id => 'subscribed',              label => 'Subscriptions',             type => 'number',},
+			   { id => 'unsubscribed',            label => 'Unubscriptions',            type => 'number',},
 		);
 
 		for(@$trends){ 
