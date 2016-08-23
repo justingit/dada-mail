@@ -365,7 +365,12 @@ sub construct_and_send {
     }
 
 	try {
-		$entity = $fm->format_headers_and_body( -entity => $entity );
+		$entity = $fm->format_headers_and_body(
+			{ 
+				-entity      => $entity,
+				-format_body => 0,
+			}
+		);
 	} catch { 
 	        return ( 0, $@, undef, undef );
 	};
@@ -494,29 +499,45 @@ sub construct_from_text {
 
     my $email_format      = $draft_q->param('email_format');
     my $attachment        = $draft_q->param('attachment');
-    my $text_message_body = $draft_q->param('text_message_body') || undef;
-    my $html_message_body = $draft_q->param('html_message_body') || undef;
+    my $text_message      = $draft_q->param('text_message_body') || undef;
+    my $html_message      = $draft_q->param('html_message_body') || undef;
     my @attachments       = $self->has_attachments( { -cgi_obj => $draft_q } );
     my $num_attachments   = scalar(@attachments);
 
-    ( $text_message_body, $html_message_body ) =
-      DADA::App::FormatMessages::pre_process_msg_strings( $text_message_body, $html_message_body );
+    ( $text_message, $html_message ) =
+      DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
+	  
+  	warn '$html_message before:' . $html_message; 
+		
+  	$html_message = $fm->format_mlm( 
+  		{
+  			-content => $html_message, 
+  			-format  => 'text/html', 
+		}
+  	);	
+  	$text_message = $fm->format_mlm(
+		{ 
+			-content => $text_message, 
+			-format  => 'text/plain',
+		}
+	);
+  	warn '$html_message after:' . $html_message; 
+	
 
     my $entity;
+    if ( $html_message && $text_message ) {
 
-    if ( $html_message_body && $text_message_body ) {
+        $text_message = safely_encode($text_message);
+        $html_message = safely_encode($html_message);
 
-        $text_message_body = safely_encode($text_message_body);
-        $html_message_body = safely_encode($html_message_body);
-
-        my ( $status, $errors ) = $self->message_tag_check($text_message_body);
+        my ( $status, $errors ) = $self->message_tag_check($text_message);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef );
         }
         undef($status);
         undef($errors);
 
-        my ( $status, $errors ) = $self->message_tag_check($html_message_body);
+        my ( $status, $errors ) = $self->message_tag_check($html_message);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef );
         }
@@ -530,23 +551,23 @@ sub construct_from_text {
         );
         $entity->attach(
             Type     => 'text/plain',
-            Data     => $text_message_body,
+            Data     => $text_message,
             Encoding => $self->{ls_obj}->param('plaintext_encoding'),
             Charset  => $self->{ls_obj}->param('charset_value'),
         );
         $entity->attach(
             Type     => 'text/html',
-            Data     => $html_message_body,
+            Data     => $html_message,
             Encoding => $self->{ls_obj}->param('html_encoding'),
             Charset  => $self->{ls_obj}->param('charset_value'),
         );
 
     }
-    elsif ($html_message_body) {
+    elsif ($html_message) {
 
-        $html_message_body = safely_encode($html_message_body);
+        $html_message = safely_encode($html_message);
 
-        my ( $status, $errors ) = $self->message_tag_check($html_message_body);
+        my ( $status, $errors ) = $self->message_tag_check($html_message);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef );
         }
@@ -555,17 +576,17 @@ sub construct_from_text {
 
         $entity = MIME::Entity->build(
             Type     => 'text/html',
-            Data     => $html_message_body,
+            Data     => $html_message,
             Encoding => $self->{ls_obj}->param('html_encoding'),
             Charset  => $self->{ls_obj}->param('charset_value'),
             ( ( $num_attachments < 1 ) ? (%headers) : () ),
         );
     }
-    elsif ($text_message_body) {
+    elsif ($text_message) {
 
-        $text_message_body = safely_encode($text_message_body);
+        $text_message = safely_encode($text_message);
 
-        my ( $status, $errors ) = $self->message_tag_check($text_message_body);
+        my ( $status, $errors ) = $self->message_tag_check($text_message);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef );
         }
@@ -574,7 +595,7 @@ sub construct_from_text {
 
         $entity = MIME::Entity->build(
             Type     => 'text/plain',
-            Data     => $text_message_body,
+            Data     => $text_message,
             Encoding => $self->{ls_obj}->param('plaintext_encoding'),
             Charset  => $self->{ls_obj}->param('charset_value'),
             ( ( $num_attachments < 1 ) ? (%headers) : () ),
@@ -592,8 +613,7 @@ sub construct_from_text {
 				-cgi_obj => $draft_q,
 			}
 		); 
-	}
-		
+	}		
     return ( 1, undef, $entity, $fm );
 }
 
@@ -657,11 +677,6 @@ sub construct_from_url {
         'HTMLCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
         HTMLEncoding                     => scalar $self->{ls_obj}->param('html_encoding'),
         TextEncoding                     => scalar $self->{ls_obj}->param('plaintext_encoding'),
-        crop_html_content                => scalar $draft_q->param('crop_html_content'),
-        crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
-        crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
-        #( ($proxy)         ? ( Proxy        => $proxy, )         : () ),
-        #( ($login_details) ? ( LoginDetails => $login_details, ) : () ),
         (
               ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
             ? ( Debug => 1, )
@@ -725,7 +740,8 @@ sub construct_from_url {
     my $md5; 
     my $mlo_status = 1; 
     my $mlo_errors = undef; 
-   	
+   	my $base = undef; 
+	
     if ( $draft_q->param('content_from') eq 'url' ) {
 		
         # Redirect tag check
@@ -736,15 +752,14 @@ sub construct_from_url {
         }
 		
 		$html_message = $rtc;
-		
+		$base = $res->base || $url; 
+	
         undef($status);
         undef($errors);
 		undef($rtc); 
 		undef($res);
 		undef($md5);
-        #/ Redirect tag check
-		
-		
+        #/ Redirect tag check	
     }
     else {
 	    if ( $draft_q->param('content_from') eq 'none' ) {
@@ -752,8 +767,7 @@ sub construct_from_url {
 		}
 		else {
 	        $html_message = $draft_q->param('html_message_body');
-	        ( $text_message, $html_message ) =
-	          DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
+	        ( $text_message, $html_message ) = DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
 		}
 		
         my ( $status, $errors ) = $self->message_tag_check($html_message);
@@ -767,9 +781,28 @@ sub construct_from_url {
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
 	
 	warn '$html_message before:' . $html_message; 
-	
-	$html_message = $fm->format_mlm( $html_message, 'text/html' );
-	$text_message = $fm->format_mlm( $text_message, 'text/plain' );
+		
+	$html_message = $fm->format_mlm( 
+		{
+			-content => $html_message, 
+			-format  => 'text/html', 
+			-crop_html_options => {	
+		        enabled                          => scalar $draft_q->param('crop_html_content'),
+		        crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
+		        crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
+			}, 
+			-rel_to_abs_options { 
+				enabled => 1, 
+				base    => $base, 
+			}
+		}
+	);	
+	$text_message = $fm->format_mlm(
+		{
+			-content => $text_message, 
+			-format  => 'text/plain'
+		}
+	);
 	
 	warn '$html_message after:' . $html_message; 
 	
@@ -1664,7 +1697,7 @@ sub list_invite {
         $fm->list_type('invitelist');
 
         try { 
-			$entity = $fm->format_headers_and_body( -entity => $entity ); 
+			$entity = $fm->format_headers_and_body({-entity => $entity}); 
 		
 		} catch { 
             return $self->report_mass_mail_errors( $_, $root_login );
@@ -2232,14 +2265,16 @@ sub just_subscribed_mass_mailing {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     my ( $header_glob, $message_string ) = $fm->format_headers_and_body(
-        -msg => $fm->string_from_dada_style_args(
-            {
-                -fields => {
-                    Subject => $ls->param('subscribed_by_list_owner_message_subject'),
-                    Body    => $ls->param('subscribed_by_list_owner_message'),
-                },
-            }
-        )
+		{
+	        -msg => $fm->string_from_dada_style_args(
+	            {
+	                -fields => {
+	                    Subject => $ls->param('subscribed_by_list_owner_message_subject'),
+	                    Body    => $ls->param('subscribed_by_list_owner_message'),
+	                },
+	            }
+	        )
+		}
     );
 
     require DADA::Mail::Send;
@@ -2300,14 +2335,16 @@ sub just_unsubscribed_mass_mailing {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     my ( $header_glob, $message_string ) = $fm->format_headers_and_body(
-        -msg => $fm->string_from_dada_style_args(
-            {
-                -fields => {
-                    Subject => $ls->param('unsubscribed_by_list_owner_message_subject'),
-                    Body    => $ls->param('unsubscribed_by_list_owner_message'),
-                },
-            }
-        )
+		{
+	        -msg => $fm->string_from_dada_style_args(
+	            {
+	                -fields => {
+	                    Subject => $ls->param('unsubscribed_by_list_owner_message_subject'),
+	                    Body    => $ls->param('unsubscribed_by_list_owner_message'),
+	                },
+	            }
+	        )
+		}
     );
 
     require DADA::Mail::Send;

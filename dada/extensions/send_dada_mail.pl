@@ -92,7 +92,7 @@ sub deliver {
 		
        
     
-    my ($final_header, $final_body) = $fm->format_headers_and_body(-msg => $msg );
+    my ($final_header, $final_body) = $fm->format_headers_and_body({-msg => $msg});
             
     require DADA::Mail::Send;
            

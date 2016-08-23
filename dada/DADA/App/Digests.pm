@@ -194,7 +194,11 @@ sub send_digest {
         my $entity = $self->create_digest_msg_entity();
 
         try { 
-			$entity = $fm->format_headers_and_body( -entity => $entity ); 
+			$entity = $fm->format_headers_and_body(
+				{
+					-entity => $entity
+				}
+			 ); 
 		
 		} catch { 
 			warn $_; 

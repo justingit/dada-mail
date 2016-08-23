@@ -134,7 +134,7 @@ sub filter {
 }
 
 
-sub inject_stylesheet { 
+ { 
 	my $self = shift; 
 	my $html = shift;
 	
@@ -155,14 +155,18 @@ sub inject_stylesheet {
 	}
 	else { 
 		$html = qq{
-			<html> 
-				<head> 
-					$css
-				</head>
-				<body>
-					$html
-				</body 
-			</html> 
+
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+			    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+			    <meta name="viewport" content="width=device-width">
+			  </head>
+			  <body>
+			  	$html
+			  </body>
+			 </html> 
 		};
 	}
 	
@@ -187,76 +191,5 @@ sub grab_css {
 	return $em->app_css();
 
 }
-
-
-
-
-sub only_body { 
-	
-	my $self = shift; 
-	my $html = shift; 
-	
-	try {
-		require HTML::Parser; 
-	}
-	catch { 
-		warn 'HTML::Parser not present? ' . $_;
-		return $self->only_body_naive($html);
-	};
-	
-	my $body = undef; 
-	my $p = HTML::Parser->new( api_version => 3 );
-	$p->handler( start => \&start_handler, "self,tagname,attr" );
-	$p->parse($html);
-	sub start_handler {
-	    my $self = shift;
-	    my $tagname  = shift;
-	    my $attr = shift;
-	    my $text = shift;
-	    return unless ( $tagname eq 'body' );
-	    $self->handler( start => sub { $body .= shift }, "text" );
-	    $self->handler( text =>  sub { $body .= shift }, "text" );
-	    $self->handler( default =>  sub { $body .= shift }, "text" );
-	    $self->handler( comment =>  sub { $body .= shift }, "text" );
-	    $self->handler( end  => sub {
-	    my ($endtagname, $self, $text) = @_;
-	         if($endtagname eq $tagname) {
-	         $self->eof;
-	         } else {
-	              $body .= $text;
-	        }
-	    }, "tagname,self,text");
-	 }
-	 
-	 if(! defined($body)){ 
-		 warn "couldn't find body!";
-		 return $html; 
-	 }
-	 else {
-		 return $body; 
-	 }
-}
-
-sub only_body_naive { 
-
-	my $self = shift; 
-	my $html = shift; 
-
-	my $result = '';
-
-	$html =~ s/\n//g; 
-	if (
-		$html =~ m/\<(.*?)body(.*?)\>(.*?)\<\/body\>/m
-	) {
-	    $result = $3;
-	}
-	$html = $result; 
-	
-	return $result; 
-
-}
-
-
-
 
 1;

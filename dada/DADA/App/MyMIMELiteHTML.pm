@@ -66,17 +66,17 @@ sub parse {
         }
         else {
             $html_ver = safely_decode($content);
-            if ( $self->{crop_html_content} == 1 ) {
-                $html_ver = $self->crop_html($html_ver);
-            }
+            #if ( $self->{crop_html_content} == 1 ) {
+            #    $html_ver = $self->crop_html($html_ver);
+            #}
         }
         $rootPage = $url1 || $res->base;
     }
     else {
         $html_ver = $url_page;
-        if ( $self->{crop_html_content} == 1 ) {
-            $html_ver = $self->crop_html($html_ver);
-        }
+        #if ( $self->{crop_html_content} == 1 ) {
+        #    $html_ver = $self->crop_html($html_ver);
+        #}
         $rootPage = $url1;
         $html_md5 = md5_checksum( \$html_ver );
     }
@@ -525,68 +525,6 @@ sub build_mime_object {
 
     $self->{_MAIL} = $mail;
 
-}
-
-sub crop_html {
-    
-    
-    my $self = shift;
-    my $html = shift;
-
-  #  warn 'crop_html'; 
-  #  warn q{$self->{crop_html_content_selector_type}} . $self->{crop_html_content_selector_type}; 
-  #  warn q{$self->{crop_html_content_selector_label}} . $self->{crop_html_content_selector_label}; 
-  #  warn q{$self->{crop_html_content}} . $self->{crop_html_content}; 
-
-    try {
-        require HTML::Tree;
-        require HTML::Element;
-        require HTML::TreeBuilder;
-
-        my $root = HTML::TreeBuilder->new(
-            ignore_unknown      => 0,
-            no_space_compacting => 1,
-            store_comments      => 1,
-        );
-
-        $root->parse($html);
-        $root->eof();
-        $root->elementify();
-        my $replace_tag = undef;
-        my $crop        = undef;
-        if ( $self->{crop_html_content_selector_type} eq 'id' ) {
-            if ( $replace_tag = $root->look_down( "id", $self->{crop_html_content_selector_label} ) ) {
-                $crop = $replace_tag->as_HTML( undef, '  ' );
-            }
-            else {
-                warn 'cannot crop html: ' . 'cannot find id, ' . $self->{crop_html_content_selector_label};
-                return $html;
-            }
-        }
-        elsif ( $self->{crop_html_content_selector_type} eq 'class' ) {
-            if ( $replace_tag = $root->look_down( "class", $self->{crop_html_content_selector_label} ) ) {
-                $crop = $replace_tag->as_HTML( undef, '  ' );
-            }
-            else {
-                warn 'cannot crop html: ' . 'cannot find class, ' . $self->{crop_html_content_selector_label};
-                return $html;
-            }
-        }
-
-        my $body_tag = $root->find_by_tag_name('body');
-        $body_tag->delete_content();
-        $body_tag->push_content(
-            HTML::Element->new(
-                '~literal', 'text' => $crop,
-            )
-        );
-        return $root->as_HTML( undef, '  ' );
-
-    }
-    catch {
-        warn 'cannot crop html: ' . $_;
-        return $html;
-    };
 }
 
 1;

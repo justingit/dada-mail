@@ -2269,9 +2269,11 @@ sub dm_format {
 	# warn ' ${$msg} ' .  ${$msg}; 
 
     my ( $header_str, $body_str ) = $fm->format_headers_and_body(
-        -msg             => ${$msg},
-        -convert_charset => 1,
-    );
+        {	
+			-msg             => ${$msg},
+	        -convert_charset => 1,
+		}
+	);
 
     # not a scalarref (duh)
     my $all_together = $header_str . "\n\n" . $body_str;

@@ -12,10 +12,15 @@ Key:
 [*] Naw...
 [?] Someday
 
-Send a Webpage 
+Send a Webpage ourselves
+	(Love to inline all linkned stylesheets beforehand - MIME::Lite::HTML takes care of that - 
+	AND inlining images, grr!)
+
 	Grab Webpage
-	Apply Template
+	
+	Apply Template?
 		- do we just take the <body> content? 
+			- want this as its own "filter"
 		- or, attempt to inject our own css into the page (we need our own css...)
 			- but template now comprised both a <head> and a <body> so results are goign to be WEIRD
 				- vote for taking just content from body... BUT: 

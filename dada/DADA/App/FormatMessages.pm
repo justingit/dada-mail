@@ -37,7 +37,7 @@ DADA::App::FormatMessages
  # Use the email template.
    $fm->use_email_templates(1);  
  
- my ($header_str, $body_str) = $fm->format_headers_and_body(-msg => $msg);
+ my ($header_str, $body_str) = $fm->format_headers_and_body({-entity => $entity});
  
  # (... later on... 
  
@@ -210,16 +210,16 @@ sub format_message {
 
     my $self = shift;
 
-    my %args = @_;
+    my ($args) = @_;
 
-    if ( exists( $args{-msg} ) ) {
+    if ( exists( $args->{-msg} ) ) {
         warn 'args -msg';
-        my ( $h, $b ) = $self->format_headers_and_body(%args);
+        my ( $h, $b ) = $self->format_headers_and_body($args);
         return $h . "\n" . $b;
     }
-    elsif ( exists( $args{-entity} ) ) {
+    elsif ( exists( $args->{-entity} ) ) {
         warn 'args -entity';
-        return $self->format_headers_and_body(%args);
+        return $self->format_headers_and_body($args);
     }
     else {
         die "you must pass either a -msg or an -entity";
@@ -257,30 +257,33 @@ sub format_headers_and_body {
 
     my $self = shift;
 
-    my %args = @_;
+    my ($args) = @_;
 
     my $entity;
     my $msg = undef;
 
-    if ( exists( $args{-msg} ) ) {
+    if ( exists( $args->{-msg} ) ) {
         warn 'args -msg';
-
         $entity = $self->{parser}->parse_data( safely_encode($msg) );
     }
-    elsif ( exists( $args{-entity} ) ) {
+    elsif ( exists( $args->{-entity} ) ) {
         warn 'args -entity';
-
-        $entity = $args{-entity};
+        $entity = $args->{-entity};
     }
     else {
         die "you must pass either a -msg or an -entity";
     }
+	
+	if(!exists($args->{-format_body})){ 
+		$args->{-format_body} = 1;
+	}
 
-    if ( $args{-convert_charset} == 1 ) {
-        eval { $entity = $self->change_charset( { -entity => $entity } ); };
-        if ($@) {
-            carp "changing charset didn't work!: $@";
-        }
+    if ( $args->{-convert_charset} == 1 ) {
+        try { 
+			$entity = $self->change_charset( { -entity => $entity } ); 
+		} catch {
+            carp "changing charset didn't work!: $_";
+        };
     }
 
     if ( $entity->head->get( 'Subject', 0 ) ) {
@@ -297,9 +300,10 @@ sub format_headers_and_body {
     if ( defined( $self->{list} ) ) {
         $entity = $self->_make_multipart_alternative($entity);
     }
-
-    $entity = $self->_format_text($entity);
-
+	if($args->{-format_body} == 1){
+		$entity = $self->_format_text($entity);
+	}
+	
     # yeah, don't know why you have to do it
     # RIGHT BEFORE you make it a string...
     $entity->head->delete('X-Mailer')
@@ -307,21 +311,20 @@ sub format_headers_and_body {
 
     # or how about, count?
 
-    if ( exists( $args{-msg} ) ) {
+	if ( exists( $args->{-entity} ) ) {
+        warn 'returning -entity';
+        return $entity;
+    }
+	elsif ( exists( $args->{-msg} ) ) {
         warn 'returning -msg';
-
         my $has = $entity->head->as_string;
         my $bas = $entity->body_as_string;
-
         $entity->purge;
         undef($entity);
-
         return ( safely_decode($has), safely_decode($bas) );
     }
     else {
-        warn 'returning -entity';
-
-        return $entity;
+		return undef;
     }
 
 }
@@ -341,24 +344,73 @@ sub format_phrase_address {
 sub format_mlm { 
 
 	my $self     = shift; 
-	my $content  = shift; 
-	my $type     = shift || 'text/html';
-
+	my ($args)   = shift; 
+	
+	if(!exists($args->{-content})){ 
+		warn 'Please pass -content with the content of your message.';
+		return undef; 
+	}
+	my $content = $args->{-content};
+	
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'text/html';
+	}
+	my $type = $args->{-type};
+	
+	if(!exists($args->{-rel_to_abs_options})){ 
+		$args->{-rel_to_abs_options} = {
+			enabled => 0,
+		};
+	}
+	if(!exists($args->{-crop_html_options})){ 
+		$args->{-crop_html_options} = {
+			enabled => 0,
+		};
+	}
+	
     if ( $type eq 'text/html' ) {
-        if ( $self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1 ) {
-            try {
-                require
-                  DADA::App::FormatMessages::Filters::CSSInliner;
-                my $css_inliner =
-                  DADA::App::FormatMessages::Filters::CSSInliner
-                  ->new;
-                $content =
-                  $css_inliner->filter( { -html_msg => $content } );
+		
+		# Relative to Absolute URL links:
+		if($args->{-rel_to_abs_options}->{enabled} == 1) {
+			$content = $self->rel_to_abs(
+				$content, 
+				$args->{-rel_to_abs_options}->{base},
+			); 
+		}	
+		
+		# Crop HTML:
+		if($args->{-crop_html_options}->{enabled} == 1) {
+			$content = $self->crop_html(
+				{
+					%{
+						-html => $content, 
+						$args->{-crop_html_options},
+					}, 
+				}	
+			);
+		}
+		
+		# Body Content Only:
+		$content = $self->body_content_only($content);
+		
+		# Inlining
+		if ( $self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1 ) {
+			
+			# This should be an option - esp. with Send a Webpage 
+			# (I would say the DEFAULT option...)
+			# 
+           
+		    try {
+                require DADA::App::FormatMessages::Filters::CSSInliner;
+                my $css_inliner = DADA::App::FormatMessages::Filters::CSSInliner->new;
+                $content = $css_inliner->filter( { -html_msg => $content } );
             } catch {
                 carp "Problems with filter: $_";
             };
         }
-
+		
+		# Change inlined images into separate files we'll link 
+		# (and hopefully embed later down the chain)
         if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1
             || $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 )
         {
@@ -366,13 +418,13 @@ sub format_mlm {
                 require
                   DADA::App::FormatMessages::Filters::InlineEmbeddedImages;
                 my $iei = DADA::App::FormatMessages::Filters::InlineEmbeddedImages->new;
-                $content =
-                  $iei->filter( { -html_msg => $content } );
+                $content = $iei->filter( { -html_msg => $content } );
             } catch {
                 carp "Problems with filter: $_";
             };
         }
 
+		# Unmuck template tags
         try {
             require DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
             my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
@@ -389,7 +441,6 @@ sub format_mlm {
         && $self->{ls}->param('disable_discussion_sending') != 1
         && $self->{ls}->param('group_list') == 1 )
     {
-
         if ( $type eq 'text/html' ) {
             try {
                 $content = $self->_remove_opener_image(
@@ -404,20 +455,17 @@ sub format_mlm {
         try {
             require
               DADA::App::FormatMessages::Filters::RemoveTokenLinks;
-            my $rul =
-              DADA::App::FormatMessages::Filters::RemoveTokenLinks
-              ->new;
+            my $rul  = DADA::App::FormatMessages::Filters::RemoveTokenLinks->new;
             $content = $rul->filter( { -data => $content } );
         } catch {
             carp "Problems with filter: $_";
         };
 
+		# I am doing this, twice?
         try {
             require
               DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
-            my $utt =
-              DADA::App::FormatMessages::Filters::UnescapeTemplateTags
-              ->new;
+            my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
             $content = $utt->filter( { -html_msg => $content } );
         } catch {
             carp "Problems with filter: $_";
@@ -425,27 +473,24 @@ sub format_mlm {
 
         if ( $self->{ls}->param('discussion_template_defang') == 1 ) {
             try {
-                $content =
-                  $self->template_defang( { -data => $content } );
+                $content = $self->template_defang( { -data => $content } );
             } catch {
                 carp "Problem defanging template: $_";
             };
         }
 
-        #else {
-        #}
 
-    }    #/ discussion lists
-
+    } #/ discussion lists
     # End filtering done before the template is applied
 
+	# Apply our own mailing list template:
     $content = $self->_apply_template(
         -data => $content,
         -type => $type,
     );
 
-    # Begin filtering done after the template is applied
 
+    # Begin filtering done after the template is applied
     if ( $self->mass_mailing == 1 ) {
         if ( $self->list_type eq 'just_unsubscribed' ) {
             # ... well, nothing, really.
@@ -465,7 +510,6 @@ sub format_mlm {
     }
 
     if ( $self->no_list != 1 ) {
-
         $content = $self->_expand_macro_tags(
             -data => $content,
             -type => $type,
@@ -516,14 +560,217 @@ sub format_mlm {
     if ( $valid == 0 ) {
         my $munge = quotemeta('/fake/path/for/non/file/template');
         $errors =~ s/$munge/line/;
-        croak
-"Problems with email message! Invalid template markup: '$errors' \n"
+        croak "Problems with email message! Invalid template markup: '$errors' \n"
           . '-' x 72 . "\n"
           . $content;
     }
 	
 	return $content;
+	
+}
 
+sub rel_to_abs { 
+	
+	require URI::URL;
+	require URI::Find; 
+	require HTML::LinkExtor;
+	
+	my $self       = shift; 
+	my $str        = shift; 	
+	my $base       = shift; 
+	
+	my $parsed      = $str; 
+
+	my @links_to_look_at = (); 
+	my $callback = sub {
+	     my($tag, %attr) = @_;     
+
+		return 
+			unless $tag eq 'a' || $tag eq 'area'; 
+			
+		 my $link =  $attr{href}; 
+		
+		if($link =~ m/^mailto\:/) { 
+			warn "Skipping mailto: links"
+				if $t;
+		}
+		elsif($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
+			warn '$link looks to contain tags? skipping.'
+			 if $t; 
+		}
+#		elsif($self->_ignore_this_url($link) == 1) { 
+#		    warn "skipping: $link"
+#		        if $t;
+#		}
+		else { 
+			warn 'pushing: ' . $link if $t; 
+			push(@links_to_look_at, $link);	
+		}
+		
+		if($link =~ m/\&/){ 
+			# There's some weird stuff happening in HTML::LinkExtor, 
+			# Which will change, "&amps;" back to, "&", probably due to 
+			# A well-reasoned... reason. But it still breaks shit. 
+			# So I look for both: 
+
+			my $ampersand_link = $link; 
+			   $ampersand_link =~ s/\&/\&amp;/g;
+			push(@links_to_look_at, $ampersand_link); 
+
+		}
+	};
+
+    my $p = HTML::LinkExtor->new( $callback );
+       $p->parse($str);
+	undef $p; 
+
+	if($t) { 
+		require Data::Dumper; 
+		warn 'Links Found:' . Data::Dumper::Dumper([@links_to_look_at]); 
+	}
+	
+	foreach my $rel(@links_to_look_at){ 
+
+		warn '$rel: "' . $rel . '"'
+			if $t; 
+			
+		my $abs_link = URI::URL->new($rel)->abs( $base, 1 );
+		warn '$abs_link: ' . $abs_link
+			if $t; 
+	
+		my $qm_link         = quotemeta($rel);
+		
+		warn '$qm_link: "' . $qm_link . '"'
+			if $t; 
+		
+		# This line is suspect - it only works with double quotes, ONLY looks at the first (?) 
+		# double quote and doesn't use any sort of API from HTML::LinkExtor. 
+		# 
+		# Also see that we don't get rid of dupes in @links_to_look_at, and this regex is not global. 
+		# If you do one do the other, 
+		$parsed =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$abs_link/;
+		
+	}
+
+	@links_to_look_at = (); 
+	
+	return $parsed; 
+}
+
+
+
+sub crop_html {
+     
+    my $self = shift;
+	my ($args) = @_; 
+	my $html   = $args->{-html};
+	
+	    try {
+        require HTML::Tree;
+        require HTML::Element;
+        require HTML::TreeBuilder;
+
+        my $root = HTML::TreeBuilder->new(
+            ignore_unknown      => 0,
+            no_space_compacting => 1,
+            store_comments      => 1,
+        );
+
+        $root->parse($html);
+        $root->eof();
+        $root->elementify();
+        my $replace_tag = undef;
+        my $crop        = undef;
+		
+        if ( $args->{crop_html_content_selector_type} eq 'id' ) {
+            if ( $replace_tag = $root->look_down( "id", $args->{crop_html_content_selector_label} ) ) {
+                $crop = $replace_tag->as_HTML( undef, '  ' );
+            }
+            else {
+                warn 'cannot crop html: ' . 'cannot find id, ' . $args->{crop_html_content_selector_label};
+                return $html;
+            }
+        }
+        elsif ( $args->{crop_html_content_selector_type} eq 'class' ) {
+            if ( $replace_tag = $root->look_down( "class", $args->{crop_html_content_selector_label} ) ) {
+                $crop = $replace_tag->as_HTML( undef, '  ' );
+            }
+            else {
+                warn 'cannot crop html: ' . 'cannot find class, ' . $args->{crop_html_content_selector_label};
+                return $html;
+            }
+        }
+
+        my $body_tag = $root->find_by_tag_name('body');
+        $body_tag->delete_content();
+        $body_tag->push_content(
+            HTML::Element->new(
+                '~literal', 'text' => $crop,
+            )
+        );
+        return $root->as_HTML( undef, '  ' );
+
+    }
+    catch {
+        warn 'cannot crop html: ' . $_;
+        return $html;
+    };
+}
+
+
+sub body_content_only { 
+	my $self            = shift; 
+	my $html            = shift; 
+	my $has_HTML_Parser = 1;  
+	my $body            = undef;
+	
+	try {
+		require HTML::Parser; 
+	}
+	catch { 
+		$has_HTML_Parser = 0;
+	};
+
+	if($has_HTML_Parser == 0){ 
+		$html =~ s/\n//g; 
+		if (
+			$html =~ m/\<(.*?)body(.*?)\>(.*?)\<\/body\>/m
+		) {
+		    $body = $3;
+		}
+		return $body; 
+	}
+	else { 
+		my $p = HTML::Parser->new( api_version => 3 );
+		$p->handler( start => \&start_handler, "self,tagname,attr" );
+		$p->parse($html);
+		sub start_handler {
+		    my $self     = shift;
+		    my $tagname  = shift;
+		    my $attr     = shift;
+		    my $text     = shift;
+		    return unless ( $tagname eq 'body' );
+		    $self->handler( start   => sub { $body .= shift }, "text" );
+		    $self->handler( text    => sub { $body .= shift }, "text" );
+		    $self->handler( default => sub { $body .= shift }, "text" );
+		    $self->handler( comment => sub { $body .= shift }, "text" );
+		    $self->handler( end     => sub {
+		    my ($endtagname, $self, $text) = @_;
+		         if($endtagname eq $tagname) {
+					 $self->eof;
+		         } else {
+		              $body .= $text;
+		        }
+		    }, "tagname,self,text");
+		 }
+		 if(! defined($body)){ 
+			 warn "couldn't find body!";
+			 return $html; 
+		 }
+		 else {
+			 return $body; 
+		 }
+	 }	
 }
 
 
@@ -534,7 +781,8 @@ sub _format_text {
 	
 	return $entity; 
 	
-	
+=cut
+		
 	###########################################################################
 	
     my @parts = $entity->parts;
@@ -598,7 +846,11 @@ sub _format_text {
             # Same thing - this means it could be in quoted/printable,etc.
             # Begin filtering done before the template is applied
 
-            $content = $self->format_mlm( $content, $entity->head->mime_type );
+            $content = $self->format_mlm( {
+            		-content => $content, 
+					-type    => $entity->head->mime_type,
+				}
+			);
             
 			my $io = $body->open('w');
             $content = safely_encode($content);
@@ -611,6 +863,8 @@ sub _format_text {
         }
         return $entity;
     }
+=cut
+	
 }
 
 =pod
