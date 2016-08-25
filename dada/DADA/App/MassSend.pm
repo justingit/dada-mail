@@ -348,10 +348,27 @@ sub construct_and_send {
     }
     
     if ( $args->{-screen} eq 'send_email' ) {
-        ( $status, $errors, $entity, $fm ) = $self->construct_from_text($draft_q);
-    }
+		
+	    my $can_use_mime_lite_html = 1;
+	    try { 
+			require DADA::App::MyMIMELiteHTML; 
+		} catch  {
+	        $can_use_mime_lite_html = 0;
+	    };
+		if($can_use_mime_lite_html == 1) {
+			( $status, $errors, $entity, $fm ) = $self->construct_from_url(
+				{
+					-cgi_obj => $draft_q, 
+					-mode    => 'text'
+				},
+			);
+    	}
+		else { 
+			( $status, $errors, $entity, $fm ) = $self->construct_from_text({-cgi_obj => $draft_q});			
+		}
+	}
     elsif ( $args->{-screen} eq 'send_url_email' ) {
-        ( $status, $errors, $entity, $fm, $md5 ) = $self->construct_from_url($draft_q);
+        ( $status, $errors, $entity, $fm, $md5 ) = $self->construct_from_url({-cgi_obj => $draft_q});
     }
     else {
         croak "unknown screen: " . $args->{-screen};
@@ -368,13 +385,12 @@ sub construct_and_send {
 		$entity = $fm->format_headers_and_body(
 			{ 
 				-entity      => $entity,
-				-format_body => 0,
 			}
 		);
 	} catch { 
 	        return ( 0, $@, undef, undef );
 	};
-	
+		
     my $final_header = safely_decode( $entity->head->as_string );
     my $final_body   = safely_decode( $entity->body_as_string );
 	
@@ -460,12 +476,17 @@ sub construct_and_send {
     }
 }
 
+
+
 sub construct_from_text {
     warn 'construct_from_text'
       if $t;
 
     my $self    = shift;
-    my $draft_q = shift;
+    my ($args)  = @_; 
+	
+	my $draft_q = $args->{-cgi_obj};
+	
 
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
@@ -512,13 +533,13 @@ sub construct_from_text {
   	$html_message = $fm->format_mlm( 
   		{
   			-content => $html_message, 
-  			-format  => 'text/html', 
+  			-type  => 'text/html', 
 		}
   	);	
   	$text_message = $fm->format_mlm(
 		{ 
 			-content => $text_message, 
-			-format  => 'text/plain',
+			-type  => 'text/plain',
 		}
 	);
   	warn '$html_message after:' . $html_message; 
@@ -620,28 +641,54 @@ sub construct_from_text {
 sub construct_from_url {
 
     my $self    = shift;
-    my $draft_q = shift;
-
+	my ($args)  = @_;
+	
+	my $draft_q  = $args->{-cgi_obj}; 
+	my $mode     = 'url';
+	if(exists($args->{-mode})) { 
+		 $mode = $args->{-mode};
+	}
+	
+	my $subject_from           = $draft_q->param('subject_from')           || 'input';
+	my $content_from           = $draft_q->param('content_from')           || 'url';
+	my $plaintext_content_from = $draft_q->param('plaintext_content_from') || 'auto';
+    my $url_options            = $draft_q->param('url_options')            || undef;
+	
+	if($mode eq 'text') { 
+		$subject_from = 'input';
+		$content_from = 'content_from_textarea';
+		$url_options = 'cid';
+		
+		if(! defined(scalar $draft_q->param('html_message_body'))) { 
+			$content_from = 'none';
+		}
+		if(defined(scalar $draft_q->param('text_message_body'))) { 
+			
+			$plaintext_content_from = 'text';
+		}
+		else { 
+			$plaintext_content_from = 'auto';
+		}
+	}
+	
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
     $fm->mass_mailing(1);
 
-    my $can_use_mime_lite_html = 0;
+    my $can_use_mime_lite_html = 1;
     my $mime_lite_html_error   = undef;
-    eval { require DADA::App::MyMIMELiteHTML };
-    if ( !$@ ) {
-        $can_use_mime_lite_html = 1;
-    }
-    else {
-        $mime_lite_html_error = $@;
-    }
-
+    try { 
+		require DADA::App::MyMIMELiteHTML; 
+	} catch  {
+        $can_use_mime_lite_html = 0;
+	    $mime_lite_html_error = $@;
+    };
+	
     if ( !$can_use_mime_lite_html ) {
-        return ( 0, $@, undef, undef, undef );
+        return ( 0, $mime_lite_html_error, undef, undef, undef );
     }
 
     my $url               = strip( $draft_q->param('url') );
-    my $url_options       = $draft_q->param('url_options') || undef;
     my $remove_javascript = $draft_q->param('remove_javascript') || 0;
 
     my @attachments       = $self->has_attachments( { -cgi_obj => $draft_q } );
@@ -662,8 +709,7 @@ sub construct_from_url {
         }
     }
     
-    if($draft_q->param('subject_from') eq 'title_tag') { 
-        
+    if($subject_from eq 'title_tag') { 
        my $url_subject = $self->subject_from_title_tag($draft_q); 
        if(defined($url_subject)){ 
             $headers{Subject} = $url_subject; 
@@ -685,64 +731,16 @@ sub construct_from_url {
 		( ( $num_attachments < 1 ) ? (%headers) : () ),
     );
 
-    my $text_message = undef; 
+    my $text_message = 'This email message requires that your mail reader support HTML'; 
     my $html_message = undef; 
 	
-    if ( defined(scalar $draft_q->param('text_message_body')) ) {
-        $text_message = $draft_q->param('text_message_body');
-    }
-    else {
-        $text_message = 'This email message requires that your mail reader support HTML';
-    }
-    if ( $draft_q->param('plaintext_content_from') eq 'auto' ) {
-        if ( $draft_q->param('content_from') eq 'url' ) {
-            if ( length($url) <= 0 ) {
-                croak "You did not fill out a URL!";
-            }
-            my ( $good_try, $res, $md5 ) = grab_url({-url => $url });
-
-            $text_message = html_to_plaintext(
-                {
-                    -str              => $good_try,
-                    -formatter_params => {
-                        base        => $url,
-                        before_link => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
-                        footnote    => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET --> %l',
-                    }
-                }
-            );
-        }
-        else {
-            $text_message = html_to_plaintext(
-                {
-                    -str => $draft_q->param('html_message_body')
-                }
-            );
-        }
-    }
-    elsif ( $draft_q->param('plaintext_content_from') eq 'text' ) {        
-		$text_message = $draft_q->param('text_message_body');
-    }
-	elsif ( $draft_q->param('plaintext_content_from') eq 'url' ) {        
-        my $res; 
-		my $md5; 
-        ( $text_message, $res, $md5 ) = grab_url({-url => $draft_q->param('plaintext_url') });
-    }
-
-    my ( $status, $errors ) = $self->message_tag_check($text_message);
-    if ( $status == 0 ) {
-        return ( $status, $errors, undef, undef, undef );
-    }
-    undef($status);
-    undef($errors);
-
     my $MIMELiteObj;
     my $md5; 
     my $mlo_status = 1; 
     my $mlo_errors = undef; 
    	my $base = undef; 
 	
-    if ( $draft_q->param('content_from') eq 'url' ) {
+    if ($content_from eq 'url' ) {
 		
         # Redirect tag check
         my ( $rtc, $res, $md5 ) = grab_url({-url => $url });
@@ -761,37 +759,59 @@ sub construct_from_url {
 		undef($md5);
         #/ Redirect tag check	
     }
-    else {
-	    if ( $draft_q->param('content_from') eq 'none' ) {
+    elsif ($content_from eq 'none' ) {
 			# ...
-		}
-		else {
-	        $html_message = $draft_q->param('html_message_body');
-	        ( $text_message, $html_message ) = DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
-		}
+	}
+	else {
+		$html_message = $draft_q->param('html_message_body');
+	   ( $text_message, $html_message ) = DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
+	}
 		
-        my ( $status, $errors ) = $self->message_tag_check($html_message);
-        if ( $status == 0 ) {
-            return ( $status, $errors, undef, undef, undef );
-        }
-        undef($status);
-        undef($errors);
+    my ( $status, $errors ) = $self->message_tag_check($html_message);
+    if ( $status == 0 ) {
+        return ( $status, $errors, undef, undef, undef );
     }
+    undef($status);
+    undef($errors);
+
+    if($plaintext_content_from eq 'text') {
+	    $text_message = $draft_q->param('text_message_body');
+    } elsif ( $plaintext_content_from eq 'auto' ) {
+    	$text_message = html_to_plaintext(
+            {
+                -str              => $html_message,
+                -formatter_params => {
+                    base        => $url,
+                    before_link => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
+                    footnote    => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET --> %l',
+                }
+            }
+        );
+    } elsif ( $plaintext_content_from eq 'url' ) {        
+        my $res; 
+		my $md5; 
+        ( $text_message, $res, $md5 ) = grab_url({-url => $draft_q->param('plaintext_url') });
+    }
+    my ( $status, $errors ) = $self->message_tag_check($text_message);
+    if ( $status == 0 ) {
+        return ( $status, $errors, undef, undef, undef );
+    }
+    undef($status);
+    undef($errors);
+	
 	
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-	
-	warn '$html_message before:' . $html_message; 
-		
+			
 	$html_message = $fm->format_mlm( 
 		{
 			-content => $html_message, 
-			-format  => 'text/html', 
+			-type  => 'text/html', 
 			-crop_html_options => {	
 		        enabled                          => scalar $draft_q->param('crop_html_content'),
 		        crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
 		        crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
 			}, 
-			-rel_to_abs_options { 
+			-rel_to_abs_options => { 
 				enabled => 1, 
 				base    => $base, 
 			}
@@ -800,11 +820,9 @@ sub construct_from_url {
 	$text_message = $fm->format_mlm(
 		{
 			-content => $text_message, 
-			-format  => 'text/plain'
+			-type  => 'text/plain'
 		}
 	);
-	
-	warn '$html_message after:' . $html_message; 
 	
 	
     try { 
@@ -864,6 +882,8 @@ sub construct_from_url {
 			}
 		); 
 	}
+	
+	#warn '$entity->as_string' . $entity->as_string;
 
     return ( 1, undef, $entity, $fm, $md5 );
 

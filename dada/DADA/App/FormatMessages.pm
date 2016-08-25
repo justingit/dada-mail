@@ -301,7 +301,7 @@ sub format_headers_and_body {
         $entity = $self->_make_multipart_alternative($entity);
     }
 	if($args->{-format_body} == 1){
-		$entity = $self->_format_text($entity);
+		$entity = $self->_format_body($entity);
 	}
 	
     # yeah, don't know why you have to do it
@@ -521,17 +521,6 @@ sub format_mlm {
             -data => $content,
             -type => $type,
         );
-    }
-
-    if ( $self->no_list != 1 ) {
-        if ( defined( $self->{list} ) ) {
-            if ( $self->{ls}->param('tracker_track_opens_method') eq
-                'directly'
-                && $type eq 'text/html' )
-            {
-                $content = $self->_add_opener_image($content);
-            }
-        }
     }
 
     # End filtering done after the template is applied
@@ -774,17 +763,11 @@ sub body_content_only {
 }
 
 
-sub _format_text {
+sub _format_body {
 
     my $self   = shift;
     my $entity = shift;
-	
-	return $entity; 
-	
-=cut
-		
-	###########################################################################
-	
+			
     my @parts = $entity->parts;
 
     if (@parts) {
@@ -793,7 +776,7 @@ sub _format_text {
             my $n_entity = undef;
 
             try {
-                $n_entity = $self->_format_text( $parts[$i] );
+                $n_entity = $self->_format_body( $parts[$i] );
 
             } catch {
                 warn 'Formatting single entity failed!' . $_;
@@ -817,7 +800,6 @@ sub _format_text {
         return $entity;
     }
     else {
-
         my $is_att = 0;
         if ( defined( $entity->head->mime_attr('content-disposition') ) ) {
             if ( $entity->head->mime_attr('content-disposition') =~
@@ -827,44 +809,57 @@ sub _format_text {
             }
         }
 
-        if (
-            (
-                   ( $entity->head->mime_type eq 'text/plain' )
-                || ( $entity->head->mime_type eq 'text/html' )
-            )
-            && ( $is_att != 1 )
-          )
-        {
-
+        #if (
+        #    (
+        #           ( $entity->head->mime_type eq 'text/plain' )
+        #        || ( $entity->head->mime_type eq 'text/html' )
+        #    )
+        #    && ( $is_att != 1 )
+        #  )
+        #{
+			
+		if ( 
+			($entity->head->mime_type eq 'text/html' )
+			&& ( $is_att != 1 )
+		){
+				
             my $body    = $entity->bodyhandle;
             my $content = $entity->bodyhandle->as_string;
-            $content = safely_decode($content);
-            #
-            # body_as_string gives you encoded version.
-            # Don't get it this way, unless you've got a great reason
-            # my $content = $entity->body_as_string;
-            # Same thing - this means it could be in quoted/printable,etc.
-            # Begin filtering done before the template is applied
+               $content = safely_decode($content);
+			my $changes = 0; 
+			   
+			if ( $self->no_list != 1 ) {
+				#warn '$self->no_list != 1';
 
-            $content = $self->format_mlm( {
-            		-content => $content, 
-					-type    => $entity->head->mime_type,
+				if ( defined( $self->{list} ) ) {
+
+					#warn q{ if ( defined( $self->{list} ) ) };
+
+
+					#warn '$entity->head->mime_type' . $entity->head->mime_type; 
+					#warn q{$self->{ls}->param('tracker_track_opens_method')};
+
+					if ( $self->{ls}->param('tracker_track_opens_method') eq 'directly' && $entity->head->mime_type eq 'text/html' ) {
+						$content = $self->_add_opener_image($content);
+						$changes = 1; 
+					}
 				}
-			);
-            
-			my $io = $body->open('w');
-            $content = safely_encode($content);
-            $io->print($content);
-            $io->close;
-            $entity->sync_headers(
-                'Length'      => 'COMPUTE',
-                'Nonstandard' => 'ERASE'
-            );
-        }
+			}
+
+			#warn '$changes' . $changes; 
+			if($changes == 1){
+				my $io = $body->open('w');
+				$content = safely_encode($content);
+				$io->print($content);
+				$io->close;
+				$entity->sync_headers(
+					'Length'      => 'COMPUTE',
+					'Nonstandard' => 'ERASE'
+				);
+			}
+		}
         return $entity;
     }
-=cut
-	
 }
 
 =pod
@@ -952,6 +947,9 @@ sub _give_props {
 }
 
 sub _add_opener_image {
+
+	#warn '_add_opener_image';
+	
 
     my $self    = shift;
     my $content = shift;
