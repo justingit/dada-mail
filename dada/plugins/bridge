@@ -1623,14 +1623,25 @@ sub validate_msg {
         }
     }
 
-    if ( $entity->head->count('X-BeenThere') ) {
-        my $x_been_there_header = $entity->head->get( 'X-BeenThere', 0 );
-        chomp($x_been_there_header);
-
+	my $x_been_there_header = undef; 
+	if ( $entity->head->count('X-BeenThere') ) {
+		$x_been_there_header = $entity->head->get( 'X-BeenThere', 0 );
+		chomp($x_been_there_header);
+	}
+	elsif ( $entity->head->count('X-Beenthere') ) {
+			$x_been_there_header = $entity->head->get( 'X-Beenthere', 0 );
+			chomp($x_been_there_header);
+	}
+			
+    if ( defined $x_been_there_header ) {
         if ( lc_email($x_been_there_header) eq lc_email( $ls->param('discussion_pop_email') ) ) {
             $r .= "\t* Message is from myself (the, X-BeenThere header has been set), message should be ignored...\n";
             $errors->{x_been_there_header_found} = 1;
         }
+		elsif($x_been_there_header eq $DADA::Config::PROGRAM_URL) { 
+            $r .= "\t* Message is from myself (the, X-BeenThere header has been set to the app's URL), message should be ignored...\n";
+            $errors->{x_been_there_header_found} = 1;
+		}
         else {
             $errors->{x_been_there_header_found} = 0;
         }

@@ -901,48 +901,55 @@ Given an entity, will do some transformations on the headers. It will:
 sub _format_headers {
 
     # so much shuffling.
-    # a copy of the message should be made - at least the headers, 
+    # a copy of the message should be made - at least the headers,
     # we can then modify the copy, using a r/o og copy, and not worry about
-    # "hey, did I touch this, yet?" 
-    
+    # "hey, did I touch this, yet?"
+
     my $self   = shift;
     my $entity = shift;
-    
-      if($self->no_list == 1 || $self->{ls}->param('disable_discussion_sending') == 1){ 
-          return $entity;
-      }
 
+	return $entity 
+		if $self->no_list == 1;
+
+    $entity->head->add( 'X-BeenThere',
+        safely_encode( $DADA::Config::PROGRAM_URL ) );
+
+	return $entity 
+		if $self->{ls}->param('disable_discussion_sending') == 1; 
+	
+	
     require Email::Address;
 
     # DEV: this if() shouldn't really need to be here, if this is only used for
     # discussion messages
     #
 
-
     if ( $self->{ls}->param('prefix_list_name_to_subject') == 1 ) {
-        
-        # Most likely, the OG subject is encoded... 
+
+        # Most likely, the OG subject is encoded...
         my $new_subject;
-        
+
         my $og_subject = $entity->head->get( 'Subject', 0 );
-        
-         if($og_subject =~ m/\=\?(.*?)\?Q\?/){ 
-             # probably not going to need to be decoded, it's 7bit ASCII
-            $new_subject = $og_subject; 
-        
-            # This is related to the bug with the named capture in _list_name_subject 
-            # http://stackoverflow.com/questions/10217531/whats-the-best-way-to-clear-regex-matching-variables
+
+        if ( $og_subject =~ m/\=\?(.*?)\?Q\?/ ) {
+
+            # probably not going to need to be decoded, it's 7bit ASCII
+            $new_subject = $og_subject;
+
+# This is related to the bug with the named capture in _list_name_subject
+# http://stackoverflow.com/questions/10217531/whats-the-best-way-to-clear-regex-matching-variables
             "a" =~ /a/;
-            
-         }
-         else { 
-             $new_subject = safely_decode($og_subject); 
+
         }
-        $new_subject = $self->_list_name_subject($new_subject); 
-        
+        else {
+            $new_subject = safely_decode($og_subject);
+        }
+        $new_subject = $self->_list_name_subject($new_subject);
+
         $entity->head->delete('Subject');
+
         # also, probably don't have to re-encode this, as it's encoded... sigh.
-        $entity->head->add( 'Subject', safely_encode($new_subject) ); 
+        $entity->head->add( 'Subject', safely_encode($new_subject) );
     }
 
     # DEV:  Send mass mailings via sendmail, OTHER THAN via a discussion list,
@@ -951,15 +958,15 @@ sub _format_headers {
     # _format_headers should only be called for discussion lists.
     #
 
-    if (   $self->mass_mailing == 1
+    if ( $self->mass_mailing == 1
         && defined( $self->{ls}->param('discussion_pop_email') ) )
     {
         if ( $entity->head->count('Cc') ) {
-            $entity->head->add( 'X-Cc', $entity->head->get('Cc', 0));
+            $entity->head->add( 'X-Cc', $entity->head->get( 'Cc', 0 ) );
             $entity->head->delete('Cc');
         }
         if ( $entity->head->count('CC') ) {
-            $entity->head->add( 'X-Cc', $entity->head->get('CC', 0));
+            $entity->head->add( 'X-Cc', $entity->head->get( 'CC', 0 ) );
             $entity->head->delete('CC');
         }
 
@@ -969,85 +976,96 @@ sub _format_headers {
         if ( $entity->head->count('BCC') ) {
             $entity->head->delete('BCC');
         }
-		
+
     }
-	
-	# This is weird, right? remove the original original from header, and put our own: 
-	if ( $entity->head->count('X-Original-From') ) {
+
+# This is weird, right? remove the original original from header, and put our own:
+    if ( $entity->head->count('X-Original-From') ) {
         $entity->head->delete('X-Original-From');
     }
-    $entity->head->add( 'X-Original-From', $entity->head->get('From', 0));
-    
-	if (   $self->mass_mailing == 1
+    $entity->head->add( 'X-Original-From', $entity->head->get( 'From', 0 ) );
+
+    if (   $self->mass_mailing == 1
         && $self->{ls}->param('group_list') == 1
-        && defined( $self->{ls}->param('discussion_pop_email') ) 
-        && $self->{ls}->param('group_list_pp_mode') == 1)
+        && defined( $self->{ls}->param('discussion_pop_email') )
+        && $self->{ls}->param('group_list_pp_mode') == 1 )
     {
         if ( $entity->head->count('From') ) {
-			my    $og_from = $entity->head->get('From', 0);
-			chomp($og_from);
-			#warn '$og_from ' . $og_from; 
-			
-			$entity->head->delete('From');
-	        $entity->head->add( 'From', safely_encode($self->_pp($og_from)) );
-			
-			
-			if($self->{ls}->param('set_to_header_to_list_address') == 1) { 
-		        if ( $entity->head->count('Reply-To') ) {
-					$entity->head->delete('Reply-To');
-				}
-				$entity->head->add( 'Reply-To', $og_from );
-			}
-		}
-	}
-	else { 
-		# "no pp mode!"; 
-	}
+            my $og_from = $entity->head->get( 'From', 0 );
+            chomp($og_from);
+
+            #warn '$og_from ' . $og_from;
+
+            $entity->head->delete('From');
+            $entity->head->add( 'From', safely_encode( $self->_pp($og_from) ) );
+
+            if ( $self->{ls}->param('set_to_header_to_list_address') == 1 ) {
+                if ( $entity->head->count('Reply-To') ) {
+                    $entity->head->delete('Reply-To');
+                }
+                $entity->head->add( 'Reply-To', $og_from );
+            }
+        }
+    }
+    else {
+        # "no pp mode!";
+    }
 
     # Only Announce-Only
-	if (   $self->mass_mailing == 1
+    if (   $self->mass_mailing == 1
         && $self->{ls}->param('group_list') == 0
-        && defined( $self->{ls}->param('discussion_pop_email')) 
-        ) 
+        && defined( $self->{ls}->param('discussion_pop_email') ) )
     {
-		if($t == 1) {
-	        warn q{$entity->head->get('From', 0) } . $entity->head->get('From', 0); 
-	        warn q{$entity->head->get('Reply-To', 0) } . $entity->head->get('Reply-To', 0); 
-	        warn q{$entity->head->get('Sender', 0) } . $entity->head->get('Sender', 0); 
-	        warn 'Only Announce-Only'; 
-		}
+        if ( $t == 1 ) {
+            warn q{$entity->head->get('From', 0) }
+              . $entity->head->get( 'From', 0 );
+            warn q{$entity->head->get('Reply-To', 0) }
+              . $entity->head->get( 'Reply-To', 0 );
+            warn q{$entity->head->get('Sender', 0) }
+              . $entity->head->get( 'Sender', 0 );
+            warn 'Only Announce-Only';
+        }
 
-        if($self->{ls}->param('bridge_announce_reply_to') eq 'list_owner') { 
+        if ( $self->{ls}->param('bridge_announce_reply_to') eq 'list_owner' ) {
             if ( $entity->head->count('Reply-To') ) {
-				$entity->head->delete('Reply-To');
-			}
-			warn q{$entity->head->add( 'Reply-To', $self->{ls}->param('list_owner_email') );}
-				if $t; 
-			$entity->head->add( 'Reply-To', $self->{ls}->param('list_owner_email') );
+                $entity->head->delete('Reply-To');
+            }
+            warn
+q{$entity->head->add( 'Reply-To', $self->{ls}->param('list_owner_email') );}
+              if $t;
+            $entity->head->add( 'Reply-To',
+                $self->{ls}->param('list_owner_email') );
         }
-        elsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') { 
-            warn q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
-				if $t; 
+        elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'og_sender' )
+        {
+            warn
+q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
+              if $t;
             if ( $entity->head->count('Reply-To') ) {
-				$entity->head->delete('Reply-To');
-			}
-			if ( $entity->head->count('Sender') ) {
-               warn q{ $entity->head->add( 'Reply-To',  $entity->head->get('Sender', 0) );}
-			   	 if $t; 
-                $entity->head->add( 'Reply-To',  $entity->head->get('Sender', 0) );
+                $entity->head->delete('Reply-To');
             }
-            else { 
-                warn q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}
-					if $t; 
-                $entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );
+            if ( $entity->head->count('Sender') ) {
+                warn
+q{ $entity->head->add( 'Reply-To',  $entity->head->get('Sender', 0) );}
+                  if $t;
+                $entity->head->add( 'Reply-To',
+                    $entity->head->get( 'Sender', 0 ) );
+            }
+            else {
+                warn
+q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}
+                  if $t;
+                $entity->head->add( 'Reply-To',
+                    $entity->head->get( 'From', 0 ) );
             }
         }
-        elsif($self->{ls}->param('bridge_announce_reply_to') eq 'none') { 
+        elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'none' ) {
+
             #...
         }
     }
-	
-	if ( $self->{ls}->param('group_list') == 1 ) {
+
+    if ( $self->{ls}->param('group_list') == 1 ) {
         $entity->head->delete('Return-Path');
     }
     else {
@@ -1055,19 +1073,19 @@ sub _format_headers {
             $entity->head->delete('From');
         }
     }
-    
-	#Sender Header
-	if ( $entity->head->count('Sender') ) {
+
+    #Sender Header
+    if ( $entity->head->count('Sender') ) {
         $entity->head->delete('Sender');
     }
-    if($self->{ls}->param('group_list')  == 1) { 
-            $entity->head->add( 'Sender', $self->{ls}->param('discussion_pop_email'));
+    if ( $self->{ls}->param('group_list') == 1 ) {
+        $entity->head->add( 'Sender',
+            $self->{ls}->param('discussion_pop_email') );
     }
-    else { 
-        $entity->head->add( 'Sender', $self->{ls}->param('list_owner_email'));            
+    else {
+        $entity->head->add( 'Sender', $self->{ls}->param('list_owner_email') );
     }
-	
-	
+
     $entity->head->delete('Message-ID');
 
     # If there ain't a TO: header, add one:
@@ -1087,7 +1105,7 @@ sub _format_headers {
 
     if ( $test_To =~ m{undisclosed\-recipients\:\;}i ) {
         warn "I'm SILENTLY IGNORING a, 'undisclosed-recipients:;' header!"
-			if $t; 
+          if $t;
 
     }
     else {
@@ -1128,13 +1146,13 @@ sub _format_headers {
             safely_encode( $self->{ls}->param('discussion_pop_email') ) );
     }
 
-	warn $entity->as_string
-		if $t; 
+
+    warn $entity->as_string
+      if $t;
 
     return $entity;
 
 }
-
 
 sub _pp {
 
@@ -1146,46 +1164,49 @@ sub _pp {
     require DADA::Template::Widgets;
 
     my $a = ( Email::Address->parse($from) )[0]->address;
-    my ($e_name, $e_domain) = split('@', $a, 2); 
+    my ( $e_name, $e_domain ) = split( '@', $a, 2 );
 
     #if ( $a eq $self->{ls}->param('list_owner_email') ) {
     #    # We don't have to "On Behalf Of" ourselves.
     #    return $from;
     #}
     #else {
-        # $a =~ s/\@/ _at_ /;
-        
-        my $p          = ( Email::Address->parse($from) )[0]->phrase || ( Email::Address->parse($from) )[0]->address;
-           $p          = $self->_decode_header($p); 
-        my $d          = $self->{ls}->param('group_list_pp_mode_from_phrase');
-        my $new_phrase = DADA::Template::Widgets::screen(
-            {
-                -data                     => \$d,
-                -expr                     => 1,
-                -vars   => { 
-                    original_from_phrase      => $p, 
-                    'subscriber.email'        => $a, 
-                    'subscriber.email_name'   => $e_name, 
-                    'subscriber.email_domain' => $e_name, 
-                },
-                -list_settings_vars_param => {
-                    -list   => $self->{ls}->param('list'),
-                    -dot_it => 1,
-                },
-            }
-        );
+    # $a =~ s/\@/ _at_ /;
 
-        my $new_from = Email::Address->new();
-        $new_from->address( $self->{ls}->param('discussion_pop_email') );
-        $new_from->phrase(
-            MIME::EncWords::encode_mimewords(
-                $new_phrase,
-                Encoding => 'Q',
-                Charset  => $self->{ls}->param('charset_value'),
-            )
-        );
-       #  $new_from->comment( '(' . $a . ')' );
-          return $new_from->format;
+    my $p = ( Email::Address->parse($from) )[0]->phrase
+      || ( Email::Address->parse($from) )[0]->address;
+    $p = $self->_decode_header($p);
+    my $d          = $self->{ls}->param('group_list_pp_mode_from_phrase');
+    my $new_phrase = DADA::Template::Widgets::screen(
+        {
+            -data => \$d,
+            -expr => 1,
+            -vars => {
+                original_from_phrase      => $p,
+                'subscriber.email'        => $a,
+                'subscriber.email_name'   => $e_name,
+                'subscriber.email_domain' => $e_name,
+            },
+            -list_settings_vars_param => {
+                -list   => $self->{ls}->param('list'),
+                -dot_it => 1,
+            },
+        }
+    );
+
+    my $new_from = Email::Address->new();
+    $new_from->address( $self->{ls}->param('discussion_pop_email') );
+    $new_from->phrase(
+        MIME::EncWords::encode_mimewords(
+            $new_phrase,
+            Encoding => 'Q',
+            Charset  => $self->{ls}->param('charset_value'),
+        )
+    );
+
+    #  $new_from->comment( '(' . $a . ')' );
+    return $new_from->format;
+
     # }
 }
 

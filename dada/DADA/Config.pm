@@ -1830,6 +1830,7 @@ $PROGRAM_NAME //= "Dada Mail";
     'List-Unsubscribe'          => undef,
     'List-URL'                  => undef,
     'X-BeenThere'               => undef,
+	'X-Beenthere'               => undef,
     'Message-ID'                => undef,
     'Precedence'                => 'list',
     'X-Mailer'                  => "$PROGRAM_NAME $VER ",
@@ -1871,7 +1872,8 @@ $PROGRAM_NAME //= "Dada Mail";
   List-Unsubscribe
   List-URL
   X-BeenThere
-
+  X-Beenthere
+  
   X-Message-ID
   Message-ID
 

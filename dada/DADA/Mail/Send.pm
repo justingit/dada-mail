@@ -790,7 +790,7 @@ sub send {
                 -admin_email => $self->{ls}->param('admin_email'),
             }
         );
-
+		
         my $ses_obj = undef;
         require Net::Amazon::SES;
 
@@ -816,12 +816,13 @@ sub send {
                 && $fields{$field} ne "" )
             {
                 $msg .= "$field: $fields{$field}\n";
-            }
+			}
         }
 
         $msg .= "\n";
         $msg .= $fields{Body} . "\n";    # DEV: Why the last, "\n"?
                                          #warn "sending " . time;
+										 
         my ( $response_code, $response_content ) = $ses_obj->send_msg(
             {
                 -msg => $msg,
