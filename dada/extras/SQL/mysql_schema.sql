@@ -147,3 +147,11 @@ action VARCHAR(225) NOT NULL,
 timestamp INT UNSIGNED NOT NULL
 );
 CREATE INDEX dada_rate_limit_hits_all_index ON dada_rate_limit_hits (user_id, action, timestamp);
+
+CREATE TABLE IF NOT EXISTS dada_email_message_previews (
+id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
+list varchar(16),
+created_timestamp TIMESTAMP DEFAULT NOW(),
+plaintext mediumtext,
+html mediumtext
+);

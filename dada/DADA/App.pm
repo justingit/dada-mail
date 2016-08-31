@@ -146,7 +146,8 @@ sub setup {
         'admin_menu_tracker_notification'             => \&admin_menu_tracker_notification,
         'admin_menu_bridge_notification'              => \&admin_menu_bridge_notification, 
 		'send_email'                                  => \&send_email,
-        'send_email_button_widget'                    => \&send_email_button_widget, 
+        'email_message_preview'                       => \&email_message_preview,
+		'send_email_button_widget'                    => \&send_email_button_widget, 
         'mass_mailing_schedules_preview'                 => \&mass_mailing_schedules_preview, 
         'draft_message_values'                        => \&draft_message_values, 
         'ckeditor_template_tag_list'                  => \&ckeditor_template_tag_list,
@@ -1049,6 +1050,21 @@ sub send_email {
         }
         return $body;
     }
+}
+
+
+sub email_message_preview { 
+	
+    my $self = shift;
+    my $q    = $self->query();
+	
+	
+	require DADA::App::EmailMessagePreview; 
+	my $daemp = DADA::App::EmailMessagePreview->new; 
+	my $r = $daemp->fetch($q->param('id'));
+	
+	return $r->{html};
+	
 }
 
 sub send_email_button_widget { 

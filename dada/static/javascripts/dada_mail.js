@@ -240,57 +240,90 @@ jQuery(document).ready(function($){
 
 
 			if($(this).hasClass("preview") === true){ 
-				var responsive_options = {
-				  width: '95%',
-				  height: '95%',
-				  maxWidth: '640px',
-				  maxHeight: '480px'
-				};
-				$.colorbox({
-					iframe: true,
-					html: "I shall be in an iframe!",
-					opacity: 0.50,
-					maxWidth: '640px',
-					maxHeight: '480px',
-					width: '95%',
-					height: '95%'				
+				
+				//alert('preview!');
+					
+				var request = $.ajax({
+					url:       $("#s_program_url").val(),
+					type:      "POST",
+					dataType: "json",
+					cache:     false,
+					data: $("#mass_mailing").serialize() + '&process=preview',
+					success: function(content) {
+						
+						//alert('requrest success!');
+						
+						console.log('content.id:' + content.id);
+						//if(content.status == 0){
+						//	alert('Problems saving preference:' . content.error)
+						//} else { 
+						//	alert('Preference Saved');
+						//}
+						
+						
+						// ajax to get the json doc with the id - 
+						// construct URL
+						// give URL w/flavor to colorbox to show the previw. 
+				
+						//alert('s_program_url! ' + $("#s_program_url").val());
+						var responsive_options = {
+						  width: '95%',
+						  height: '95%'
+						};
+						$.colorbox({
+							iframe: true,
+							href: $("#s_program_url").val() + '?flavor=email_message_preview&id=' + content.id,
+							opacity: 0.50,
+							width: '95%',
+							height: '95%'				
+						});
+						$(window).resize(function(){
+						    $.colorbox.resize({
+						      width: responsive_options.width,
+						      height: responsive_options.height
+						    });		
+						});
+						return true; 
+					},
+					error: function(xhr, ajaxOptions, thrownError) {
+						
+						//alert('requrest error!');
+						
+						
+						console.log('status: ' + xhr.status);
+						console.log('thrownError:' + thrownError);
+					},
 				});
-				$(window).resize(function(){
-				    $.colorbox.resize({
-				      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
-				      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
-				    });		
-				});
-				return true; 
 			}
-
-			var itsatest = $(this).hasClass("justatest");
-			if (sendMailingListMessage(fid, itsatest) === true) {
-				if($("#f").val() != 'list_invite') {
-					save_msg(false);
-					admin_menu_drafts_notification();
-				}
-				if($("#f").val() == 'list_invite' && itsatest == true) {
-					// alert('now were sending out a test message!');
-					var request = $.ajax({
-						url: $("#s_program_url").val(),
-						type: "POST",
-						dataType: "html",
-						cache: false,
-						data: $("#mass_mailing").serialize() + '&process=Send%20Test%20Invitation',
-						success: function(content) {
-							alert("List Invitation Test Sent");
-						},
-						error: function(xhr, ajaxOptions, thrownError) {
-							alert('Error Sending List Invitation Test: ' + thrownError);
-							console.log('status: ' + xhr.status);
-							console.log('thrownError:' + thrownError);
-						},
-					});
-				}
-				else {
-					$("body").off('submit', '#' + fid);
-					return true;
+			else {
+				var itsatest = $(this).hasClass("justatest");
+				if (sendMailingListMessage(fid, itsatest) === true) {
+					if($("#f").val() != 'list_invite') {
+						save_msg(false);
+						admin_menu_drafts_notification();
+					}
+					if($("#f").val() == 'list_invite' && itsatest == true) {
+						// alert('now were sending out a test message!');
+						var request = $.ajax({
+							url: $("#s_program_url").val(),
+							type: "POST",
+							dataType: "html",
+							cache: false,
+							data: $("#mass_mailing").serialize() + '&process=Send%20Test%20Invitation',
+							success: function(content) {
+								alert("List Invitation Test Sent");
+							},
+							error: function(xhr, ajaxOptions, thrownError) {
+								alert('Error Sending List Invitation Test: ' + thrownError);
+								console.log('status: ' + xhr.status);
+								console.log('thrownError:' + thrownError);
+							},
+						});
+					}
+					else {
+						$("body").off('submit', '#' + fid);
+						return true;
+					}
 				}
 			}
 		});

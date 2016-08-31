@@ -16,12 +16,12 @@ use Try::Tiny;
 
 use Carp qw(carp croak);
 
-$Carp::Verbose = 1;
+#$Carp::Verbose = 1;
 
 use strict;
 use vars qw($AUTOLOAD);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
 
 my %allowed = ( test => 0, );
 
@@ -229,7 +229,11 @@ sub send_email {
         return ( $headers, $body );
     }
     elsif ( $process =~ m/preview/i ) {
-        my $draft_id = $self->save_as_draft(
+     
+	 	warn 'preview!'; 
+		
+		warn 'save_as_draft';
+	    my $draft_id = $self->save_as_draft(
             {
                 -cgi_obj => $q,
                 -list    => $self->{list},
@@ -237,6 +241,7 @@ sub send_email {
             }
         );
 		
+		warn 'construct_and_send';
         my $construct_r = $self->construct_and_send(
             {
                 -draft_id => $draft_id,
@@ -252,24 +257,40 @@ sub send_email {
             carp 'done with construct_and_send!';
         }
         if ( $construct_r->{status} == 0 ) {
+			warn 'status is 0?!';
             return $self->report_mass_mail_errors(
 				$construct_r->{errors}, 
 				$root_login
 			);
         }
-		if(length($construct_r->{html_message}) <= 0){ 
-			return (
-				{type => 'text/plain'},
-				$construct_r->{text_message}
-			);
+		else { 
+			warn 'DADA::App::EmailMessagePreview!';
+			
+			require DADA::App::EmailMessagePreview; 
+			my $daemp = DADA::App::EmailMessagePreview->new; 
+			my $daemp_id = $daemp->save({
+				-list      => $self->{list},
+				-plaintext => $construct_r->{plaintext_message},
+				-html      => $construct_r->{html_message},
+			});
+	        require JSON;
+	        my $json    = JSON->new->allow_nonref;
+	        my $return  = { id => $daemp_id };
+	        my $headers = {
+	            '-Cache-Control' => 'no-cache, must-revalidate',
+	            -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
+	            -type            => 'application/json',
+	        };
+	        my $body = $json->pretty->encode($return);
+	        if($t == 1){ 
+	            require Data::Dumper; 
+	            warn 'returning headers: ' . Data::Dumper::Dumper($headers); 
+	            warn 'returning body: ' . $body; 
+	        }
+			warn '$body';
+			
+	        return ( $headers, $body );
 		}
-		else {
-			return (
-				{},
-				$construct_r->{html_message}
-			);
-		}
-		
 	}
     else {
         # Draft now has all our form params
