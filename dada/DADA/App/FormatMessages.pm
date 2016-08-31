@@ -14,6 +14,7 @@ use MIME::Entity;
 use DADA::App::Guts;
 use Try::Tiny;
 use Carp qw(croak carp);
+$Carp::Verbose = 1; 
 use vars qw($AUTOLOAD);
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
@@ -2074,9 +2075,9 @@ sub _apply_template {
         @_,
     );
 
-    die 'No message passed for type: ' . $args{-type}
+    croak 'No -data passed for type: ' . $args{-type}
       if !$args{-data};
-    die "no type! $!" if !$args{-type};
+    croak "no type! $!" if !$args{-type};
 
 
     my $data = $args{-data};

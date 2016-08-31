@@ -12,10 +12,6 @@ Key:
 [*] Naw...
 [?] Someday
 
-
-Don't embed spacer image.....
-
-
 Send a Webpage ourselves
 	(Love to inline all linkned stylesheets beforehand - MIME::Lite::HTML takes care of that - 
 	AND inlining images, grr!)

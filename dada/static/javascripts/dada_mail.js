@@ -225,7 +225,6 @@ jQuery(document).ready(function($){
 
 			$("#button_action_notice").html('Working...');
 
-			//var fid = $(event.target).closest('form').attr('id');
 			var fid = 'mass_mailing';
 
 			if ($("#using_ckeditor").length) {
@@ -237,6 +236,32 @@ jQuery(document).ready(function($){
 				if($("#html_message_body_ifr").length) {
 					tinyMCE.triggerSave();
 				}
+			}
+
+
+			if($(this).hasClass("preview") === true){ 
+				var responsive_options = {
+				  width: '95%',
+				  height: '95%',
+				  maxWidth: '640px',
+				  maxHeight: '480px'
+				};
+				$.colorbox({
+					iframe: true,
+					html: "I shall be in an iframe!",
+					opacity: 0.50,
+					maxWidth: '640px',
+					maxHeight: '480px',
+					width: '95%',
+					height: '95%'				
+				});
+				$(window).resize(function(){
+				    $.colorbox.resize({
+				      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+				      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+				    });		
+				});
+				return true; 
 			}
 
 			var itsatest = $(this).hasClass("justatest");

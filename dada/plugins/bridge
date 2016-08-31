@@ -1521,6 +1521,11 @@ sub valid_login_information {
 
 sub validate_msg {
 
+
+	# to ddress is list email, 
+	# from ddress is From emial
+	# Naw, need header.... 
+	# X-From_App
     my $ls       = shift;
     my $test_msg = shift;           #ref
     my $msg      = ${$test_msg};    # copy of orig
