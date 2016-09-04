@@ -152,6 +152,7 @@ CREATE TABLE IF NOT EXISTS dada_email_message_previews (
 id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
 list varchar(16),
 created_timestamp TIMESTAMP DEFAULT NOW(),
+subject text,
 plaintext mediumtext,
 html mediumtext
 );

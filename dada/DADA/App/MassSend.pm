@@ -266,11 +266,13 @@ sub send_email {
 		else { 
 			warn 'DADA::App::EmailMessagePreview!';
 			
+			warn '$construct_r->{subject}' .  $construct_r->{subject}; 
 			require DADA::App::EmailMessagePreview; 
 			my $daemp = DADA::App::EmailMessagePreview->new; 
 			my $daemp_id = $daemp->save({
 				-list      => $self->{list},
-				-plaintext => $construct_r->{plaintext_message},
+				-subject   => $construct_r->{subject},
+				-plaintext => $construct_r->{text_message},
 				-html      => $construct_r->{html_message},
 			});
 	        require JSON;
@@ -573,17 +575,21 @@ sub construct_and_send {
 			errors       => undef, 
 			mid          => $message_id, 
 			md5          => $con->{md5},
+			subject      => $con->{subject},
 			text_message => $con->{text_message},
 			html_message => $con->{html_message},
 		};
     }
     else {
-        # Dry run:
+     
+	 	warn '$con->{subject}' . $con->{subject}; 
+	 	# Dry run:
         return { 
 			status => 1, 
 			errors => undef, 
 			mid    => undef, 
 			md5    => $con->{md5}, 
+			subject      => $con->{subject},
 			text_message => $con->{text_message},
 			html_message => $con->{html_message},
 		};
@@ -758,7 +764,8 @@ sub construct_from_text {
 		errors       => undef, 
 		entity       => $entity, 
 		fm_obj       => $fm, 
-		md5          => undef, 
+		md5          => undef,
+		subject      => $headers{Subject}, 
 		text_message => $text_message, 
 		html_message => $html_message, 
 	};
@@ -883,7 +890,13 @@ sub construct_from_url {
         }
 		
 		$html_message = $rtc;
-		$base = $res->base || $url; 
+		$base         = $res->base || $url; 
+		
+		use Data::Dumper; 
+		warn '$res->base  ' . $res->base; 
+		warn '$url:       ' . $url; 
+		warn '$base:      ' . $base; 
+		warn 'Dumper $base' . Dumper($base);
 	
         undef($status);
         undef($errors);
@@ -941,6 +954,8 @@ sub construct_from_url {
 	
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
 			
+	use Data::Dumper; 
+	warn '$base' . Dumper($base);
 	$html_message = $fm->format_mlm( 
 		{
 			-content => $html_message, 
@@ -965,6 +980,13 @@ sub construct_from_url {
 		);
 	}
 	
+	# This is cheating: 
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+	my $tag       = quotemeta('<!-- tmpl_var list_settings.logo_image_url -->');
+	my $tag_value = $ls->param('logo_image_url');
+	# Sigh.
+	$html_message =~ s/$tag/$tag_value/g; 
 	
     try { 
         ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) 
@@ -1035,12 +1057,15 @@ sub construct_from_url {
 	
 	#warn '$entity->as_string' . $entity->as_string;
 
+	warn '$headers{Subject}' . $headers{Subject}; 
+	
 	return { 
 		status       => 1, 
 		errors       => undef, 
 		entity       => $entity, 
 		fm_obj       => $fm, 
 		md5          => $md5, 
+		subject      => $headers{Subject}, 
 		text_message => $text_message, 
 		html_message => $html_message, 
 	};
@@ -1312,6 +1337,74 @@ sub send_url_email {
         );
         return ( $headers, $body );
     }
+    elsif ( $process =~ m/preview/i ) {
+     
+	 	warn 'send_url_email preview!'; 		
+	    my $draft_id = $self->save_as_draft(
+            {
+                -cgi_obj => $q,
+                -list    => $self->{list},
+                -json    => 0,
+            }
+        );
+		
+        my $construct_r = $self->construct_and_send(
+            {
+                -draft_id => $draft_id,
+                -screen   => 'send_url_email',
+                -role     => $draft_role,
+                -process  => $process,
+				-dry_run  => 1, 
+            }
+        );
+		
+        if($t) { 
+            carp '$construct_r->{mid} ' . $construct_r->{mid};
+            carp 'done with construct_and_send!';
+        }
+        if ( $construct_r->{status} == 0 ) {
+			warn 'status is 0?!';
+            return $self->report_mass_mail_errors(
+				$construct_r->{errors}, 
+				$root_login
+			);
+        }
+		else { 
+			warn 'status:' . $construct_r->{status};
+			warn 'DADA::App::EmailMessagePreview!';
+			
+			warn '$construct_r->{subject}' .  $construct_r->{subject}; 
+			require DADA::App::EmailMessagePreview; 
+			my $daemp = DADA::App::EmailMessagePreview->new; 
+			warn '$daemp->save';
+			my $daemp_id = $daemp->save({
+				-list      => $self->{list},
+				-subject   => $construct_r->{subject},
+				-plaintext => $construct_r->{text_message},
+				-html      => $construct_r->{html_message},
+			});
+			warn '$daemp_id' . $daemp_id; 
+	        require JSON;
+	        my $json    = JSON->new->allow_nonref;
+	        my $return  = { id => $daemp_id };
+	        my $headers = {
+	            '-Cache-Control' => 'no-cache, must-revalidate',
+	            -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
+	            -type            => 'application/json',
+	        };
+	        my $body = $json->pretty->encode($return);
+	        if($t == 1){ 
+	            require Data::Dumper; 
+	            warn 'returning headers: ' . Data::Dumper::Dumper($headers); 
+	            warn 'returning body: ' . $body; 
+	        }
+			warn '$body';
+			
+	        return ( $headers, $body );
+			
+			warn 'and were done.'; 
+		}
+	}
     else {
 
         # Draft now has all our form params

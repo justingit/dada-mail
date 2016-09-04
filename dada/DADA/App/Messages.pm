@@ -380,10 +380,10 @@ sub send_confirmation_message {
 	);
 	my $etp = $em->fetch('confirmation_message');
 	  
-	my $confirmation_msg = $ls->param('confirmation_message'); 
 	require DADA::App::FormatMessages; 
 	my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
-	   $confirmation_msg = $fm->subscription_confirmationation({-str => $confirmation_msg}); 
+	   $etp->{plaintext} = $fm->subscription_confirmationation({-str => $etp->{plaintext}}); 
+	   $etp->{html}      = $fm->subscription_confirmationation({-str => $etp->{html}}     ); 
 	   
 	   send_multipart_email(
    		{

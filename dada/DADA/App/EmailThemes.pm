@@ -78,7 +78,7 @@ sub fetch {
 		$self->theme_dir . '/' . $self->name . '/dist/' . $fn . '.html'
 	);  
 	my $pt = $self->slurp(
-		$self->theme_dir . '/' . $self->name . '/dist/' . $fn . '-plaintext.html'
+		$self->theme_dir . '/' . $self->name . '/dist/' . $fn . '.txt'
 	);  
 	
 	my $subject = $self->subject_from_title_tag($html); 

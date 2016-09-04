@@ -1230,6 +1230,11 @@ $MIME_TOOLS_PARAMS //= {
         # (Dummy)
         list_info => undef,
 
+	logo_image_url       => undef,
+	facebook_page_url    => undef,
+	twitter_url          => undef,
+	google_plus_page_url => undef,
+
     # Mailing List >> List Password
     password         => '',      # you'll need to encrypt it to use this...
     cipher_key       => undef,

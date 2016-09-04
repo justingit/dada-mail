@@ -17,7 +17,7 @@ use Carp qw(croak carp);
 $Carp::Verbose = 1; 
 use vars qw($AUTOLOAD);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
 
 =pod
 
@@ -363,6 +363,9 @@ sub format_mlm {
 			enabled => 0,
 		};
 	}
+	use Data::Dumper; 
+	warn '$args->{-rel_to_abs_options}' . Dumper($args->{-rel_to_abs_options});
+	
 	if(!exists($args->{-crop_html_options})){ 
 		$args->{-crop_html_options} = {
 			enabled => 0,
@@ -2065,7 +2068,7 @@ HTML version.
 
 =cut
 
-sub _apply_template {
+sub  _apply_template {
 
     my $self = shift;
 
@@ -2093,14 +2096,22 @@ sub _apply_template {
     }
 
     if ($template_out) {
-
+		
+		
+		require DADA::App::EmailThemes; 
+		my $em = DADA::App::EmailThemes->new(
+			{ 
+				-name => 'default',
+				-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+			}
+		);
+		my $etp = $em->fetch('mailing_list_message');
+	
         if ( $args{-type} eq 'text/plain' ) {
-            $new_data = strip( $self->{ls}->param('mailing_list_message') )
-              || '<!-- tmpl_var message_body -->';
+            $new_data = $etp->{plaintext} || '<!-- tmpl_var message_body -->';
         }
         else {
-            $new_data = strip( $self->{ls}->param('mailing_list_message_html') )
-              || '<!-- tmpl_var message_body -->';
+            $new_data =  $etp->{html}     || '<!-- tmpl_var message_body -->';
         }
 
         # if(some-user-set-setting) {
@@ -2734,7 +2745,33 @@ sub email_template {
     my $self = shift;
 
     my ($args) = @_;
+	if(!exists($args->{-first_pass})) {
+		$args->{-first_pass} = 1; 
+	}
+	if($args->{-first_pass} == 1){ 
+        my $screen_vars = {};
+        for ( keys %{$args} ) {
+            next if $_ eq '-entity';
+            $screen_vars->{$_} = $args->{$_};
+        }
+        $screen_vars->{-dada_pseudo_tag_filter} = 1;
+		
+        my $og_subject = $args->{-entity}->head->get( 'Subject', 0 );  #
+           $og_subject = $self->_decode_header($og_subject);
+		my $subject = DADA::Template::Widgets::screen(
+            {
+                %{$screen_vars},
+                -data => \$og_subject,
+			}
+		); 				
 
+		$args->{-vars}->{'email.subject'} = $subject;
+		undef $screen_vars;
+		$args->{-first_pass} = 0;
+
+	}
+	
+	
     require DADA::Template::Widgets;
 
     if ( !exists( $args->{-entity} ) ) {
@@ -2798,13 +2835,12 @@ sub email_template {
               if $t;
 
 ###
-            # ?!
-            my %screen_vars = ();
+            my $screen_vars = {};
             for ( keys %{$args} ) {
                 next if $_ eq '-entity';
-                $screen_vars{$_} = $args->{$_};
+                $screen_vars->{$_} = $args->{$_};
             }
-            $screen_vars{-dada_pseudo_tag_filter} = 1;
+            $screen_vars->{-dada_pseudo_tag_filter} = 1;
 
             my $body    = $args->{-entity}->bodyhandle;
             my $content = $args->{-entity}->bodyhandle->as_string;
@@ -2813,20 +2849,24 @@ sub email_template {
             if ($content) {
 
                 # use Data::Dumper;
-                # warn '%screen_vars ' . Dumper(\%screen_vars);
+                # warn '%screen_vars ' . Dumper($screen_vars);
                 # And, that's it.
+				
                 $content = DADA::Template::Widgets::screen(
                     {
-                        %screen_vars,
+                        %{$screen_vars},
                         -data => \$content,
                         (
                             (
-                                $args->{-entity}->head->mime_type eq
-                                  'text/html'
+                                $args->{-entity}->head->mime_type eq 'text/html'
                             )
                             ? (
                                 -webify_these => [
-                                    qw(list_settings.info list_settings.privacy_policy list_settings.physical_address)
+                                    qw(
+										list_settings.info 
+										list_settings.privacy_policy 
+										list_settings.physical_address
+									)
                                 ],
                               )
                             : ()
@@ -2852,12 +2892,12 @@ sub email_template {
     }
 
     # ?!
-    my %screen_vars = ();
+    my $screen_vars = {};
     for ( keys %{$args} ) {
         next if $_ eq '-entity';
-        $screen_vars{$_} = $args->{$_};
+        $screen_vars->{$_} = $args->{$_};
     }
-    $screen_vars{-dada_pseudo_tag_filter} = 1;
+    $screen_vars->{-dada_pseudo_tag_filter} = 1;
 
     #warn 'all headers:' . $args->{-entity}->head->as_string;
     for my $header (
@@ -2917,7 +2957,8 @@ sub email_template {
                             # Template it Out
                         $phrase = DADA::Template::Widgets::screen(
                             {
-                                %screen_vars, -data => \$phrase,
+                                %{$screen_vars}, 
+								-data => \$phrase,
                             }
                         );
 
@@ -2966,7 +3007,8 @@ sub email_template {
                 {    # has a template? (optimization)
                     $header_value = DADA::Template::Widgets::screen(
                         {
-                            %screen_vars, -data => \$header_value,
+                            %{$screen_vars}, 
+							-data => \$header_value,
                         }
                     );
                     warn 'Template:' . safely_encode($header_value)

@@ -1055,15 +1055,63 @@ sub send_email {
 
 sub email_message_preview { 
 	
+	warn 'email_message_preview!';
     my $self = shift;
     my $q    = $self->query();
 	
+	
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_email send_url_email'
+    );    	
+    if ( !$checksout ) { return $error_msg; }
+    my $list = $admin_list;
+	
+	
+    require DADA::ProfileFieldsManager;
+    my $pfm         = DADA::ProfileFieldsManager->new;
+    my $fields_attr = $pfm->get_all_field_attributes;
+	my $subscriber_fields = $pfm->fields;
+	
+		
+	my $fake_sub_info = {
+		'subscriber.email' => 'user@example.com',
+	};
+	for(@$subscriber_fields){ 
+		$fake_sub_info->{'subscriber.' . $_} = $fields_attr->{$_}->{label},
+	}
 	
 	require DADA::App::EmailMessagePreview; 
 	my $daemp = DADA::App::EmailMessagePreview->new; 
 	my $r = $daemp->fetch($q->param('id'));
 	
-	return $r->{html};
+	
+	my $subject = DADA::Template::Widgets::screen(
+        {
+            -data               => \$r->{subject},
+            -expr => 1,
+            -vars => $fake_sub_info,
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+
+	$fake_sub_info->{'email.subject'} = $subject; 
+    my $scrn    = DADA::Template::Widgets::screen(
+        {
+            -data               => \$r->{html},
+            -expr => 1,
+            -vars => $fake_sub_info,
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    return $scrn;
+
 	
 }
 
@@ -2442,6 +2490,10 @@ sub change_info {
                     flags_list_name_bad_characters => $flags_list_name_bad_characters,
                     %$ses_params,
                 },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
             }
         );
         return $scrn;
@@ -2454,12 +2506,17 @@ sub change_info {
         $ls->save(
             {
                 -settings => {
-					list_owner_email => strip($list_owner_email),
-	                admin_email      => strip($admin_email),
-	                list_name        => $list_name,
-	                info             => $info,
-	                privacy_policy   => $privacy_policy,
-	                physical_address => $physical_address,
+					list_owner_email  => strip($list_owner_email),
+	                admin_email       => strip($admin_email),
+	                list_name         => $list_name,
+	                info              => $info,
+	                privacy_policy    => $privacy_policy,
+	                physical_address  => $physical_address,
+					
+					logo_image_url       => xss_filter( strip( scalar $q->param('logo_image_url'))), 
+					facebook_page_url    => xss_filter( strip( scalar $q->param('facebook_page_url'))), 
+					twitter_url          => xss_filter( strip( scalar $q->param('twitter_url'))), 
+					google_plus_page_url => xss_filter( strip( scalar $q->param('google_plus_page_url'))), 
 				}
             }
         );

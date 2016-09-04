@@ -146,7 +146,7 @@ sub save {
 	$query =
 	'INSERT INTO '
 	. $self->{sql_params}->{email_message_previews_table}
-	. ' (list, plaintext, html) VALUES (?,?,?)';
+	. ' (list, subject, plaintext, html) VALUES (?,?,?,?)';
 
     warn 'QUERY: ' . $query
       if $t;
@@ -154,9 +154,14 @@ sub save {
     my $sth = $self->{dbh}->prepare($query);
     if($t == 1) { 
         require Data::Dumper; 
-        warn 'execute params: ' . Data::Dumper::Dumper([$self->{list}, $args->{-plaintext}, $args->{-html}]); 
+        warn 'execute params: ' . Data::Dumper::Dumper([$self->{list}, $args->{-subject},  $args->{-plaintext}, $args->{-html}]); 
     }
-    $sth->execute($self->{list}, $args->{-plaintext}, $args->{-html} )
+    $sth->execute(
+		$self->{list}, 
+		$args->{-subject}, 
+		$args->{-plaintext}, 
+		$args->{-html}, 
+	)
       or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     $sth->finish;
@@ -188,7 +193,7 @@ sub fetch {
     my $id    = shift;
 
     my $query =
-        'SELECT plaintext, html FROM '
+        'SELECT subject, plaintext, html FROM '
       . $self->{sql_params}->{email_message_previews_table}
       . ' where id = ?';
 
