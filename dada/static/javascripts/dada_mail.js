@@ -273,6 +273,7 @@ jQuery(document).ready(function($){
 						};
 						$.colorbox({
 							iframe: true,
+							fastIframe: false,
 							href: $("#s_program_url").val() + '?flavor=email_message_preview&id=' + content.id,
 							opacity: 0.50,
 							maxWidth: '640px',

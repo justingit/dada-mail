@@ -17,7 +17,7 @@ use Carp qw(croak carp);
 $Carp::Verbose = 1; 
 use vars qw($AUTOLOAD);
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
 
 =pod
 
@@ -363,8 +363,8 @@ sub format_mlm {
 			enabled => 0,
 		};
 	}
-	use Data::Dumper; 
-	warn '$args->{-rel_to_abs_options}' . Dumper($args->{-rel_to_abs_options});
+	#use Data::Dumper; 
+	#warn '$args->{-rel_to_abs_options}' . Dumper($args->{-rel_to_abs_options});
 	
 	if(!exists($args->{-crop_html_options})){ 
 		$args->{-crop_html_options} = {
@@ -575,14 +575,21 @@ sub rel_to_abs {
 	my $parsed      = $str; 
 
 	my @links_to_look_at = (); 
+	
+	# There's a way to do differnt things, based on the tag you get... 
 	my $callback = sub {
 	     my($tag, %attr) = @_;     
 
 		return 
-			unless $tag eq 'a' || $tag eq 'area'; 
+			unless $tag eq 'a' || $tag eq 'area' || $tag eq 'img'; 
 			
-		 my $link =  $attr{href}; 
-		
+		my $link; 
+		if($tag eq 'a' || $tag eq 'area'){
+			$link =  $attr{href}; 
+		}elsif($tag eq 'img'){ 
+			$link =  $attr{src}; 
+		}
+			
 		if($link =~ m/^mailto\:/) { 
 			warn "Skipping mailto: links"
 				if $t;
@@ -623,7 +630,6 @@ sub rel_to_abs {
 	}
 	
 	foreach my $rel(@links_to_look_at){ 
-
 		warn '$rel: "' . $rel . '"'
 			if $t; 
 			
@@ -641,8 +647,12 @@ sub rel_to_abs {
 		# 
 		# Also see that we don't get rid of dupes in @links_to_look_at, and this regex is not global. 
 		# If you do one do the other, 
-		$parsed =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$abs_link/;
 		
+		#if($tag eq 'a' || $tag eq 'area'){
+				$parsed =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$abs_link/;
+		#}elsif($tag eq 'img'){ 
+				$parsed =~ s/(src(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$abs_link/;
+		#}
 	}
 
 	@links_to_look_at = (); 
@@ -1834,8 +1844,7 @@ sub _list_name_subject {
           . '<!-- tmpl_var list_settings.list_name -->' . ']'
           . "$re $orig_subject";
     }
-    elsif ( $self->{ls}->param('prefix_discussion_list_subjects_with') eq
-        "list_shortname" )
+    elsif ( $self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_shortname" )
     {
         $orig_subject = '['
           . '<!-- tmpl_var list_settings.list -->' . ']'
@@ -2749,6 +2758,7 @@ sub email_template {
 		$args->{-first_pass} = 1; 
 	}
 	if($args->{-first_pass} == 1){ 
+		warn 'first pass!';
         my $screen_vars = {};
         for ( keys %{$args} ) {
             next if $_ eq '-entity';
@@ -2756,19 +2766,31 @@ sub email_template {
         }
         $screen_vars->{-dada_pseudo_tag_filter} = 1;
 		
-        my $og_subject = $args->{-entity}->head->get( 'Subject', 0 );  #
-           $og_subject = $self->_decode_header($og_subject);
-		my $subject = DADA::Template::Widgets::screen(
-            {
-                %{$screen_vars},
-                -data => \$og_subject,
-			}
-		); 				
+		my $special_headers = { 
+			Subject       => 'email.subject', 
+			'X-Preheader' => 'email.preheader',
+		};
 
-		$args->{-vars}->{'email.subject'} = $subject;
+		warn q{$args->{-entity}->head->as_string} . $args->{-entity}->head->as_string;
+
+		for(keys %$special_headers) {
+			warn '$_' . $_; 
+	        my $og_header = $args->{-entity}->head->get( $_, 0 );
+	           $og_header = $self->_decode_header($og_header);
+			my $header = DADA::Template::Widgets::screen(
+	            {
+	                %{$screen_vars},
+	                -data => \$og_header,
+				}
+			); 	
+			warn '$header' . $header; 
+			warn q{$special_headers->{$_}} . $special_headers->{$_}; 
+						
+			$args->{-vars}->{$special_headers->{$_}} = $header;
+			
+		}
 		undef $screen_vars;
 		$args->{-first_pass} = 0;
-
 	}
 	
 	
@@ -2852,6 +2874,8 @@ sub email_template {
                 # warn '%screen_vars ' . Dumper($screen_vars);
                 # And, that's it.
 				
+				warn q{keys %$screen_vars} . keys %$screen_vars; 
+				
                 $content = DADA::Template::Widgets::screen(
                     {
                         %{$screen_vars},
@@ -2901,11 +2925,17 @@ sub email_template {
 
     #warn 'all headers:' . $args->{-entity}->head->as_string;
     for my $header (
-        'Subject',        'From',
-        'To',             'Reply-To',
-        'Return-Path',    'List',
-        'List-URL',       'List-Owner',
-        'List-Subscribe', 'List-Unsubscribe'
+        'Subject',  
+		'X-Preheader',      
+		'From',
+        'To',             
+		'Reply-To',
+        'Return-Path',    
+		'List',
+        'List-URL',       
+		'List-Owner',
+        'List-Subscribe', 
+		'List-Unsubscribe'
       )
     {
 
@@ -2989,7 +3019,7 @@ sub email_template {
                 }
             }
             else {
-                warn "I think we have a subject line."
+                warn "I think we have Subject or X-Preheader."
                   if $t;
 
                 # Get

@@ -585,7 +585,6 @@ sub draft_index {
             role                          => $hashref->{role},
             Subject                       => scalar $q->param('Subject'),
 
-
             schedule_activated             => scalar $q->param('schedule_activated'),
             schedule_type                  => scalar $q->param('schedule_type'),
             schedule_single_ctime          => scalar $q->param('schedule_single_ctime'),
@@ -746,7 +745,8 @@ sub params_to_save {
         backdate_datetime              => 1,
         test_recipient                 => 1,
         Subject                        => 1,
-        subject_from                   => 1, 
+        subject_from                   => 1,
+		'X-Preheader'                  => 1,  
         schedule_activated             => 1,
         schedule_type                  => 1,
         

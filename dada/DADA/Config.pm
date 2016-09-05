@@ -1844,6 +1844,7 @@ $PROGRAM_NAME //= "Dada Mail";
     'Content-Disposition'       => undef,
     'MIME-Version'              => undef,
     Subject                     => '(no subject)',
+	'X-Preheader'               => 'X-Preheader',
     Body                        => 'blank',
 ) unless keys %EMAIL_HEADERS;
 
@@ -1889,7 +1890,7 @@ $PROGRAM_NAME //= "Dada Mail";
   Content-Base
 
   MIME-Version
-
+  X-Preheader
   Subject
   ) unless scalar @EMAIL_HEADERS_ORDER;
 

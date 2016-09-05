@@ -13,7 +13,7 @@ Key:
 [?] Someday
 
 
-Subject: needs to be available in message - subject itself can hold template tags, so we need to template it out, first. 
+Preheader not available in preheader (or any other headers, like From - which would be nice...)
 
 Send a Webpage ourselves
 	(Love to inline all linkned stylesheets beforehand - MIME::Lite::HTML takes care of that - 

@@ -21,7 +21,7 @@ use Carp qw(carp croak);
 use strict;
 use vars qw($AUTOLOAD);
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
 
 my %allowed = ( test => 0, );
 
@@ -619,13 +619,14 @@ sub construct_from_text {
         Return-Path
         X-Priority
         Subject
+		X-Preheader
         )
       )
     {
         if ( defined( scalar $draft_q->param($h) ) ) {
 
             # I do not like how we treat Subject differently, but I don't have a better idea on what to do.
-            if ( $h eq 'Subject' ) {
+            if ( $h eq 'Subject' || $h eq 'X-Preheader') {
                 $headers{$h} = $fm->_encode_header( 'Subject', scalar $draft_q->param($h) );
             }
             else {
@@ -798,10 +799,16 @@ sub construct_from_url {
 		}
 		if(defined(scalar $draft_q->param('text_message_body'))) { 
 			
+			warn q{$plaintext_content_from = 'text';};
+		
 			$plaintext_content_from = 'text';
 		}
 		else { 
+		
 			$plaintext_content_from = 'auto';
+			
+			warn q{$plaintext_content_from = 'auto';};
+		
 		}
 	}
 	
@@ -838,11 +845,17 @@ sub construct_from_url {
         Return-Path
         X-Priority
         Subject
+		X-Preheader
         )
       )
     {
         if ( defined( $draft_q->param($h) ) ) {
-            $headers{$h} = strip( $draft_q->param($h) );
+            if ( $h eq 'Subject' ) {
+                $headers{$h} = $fm->_encode_header( 'Subject', $draft_q->param($h) );
+            }
+            else {
+                $headers{$h} = strip( scalar $draft_q->param($h) );
+            }
         }
     }
     
@@ -868,7 +881,7 @@ sub construct_from_url {
 		( ( $num_attachments < 1 ) ? (%headers) : () ),
     );
 
-    my $text_message = 'This email message requires that your mail reader support HTML'; 
+    my $text_message = undef; #'This email message requires that your mail reader support HTML'; 
     my $html_message = undef; 
 	
     my $MIMELiteObj;
@@ -892,12 +905,6 @@ sub construct_from_url {
 		$html_message = $rtc;
 		$base         = $res->base || $url; 
 		
-		use Data::Dumper; 
-		warn '$res->base  ' . $res->base; 
-		warn '$url:       ' . $url; 
-		warn '$base:      ' . $base; 
-		warn 'Dumper $base' . Dumper($base);
-	
         undef($status);
         undef($errors);
 		undef($rtc); 
@@ -923,9 +930,15 @@ sub construct_from_url {
     undef($status);
     undef($errors);
 
-    if(defined($text_message) && $plaintext_content_from eq 'text') {
-	    $text_message = $draft_q->param('text_message_body');
-    } elsif (! defined($text_message) || $plaintext_content_from eq 'auto' ) {
+    if(
+			length($text_message) > 0  
+		 && $plaintext_content_from eq 'text'
+	 ) {
+		$text_message = $draft_q->param('text_message_body');
+    } elsif (
+			length($text_message) <= 0 
+		 || $plaintext_content_from eq 'auto'
+	 ) {
     	$text_message = html_to_plaintext(
             {
                 -str              => $html_message,
@@ -936,7 +949,7 @@ sub construct_from_url {
                 }
             }
         );
-    } elsif ( $plaintext_content_from eq 'url' ) {        
+    } elsif ( $plaintext_content_from eq 'url' ) {    
         my $res; 
 		my $md5; 
         ( $text_message, $res, $md5 ) = grab_url({-url => $draft_q->param('plaintext_url') });
@@ -953,9 +966,7 @@ sub construct_from_url {
 	
 	
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-			
-	use Data::Dumper; 
-	warn '$base' . Dumper($base);
+
 	$html_message = $fm->format_mlm( 
 		{
 			-content => $html_message, 
@@ -972,6 +983,7 @@ sub construct_from_url {
 		}
 	);	
 	if( length($text_message) > 0){
+
 		$text_message = $fm->format_mlm(
 			{
 				-content => $text_message, 
@@ -1055,10 +1067,6 @@ sub construct_from_url {
 		); 
 	}
 	
-	#warn '$entity->as_string' . $entity->as_string;
-
-	warn '$headers{Subject}' . $headers{Subject}; 
-	
 	return { 
 		status       => 1, 
 		errors       => undef, 
@@ -1080,11 +1088,7 @@ sub _add_attachments {
 	my $headers = $args->{-headers};
 	
 	my @attachments = $self->has_attachments( { -cgi_obj => $q } );
-	
-	use Data::Dumper; 
-	
-	#warn 'attachments:' . Data::Dumper::Dumper([@attachments]); 
-	
+		
     require MIME::Entity;
 	
     my @compl_att = ();
@@ -1107,7 +1111,6 @@ sub _add_attachments {
             );
             $mpm_entity->add_part($entity);
             for (@compl_att) {
-                #  warn 'add part
                 $mpm_entity->add_part($_);
             }
             $entity = $mpm_entity;
@@ -1338,9 +1341,7 @@ sub send_url_email {
         return ( $headers, $body );
     }
     elsif ( $process =~ m/preview/i ) {
-     
-	 	warn 'send_url_email preview!'; 		
-	    my $draft_id = $self->save_as_draft(
+     	    my $draft_id = $self->save_as_draft(
             {
                 -cgi_obj => $q,
                 -list    => $self->{list},
@@ -1363,28 +1364,21 @@ sub send_url_email {
             carp 'done with construct_and_send!';
         }
         if ( $construct_r->{status} == 0 ) {
-			warn 'status is 0?!';
-            return $self->report_mass_mail_errors(
+			return $self->report_mass_mail_errors(
 				$construct_r->{errors}, 
 				$root_login
 			);
         }
 		else { 
-			warn 'status:' . $construct_r->{status};
-			warn 'DADA::App::EmailMessagePreview!';
-			
-			warn '$construct_r->{subject}' .  $construct_r->{subject}; 
 			require DADA::App::EmailMessagePreview; 
 			my $daemp = DADA::App::EmailMessagePreview->new; 
-			warn '$daemp->save';
 			my $daemp_id = $daemp->save({
 				-list      => $self->{list},
 				-subject   => $construct_r->{subject},
 				-plaintext => $construct_r->{text_message},
 				-html      => $construct_r->{html_message},
 			});
-			warn '$daemp_id' . $daemp_id; 
-	        require JSON;
+			require JSON;
 	        my $json    = JSON->new->allow_nonref;
 	        my $return  = { id => $daemp_id };
 	        my $headers = {
@@ -1395,14 +1389,8 @@ sub send_url_email {
 	        my $body = $json->pretty->encode($return);
 	        if($t == 1){ 
 	            require Data::Dumper; 
-	            warn 'returning headers: ' . Data::Dumper::Dumper($headers); 
-	            warn 'returning body: ' . $body; 
-	        }
-			warn '$body';
-			
+	        }			
 	        return ( $headers, $body );
-			
-			warn 'and were done.'; 
 		}
 	}
     else {
@@ -1833,6 +1821,7 @@ sub list_invite {
             Return-Path
             X-Priority
             Subject
+			X-Preheader
             )
           )
         {
