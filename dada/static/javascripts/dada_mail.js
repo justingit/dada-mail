@@ -72,7 +72,10 @@ jQuery(document).ready(function($){
 	// Admin Menu
 
 	if ($("#navcontainer").length) {
-
+		//alert('if ($("#navcontainer").length) {!');
+		
+		admin_menu_notifications(); 
+/*
 		var admin_menu_callbacks = $.Callbacks();
 		admin_menu_callbacks.add(admin_menu_drafts_notification());
 		admin_menu_callbacks.add(admin_menu_sending_monitor_notification());
@@ -84,7 +87,7 @@ jQuery(document).ready(function($){
 		admin_menu_callbacks.add(admin_menu_tracker_notification());
 		admin_menu_callbacks.add(admin_menu_bridge_notification());
 		admin_menu_callbacks.fire();
-
+*/
 		if($("#screen_meta").length) {
 			var highlight_scrn = $("#screen_meta").attr("data-menu_highlight");
 			$( ".admin_menu_" + highlight_scrn ).addClass( "active" );
@@ -243,7 +246,6 @@ jQuery(document).ready(function($){
 			if (sendMailingListMessage(fid, itsatest) === true) {
 				if($("#f").val() != 'list_invite') {
 					save_msg(false);
-					admin_menu_drafts_notification();
 				}
 				if($("#f").val() == 'list_invite' && itsatest == true) {
 					// alert('now were sending out a test message!');
@@ -554,7 +556,6 @@ jQuery(document).ready(function($){
 		$("body").on("click", ".test_mail_sending_options", function(event) {
 			event.preventDefault();
 			test_mail_sending_options();
-			admin_menu_notification('admin_menu_mail_sending_options_notification', 'admin_menu_mail_sending_options');
 		});
 
 		$("body").on("click", ".amazon_verify_email", function(event) {
@@ -1184,7 +1185,6 @@ jQuery(document).ready(function($){
 		$("body").on("click", '.plugins_bridge_manually_check_messages', function(event) {
 			event.preventDefault();
 			plugins_bridge_manually_check_messages();
-			admin_menu_notification('admin_menu_mailing_monitor_notification', 'admin_menu_sending_monitor');
 		});
 
 		$("body").on("click", '.bridge_settings', function(event) {
@@ -1501,76 +1501,55 @@ jQuery(document).ready(function($){
 
 
 // Admin Menu
-
-
-function admin_menu_drafts_notification() {
-	admin_menu_notification('admin_menu_drafts_notification', 'admin_menu_drafts');
-}
-function admin_menu_sending_monitor_notification() {
-	/* console.log('admin_menu_sending_monitor_notification'); */
-	admin_menu_notification('admin_menu_mailing_monitor_notification', 'admin_menu_sending_monitor');
-}
-
-function admin_menu_subscriber_count_notification() {
-	/* console.log('admin_menu_subscriber_count_notification');  */
-	admin_menu_notification('admin_menu_subscriber_count_notification', 'admin_menu_view_list');
-}
-function admin_menu_archive_count_notification() {
-	/* console.log('admin_menu_archive_count_notification'); */
-	admin_menu_notification('admin_menu_archive_count_notification', 'admin_menu_view_archive');
-}
-
-function admin_menu_mail_sending_options_notification() {
-	admin_menu_notification('admin_menu_mail_sending_options_notification', 'admin_menu_mail_sending_options');
-}
-
-function admin_menu_mailing_sending_mass_mailing_options_notification() {
-	admin_menu_notification('admin_menu_mailing_sending_mass_mailing_options_notification', 'admin_menu_mailing_sending_mass_mailing_options');
-}
-
-function admin_menu_bounce_handler_notification() {
-	admin_menu_notification('admin_menu_bounce_handler_notification', 'admin_menu_bounce_handler');
-}
-function admin_menu_tracker_notification() {
-	admin_menu_notification('admin_menu_tracker_notification', 'admin_menu_tracker');
-}
-function admin_menu_bridge_notification() { 
-	admin_menu_notification('admin_menu_bridge_notification', 'admin_menu_bridge');
-}
-
-
-
-function admin_menu_notification(sflavor, target_class) {
+function admin_menu_notifications(){ 
+	
 	var r = 60 * 5 * 1000; // Every 5 minutes.
+	
 	var refresh_loop = function(no_loop) {
-
 			var request = $.ajax({
 				url: $('#navcontainer').attr("data-s_program_url"),
 				type: "POST",
 				cache: false,
 				data: {
-					flavor: sflavor
+					flavor: 'admin_menu_notifications'
 				},
-				dataType: "html"
+				dataType: "json"
 			});
-			request.done(function(content) {
-				if ($('.' + target_class + '_notification').length) {
-					$('.' + target_class + '_notification').remove();
+			request.done(function(jsondoc) {				
+				 var targets = [
+					"drafts",            
+					"sending_monitor",    
+					"view_list",   
+					"view_archive",    
+					"mail_sending_options",
+					"mailing_sending_mass_mailing_options",
+					"bounce_handler",     
+					"tracker",            
+					"bridge"            
+				 ]; 
+				 tlen = targets.length;
+				  for (i = 0; i < tlen; i++) {	
+					 target_class = targets[i];			 
+					if ($('.admin_menu_' + target_class + '_notification').length) {
+						$('.admin_menu_' + target_class + '_notification').remove();
+					}
+					content = jsondoc[target_class];
+					if(content.length) {
+						$('.admin_menu_' + target_class + ' a').append('<span class="admin_menu_' + target_class + '_notification round alert label"> ' + content + '</span>');
+					}
 				}
 
-				if(content.length) {
-					//console.log('update! ' + target_class);
-					$('.' + target_class + ' a').append('<span class="' + target_class + '_notification round alert label"> ' + content + '</span>');
-				}
 			});
 			if (no_loop != 1) {
-				setTimeout(
-				refresh_loop, r);
+				setTimeout(refresh_loop, r);
 			}
 		}
 		setTimeout(refresh_loop, r);
 		refresh_loop(1);
 }
+
+
+
 
 function setup_attachment_fields() {
 	var a_nums = [1,2,3,4,5];
@@ -1851,7 +1830,6 @@ function auto_save_as_draft() {
 
 
 				$("#draft_id").val(content.id);
-				admin_menu_drafts_notification();
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
 				$('#draft_notice .alert').text('Problems auto-saving!'  + new Date().format("yyyy-MM-dd h:mm:ss"));

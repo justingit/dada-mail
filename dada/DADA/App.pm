@@ -136,7 +136,8 @@ sub setup {
         'add_email'                                   => \&add_email,
         'delete_email'                                => \&delete_email,
         'subscription_options'                        => \&subscription_options,
-        'admin_menu_drafts_notification'              => \&admin_menu_drafts_notification,
+		'admin_menu_notifications'                    => \&admin_menu_notifications,
+		'admin_menu_drafts_notification'              => \&admin_menu_drafts_notification,
         'admin_menu_subscriber_count_notification'    => \&admin_menu_subscriber_count_notification,
         'admin_menu_mailing_monitor_notification'     => \&admin_menu_mailing_monitor_notification,
         'admin_menu_archive_count_notification'       => \&admin_menu_archive_count_notification,
@@ -745,6 +746,40 @@ sub sign_in {
 
 }
 
+
+sub admin_menu_notifications { 
+
+    my $self = shift;
+    my $q    = $self->query();
+	my $r = {}; 
+	
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security( -cgi_obj => $q, );
+    if ($checksout) {
+		$r->{drafts}               = $self->admin_menu_drafts_notification(); 
+		$r->{sending_monitor}      = $self->admin_menu_mailing_monitor_notification(); 
+		$r->{view_list}            = $self->admin_menu_subscriber_count_notification(); 
+		$r->{view_archive}         = $self->admin_menu_archive_count_notification(); 
+		$r->{mail_sending_options} = $self->admin_menu_mail_sending_options_notification(); 
+		$r->{mailing_sending_mass_mailing_options} = $self->admin_menu_mailing_sending_mass_mailing_options_notification();
+		$r->{bounce_handler}       = $self->admin_menu_bounce_handler_notification();
+		$r->{tracker}              = $self->admin_menu_tracker_notification();
+		$r->{bridge}               = $self->admin_menu_bridge_notification();
+
+	    require JSON;
+	    my $json = JSON->new->allow_nonref;
+	
+	    my $headers = { -type => 'application/json', };
+	    my $body = $json->encode( $r );
+
+	    $self->header_props(%$headers);
+
+	    return $body;
+	}
+	else { 
+		return $error_msg;
+	}
+	
+}
 sub admin_menu_drafts_notification {
 
     my $self = shift;
@@ -831,6 +866,9 @@ sub admin_menu_subscriber_count_notification {
             if ( $num > 0 ) {
                 return commify($num);
             }
+			else { 
+				return '0';
+			}
         }
     } catch {
         carp($_);
@@ -856,6 +894,9 @@ sub admin_menu_archive_count_notification {
             if ( $num > 0 ) {
                 return commify($num);
             }
+			else { 
+				return '0';
+			}
         }
     } catch {
         carp($_);
@@ -945,7 +986,7 @@ sub admin_menu_bounce_handler_notification {
                 return commify($num);
             }
 			else { 
-				return 0; 
+				return '0'; 
 			}
         }
     } catch {
@@ -970,7 +1011,12 @@ sub admin_menu_tracker_notification {
             require DADA::Logging::Clickthrough;
             my $rd = DADA::Logging::Clickthrough->new({-list => $admin_list});
             my ( $total, $msg_ids ) = $rd->get_all_mids; 
-            return commify($total);
+            if ( $total > 0 ) {
+                return commify($total);
+            }
+			else { 
+				return '0'; 
+			}
         }
     } catch {
         carp($_);
