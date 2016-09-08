@@ -44,6 +44,7 @@ sub new {
       LocalAddr => $arg{LocalAddr},
       LocalPort => $arg{LocalPort},
       Proto     => 'tcp',
+	  SSL_verify_mode => 0,
       Timeout   => defined $arg{Timeout}
       ? $arg{Timeout}
       : 120
