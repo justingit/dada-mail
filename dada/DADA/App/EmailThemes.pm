@@ -16,6 +16,7 @@ use strict;
 my $t = 0;
 
 my %allowed = ( 
+    list      =>  undef, 
 	name      => 'default',
 	theme_dir => '', 
 );
@@ -62,7 +63,10 @@ sub AUTOLOAD {
 sub _init {
 	my $self = shift; 
 	my ($args) = @_;
-	
+
+	if(exists($args->{-list})){ 
+		$self->list($args->{-list}); 
+	}
 	if(exists($args->{-name})){ 
 		$self->name($args->{-name}); 
 	}
@@ -74,20 +78,45 @@ sub _init {
 sub fetch { 
 	my $self = shift; 
 	my $fn   = shift; 
-	my $html = $self->slurp(
-		$self->theme_dir . '/' . $self->name . '/dist/' . $fn . '.html'
-	);  
-	my $pt = $self->slurp(
-		$self->theme_dir . '/' . $self->name . '/dist/' . $fn . '.txt'
-	);  
+	
+	my $pt_file   = make_safer($self->theme_dir . '/' . $self->name . '/dist/' . $fn . '.txt');
+	my $html_file = make_safer($self->theme_dir . '/' . $self->name . '/dist/' . $fn . '.html');
+	
+	my $pt   = undef; 
+	my $html = undef; 
+	
+	if(-e $pt_file) {
+		$pt = $self->slurp($pt_file);
+	}
+	if(-e $html_file) {
+		$html = $self->slurp($html_file); 
+		if(defined($self->list)){ 
+			$html = $self->munge_logo_img($html);
+		}
+	}
 	
 	my $subject = $self->subject_from_title_tag($html); 
+	warn '$subject' . $subject; 
 	
 	return { 
 		html      => $html, 
 		plaintext => $pt, 
 		subject   => $subject, 
 	}
+}
+
+
+
+sub munge_logo_img { 
+	my $self = shift; 
+	my $html = shift; 
+	# This is cheating: 
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->list } );
+	my $tag       = quotemeta('<!-- tmpl_var list_settings.logo_image_url -->');
+	my $tag_value = $ls->param('logo_image_url');
+	   $html =~ s/$tag/$tag_value/g; 
+	   return $html; 
 }
 
 
@@ -115,7 +144,6 @@ sub subject_from_title_tag {
 
     my $self = shift;
     my $html = shift; 
-    my $html;
 
     try {
         
@@ -136,6 +164,7 @@ sub subject_from_title_tag {
         return $title_ele->as_text;
     }
     catch {
+		warn 'fallack to regex: ' . $_; 
         # aaaaaand if that does work, regex to the rescue!
         my ($title) = $html =~ m/<title>([a-zA-Z\/][^>]+)<\/title>/si;
         if ( defined($title) ) {

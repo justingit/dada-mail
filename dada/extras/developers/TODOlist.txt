@@ -12,8 +12,37 @@ Key:
 [*] Naw...
 [?] Someday
 
+Make 4 versions of mailing list message layout
+	* default - all bells/whistels
+	* footer only
+	* discussion list specific
+	* none
 
-Preheader not available in preheader (or any other headers, like From - which would be nice...)
+Ability to switch out between all these options in Send a Message screen. 
+
+Finalize Confirmation HTML email
+
+Make the system work if HTML or Plaintext email is not available. If no HTML, just send plaintext. 
+	we'll then slowly build up the collection of TML versions of the email's that we have. 
+
+* Make using Email::MIME::CreateHTML an option if available - and maybe the dfault, unless NOT avalable, 
+	* make slight tweak so that LWP resolver doesn't die with unfound resource 
+		- just a warning is just fine... 
+
+Other things we may want to look for, for embeddignn images? 
+
+'bgsound' => {'src'=>1},
+'body'    => {'background'=>1},
+'img'     => {'src'=>1},
+'input'   => {'src'=>1},
+'table'   => {'background'=>1},
+'td'      => {'background'=>1},
+'th'      => {'background'=>1},
+'tr'      => {'background'=>1}
+
+
+
+
 
 Send a Webpage ourselves
 	(Love to inline all linkned stylesheets beforehand - MIME::Lite::HTML takes care of that - 

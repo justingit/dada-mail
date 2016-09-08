@@ -10871,7 +10871,11 @@ sub send_archive {
         $fm->use_header_info(1);
 
         my $msg_a_s = safely_encode( $msg->as_string );
-        my ($email_str) = $fm->format_message( -msg => $msg_a_s, );
+        my ($email_str) = $fm->format_message(
+			{ 
+				-msg => $msg_a_s 
+			} 
+		);
 
         my ( $e_name, $e_domain ) = split( '@', $to_email, 2 );
         my $entity = $fm->email_template(

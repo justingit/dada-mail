@@ -130,8 +130,14 @@ sub send_generic_email {
     if ( $args->{-tmpl_params}->{-expr} == 1 ) {
         $fm->override_validation_type('expr');
     }
-    my ($email_str) = $fm->format_message( 
-		-msg => $fm->string_from_dada_style_args( { -fields => $data, } ), 
+    my ($email_str) = $fm->format_message(
+		{ 
+			-msg => $fm->string_from_dada_style_args(
+				 { 
+					 -fields => $data,
+				 } 
+			)
+		} 
 	);
 
     $email_str = safely_decode($email_str);
@@ -160,28 +166,25 @@ sub send_generic_email {
 
 
 sub send_multipart_email {
-	
-	# Confirmaiton link still not showig up correctly in email message? 
-	
-	
+
     my ($args) = @_;
 
     if ( !exists( $args->{-test} ) ) {
         $args->{-test} = 0;
     }
 
-    my $ls = $args->{-ls_obj};
-	my $list = $ls->param('list');
-	
+    my $ls   = $args->{-ls_obj};
+    my $list = $ls->param('list');
+
     require DADA::Mail::Send;
     my $mh = DADA::Mail::Send->new(
         {
-                -list   => $list,
-                -ls_obj => $ls,
+            -list   => $list,
+            -ls_obj => $ls,
         }
     );
 
-    my $expr = 1; 
+    my $expr = 1;
     if ( $ls->param('enable_email_template_expr') == 1 ) {
         $expr = 1;
     }
@@ -190,72 +193,86 @@ sub send_multipart_email {
     }
 
     $args->{-headers} = {}
-		if !exists( $args->{-headers} );
-	
+      if !exists( $args->{-headers} );
 
-	#$args->{-tmpl_params} = { -list_settings_vars_param => { -list => $list } },   
-	
-			
-  #  try { 
- 	  require  DADA::App::MyMIMELiteHTML; 
-      my $mailHTML = new DADA::App::MyMIMELiteHTML(
+   #$args->{-tmpl_params} = { -list_settings_vars_param => { -list => $list } },
+
+    #  try {
+    require DADA::App::MyMIMELiteHTML;
+    my $mailHTML = new DADA::App::MyMIMELiteHTML(
+
         #  remove_jscript                   => $remove_javascript,
-          'IncludeType'                    => 'cid',
-          'TextCharset'                    => scalar $ls->param('charset_value'),
-          'HTMLCharset'                    => scalar $ls->param('charset_value'),
-          HTMLEncoding                     => scalar $ls->param('html_encoding'),
-          TextEncoding                     => scalar $ls->param('plaintext_encoding'),
-          (
-                ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
-              ? ( Debug => 1, )
-              : ()
-          ),
-          %{$args->{-headers}},
-      );
-	  
-	 my ($status, $errors, $MIMELiteObj, $md5) = $mailHTML->parse(
-	 	safely_encode($args->{-html_body}), 
-		safely_encode($args->{-plaintext_body})
-	);
-
+        'IncludeType' => 'cid',
+        'TextCharset' => scalar $ls->param('charset_value'),
+        'HTMLCharset' => scalar $ls->param('charset_value'),
+        HTMLEncoding  => scalar $ls->param('html_encoding'),
+        TextEncoding  => scalar $ls->param('plaintext_encoding'),
+        (
+              ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
+            ? ( Debug => 1, )
+            : ()
+        ),
+        %{ $args->{-headers} },
+    );
+    my ( $status, $errors, $MIMELiteObj, $md5 );
+    if (   length( $args->{-html_body} ) > 0
+        && length( $args->{-plaintext_body} ) > 0 )
+    {
+        ( $status, $errors, $MIMELiteObj, $md5 ) = $mailHTML->parse(
+            safely_encode( $args->{-html_body} ),
+            safely_encode( $args->{-plaintext_body} )
+        );
+    }
+    elsif (length( $args->{-html_body} ) > 0
+        && length( $args->{-plaintext_body} ) <= 0 )
+    {
+        ( $status, $errors, $MIMELiteObj, $md5 ) =
+          $mailHTML->parse( safely_encode( $args->{-html_body} ), undef, );
+    }
+    elsif (length( $args->{-html_body} ) <= 0
+        && length( $args->{-plaintext_body} ) > 0 )
+    {
+        ( $status, $errors, $MIMELiteObj, $md5 ) =
+          $mailHTML->parse( undef, safely_encode( $args->{-plaintext_body} ), );
+    }
     use MIME::Parser;
     my $parser = new MIME::Parser;
-       $parser = optimize_mime_parser($parser);
-	
-	my $entity = $parser->parse_data($MIMELiteObj->as_string);
-	
-	my %lh = $mh->list_headers; 
-	for my $h(keys %lh){ 
-		$entity->head->add(   $h, safely_encode($lh{$h}));
-	}
-	
-	
-	
+    $parser = optimize_mime_parser($parser);
+
+    my $entity = $parser->parse_data( $MIMELiteObj->as_string );
+
+    my %lh = $mh->list_headers;
+    for my $h ( keys %lh ) {
+        $entity->head->add( $h, safely_encode( $lh{$h} ) );
+    }
+
     my $fm = DADA::App::FormatMessages->new( -List => $list );
     $fm->use_header_info(1);
     $fm->use_email_templates(0);
-	
 
     if ( $args->{-tmpl_params}->{-expr} == 1 ) {
         $fm->override_validation_type('expr');
     }
-	
-    $entity = $fm->format_message( 
-		-entity => $entity,
+
+    $entity = $fm->format_message(
+		 {
+			 -entity => $entity
+		 }
 	);
-	
-	    $entity = $fm->email_template(
+
+    $entity = $fm->email_template(
         {
             -entity => $entity,
             -expr   => $expr,
             %{ $args->{-tmpl_params} },    # note: this may have -expr param.
         }
     );
-	
+
     my $msg = $entity->as_string;
     my ( $header_str, $body_str ) = split( "\n\n", $msg, 2 );
-	# Time for DADA::Mail::Send to just have a, "Here's th entity!" argument, 
-	# rather than always passing this crap back and forth. 
+
+    # Time for DADA::Mail::Send to just have a, "Here's th entity!" argument,
+    # rather than always passing this crap back and forth.
     my $header_str = safely_decode( $entity->head->as_string );
     my $body_str   = safely_decode( $entity->body_as_string );
     if ( $args->{-test} == 1 ) {
@@ -374,12 +391,14 @@ sub send_confirmation_message {
 	require DADA::App::EmailThemes; 
 	my $em = DADA::App::EmailThemes->new(
 		{ 
+			-list => $args->{-list},
 			-name => 'default',
 			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
 		}
 	);
 	my $etp = $em->fetch('confirmation_message');
 	  
+	warn  '$etp->{subject}' . $etp->{subject};
 	require DADA::App::FormatMessages; 
 	my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
 	   $etp->{plaintext} = $fm->subscription_confirmationation({-str => $etp->{plaintext}}); 

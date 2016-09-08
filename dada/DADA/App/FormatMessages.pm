@@ -14,7 +14,7 @@ use MIME::Entity;
 use DADA::App::Guts;
 use Try::Tiny;
 use Carp qw(croak carp);
-$Carp::Verbose = 1; 
+#$Carp::Verbose = 1; 
 use vars qw($AUTOLOAD);
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
@@ -781,7 +781,7 @@ sub _format_body {
 
     my $self   = shift;
     my $entity = shift;
-			
+
     my @parts = $entity->parts;
 
     if (@parts) {
@@ -792,7 +792,8 @@ sub _format_body {
             try {
                 $n_entity = $self->_format_body( $parts[$i] );
 
-            } catch {
+            }
+            catch {
                 warn 'Formatting single entity failed!' . $_;
                 next;
             };
@@ -814,7 +815,9 @@ sub _format_body {
         return $entity;
     }
     else {
-        my $is_att = 0;
+
+        my $changes = 0;
+        my $is_att  = 0;
         if ( defined( $entity->head->mime_attr('content-disposition') ) ) {
             if ( $entity->head->mime_attr('content-disposition') =~
                 m/attachment/ )
@@ -823,58 +826,67 @@ sub _format_body {
             }
         }
 
-        #if (
-        #    (
-        #           ( $entity->head->mime_type eq 'text/plain' )
-        #        || ( $entity->head->mime_type eq 'text/html' )
-        #    )
-        #    && ( $is_att != 1 )
-        #  )
-        #{
-			
-		if ( 
-			($entity->head->mime_type eq 'text/html' )
-			&& ( $is_att != 1 )
-		){
-				
-            my $body    = $entity->bodyhandle;
-            my $content = $entity->bodyhandle->as_string;
-               $content = safely_decode($content);
-			my $changes = 0; 
-			   
-			if ( $self->no_list != 1 ) {
-				#warn '$self->no_list != 1';
-
-				if ( defined( $self->{list} ) ) {
-
-					#warn q{ if ( defined( $self->{list} ) ) };
+        my $body    = $entity->bodyhandle;
+        my $content = $entity->bodyhandle->as_string;
+        $content = safely_decode($content);
+		
+        if (
+            (
+                   ( $entity->head->mime_type eq 'text/plain' )
+                || ( $entity->head->mime_type eq 'text/html' )
+            )
+            && ( $is_att != 1 )
+          )
+        {
+            if ( $self->no_list != 1 ) {
+                $content = $self->_expand_macro_tags(
+                    -data => $content,
+                    -type => $entity->head->mime_type,
+                );
+                $changes = 1;
+            }
+        }
+        if (   ( $entity->head->mime_type eq 'text/html' )
+            && ( $is_att != 1 ) )
+        {
 
 
-					#warn '$entity->head->mime_type' . $entity->head->mime_type; 
-					#warn q{$self->{ls}->param('tracker_track_opens_method')};
+            if ( $self->no_list != 1 ) {
 
-					if ( $self->{ls}->param('tracker_track_opens_method') eq 'directly' && $entity->head->mime_type eq 'text/html' ) {
-						$content = $self->_add_opener_image($content);
-						$changes = 1; 
-					}
-				}
-			}
+                #warn '$self->no_list != 1';
 
-			#warn '$changes' . $changes; 
-			if($changes == 1){
-				my $io = $body->open('w');
-				$content = safely_encode($content);
-				$io->print($content);
-				$io->close;
-				$entity->sync_headers(
-					'Length'      => 'COMPUTE',
-					'Nonstandard' => 'ERASE'
-				);
-			}
-		}
+                if ( defined( $self->{list} ) ) {
+
+                    #warn q{ if ( defined( $self->{list} ) ) };
+
+                    #warn '$entity->head->mime_type' . $entity->head->mime_type;
+                    #warn q{$self->{ls}->param('tracker_track_opens_method')};
+
+                    if ( $self->{ls}->param('tracker_track_opens_method') eq
+                        'directly' && $entity->head->mime_type eq 'text/html' )
+                    {
+                        $content = $self->_add_opener_image($content);
+                        $changes = 1;
+                    }
+                }
+            }
+        }
+
+        #warn '$changes' . $changes;
+        if ( $changes == 1 ) {
+            my $io = $body->open('w');
+            $content = safely_encode($content);
+            $io->print($content);
+            $io->close;
+            $entity->sync_headers(
+                'Length'      => 'COMPUTE',
+                'Nonstandard' => 'ERASE'
+            );
+        }
         return $entity;
     }
 }
+
 
 =pod
 
