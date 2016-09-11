@@ -4278,8 +4278,6 @@ sub view_bounce_history {
 
 sub subscription_requests {
 
-	warn 'here: subscription_requests'; 
-	
     my $self = shift;
     my $q    = $self->query();
 
@@ -4315,14 +4313,7 @@ sub subscription_requests {
 
     if ( $q->param('process') =~ m/approve/i ) {
 
-		warn 'approve!';
-		use Data::Dumper; 
-		warn '@address' . Dumper(@address);
-		
         for my $email (@address) {
-			
-			warn 'email:' . $email; 
-			
             $lh->move_subscriber(
                 {
                     -email     => $email,
@@ -4347,7 +4338,7 @@ sub subscription_requests {
 
                 # Make a profile, if needed,
                 require DADA::Profile;
-                my $prof = DADA::Profile->new( { -email => $email } );
+                my $prof = DADA::Profile->new( { -email => scalar $q->param('email') } );
                 if ( !$prof->exists ) {
                     $new_profile = 1;
                     $new_pass    = $prof->_rand_str(8);
@@ -4361,20 +4352,15 @@ sub subscription_requests {
 
                 # / Make a profile, if needed,
             }
-			warn 'sending, send_subscription_request_approved_message to' . $email;
             require DADA::App::Messages;
-            DADA::App::Messages::send_subscription_request_approved_message(
+			my $dap = DADA::App::Messages->new({-list => $list}); 
+            $dap->send_subscription_request_approved_message(
                 {
-                    -list   => $list,
-                    -email  => $email,
-                    -ls_obj => $ls,
-
-                    #-test   => $self->test,
+                    -email  => scalar $q->param('email'),
                     -vars => {
                         new_profile        => $new_profile,
-                        'profile.email'    => $email,
+                        'profile.email'    => scalar $q->param('email'),
                         'profile.password' => $new_pass,
-
                     }
                 }
             );
@@ -4411,13 +4397,10 @@ sub subscription_requests {
             );
 
             require DADA::App::Messages;
-            DADA::App::Messages::send_subscription_request_denied_message(
+			my $dap = DADA::App::Messages->new({-list => $list}); 
+               $dap->send_subscription_request_denied_message(
                 {
-                    -list   => $list,
                     -email  => $email,
-                    -ls_obj => $ls,
-
-                    #-test   => $self->test,
                 }
             );
             $count++;
@@ -4501,13 +4484,10 @@ sub unsubscription_requests {
             #           warn 'send_unsubscription_request_approved_message'
             #                if $t;
             require DADA::App::Messages;
-            DADA::App::Messages::send_unsubscription_request_approved_message(
+			my $dap = DADA::App::Messages->new({-list => $list}); 
+               $dap->send_unsubscription_request_approved_message(
                 {
-                    -list   => $list,
                     -email  => $email,
-                    -ls_obj => $ls,
-
-                    #-test   => $self->test,
                 }
             );
         }
@@ -4537,13 +4517,10 @@ sub unsubscription_requests {
                 }
             );
             require DADA::App::Messages;
-            DADA::App::Messages::send_unsubscription_request_denied_message(
+			my $dap = DADA::App::Messages->new({-list => $list}); 
+               $dap->send_unsubscription_request_denied_message(
                 {
-                    -list   => $list,
                     -email  => $email,
-                    -ls_obj => $ls,
-
-                    #-test   => $self->test,
                 }
             );
             $count++;
@@ -9293,9 +9270,9 @@ sub report_abuse {
 
                 # Email the Abuse Report
                 require DADA::App::Messages;
-                DADA::App::Messages::send_abuse_report(
+				my $dap = DADA::App::Messages->new({-list => $list}); 
+	               $dap->send_abuse_report(
                     {
-                        -list                 => $list,
                         -email                => $email,
                         -abuse_report_details => $abuse_report_details,
                     }
@@ -11039,32 +11016,17 @@ sub email_password {
 
         require DADA::App::ReadEmailMessages;
         my $rm       = DADA::App::ReadEmailMessages->new;
-        my $msg_data = $rm->read_message('list_password_reset_message.eml');
 
         require DADA::App::Messages;
-        DADA::App::Messages::send_generic_email(
-            {
-                -list    => $list,
-                -headers => {
-                    From => '"'
-                      . escape_for_sending( $ls->param('list_name') ) . '" <'
-                      . $ls->param('list_owner_email') . '>',
-                    To => '"List Owner for: '
-                      . escape_for_sending( $ls->param('list_name') ) . '" <'
-                      . $ls->param('list_owner_email') . '>',
-                    Subject => $msg_data->{subject},
-                },
-                -body        => $msg_data->{plaintext_body},
-                -tmpl_params => {
-                    -list_settings_vars_param => {
-                        -list   => $list,
-                        -dot_it => 1,
-                    },
-                    -vars => { new_password => $new_password, },
-                },
-            }
-        );
-
+		my $dap = DADA::App::Messages->new({-list => $list}); 
+           $dap->send_list_password_reset(
+		   		{
+          			-vars => {
+						new_password => $new_password, 
+					}
+				},
+           ); 
+		  
         require DADA::Logging::Usage;
         my $log = new DADA::Logging::Usage;
         $log->mj_log( $list, 'List Password Reset', "remote_host:$ENV{REMOTE_HOST}, ip_address:$ENV{REMOTE_ADDR}" )

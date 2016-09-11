@@ -95,15 +95,51 @@ sub fetch {
 		}
 	}
 	
-	my $subject = $self->subject_from_title_tag($html); 
-	warn '$subject' . $subject; 
+	#my $subject; 
+	my $yaml = {};
+	if(length($pt) > 0){
+		($yaml, $pt) = $self->strip_and_return_yaml($pt); 
+	}
+
+#	if(length($html) > 0){
+#		$subject = $self->subject_from_title_tag($html); 
+#	}
+		
 	
-	return { 
+	my $r = { 
 		html      => $html, 
 		plaintext => $pt, 
-		subject   => $subject, 
+		yaml      => $yaml, 
+	};
+	
+	return $r; 
+}
+
+
+sub strip_and_return_yaml { 
+	
+	require Text::FrontMatter::YAML;
+	my $self = shift; 
+	my $str  = shift; 
+	
+	return ({}, $str) 
+		if $str !~ m/$\-\-\-/; 
+		
+	try {
+		my $tfm = Text::FrontMatter::YAML->new(
+			document_string => $str,
+		);
+		my @r = (
+			$tfm->frontmatter_hashref, 
+			$tfm->data_text,
+		);
+		return @r; 
+	} catch { 
+		warn $_; 
+		return (undef, $str);
 	}
 }
+
 
 
 

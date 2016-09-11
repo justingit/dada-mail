@@ -1025,22 +1025,22 @@ sub send_profile_activation_email {
       . '/'
       . $auth_code 
       . '/';
-
-      require DADA::App::ReadEmailMessages; 
-      my $rm = DADA::App::ReadEmailMessages->new; 
-      my $msg_data = $rm->read_message('profiles_activation_message.eml'); 
-  
-    require DADA::App::Messages;
-    DADA::App::Messages::send_generic_email(
+	  
+      require DADA::App::Messages;
+	   my $dap = DADA::App::Messages->new({-list => $self->_config_profile_host_list});
+	
+		my $etp = $dap->em->fetch('profiles_activation_message'); 
+	
+         $dap->send_multipart_email(		 
         {
-            -list    => $self->_config_profile_host_list,
-            -email   => $self->{email},
             -headers => {
-                Subject => $msg_data->{subject},
+			    Subject => $etp->{yaml}->{subject},
                 From    => $self->_config_profile_email(1),
                 To      => $self->{email},
             },
-            -body        => $msg_data->{plaintext_body},
+		}, 
+		-plaintext_body => $etp->{plaintext},
+		-html_body      => $etp->{html},
             -tmpl_params => {
                 -vars => {
                     auth_code                    => $auth_code,
