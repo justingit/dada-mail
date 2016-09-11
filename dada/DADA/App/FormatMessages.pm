@@ -2089,7 +2089,7 @@ HTML version.
 
 =cut
 
-sub  _apply_template {
+sub _apply_template {
 
     my $self = shift;
 
@@ -2127,8 +2127,19 @@ sub  _apply_template {
 				-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
 			}
 		);
-		my $etp = $em->fetch('mailing_list_message');
-	
+		my $etp = {}; 
+	    if (   $self->no_list != 1
+	        && $self->mass_mailing == 1
+	        && $self->list_type eq 'list'
+	        && $self->{ls}->param('disable_discussion_sending') != 1
+	        && $self->{ls}->param('group_list') == 1 )
+	    {
+			$etp = $em->fetch('mailing_list_message-discussion');
+		}
+		else {
+			$etp = $em->fetch('mailing_list_message');
+		}
+		
         if ( $args{-type} eq 'text/plain' ) {
             $new_data = $etp->{plaintext} || '<!-- tmpl_var message_body -->';
         }
