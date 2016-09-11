@@ -1,21 +1,23 @@
-package DADA::App::Messages; 
+package DADA::App::Messages;
 
-use lib qw(../../ ../../perllib); 
-use Carp qw(croak carp cluck); 
+use lib qw(../../ ../../perllib);
+use Carp qw(croak carp cluck);
 
-use DADA::Config qw(!:DEFAULT); 
-use DADA::App::Guts; 
+use DADA::Config qw(!:DEFAULT);
+use DADA::App::Guts;
 
 use vars qw($AUTOLOAD);
 use strict;
 my $t = 0;
 
-my %allowed = ( 
-    list         => undef, 
-	emt          => undef, 
-	fm           => undef, 
-	mh           => undef, 
-	logging      => undef, 
+my %allowed = (
+    list    => undef,
+    emt     => undef,
+    fm      => undef,
+    mh      => undef,
+	ls      => undef, 
+    logging => undef,
+	test    => 0,
 );
 
 sub new {
@@ -32,7 +34,7 @@ sub new {
 
     my ($args) = @_;
 
-    $self->_init( $args );
+    $self->_init($args);
     return $self;
 }
 
@@ -41,7 +43,7 @@ sub AUTOLOAD {
     my $type = ref($self)
       or croak "$self is not an object";
 
-	return if(substr($AUTOLOAD, -7) eq 'DESTROY');
+    return if ( substr( $AUTOLOAD, -7 ) eq 'DESTROY' );
 
     my $name = $AUTOLOAD;
     $name =~ s/.*://;    #strip fully qualifies portion
@@ -58,70 +60,70 @@ sub AUTOLOAD {
 }
 
 sub _init {
-	my $self = shift; 
-	my ($args) = @_;
-
+    my $self = shift;
+    my ($args) = @_;
 
     if ( !exists( $args->{-test} ) ) {
-        $self->test = 0;
+        $self->test(0);
+    }
+	else { 
+		$self->test($args->{-test}); 
+	}
+
+    if ( exists( $args->{-list} ) ) {
+        $self->list( $args->{-list} );
+
+        require DADA::App::FormatMessages;
+        my $fm = DADA::App::FormatMessages->new( -List => $self->list );
+        $self->fm($fm);
+
+        require DADA::MailingList::Settings;
+        my $ls = DADA::MailingList::Settings->new( { -list => $self->list } );
+		$self->ls($ls);
+		
+        require DADA::App::EmailThemes;
+        my $em = DADA::App::EmailThemes->new(
+            {
+                -list      => $self->list,
+                -name      => 'default',
+                -theme_dir => $DADA::Config::SUPPORT_FILES->{dir}
+                  . '/themes/email',
+            }
+        );
+        $self->emt($em);
+
+        require DADA::Mail::Send;
+        my $mh = DADA::Mail::Send->new(
+            {
+                -list   => $self->list,
+                -ls_obj => $self->ls,
+            }
+        );
+        $self->mh($mh);
+    }
+    else {
+        require DADA::App::FormatMessages;
+        my $fm = DADA::App::FormatMessages->new( -yeah_no_list => 1 );
+        $self->fm( $self->emt );
     }
 
-	if(exists($args->{-list})){ 
-		$self->list($args->{-list}); 
-	
-		require DADA::App::FormatMessages;
-	    my $fm = DADA::App::FormatMessages->new( -List => $self->list );
-		$self->fm($fm);
-	
-		require DADA::MailingList::Settings; 
-		my $ls = DADA::MailingList::Settings->new({-list => $self->list});
-
-		require DADA::App::EmailThemes; 
-		my $em = DADA::App::EmailThemes->new(
-			{ 
-				-list => $self->list,
-				-name => 'default',
-				-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
-			}
-		);
-		$self->emt($em);
-	
-		require DADA::Mail::Send; 
-		my $mh = DADA::Mail::Send->new(
-		    {
-		        -list   => $list,
-		        -ls_obj => $ls,
-		    }
-		);
-		$self->mh($mh); 
-	}
-	else { 
-		require DADA::App::FormatMessages;
-        $fm = DADA::App::FormatMessages->new( -yeah_no_list => 1 );
-		$self->fm($self->emt);
-	}
-	
-    require       DADA::Logging::Usage;
+    require DADA::Logging::Usage;
     my $log = new DADA::Logging::Usage;
-	$self->logging($log);
+    $self->logging($log);
 }
-
-
-
 
 sub send_generic_email {
 
-	my $self = shift;
+    my $self = shift;
     my ($args) = @_;
 
-
     # We'll use this, later
-	# DEV: strange - passing the -list param should probably be requird... 
+    # DEV: strange - passing the -list param should probably be requird...
 
     # /We'll use this, later
 
     my $expr = 1;    # Default it to 1, if there's no list.
-    if ( exists( $self->list ) ) {
+    if ( defined( $self->list ) ) {
         if ( $self->ls->param('enable_email_template_expr') == 1 ) {
             $expr = 1;
         }
@@ -138,10 +140,11 @@ sub send_generic_email {
     }
 
     if ( !exists( $args->{-tmpl_params} ) ) {
-        if ( exists( $self->list ) ) {
+        if ( defined( $self->list ) ) {
 
             $args->{-tmpl_params} =
-              { -list_settings_vars_param => { -list => $self->list } },    # Dev: Probably could just pass $ls?
+              { -list_settings_vars_param => { -list => $self->list } }
+              ,    # Dev: Probably could just pass $ls?
         }
         else {
             $args->{-tmpl_params} = {};
@@ -149,9 +152,11 @@ sub send_generic_email {
     }
 
     my $data = {
-          ( exists( $self->list ) )
+          ( defined( $self->list ) )
         ? ( $self->mh->list_headers, )
-        : (), %{ $args->{-headers} }, Body => $args->{-body},
+        : (),
+        %{ $args->{-headers} },
+        Body => $args->{-body},
     };
 
     while ( my ( $key, $value ) = each %{$data} ) {
@@ -161,32 +166,33 @@ sub send_generic_email {
     $self->fm->use_header_info(1);
     $self->fm->use_email_templates(0);
 
-    # Some templates always uses HTML::Template::Expr, example, the sending
-    # preferences. This makes sure that the correct templating system is validated
-    # correctly.
-    # As far as I know, this really is only needed for the sending prefs test.
-    #
+  # Some templates always uses HTML::Template::Expr, example, the sending
+  # preferences. This makes sure that the correct templating system is validated
+  # correctly.
+  # As far as I know, this really is only needed for the sending prefs test.
+  #
     if ( $args->{-tmpl_params}->{-expr} == 1 ) {
         $self->override_validation_type('expr');
     }
     my ($email_str) = $self->fm->format_message(
-		{ 
-			-msg => $self->fm->string_from_dada_style_args(
-				 { 
-					 -fields => $data,
-				 } 
-			)
-		} 
-	);
+        {
+            -msg => $self->fm->string_from_dada_style_args(
+                {
+                    -fields => $data,
+                }
+            )
+        }
+    );
 
     $email_str = safely_decode($email_str);
 
     my $entity = $self->fm->email_template(
         {
-            -entity => $self->fm->get_entity( { -data => safely_encode($email_str), } ),
-            -expr   => $expr,
+            -entity =>
+              $self->fm->get_entity( { -data => safely_encode($email_str), } ),
+            -expr => $expr,
             %{ $args->{-tmpl_params} },    # note: this may have -expr param.
-			
+
         }
     );
     my $msg = $entity->as_string;
@@ -199,19 +205,14 @@ sub send_generic_email {
         $self->mh->test(1);
     }
 
-    $self->mh->send(
-		$self->mh->return_headers($header_str), 
-		Body => $body_str,
-	);
+    $self->mh->send( $self->mh->return_headers($header_str),
+        Body => $body_str, );
 
 }
 
-
-
-
 sub send_multipart_email {
 
-	my $self = shift;
+    my $self = shift;
     my ($args) = @_;
 
     my $expr = 1;
@@ -243,10 +244,11 @@ sub send_multipart_email {
         %{ $args->{-headers} },
     );
     my ( $status, $errors, $MIMELiteObj, $md5 );
-	
-	warn '(length( $args->{-html_body} )'      . length( $args->{-html_body} ); 
-	warn '(length( $args->{-plaintext_body} )' . length( $args->{-plaintext_body} ); 
-	
+
+    warn '(length( $args->{-html_body} )' . length( $args->{-html_body} );
+    warn '(length( $args->{-plaintext_body} )'
+      . length( $args->{-plaintext_body} );
+
     if (   length( $args->{-html_body} ) > 0
         && length( $args->{-plaintext_body} ) > 0 )
     {
@@ -286,10 +288,10 @@ sub send_multipart_email {
     }
 
     $entity = $self->fm->format_message(
-		 {
-			 -entity => $entity
-		 }
-	);
+        {
+            -entity => $entity
+        }
+    );
 
     $entity = $self->fm->email_template(
         {
@@ -306,42 +308,44 @@ sub send_multipart_email {
     # rather than always passing this crap back and forth.
     my $header_str = safely_decode( $entity->head->as_string );
     my $body_str   = safely_decode( $entity->body_as_string );
-    if ( $self->test == 1 ) {
+    
+	if ( $self->test == 1 ) {
         $self->mh->test(1);
     }
-    $self->mh->send( 
-		$self->mh->return_headers($header_str), 
-		Body => $body_str, 
-	);
+    
+	$self->mh->send( $self->mh->return_headers($header_str),
+        Body => $body_str, );
 
 }
 
-
-
 sub send_abuse_report {
-    
-	my $self = shift; 
+
+    my $self = shift;
     my ($args) = @_;
 
     #    -email                => $email,
     #    -abuse_report_details => $abuse_report_details,
-   #     -mid => $diagnostics->{'Simplified-Message-Id'},
-    
-    my $abuse_report_details = $args->{-abuse_report_details}; 
-	
-	my $etp = $self->emt->fetch('list_abuse_report_message');
-	
+    #     -mid => $diagnostics->{'Simplified-Message-Id'},
 
-    if(!exists($args->{-mid})){ 
-        $args->{-mid} = '00000000000000'; 
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
     }
-    
-    require  DADA::MailingList::Subscribers;
+    my $email = $args->{-email};
+
+    my $abuse_report_details = $args->{-abuse_report_details};
+    if ( !exists( $args->{-mid} ) ) {
+        $args->{-mid} = '00000000000000';
+    }
+
+    my $etp = $self->emt->fetch('list_abuse_report_message');
+
+    require DADA::MailingList::Subscribers;
     my $lh = DADA::MailingList::Subscribers->new( { -list => $self->list } );
-    
+
     my $worked = $lh->add_subscriber(
         {
-            -email      => $args->{-email},
+            -email      => $email,
             -list       => $self->list,
             -type       => 'unsub_request_list',
             -dupe_check => {
@@ -350,494 +354,527 @@ sub send_abuse_report {
             },
         }
     );
-    
+
     require DADA::App::Subscriptions::ConfirmationTokens;
-    my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
+    my $ct            = DADA::App::Subscriptions::ConfirmationTokens->new();
     my $approve_token = $ct->save(
         {
-            -email => $args->{-email},
+            -email => $email,
             -data  => {
                 list        => $self->list,
                 type        => 'list',
-                mid         => $args->{-mid}, 
+                mid         => $args->{-mid},
                 flavor      => 'unsub_request_approve',
                 remote_addr => $ENV{REMOTE_ADDR},
             },
             -remove_previous => 0,
         }
-    );    
-    
+    );
+
     $self->send_multipart_email(
         {
             -headers => {
-                To      => $self->fm->format_phrase_address(
-								$etp->{yaml}->{to_phrase}, 
-								$self->ls->param('list_owner_email')
-							),
-                From    => $self->fm->format_phrase_address(
-								$etp->{yaml}->{from_phrase}, 
-								$self->ls->param('list_owner_email')
-							),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
                 Subject => $etp->{yaml}->{subject},
             },
 
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
-            -tmpl_params => {
+            -tmpl_params    => {
                 -list_settings_vars_param => { -list => $self->list },
                 -subscriber_vars_param    => {
-					-list  => $self->list, 
-					-email => $args->{-email}, 
-					-type  => 'list'
+                    -list  => $self->list,
+                    -email => $email,
+                    -type  => 'list'
                 },
                 -vars => {
-                    abuse_report_details                  => $abuse_report_details, 
-                    list_unsubscribe_request_approve_link => $DADA::Config::S_PROGRAM_URL . '/t/' . $approve_token . '/',
-                    
+                    abuse_report_details => $abuse_report_details,
+                    list_unsubscribe_request_approve_link =>
+                      $DADA::Config::S_PROGRAM_URL . '/t/'
+                      . $approve_token . '/',
+                },
+            },
+            -test => $self->test,
+        }
+    );
+}
+
+sub send_confirmation_message {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
+
+    my $etp = $self->emt->fetch('confirmation_message');
+
+    if ( defined( $etp->{plaintext} ) ) {
+        $etp->{plaintext} = $self->fm->subscription_confirmationation(
+            { -str => $etp->{plaintext} } );
+    }
+    if ( defined( $etp->{html} ) ) {
+        $etp->{html} =
+          $self->fm->subscription_confirmationation( { -str => $etp->{html} } );
+    }
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params    => {
+                -list_settings_vars_param => {
+                    -list => $self->list
+                },
+                -subscriber_vars_param => {
+                    -list  => $self->list,
+                    -email => $email,
+                    -type  => 'sub_confirm_list'
+                },
+                -vars => {
+                    'list.confirmation_token' => $args->{-token},
+                },
+            },
+
+            -test => $self->test,
+        }
+    );
+
+    $self->logging->mj_log( $self->list,
+        'Subscription Confirmation Sent for ' . $self->list . '.list', $email );
+
+    return 1;
+}
+
+sub send_subscribed_message {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
+
+    require DADA::App::Subscriptions::Unsub;
+    my $dasu = DADA::App::Subscriptions::Unsub->new( { -list => $self->list } );
+
+    my $unsub_link = $dasu->unsub_link(
+        {
+            -email => $email,
+            -mid   => '00000000000000'
+        }
+    );
+    $args->{-vars}->{list_unsubscribe_link} = $unsub_link;
+
+    my $etp = $self->emt->fetch('subscribed_message');
+
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email,
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params    => {
+                -list_settings_vars_param => {
+                    -list => $self->ls->param('list')
+                },
+                -subscriber_vars_param => {
+                    -list  => $self->ls->param('list'),
+                    -email => $email,
+                    -type  => 'list'
+                },
+                -vars => $args->{-vars},
+            },
+            -test => $self->test,
+        }
+    );
+
+    return 1;
+
+    # Logging?
+
+}
+
+sub send_subscription_request_approved_message {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists( $args->{-vars} ) ) {
+        $args->{-vars} = {};
+    }
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
+
+    require DADA::App::Subscriptions::Unsub;
+    my $dasu = DADA::App::Subscriptions::Unsub->new( { -list => $self->list } );
+    my $unsub_link =
+      $dasu->unsub_link( { -email => $email, -mid => '00000000000000' } );
+    $args->{-vars}->{list_unsubscribe_link} = $unsub_link;
+
+    my $etp = $self->emt->fetch('subscription_request_approved_message');
+
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email,
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+
+            -tmpl_params => {
+                -list_settings_vars_param =>
+                  { -list => $self->ls->param('list'), },
+                -subscriber_vars_param => {
+                    -list  => $self->ls->param('list'),
+                    -email => $email,
+                    -type  => 'list'
+                },
+
+                #-profile_vars_param       => {-email => $email},
+                -vars => $args->{-vars},
+            },
+            -test => $self->test,
+        }
+    );
+
+    # Logging?
+    return 1;
+}
+
+sub send_subscription_request_denied_message {
+
+    my $self = shift;
+
+    my ($args) = @_;
+
+    if ( !exists( $args->{-vars} ) ) {
+        $args->{-vars} = {};
+    }
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
+
+    my $etp = $self->emt->fetch('subscription_request_denied_message');
+
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params    => {
+                -list_settings_vars_param =>
+                  { -list => $self->ls->param('list'), },
+
+#-subscriber_vars_param    => {-list => $self->ls->param('list'), -email => $email, -type => 'list'},
+#-profile_vars_param       => {-email => $email},
+#-vars => $args->{-vars},
+                -vars => {
+                    'subscriber.email' => $email,
+                    %{ $args->{-vars} },
+                }
+            },
+            -test => $self->test,
+        }
+    );
+
+    # Logging?
+
+}
+
+# this is used when the token system is whack, and you request to unsub, uh, "manually"
+
+sub send_unsubscribe_request_message {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
+
+    my $etp = $self->emt->fetch('unsubscription_request_message');
+
+    $etp->{plaintext} = $self->fm->unsubscription_confirmationation(
+        {
+            -str => $etp->{plaintext}
+        }
+    );
+
+# $etp->{html} = $self->fm->unsubscription_confirmationation({-str => $etp->{html}});
+
+    require DADA::App::Subscriptions::Unsub;
+    my $dasu = DADA::App::Subscriptions::Unsub->new( { -list => $self->list } );
+    my $unsub_link =
+      $dasu->unsub_link( { -email => $email, -mid => '00000000000000' } );
+
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email,
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params    => {
+                -list_settings_vars_param => {
+                    -list => $self->list,
+                },
+                -subscriber_vars_param => {
+                    -list  => $self->list,
+                    -email => $email,
+                    -type  => 'list'
+                },
+                -vars => {
+
+                    #				'list.confirmation_token' => $args->{-token},
+                    list_unsubscribe_link => $unsub_link,
                 },
             },
             -test => $self->test,
         }
     );
 
+    $self->logging->mj_log( $self->list,
+        'Unsubscription Confirmation Sent for ' . $self->list . '.list',
+        $email );
+
+    return 1;
 }
 
+sub subscription_approval_request_message {
 
+    my $self = shift;
+    my ($args) = @_;
 
-
-sub send_confirmation_message { 
-
-	my $self = shift; 
-	my ($args) = @_; 
+    my $etp = $self->emt->fetch('subscription_approval_request_message');
 	
-	my $etp = $self->emt->fetch('confirmation_message');
-	  	
-	   if(defined($etp->{plaintext})){
-	   		$etp->{plaintext} = $self->fm->subscription_confirmationation({-str => $etp->{plaintext}}); 
-	   }
-	   if(defined($etp->{html})){
-		   $etp->{html}      = $self->fm->subscription_confirmationation({-str => $etp->{html}}     ); 
-	   }
-	   $self->send_multipart_email(
-   		{
-   			-headers => { 
-				From            => $self->fm->format_phrase_address(
-										$etp->{yaml}->{from_phrase}, 
-										$self->ls->param($self->ls->param('list_owner_email'))
-									),
-   			    To              => $self->fm->format_phrase_address(
-										$etp->{yaml}->{to_phrase}, 
-										$args->{-email}
-									),
-   			    Subject         => $etp->{yaml}->{subject},
-   			}, 
-   			-plaintext_body => $etp->{plaintext},
-			-html_body      => $etp->{html},
-   			-tmpl_params => {
-   				-list_settings_vars_param => {
-					-list => $self->list
-				},
-   	            -subscriber_vars_param    => {
-   					-list  => $self->list, 
-   					-email => $args->{-email}, 
-   					-type  => 'sub_confirm_list'
-   				},
-   	            -vars => {
-   					'list.confirmation_token' => $args->{-token},
-   				},
-   			},
-			
-   			-test => $self->test,
-   		}
-   	); 
-	   	
-       $self->logging->mj_log($self->list, 'Subscription Confirmation Sent for ' . $self->list . '.list', $args->{-email});     
+    if ( ! exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
 
-}
-
-
-
-
-sub send_subscribed_message { 
-
-	my $self = shift;
-	my ($args) = @_; 
+	warn '$email:' . $email; 
 	
-	require DADA::App::Subscriptions::Unsub; 
-	my $dasu = DADA::App::Subscriptions::Unsub->new({-list => $self->list});
-	
-	my $unsub_link = $dasu->unsub_link(
-		{
-			-email => $args->{-email}, 
-			-mid => '00000000000000'
-		}
-	); 
-	$args->{-vars}->{list_unsubscribe_link} = $unsub_link; 
-	
-	my $etp = $self->em->fetch('subscribed_message');
-	
-   $self->send_multipart_email(
-		{
-			-headers => { 
-			From            => $self->fm->format_phrase_address(
-									$etp->{yaml}->{from_phrase}, 
-									$self->ls->param($self->ls->param('list_owner_email'))
-								),
-			    To              => $self->fm->format_phrase_address(
-									$etp->{yaml}->{to_phrase}, 
-									$args->{-email}
-								),
-			    Subject         => $etp->{yaml}->{subject},
-			}, 
-			-plaintext_body => $etp->{plaintext},
-			-html_body      => $etp->{html},
-			-tmpl_params  => {		
-				-list_settings_vars_param => {
-					-list => $self->ls->param('list')
-				},
-				-subscriber_vars_param    => {
-					-list => $self->ls->param('list'), 
-					-email => $args->{-email}, 
-					-type => 'list'
-				},
-				-vars => $args->{-vars}, 
-			},
-			-test         => $self->test, 
-		}
-	); 
-   
-   return 1; 	
-	# Logging?
-	
-}
-
-
-
-sub send_subscription_request_approved_message { 
-
-	my $self = shift;
-	my ($args) = @_; 	
-	
-	if(!exists($args->{-vars})){ 
-		$args->{-vars} = {};
-	}
-	
-	if(!exists($args->{-email})){ 
-		warn 'you MUST pass the -email param to use this method!';
-		return undef;
-	}
-	
-	require DADA::App::Subscriptions::Unsub; 
-	my $dasu = DADA::App::Subscriptions::Unsub->new({-list => $self->list});
-	my $unsub_link = $dasu->unsub_link({-email => $args->{-email}, -mid => '00000000000000'}); 
-	$args->{-vars}->{list_unsubscribe_link} = $unsub_link; 
-
-	my $etp = $self->em->fetch('subscription_request_approved_message');
-
-   $self->send_multipart_email(
-		{
-			-headers => { 
-				From            => $self->fm->format_phrase_address(
-									$etp->{yaml}->{from_phrase}, 
-									$self->ls->param($self->ls->param('list_owner_email'))
-								),
-			    To              => $self->fm->format_phrase_address(
-									$etp->{yaml}->{to_phrase}, 
-									$args->{-email}
-								),
-			    Subject         => $etp->{yaml}->{subject},
-			}, 
-			-plaintext_body => $etp->{plaintext},
-			-html_body      => $etp->{html},
-
-			-tmpl_params  => {		
-				-list_settings_vars_param => {-list => $self->ls->param('list'),},
-				-subscriber_vars_param    => {-list => $self->ls->param('list'), -email => $args->{-email}, -type => 'list'},
-				#-profile_vars_param       => {-email => $args->{-email}},
-				-vars => $args->{-vars}, 
-			},
-			-test         => $self->test, 
-		}
-	); 
-	# Logging?
-	return 1; 
-}
-
-
-
-
-sub send_subscription_request_denied_message { 
-
-	my $self = shift; 
-	
-	my ($args) = @_;
-
-	if(!exists($args->{-vars})){ 
-		$args->{-vars} = {};
-	}
-	
-	my $etp = $em->fetch('subscription_request_denied_message');
-	
-
-   $self->send_multipart_email(
-		{
-		-ls_obj => $ls, 
-			-headers => { 
-			From            => $self->fm->format_phrase_address(
-									$etp->{yaml}->{from_phrase}, 
-									$self->ls->param($self->ls->param('list_owner_email'))
-								),
-			    To              => $self->fm->format_phrase_address(
-									$etp->{yaml}->{to_phrase}, 
-									$args->{-email}
-								),
-			    Subject         => $etp->{yaml}->{subject},
-			}, 
-			-plaintext_body => $etp->{plaintext},
-			-html_body      => $etp->{html},
-			-tmpl_params  => {		
-				-list_settings_vars_param => {-list => $self->ls->param('list'),},
-				#-subscriber_vars_param    => {-list => $self->ls->param('list'), -email => $args->{-email}, -type => 'list'},
-				#-profile_vars_param       => {-email => $args->{-email}},
-				#-vars => $args->{-vars}, 
-				-vars => { 
-					'subscriber.email' => $args->{-email}, 
-					%{$args->{-vars}},
-				}
-			},
-			-test         => $self->test, 
-		}
-	); 
-	# Logging?
-	
-}
-
-
-
-# this is used when the token system is whack, and you request to unsub, uh, "manually"
-
-sub send_unsubscribe_request_message { 
-		
-	my $self = shift;
-	my ($args) = @_;
-
-	my $etp = $self->em->fetch('unsubscription_request_message');	
-	
-	$etp->{plaintext} = $self->fm->unsubscription_confirmationation(
-		{
-			-str => $etp->{plaintext}
-		}
-	); 
-	# $etp->{html} = $self->fm->unsubscription_confirmationation({-str => $etp->{html}}); 
-
-	require DADA::App::Subscriptions::Unsub; 
-	my $dasu = DADA::App::Subscriptions::Unsub->new({-list => $self->list});
-	my $unsub_link = $dasu->unsub_link({-email => $args->{-email}, -mid => '00000000000000'}); 
-	
-   $self->send_multipart_email(
-		{
-			-headers => { 
-			From            => $self->fm->format_phrase_address(
-									$etp->{yaml}->{from_phrase}, 
-									$self->ls-param($self->ls->param('list_owner_email'))
-								),
-			    To              => $self->fm->format_phrase_address(
-									$etp->{yaml}->{to_phrase}, 
-									$args->{-email}
-								),
-			    Subject         => $etp->{yaml}->{subject},
-			}, 
-		-plaintext_body => $etp->{plaintext},
-		-html_body      => $etp->{html},
-		-tmpl_params => {
-			-list_settings_vars_param => {
-				-list => $self->list,
-			},
-            -subscriber_vars_param    => {
-				-list  => $self->list,
-				-email => $args->{-email}, 
-				-type  => 'list'
-			},
-            -vars                     => {
-#				'list.confirmation_token' => $args->{-token},
-				list_unsubscribe_link => $unsub_link,
-			},
-			},
-			-test         => $self->test,
-		}
-	); 
-	
-    $self->logging->mj_log(
-		$self->list, 'Unsubscription Confirmation Sent for ' . $self->list . '.list', 
-		$args->{-email}
-	);     
- 
-	   return 1; 
-}
-
-sub subscription_approval_request_message { 
-
-	my $self = shift; 
-	my ($args) = @_;
-
-	my $etp = $em->fetch('subscription_approval_request_message');
-	
-	$self->send_multipart_message(
-	{
-		-headers => { 
-			From            => $self->fm->format_phrase_address(
-									$etp->{yaml}->{from_phrase}, 
-									$self->ls-param($self->ls->param('list_owner_email'))
-								),
-			    To              => $self->fm->format_phrase_address(
-									$etp->{yaml}->{to_phrase}, 
-									$args->{-email}
-								),
-			    Subject         => $etp->{yaml}->{subject},
-			}, 
-			-plaintext_body => $etp->{plaintext},
-			-html_body      => $etp->{html},
-            -tmpl_params => {
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, 
+					$email,
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params    => {
                 -list_settings_vars_param =>
                   { -list => $self->ls->param('list') },
                 -subscriber_vars_param => {
                     -list  => $self->ls->param('list'),
-                    -email => $args->{-email},
+                    -email => $email,
                     -type  => 'sub_request_list'
                 },
-                -vars => {
-					%{$args->{-vars}},
-				},
+                -vars => { %{ $args->{-vars} }, },
             },
             -test => $self->test,
         }
     );
 }
 
-sub unsubscription_approval_request_message { 
+sub unsubscription_approval_request_message {
 
-	my $self = shift; 
-	
-	my ($args) = @_;
-	my $ls = $args->{-ls_obj}; 
-	
-	my $etp = $em->fetch('unsubscription_approval_request_message');
-	
-	$self->send_multipart_email(
-     {
- 		-headers => { 
- 			From            => $self->fm->format_phrase_address(
- 									$etp->{yaml}->{from_phrase}, 
- 									$self->ls-param($self->ls->param('list_owner_email'))
- 								),
- 			    To              => $self->fm->format_phrase_address(
- 									$etp->{yaml}->{to_phrase}, 
- 									$args->{-email}
- 								),
- 			    Subject         => $etp->{yaml}->{subject},
- 			}, 
- 			-plaintext_body => $etp->{plaintext},
- 			-html_body      => $etp->{html},
-         -tmpl_params => {
-             -list_settings_vars_param =>
-               { -list => $self->ls->param('list') },
-             -subscriber_vars_param => {
-                 -list  => $self->ls->param('list'),
-                 -email => $args->{-email},
-                 -type  => 'unsub_request_list'
-             },
-             -vars => {
-				%{$args->{-vars}},
-			},
-         },
-         -test => $self->test,
-     }
- );
- 
+    my $self = shift;
+
+    my ($args) = @_;
+    my $ls = $args->{-ls_obj};
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
+
+    my $etp = $self->emt->fetch('unsubscription_approval_request_message');
+
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email,
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params    => {
+                -list_settings_vars_param =>
+                  { -list => $self->ls->param('list') },
+                -subscriber_vars_param => {
+                    -list  => $self->ls->param('list'),
+                    -email => $email,
+                    -type  => 'unsub_request_list'
+                },
+                -vars => { %{ $args->{-vars} }, },
+            },
+            -test => $self->test,
+        }
+    );
+
 }
 
+sub send_unsubscribed_message {
 
+    my $self = shift;
+    my ($args) = @_;
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
 
+    # This is a hack - if the subscriber has recently been removed, you
+    # won't be able to get the subscriber fields - since there's no way to
+    # get fields of a removed subscriber.
+    # So! We'll go and grab the profile info, instead.
+    my $prof_fields  = {};
+    my $unsub_fields = {};
+    $unsub_fields->{'subscriber.email'} = $email;
+    (
+        $unsub_fields->{'subscriber.email_name'},
+        $unsub_fields->{'subscriber.email_domain'}
+    ) = split( '@', $email, 2 );
+    require DADA::Profile;
+    my $prof = DADA::Profile->new( { -email => $email } );
+    if ($prof) {
 
+        if ( $prof->exists ) {
+            $prof_fields = $prof->{fields}->get;
+            for ( keys %$prof_fields ) {
+                $unsub_fields->{ 'subscriber.' . $_ } = $prof_fields->{$_};
+            }
+        }
+    }
 
+    #/This is a hack - if the subscriber has recently been removed, you
 
-sub send_unsubscribed_message { 
-	
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	# This is a hack - if the subscriber has recently been removed, you 
-	# won't be able to get the subscriber fields - since there's no way to 
-	# get fields of a removed subscriber. 
-	# So! We'll go and grab the profile info, instead. 
-	my $prof_fields  = {};
-	my $unsub_fields = {};
-		$unsub_fields->{ 'subscriber.email'} = $args->{-email};
-		(
-			$unsub_fields->{ 'subscriber.email_name'},
-			$unsub_fields->{ 'subscriber.email_domain'}
-		) = split(
-			'@', 
-			$args->{-email},
-			2
-		);
-		require DADA::Profile; 
-		my $prof = DADA::Profile->new({-email => $args->{-email}});
-		if($prof){ 
-			if($prof->exists){ 
-				$prof_fields = $prof->{fields}->get;
-				for ( keys %$prof_fields ) {
-		            $unsub_fields->{ 'subscriber.' . $_ } = $prof_fields->{$_};
-		        } 					
-			}
-		}
-	#/This is a hack - if the subscriber has recently been removed, you
-	
-	my $etp = $em->fetch('unsubscribed_message')
-	
-	
-	$self->send_multipart_email(
-		{
-   			-headers => { 
-				From            => $self->fm->format_phrase_address(
-										$etp->{yaml}->{from_phrase}, 
-										$self->ls->param($self->ls->param('list_owner_email'))
-									),
-   			    To              => $self->fm->format_phrase_address(
-										$etp->{yaml}->{to_phrase}, 
-										$args->{-email}
-									),
-   			    Subject         => $etp->{yaml}->{subject},
-   			}, 
-   			-plaintext_body => $etp->{plaintext},
-			-html_body      => $etp->{html},
+    my $etp = $self->emt->fetch('unsubscribed_message');
 
-			-test         => $self->test, 
-			
-			-tmpl_params  => {	
-				-list_settings_vars_param => 
-					{
-                        -list => $self->ls->param('list'),
-						-dot_it => 1, 
-					}, 
-				#-subscriber_vars => {'subscriber.email' => $args->{-email}}, # DEV: This line right?
-				-subscriber_vars          => $unsub_fields,
-			},
-		}
-	); 
-	
-	# DEV: Logging?
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email,
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+
+            -test => $self->test,
+
+            -tmpl_params => {
+                -list_settings_vars_param => {
+                    -list   => $self->ls->param('list'),
+                    -dot_it => 1,
+                },
+
+    #-subscriber_vars => {'subscriber.email' => $email}, # DEV: This line right?
+                -subscriber_vars => $unsub_fields,
+            },
+        }
+    );
+
+    # DEV: Logging?
 }
-
 
 sub send_owner_happenings {
 
-	my $self = shift; 
+    my $self = shift;
     my ($args) = @_;
+
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+
+    # Email is not used to send here, it's just used to say who sub'd/unsub'd
+    my $email = $args->{-email};
 
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'subscribed';
     }
+
     my $status = $args->{-role};
 
     if ( !exists( $args->{-note} ) ) {
@@ -860,8 +897,7 @@ sub send_owner_happenings {
         $lh = $args->{-lh_obj};
     }
     else {
-        $lh =
-          DADA::MailingList::Subscribers->new( { -list => $self->list } );
+        $lh = DADA::MailingList::Subscribers->new( { -list => $self->list } );
     }
     my $num_subscribers = $lh->num_subscribers;
 
@@ -872,14 +908,14 @@ sub send_owner_happenings {
     my $prof_fields  = {};
     my $unsub_fields = {};
     if ( $status eq "unsubscribed" ) {
-        $unsub_fields->{'subscriber.email'} = $args->{-email};
+        $unsub_fields->{'subscriber.email'} = $email;
         (
             $unsub_fields->{'subscriber.email_name'},
             $unsub_fields->{'subscriber.email_domain'}
-        ) = split( '@', $args->{-email}, 2 );
+        ) = split( '@', $email, 2 );
 
         require DADA::Profile;
-        my $prof = DADA::Profile->new( { -email => $args->{-email} } );
+        my $prof = DADA::Profile->new( { -email => $email } );
         if ($prof) {
             if ( $prof->exists ) {
                 $prof_fields = $prof->{fields}->get;
@@ -889,25 +925,26 @@ sub send_owner_happenings {
             }
         }
     }
-	my $etp = {}; 
-	my $msg_template = {};
+    my $etp          = {};
+    my $msg_template = {};
 
     if ( $status eq "subscribed" ) {
-		$etp = $em->fetch('admin_subscription_notice_message')
+        $etp = $self->emt->fetch('admin_subscription_notice_message');
     }
-    elsif ( $status eq "unsubscribed" ) {		
-		$etp = $em->fetch('admin_unsubscription_notice_message')
+    elsif ( $status eq "unsubscribed" ) {
+        $etp = $self->emt->fetch('admin_unsubscription_notice_message');
     }
-	$msg_template = {
-		from_phrase => $etp->{yaml}->{from_phrase},
-		to_phrase   => $etp->{yaml}->{to_phrase},
-		subject     => $etp->{yaml}->{subject},
-		plaintext   => $etp->{plaintext},
-		#html        => $etp->{html},		
-	};
-	
+    $msg_template = {
+        from_phrase => $etp->{yaml}->{from_phrase},
+        to_phrase   => $etp->{yaml}->{to_phrase},
+        subject     => $etp->{yaml}->{subject},
+        plaintext   => $etp->{plaintext},
+
+        #html        => $etp->{html},
+    };
+
     require DADA::Template::Widgets;
-    for (qw(from_phrase to_phrase subject plaintext )) { #html
+    for (qw(from_phrase to_phrase subject plaintext )) {    #html
         my $tmpl    = $msg_template->{$_};
         my $content = DADA::Template::Widgets::screen(
             {
@@ -924,7 +961,7 @@ sub send_owner_happenings {
                 ? (
                     -subscriber_vars_param => {
                         -list  => $self->list,
-                        -email => $args->{-email},
+                        -email => $email,
                         -type  => 'list'
                     },
                   )
@@ -943,8 +980,8 @@ sub send_owner_happenings {
     else {
         $send_to = $self->ls->param('send_unsubscription_notice_to');
     }
-    
-    my $from_address = $self->ls->param('list_owner_email');
+
+    my $from_address   = $self->ls->param('list_owner_email');
     my $formatted_from = $self->fm->_encode_header(
         'From',
         $self->fm->format_phrase_address(
@@ -952,9 +989,8 @@ sub send_owner_happenings {
             $from_address,
         )
     );
-    
-    
-    if ( $send_to eq 'list') {
+
+    if ( $send_to eq 'list' ) {
         $self->fm->mass_mailing(1);
         require DADA::Mail::Send;
         my $mh = DADA::Mail::Send->new( { -list => $self->list } );
@@ -970,14 +1006,28 @@ sub send_owner_happenings {
         );
 
     }
-    elsif($send_to eq 'list_owner' || $send_to eq 'alt') {  
+    elsif ( $send_to eq 'list_owner' || $send_to eq 'alt' ) {
         my $to = $formatted_from;
-        if($send_to eq 'alt' && $status eq "subscribed" && check_for_valid_email($self->ls->param('alt_send_subscription_notice_to')) == 0) { 
-            $to = $self->ls->param('alt_send_subscription_notice_to'); 
+        if (
+               $send_to eq 'alt'
+            && $status eq "subscribed"
+            && check_for_valid_email(
+                $self->ls->param('alt_send_subscription_notice_to')
+            ) == 0
+          )
+        {
+            $to = $self->ls->param('alt_send_subscription_notice_to');
         }
-        if($send_to eq 'alt' && $status eq "unsubscribed" && check_for_valid_email($self->ls->param('alt_send_unsubscription_notice_to')) == 0) { 
-            $to = $self->ls->param('alt_send_unsubscription_notice_to'); 
-        } 
+        if (
+               $send_to eq 'alt'
+            && $status eq "unsubscribed"
+            && check_for_valid_email(
+                $self->ls->param('alt_send_unsubscription_notice_to')
+            ) == 0
+          )
+        {
+            $to = $self->ls->param('alt_send_unsubscription_notice_to');
+        }
         $self->send_multipart_email(
             {
                 -headers => {
@@ -986,347 +1036,396 @@ sub send_owner_happenings {
                     Subject => $msg_template->{subject},
                 },
                 -plaintext_body => $msg_template->{plaintext},
-               #-html_body      => $msg_template->{html},
+
+                #-html_body      => $msg_template->{html},
                 -test => $self->test,
             }
 
         );
     }
-    else { 
-        die "who am I sending to?!"; 
-    }   
+    else {
+        die "who am I sending to?!";
+    }
 }
 
+sub send_you_are_already_subscribed_message {
 
-sub send_you_are_already_subscribed_message { 
+    my $self = shift;
+    my ($args) = @_;
 
-	my $self = shift; 
-	my ($args) = @_; 
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
 
-	my $etp = $self->em->fetch('you_are_already_subscribed_message');	
-
-   $self->send_multipart_email(
-		{
-			-headers => { 
-				From            => $self->fm->format_phrase_address(
-										$etp->{yaml}->{from_phrase}, 
-										$self->ls->param($self->ls->param('list_owner_email'))
-									),
-				    To              => $self->fm->format_phrase_address(
-										$etp->{yaml}->{to_phrase}, 
-										$args->{-email}
-									),
-				    Subject         => $etp->{yaml}->{subject},
-			}, 
-			-plaintext_body => $etp->{plaintext},
-			-html_body      => $etp->{html},
-		
-			-tmpl_params  => {		
-				-list_settings_vars_param => {-list => $self->ls->param('list'),},
-				-subscriber_vars_param    => {-list => $self->ls->param('list'), -email => $args->{-email}, -type => 'list'},
-			},
-		
-			-test         => $self->test, 
-			}
-		);
-	
-		return 1;
-}
-
-
-
-
-sub send_not_subscribed_message { 
-
-	my $self = shift; 
-	my ($args) = @_; 
-		
-	my $etp = $self->em->fetch('you_are_not_subscribed_message');	
-	
-   $self->send_multipart_email(
-		{
-			-headers => { 
-			From            => $self->fm->format_phrase_address(
-									$etp->{yaml}->{from_phrase}, 
-									$self->ls->param($self->ls->param('list_owner_email'))
-								),
-			    To              => $self->fm->format_phrase_address(
-									$etp->{yaml}->{to_phrase}, 
-									$args->{-email}
-								),
-			    Subject         => $etp->{yaml}->{subject},
-			}, 
-			-plaintext_body => $etp->{plaintext},
-		   -html_body      => $etp->{html},		
-		-tmpl_params  => {		
-			-list_settings_vars_param => {-list => $self->ls->param('list'),},
-			-subscriber_vars_param    => {-list => $self->ls->param('list'), -email => $args->{-email}, -type => 'list'},
-		},
-		-test         => $self->test, 
-		}
-	);
-	
-}
-
-
-sub send_newest_archive { 
-
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	die "no email!"        if ! exists($args->{-email}); 
-	require DADA::MailingList::Archives; 
-	$la = DADA::MailingList::Archives->new(
-			{
-				-list => $self->list
-			}
-		);
-	
-    my $newest_entry = $la->newest_entry; 
-	
-	if(
-		defined($newest_entry) && 
-		$newest_entry      > 1
-	){ 
-		
-		my ($head, $body) = $la->massage_msg_for_resending(
-								-key     => $newest_entry, 
-								'-split' => 1,
-							);
-							
-		if($self->test == 1){ 
-			$self->mh->test(1);	
-		}
-		
-		$self->send_generic_email(
-			{
-	        -email        => $args->{-email}, 
-
-			-headers => { 
-						 $self->mh->return_headers($head),  
-					  	 To             => '"'. escape_for_sending($self->ls->param('list_name')) .' Subscriber" <'. $args->{-email} .'>',
-			},
-
-			-body         => $body, 
-
-			-tmpl_params  => {		
-				-list_settings_vars_param => {-list => $self->ls->param('list'),},
-				-subscriber_vars_param    => {-list => $self->ls->param('list'), -email => $args->{-email}, -type => 'list'},
-			},
-
-			-test         => $self->test, 
-			}
-		);
-		return 1;
-	}
-	else { 
-		return 0; 
-	}
-}
-
-
-
-# This one's weird, since it's a part of Bridge 
-
-sub send_not_allowed_to_post_msg { 
-	
-	my $self = shift; 
-	my ($args) = @_; 
-
-	my $etp = $em->fetch('not_allowed_to_post_msg')
-		
-   $self->send_multipart_email(
-		{
-			-headers => { 
-			From            => $self->fm->format_phrase_address(
-									$etp->{yaml}->{from_phrase}, 
-									$self->ls->param($self->ls->param('list_owner_email'))
-								),
-			    To              => $self->fm->format_phrase_address(
-									$etp->{yaml}->{to_phrase}, 
-									$args->{-email}
-								),
-			    Subject         => $etp->{yaml}->{subject},
-			}, 
-			-plaintext_body => $etp->{plaintext},
-		-html_body      => $etp->{html},
-		-tmpl_params  => {		
-			-list_settings_vars_param => {-list => $self->list},
-			-subscriber_vars => 
-				{
-					'subscriber.email' => $args->{-email}
-				},
-			-vars => { 
-			    original_subject => $args->{-original_subject},  
-			}, 
-		},
-
-		-test => $self->test, 
-		}
-	);
-	
-}
-
-sub send_unsubscription_request_approved_message { 
-
-	my $self = shift;
-	my ($args) = @_; 
-
-	if(!exists($args->{-vars})){ 
-		$args->{-vars} = {};
-	}
-
-	my $etp = $em->fetch('unsubscription_request_approved_message')
-
-   $self->send_multipart_email(
-		{
-			-headers => { 
-			From            => $self->fm->format_phrase_address(
-									$etp->{yaml}->{from_phrase}, 
-									$self->ls->param($self->ls->param('list_owner_email'))
-								),
-			    To              => $self->fm->format_phrase_address(
-									$etp->{yaml}->{to_phrase}, 
-									$args->{-email}
-								),
-			    Subject         => $etp->{yaml}->{subject},
-			}, 
-			-plaintext_body => $etp->{plaintext},
-		-html_body      => $etp->{html},
-					-tmpl_params  => {		
-				-list_settings_vars_param => {-list => $self->ls->param('list'),},
-                -subscriber_vars => 
-    				{
-    					'subscriber.email' => $args->{-email}
-    				},
-				# -subscriber_vars_param    => {-list => $self->ls->param('list'), -email => $args->{-email}, -type => 'list'},
-				# -profile_vars_param       => {-email => $args->{-email}},
-				# -vars => $args->{-vars}, 
-			},
-			# -test         => $self->test, 
-		}
-	); 
-	# Logging?
-	
-}
-
-
-sub send_unsubscription_request_denied_message { 
-
-	my $self = shift;
-	my ($args) = @_; 
-	
-	if(!exists($args->{-vars})){ 
-		$args->{-vars} = {};
-	}
-
-	my $etp = $em->fetch('unsubscription_request_denied_message')
+    my $etp = $self->emt->fetch('you_are_already_subscribed_message');
 
     $self->send_multipart_email(
- 		{
- 			-headers => { 
- 			From            => $self->fm->format_phrase_address(
- 									$etp->{yaml}->{from_phrase}, 
- 									$self->ls->param($self->ls->param('list_owner_email'))
- 								),
- 			    To              => $self->fm->format_phrase_address(
- 									$etp->{yaml}->{to_phrase}, 
- 									$args->{-email}
- 								),
- 			    Subject         => $etp->{yaml}->{subject},
- 			}, 
- 			-plaintext_body => $etp->{plaintext},
- 		-html_body      => $etp->{html},
-			-tmpl_params  => {		
-				-list_settings_vars_param => {-list => $self->ls->param('list'),},
-				-subscriber_vars => 
-    				{
-    					'subscriber.email' => $args->{-email}
-    				},
-				-vars => { 
-					'subscriber.email' => $args->{-email}, 
-					%{$args->{-vars}},
-				}
-			},
-			 -test         => $self->test, 
-		}
-	); 
-	# Logging?
-	
-	return 1;
-	
-}
-
-sub send_out_message { 
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	if(!exists($args->{-vars})){ 
-		$args->{-vars} = {};
-	}
-
-	my $etp = $em->fetch($args->{-message})
-	
-   $self->send_multipart_email(
-		{
-			-headers => { 
-			From            => $self->fm->format_phrase_address(
-									$etp->{yaml}->{from_phrase}, 
-									$self->ls->param($self->ls->param('list_owner_email'))
-								),
-			    To              => $self->fm->format_phrase_address(
-									$etp->{yaml}->{to_phrase}, 
-									$args->{-email}
-								),
-			    Subject         => $etp->{yaml}->{subject},
-			}, 
-			-plaintext_body => $etp->{plaintext},
-		-html_body      => $etp->{html},
-        -tmpl_params => {
-            -list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1,
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email,
+                ),
+                Subject => $etp->{yaml}->{subject},
             },
-        -vars => $args->{-vars}, 
-		},
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+
+            -tmpl_params => {
+                -list_settings_vars_param =>
+                  { -list => $self->ls->param('list'), },
+                -subscriber_vars_param => {
+                    -list  => $self->ls->param('list'),
+                    -email => $email,
+                    -type  => 'list'
+                },
+            },
+
+            -test => $self->test,
+        }
+    );
+
+    return 1;
+}
+
+sub send_not_subscribed_message {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
     }
-);	
-	
+    my $email = $args->{-email};
+
+    my $etp = $self->emt->fetch('you_are_not_subscribed_message');
+
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email,
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params    => {
+                -list_settings_vars_param =>
+                  { -list => $self->ls->param('list'), },
+                -subscriber_vars_param => {
+                    -list  => $self->ls->param('list'),
+                    -email =>,
+                    -type  => 'list'
+                },
+            },
+            -test => $self->test,
+        }
+    );
+
 }
 
+sub send_newest_archive {
 
+    my $self = shift;
+    my ($args) = @_;
 
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
 
+    require DADA::MailingList::Archives;
+    my $la = DADA::MailingList::Archives->new(
+        {
+            -list => $self->list,
+        }
+    );
 
+    my $newest_entry = $la->newest_entry;
 
-
-sub _mime_headers_from_string { 
-	
-	my $self = shift; 
-	#get the blob
-	my $header_blob = shift || "";
-
-
-	#init a new %hash
-	my %new_header;
-
-	# split.. logically
-	my @logical_lines = split /\n(?!\s)/, $header_blob;
- 
-	    # make the hash
-	    for my $line(@logical_lines) {
-	          my ($label, $value) = split(/:\s*/, $line, 2);
-	          $new_header{$label} = $value;
-	        }
+    if ( defined($newest_entry)
+        && $newest_entry > 1 )
+    {
 		
-	return %new_header; 
+		warn 'weve got an entry!'; 
+
+        my ( $head, $body ) = $la->massage_msg_for_resending(
+            -key     => $newest_entry,
+            '-split' => 1,
+        );
+		
+		warn '$body!' . $body; 
+
+        if ( $self->test == 1 ) {
+			warn 'testing!';
+            $self->mh->test(1);
+        }
+
+        $self->send_generic_email(
+            {
+                -email   => $email,
+                -headers => {
+                    $self->mh->return_headers($head),
+
+                    To => $self->fm->format_phrase_address(
+                        $self->ls->param('list_name') . ' Subscriber', 
+						$email,
+                    ),
+                },
+                -body        => $body,
+                -tmpl_params => {
+                    -list_settings_vars_param => {
+                        -list => $self->ls->param('list')
+                    },
+                    -subscriber_vars_param => {
+                        -list  => $self->ls->param('list'),
+                        -email => $email,
+                        -type  => 'list'
+                    },
+                },
+                -test => $self->test,
+            }
+        );
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+# This one's weird, since it's a part of Bridge
+
+sub send_not_allowed_to_post_msg {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
+
+    my $etp = $self->emt->fetch('not_allowed_to_post_msg');
+
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params    => {
+                -list_settings_vars_param => { -list => $self->list },
+                -subscriber_vars          => {
+                    'subscriber.email' => $email
+                },
+                -vars => {
+                    original_subject => $args->{-original_subject},
+                },
+            },
+
+            -test => $self->test,
+        }
+    );
 
 }
 
+sub send_unsubscription_request_approved_message {
 
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists( $args->{-vars} ) ) {
+        $args->{-vars} = {};
+    }
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
+
+    my $etp = $self->emt->fetch('unsubscription_request_approved_message');
+
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email,
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params    => {
+                -list_settings_vars_param =>
+                  { -list => $self->ls->param('list'), },
+                -subscriber_vars => {
+                    'subscriber.email' => $email,
+                },
+
+# -subscriber_vars_param    => {-list => $self->ls->param('list'), -email => $args->{-email}, -type => 'list'},
+# -profile_vars_param       => {-email => $args->{-email}},
+# -vars => $args->{-vars},
+            },
+
+            # -test         => $self->test,
+        }
+    );
+
+    # Logging?
+
+}
+
+sub send_unsubscription_request_denied_message {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists( $args->{-vars} ) ) {
+        $args->{-vars} = {};
+    }
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
+
+    my $etp = $self->emt->fetch('unsubscription_request_denied_message');
+
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email,
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params    => {
+                -list_settings_vars_param =>
+                  { -list => $self->ls->param('list'), },
+                -subscriber_vars => {
+                    'subscriber.email' => $email,
+                },
+                -vars => {
+                    'subscriber.email' => $email,
+                    %{ $args->{-vars} },
+                }
+            },
+            -test => $self->test,
+        }
+    );
+
+    # Logging?
+
+    return 1;
+
+}
+
+sub send_send_list_password_reset_confirmation { 
+
+}
+
+sub send_out_message {
+    my $self = shift;
+    my ($args) = @_;
+
+
+    if ( !exists( $args->{-vars} ) ) {
+        $args->{-vars} = {};
+    }
+    if ( !exists( $args->{-subscriber_vars} ) ) {
+        $args->{-subscriber_vars} = {};
+    }
+	
+    if ( !exists( $args->{-email} ) ) {
+        warn 'you MUST pass the -email param to use this method!';
+        return undef;
+    }
+    my $email = $args->{-email};
+
+    my $etp = $self->emt->fetch( $args->{-message} );
+
+    $self->send_multipart_email(
+        {
+            -headers => {
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                To => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase}, $email,
+                ),
+                Subject => $etp->{yaml}->{subject},
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params    => {
+                -list_settings_vars_param => {
+                    -list   => $self->list,
+                    -dot_it => 1,
+                },
+				 -subscriber_vars => $args->{-subscriber_vars} 
+                -vars => $args->{-vars},
+            },
+        }
+    );
+
+}
+
+sub _mime_headers_from_string {
+
+    my $self = shift;
+
+    #get the blob
+    my $header_blob = shift || "";
+
+    #init a new %hash
+    my %new_header;
+
+    # split.. logically
+    my @logical_lines = split /\n(?!\s)/, $header_blob;
+
+    # make the hash
+    for my $line (@logical_lines) {
+        my ( $label, $value ) = split( /:\s*/, $line, 2 );
+        $new_header{$label} = $value;
+    }
+
+    return %new_header;
+
+}
 
 1;
-
 
 =pod
 

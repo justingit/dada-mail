@@ -28,6 +28,10 @@ $DADA::Config::PROGRAM_USAGE_LOG        = $DADA::Config::FILES . '/dada.txt';
 				croak "I couldn't make a tmp directory - heavens!"; 
 		}		
 	}
+	$DADA::Config::SUPPORT_FILES = {
+	    dir => 'static',
+	    url => undef,
+	};
 	
 
 }

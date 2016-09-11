@@ -8,6 +8,8 @@ use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib
 	); 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 
+warn q{$DADA::Config::SUPPORT_FILES->{dir}} . $DADA::Config::SUPPORT_FILES->{dir}; 
+
 
 use dada_test_config; 
 dada_test_config::create_SQLite_db(); 
@@ -21,7 +23,6 @@ use DADA::App::Guts;
 use DADA::MailingList::Subscribers; 
 use DADA::MailingList::Settings; 
 use DADA::Mail::Send; 
-use DADA::App::Messages; 
 
 my $fake_token = '1234'; 
 
@@ -31,6 +32,13 @@ my $parser = new MIME::Parser;
 
 my $list = dada_test_config::create_test_list;
 
+use DADA::App::Messages; 
+my $dap = DADA::App::Messages->new(
+	{
+		-list => $list,
+		-test => 1, 
+	}
+); 
 
 use DADA::App::FormatMessages; 
 my $fm = DADA::App::FormatMessages->new(-List => $list); 
@@ -72,18 +80,22 @@ ok($lh->add_subscriber({
     -email => $email,
     -type  => 'sub_confirm_list', 
 }));
-DADA::App::Messages::send_confirmation_message(
+$dap->send_confirmation_message(
 	{
-        -list   => $list, 
         -email  => $email, 
-        -ls_obj => $ls, 
-		-test   => 1, 
 		-token  => $fake_token,	
 	}
 );
 $msg = slurp($mh->test_send_file); 
+diag 'length of $msg: ' . length($msg);
 my $entity = $parser->parse_data(safely_encode($msg)); 
-my $msg_str = safely_decode($entity->bodyhandle->as_string); 
+#diag 'defined $entity' . (defined($entity));
+#warn '$entity->body->as_string' . $entity->body->as_string; 
+use Data::Dumper; 
+diag '$entity' . Dumper($entity); 
+
+my $pt_body = safely_decode($entity->parts(0)->bodyhandle->as_string); 
+my $html_body = safely_decode($entity->parts(1)->parts(0)->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('From', 0))
@@ -99,87 +111,45 @@ like($msg, qr/To:(.*?)$email_name\@$email_domain/, "To: set correctly 1");
 
 
 my $confirm_url = quotemeta('/t/'. $fake_token . '/'); 
-diag $msg_str; 
-like($msg_str, qr/$confirm_url/, 'Confirmation link found and correct.'); 
+
+like($pt_body, qr/$confirm_url/, 'Confirmation link found and correct.'); 
+like($html_body, qr/$confirm_url/, 'Confirmation link found and correct.'); 
+
+
 my $list_name = $ls->param('list_name'); 
-like($msg_str, qr/$list_name/, "List Name Found"); 
+like($pt_body, qr/$list_name/, "List Name Found"); 
+like($html_body, qr/$list_name/, "List Name Found"); 
+
 undef($list_name); 
 
 my $privacy_policy = $ls->param('privacy_policy');
-like($msg_str, qr/$privacy_policy/, "Privacy Policy Found"); 
+
+
+like($pt_body, qr/$privacy_policy/, "Privacy Policy Found"); 
+like($html_body, qr/$privacy_policy/, "Privacy Policy Found"); 
+
+
 undef($privacy_policy); 
 
 my $physical_address = $ls->param('physical_address');
-like($msg_str, qr/$physical_address/, "Physical Address Found"); 
+
+like($pt_body, qr/$physical_address/, "Physical Address Found"); 
+like($html_body, qr/$physical_address/, "Physical Address Found"); 
+
 undef($physical_address); 
 
 my $list_owner_email = $ls->param('list_owner_email'); 
-like($msg_str, qr/$list_owner_email/, "List Owner (" . $ls->param('list_owner_email') . ") Found"); 
+
+like($pt_body, qr/$list_owner_email/, "List Owner (" . $ls->param('list_owner_email') . ") Found"); 
+like($html_body, qr/$list_owner_email/, "List Owner (" . $ls->param('list_owner_email') . ") Found"); 
+
+
 undef($list_owner_email); 
 
 ok(unlink($mh->test_send_file)); 
 undef $entity; 
 undef $msg; 
-undef $msg_str; 
 
-# ALternative Saved Text
-ok(
-	$ls->save({
-		-settings => {
-			confirmation_message         => $alt_message_body, 
-			confirmation_message_subject => $alt_message_subject,	
-		},	
-	}),
-);
-DADA::App::Messages::send_confirmation_message(
-	{
-        -list   => $list, 
-        -email  => $email, 
-        -ls_obj => $ls, 
-		-test   => 1, 
-	}
-);
-$msg = slurp($mh->test_send_file); 
-$entity = $parser->parse_data(safely_encode($msg)); 
-$msg_str = safely_decode($entity->bodyhandle->as_string); 
-
-
-ok(
-	decode_header($entity->head->get('Subject', 0))
-	eq
-	"Email: mytest\@example.com List Name: " . $ls->param('list_name'), 
-	"Subject: Set Correctly"
-); 
-
-
-
-
-diag $msg_str; 
-
-my $list_name = $ls->param('list_name'); 
-like($msg_str, qr/List Name\: $list_name/, "Found: List Name"); 
-undef($list_name); 
-
-like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
-like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name1"); 
-
-# Reset: 
-ok(
-	$ls->save({ -settings => 
-		{
-			confirmation_message         => undef, 
-			confirmation_message_subject => undef,	
-		},	
-	}),
-);
-ok(unlink($mh->test_send_file)); 
-undef $msg; 
-undef $entity; 
-undef $msg_str; 
-
-#undef $parser; 
 
 
 
@@ -201,18 +171,15 @@ ok($lh->move_subscriber(
 	}
 )); 
 
-DADA::App::Messages::send_subscribed_message(
+$dap->send_subscribed_message(
 	{
-		-list         => $list, 
         -email        => $email, 
-        -ls_obj       => $ls,
-		-test         => 1,  
 	}
 );
 
-$msg = slurp($mh->test_send_file); 
-$entity = $parser->parse_data(safely_encode($msg)); 
-$msg_str = safely_decode($entity->bodyhandle->as_string);
+my $msg = slurp($mh->test_send_file); 
+my $entity = $parser->parse_data(safely_encode($msg)); 
+my $msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('From', 0))
@@ -259,17 +226,14 @@ ok(
 		},	
 	}),
 );
-DADA::App::Messages::send_subscribed_message(
+$dap->send_subscribed_message(
 	{
-        -list   => $list, 
         -email  => $email, 
-        -ls_obj => $ls, 
-		-test   => 1, 
 	}
 );
 $msg = slurp($mh->test_send_file); 
 $entity = $parser->parse_data(safely_encode($msg)); 
-$msg_str = safely_decode($entity->bodyhandle->as_string);
+$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('Subject', 0))
@@ -304,14 +268,12 @@ undef $entity;
 undef $msg_str; 
 
 
-########################
+##################################
 # send_owner_happenings - subscribed
-DADA::App::Messages::send_owner_happenings(
+$dap->send_owner_happenings(
 	{
-		-list  => $list, 
 		-email => $email, 
 		-role  => "subscribed",
-		-test  => 1,
 	}
 );
 
@@ -360,12 +322,9 @@ undef $msg_str;
 # send_you_are_already_subscribed_message
 
 
-require DADA::App::Messages; 
-DADA::App::Messages::send_you_are_already_subscribed_message(		
+$dap->send_you_are_already_subscribed_message(		
 	{
-    	-list         => $list, 
         -email        => $email, 
-		-test         => 1, 
 	}
 );
 $msg = slurp($mh->test_send_file); 
@@ -426,12 +385,9 @@ ok(
 		},	
 	}),
 );
-DADA::App::Messages::send_you_are_already_subscribed_message(
+$dap->send_you_are_already_subscribed_message(
 	{
-        -list   => $list, 
         -email  => $email, 
-        -ls_obj => $ls, 
-		-test   => 1, 
 	}
 );
 $msg     = slurp($mh->test_send_file); 
@@ -482,12 +438,9 @@ ok($lh->remove_subscriber({-email => $email, -type => 'list'}));
 ok($lh->remove_subscriber({-email => $email, -type => 'unsub_confirm_list'})); 
 
 
-DADA::App::Messages::send_unsubscribed_message(
+$dap->send_unsubscribed_message(
 	{
-		-list      => $list,
         -email     => $email,
-        -ls_obj    => $ls,
-		-test      => 1,
 	}	
 );
 
@@ -501,7 +454,7 @@ $entity  = $parser->parse_data(safely_encode($msg));
 
 diag "here."; 
 
-$msg_str = safely_decode($entity->bodyhandle->as_string);
+$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
 
 
 
@@ -554,19 +507,16 @@ ok(
 		},	
 	}),
 );
-DADA::App::Messages::send_unsubscribed_message(
+$dap->send_unsubscribed_message(
 	{
-        -list   => $list, 
         -email  => $email, 
-        -ls_obj => $ls, 
-		-test   => 1, 
 	}
 );
 
 
 $msg     = slurp($mh->test_send_file); 
 $entity  = $parser->parse_data(safely_encode($msg)); 
-$msg_str = safely_decode($entity->bodyhandle->as_string);
+$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
 
 
 
@@ -607,12 +557,10 @@ undef $msg_str;
 
 ########################
 # send_owner_happenings - unsubscribed
-DADA::App::Messages::send_owner_happenings(
+$dap->send_owner_happenings(
 	{
-		-list  => $list, 
 		-email => $email, 
 		-role  => "unsubscribed",
-		-test  => 1,
 	}
 );
 
@@ -665,12 +613,9 @@ ok($lh->add_subscriber({
 
 # If there's no archive to send, it should return, "0"
 
-ok(DADA::App::Messages::send_newest_archive(
+ok($dap->send_newest_archive(
 	{
-	-list         => $list, 
-    -email        => $email, 
-    -ls_obj       => $ls, 
-    -test         => 1,
+    	-email        => $email, 
 	}
 ) == 0, "No archive to send returns, '0'"); 
 
@@ -710,14 +655,9 @@ my $exists = $mla->check_if_entry_exists($message_id);
 ok($exists == 1, "check_if_entry_exists says our archived message exists!");
 
 
-
-ok(DADA::App::Messages::send_newest_archive(
+ok($dap->send_newest_archive(
 	{
-	-list         => $list, 
-    -email        => $email, 
-    -ls_obj       => $ls, 
-    -test         => 1,
-	-la_obj       => $mla, 
+		-email        => $email, 
 	}
 ) == 1, "Archive to send returns, '1' (1)");
 
@@ -783,12 +723,9 @@ undef $msg_str;
 	$set_return_pass = $mla->set_archive_info(($message_id + 1), "Subject", "Body", 'text/html'); 
 	ok($set_return_pass == 1, "adding a new archive entry *with* a message id returns 1!");
 
-	ok(DADA::App::Messages::send_newest_archive(
+	ok($dap->send_newest_archive(
 		{
-		-list         => $list, 
 	    -email        => $email, 
-	    -ls_obj       => $ls, 
-	    -test         => 1,
 		-la_obj       => $mla, 
 		}
 	) == 1, "Archive to send returns, '1' (2)");
@@ -797,7 +734,7 @@ undef $msg_str;
 	$msg     = slurp($mh->test_send_file); 
 	$entity  = $parser->parse_data(safely_encode($msg)); 
 	
-	#$msg_str = safely_decode($entity->bodyhandle->as_string);
+	#$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
 
 	diag '$entity->head->mime_type ' . $entity->head->mime_type; 
 	# I honestly only care about the Content-type
@@ -824,12 +761,9 @@ Body
 	$set_return_pass = $mla->set_archive_info(($message_id + 2), 'Subject', undef, undef, $test_msg); 
 	ok($set_return_pass == 1, "adding a new archive entry *with* a message id returns 1!");
 
-	ok(DADA::App::Messages::send_newest_archive(
+	ok($dap->send_newest_archive(
 		{
-		-list         => $list, 
 	    -email        => $email, 
-	    -ls_obj       => $ls, 
-	    -test         => 1,
 		-la_obj       => $mla, 
 		}
 	) == 1, "Archive to send returns, '1' (3)");
@@ -869,12 +803,10 @@ Subject: Dud
 This isn't getting too far, is it?
 };
 
-DADA::App::Messages::send_not_allowed_to_post_msg(
+$dap->send_not_allowed_to_post_msg(
 	{
-		-list       => $list, 
 		-email      => $email,	
 		-attachment => $fake_message_back, 
-		-test       => 1
 	},
 );
 
@@ -890,7 +822,7 @@ my @parts = $entity->parts;
 #diag '$parts[0]->bodyhandle->as_string ' . safely_encode($parts[0]->bodyhandle->as_string); 
 #diag '$parts[1]->as_string ' . safely_encode($parts[1]->as_string); 
 
-my $msg_str0 = safely_decode($parts[0]->bodyhandle->as_string);
+my $msg_str0 = safely_decode($entity->bodyhandle->as_string);
 TODO: {
 	    local $TODO = 'There is, I think a bug in the test itself, dealing with an encoding issue, but this needs to be double-checked.';
 
@@ -949,13 +881,10 @@ ok(
 		},	
 	}),
 );
-DADA::App::Messages::send_not_allowed_to_post_msg(
+$dap->send_not_allowed_to_post_msg(
 	{
-        -list       => $list, 
         -email      => $email, 
-        -ls_obj     => $ls, 
 		-attachment => $fake_message_back, 
-		-test       => 1, 
 	}
 );
 
@@ -965,7 +894,7 @@ $msg     = slurp($mh->test_send_file);
 # This is a multipart message, it needs something fancier... 
 $entity  = $parser->parse_data(safely_encode($msg)); 
 @parts = $entity->parts; 
-$msg_str = safely_decode($parts[0]->bodyhandle->as_string);
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 diag $msg_str; 
 
 
@@ -1017,19 +946,16 @@ undef $msg_str;
 
 
 
-DADA::App::Messages::send_not_allowed_to_post_msg(
+$dap->send_not_allowed_to_post_msg(
 	{
-        -list       => $list, 
         -email      => $email, 
-        -ls_obj     => $ls, 
 		-attachment => $fake_message_back, 
-		-test       => 1, 
 	}
 );
 $msg     = slurp($mh->test_send_file); 
 $entity  = $parser->parse_data(safely_encode($msg)); 
 @parts = $entity->parts; 
-$msg_str = safely_decode($parts[0]->bodyhandle->as_string);
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 diag $msg_str;
 
 TODO: {
@@ -1080,18 +1006,13 @@ undef $msg_str;
 
 
  
-send_generic_email(
+$dap->send_generic_email(
 	{ 
-		-list       => $list, 
         -email      => $email, 
-        -ls_obj     => $ls, 
-		-test       => 1,
-
 		-headers => {
 		    Subject =>  $dada_test_config::UTF8_STR,
 		},
-		-body => $dada_test_config::UTF8_STR, 
-		
+		-body => $dada_test_config::UTF8_STR, 		
 		-tmpl_params => { 
             -vars                     => {},
 		},
@@ -1128,13 +1049,9 @@ undef $msg;
 
 
 
-send_generic_email(
+$dap->send_generic_email(
 	{ 
-		-list       => $list, 
         -email      => $email, 
-        -ls_obj     => $ls, 
-		-test       => 1,
-
 		-headers => {
 		    Subject =>  $dada_test_config::UTF8_STR,
 		},
@@ -1142,7 +1059,6 @@ send_generic_email(
 		# Slurp doesn't know encoding, so no need to decode
 		# OR, you decode in UTF8 and re-encode. 
 		-body => slurp('t/corpus/html/utf8.html'), 
-		
 		-tmpl_params => { 
             -vars                     => {},
 		},

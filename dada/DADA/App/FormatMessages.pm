@@ -14,7 +14,7 @@ use MIME::Entity;
 use DADA::App::Guts;
 use Try::Tiny;
 use Carp qw(croak carp);
-#$Carp::Verbose = 1; 
+# $Carp::Verbose = 1; 
 use vars qw($AUTOLOAD);
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
@@ -214,12 +214,12 @@ sub format_message {
     my ($args) = @_;
 
     if ( exists( $args->{-msg} ) ) {
-        warn 'args -msg';
+        # warn 'args -msg';
         my ( $h, $b ) = $self->format_headers_and_body($args);
         return $h . "\n" . $b;
     }
     elsif ( exists( $args->{-entity} ) ) {
-        warn 'args -entity';
+        # warn 'args -entity';
         return $self->format_headers_and_body($args);
     }
     else {
@@ -261,14 +261,14 @@ sub format_headers_and_body {
     my ($args) = @_;
 
     my $entity;
-    my $msg = undef;
 
     if ( exists( $args->{-msg} ) ) {
         warn 'args -msg';
-        $entity = $self->{parser}->parse_data( safely_encode($msg) );
+        $entity = $self->{parser}->parse_data( safely_encode($args->{-msg}) );
+		warn '$entity->as_string' . $entity->as_string; 
     }
     elsif ( exists( $args->{-entity} ) ) {
-        warn 'args -entity';
+        # warn 'args -entity';
         $entity = $args->{-entity};
     }
     else {
@@ -313,7 +313,7 @@ sub format_headers_and_body {
     # or how about, count?
 
 	if ( exists( $args->{-entity} ) ) {
-        warn 'returning -entity';
+        # warn 'returning -entity';
         return $entity;
     }
 	elsif ( exists( $args->{-msg} ) ) {
@@ -828,8 +828,8 @@ sub _format_body {
 
         my $body    = $entity->bodyhandle;
         my $content = $entity->bodyhandle->as_string;
-        $content = safely_decode($content);
-		
+           $content = safely_decode($content);
+		   warn '$content' . $content; 
         if (
             (
                    ( $entity->head->mime_type eq 'text/plain' )
@@ -1899,7 +1899,7 @@ sub _expand_macro_tags {
         @_
     );
 
-    die "no data! $!" if !$args{-data};
+    croak "no data! $!" if !$args{-data};
 
     my $data = $args{-data};
     if ( $self->no_list == 1 ) {
@@ -2122,7 +2122,8 @@ sub  _apply_template {
 		require DADA::App::EmailThemes; 
 		my $em = DADA::App::EmailThemes->new(
 			{ 
-				-name => 'default',
+				-list      => $self->{list}
+				-name      => 'default',
 				-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
 			}
 		);
@@ -2770,7 +2771,7 @@ sub email_template {
 		$args->{-first_pass} = 1; 
 	}
 	if($args->{-first_pass} == 1){ 
-		warn 'first pass!';
+		# warn 'first pass!';
         my $screen_vars = {};
         for ( keys %{$args} ) {
             next if $_ eq '-entity';
@@ -2783,10 +2784,10 @@ sub email_template {
 			'X-Preheader' => 'email.preheader',
 		};
 
-		warn q{$args->{-entity}->head->as_string} . $args->{-entity}->head->as_string;
+		# warn q{$args->{-entity}->head->as_string} . $args->{-entity}->head->as_string;
 
 		for(keys %$special_headers) {
-			warn '$_' . $_; 
+			# warn '$_' . $_; 
 	        my $og_header = $args->{-entity}->head->get( $_, 0 );
 	           $og_header = $self->_decode_header($og_header);
 			my $header = DADA::Template::Widgets::screen(
@@ -2795,8 +2796,8 @@ sub email_template {
 	                -data => \$og_header,
 				}
 			); 	
-			warn '$header' . $header; 
-			warn q{$special_headers->{$_}} . $special_headers->{$_}; 
+			# warn '$header' . $header; 
+			# warn q{$special_headers->{$_}} . $special_headers->{$_}; 
 						
 			$args->{-vars}->{$special_headers->{$_}} = $header;
 			
@@ -2886,7 +2887,7 @@ sub email_template {
                 # warn '%screen_vars ' . Dumper($screen_vars);
                 # And, that's it.
 				
-				warn q{keys %$screen_vars} . keys %$screen_vars; 
+				# warn q{keys %$screen_vars} . keys %$screen_vars; 
 				
                 $content = DADA::Template::Widgets::screen(
                     {

@@ -577,14 +577,12 @@ sub subscribe {
                     -remove_previous => 1,
                 }
             );
-
-            require DADA::App::Messages;
-            DADA::App::Messages::send_confirmation_message(
+			
+		    require DADA::App::Messages;
+		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+		    $dap->send_confirmation_message(
                 {
-                    -list   => $list,
                     -email  => $email,
-                    -ls_obj => $ls,
-                    -test   => $self->test,
                     -token  => $token,
                 }
             );
@@ -594,12 +592,11 @@ sub subscribe {
             warn '>>>> >>> >>> Sending: "Mailing List Confirmation - Already Subscribed" message'
               if $t;
 
-            require DADA::App::Messages;
-            DADA::App::Messages::send_you_are_already_subscribed_message(
+  		    require DADA::App::Messages;
+  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+  		    $dap->send_you_are_already_subscribed_message(
                 {
-                    -list  => $list,
                     -email => $email,
-                    -test  => $self->test,
                 }
             );
         }
@@ -1042,13 +1039,11 @@ sub confirm {
 
                     warn '>>>> >>>> >>>> sending subscribed message'
                       if $t;
-                    require DADA::App::Messages;
-                    DADA::App::Messages::send_subscribed_message(
+		  		    require DADA::App::Messages;
+		  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+		  		    $dap->send_subscribed_message(
                         {
-                            -list   => $list,
                             -email  => $email,
-                            -ls_obj => $ls,
-                            -test   => $self->test,
                             -vars   => {
                                 new_profile        => $new_profile,
                                 'profile.email'    => $email,
@@ -1060,13 +1055,12 @@ sub confirm {
 
                 }
 
-                require DADA::App::Messages;
-                DADA::App::Messages::send_owner_happenings(
+	  		    require DADA::App::Messages;
+	  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+	  		    $dap->send_owner_happenings(
                     {
-                        -list  => $list,
                         -email => $email,
                         -role  => "subscribed",
-                        -test  => $self->test,
                     }
                 );
 
@@ -1077,13 +1071,11 @@ sub confirm {
 
                     warn 'Sending newest archive.'
                       if $t;
-                    require DADA::App::Messages;
-                    DADA::App::Messages::send_newest_archive(
+	  	  		    require DADA::App::Messages;
+	  	  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+	  	  		    $dap->send_newest_archive(
                         {
-                            -list   => $list,
                             -email  => $email,
-                            -ls_obj => $ls,
-                            -test   => $self->test,
                         }
                     );
                 }
@@ -1096,12 +1088,11 @@ sub confirm {
                 warn '>>>> >>> >>> Sending: "Mailing List Confirmation - Already Subscribed" message'
                   if $t;
 
-                require DADA::App::Messages;
-                DADA::App::Messages::send_you_are_already_subscribed_message(
+  	  		    require DADA::App::Messages;
+  	  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+  	  		    $dap->send_you_are_already_subscribed_message(
                     {
-                        -list  => $list,
                         -email => $email,
-                        -test  => $self->test,
                     }
                 );
             }
@@ -1228,16 +1219,18 @@ sub subscription_approval_step {
 
     
     require DADA::App::Messages;
-    DADA::App::Messages::subscription_approval_request_message(
+    my $dap = DADA::App::Messages->new( 
+		{ 
+			-list => $ls->param('list'), 
+		} 
+	);
+    $dap->subscription_approval_request_message(
         {
             -email => $email,
-            -ls_obj => $ls,
-            -test                               => $self->test,
             -vars   => { 
                 list_subscribe_request_approve_link => $DADA::Config::S_PROGRAM_URL . '/t/' . $approve_token . '/',
                 list_subscribe_request_deny_link    => $DADA::Config::S_PROGRAM_URL . '/t/' . $deny_token . '/',
             }, 
-            
         }
     );
  
@@ -1420,25 +1413,22 @@ sub unsubscription_request {
         if ( $send_you_are_not_subscribed_email == 1 ) {
 
             # Send the URL with the unsub confirmation URL:
-            require DADA::App::Messages;
-            DADA::App::Messages::send_not_subscribed_message(
+  		    require DADA::App::Messages;
+  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+  		    $dap->send_not_subscribed_message(
                 {
-                    -list         => $list,
                     -email        => $email,
-                    -settings_obj => $ls,
-                    -test         => $self->test,
                 }
             );
         }
         else {
 
             # Send the URL with the unsub confirmation URL:
-            require DADA::App::Messages;
-            DADA::App::Messages::send_unsubscribe_request_message(
+  		    require DADA::App::Messages;
+  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+  		    $dap->send_unsubscribe_request_message(
                 {
-                    -list         => $list,
                     -email        => $email,
-                    -settings_obj => $ls,
                     -test         => $self->test,
                 }
             );
@@ -1817,13 +1807,12 @@ sub complete_unsubscription {
             }
         );
 
-        require DADA::App::Messages;
-        DADA::App::Messages::send_owner_happenings(
+	    require DADA::App::Messages;
+	    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+	    $dap->send_owner_happenings(
             {
-                -list  => $list,
                 -email => $email,
                 -role  => "unsubscribed",
-                -test  => $self->test,
             }
         );
 
@@ -1834,13 +1823,11 @@ sub complete_unsubscription {
                 # ... 
             }
             else {
-                require DADA::App::Messages;
-                DADA::App::Messages::send_unsubscribed_message(
+  	  		    require DADA::App::Messages;
+  	  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+  	  		    $dap->send_unsubscribed_message(
                     {
-                        -list   => $list,
                         -email  => $email,
-                        -ls_obj => $ls,
-                        -test   => $self->test,
                     }
                 );
             }
@@ -2020,13 +2007,11 @@ sub pl_unsubscription_request {
             }
         );
 
-        require DADA::App::Messages;
-        DADA::App::Messages::unsubscription_approval_request_message(
+	    require DADA::App::Messages;
+	    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+	    $dap->unsubscription_approval_request_message(
             {
-                -list   => $list,
                 -email  => $email,
-                -ls_obj => $ls,
-                -test   => $self->test,
                 -vars => {
                     list_unsubscribe_request_approve_link => $DADA::Config::S_PROGRAM_URL . '/t/' . $approve_token . '/',
                     list_unsubscribe_request_deny_link    => $DADA::Config::S_PROGRAM_URL . '/t/' . $deny_token . '/',
@@ -2206,14 +2191,11 @@ sub complete_pl_unsubscription_request {
 
             warn 'send_unsubscription_request_approved_message'
              if $t;
-            require DADA::App::Messages;
-            DADA::App::Messages::send_unsubscription_request_approved_message(
+  		    require DADA::App::Messages;
+  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+  		    $dap->send_unsubscription_request_approved_message(
                 {
-                    -list   => $data->{data}->{list},
                     -email  => $data->{email},
-                    -ls_obj => $ls,
-
-                    #-test   => $self->test,
                 }
             );
             
@@ -2250,13 +2232,11 @@ sub complete_pl_unsubscription_request {
                 }
             );
             require DADA::App::Messages;
-            DADA::App::Messages::send_unsubscription_request_denied_message(
+  		    require DADA::App::Messages;
+  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+  		    $dap->send_unsubscription_request_denied_message(
                 {
-                    -list   => $data->{data}->{list},
                     -email  => $data->{email},
-                    -ls_obj => $ls,
-
-                    #-test   => $self->test,
                 }
             );
             my $count = 1;
@@ -2414,19 +2394,15 @@ sub subscription_requests {
 
                 # / Make a profile, if needed,
             }
-            require DADA::App::Messages;
-            DADA::App::Messages::send_subscription_request_approved_message(
+  		    require DADA::App::Messages;
+  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+  		    $dap->send_subscription_request_approved_message(
                 {
-                    -list   => $list,
                     -email  => $email,
-                    -ls_obj => $ls,
-
-                    #-test   => $self->test,
                     -vars => {
                         new_profile        => $new_profile,
                         'profile.email'    => $email,
                         'profile.password' => $new_pass,
-
                     }
                 }
             );
@@ -2468,14 +2444,11 @@ sub subscription_requests {
                  }
              );
             
-            require DADA::App::Messages;
-            DADA::App::Messages::send_subscription_request_denied_message(
+  		    require DADA::App::Messages;
+  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+  		    $dap->send_subscription_request_denied_message(
                 {
-                    -list   => $list,
                     -email  => $email,
-                    -ls_obj => $ls,
-
-                    #-test   => $self->test,
                 }
             );
             my $count = 1;

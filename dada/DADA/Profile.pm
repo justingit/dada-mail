@@ -1030,29 +1030,28 @@ sub send_profile_activation_email {
 	   my $dap = DADA::App::Messages->new({-list => $self->_config_profile_host_list});
 	
 		my $etp = $dap->em->fetch('profiles_activation_message'); 
-	
-         $dap->send_multipart_email(		 
+		
+		$dap->send_multipart_email(		 
         {
             -headers => {
 			    Subject => $etp->{yaml}->{subject},
                 From    => $self->_config_profile_email(1),
                 To      => $self->{email},
             },
-		}, 
-		-plaintext_body => $etp->{plaintext},
-		-html_body      => $etp->{html},
-            -tmpl_params => {
-                -vars => {
-                    auth_code                    => $auth_code,
-                    email                        => $self->{email},
-                    'profile.email'              => $self->{email},
-                    'profile.email_name'         => $n,
-                    'profile.email_domain'       => $d,
-                    'app.profile_activation_link' => $profile_activation_link, 
-                },
-            },
-        }
-    );
+			-plaintext_body => $etp->{plaintext},
+			-html_body      => $etp->{html},
+	            -tmpl_params => {
+	                -vars => {
+	                    auth_code                    => $auth_code,
+	                    email                        => $self->{email},
+	                    'profile.email'              => $self->{email},
+	                    'profile.email_name'         => $n,
+	                    'profile.email_domain'       => $d,
+	                    'app.profile_activation_link' => $profile_activation_link, 
+	                },
+	            },
+	        }
+	    );
 
     return 1;
 
@@ -1075,23 +1074,28 @@ sub send_profile_reset_password_email {
     . $auth_code 
     . '/';
     
-    require DADA::App::ReadEmailMessages; 
-    my $rm = DADA::App::ReadEmailMessages->new; 
-    my $msg_data = $rm->read_message('profiles_reset_password_message.eml'); 
-    
-    
+	
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $self->_config_profile_host_list,
+			-name      => 'default',
+			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+		}
+	);
+	my $etp = $em->fetch('profiles_reset_password_message');
+	
     require DADA::App::Messages;
-    DADA::App::Messages::send_generic_email(
+    my $dap = DADA::App::Messages->new({-list => $self->_config_profile_host_list});
+	$dap->send_generic_email(
         {
-            -list    => $self->_config_profile_host_list, 
             -email   => $self->{email},
             -headers => {
-                Subject =>
-                  $msg_data->{subject}, 
-                From => $self->_config_profile_email(1),
-                To   => $self->{email},
+                Subject => $etp->{yaml}->{subject}, 
+                From    => $self->_config_profile_email(1),
+                To      => $self->{email},
             },
-            -body        => $msg_data->{plaintext_body},
+            -body        => $etp->{plaintext},
             -tmpl_params => {
                 -vars => {
                     auth_code                             => $auth_code,
@@ -1162,23 +1166,27 @@ sub send_update_profile_email_email {
 	
 	my $info = $self->get({-dotted => 1}); 
 	
-	
-	require DADA::App::ReadEmailMessages; 
-    my $rm = DADA::App::ReadEmailMessages->new; 
-    my $msg_data = $rm->read_message('profiles_update_email_message.eml'); 
-    
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $self->_config_profile_host_list,
+			-name      => 'default',
+			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+		}
+	);
+	my $etp = $em->fetch('profiles_update_email_message');
+
 	require DADA::App::Messages;
-    DADA::App::Messages::send_generic_email(
+    my $dap = DADA::App::Messages->new({-list => $self->_config_profile_host_list});
+	$dap->send_generic_email(
         {
-            -list    => $self->_config_profile_host_list, 
-            -email   => $args->{-updated_email},
             -headers => {
                 Subject =>
-                  $msg_data->{subject},
+                  $etp->{yaml}->{subject},
                 From => $self->_config_profile_email(1),
                 To   => $args->{-updated_email},
             },
-            -body        => $msg_data->{plaintext_body},
+            -body        => $etp->{plaintext},
             -tmpl_params => {
                 -vars => {
                     'profile.update_email_auth_code' => $args->{-update_email_auth_code},
@@ -1215,21 +1223,27 @@ sub send_update_email_notification {
 	}
 	my $info = $self->get({-dotted => 1}); 
 	
-	require DADA::App::ReadEmailMessages; 
-    my $rm = DADA::App::ReadEmailMessages->new; 
-    my $msg_data = $rm->read_message('profiles_email_updated_notification_message.eml'); 
-    
-
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $self->_config_profile_host_list,
+			-name      => 'default',
+			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+		}
+	);
+	my $etp = $em->fetch('profiles_email_updated_notification_message');
+	
 	require DADA::App::Messages;
-    DADA::App::Messages::send_generic_email(
+    my $dap = DADA::App::Messages->new({-list => $self->_config_profile_host_list});
+	$dap->send_generic_email(
         {
             -list    => $self->_config_profile_host_list, 
             -headers => {
-                Subject => $msg_data->{subject},
+                Subject => $etp->{yaml}->{subject},
                 From => $self->_config_profile_email(1),
                 To   => $self->_config_profile_email,
             },
-            -body        => $msg_data->{plaintext_body},
+            -body        => $etp->{plaintext},
             -tmpl_params => {
                 -vars => {
 					'profile.prev_email'             => $args->{-prev_email}, 

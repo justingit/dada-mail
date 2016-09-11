@@ -864,6 +864,7 @@ sub remove_bounces {
 
     if ( $ls->param('get_unsub_notice') == 1 ) {
         require DADA::App::Messages;
+        my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
 
         $m .= "\n";
 
@@ -871,37 +872,25 @@ sub remove_bounces {
 
         for my $d_email (@remove_list) {
 
-            DADA::App::Messages::send_owner_happenings(
+            $dap->send_owner_happenings(
                 {
-                    -list   => $list,
                     -email  => $d_email,
                     -role   => 'unsubscribed',
-                    -lh_obj => $lh,
-                    -ls_obj => $ls,
                     -note   => 'Reason: Address is bouncing messages.',
                 }
             );
+			
+			$dap->send_out_message( 
+			{ 
+				-message => 'unsubscribed_because_of_bouncing',
+				-email => $d_email,
+	            -subscriber_vars          => { 'subscriber.email' => $d_email, },
+	            -vars                     => { 
+					Plugin_Name        => $self->config->{Plugin_Name}, 
+				}
+			}
+			); 
 
-            require DADA::App::ReadEmailMessages;
-            my $rm       = DADA::App::ReadEmailMessages->new;
-            my $msg_data = $rm->read_message('unsubscribed_because_of_bouncing.eml');
-
-            DADA::App::Messages::send_generic_email(
-                {
-                    -list    => $list,
-                    -email   => $d_email,
-                    -ls_obj  => $ls,
-                    -headers => {
-                        Subject => $msg_data->{subject},
-                    },
-                    -body        => $msg_data->{plaintext_body},
-                    -tmpl_params => {
-                        -list_settings_vars_param => { -list              => $list, },
-                        -subscriber_vars          => { 'subscriber.email' => $d_email, },
-                        -vars                     => { Plugin_Name        => $self->config->{Plugin_Name}, },
-                    },
-                }
-            );
         }
     }
 
@@ -1138,10 +1127,11 @@ sub abuse_report {
     for ( keys %$diagnostics ) {
         $abuse_report_details .= $_ . ": " . $diagnostics->{$_} . "\n";
     }
+	
     require DADA::App::Messages;
-    DADA::App::Messages::send_abuse_report(
+    my $dap = DADA::App::Messages->new( { -list => $list} );
+    $dap->send_abuse_report(
         {
-            -list                 => $list,
             -email                => $email,
             -abuse_report_details => $abuse_report_details,
             -mid                  => $diagnostics->{'Simplified-Message-Id'},

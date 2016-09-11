@@ -118,7 +118,7 @@ sub AUTOLOAD {
     my $type = ref($self)
       or croak "$self is not an object";
 
-	return if(substr($AUTOLOAD, -7) eq 'DESTROY');
+    return if ( substr( $AUTOLOAD, -7 ) eq 'DESTROY' );
 
     my $name = $AUTOLOAD;
     $name =~ s/.*://;    #strip fully qualifies portion
@@ -157,11 +157,11 @@ sub _init {
         undef $lh;
         undef $pfm;
     }
-	
+
     require MIME::Parser;
     my $parser = new MIME::Parser;
-       $parser = DADA::App::Guts::optimize_mime_parser($parser);
-	$self->{parser} = $parser; 
+    $parser = DADA::App::Guts::optimize_mime_parser($parser);
+    $self->{parser} = $parser;
 
 }
 
@@ -320,12 +320,14 @@ sub send {
     # say the Subject; header to use this charset.
 
     if (
-         ( defined( $self->{ls}->param('charset_value') ) )
-      && ( defined( $fields{'Content-type'} ) )
-      && ( $fields{'Content-type'} !~ /charset\=/ )    #ie, wasn't set before.
-    ) {
-		$fields{'Content-type'} .= '; charset=' . $self->{ls}->param('charset_value')
-	}
+           ( defined( $self->{ls}->param('charset_value') ) )
+        && ( defined( $fields{'Content-type'} ) )
+        && ( $fields{'Content-type'} !~ /charset\=/ )    #ie, wasn't set before.
+      )
+    {
+        $fields{'Content-type'} .=
+          '; charset=' . $self->{ls}->param('charset_value');
+    }
     if ( !defined( $self->{ls}->param('smtp_server') )
         && $self->{ls}->param('sending_method') eq 'smtp' )
     {
@@ -370,8 +372,8 @@ sub send {
                 my %mailer_params = (
                     Hello => $host,
                     Host  => $self->{ls}->param('smtp_server'),
-                    Timeout => 60,                     # Keep this at 60 for now
-                    Port    => $self->{ls}->param('smtp_port'),
+                    Timeout => 60,    # Keep this at 60 for now
+                    Port => $self->{ls}->param('smtp_port'),
                     (
                         ( $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP} == 1 )
                         ? (
@@ -403,7 +405,7 @@ sub send {
           # attempted anyways.
                     if ( $self->{ls}->param('use_sasl_smtp_auth') == 1 ) {
                         $mailer->auth(
-							$self->{ls}->param('sasl_smtp_username'),
+                            $self->{ls}->param('sasl_smtp_username'),
                             $self->_cipher_decrypt(
                                 $self->{ls}->param('sasl_smtp_password')
                             )
@@ -452,7 +454,8 @@ sub send {
             if (
                    $self->{ls}->param('group_list') == 1
                 && $fields{from_mass_send} == 1
-                && defined( $self->{ls}->param('discussion_pop_email') )    # safegaurd?
+                && defined(
+                    $self->{ls}->param('discussion_pop_email') )    # safegaurd?
 
               )
             {
@@ -477,7 +480,8 @@ sub send {
                 # This is what we're going to say we are...
                 $fields{To} = $formatted_disc_email;
 
-                if ( $self->{ls}->param('set_to_header_to_list_address') == 1 ) {
+                if ( $self->{ls}->param('set_to_header_to_list_address') == 1 )
+                {
 
                     # Nothin' needed.
                 }
@@ -536,7 +540,12 @@ sub send {
                     }
                 }
                 else {
-                    if ( !$mailer->mail( $self->{ls}->param('list_owner_email') ) ) {
+                    if (
+                        !$mailer->mail(
+                            $self->{ls}->param('list_owner_email')
+                        )
+                      )
+                    {
                         carp $FROM_error;
                         $FROM_error_flag++;
                     }
@@ -653,7 +662,8 @@ sub send {
         if (
                $self->{ls}->param('group_list') == 1
             && $fields{from_mass_send} == 1
-            && defined( $self->{ls}->param('discussion_pop_email') )    # safegaurd?
+            && defined(
+                $self->{ls}->param('discussion_pop_email') )    # safegaurd?
           )
         {
 
@@ -741,8 +751,7 @@ sub send {
             warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
                          didn't close pipe to '$live_mailing_settings' while 
                          attempting to send a message to: '"
-              . $fields{To}
-              . " because:' $!";
+              . $fields{To} . " because:' $!";
             return;
         }
 
@@ -753,7 +762,8 @@ sub send {
         if (
                $self->{ls}->param('group_list') == 1
             && $fields{from_mass_send} == 1
-            && defined( $self->{ls}->param('discussion_pop_email') )    # safegaurd?
+            && defined(
+                $self->{ls}->param('discussion_pop_email') )    # safegaurd?
           )
         {
 
@@ -846,11 +856,12 @@ sub send {
         }
     }
     else {
-        die 'Unknown Sending Method: "' . $self->{ls}->param('sending_method') . '"';
+        die 'Unknown Sending Method: "'
+          . $self->{ls}->param('sending_method') . '"';
     }
 
-    $self->{mj_log}->mj_log( $self->{ls}->param('list'), 'Mail Sent',
-        "Recipient:$recipient_for_log, Subject:$fields{Subject}" )
+    $self->{mj_log}->mj_log( $self->{ls}->param('list'),
+        'Mail Sent', "Recipient:$recipient_for_log, Subject:$fields{Subject}" )
       if $DADA::Config::LOG{mailings};
 
     return 1;
@@ -864,7 +875,7 @@ sub _massage_fields_for_amazon_ses {
     my $fields      = $args->{-fields};
     my $admin_email = $args->{-admin_email},
 
-    $fields->{'X-Message-ID'} = $fields->{'Message-ID'};
+      $fields->{'X-Message-ID'} = $fields->{'Message-ID'};
     $fields->{'Return-Path'} = '<' . $args->{-admin_email} . '>';
 
     for my $field (@default_headers) {
@@ -881,26 +892,29 @@ sub _massage_fields_for_amazon_ses {
 
 sub mail_sending_options_test {
 
-    my $self = shift;
+    my $self   = shift;
     my $report = [];
 
-	if($self->{ls}->param('sending_method') eq 'smtp' ) {
-		my ($n_p_t_status, $n_p_t_msg);
-		try {
-			($n_p_t_status, $n_p_t_msg) 
-				= $self->net_ping_test(
-					$self->{ls}->param('smtp_server'), 
-					$self->{ls}->param('smtp_port')
-			);
-		} catch { 
-			warn $_;
-		};
-		push(@$report, { 
-	    	line    => '',
-	        message => $n_p_t_msg,
-		});
-	}
-	
+    if ( $self->{ls}->param('sending_method') eq 'smtp' ) {
+        my ( $n_p_t_status, $n_p_t_msg );
+        try {
+            ( $n_p_t_status, $n_p_t_msg ) = $self->net_ping_test(
+                $self->{ls}->param('smtp_server'),
+                $self->{ls}->param('smtp_port')
+            );
+        }
+        catch {
+            warn $_;
+        };
+        push(
+            @$report,
+            {
+                line    => '',
+                message => $n_p_t_msg,
+            }
+        );
+    }
+
     require DADA::Security::Password;
 
     my $filename =
@@ -920,29 +934,32 @@ sub mail_sending_options_test {
     my $orig_debug_pop3 = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3};
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = 1;
 
-    require DADA::App::ReadEmailMessages;
-    my $rm       = DADA::App::ReadEmailMessages->new;
-    my $msg_data = $rm->read_message('mail_sending_options_test_message.eml');
+    require DADA::App::EmailThemes;
+    my $em = DADA::App::EmailThemes->new(
+        {
+            -list => $self->{list} -name => 'default',
+            -theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+        }
+    );
+    my $etp = $em->fetch('mail_sending_options_test_message');
 
     require DADA::App::Messages;
-    DADA::App::Messages::send_generic_email(
+    my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
+
+    $dap->send_multipart_email(
         {
-            -list    => $self->{list},
             -headers => {
-                To      => $self->{ls}->param('list_owner_email'),
-                From    => $self->{ls}->param('list_owner_email'),
-                Subject => $msg_data->{subject},
+                To => $dap->fm->format_phrase_address(
+                    $etp->{yaml}->{to_phrase},
+                    $dap->ls->param('list_owner_email')
+                ),
+                From => $self->fm->format_phrase_address(
+                    $etp->{yaml}->{from_phrase},
+                    $dap->ls->param('list_owner_email')
+                ),
+                Subject => $etp->{yaml}->{subject},
             },
-            -body        => $msg_data->{plaintext_body},
-            -tmpl_params => {
-
-                -list_settings_vars_param => {
-                    -list   => $self->{list},
-                    -dot_it => 1,
-                },
-                -expr => 1,
-
-            },
+            -plaintext_body => $etp->{plaintext},
         }
     );
 
@@ -957,7 +974,6 @@ sub mail_sending_options_test {
     close(RESULTS);
 
     my @r_l = split( "\n", $smtp_msg );
-
 
     my @munged_l = ();
     for my $l (@r_l) {
@@ -1035,34 +1051,36 @@ m/Authentication succeeded|OK Authenticated|Authentication successful/i
 
 }
 
-sub net_ping_test { 
-	
-	my $self = shift; 
-	my $host = shift; 
-	my $port = shift; 
-	
-	my $status = 1; 
-	try {
-		require Net::Ping;
-	} catch { 
-		$status = 0; 
-		return (1, "Net::Ping not available.");
-	};
-	
-	my $timeout = 60;
-	my $p = Net::Ping->new("tcp");
-	   $p->port_number($port);
+sub net_ping_test {
 
-	# perform the ping
-	if( $p->ping($host, $timeout) )
-	{
-		$p->close();
-	    return(1, "Host $host successfully pinged at port $port.");
-	}
-	else {
-		$p->close();
-        return(0, "Host $host could not be  pinged at port $port. Outbound port may be blocked, or host is down at specified port");
-	}
+    my $self = shift;
+    my $host = shift;
+    my $port = shift;
+
+    my $status = 1;
+    try {
+        require Net::Ping;
+    }
+    catch {
+        $status = 0;
+        return ( 1, "Net::Ping not available." );
+    };
+
+    my $timeout = 60;
+    my $p       = Net::Ping->new("tcp");
+    $p->port_number($port);
+
+    # perform the ping
+    if ( $p->ping( $host, $timeout ) ) {
+        $p->close();
+        return ( 1, "Host $host successfully pinged at port $port." );
+    }
+    else {
+        $p->close();
+        return ( 0,
+"Host $host could not be  pinged at port $port. Outbound port may be blocked, or host is down at specified port"
+        );
+    }
 
 }
 
@@ -1511,7 +1529,7 @@ sub mass_send {
               . $mailout_id
               . ' Fork successful. (From Parent)'
               if $t;
-           	 carp 'returning message id' . $fields{'Message-ID'};
+            carp 'returning message id' . $fields{'Message-ID'};
 
             #			use Data::Dumper;
             #			carp '%fields' . Dumper({%fields});
@@ -2194,23 +2212,19 @@ sub mass_send {
                                   = $mailout->batch_params;
                             }
 
-
-                              
-
                             ##############################################
                             # This is all to attempt to tweak the sleep time
                             # to more reflect the batch settings
                             #
 
                             my $sleep_for_this_amount = $batch_wait;
-                            if ( $self->{ls}
-                                ->param('adjust_batch_sleep_time') == 1 )
+                            if ( $self->{ls}->param('adjust_batch_sleep_time')
+                                == 1 )
                             {
-                                my $batch_time_took =
-                                  time - $batch_start_time;
+                                my $batch_time_took = time - $batch_start_time;
                                 if ( $batch_time_took > 0 ) {
 
-                   #warn "SLEEP: This batch took: $batch_time_took seconds";
+                       #warn "SLEEP: This batch took: $batch_time_took seconds";
                                     if ( $batch_time_took >= $batch_wait ) {
                                         warn '['
                                           . $self->{list}
@@ -2296,8 +2310,7 @@ sub mass_send {
                                   . $mailout_id
                                   . ' Seems to have been removed.'
                                   if $t;
-                                if ( $DADA::Config::RUNNING_UNDER eq
-                                    'FastCGI' )
+                                if ( $DADA::Config::RUNNING_UNDER eq 'FastCGI' )
                                 {
                                     return (0);
                                 }
@@ -2306,7 +2319,7 @@ sub mass_send {
                                 }
                             }
 
-                # Let's make sure I'm still supposed to be working on stuff:
+                    # Let's make sure I'm still supposed to be working on stuff:
                             if ( $batch_status->{controlling_pid} == $$ ) {
 
                                 # Good to go.
@@ -2330,8 +2343,7 @@ sub mass_send {
                                   . $batch_status->{controlling_pid}
                                   . ' has taken over sending for this mailing! '
                                   . ' stopping to allow that process to do it\'s business!';
-                                if ( $DADA::Config::RUNNING_UNDER eq
-                                    'FastCGI' )
+                                if ( $DADA::Config::RUNNING_UNDER eq 'FastCGI' )
                                 {
                                     return (0);
                                 }
@@ -2344,8 +2356,6 @@ sub mass_send {
                             $mailout->batch_lock;
                             $batch_start_time = time;
 
-
-							
                         }
                         else {
                             warn '['
@@ -2481,8 +2491,8 @@ sub mass_send {
                 $self->ses_obj(undef);
             }
 
-		    $entity->purge; 
-			
+            $entity->purge;
+
             warn '['
               . $self->{list}
               . '] Mass Mailing:'
@@ -2770,7 +2780,7 @@ sub _content_transfer_encode {
         );
 
         my $head = $entity->head->as_string;
-           $head = safely_decode($head);
+        $head = safely_decode($head);
 
         # encoded. YES.
         my $body = $entity->body_as_string;
@@ -2791,9 +2801,9 @@ sub _content_transfer_encode {
     else {
         return %new_fields;
     }
-	
-	$self->{parser}->filer->purge
-		if $self->{parser};
+
+    $self->{parser}->filer->purge
+      if $self->{parser};
 }
 
 sub _domain_for_smtp {
@@ -3190,9 +3200,14 @@ sub _email_batched_finished_notification {
     my $total_time =
       formatted_runtime( ( $args{-end_time} - $args{-start_time} ) );
 
-    require DADA::App::ReadEmailMessages;
-    my $rm       = DADA::App::ReadEmailMessages->new;
-    my $msg_data = $rm->read_message('mass_mailing_finished_notification.eml');
+    require DADA::App::EmailThemes;
+    my $em = DADA::App::EmailThemes->new(
+        {
+            -list => $self->{list} -name => 'default',
+            -theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+        }
+    );
+    my $etp = $em->fetch('mass_mailing_finished_notification');
 
     my $m_report = {};
     require DADA::Logging::Clickthrough;
@@ -3207,18 +3222,18 @@ sub _email_batched_finished_notification {
         Type => 'multipart/mixed',
         To   => safely_encode(
             $fm->format_phrase_address(
-                'List Owner For ' . $self->{ls}->param('list_name'),
+                $em->{yaml}->{from_phrase},
                 $self->{ls}->param('list_owner_email')
             )
         ),
-        Subject   => safely_encode( $msg_data->{subject} ),
+        Subject   => safely_encode( $em->{yaml}->{subject}, ),
         Datestamp => 0,
 
     );
 
     $entity->attach(
         Type        => 'text/plain',
-        Data        => safely_encode( $msg_data->{plaintext_body} ),
+        Data        => safely_encode( $em->{plaintext}, ),
         Encoding    => $self->{ls}->param('plaintext_encoding'),
         Disposition => 'inline',
 
@@ -3279,10 +3294,7 @@ sub _email_batched_finished_notification {
     $self->send(
         $self->return_headers( safely_decode( $n_entity->head->as_string ), ),
         Body => $body, );
-	
-#	$n_entity->purge;
-	
-	return 1; 
+    return 1;
 
 }
 
@@ -3338,12 +3350,11 @@ sub _mail_merge {
     else {
         croak "you MUST pass the -fm_obj parameter!";
     }
-	
-	   
-	   
-	   my $entity_cp = $self->copy_entity($entity);
-#	my $entity_cp = $entity->dup; 
-		
+
+    my $entity_cp = $self->copy_entity($entity);
+
+    #	my $entity_cp = $entity->dup;
+
 # So all we really have to do is label and arrange the values we have and populate the email message.
 # Here we go:
 
@@ -3420,6 +3431,7 @@ sub _mail_merge {
     if ( $self->{ls}->param('enable_email_template_expr') == 1 ) {
         $expr = 1;
     }
+
 =cut	
     carp "ORIGINAL ENTITY: \n";
     carp '-' x 72 . "\n";
@@ -3432,7 +3444,7 @@ sub _mail_merge {
     carp Dumper({%labeled_data});
     carp '-' x 72 . "\n";
 =cut
-	
+
     my $entity_cp = $args->{-fm_obj}->email_template(
         {
             -entity                   => $entity_cp,
@@ -3456,32 +3468,31 @@ sub _mail_merge {
     carp $entity_cp->as_string;
     carp '-' x 72 . "\n";
 =cut
-	
+
     my $msg = $entity_cp->as_string;
-       $msg = safely_decode($msg);
+    $msg = safely_decode($msg);
 
     my ( $h, $b ) = split( "\n\n", $msg, 2 );
     undef($msg);
 
-    my %final = ( 
-		$self->return_headers($h), 
-		Body => $b
-	);
+    my %final = ( $self->return_headers($h), Body => $b );
 
-	$entity_cp->purge; 
-	#$entity->purge;
-	
-     undef($entity_cp);
-     #undef($entity);
+    $entity_cp->purge;
+
+    #$entity->purge;
+
+    undef($entity_cp);
+
+    #undef($entity);
 
     return %final;
 }
 
-sub copy_entity { 
-	my $self = shift; 
-	my $entity = shift;
-	my $entity_cp = $self->{parser}->parse_data($entity->as_string);
-	return $entity_cp;
+sub copy_entity {
+    my $self      = shift;
+    my $entity    = shift;
+    my $entity_cp = $self->{parser}->parse_data( $entity->as_string );
+    return $entity_cp;
 }
 
 sub _make_token {

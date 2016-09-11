@@ -2076,19 +2076,28 @@ sub send_msg_too_big {
         my $subject = $entity->head->get( 'Subject', 0 );
         $subject =~ s/\n//g;
         $subject = $dfm->_decode_header($subject);
-
-        require DADA::App::Messages;
-        DADA::App::Messages::send_generic_email(
+		
+		require DADA::App::EmailThemes; 
+		my $em = DADA::App::EmailThemes->new(
+			{ 
+				-list      => $ls->param('list'),
+				-name      => 'default',
+				-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+			}
+		);
+		my $etp = $em->fetch('msg_too_big_msg');
+		
+		require DADA::App::Messages;
+	    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
+		$dap->send_generic_email(
             {
-                -list    => $ls->param('list'),
                 -headers => {
                     To      => $from_address,
-                    Subject => $ls->param('msg_too_big_msg_subject'),
+                    Subject => $etp->{yaml}->{subject},
                 },
-                -body        => $ls->param('msg_too_big_msg'),
+                -body        => $etp->{plaintext},
                 -tmpl_params => {
                     -list_settings_vars_param => { -list => $ls->param('list'), -dot_it => 1, },
-
                     -subscriber_vars => { 'subscriber.email' => $from_address, },
                     -vars            => {
                         original_subject         => $subject,
@@ -2144,16 +2153,26 @@ sub notify_of_delivery {
     my $original_subject = $entity->head->get( 'Subject', 0 );
     chomp($original_subject);
 
-    require DADA::App::Messages;
-    DADA::App::Messages::send_generic_email(
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $ls->param('list'),
+			-name      => 'default',
+			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+		}
+	);
+	my $etp = $em->fetch('msg_received_msg');
+	
+	require DADA::App::Messages;
+    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
+	$dap->send_generic_email(
         {
-            -list    => $ls->param('list'),
             -headers => {
                 To      => $rough_from,
                 From    => $ls->param('list_owner_email'),
-                Subject => $ls->param('msg_received_msg_subject'),
+                Subject => $dap->{yaml}->{subject},
             },
-            -body        => $ls->param('msg_received_msg'),
+            -body        => $dap->{plaintext},
             -tmpl_params => {
                 -list_settings_vars       => $ls->params,
                 -list_settings_vars_param => { -dot_it => 1, },
@@ -2642,10 +2661,11 @@ sub send_msg_not_from_subscriber {
         else {
             my $att = $entity->as_string;
             $att = safely_decode($att);
-            require DADA::App::Messages;
-            DADA::App::Messages::send_not_allowed_to_post_msg(
+
+			require DADA::App::Messages;
+		    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
+			$dap->send_not_allowed_to_post_msg(
                 {
-                    -list       => $ls->param('list'),
                     -email      => $from_address,
                     #-attachment => safely_encode($att),
                     -original_subject => $original_subject, 
@@ -2681,21 +2701,28 @@ sub send_spam_rejection_message {
         my $ls =
           DADA::MailingList::Settings->new( { -list => $ls->param('list') } );
 
-        #my $att = $entity->as_string;
-        #   $att = safely_decode($att);
-        require DADA::App::Messages;
 
-        DADA::App::Messages::send_generic_email(
+  		require DADA::App::EmailThemes; 
+  		my $em = DADA::App::EmailThemes->new(
+  			{ 
+  				-list      => $ls->param('list'),
+  				-name      => 'default',
+  				-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+  			}
+  		);
+  		my $etp = $em->fetch('msg_labeled_as_spam_msg');
+
+		require DADA::App::Messages;
+	    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
+		$dap->send_generic_email(
             {
-                -list    => $ls->param('list'),
                 -headers => {
                     To      => $from_address,
                     From    => $ls->param('list_owner_email'),
-                    Subject => $ls->param('msg_labeled_as_spam_msg_subject'),
+                    Subject => $etp->{yaml}->{subject},
                 },
-                -body        => $ls->param('msg_labeled_as_spam_msg'),
+                -body        => $etp->{plaintext},
                 -tmpl_params => {
-
                     -list_settings_vars       => $ls->params,
                     -list_settings_vars_param => { -dot_it => 1, },
                     -subscriber_vars          => { 'subscriber.email' => $from_address, },
@@ -2731,30 +2758,36 @@ sub send_invalid_msgs_to_owner {
 
     if ( $from_address && $from_address ne '' ) {
 
+
+  		require DADA::App::EmailThemes; 
+  		my $em = DADA::App::EmailThemes->new(
+  			{ 
+  				-list      => $ls->param('list'),
+  				-name      => 'default',
+  				-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+  			}
+  		);
+  		my $etp = $em->fetch('invalid_msgs_to_owner_msg');
+		
         my $original_subject = $entity->head->get( 'Subject', 0 );
         
         my $reply = MIME::Entity->build(
             Type    => "multipart/mixed",
             From    => $ls->param('list_owner_email'),
             To      => $ls->param('list_owner_email'),
-            Subject => $ls->param('invalid_msgs_to_owner_msg_subject'),
+            Subject => $etp->{yaml}->{subject},
         );
 
         $reply->attach(
             Type     => 'text/plain',
             Encoding => $ls->param('plaintext_encoding'),
-            Data     => $ls->param('invalid_msgs_to_owner_msg'),
+            Data     => $etp->{plaintext},
         );
-
-#        $reply->attach(
-#            Type        => 'message/rfc822',
-#            Disposition => "inline",
-#            Data        => safely_decode( $entity->as_string ),
-#        );
 
         my %msg_headers = DADA::App::Messages::_mime_headers_from_string( $reply->stringify_header );
 
-        DADA::App::Messages::send_generic_email(
+	    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
+		$dap->send_generic_email(
             {
                 -list    => $ls->param('list'),
                 -headers => {
@@ -3612,18 +3645,29 @@ sub send_moderation_msg {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
+
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $self->{list},
+			-name      => 'default',
+			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+		}
+	);
+	my $etp = $em->fetch('await_moderation_msg');
+	
     my $reply = MIME::Entity->build(
         Type     => "text/plain",
         Encoding => $ls->param('plaintext_encoding'),
-        To       => $from,
-        Subject  => $ls->param('await_moderation_msg_subject'),
-        Data     => $ls->param('await_moderation_msg'),
+        To       => $from, # really?
+        Subject  => $etp->{yaml}->{subject},
+        Data     => $etp->{plaintext},
     );
 
-    require DADA::App::Messages;
-    DADA::App::Messages::send_generic_email(
+	require DADA::App::Messages;
+    my $dap = DADA::App::Messages->new({-list => $self->{list}});
+	$dap->send_generic_email(
         {
-            -list    => $self->{list},
             -headers => { DADA::App::Messages::_mime_headers_from_string( $reply->stringify_header ), },
 
             -body        => $reply->stringify_body,
@@ -3690,18 +3734,29 @@ sub send_accept_msg {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $ls->param('list'),
+			-name      => 'default',
+			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+		}
+	);
+	my $etp = $em->fetch('accept_msg');
+	
+	
     my $reply = MIME::Entity->build(
         Type     => "text/plain",
         Encoding => $ls->param('plaintext_encoding'),
         To       => $from,
-        Subject  => $ls->param('accept_msg_subject'),
-        Data     => $ls->param('accept_msg'),
+        Subject  => $etp->{yaml}->{subject},
+        Data     => $etp->{yaml}->{plaintext},
     );
 
-    require DADA::App::Messages;
-    DADA::App::Messages::send_generic_email(
+	require DADA::App::Messages;
+    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
+	$dap->send_generic_email(
         {
-            -list        => $self->{list},
             -headers     => { DADA::App::Messages::_mime_headers_from_string( $reply->stringify_header ), },
             -body        => $reply->stringify_body,
             -tmpl_params => {
@@ -3717,9 +3772,9 @@ sub send_accept_msg {
             },
         }
     );
-	
-	$reply->purge; 
-	$entity->purge;
+
+	#$reply->purge; 
+	#$entity->purge;
 	
 }
 
@@ -3764,19 +3819,30 @@ sub send_reject_msg {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
-
+	
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $ls->param('list'),
+			-name      => 'default',
+			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+		}
+	);
+	my $etp = $em->fetch('rejection_msg');
+	
     my $reply = MIME::Entity->build(
         Type     => "text/plain",
         Encoding => $ls->param('plaintext_encoding'),
         To       => $from,
-        Subject  => $ls->param('rejection_msg_subject'),
-        Data     => $ls->param('rejection_msg'),
+        Subject  => $etp->{yaml}->{subject},
+        Data     => $etp->{plaintext},
     );
 
-    require DADA::App::Messages;
-    DADA::App::Messages::send_generic_email(
+
+	require DADA::App::Messages;
+    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
+	$dap->send_generic_email(
         {
-            -list        => $self->{list},
             -headers     => { DADA::App::Messages::_mime_headers_from_string( $reply->stringify_header ), },
             -body        => $reply->stringify_body,
             -tmpl_params => {
@@ -3798,8 +3864,8 @@ sub send_reject_msg {
         }
     );
 	
-	$reply->purge; 
-	$entity->purge;
+	#$reply->purge; 
+	#$entity->purge;
 	
 }
 

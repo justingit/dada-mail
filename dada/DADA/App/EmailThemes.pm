@@ -13,7 +13,7 @@ use Try::Tiny;
 
 use vars qw($AUTOLOAD);
 use strict;
-my $t = 0;
+my $t = 1;
 
 my %allowed = ( 
     list      =>  undef, 
@@ -88,12 +88,19 @@ sub fetch {
 	if(-e $pt_file) {
 		$pt = $self->slurp($pt_file);
 	}
+	else { 
+		warn '$pt_file does not exist at, ' . $pt_file; 
+	}
+	
 	if(-e $html_file) {
 		$html = $self->slurp($html_file); 
 		if(defined($self->list)){ 
 			$html = $self->munge_logo_img($html);
 		}
+	}else { 
+		warn '$html_file does not exist at, ' . $html_file; 
 	}
+	
 	
 	#my $subject; 
 	my $yaml = {};
