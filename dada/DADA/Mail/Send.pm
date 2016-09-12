@@ -937,7 +937,8 @@ sub mail_sending_options_test {
     require DADA::App::EmailThemes;
     my $em = DADA::App::EmailThemes->new(
         {
-            -list => $self->{list} -name => 'default',
+            -list => $self->{list},
+			-name => 'default',
             -theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
         }
     );
@@ -3203,7 +3204,8 @@ sub _email_batched_finished_notification {
     require DADA::App::EmailThemes;
     my $em = DADA::App::EmailThemes->new(
         {
-            -list => $self->{list} -name => 'default',
+            -list => $self->{list}, 
+			-name => 'default',
             -theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
         }
     );

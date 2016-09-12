@@ -11677,9 +11677,6 @@ sub email_password {
             }
         );
 
-        require DADA::App::ReadEmailMessages;
-        my $rm = DADA::App::ReadEmailMessages->new;
-
         require DADA::App::Messages;
         my $dap = DADA::App::Messages->new( { -list => $list } );
         $dap->send_list_password_reset(
@@ -11774,23 +11771,29 @@ sub email_password {
 
         my $random_string = DADA::Security::Password::generate_rand_string();
 
-        $ls->save( { -settings => { pass_auth_id => $random_string, } } );
-
-      require DADA::App::Messages;
-      my $dap = DADA::App::Messages->new( { -list => $list } );
-      $dap->send_out_message(
-          {
-			  -message => 'list_password_reset_confirmation_message',
-              -email => scalar $q->param('email'),
-                    -vars => {
-                        random_string => $random_string,
-                        REMOTE_HOST   => $ENV{REMOTE_HOST},
-                        REMOTE_ADDR   => $ENV{REMOTE_ADDR},
-                    },
-                },
+        $ls->save(
+            {
+                -settings => {
+                    pass_auth_id => $random_string,
+                }
             }
         );
-		
+
+        require DADA::App::Messages;
+        my $dap = DADA::App::Messages->new( { -list => $list } );
+        $dap->send_out_message(
+            {
+                -message => 'list_password_reset_confirmation_message',
+                -email   => scalar $q->param('email'),
+                -vars    => {
+                    random_string => $random_string,
+                    REMOTE_HOST   => $ENV{REMOTE_HOST},
+                    REMOTE_ADDR   => $ENV{REMOTE_ADDR},
+                },
+            },
+
+        );
+
         require DADA::Logging::Usage;
         my $log = new DADA::Logging::Usage;
         $log->mj_log(

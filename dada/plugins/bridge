@@ -3,6 +3,7 @@
 package bridge;
 
 
+warn 'here.';
 
 use FindBin qw($RealScript);
 
@@ -2120,6 +2121,7 @@ sub send_msg_too_big {
 
 sub notify_of_delivery {
 
+	warn 'in notify_of_delivery'; 
     my ($args) = @_;
 
     if ( !exists( $args->{-ls} ) ) {
@@ -2170,9 +2172,9 @@ sub notify_of_delivery {
             -headers => {
                 To      => $rough_from,
                 From    => $ls->param('list_owner_email'),
-                Subject => $dap->{yaml}->{subject},
+                Subject => $etp->{yaml}->{subject},
             },
-            -body        => $dap->{plaintext},
+            -body        => $etp->{plaintext},
             -tmpl_params => {
                 -list_settings_vars       => $ls->params,
                 -list_settings_vars_param => { -dot_it => 1, },
@@ -2290,15 +2292,18 @@ sub dm_format {
         $fm->reset_from_header(0);
     }
 
-	# warn ' ${$msg} ' .  ${$msg}; 
+	warn '${$msg} ' .  ${$msg}; 
 
     my ( $header_str, $body_str ) = $fm->format_headers_and_body(
         {	
 			-msg             => ${$msg},
 	        -convert_charset => 1,
+			-format_mlm      => 1, 
 		}
 	);
-
+	warn '$header_str' . $header_str; 
+	warn '$body_str'   . $body_str; 
+  
     # not a scalarref (duh)
     my $all_together = $header_str . "\n\n" . $body_str;
     return ( $all_together, $r );
@@ -3270,20 +3275,18 @@ sub inject {
         my $report;
          
         try {
+			warn 'validate_msg';
             ( $status, $errors, $report ) = validate_msg( $ls, \$msg );
         } catch { 
             warn 'couldn\'t validate_msg?!'; 
             return (0, {}, 'couldn\'t validate_msg?!'); 
         };
         
-        try { 
-            
-            #require Data::Dumper; 
-            #$r .= 'Errors: ' . Data::Dumper::Dumper({status => $status, errors => $errors, report => $report}); 
-            #$r .= 'Msg: ' . $msg; 
+		try { 
             
             if ($status == 1) {
                 if ( $ls->param('send_received_msg') == 1 ) {
+					warn 'notify_of_delivery'; 
                     notify_of_delivery(
                         {
                             -ls        => $ls,
@@ -3292,6 +3295,7 @@ sub inject {
                         }
                     );
                 }
+				warn 'process';
                 $r .= process(
                     {
                         -ls        => $ls,
@@ -3300,6 +3304,7 @@ sub inject {
                     }
                 );
 
+				warn 'append_message_to_file';
                 my ( $amtf_status, $amtf_r ) = append_message_to_file( $ls, $msg );
                 $r .= $amtf_r;
                 return ( $status, $errors, $r );
@@ -3307,6 +3312,7 @@ sub inject {
             }
             else {
 
+				warn 'handle_errors';
                 $r .= "\tMessage did not pass verification.\n";
                 $r .= handle_errors( $ls, $errors, $msg );
                 
@@ -3317,13 +3323,14 @@ sub inject {
             }
 
         } catch { 
-            
+
             cluck "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
             # Then, we have to tell the og sender, something went wrong: 
             
             
             $r .= "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
             return ( 0, { irrecoverable_error => 1 }, $r );
+			warn '$r' .  $r;
 
         }; 
         return ( $status, $errors, $r );

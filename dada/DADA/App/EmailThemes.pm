@@ -92,8 +92,10 @@ sub fetch {
 		warn '$pt_file does not exist at, ' . $pt_file; 
 	}
 	
+	warn '$html_file' . $html_file; 
 	if(-e $html_file) {
 		$html = $self->slurp($html_file); 
+		warn '$html:' . $html; 
 		if(defined($self->list)){ 
 			$html = $self->munge_logo_img($html);
 		}

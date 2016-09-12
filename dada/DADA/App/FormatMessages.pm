@@ -264,6 +264,7 @@ sub format_headers_and_body {
 
     if ( exists( $args->{-msg} ) ) {
         warn 'args -msg';
+		warn '$args->{-msg}' . $args->{-msg}; 
         $entity = $self->{parser}->parse_data( safely_encode($args->{-msg}) );
 		warn '$entity->as_string' . $entity->as_string; 
     }
@@ -302,7 +303,12 @@ sub format_headers_and_body {
         $entity = $self->_make_multipart_alternative($entity);
     }
 	if($args->{-format_body} == 1){
-		$entity = $self->_format_body($entity);
+		$entity = $self->_format_body(
+			$entity, 
+			{
+				-format_mlm => $args->{-format_mlm}
+			}
+		);
 	}
 	
     # yeah, don't know why you have to do it
@@ -781,7 +787,9 @@ sub _format_body {
 
     my $self   = shift;
     my $entity = shift;
+	my ($args) = @_;  
 
+	warn '$args->{-format_mlm}' . $args->{-format_mlm};
     my @parts = $entity->parts;
 
     if (@parts) {
@@ -790,7 +798,7 @@ sub _format_body {
             my $n_entity = undef;
 
             try {
-                $n_entity = $self->_format_body( $parts[$i] );
+                $n_entity = $self->_format_body( $parts[$i], $args);
 
             }
             catch {
@@ -829,7 +837,6 @@ sub _format_body {
         my $body    = $entity->bodyhandle;
         my $content = $entity->bodyhandle->as_string;
            $content = safely_decode($content);
-		   warn '$content' . $content; 
         if (
             (
                    ( $entity->head->mime_type eq 'text/plain' )
@@ -843,8 +850,27 @@ sub _format_body {
                     -data => $content,
                     -type => $entity->head->mime_type,
                 );
+
+				if($args->{-format_mlm} == 1) {
+					$content = $self->format_mlm( 
+						{
+							-content => $content, 
+							-type  => $entity->head->mime_type,
+							-crop_html_options => {	
+						        #enabled                          => scalar $draft_q->param('crop_html_content'),
+						        #crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
+						        #crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
+							}, 
+							-rel_to_abs_options => { 
+								enabled => 0, 
+								#base    => $base, 
+							}
+						}
+					);	
+				}
                 $changes = 1;
-            }
+				
+			}
         }
         if (   ( $entity->head->mime_type eq 'text/html' )
             && ( $is_att != 1 ) )
@@ -2109,6 +2135,7 @@ sub _apply_template {
     my $new_data;
     my $template_out = 0;
 
+	warn '$args{-type} in _apply_template:' . $args{-type};
     if ( $args{-type} eq 'text/plain' ) {
         $template_out = $self->use_plaintext_email_template;
     }
@@ -2117,12 +2144,10 @@ sub _apply_template {
     }
 
     if ($template_out) {
-		
-		
 		require DADA::App::EmailThemes; 
 		my $em = DADA::App::EmailThemes->new(
 			{ 
-				-list      => $self->{list}
+				-list      => $self->{list},
 				-name      => 'default',
 				-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
 			}
@@ -2144,7 +2169,10 @@ sub _apply_template {
             $new_data = $etp->{plaintext} || '<!-- tmpl_var message_body -->';
         }
         else {
+			warn '$etp->{html}' . $etp->{html}; 
             $new_data =  $etp->{html}     || '<!-- tmpl_var message_body -->';
+			warn '$new_data:' . $new_data; 
+			
         }
 
         # if(some-user-set-setting) {
