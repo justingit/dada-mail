@@ -14,7 +14,8 @@ use MIME::Entity;
 use DADA::App::Guts;
 use Try::Tiny;
 use Carp qw(croak carp);
-# $Carp::Verbose = 1; 
+
+# $Carp::Verbose = 1;
 use vars qw($AUTOLOAD);
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
@@ -214,11 +215,13 @@ sub format_message {
     my ($args) = @_;
 
     if ( exists( $args->{-msg} ) ) {
+
         # warn 'args -msg';
         my ( $h, $b ) = $self->format_headers_and_body($args);
         return $h . "\n" . $b;
     }
     elsif ( exists( $args->{-entity} ) ) {
+
         # warn 'args -entity';
         return $self->format_headers_and_body($args);
     }
@@ -264,26 +267,28 @@ sub format_headers_and_body {
 
     if ( exists( $args->{-msg} ) ) {
         warn 'args -msg';
-		warn '$args->{-msg}' . $args->{-msg}; 
-        $entity = $self->{parser}->parse_data( safely_encode($args->{-msg}) );
-		warn '$entity->as_string' . $entity->as_string; 
+        warn '$args->{-msg}' . $args->{-msg};
+        $entity = $self->{parser}->parse_data( safely_encode( $args->{-msg} ) );
+        warn '$entity->as_string' . $entity->as_string;
     }
     elsif ( exists( $args->{-entity} ) ) {
+
         # warn 'args -entity';
         $entity = $args->{-entity};
     }
     else {
         die "you must pass either a -msg or an -entity";
     }
-	
-	if(!exists($args->{-format_body})){ 
-		$args->{-format_body} = 1;
-	}
+
+    if ( !exists( $args->{-format_body} ) ) {
+        $args->{-format_body} = 1;
+    }
 
     if ( $args->{-convert_charset} == 1 ) {
-        try { 
-			$entity = $self->change_charset( { -entity => $entity } ); 
-		} catch {
+        try {
+            $entity = $self->change_charset( { -entity => $entity } );
+        }
+        catch {
             carp "changing charset didn't work!: $_";
         };
     }
@@ -302,15 +307,15 @@ sub format_headers_and_body {
     if ( defined( $self->{list} ) ) {
         $entity = $self->_make_multipart_alternative($entity);
     }
-	if($args->{-format_body} == 1){
-		$entity = $self->_format_body(
-			$entity, 
-			{
-				-format_mlm => $args->{-format_mlm}
-			}
-		);
-	}
-	
+    if ( $args->{-format_body} == 1 ) {
+        $entity = $self->_format_body(
+            $entity,
+            {
+                -format_mlm => $args->{-format_mlm}
+            }
+        );
+    }
+
     # yeah, don't know why you have to do it
     # RIGHT BEFORE you make it a string...
     $entity->head->delete('X-Mailer')
@@ -318,11 +323,12 @@ sub format_headers_and_body {
 
     # or how about, count?
 
-	if ( exists( $args->{-entity} ) ) {
+    if ( exists( $args->{-entity} ) ) {
+
         # warn 'returning -entity';
         return $entity;
     }
-	elsif ( exists( $args->{-msg} ) ) {
+    elsif ( exists( $args->{-msg} ) ) {
         warn 'returning -msg';
         my $has = $entity->head->as_string;
         my $bas = $entity->body_as_string;
@@ -331,7 +337,7 @@ sub format_headers_and_body {
         return ( safely_decode($has), safely_decode($bas) );
     }
     else {
-		return undef;
+        return undef;
     }
 
 }
@@ -348,98 +354,101 @@ sub format_phrase_address {
 
 }
 
-sub format_mlm { 
+sub format_mlm {
 
-	my $self     = shift; 
-	my ($args)   = shift; 
-	
-	if(!exists($args->{-content})){ 
-		warn 'Please pass -content with the content of your message.';
-		return undef; 
-	}
-	my $content = $args->{-content};
-	
-	if(!exists($args->{-type})){ 
-		$args->{-type} = 'text/html';
-	}
-	my $type = $args->{-type};
-	
-	if(!exists($args->{-rel_to_abs_options})){ 
-		$args->{-rel_to_abs_options} = {
-			enabled => 0,
-		};
-	}
-	#use Data::Dumper; 
-	#warn '$args->{-rel_to_abs_options}' . Dumper($args->{-rel_to_abs_options});
-	
-	if(!exists($args->{-crop_html_options})){ 
-		$args->{-crop_html_options} = {
-			enabled => 0,
-		};
-	}
-	
+    my $self = shift;
+    my ($args) = shift;
+
+    if ( !exists( $args->{-content} ) ) {
+        warn 'Please pass -content with the content of your message.';
+        return undef;
+    }
+    my $content = $args->{-content};
+
+    if ( !exists( $args->{-type} ) ) {
+        $args->{-type} = 'text/html';
+    }
+    my $type = $args->{-type};
+
+    if ( !exists( $args->{-rel_to_abs_options} ) ) {
+        $args->{-rel_to_abs_options} = { enabled => 0, };
+    }
+
+    #use Data::Dumper;
+    #warn '$args->{-rel_to_abs_options}' . Dumper($args->{-rel_to_abs_options});
+
+    if ( !exists( $args->{-crop_html_options} ) ) {
+        $args->{-crop_html_options} = { enabled => 0, };
+    }
+
     if ( $type eq 'text/html' ) {
-		
-		# Relative to Absolute URL links:
-		if($args->{-rel_to_abs_options}->{enabled} == 1) {
-			$content = $self->rel_to_abs(
-				$content, 
-				$args->{-rel_to_abs_options}->{base},
-			); 
-		}	
-		
-		# Crop HTML:
-		if($args->{-crop_html_options}->{enabled} == 1) {
-			$content = $self->crop_html(
-				{
-					%{
-						-html => $content, 
-						$args->{-crop_html_options},
-					}, 
-				}	
-			);
-		}
-		
-		# Body Content Only:
-		$content = $self->body_content_only($content);
-		
-		# Inlining
-		if ( $self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1 ) {
-			
-			# This should be an option - esp. with Send a Webpage 
-			# (I would say the DEFAULT option...)
-			# 
-           
-		    try {
+
+        # Relative to Absolute URL links:
+        if ( $args->{-rel_to_abs_options}->{enabled} == 1 ) {
+            $content =
+              $self->rel_to_abs( $content, $args->{-rel_to_abs_options}->{base},
+              );
+        }
+
+        # Crop HTML:
+        if ( $args->{-crop_html_options}->{enabled} == 1 ) {
+            $content = $self->crop_html(
+                {
+                    %{
+                        -html => $content,
+                        $args->{-crop_html_options},
+                    },
+                }
+            );
+        }
+
+        # Body Content Only:
+        $content = $self->body_content_only($content);
+
+        # Inlining
+        if ( $self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1 ) {
+
+            # This should be an option - esp. with Send a Webpage
+            # (I would say the DEFAULT option...)
+            #
+
+            try {
                 require DADA::App::FormatMessages::Filters::CSSInliner;
-                my $css_inliner = DADA::App::FormatMessages::Filters::CSSInliner->new;
+                my $css_inliner =
+                  DADA::App::FormatMessages::Filters::CSSInliner->new;
                 $content = $css_inliner->filter( { -html_msg => $content } );
-            } catch {
+            }
+            catch {
                 carp "Problems with filter: $_";
             };
         }
-		
-		# Change inlined images into separate files we'll link 
-		# (and hopefully embed later down the chain)
-        if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1
-            || $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 )
+
+        # Change inlined images into separate files we'll link
+        # (and hopefully embed later down the chain)
+        if (   $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1
+            || $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}
+            ->{enabled} == 1 )
         {
             try {
                 require
                   DADA::App::FormatMessages::Filters::InlineEmbeddedImages;
-                my $iei = DADA::App::FormatMessages::Filters::InlineEmbeddedImages->new;
+                my $iei =
+                  DADA::App::FormatMessages::Filters::InlineEmbeddedImages->new;
                 $content = $iei->filter( { -html_msg => $content } );
-            } catch {
+            }
+            catch {
                 carp "Problems with filter: $_";
             };
         }
 
-		# Unmuck template tags
+        # Unmuck template tags
         try {
             require DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
-            my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
+            my $utt =
+              DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
             $content = $utt->filter( { -html_msg => $content } );
-        } catch {
+        }
+        catch {
             carp "Problems with filter: $_";
         };
     }
@@ -453,61 +462,62 @@ sub format_mlm {
     {
         if ( $type eq 'text/html' ) {
             try {
-                $content = $self->_remove_opener_image(
-                    { -data => $content } );
-            } catch {
+                $content = $self->_remove_opener_image( { -data => $content } );
+            }
+            catch {
                 carp "Problem removing existing opener images: $_";
             };
         }
 
-       # This attempts to strip any unsubscription links in messages
-       # (think: replying)
+        # This attempts to strip any unsubscription links in messages
+        # (think: replying)
         try {
-            require
-              DADA::App::FormatMessages::Filters::RemoveTokenLinks;
-            my $rul  = DADA::App::FormatMessages::Filters::RemoveTokenLinks->new;
+            require DADA::App::FormatMessages::Filters::RemoveTokenLinks;
+            my $rul = DADA::App::FormatMessages::Filters::RemoveTokenLinks->new;
             $content = $rul->filter( { -data => $content } );
-        } catch {
+        }
+        catch {
             carp "Problems with filter: $_";
         };
 
-		# I am doing this, twice?
+        # I am doing this, twice?
         try {
-            require
-              DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
-            my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
+            require DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
+            my $utt =
+              DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
             $content = $utt->filter( { -html_msg => $content } );
-        } catch {
+        }
+        catch {
             carp "Problems with filter: $_";
         };
 
         if ( $self->{ls}->param('discussion_template_defang') == 1 ) {
             try {
                 $content = $self->template_defang( { -data => $content } );
-            } catch {
+            }
+            catch {
                 carp "Problem defanging template: $_";
             };
         }
 
+    }    #/ discussion lists
+         # End filtering done before the template is applied
 
-    } #/ discussion lists
-    # End filtering done before the template is applied
-
-	# Apply our own mailing list template:
+    # Apply our own mailing list template:
     $content = $self->_apply_template(
         -data => $content,
         -type => $type,
     );
 
-
     # Begin filtering done after the template is applied
     if ( $self->mass_mailing == 1 ) {
         if ( $self->list_type eq 'just_unsubscribed' ) {
+
             # ... well, nothing, really.
         }
         elsif ( $self->list_type eq 'invitelist' ) {
-            $content = $self->subscription_confirmationation(
-                { -str => $content, } );
+            $content =
+              $self->subscription_confirmationation( { -str => $content, } );
         }
         else {
             $content = $self->unsubscriptionation(
@@ -559,122 +569,126 @@ sub format_mlm {
     if ( $valid == 0 ) {
         my $munge = quotemeta('/fake/path/for/non/file/template');
         $errors =~ s/$munge/line/;
-        croak "Problems with email message! Invalid template markup: '$errors' \n"
+        croak
+          "Problems with email message! Invalid template markup: '$errors' \n"
           . '-' x 72 . "\n"
           . $content;
     }
-	
-	return $content;
-	
+
+    return $content;
+
 }
 
-sub rel_to_abs { 
-	
-	require URI::URL;
-	require URI::Find; 
-	require HTML::LinkExtor;
-	
-	my $self       = shift; 
-	my $str        = shift; 	
-	my $base       = shift; 
-	
-	my $parsed      = $str; 
+sub rel_to_abs {
 
-	my @links_to_look_at = (); 
-	
-	# There's a way to do differnt things, based on the tag you get... 
-	my $callback = sub {
-	     my($tag, %attr) = @_;     
+    require URI::URL;
+    require URI::Find;
+    require HTML::LinkExtor;
 
-		return 
-			unless $tag eq 'a' || $tag eq 'area' || $tag eq 'img'; 
-			
-		my $link; 
-		if($tag eq 'a' || $tag eq 'area'){
-			$link =  $attr{href}; 
-		}elsif($tag eq 'img'){ 
-			$link =  $attr{src}; 
-		}
-			
-		if($link =~ m/^mailto\:/) { 
-			warn "Skipping mailto: links"
-				if $t;
-		}
-		elsif($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
-			warn '$link looks to contain tags? skipping.'
-			 if $t; 
-		}
-#		elsif($self->_ignore_this_url($link) == 1) { 
-#		    warn "skipping: $link"
-#		        if $t;
-#		}
-		else { 
-			warn 'pushing: ' . $link if $t; 
-			push(@links_to_look_at, $link);	
-		}
-		
-		if($link =~ m/\&/){ 
-			# There's some weird stuff happening in HTML::LinkExtor, 
-			# Which will change, "&amps;" back to, "&", probably due to 
-			# A well-reasoned... reason. But it still breaks shit. 
-			# So I look for both: 
+    my $self = shift;
+    my $str  = shift;
+    my $base = shift;
 
-			my $ampersand_link = $link; 
-			   $ampersand_link =~ s/\&/\&amp;/g;
-			push(@links_to_look_at, $ampersand_link); 
+    my $parsed = $str;
 
-		}
-	};
+    my @links_to_look_at = ();
 
-    my $p = HTML::LinkExtor->new( $callback );
-       $p->parse($str);
-	undef $p; 
+    # There's a way to do differnt things, based on the tag you get...
+    my $callback = sub {
+        my ( $tag, %attr ) = @_;
 
-	if($t) { 
-		require Data::Dumper; 
-		warn 'Links Found:' . Data::Dumper::Dumper([@links_to_look_at]); 
-	}
-	
-	foreach my $rel(@links_to_look_at){ 
-		warn '$rel: "' . $rel . '"'
-			if $t; 
-			
-		my $abs_link = URI::URL->new($rel)->abs( $base, 1 );
-		warn '$abs_link: ' . $abs_link
-			if $t; 
-	
-		my $qm_link         = quotemeta($rel);
-		
-		warn '$qm_link: "' . $qm_link . '"'
-			if $t; 
-		
-		# This line is suspect - it only works with double quotes, ONLY looks at the first (?) 
-		# double quote and doesn't use any sort of API from HTML::LinkExtor. 
-		# 
-		# Also see that we don't get rid of dupes in @links_to_look_at, and this regex is not global. 
-		# If you do one do the other, 
-		
-		#if($tag eq 'a' || $tag eq 'area'){
-				$parsed =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$abs_link/;
-		#}elsif($tag eq 'img'){ 
-				$parsed =~ s/(src(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$abs_link/;
-		#}
-	}
+        return
+          unless $tag eq 'a' || $tag eq 'area' || $tag eq 'img';
 
-	@links_to_look_at = (); 
-	
-	return $parsed; 
+        my $link;
+        if ( $tag eq 'a' || $tag eq 'area' ) {
+            $link = $attr{href};
+        }
+        elsif ( $tag eq 'img' ) {
+            $link = $attr{src};
+        }
+
+        if ( $link =~ m/^mailto\:/ ) {
+            warn "Skipping mailto: links"
+              if $t;
+        }
+        elsif ( $link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/ ) {
+            warn '$link looks to contain tags? skipping.'
+              if $t;
+        }
+
+        #		elsif($self->_ignore_this_url($link) == 1) {
+        #		    warn "skipping: $link"
+        #		        if $t;
+        #		}
+        else {
+            warn 'pushing: ' . $link if $t;
+            push( @links_to_look_at, $link );
+        }
+
+        if ( $link =~ m/\&/ ) {
+
+            # There's some weird stuff happening in HTML::LinkExtor,
+            # Which will change, "&amps;" back to, "&", probably due to
+            # A well-reasoned... reason. But it still breaks shit.
+            # So I look for both:
+
+            my $ampersand_link = $link;
+            $ampersand_link =~ s/\&/\&amp;/g;
+            push( @links_to_look_at, $ampersand_link );
+
+        }
+    };
+
+    my $p = HTML::LinkExtor->new($callback);
+    $p->parse($str);
+    undef $p;
+
+    if ($t) {
+        require Data::Dumper;
+        warn 'Links Found:' . Data::Dumper::Dumper( [@links_to_look_at] );
+    }
+
+    foreach my $rel (@links_to_look_at) {
+        warn '$rel: "' . $rel . '"'
+          if $t;
+
+        my $abs_link = URI::URL->new($rel)->abs( $base, 1 );
+        warn '$abs_link: ' . $abs_link
+          if $t;
+
+        my $qm_link = quotemeta($rel);
+
+        warn '$qm_link: "' . $qm_link . '"'
+          if $t;
+
+# This line is suspect - it only works with double quotes, ONLY looks at the first (?)
+# double quote and doesn't use any sort of API from HTML::LinkExtor.
+#
+# Also see that we don't get rid of dupes in @links_to_look_at, and this regex is not global.
+# If you do one do the other,
+
+        #if($tag eq 'a' || $tag eq 'area'){
+        $parsed =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$abs_link/;
+
+        #}elsif($tag eq 'img'){
+        $parsed =~ s/(src(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$abs_link/;
+
+        #}
+    }
+
+    @links_to_look_at = ();
+
+    return $parsed;
 }
-
-
 
 sub crop_html {
-     
-    my $self = shift;
-	my ($args) = @_; 
-	my $html   = $args->{-html};
-	
-	    try {
+
+    my $self   = shift;
+    my ($args) = @_;
+    my $html   = $args->{-html};
+
+    try {
         require HTML::Tree;
         require HTML::Element;
         require HTML::TreeBuilder;
@@ -690,22 +704,36 @@ sub crop_html {
         $root->elementify();
         my $replace_tag = undef;
         my $crop        = undef;
-		
+
         if ( $args->{crop_html_content_selector_type} eq 'id' ) {
-            if ( $replace_tag = $root->look_down( "id", $args->{crop_html_content_selector_label} ) ) {
+            if (
+                $replace_tag = $root->look_down(
+                    "id", $args->{crop_html_content_selector_label}
+                )
+              )
+            {
                 $crop = $replace_tag->as_HTML( undef, '  ' );
             }
             else {
-                warn 'cannot crop html: ' . 'cannot find id, ' . $args->{crop_html_content_selector_label};
+                warn 'cannot crop html: '
+                  . 'cannot find id, '
+                  . $args->{crop_html_content_selector_label};
                 return $html;
             }
         }
         elsif ( $args->{crop_html_content_selector_type} eq 'class' ) {
-            if ( $replace_tag = $root->look_down( "class", $args->{crop_html_content_selector_label} ) ) {
+            if (
+                $replace_tag = $root->look_down(
+                    "class", $args->{crop_html_content_selector_label}
+                )
+              )
+            {
                 $crop = $replace_tag->as_HTML( undef, '  ' );
             }
             else {
-                warn 'cannot crop html: ' . 'cannot find class, ' . $args->{crop_html_content_selector_label};
+                warn 'cannot crop html: '
+                  . 'cannot find class, '
+                  . $args->{crop_html_content_selector_label};
                 return $html;
             }
         }
@@ -726,70 +754,71 @@ sub crop_html {
     };
 }
 
+sub body_content_only {
+    my $self            = shift;
+    my $html            = shift;
+    my $has_HTML_Parser = 1;
+    my $body            = undef;
 
-sub body_content_only { 
-	my $self            = shift; 
-	my $html            = shift; 
-	my $has_HTML_Parser = 1;  
-	my $body            = undef;
-	
-	try {
-		require HTML::Parser; 
-	}
-	catch { 
-		$has_HTML_Parser = 0;
-	};
+    try {
+        require HTML::Parser;
+    }
+    catch {
+        $has_HTML_Parser = 0;
+    };
 
-	if($has_HTML_Parser == 0){ 
-		$html =~ s/\n//g; 
-		if (
-			$html =~ m/\<(.*?)body(.*?)\>(.*?)\<\/body\>/m
-		) {
-		    $body = $3;
-		}
-		return $body; 
-	}
-	else { 
-		my $p = HTML::Parser->new( api_version => 3 );
-		$p->handler( start => \&start_handler, "self,tagname,attr" );
-		$p->parse($html);
-		sub start_handler {
-		    my $self     = shift;
-		    my $tagname  = shift;
-		    my $attr     = shift;
-		    my $text     = shift;
-		    return unless ( $tagname eq 'body' );
-		    $self->handler( start   => sub { $body .= shift }, "text" );
-		    $self->handler( text    => sub { $body .= shift }, "text" );
-		    $self->handler( default => sub { $body .= shift }, "text" );
-		    $self->handler( comment => sub { $body .= shift }, "text" );
-		    $self->handler( end     => sub {
-		    my ($endtagname, $self, $text) = @_;
-		         if($endtagname eq $tagname) {
-					 $self->eof;
-		         } else {
-		              $body .= $text;
-		        }
-		    }, "tagname,self,text");
-		 }
-		 if(! defined($body)){ 
-			 warn "couldn't find body!";
-			 return $html; 
-		 }
-		 else {
-			 return $body; 
-		 }
-	 }	
+    if ( $has_HTML_Parser == 0 ) {
+        $html =~ s/\n//g;
+        if ( $html =~ m/\<(.*?)body(.*?)\>(.*?)\<\/body\>/ ) {
+            $body = $3;
+        }
+        return $body;
+    }
+    else {
+        my $p = HTML::Parser->new( api_version => 3 );
+        $p->handler( start => \&start_handler, "self,tagname,attr" );
+        $p->parse($html);
+
+        sub start_handler {
+            my $self    = shift;
+            my $tagname = shift;
+            my $attr    = shift;
+            my $text    = shift;
+            return unless ( $tagname eq 'body' );
+            $self->handler( start   => sub { $body .= shift }, "text" );
+            $self->handler( text    => sub { $body .= shift }, "text" );
+            $self->handler( default => sub { $body .= shift }, "text" );
+            $self->handler( comment => sub { $body .= shift }, "text" );
+            $self->handler(
+                end => sub {
+                    my ( $endtagname, $self, $text ) = @_;
+                    if ( $endtagname eq $tagname ) {
+                        $self->eof;
+                    }
+                    else {
+                        $body .= $text;
+                    }
+                },
+                "tagname,self,text"
+            );
+        }
+        if ( !defined($body) ) {
+            warn "couldn't find body!";
+            return $html;
+        }
+        else {
+            return $body;
+        }
+    }
 }
-
 
 sub _format_body {
 
     my $self   = shift;
     my $entity = shift;
-	my ($args) = @_;  
+    my ($args) = @_;
 
-	warn '$args->{-format_mlm}' . $args->{-format_mlm};
+    warn '$args->{-format_mlm}' . $args->{-format_mlm};
     my @parts = $entity->parts;
 
     if (@parts) {
@@ -798,7 +827,7 @@ sub _format_body {
             my $n_entity = undef;
 
             try {
-                $n_entity = $self->_format_body( $parts[$i], $args);
+                $n_entity = $self->_format_body( $parts[$i], $args );
 
             }
             catch {
@@ -836,7 +865,7 @@ sub _format_body {
 
         my $body    = $entity->bodyhandle;
         my $content = $entity->bodyhandle->as_string;
-           $content = safely_decode($content);
+        $content = safely_decode($content);
         if (
             (
                    ( $entity->head->mime_type eq 'text/plain' )
@@ -851,31 +880,32 @@ sub _format_body {
                     -type => $entity->head->mime_type,
                 );
 
-				if($args->{-format_mlm} == 1) {
-					$content = $self->format_mlm( 
-						{
-							-content => $content, 
-							-type  => $entity->head->mime_type,
-							-crop_html_options => {	
-						        #enabled                          => scalar $draft_q->param('crop_html_content'),
-						        #crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
-						        #crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
-							}, 
-							-rel_to_abs_options => { 
-								enabled => 0, 
-								#base    => $base, 
-							}
-						}
-					);	
-				}
+                if ( $args->{-format_mlm} == 1 ) {
+                    $content = $self->format_mlm(
+                        {
+                            -content           => $content,
+                            -type              => $entity->head->mime_type,
+                            -crop_html_options => {
+
+#enabled                          => scalar $draft_q->param('crop_html_content'),
+#crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
+#crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
+                            },
+                            -rel_to_abs_options => {
+                                enabled => 0,
+
+                                #base    => $base,
+                            }
+                        }
+                    );
+                }
                 $changes = 1;
-				
-			}
+
+            }
         }
         if (   ( $entity->head->mime_type eq 'text/html' )
             && ( $is_att != 1 ) )
         {
-
 
             if ( $self->no_list != 1 ) {
 
@@ -912,7 +942,6 @@ sub _format_body {
         return $entity;
     }
 }
-
 
 =pod
 
@@ -971,7 +1000,6 @@ sub _give_props {
         my $text_props =
 "\n\nMailing List Powered by Dada Mail\n$DADA::Config::PROGRAM_URL/what_is_dada_mail/\n";
 
-
         if ( $args{-type} eq 'text/html' ) {
 
             if ( $args{-data} =~ m{<!--/signature-->} ) {
@@ -1000,8 +1028,7 @@ sub _give_props {
 
 sub _add_opener_image {
 
-	#warn '_add_opener_image';
-	
+    #warn '_add_opener_image';
 
     my $self    = shift;
     my $content = shift;
@@ -1882,7 +1909,8 @@ sub _list_name_subject {
           . '<!-- tmpl_var list_settings.list_name -->' . ']'
           . "$re $orig_subject";
     }
-    elsif ( $self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_shortname" )
+    elsif ( $self->{ls}->param('prefix_discussion_list_subjects_with') eq
+        "list_shortname" )
     {
         $orig_subject = '['
           . '<!-- tmpl_var list_settings.list -->' . ']'
@@ -2129,13 +2157,12 @@ sub _apply_template {
       if !$args{-data};
     croak "no type! $!" if !$args{-type};
 
-
     my $data = $args{-data};
 
     my $new_data;
     my $template_out = 0;
 
-	warn '$args{-type} in _apply_template:' . $args{-type};
+    warn '$args{-type} in _apply_template:' . $args{-type};
     if ( $args{-type} eq 'text/plain' ) {
         $template_out = $self->use_plaintext_email_template;
     }
@@ -2144,35 +2171,36 @@ sub _apply_template {
     }
 
     if ($template_out) {
-		require DADA::App::EmailThemes; 
-		my $em = DADA::App::EmailThemes->new(
-			{ 
-				-list      => $self->{list},
-				-name      => 'default',
-				-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
-			}
-		);
-		my $etp = {}; 
-	    if (   $self->no_list != 1
-	        && $self->mass_mailing == 1
-	        && $self->list_type eq 'list'
-	        && $self->{ls}->param('disable_discussion_sending') != 1
-	        && $self->{ls}->param('group_list') == 1 )
-	    {
-			$etp = $em->fetch('mailing_list_message-discussion');
-		}
-		else {
-			$etp = $em->fetch('mailing_list_message');
-		}
-		
+        require DADA::App::EmailThemes;
+        my $em = DADA::App::EmailThemes->new(
+            {
+                -list      => $self->{list},
+                -name      => 'default',
+                -theme_dir => $DADA::Config::SUPPORT_FILES->{dir}
+                  . '/themes/email',
+            }
+        );
+        my $etp = {};
+        if (   $self->no_list != 1
+            && $self->mass_mailing == 1
+            && $self->list_type eq 'list'
+            && $self->{ls}->param('disable_discussion_sending') != 1
+            && $self->{ls}->param('group_list') == 1 )
+        {
+            $etp = $em->fetch('mailing_list_message-discussion');
+        }
+        else {
+            $etp = $em->fetch('mailing_list_message');
+        }
+
         if ( $args{-type} eq 'text/plain' ) {
             $new_data = $etp->{plaintext} || '<!-- tmpl_var message_body -->';
         }
         else {
-			warn '$etp->{html}' . $etp->{html}; 
-            $new_data =  $etp->{html}     || '<!-- tmpl_var message_body -->';
-			warn '$new_data:' . $new_data; 
-			
+            warn '$etp->{html}' . $etp->{html};
+            $new_data = $etp->{html} || '<!-- tmpl_var message_body -->';
+            warn '$new_data:' . $new_data;
+
         }
 
         # if(some-user-set-setting) {
@@ -2487,67 +2515,7 @@ sub message_body_tagged {
     return $args->{-str};
 }
 
-=pod
 
-=head2 _apply_list_template
-
- $new_data = $self->_apply_list_template($new_data);
-
-Given a string, will apply the List Template. The List Template is 
-usually used for HTML screens that appear in your web browser. 
-
-=cut
-
-sub _apply_list_template {
-
-    my $self = shift;
-
-    require DADA::Template::HTML;
-
-    my $html      = shift;
-    my $new_html  = shift;
-    my $body_html = '';
-
-    $html =~ s/(\<body.*?\>|<\/body\>)/\n$1\n/gi;
-
-    my @lines = split( "\n", $html );
-    for (@lines) {
-        if ( /\<body(.*?)\>/i .. /\<\/body\>/i ) {
-            next if /\<body(.*?)\>/i || /\<\/body\>/i;
-            $body_html .= $_ . "\n";
-        }
-    }
-
-    $body_html ||= $html;
-
-    $new_html = (
-        DADA::Template::HTML::list_template(
-            -Part  => "header",
-            -Title => $self->Subject,
-            -List  => $self->{ls}->param('list'),
-            -vars  => {
-
-                # kludge
-                message_id => '[message_id]'
-                ,    # DEV: shouldn't be, "<!-- tmpl_var message_id -->" ?
-
-                show_profile_widget => 0,
-            }
-        )
-      )
-      .
-
-      $body_html .
-
-      DADA::Template::HTML::list_template(
-        -Part => "footer",
-        -List => $self->{ls}->param('list'),
-        ,
-      );
-
-    return $new_html;
-
-}
 
 sub entity_from_dada_style_args {
 
@@ -2806,46 +2774,47 @@ sub email_template {
     my $self = shift;
 
     my ($args) = @_;
-	if(!exists($args->{-first_pass})) {
-		$args->{-first_pass} = 1; 
-	}
-	if($args->{-first_pass} == 1){ 
-		# warn 'first pass!';
+    if ( !exists( $args->{-first_pass} ) ) {
+        $args->{-first_pass} = 1;
+    }
+    if ( $args->{-first_pass} == 1 ) {
+
+        # warn 'first pass!';
         my $screen_vars = {};
         for ( keys %{$args} ) {
             next if $_ eq '-entity';
             $screen_vars->{$_} = $args->{$_};
         }
         $screen_vars->{-dada_pseudo_tag_filter} = 1;
-		
-		my $special_headers = { 
-			Subject       => 'email.subject', 
-			'X-Preheader' => 'email.preheader',
-		};
 
-		# warn q{$args->{-entity}->head->as_string} . $args->{-entity}->head->as_string;
+        my $special_headers = {
+            Subject       => 'email.subject',
+            'X-Preheader' => 'email.preheader',
+        };
 
-		for(keys %$special_headers) {
-			# warn '$_' . $_; 
-	        my $og_header = $args->{-entity}->head->get( $_, 0 );
-	           $og_header = $self->_decode_header($og_header);
-			my $header = DADA::Template::Widgets::screen(
-	            {
-	                %{$screen_vars},
-	                -data => \$og_header,
-				}
-			); 	
-			# warn '$header' . $header; 
-			# warn q{$special_headers->{$_}} . $special_headers->{$_}; 
-						
-			$args->{-vars}->{$special_headers->{$_}} = $header;
-			
-		}
-		undef $screen_vars;
-		$args->{-first_pass} = 0;
-	}
-	
-	
+# warn q{$args->{-entity}->head->as_string} . $args->{-entity}->head->as_string;
+
+        for ( keys %$special_headers ) {
+
+            # warn '$_' . $_;
+            my $og_header = $args->{-entity}->head->get( $_, 0 );
+            $og_header = $self->_decode_header($og_header);
+            my $header = DADA::Template::Widgets::screen(
+                {
+                    %{$screen_vars}, -data => \$og_header,
+                }
+            );
+
+            # warn '$header' . $header;
+            # warn q{$special_headers->{$_}} . $special_headers->{$_};
+
+            $args->{-vars}->{ $special_headers->{$_} } = $header;
+
+        }
+        undef $screen_vars;
+        $args->{-first_pass} = 0;
+    }
+
     require DADA::Template::Widgets;
 
     if ( !exists( $args->{-entity} ) ) {
@@ -2925,9 +2894,9 @@ sub email_template {
                 # use Data::Dumper;
                 # warn '%screen_vars ' . Dumper($screen_vars);
                 # And, that's it.
-				
-				# warn q{keys %$screen_vars} . keys %$screen_vars; 
-				
+
+                # warn q{keys %$screen_vars} . keys %$screen_vars;
+
                 $content = DADA::Template::Widgets::screen(
                     {
                         %{$screen_vars},
@@ -2939,10 +2908,10 @@ sub email_template {
                             ? (
                                 -webify_these => [
                                     qw(
-										list_settings.info 
-										list_settings.privacy_policy 
-										list_settings.physical_address
-									)
+                                      list_settings.info
+                                      list_settings.privacy_policy
+                                      list_settings.physical_address
+                                      )
                                 ],
                               )
                             : ()
@@ -2977,17 +2946,12 @@ sub email_template {
 
     #warn 'all headers:' . $args->{-entity}->head->as_string;
     for my $header (
-        'Subject',  
-		'X-Preheader',      
-		'From',
-        'To',             
-		'Reply-To',
-        'Return-Path',    
-		'List',
-        'List-URL',       
-		'List-Owner',
-        'List-Subscribe', 
-		'List-Unsubscribe'
+        'Subject',    'X-Preheader',
+        'From',       'To',
+        'Reply-To',   'Return-Path',
+        'List',       'List-URL',
+        'List-Owner', 'List-Subscribe',
+        'List-Unsubscribe'
       )
     {
 
@@ -3039,8 +3003,7 @@ sub email_template {
                             # Template it Out
                         $phrase = DADA::Template::Widgets::screen(
                             {
-                                %{$screen_vars}, 
-								-data => \$phrase,
+                                %{$screen_vars}, -data => \$phrase,
                             }
                         );
 
@@ -3089,8 +3052,7 @@ sub email_template {
                 {    # has a template? (optimization)
                     $header_value = DADA::Template::Widgets::screen(
                         {
-                            %{$screen_vars}, 
-							-data => \$header_value,
+                            %{$screen_vars}, -data => \$header_value,
                         }
                     );
                     warn 'Template:' . safely_encode($header_value)
