@@ -760,6 +760,8 @@ sub params_to_save {
         schedule_html_body_checksum    => 1,
         
         schedule_recurring_only_mass_mail_if_primary_diff => 1, 
+		
+		layout                         => 1,
         
 
     };

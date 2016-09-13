@@ -83,13 +83,7 @@ sub filter {
 	my $html;
 	
 	if(exists($args->{-html_msg})){ 
-		
-		
-		$html = $args->{-html_msg};
-		#warn '$html.0' . $html; 
-		
-		$html = $self->inject_stylesheet($html); 
-		#warn '$html.1' . $html; 
+		$html = $args->{-html_msg};		
 		
 	#	try{ 
 	#		require CSS::Inliner; 
@@ -136,67 +130,6 @@ sub filter {
 		croak "you MUST pass your HTML message in, 'html_msg'!"; 
 	}
 }
-
-
-sub inject_stylesheet { 
-	my $self = shift; 
-	my $html = shift;
-	
-	my $css = $self->grab_css(); 
-	
-	$css = qq{ 
-		<!-- start injected css -->
-		<style type="text/css"> 
-			$css
-		</style> 
-		<!-- end injected css -->
-	};
-	
-	# NAIVE:
-	# Well, does it have a body?  
-	if($html =~ m/\<body/i){ 
-		$html =~ s/\<body/\n$css\n<body/i;
-	}
-	else { 
-		$html = qq{
-
-			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-			    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-			    <meta name="viewport" content="width=device-width">
-			  </head>
-			  $css
-			  <body>
-			  	$html
-			  </body>
-			 </html> 
-		};
-	}
-	
-	return $html;
-
-}
-
-
-
-
-sub grab_css { 
-	my $self = shift;
-	
-	require  DADA::App::EmailThemes; 
-	my $em = DADA::App::EmailThemes->new(
-		{ 
-			-name => 'default',
-			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
-		}
-	);
-	
-	return $em->app_css();
-
-}
-
 
 sub body_content_only { 
 	my $self            = shift; 

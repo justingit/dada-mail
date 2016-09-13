@@ -359,6 +359,7 @@ sub format_mlm {
     my $self = shift;
     my ($args) = shift;
 
+	 
     if ( !exists( $args->{-content} ) ) {
         warn 'Please pass -content with the content of your message.';
         return undef;
@@ -404,14 +405,25 @@ sub format_mlm {
 
         # Body Content Only:
         $content = $self->body_content_only($content);
-
+		
+		unless ($self->layout_choice($args) eq 'none') {
+	        try {
+	            require DADA::App::FormatMessages::Filters::InjectThemeStylesheet;
+	            my $its =
+	              DADA::App::FormatMessages::Filters::InjectThemeStylesheet->new;
+	            $content = $its->filter( { -html_msg => $content } );
+	        }
+	        catch {
+	            carp "Problems with filter: $_";
+	        };
+		}
+		
         # Inlining
         if ( $self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1 ) {
 
             # This should be an option - esp. with Send a Webpage
             # (I would say the DEFAULT option...)
             #
-
             try {
                 require DADA::App::FormatMessages::Filters::CSSInliner;
                 my $css_inliner =
@@ -503,10 +515,12 @@ sub format_mlm {
     }    #/ discussion lists
          # End filtering done before the template is applied
 
+
     # Apply our own mailing list template:
     $content = $self->_apply_template(
         -data => $content,
         -type => $type,
+		-layout => $args->{-layout},
     );
 
     # Begin filtering done after the template is applied
@@ -2180,27 +2194,21 @@ sub _apply_template {
                   . '/themes/email',
             }
         );
-        my $etp = {};
-        if (   $self->no_list != 1
-            && $self->mass_mailing == 1
-            && $self->list_type eq 'list'
-            && $self->{ls}->param('disable_discussion_sending') != 1
-            && $self->{ls}->param('group_list') == 1 )
-        {
-            $etp = $em->fetch('mailing_list_message-discussion');
-        }
-        else {
-            $etp = $em->fetch('mailing_list_message');
-        }
-
+        my $etp = {
+        	plaintext => '<!-- tmpl_var message_body -->', 
+			html      => '<!-- tmpl_var message_body -->', 
+        };
+		my $layout = $self->layout_choice({%args});
+		if($layout ne 'none'){ 
+			$etp = $em->fetch($layout);
+		}
+		
+		
         if ( $args{-type} eq 'text/plain' ) {
             $new_data = $etp->{plaintext} || '<!-- tmpl_var message_body -->';
         }
         else {
-            warn '$etp->{html}' . $etp->{html};
             $new_data = $etp->{html} || '<!-- tmpl_var message_body -->';
-            warn '$new_data:' . $new_data;
-
         }
 
         # if(some-user-set-setting) {
@@ -2292,6 +2300,39 @@ $new_data
 
     return $new_data;
 
+}
+
+sub layout_choice { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	my $layout = undef; 
+	
+	if(exists($args->{-layout})){
+		if($args->{-layout} eq 'none'){ 
+			return 'none';
+		}
+		else {
+			# init. sort of. 
+			$layout = 'mailing_list_message';
+			if($args->{-layout} ne 'default'){
+				$layout .= '-' . $args->{-layout};
+			}
+		}
+	}
+	else {
+		if (   $self->no_list != 1
+			&& $self->mass_mailing == 1
+			&& $self->list_type eq 'list'
+			&& $self->{ls}->param('disable_discussion_sending') != 1
+			&& $self->{ls}->param('group_list') == 1 )
+		{			
+			$layout .= '-discussion';
+		}
+		else { 
+			$layout = 'mailing_list_message';
+		}
+	}
+	return $layout; 
 }
 
 #dumb.

@@ -264,9 +264,6 @@ sub send_email {
 			);
         }
 		else { 
-			warn 'DADA::App::EmailMessagePreview!';
-			
-			warn '$construct_r->{subject}' .  $construct_r->{subject}; 
 			require DADA::App::EmailMessagePreview; 
 			my $daemp = DADA::App::EmailMessagePreview->new; 
 			my $daemp_id = $daemp->save({
@@ -286,10 +283,7 @@ sub send_email {
 	        my $body = $json->pretty->encode($return);
 	        if($t == 1){ 
 	            require Data::Dumper; 
-	            warn 'returning headers: ' . Data::Dumper::Dumper($headers); 
-	            warn 'returning body: ' . $body; 
 	        }
-			warn '$body';
 			
 	        return ( $headers, $body );
 		}
@@ -582,7 +576,7 @@ sub construct_and_send {
     }
     else {
      
-	 	warn '$con->{subject}' . $con->{subject}; 
+	 	#warn '$con->{subject}' . $con->{subject}; 
 	 	# Dry run:
         return { 
 			status => 1, 
@@ -650,17 +644,19 @@ sub construct_from_text {
       DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
 	  
   	warn '$html_message before:' . $html_message; 
-		
+	
   	$html_message = $fm->format_mlm( 
   		{
   			-content => $html_message, 
-  			-type  => 'text/html', 
+  			-type   => 'text/html', 
+			-layout => $draft_q->param('layout'),
 		}
   	);	
   	$text_message = $fm->format_mlm(
 		{ 
 			-content => $text_message, 
 			-type  => 'text/plain',
+			-layout => $draft_q->param('layout'),
 		}
 	);
   	warn '$html_message after:' . $html_message; 
@@ -965,8 +961,6 @@ sub construct_from_url {
     undef($errors);
 	
 	
-    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-
 	$html_message = $fm->format_mlm( 
 		{
 			-content => $html_message, 
@@ -979,7 +973,8 @@ sub construct_from_url {
 			-rel_to_abs_options => { 
 				enabled => 1, 
 				base    => $base, 
-			}
+			},
+			-layout => $draft_q->param('layout'),
 		}
 	);	
 	if( length($text_message) > 0){

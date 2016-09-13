@@ -1070,7 +1070,6 @@ sub send_email {
 
 sub email_message_preview {
 
-    warn 'email_message_preview!';
     my $self = shift;
     my $q    = $self->query();
 
@@ -1087,10 +1086,15 @@ sub email_message_preview {
     my $fields_attr       = $pfm->get_all_field_attributes;
     my $subscriber_fields = $pfm->fields;
 
+	# This should really be set to whatever the test email is set to... 
     my $fake_sub_info = { 'subscriber.email' => 'user@example.com', };
     for (@$subscriber_fields) {
         $fake_sub_info->{ 'subscriber.' . $_ } = $fields_attr->{$_}->{label},;
     }
+	
+	# Other things need to be filled in, like the usubscription link 
+	# which, strangely, doesn't show up!? (expand macro tags, or something?)
+
 
     require DADA::App::EmailMessagePreview;
     my $daemp = DADA::App::EmailMessagePreview->new;
