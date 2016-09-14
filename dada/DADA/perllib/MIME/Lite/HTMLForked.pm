@@ -642,13 +642,15 @@ sub input_image(\%$$) {
 sub create_image_part {
     my ( $self, $ur, $typ ) = @_;
     my ( $type, $buff1 );
-
+	
+	# This is asolutely ridiculous. 
     # Create MIME type
     if    ($typ)                   { $type = $typ; }
     elsif ( lc($ur) =~ /\.gif$/i ) { $type = "image/gif"; }
     elsif ( lc($ur) =~ /\.jpg$/i ) { $type = "image/jpg"; }
-    elsif ( lc($ur) =~ /\.png$/i ) { $type = "image/png"; }
-    else                           { $type = "application/x-shockwave-flash"; }
+    elsif ( lc($ur) =~ /\.jpeg$/i ) { $type = "image/jpg"; }
+    elsif ( lc($ur) =~ /\.png$/i ) { $type  = "image/png"; }
+    else                           { $type = "application/octet-stream"; }
 
     # Url is already in memory
     if ( $self->{_HASH_TEMPLATE}{$ur} ) {

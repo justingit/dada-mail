@@ -1159,25 +1159,30 @@ sub html_to_plaintext {
 			carp $DADA::Config::PROGRAM_NAME . ' ' . $DADA::Config::VER . 
 				' warning: Something went wrong with the HTML to PlainText conversion: ' . 
 				$f->error; 
-			return _chomp_off_body(convert_to_ascii($args->{-str})); 
+			return convert_to_ascii(_chomp_off_body($args->{-str})); 
 		}
 	}
 	else { 
-		return _chomp_off_body(convert_to_ascii($args->{-str})); 	
+		carp 'before:' . $args->{-str}; 
+		my $pt = _chomp_off_body($args->{-str}); 
+		   $pt = convert_to_ascii($pt); 
+		carp 'after:' . $pt; 
+		return $pt; 
 	}		
 }
 
 
 sub _chomp_off_body { 
 	
+	# This is dumb. 
+	
 	my $str   = shift;
 	my $n_str = $str;
 	
-	if($n_str =~ m/\<body.*?\>|<\/body\>/i){ 
-
-		$n_str =~ m/\<body.*?\>([\s\S]*?)\<\/body\>/i;  
-		$n_str = $1; 
-		
+	if (
+		$n_str =~ m/\<(.*?)body(.*?)\>(.*?)\<\/body\>/m
+	) {
+	    $n_str = $3;		
 		if($n_str =~ m/\<body.*?\>|<\/body\>/i){ 
 			$n_str = _chomp_off_body_thats_being_difficult($n_str); 		
 		}		

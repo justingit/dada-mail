@@ -643,7 +643,6 @@ sub construct_from_text {
     ( $text_message, $html_message ) =
       DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
 	  
-  	warn '$html_message before:' . $html_message; 
 	
   	$html_message = $fm->format_mlm( 
   		{
@@ -659,7 +658,6 @@ sub construct_from_text {
 			-layout => $draft_q->param('layout'),
 		}
 	);
-  	warn '$html_message after:' . $html_message; 
 	
 
     my $entity;
@@ -935,9 +933,12 @@ sub construct_from_url {
 			length($text_message) <= 0 
 		 || $plaintext_content_from eq 'auto'
 	 ) {
+ 		
+		$text_message = $html_message;  
+		$text_message = $fm->body_content_only($text_message);
     	$text_message = html_to_plaintext(
             {
-                -str              => $html_message,
+                -str              => $text_message,
                 -formatter_params => {
                     base        => $url,
                     before_link => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',

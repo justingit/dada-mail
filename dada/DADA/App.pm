@@ -1095,7 +1095,11 @@ sub email_message_preview {
 	# Other things need to be filled in, like the usubscription link 
 	# which, strangely, doesn't show up!? (expand macro tags, or something?)
 
-
+	my $fake_vars = {};
+    $fake_vars->{'list_unsubscribe_link'} = $DADA::Config::PROGRAM_URL . '/t/'  . 'CONFIRMATION_TOKEN' . '/';
+	  
+	warn q{$fake_vars->{'list_unsubscribe_link'}} . $fake_vars->{'list_unsubscribe_link'}; 
+	
     require DADA::App::EmailMessagePreview;
     my $daemp = DADA::App::EmailMessagePreview->new;
     my $r     = $daemp->fetch( $q->param('id') );
@@ -1104,7 +1108,7 @@ sub email_message_preview {
         {
             -data                     => \$r->{subject},
             -expr                     => 1,
-            -vars                     => $fake_sub_info,
+            -vars                     => {%$fake_sub_info, %$fake_vars},
             -list_settings_vars_param => {
                 -list   => $list,
                 -dot_it => 1,
@@ -1117,7 +1121,7 @@ sub email_message_preview {
         {
             -data                     => \$r->{html},
             -expr                     => 1,
-            -vars                     => $fake_sub_info,
+            -vars                     => {%$fake_sub_info, %$fake_vars},
             -list_settings_vars_param => {
                 -list   => $list,
                 -dot_it => 1,

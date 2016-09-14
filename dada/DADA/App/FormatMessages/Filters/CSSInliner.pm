@@ -89,7 +89,7 @@ sub filter {
 	#		require CSS::Inliner; 
 		my $inliner = CSS::Inliner->new(
 			{
-				leave_style => 0,
+				leave_style => 1,
 				relaxed     => 1
 			}
 		);
@@ -101,7 +101,7 @@ sub filter {
 		$html = $inliner->inlinify();
 		#warn '$html.2' . $html; 
 		
-		$html = $self->body_content_only($html); 
+	#	$html = $self->body_content_only($html); 
 		
 		#warn '$html.3' . $html; 
 		
