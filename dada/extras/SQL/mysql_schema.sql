@@ -96,6 +96,10 @@ msg_id text,
 url text
 ); 
 
+
+-- change 'text' to, 'varchar(255)', add index: 
+-- ALTER TABLE `dada_mass_mailing_event_log` ADD INDEX  `dada_mass_mailing_event_log_index` (`list`,`remote_addr`, `msg_id`, `event`, timestamp);
+
 CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log (
 id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
 list varchar(16),

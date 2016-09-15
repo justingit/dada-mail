@@ -268,7 +268,9 @@ sub send_email {
 			my $daemp = DADA::App::EmailMessagePreview->new; 
 			my $daemp_id = $daemp->save({
 				-list      => $self->{list},
-				-subject   => $construct_r->{subject},
+				-vars => {
+					subject   => $construct_r->{subject},
+				},
 				-plaintext => $construct_r->{text_message},
 				-html      => $construct_r->{html_message},
 			});

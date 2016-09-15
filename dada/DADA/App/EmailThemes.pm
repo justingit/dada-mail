@@ -104,7 +104,6 @@ sub fetch {
 	}
 	
 	
-	#my $subject; 
 	my $yaml = {};
 	if(length($pt) > 0){
 		($yaml, $pt) = $self->strip_and_return_yaml($pt); 

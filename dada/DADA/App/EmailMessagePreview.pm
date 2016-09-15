@@ -141,12 +141,19 @@ sub save {
     if ( !exists( $args->{-html} ) ) {
         croak "You MUST pass a, '-html' parameter!";
     }
-
+	
+	require YAML::Tiny; 
+	my $yaml = YAML::Tiny->new( $args->{-vars} );
+	my $vars = $yaml->write_string; 
+	   $vars = safely_encode($vars);
+   
+	undef($yaml);
+	   
    my $query; 
 	$query =
 	'INSERT INTO '
 	. $self->{sql_params}->{email_message_previews_table}
-	. ' (list, subject, plaintext, html) VALUES (?,?,?,?)';
+	. ' (list, vars, plaintext, html) VALUES (?,?,?,?)';
 
     warn 'QUERY: ' . $query
       if $t;
@@ -154,11 +161,19 @@ sub save {
     my $sth = $self->{dbh}->prepare($query);
     if($t == 1) { 
         require Data::Dumper; 
-        warn 'execute params: ' . Data::Dumper::Dumper([$self->{list}, $args->{-subject},  $args->{-plaintext}, $args->{-html}]); 
+        warn 'execute params: ' 
+			. Data::Dumper::Dumper(
+				[
+					$self->{list}, 
+					$vars,
+					$args->{-plaintext},
+					$args->{-html}
+				]
+			); 
     }
     $sth->execute(
 		$self->{list}, 
-		$args->{-subject}, 
+		$vars, 
 		$args->{-plaintext}, 
 		$args->{-html}, 
 	)
@@ -193,7 +208,7 @@ sub fetch {
     my $id    = shift;
 
     my $query =
-        'SELECT subject, plaintext, html FROM '
+        'SELECT vars, plaintext, html FROM '
       . $self->{sql_params}->{email_message_previews_table}
       . ' where id = ?';
 
@@ -205,8 +220,18 @@ sub fetch {
     $sth->execute( $id, ) or croak "cannot do statement! $DBI::errstr\n";
 
     my $r = $sth->fetchrow_hashref();
-
- 
+	
+	require YAML::Tiny;
+	
+	my $yaml = YAML::Tiny->read_string(
+		safely_decode(
+			$r->{vars}
+		)
+	);  
+	$r->{vars} = $yaml->[0];
+	
+	undef ($yaml);
+	
     $sth->finish;
 
 	return $r;
