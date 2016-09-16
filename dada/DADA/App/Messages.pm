@@ -437,7 +437,8 @@ sub send_confirmation_message {
                 To => $self->fm->format_phrase_address(
                     $etp->{yaml}->{to_phrase}, $email
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject       => $etp->{yaml}->{subject},
+				'X-Preheader' => $etp->{yaml}->{preheader},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},

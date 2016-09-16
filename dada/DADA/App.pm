@@ -1103,7 +1103,7 @@ sub email_message_preview {
     require DADA::App::EmailMessagePreview;
     my $daemp = DADA::App::EmailMessagePreview->new;
     my $r     = $daemp->fetch( $q->param('id') );
-	my $vs = $r->{vars}->{subject};
+	my $vs = $r->{vars}->{Subject};
     my $subject = DADA::Template::Widgets::screen(
         {
             -data                     => \$vs,
@@ -1116,7 +1116,10 @@ sub email_message_preview {
         }
     );
 
-    $fake_sub_info->{'email.subject'} = $subject;
+    $fake_sub_info->{'email.subject'}   = $subject;
+    $fake_sub_info->{'email.preheader'} = $r->{vars}->{'X-Preheader'};
+	
+	
     my $scrn = DADA::Template::Widgets::screen(
         {
             -data                     => \$r->{html},

@@ -264,14 +264,16 @@ sub send_email {
 			);
         }
 		else { 
+			
+			use Data::Dumper; 
+			warn '$construct_r->{vars}' . Dumper($construct_r->{vars});
+			
 			require DADA::App::EmailMessagePreview; 
 			my $daemp = DADA::App::EmailMessagePreview->new; 
 			my $daemp_id = $daemp->save({
 				-list      => $self->{list},
-				-vars => {
-					subject   => $construct_r->{subject},
-				},
-				-plaintext => $construct_r->{text_message},
+				-vars      => $construct_r->{vars},
+			    -plaintext => $construct_r->{text_message},
 				-html      => $construct_r->{html_message},
 			});
 	        require JSON;
@@ -565,13 +567,17 @@ sub construct_and_send {
               ->set_archive_info( $message_id, $mailing{Subject}, undef, undef,
                 $mh->saved_message );
         }
-
+		
+		
+		use Data::Dumper; 
+		warn Dumper($con->{vars});
+		
         return {
         	status       => 1, 
 			errors       => undef, 
 			mid          => $message_id, 
 			md5          => $con->{md5},
-			subject      => $con->{subject},
+			vars         => $con->{vars}, 
 			text_message => $con->{text_message},
 			html_message => $con->{html_message},
 		};
@@ -580,12 +586,17 @@ sub construct_and_send {
      
 	 	#warn '$con->{subject}' . $con->{subject}; 
 	 	# Dry run:
+		
+		use Data::Dumper; 
+		warn Dumper($con->{vars});
+		
+		
         return { 
-			status => 1, 
-			errors => undef, 
-			mid    => undef, 
-			md5    => $con->{md5}, 
-			subject      => $con->{subject},
+			status       => 1, 
+			errors       => undef, 
+			mid          => undef, 
+			md5          => $con->{md5}, 
+			vars         => $con->{vars}, 
 			text_message => $con->{text_message},
 			html_message => $con->{html_message},
 		};
@@ -1065,13 +1076,18 @@ sub construct_from_url {
 		); 
 	}
 	
+	warn q{$draft_q->param('preheader')} . $draft_q->param('preheader'); 
+	
 	return { 
 		status       => 1, 
 		errors       => undef, 
 		entity       => $entity, 
 		fm_obj       => $fm, 
 		md5          => $md5, 
-		subject      => $headers{Subject}, 
+		vars         => {
+			Subject       => $headers{Subject},
+			'X-Preheader' => $draft_q->param('X-Preheader'),
+		},
 		text_message => $text_message, 
 		html_message => $html_message, 
 	};
@@ -1369,10 +1385,10 @@ sub send_url_email {
         }
 		else { 
 			require DADA::App::EmailMessagePreview; 
-			my $daemp = DADA::App::EmailMessagePreview->new; 
+			my $daemp = DADA::App::EmailMessagePreview->new; 			
 			my $daemp_id = $daemp->save({
-				-list      => $self->{list},
-				-subject   => $construct_r->{subject},
+				-list      => $self->{list},				
+				-vars      => $construct_r->{vars},
 				-plaintext => $construct_r->{text_message},
 				-html      => $construct_r->{html_message},
 			});

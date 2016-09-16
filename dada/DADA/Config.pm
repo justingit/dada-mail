@@ -1844,7 +1844,7 @@ $PROGRAM_NAME //= "Dada Mail";
     'Content-Disposition'       => undef,
     'MIME-Version'              => undef,
     Subject                     => '(no subject)',
-	'X-Preheader'               => 'X-Preheader',
+	'X-Preheader'               => undef,
     Body                        => 'blank',
 ) unless keys %EMAIL_HEADERS;
 

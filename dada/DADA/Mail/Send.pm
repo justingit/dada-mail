@@ -3224,18 +3224,22 @@ sub _email_batched_finished_notification {
         Type => 'multipart/mixed',
         To   => safely_encode(
             $fm->format_phrase_address(
-                $em->{yaml}->{from_phrase},
+                $etp->{yaml}->{from_phrase},
                 $self->{ls}->param('list_owner_email')
             )
         ),
-        Subject   => safely_encode( $em->{yaml}->{subject}, ),
+        Subject   => safely_encode( $etp->{yaml}->{subject}, ),
         Datestamp => 0,
 
     );
+	
 
+	use Data::Dumper; 
+	warn '$etp' . Dumper($etp);
+	
     $entity->attach(
         Type        => 'text/plain',
-        Data        => safely_encode( $em->{plaintext}, ),
+        Data        => safely_encode( $etp->{plaintext} ),
         Encoding    => $self->{ls}->param('plaintext_encoding'),
         Disposition => 'inline',
 

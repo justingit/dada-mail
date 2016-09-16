@@ -12,6 +12,9 @@ Key:
 [*] Naw...
 [?] Someday
 
+Work locally dummy. 
+
+
 Make 4 versions of mailing list message layout
 	* default - all bells/whistels
 	* footer only
