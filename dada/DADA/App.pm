@@ -4745,13 +4745,11 @@ sub unsubscription_requests {
                 }
             );
 
-            #           warn 'send_unsubscription_request_approved_message'
-            #                if $t;
             require DADA::App::Messages;
             my $dap = DADA::App::Messages->new( { -list => $list } );
-            $dap->send_unsubscription_request_approved_message(
+  		    $dap->send_unsubscribed_message(
                 {
-                    -email => $email,
+                    -email  => $email,
                 }
             );
         }

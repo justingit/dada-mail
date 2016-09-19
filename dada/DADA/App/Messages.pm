@@ -245,9 +245,9 @@ sub send_multipart_email {
     );
     my ( $status, $errors, $MIMELiteObj, $md5 );
 
-    warn '(length( $args->{-html_body} )' . length( $args->{-html_body} );
-    warn '(length( $args->{-plaintext_body} )'
-      . length( $args->{-plaintext_body} );
+#    warn '(length( $args->{-html_body} )' . length( $args->{-html_body} );
+#    warn '(length( $args->{-plaintext_body} )'
+#      . length( $args->{-plaintext_body} );
 
     if (   length( $args->{-html_body} ) > 0
         && length( $args->{-plaintext_body} ) > 0 )
@@ -500,7 +500,8 @@ sub send_subscribed_message {
                 To => $self->fm->format_phrase_address(
                     $etp->{yaml}->{to_phrase}, $email,
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject       => $etp->{yaml}->{subject},
+				'X-Preheader' => $etp->{yaml}->{preheader},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -654,7 +655,11 @@ sub send_unsubscribe_request_message {
         }
     );
 
-# $etp->{html} = $self->fm->unsubscription_confirmationation({-str => $etp->{html}});
+	$etp->{html} = $self->fm->unsubscription_confirmationation(
+		{
+			-str => $etp->{html}
+		}
+	);
 
     require DADA::App::Subscriptions::Unsub;
     my $dasu = DADA::App::Subscriptions::Unsub->new( { -list => $self->list } );
@@ -669,7 +674,8 @@ sub send_unsubscribe_request_message {
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email,
+                    $etp->{yaml}->{to_phrase}, 
+					$email,
                 ),
                 Subject => $etp->{yaml}->{subject},
             },
@@ -940,12 +946,11 @@ sub send_owner_happenings {
         to_phrase   => $etp->{yaml}->{to_phrase},
         subject     => $etp->{yaml}->{subject},
         plaintext   => $etp->{plaintext},
-
-        #html        => $etp->{html},
+		html        => $etp->{html},
     };
 
     require DADA::Template::Widgets;
-    for (qw(from_phrase to_phrase subject plaintext )) {    #html
+    for (qw(from_phrase to_phrase subject plaintext html)) {
         my $tmpl    = $msg_template->{$_};
         my $content = DADA::Template::Widgets::screen(
             {
@@ -1038,7 +1043,7 @@ sub send_owner_happenings {
                 },
                 -plaintext_body => $msg_template->{plaintext},
 
-                #-html_body      => $msg_template->{html},
+                -html_body      => $msg_template->{html},
                 -test => $self->test,
             }
 
@@ -1251,55 +1256,7 @@ sub send_not_allowed_to_post_msg {
 
 }
 
-sub send_unsubscription_request_approved_message {
 
-    my $self = shift;
-    my ($args) = @_;
-
-    if ( !exists( $args->{-vars} ) ) {
-        $args->{-vars} = {};
-    }
-    if ( !exists( $args->{-email} ) ) {
-        warn 'you MUST pass the -email param to use this method!';
-        return undef;
-    }
-    my $email = $args->{-email};
-
-    my $etp = $self->emt->fetch('unsubscription_request_approved_message');
-
-    $self->send_multipart_email(
-        {
-            -headers => {
-                From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
-                    $self->ls->param('list_owner_email')
-                ),
-                To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email,
-                ),
-                Subject => $etp->{yaml}->{subject},
-            },
-            -plaintext_body => $etp->{plaintext},
-            -html_body      => $etp->{html},
-            -tmpl_params    => {
-                -list_settings_vars_param =>
-                  { -list => $self->ls->param('list'), },
-                -subscriber_vars => {
-                    'subscriber.email' => $email,
-                },
-
-# -subscriber_vars_param    => {-list => $self->ls->param('list'), -email => $args->{-email}, -type => 'list'},
-# -profile_vars_param       => {-email => $args->{-email}},
-# -vars => $args->{-vars},
-            },
-
-            # -test         => $self->test,
-        }
-    );
-
-    # Logging?
-
-}
 
 sub send_unsubscription_request_denied_message {
 

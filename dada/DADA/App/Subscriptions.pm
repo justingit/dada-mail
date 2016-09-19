@@ -2189,11 +2189,9 @@ sub complete_pl_unsubscription_request {
 
             my $count = 1;
 
-            warn 'send_unsubscription_request_approved_message'
-             if $t;
   		    require DADA::App::Messages;
   		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
-  		    $dap->send_unsubscription_request_approved_message(
+  		    $dap->send_unsubscribed_message(
                 {
                     -email  => $data->{email},
                 }
