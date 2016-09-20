@@ -130,15 +130,7 @@ sub send_generic_email {
     if ( $args->{-tmpl_params}->{-expr} == 1 ) {
         $fm->override_validation_type('expr');
     }
-    my ($email_str) = $fm->format_message(
-		{ 
-			-msg => $fm->string_from_dada_style_args(
-				 { 
-					 -fields => $data,
-				 } 
-			)
-		} 
-	);
+    my ($email_str) = $fm->format_message( -msg => $fm->string_from_dada_style_args( { -fields => $data, } ), );
 
     $email_str = safely_decode($email_str);
 
@@ -147,7 +139,6 @@ sub send_generic_email {
             -entity => $fm->get_entity( { -data => safely_encode($email_str), } ),
             -expr   => $expr,
             %{ $args->{-tmpl_params} },    # note: this may have -expr param.
-			
         }
     );
     my $msg = $entity->as_string;
@@ -163,129 +154,6 @@ sub send_generic_email {
     $mh->send( $mh->return_headers($header_str), Body => $body_str, );
 
 }
-
-
-sub send_multipart_email {
-
-    my ($args) = @_;
-
-    if ( !exists( $args->{-test} ) ) {
-        $args->{-test} = 0;
-    }
-
-    my $ls   = $args->{-ls_obj};
-    my $list = $ls->param('list');
-
-    require DADA::Mail::Send;
-    my $mh = DADA::Mail::Send->new(
-        {
-            -list   => $list,
-            -ls_obj => $ls,
-        }
-    );
-
-    my $expr = 1;
-    if ( $ls->param('enable_email_template_expr') == 1 ) {
-        $expr = 1;
-    }
-    else {
-        $expr = 0;
-    }
-
-    $args->{-headers} = {}
-      if !exists( $args->{-headers} );
-
-   #$args->{-tmpl_params} = { -list_settings_vars_param => { -list => $list } },
-
-    #  try {
-    require DADA::App::MyMIMELiteHTML;
-    my $mailHTML = new DADA::App::MyMIMELiteHTML(
-
-        #  remove_jscript                   => $remove_javascript,
-        'IncludeType' => 'cid',
-        'TextCharset' => scalar $ls->param('charset_value'),
-        'HTMLCharset' => scalar $ls->param('charset_value'),
-        HTMLEncoding  => scalar $ls->param('html_encoding'),
-        TextEncoding  => scalar $ls->param('plaintext_encoding'),
-        (
-              ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
-            ? ( Debug => 1, )
-            : ()
-        ),
-        %{ $args->{-headers} },
-    );
-    my ( $status, $errors, $MIMELiteObj, $md5 );
-	
-	warn '(length( $args->{-html_body} )'      . length( $args->{-html_body} ); 
-	warn '(length( $args->{-plaintext_body} )' . length( $args->{-plaintext_body} ); 
-	
-    if (   length( $args->{-html_body} ) > 0
-        && length( $args->{-plaintext_body} ) > 0 )
-    {
-        ( $status, $errors, $MIMELiteObj, $md5 ) = $mailHTML->parse(
-            safely_encode( $args->{-html_body} ),
-            safely_encode( $args->{-plaintext_body} )
-        );
-    }
-    elsif (length( $args->{-html_body} ) > 0
-        && length( $args->{-plaintext_body} ) <= 0 )
-    {
-        ( $status, $errors, $MIMELiteObj, $md5 ) =
-          $mailHTML->parse( safely_encode( $args->{-html_body} ), undef, );
-    }
-    elsif (length( $args->{-html_body} ) <= 0
-        && length( $args->{-plaintext_body} ) > 0 )
-    {
-        ( $status, $errors, $MIMELiteObj, $md5 ) =
-          $mailHTML->parse( undef, safely_encode( $args->{-plaintext_body} ), );
-    }
-    use MIME::Parser;
-    my $parser = new MIME::Parser;
-    $parser = optimize_mime_parser($parser);
-
-    my $entity = $parser->parse_data( $MIMELiteObj->as_string );
-
-    my %lh = $mh->list_headers;
-    for my $h ( keys %lh ) {
-        $entity->head->add( $h, safely_encode( $lh{$h} ) );
-    }
-
-    my $fm = DADA::App::FormatMessages->new( -List => $list );
-    $fm->use_header_info(1);
-    $fm->use_email_templates(0);
-
-    if ( $args->{-tmpl_params}->{-expr} == 1 ) {
-        $fm->override_validation_type('expr');
-    }
-
-    $entity = $fm->format_message(
-		 {
-			 -entity => $entity
-		 }
-	);
-
-    $entity = $fm->email_template(
-        {
-            -entity => $entity,
-            -expr   => $expr,
-            %{ $args->{-tmpl_params} },    # note: this may have -expr param.
-        }
-    );
-
-    my $msg = $entity->as_string;
-    my ( $header_str, $body_str ) = split( "\n\n", $msg, 2 );
-
-    # Time for DADA::Mail::Send to just have a, "Here's th entity!" argument,
-    # rather than always passing this crap back and forth.
-    my $header_str = safely_decode( $entity->head->as_string );
-    my $body_str   = safely_decode( $entity->body_as_string );
-    if ( $args->{-test} == 1 ) {
-        $mh->test(1);
-    }
-    $mh->send( $mh->return_headers($header_str), Body => $body_str, );
-
-}
-
 
 
 sub send_abuse_report {
@@ -382,71 +250,29 @@ sub send_abuse_report {
 
 sub send_confirmation_message { 
 
-	my ($args) = @_; 
-	my $ls;
-	if(exists($args->{-ls_obj})){ 
-		$ls = $args->{-ls_obj};
-	}
-	else {
-		require DADA::MailingList::Settings; 
-		$ls = DADA::MailingList::Settings->new({-list => $args->{-list}});
-	}
 
-	require DADA::App::EmailThemes; 
-	my $em = DADA::App::EmailThemes->new(
-		{ 
-			-list => $args->{-list},
-			-name => 'default',
-			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+	my ($args) = @_; 
+	####
+		my $ls;
+		if(exists($args->{-ls_obj})){ 
+			$ls = $args->{-ls_obj};
 		}
-	);
-	my $etp = $em->fetch('confirmation_message');
-	  
-	warn  '$etp->{subject}' . $etp->{subject};
+		else {
+			require DADA::MailingList::Settings; 
+			$ls = DADA::MailingList::Settings->new({-list => $args->{-list}});
+		}
+	####
+	
+	my $confirmation_msg = $ls->param('confirmation_message'); 
 	require DADA::App::FormatMessages; 
 	my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
+	   $confirmation_msg = $fm->subscription_confirmationation({-str => $confirmation_msg}); 
 	
-	   if(defined($etp->{plaintext})){
-	   		$etp->{plaintext} = $fm->subscription_confirmationation({-str => $etp->{plaintext}}); 
-	   }
-	   if(defined($etp->{html})){
-		   $etp->{html}      = $fm->subscription_confirmationation({-str => $etp->{html}}     ); 
-	   }
-	   send_multipart_email(
-   		{
-			-ls_obj => $ls, 
-   			-headers => { 
-   			    To              => $fm->format_phrase_address($ls->param('list_name') 
-   									. ' Subscriber', $args->{-email}),
-   			    Subject         => $etp->{subject},
-   			}, 
-   			-plaintext_body => $etp->{plaintext},
-			-html_body      => $etp->{html},
-   			-tmpl_params => {
-   				-list_settings_vars_param => {-list => $args->{-list}},
-   	            -subscriber_vars_param    => {
-   					-list  => $args->{-list}, 
-   					-email => $args->{-email}, 
-   					-type  => 'sub_confirm_list'
-   				},
-   	            -vars => {
-   					'list.confirmation_token' => $args->{-token},
-   				},
-   			},
-			
-   			-test => $args->{-test},
-   		}
-   	); 
-	   
-
-=cut
-	   
 	send_generic_email(
 		{
 			-list    => $args->{-list}, 
 			-headers => { 
-			    To              => $fm->format_phrase_address($ls->param('list_name') 
-									. ' Subscriber', $args->{-email}),
+			    To              => $fm->format_phrase_address($ls->param('list_name') . ' Subscriber', $args->{-email}),
 			    Subject         => $ls->param('confirmation_message_subject'),
 			}, 
 			
@@ -467,9 +293,7 @@ sub send_confirmation_message {
 			-test => $args->{-test},
 		}
 	); 
-
-=cut
-	   	
+	
     require       DADA::Logging::Usage;
     my $log = new DADA::Logging::Usage;
        $log->mj_log($args->{-list}, 'Subscription Confirmation Sent for ' . $args->{-list} . '.list', $args->{-email});     
@@ -538,25 +362,17 @@ sub send_subscription_request_approved_message {
 	if(!exists($args->{-vars})){ 
 		$args->{-vars} = {};
 	}
-	
-	if(!exists($args->{-email})){ 
-		warn 'you MUST pass the -email param to use this method!';
-		return undef;
-	}
-	
+
 	require DADA::App::Subscriptions::Unsub; 
 	my $dasu = DADA::App::Subscriptions::Unsub->new({-list => $args->{-list}});
 	my $unsub_link = $dasu->unsub_link({-email => $args->{-email}, -mid => '00000000000000'}); 
 	$args->{-vars}->{list_unsubscribe_link} = $unsub_link; 
 
-
-	my $to_header = '"'. escape_for_sending($ls->param('list_name')) .'" <'. $args->{-email} .'>'; 
-	
 	send_generic_email (
 		{
 			-list         => $args->{-list}, 
 			-headers      => {
-					To      => $to_header,
+					To      => '"'. escape_for_sending($ls->param('list_name')) .'" <'. $args->{-email} .'>',
 					Subject => $ls->param('subscription_request_approved_message_subject'),
 			}, 
 			-body         => $ls->param('subscription_request_approved_message'),
