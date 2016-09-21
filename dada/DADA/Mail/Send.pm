@@ -939,7 +939,7 @@ sub mail_sending_options_test {
         {
             -list => $self->{list},
 			-name => 'default',
-            -theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+            
         }
     );
     my $etp = $em->fetch('mail_sending_options_test_message');
@@ -951,14 +951,14 @@ sub mail_sending_options_test {
         {
             -headers => {
                 To => $dap->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase},
+                    $etp->{vars}->{to_phrase},
                     $dap->ls->param('list_owner_email')
                 ),
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $dap->ls->param('list_owner_email')
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
         }
@@ -3206,7 +3206,7 @@ sub _email_batched_finished_notification {
         {
             -list => $self->{list}, 
 			-name => 'default',
-            -theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+            
         }
     );
     my $etp = $em->fetch('mass_mailing_finished_notification');
@@ -3224,11 +3224,11 @@ sub _email_batched_finished_notification {
         Type => 'multipart/mixed',
         To   => safely_encode(
             $fm->format_phrase_address(
-                $etp->{yaml}->{from_phrase},
+                $etp->{vars}->{from_phrase},
                 $self->{ls}->param('list_owner_email')
             )
         ),
-        Subject   => safely_encode( $etp->{yaml}->{subject}, ),
+        Subject   => safely_encode( $etp->{vars}->{subject}, ),
         Datestamp => 0,
 
     );

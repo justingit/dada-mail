@@ -85,9 +85,6 @@ sub _init {
         my $em = DADA::App::EmailThemes->new(
             {
                 -list      => $self->list,
-                -name      => 'default',
-                -theme_dir => $DADA::Config::SUPPORT_FILES->{dir}
-                  . '/themes/email',
             }
         );
         $self->emt($em);
@@ -375,14 +372,14 @@ sub send_abuse_report {
         {
             -headers => {
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase},
+                    $etp->{vars}->{to_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
 
             -plaintext_body => $etp->{plaintext},
@@ -431,14 +428,14 @@ sub send_confirmation_message {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email
+                    $etp->{vars}->{to_phrase}, $email
                 ),
-                Subject       => $etp->{yaml}->{subject},
-				'X-Preheader' => $etp->{yaml}->{preheader},
+                Subject       => $etp->{vars}->{subject},
+				'X-Preheader' => $etp->{vars}->{preheader},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -494,14 +491,14 @@ sub send_subscribed_message {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email,
+                    $etp->{vars}->{to_phrase}, $email,
                 ),
-                Subject       => $etp->{yaml}->{subject},
-				'X-Preheader' => $etp->{yaml}->{preheader},
+                Subject       => $etp->{vars}->{subject},
+				'X-Preheader' => $etp->{vars}->{preheader},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -552,13 +549,13 @@ sub send_subscription_request_approved_message {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email,
+                    $etp->{vars}->{to_phrase}, $email,
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -604,13 +601,13 @@ sub send_subscription_request_denied_message {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email
+                    $etp->{vars}->{to_phrase}, $email
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -670,14 +667,14 @@ sub send_unsubscribe_request_message {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, 
+                    $etp->{vars}->{to_phrase}, 
 					$email,
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -726,14 +723,14 @@ sub subscription_approval_request_message {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, 
+                    $etp->{vars}->{to_phrase}, 
 					$email,
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -770,13 +767,13 @@ sub unsubscription_approval_request_message {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email,
+                    $etp->{vars}->{to_phrase}, $email,
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -837,13 +834,13 @@ sub send_unsubscribed_message {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email,
+                    $etp->{vars}->{to_phrase}, $email,
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -942,9 +939,9 @@ sub send_owner_happenings {
         $etp = $self->emt->fetch('admin_unsubscription_notice_message');
     }
     $msg_template = {
-        from_phrase => $etp->{yaml}->{from_phrase},
-        to_phrase   => $etp->{yaml}->{to_phrase},
-        subject     => $etp->{yaml}->{subject},
+        from_phrase => $etp->{vars}->{from_phrase},
+        to_phrase   => $etp->{vars}->{to_phrase},
+        subject     => $etp->{vars}->{subject},
         plaintext   => $etp->{plaintext},
 		html        => $etp->{html},
     };
@@ -1071,13 +1068,13 @@ sub send_you_are_already_subscribed_message {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email,
+                    $etp->{vars}->{to_phrase}, $email,
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -1116,13 +1113,13 @@ sub send_not_subscribed_message {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email,
+                    $etp->{vars}->{to_phrase}, $email,
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -1230,13 +1227,13 @@ sub send_not_allowed_to_post_msg {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email
+                    $etp->{vars}->{to_phrase}, $email
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -1278,13 +1275,13 @@ sub send_unsubscription_request_denied_message {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email,
+                    $etp->{vars}->{to_phrase}, $email,
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -1337,13 +1334,13 @@ sub send_out_message {
         {
             -headers => {
                 From => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{from_phrase},
+                    $etp->{vars}->{from_phrase},
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{yaml}->{to_phrase}, $email,
+                    $etp->{vars}->{to_phrase}, $email,
                 ),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},

@@ -279,7 +279,7 @@ $dap->send_owner_happenings(
 
 $msg = slurp($mh->test_send_file); 
 $entity = $parser->parse_data(safely_encode($msg)); 
-$msg_str = safely_decode($entity->bodyhandle->as_string);
+$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('From', 0))
@@ -566,7 +566,7 @@ $dap->send_owner_happenings(
 
 $msg     = slurp($mh->test_send_file); 
 $entity  = $parser->parse_data(safely_encode($msg)); 
-$msg_str = safely_decode($entity->bodyhandle->as_string);
+$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
 
 
 ok(

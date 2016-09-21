@@ -487,9 +487,6 @@ sub admin_remove_subscribers {
             my $em = DADA::App::EmailThemes->new(
                 {
                     -list => $self->{list},
-					-name => 'default',
-                    -theme_dir => $DADA::Config::SUPPORT_FILES->{dir}
-                      . '/themes/email',
                 }
             );
             my $etp = $em->fetch('unsubscription_notice_message');
@@ -523,7 +520,7 @@ sub admin_remove_subscribers {
                 my $message_id = $mh->mass_send(
                     {
                         -msg => {
-                            Subject => $etp->{yaml}->{subject},
+                            Subject => $etp->{vars}->{subject},
                             Body    => $msg,
                         },
                     }
@@ -554,8 +551,8 @@ sub admin_remove_subscribers {
                     {
                         -headers => {
                             To      => $to,
-                            From    => $etp->{yaml}->{from_phrase},
-                            Subject => $etp->{yaml}->{subject},
+                            From    => $etp->{vars}->{from_phrase},
+                            Subject => $etp->{vars}->{subject},
                         },
                         -plaintext_body => $msg,
                     }

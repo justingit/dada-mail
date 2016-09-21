@@ -144,7 +144,7 @@ sub grab_css {
 	my $em = DADA::App::EmailThemes->new(
 		{ 
 			-name => 'default',
-			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+			
 		}
 	);
 	

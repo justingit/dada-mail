@@ -2082,8 +2082,8 @@ sub send_msg_too_big {
 		my $em = DADA::App::EmailThemes->new(
 			{ 
 				-list      => $ls->param('list'),
-				-name      => 'default',
-				-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+				
+				
 			}
 		);
 		my $etp = $em->fetch('msg_too_big_msg');
@@ -2094,7 +2094,7 @@ sub send_msg_too_big {
             {
                 -headers => {
                     To      => $from_address,
-                    Subject => $etp->{yaml}->{subject},
+                    Subject => $etp->{vars}->{subject},
                 },
                 -body        => $etp->{plaintext},
                 -tmpl_params => {
@@ -2159,8 +2159,8 @@ sub notify_of_delivery {
 	my $em = DADA::App::EmailThemes->new(
 		{ 
 			-list      => $ls->param('list'),
-			-name      => 'default',
-			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+			
+			
 		}
 	);
 	my $etp = $em->fetch('msg_received_msg');
@@ -2172,7 +2172,7 @@ sub notify_of_delivery {
             -headers => {
                 To      => $rough_from,
                 From    => $ls->param('list_owner_email'),
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
             },
             -body        => $etp->{plaintext},
             -tmpl_params => {
@@ -2711,8 +2711,8 @@ sub send_spam_rejection_message {
   		my $em = DADA::App::EmailThemes->new(
   			{ 
   				-list      => $ls->param('list'),
-  				-name      => 'default',
-  				-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+  				
+  				
   			}
   		);
   		my $etp = $em->fetch('msg_labeled_as_spam_msg');
@@ -2724,7 +2724,7 @@ sub send_spam_rejection_message {
                 -headers => {
                     To      => $from_address,
                     From    => $ls->param('list_owner_email'),
-                    Subject => $etp->{yaml}->{subject},
+                    Subject => $etp->{vars}->{subject},
                 },
                 -body        => $etp->{plaintext},
                 -tmpl_params => {
@@ -2768,8 +2768,8 @@ sub send_invalid_msgs_to_owner {
   		my $em = DADA::App::EmailThemes->new(
   			{ 
   				-list      => $ls->param('list'),
-  				-name      => 'default',
-  				-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+  				
+  				
   			}
   		);
   		my $etp = $em->fetch('invalid_msgs_to_owner_msg');
@@ -2780,7 +2780,7 @@ sub send_invalid_msgs_to_owner {
             Type    => "multipart/mixed",
             From    => $ls->param('list_owner_email'),
             To      => $ls->param('list_owner_email'),
-            Subject => $etp->{yaml}->{subject},
+            Subject => $etp->{vars}->{subject},
         );
 
         $reply->attach(
@@ -3657,8 +3657,8 @@ sub send_moderation_msg {
 	my $em = DADA::App::EmailThemes->new(
 		{ 
 			-list      => $self->{list},
-			-name      => 'default',
-			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+			
+			
 		}
 	);
 	my $etp = $em->fetch('await_moderation_msg');
@@ -3667,7 +3667,7 @@ sub send_moderation_msg {
         Type     => "text/plain",
         Encoding => $ls->param('plaintext_encoding'),
         To       => $from, # really?
-        Subject  => $etp->{yaml}->{subject},
+        Subject  => $etp->{vars}->{subject},
         Data     => $etp->{plaintext},
     );
 
@@ -3745,8 +3745,8 @@ sub send_accept_msg {
 	my $em = DADA::App::EmailThemes->new(
 		{ 
 			-list      => $ls->param('list'),
-			-name      => 'default',
-			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+			
+			
 		}
 	);
 	my $etp = $em->fetch('accept_msg');
@@ -3756,8 +3756,8 @@ sub send_accept_msg {
         Type     => "text/plain",
         Encoding => $ls->param('plaintext_encoding'),
         To       => $from,
-        Subject  => $etp->{yaml}->{subject},
-        Data     => $etp->{yaml}->{plaintext},
+        Subject  => $etp->{vars}->{subject},
+        Data     => $etp->{vars}->{plaintext},
     );
 
 	require DADA::App::Messages;
@@ -3831,8 +3831,8 @@ sub send_reject_msg {
 	my $em = DADA::App::EmailThemes->new(
 		{ 
 			-list      => $ls->param('list'),
-			-name      => 'default',
-			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+			
+			
 		}
 	);
 	my $etp = $em->fetch('rejection_msg');
@@ -3841,7 +3841,7 @@ sub send_reject_msg {
         Type     => "text/plain",
         Encoding => $ls->param('plaintext_encoding'),
         To       => $from,
-        Subject  => $etp->{yaml}->{subject},
+        Subject  => $etp->{vars}->{subject},
         Data     => $etp->{plaintext},
     );
 

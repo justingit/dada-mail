@@ -1034,7 +1034,7 @@ sub send_profile_activation_email {
 		$dap->send_multipart_email(		 
         {
             -headers => {
-			    Subject => $etp->{yaml}->{subject},
+			    Subject => $etp->{vars}->{subject},
                 From    => $self->_config_profile_email(1),
                 To      => $self->{email},
             },
@@ -1079,8 +1079,8 @@ sub send_profile_reset_password_email {
 	my $em = DADA::App::EmailThemes->new(
 		{ 
 			-list      => $self->_config_profile_host_list,
-			-name      => 'default',
-			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+			
+			
 		}
 	);
 	my $etp = $em->fetch('profiles_reset_password_message');
@@ -1091,7 +1091,7 @@ sub send_profile_reset_password_email {
         {
             -email   => $self->{email},
             -headers => {
-                Subject => $etp->{yaml}->{subject}, 
+                Subject => $etp->{vars}->{subject}, 
                 From    => $self->_config_profile_email(1),
                 To      => $self->{email},
             },
@@ -1170,8 +1170,8 @@ sub send_update_profile_email_email {
 	my $em = DADA::App::EmailThemes->new(
 		{ 
 			-list      => $self->_config_profile_host_list,
-			-name      => 'default',
-			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+			
+			
 		}
 	);
 	my $etp = $em->fetch('profiles_update_email_message');
@@ -1182,7 +1182,7 @@ sub send_update_profile_email_email {
         {
             -headers => {
                 Subject =>
-                  $etp->{yaml}->{subject},
+                  $etp->{vars}->{subject},
                 From => $self->_config_profile_email(1),
                 To   => $args->{-updated_email},
             },
@@ -1227,8 +1227,8 @@ sub send_update_email_notification {
 	my $em = DADA::App::EmailThemes->new(
 		{ 
 			-list      => $self->_config_profile_host_list,
-			-name      => 'default',
-			-theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email',
+			
+			
 		}
 	);
 	my $etp = $em->fetch('profiles_email_updated_notification_message');
@@ -1239,7 +1239,7 @@ sub send_update_email_notification {
         {
             -list    => $self->_config_profile_host_list, 
             -headers => {
-                Subject => $etp->{yaml}->{subject},
+                Subject => $etp->{vars}->{subject},
                 From => $self->_config_profile_email(1),
                 To   => $self->_config_profile_email,
             },

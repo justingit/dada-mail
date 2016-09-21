@@ -2200,9 +2200,6 @@ sub _apply_template {
         my $em = DADA::App::EmailThemes->new(
             {
                 -list      => $self->{list},
-                -name      => 'default',
-                -theme_dir => $DADA::Config::SUPPORT_FILES->{dir}
-                  . '/themes/email',
             }
         );
         my $etp = {
