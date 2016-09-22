@@ -4591,7 +4591,7 @@ sub subscription_requests {
                 # Make a profile, if needed,
                 require DADA::Profile;
                 my $prof =
-                  DADA::Profile->new( { -email => scalar $q->param('email') } );
+                  DADA::Profile->new( { -email => $email } );
                 if ( !$prof->exists ) {
                     $new_profile = 1;
                     $new_pass    = $prof->_rand_str(8);
@@ -4609,10 +4609,10 @@ sub subscription_requests {
             my $dap = DADA::App::Messages->new( { -list => $list } );
             $dap->send_subscribed_message(
                 {
-                    -email => scalar $q->param('email'),
+                    -email => $email,
                     -vars  => {
                         new_profile        => $new_profile,
-                        'profile.email'    => scalar $q->param('email'),
+                        'profile.email'    => $email,
                         'profile.password' => $new_pass,
                     }
                 }
