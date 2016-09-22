@@ -13,7 +13,7 @@ my $dbi_obj;
 
 use DADA::Config qw(!:DEFAULT);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Mail_Send};
+my $t = 1; # $DADA::Config::DEBUG_TRACE->{DADA_Mail_Send};
 
 use DADA::Logging::Usage;
 my $log = new DADA::Logging::Usage;
@@ -2411,12 +2411,14 @@ sub mass_send {
                   if $t;
 
                 $self->_email_batched_finished_notification(
-                    -start_time  => $ending_status->{first_access},
-                    -end_time    => $unformatted_end_time,
-                    -emails_sent => $ending_status->{total_sent_out},
-                    -last_email  => $stop_email,
-                    -msg_id      => $mailout->_internal_message_id,
-                    -fields      => \%fields,
+                    { 
+						-start_time  => $ending_status->{first_access},
+	                    -end_time    => $unformatted_end_time,
+	                    -emails_sent => $ending_status->{total_sent_out},
+	                    -last_email  => $stop_email,
+	                    -msg_id      => $mailout->_internal_message_id,
+	                    -fields      => \%fields,
+					}
                 );
 
             }
@@ -3135,32 +3137,12 @@ sub _pop_before_smtp {
 
 sub _email_batched_finished_notification {
 
-    my $self = shift;
-
     # Amazon SES may have a limit of 1 message/sec,
     # so we give ourselves a little space after a mass mailing
-    if (   $self->{ls}->param('sending_method') eq 'amazon_ses'
-        || $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ )
-    {
-        sleep(1);
-    }
-    #
+    sleep(1);
 
-    # DEV:
-    # Dum... we need ta hashref this out...
-
-    # Let's turn this stuff off:
-    $self->im_mass_sending(0);
-
-    my %args = (
-        -fields      => {},
-        -start_time  => undef,
-        -end_time    => undef,
-        -emails_sent => undef,
-        -last_email  => undef,
-        -msg_id      => undef,
-        @_
-    );
+    my $self = shift;
+    my ($args) = @_;
 
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new(
@@ -3168,14 +3150,14 @@ sub _email_batched_finished_notification {
         -ls_obj => $self->{ls},
     );
 
-    my $fields               = $args{-fields};
+    my $fields               = $args->{-fields};
     my $formatted_start_time = '';
     my $formatted_end_time   = '';
 
-    if ( defined( $args{-start_time} ) ) {
+    if ( exists( $args->{-start_time} ) ) {
 
         my ( $s_sec, $s_min, $s_hour, $s_day, $s_month, $s_year ) =
-          ( localtime( $args{-start_time} ) )[ 0, 1, 2, 3, 4, 5 ];
+          ( localtime( $args->{-start_time} ) )[ 0, 1, 2, 3, 4, 5 ];
         $formatted_start_time = sprintf(
             "%02d/%02d/%02d %02d:%02d:%02d",
             $s_month + 1,
@@ -3184,11 +3166,10 @@ sub _email_batched_finished_notification {
         );
 
     }
-
-    if ( defined( $args{-end_time} ) ) {
+    if ( exists( $args->{-end_time} ) ) {
 
         my ( $e_sec, $e_min, $e_hour, $e_day, $e_month, $e_year ) =
-          ( localtime( $args{-end_time} ) )[ 0, 1, 2, 3, 4, 5 ];
+          ( localtime( $args->{-end_time} ) )[ 0, 1, 2, 3, 4, 5 ];
         $formatted_end_time = sprintf(
             "%02d/%02d/%02d %02d:%02d:%02d",
             $e_month + 1,
@@ -3199,107 +3180,33 @@ sub _email_batched_finished_notification {
     }
 
     my $total_time =
-      formatted_runtime( ( $args{-end_time} - $args{-start_time} ) );
-
-    require DADA::App::EmailThemes;
-    my $em = DADA::App::EmailThemes->new(
-        {
-            -list => $self->{list}, 
-			-name => 'default',
-            
-        }
-    );
-    my $etp = $em->fetch('mass_mailing_finished_notification');
+      formatted_runtime( ( $args->{-end_time} - $args->{-start_time} ) );
 
     my $m_report = {};
     require DADA::Logging::Clickthrough;
     my $r = DADA::Logging::Clickthrough->new( { -list => $self->{list} } );
 
-    $args{-msg_id} =~ s/\.(.*)$//;    # remove everything after the first dot.
+    $args->{-msg_id} =~ s/\.(.*)$//;    # remove everything after the first dot.
 
-    $m_report = $r->report_by_message( $args{-msg_id} );
-
-    require MIME::Entity;
-    my $entity = MIME::Entity->build(
-        Type => 'multipart/mixed',
-        To   => safely_encode(
-            $fm->format_phrase_address(
-                $etp->{vars}->{from_phrase},
-                $self->{ls}->param('list_owner_email')
-            )
-        ),
-        Subject   => safely_encode( $etp->{vars}->{subject}, ),
-        Datestamp => 0,
-
-    );
+    $m_report = $r->report_by_message( $args->{-msg_id} );
 	
+    require DADA::App::Messages;
+    my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
 
-	use Data::Dumper; 
-	warn '$etp' . Dumper($etp);
-	
-    $entity->attach(
-        Type        => 'text/plain',
-        Data        => safely_encode( $etp->{plaintext} ),
-        Encoding    => $self->{ls}->param('plaintext_encoding'),
-        Disposition => 'inline',
-
-    );
-
-    my $att;
-    for ( keys %$fields ) {
-        next if $_ eq 'Body';
-        $att .= $_ . ': ' . $fields->{$_} . "\n"
-          if defined( $fields->{$_} ) && $fields->{$_} ne "";
-    }
-    $att .= "\n" . $fields->{Body};
-
-    # Amazon SES seems to not allow you to attach message/rfc822 attachments.
-    # Not sure why!
-    # warn q{ $self->{ls}->{sending_method} } . $self->{ls}->{sending_method};
-    my $disposition = 'inline';
-    my $type        = 'message/rfc822';
-    if (   $self->{ls}->param('sending_method') eq 'amazon_ses'
-        || $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ )
-    {
-        $disposition = 'attachment';
-        $type        = 'text/plain';
-    }
-
-    $entity->attach(
-        Type        => $type,
-        Disposition => $disposition,
-        Data        => safely_decode( safely_encode($att) ),
-    );
-
-    my $expr = 0;
-    if ( $self->{ls}->param('enable_email_template_expr') == 1 ) {
-        $expr = 1;
-    }
-
-    my $n_entity = $fm->email_template(
+    $dap->send_out_message(
         {
-            -entity                   => $entity,
-            -list_settings_vars       => $self->{ls}->params,
-            -list_settings_vars_param => { -dot_it => 1 },
-            -vars                     => {
-                addresses_sent_to   => $args{-emails_sent},
+            -message => 'mass_mailing_finished_notification',
+            -vars    => {
+                addresses_sent_to   => $args->{-emails_sent},
                 mailing_start_time  => $formatted_start_time,
                 mailing_finish_time => $formatted_end_time,
                 total_mailing_time  => $total_time,
-                last_email_send_to  => $args{-last_email},
+                last_email_send_to  => $args->{-last_email},
                 message_subject => $fm->_decode_header( $fields->{Subject} ),
                 %$m_report,
-            },
-            -expr => $expr,
+            }
         }
     );
-
-    my $body = $n_entity->body_as_string;
-    $body = safely_decode($body);
-
-    $self->send(
-        $self->return_headers( safely_decode( $n_entity->head->as_string ), ),
-        Body => $body, );
     return 1;
 
 }

@@ -2315,6 +2315,15 @@ sub layout_choice {
 	my ($args) = @_; 
 	my $layout = undef; 
 	
+	#use Data::Dumper; 
+	#warn '$args' . Dumper($args);
+	
+	if(exists($args->{-layout})){ 
+		if(!defined($args->{-layout})){ 
+			delete($args->{-layout}); 
+		}
+	}
+	
 	if(exists($args->{-layout})){
 		if($args->{-layout} eq 'none'){ 
 			return 'none';
@@ -2334,12 +2343,13 @@ sub layout_choice {
 			&& $self->{ls}->param('disable_discussion_sending') != 1
 			&& $self->{ls}->param('group_list') == 1 )
 		{			
-			$layout .= '-discussion';
+			$layout = 'mailing_list_message-discussion';
 		}
 		else { 
 			$layout = 'mailing_list_message';
 		}
 	}
+	warn '$layout' . $layout; 
 	return $layout; 
 }
 

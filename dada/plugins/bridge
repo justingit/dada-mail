@@ -2,9 +2,6 @@
 
 package bridge;
 
-
-warn 'here.';
-
 use FindBin qw($RealScript);
 
 use lib "$FindBin::Bin/../";
@@ -2167,14 +2164,17 @@ sub notify_of_delivery {
 	
 	require DADA::App::Messages;
     my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
-	$dap->send_generic_email(
+	
+	$dap->send_multipart_email(
         {
             -headers => {
                 To      => $rough_from,
                 From    => $ls->param('list_owner_email'),
                 Subject => $etp->{vars}->{subject},
             },
-            -body        => $etp->{plaintext},
+            -plaintext_body          => $etp->{plaintext},
+            -html_body               => $etp->{html},
+
             -tmpl_params => {
                 -list_settings_vars       => $ls->params,
                 -list_settings_vars_param => { -dot_it => 1, },
@@ -2292,7 +2292,7 @@ sub dm_format {
         $fm->reset_from_header(0);
     }
 
-	warn '${$msg} ' .  ${$msg}; 
+#	warn '${$msg} ' .  ${$msg}; 
 
     my ( $header_str, $body_str ) = $fm->format_headers_and_body(
         {	
@@ -2301,8 +2301,8 @@ sub dm_format {
 			-format_mlm      => 1, 
 		}
 	);
-	warn '$header_str' . $header_str; 
-	warn '$body_str'   . $body_str; 
+#	warn '$header_str' . $header_str; 
+#	warn '$body_str'   . $body_str; 
   
     # not a scalarref (duh)
     my $all_together = $header_str . "\n\n" . $body_str;
@@ -2490,7 +2490,6 @@ sub deliver_copy {
         );
 
     }
-
     return $r;
 
 }
@@ -2570,6 +2569,7 @@ sub deliver {
         );
 
 
+		warn '$r:' . $r; 
 
         return ( $msg_id, $mh->saved_message, $r );
 

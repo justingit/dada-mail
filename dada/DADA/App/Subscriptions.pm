@@ -2394,7 +2394,7 @@ sub subscription_requests {
             }
   		    require DADA::App::Messages;
   		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
-  		    $dap->send_subscription_request_approved_message(
+  		    $dap->send_subscribed_message(
                 {
                     -email  => $email,
                     -vars => {

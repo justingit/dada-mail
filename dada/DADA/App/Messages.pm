@@ -487,6 +487,8 @@ sub send_subscribed_message {
 
     my $etp = $self->emt->fetch('subscribed_message');
 
+	warn '$etp->{html}' . $etp->{html}; 
+	
     $self->send_multipart_email(
         {
             -headers => {
@@ -495,7 +497,8 @@ sub send_subscribed_message {
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{vars}->{to_phrase}, $email,
+                    $etp->{vars}->{to_phrase}, 
+					$email,
                 ),
                 Subject       => $etp->{vars}->{subject},
 				'X-Preheader' => $etp->{vars}->{preheader},
@@ -522,64 +525,6 @@ sub send_subscribed_message {
     # Logging?
 
 }
-
-sub send_subscription_request_approved_message {
-
-    my $self = shift;
-    my ($args) = @_;
-
-    if ( !exists( $args->{-vars} ) ) {
-        $args->{-vars} = {};
-    }
-    if ( !exists( $args->{-email} ) ) {
-        warn 'you MUST pass the -email param to use this method!';
-        return undef;
-    }
-    my $email = $args->{-email};
-
-    require DADA::App::Subscriptions::Unsub;
-    my $dasu = DADA::App::Subscriptions::Unsub->new( { -list => $self->list } );
-    my $unsub_link =
-      $dasu->unsub_link( { -email => $email, -mid => '00000000000000' } );
-    $args->{-vars}->{list_unsubscribe_link} = $unsub_link;
-
-    my $etp = $self->emt->fetch('subscription_request_approved_message');
-
-    $self->send_multipart_email(
-        {
-            -headers => {
-                From => $self->fm->format_phrase_address(
-                    $etp->{vars}->{from_phrase},
-                    $self->ls->param('list_owner_email')
-                ),
-                To => $self->fm->format_phrase_address(
-                    $etp->{vars}->{to_phrase}, $email,
-                ),
-                Subject => $etp->{vars}->{subject},
-            },
-            -plaintext_body => $etp->{plaintext},
-            -html_body      => $etp->{html},
-
-            -tmpl_params => {
-                -list_settings_vars_param =>
-                  { -list => $self->ls->param('list'), },
-                -subscriber_vars_param => {
-                    -list  => $self->ls->param('list'),
-                    -email => $email,
-                    -type  => 'list'
-                },
-
-                #-profile_vars_param       => {-email => $email},
-                -vars => $args->{-vars},
-            },
-            -test => $self->test,
-        }
-    );
-
-    # Logging?
-    return 1;
-}
-
 sub send_subscription_request_denied_message {
 
     my $self = shift;
@@ -728,7 +673,7 @@ sub subscription_approval_request_message {
                 ),
                 To => $self->fm->format_phrase_address(
                     $etp->{vars}->{to_phrase}, 
-					$email,
+				    $self->ls->param('list_owner_email')
                 ),
                 Subject => $etp->{vars}->{subject},
             },
@@ -771,7 +716,8 @@ sub unsubscription_approval_request_message {
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{vars}->{to_phrase}, $email,
+                    $etp->{vars}->{to_phrase},
+                    $self->ls->param('list_owner_email')
                 ),
                 Subject => $etp->{vars}->{subject},
             },
