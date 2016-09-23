@@ -115,6 +115,7 @@ sub inject_stylesheet {
 	else { 
 		$html = qq{
 
+			<!-- no body was found ?! -->
 			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -123,7 +124,8 @@ sub inject_stylesheet {
 			    <meta name="viewport" content="width=device-width">
 			  </head>
 			  $css
-			  <body>
+			    <!-- body from InjectThemeStylesheet -->
+				<body>
 			  	$html
 			  </body>
 			 </html> 

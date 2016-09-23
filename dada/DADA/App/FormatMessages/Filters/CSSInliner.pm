@@ -99,31 +99,6 @@ sub filter {
 			}
 		);
 		$html = $inliner->inlinify();
-		#warn '$html.2' . $html; 
-		
-	#	$html = $self->body_content_only($html); 
-		
-		#warn '$html.3' . $html; 
-		
-	#	}
-	#	catch { 
-	#		carp 'Problems using CSS::Inliner: ' . $_; 
-	#		return $args->{-html_msg};
-	#	};
-	
-	# Soon. Soon!
-	#use HTML::Packer;
-	#use CSS::Packer;
-	#my $minified = $PACKER->minify( \$inlined, {
-	#    remove_comments => 1,
-	#    remove_newlines => 1,
-	#    do_stylesheet   => 'minify', # needs CSS::Packer
-	#});
-	
-		#$html =~ m/body(.*?)>(.*?)<\/body>/;
-		#my $body = $2; 
-		#warn 'BODY:' . $body; 
-	
 		return $html; 
 	}
 	else { 
@@ -131,60 +106,6 @@ sub filter {
 	}
 }
 
-sub body_content_only { 
-	my $self            = shift; 
-	my $html            = shift; 
-	my $has_HTML_Parser = 1;  
-	my $body            = undef;
-	
-	try {
-		require HTML::Parser; 
-	}
-	catch { 
-		$has_HTML_Parser = 0;
-	};
-
-	if($has_HTML_Parser == 0){ 
-		$html =~ s/\n//g; 
-		if (
-			$html =~ m/\<(.*?)body(.*?)\>(.*?)\<\/body\>/m
-		) {
-		    $body = $3;
-		}
-		return $body; 
-	}
-	else { 
-		my $p = HTML::Parser->new( api_version => 3 );
-		$p->handler( start => \&start_handler, "self,tagname,attr" );
-		$p->parse($html);
-		sub start_handler {
-		    my $self     = shift;
-		    my $tagname  = shift;
-		    my $attr     = shift;
-		    my $text     = shift;
-		    return unless ( $tagname eq 'body' );
-		    $self->handler( start   => sub { $body .= shift }, "text" );
-		    $self->handler( text    => sub { $body .= shift }, "text" );
-		    $self->handler( default => sub { $body .= shift }, "text" );
-		    $self->handler( comment => sub { $body .= shift }, "text" );
-		    $self->handler( end     => sub {
-		    my ($endtagname, $self, $text) = @_;
-		         if($endtagname eq $tagname) {
-					 $self->eof;
-		         } else {
-		              $body .= $text;
-		        }
-		    }, "tagname,self,text");
-		 }
-		 if(! defined($body)){ 
-			 warn "couldn't find body!";
-			 return $html; 
-		 }
-		 else {
-			 return $body; 
-		 }
-	 }	
-}
 
 
 

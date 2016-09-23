@@ -10,7 +10,8 @@ use DADA::Config qw(!:DEFAULT);
 
 use Encode qw(encode decode);
 use MIME::Parser;
-use MIME::Entity;
+use MIME::Entity
+;
 use DADA::App::Guts;
 use Try::Tiny;
 use Carp qw(croak carp);
@@ -403,11 +404,16 @@ sub format_mlm {
             );
         }
 
+		warn '$type' . $type; 
+		warn '$self->layout_choice($args)' . $self->layout_choice($args); 
+		
 		unless ($self->layout_choice($args) eq 'none') {
 	        # Body Content Only:
-	        $content = $self->body_content_only($content);
+			
+			$content = $self->body_content_only($content); 
+			
 		}
-		
+			
 		unless ($self->layout_choice($args) eq 'none') {
 	        try {
 	            require DADA::App::FormatMessages::Filters::InjectThemeStylesheet;
@@ -520,10 +526,12 @@ sub format_mlm {
 
     # Apply our own mailing list template:
     $content = $self->_apply_template(
-        -data => $content,
-        -type => $type,
-		-layout => $args->{-layout},
-    );
+		{
+	        -content => $content,
+	        -type => $type,
+			-layout => $args->{-layout},
+		}
+	);
 
     # Begin filtering done after the template is applied
     if ( $self->mass_mailing == 1 ) {
@@ -545,13 +553,13 @@ sub format_mlm {
         }
     }
 	
-	warn 'before _expand_macro_tags';
+	#warn 'before _expand_macro_tags';
     if ( $self->no_list != 1 ) {
         $content = $self->_expand_macro_tags(
             -data => $content,
             -type => $type,
         );
-		warn '_expand_macro_tags called';
+		#warn '_expand_macro_tags called';
 		
     }
 
@@ -773,64 +781,7 @@ sub crop_html {
     };
 }
 
-sub body_content_only {
-    my $self            = shift;
-    my $html            = shift;
-    my $has_HTML_Parser = 1;
-    my $body            = undef;
 
-    try {
-        require HTML::Parser;
-    }
-    catch {
-        $has_HTML_Parser = 0;
-    };
-
-    if ( $has_HTML_Parser == 0 ) {
-        $html =~ s/\n//g;
-        if ( $html =~ m/\<(.*?)body(.*?)\>(.*?)\<\/body\>/m
-		 ) {
-            $body = $3;
-        }
-        return $body;
-    }
-    else {
-        my $p = HTML::Parser->new( api_version => 3 );
-        $p->handler( start => \&start_handler, "self,tagname,attr" );
-        $p->parse($html);
-
-        sub start_handler {
-            my $self    = shift;
-            my $tagname = shift;
-            my $attr    = shift;
-            my $text    = shift;
-            return unless ( $tagname eq 'body' );
-            $self->handler( start   => sub { $body .= shift }, "text" );
-            $self->handler( text    => sub { $body .= shift }, "text" );
-            $self->handler( default => sub { $body .= shift }, "text" );
-            $self->handler( comment => sub { $body .= shift }, "text" );
-            $self->handler(
-                end => sub {
-                    my ( $endtagname, $self, $text ) = @_;
-                    if ( $endtagname eq $tagname ) {
-                        $self->eof;
-                    }
-                    else {
-                        $body .= $text;
-                    }
-                },
-                "tagname,self,text"
-            );
-        }
-        if ( !defined($body) ) {
-            warn "couldn't find body!";
-            return $html;
-        }
-        else {
-            return $body;
-        }
-    }
-}
 
 sub _format_body {
 
@@ -2156,9 +2107,9 @@ sub _macro_tags {
 
 =head2 _apply_template
 
-$content = $self->_apply_template(-data => $content, 
+$content = $self->_apply_template({-content => $content, 
 								  -type => $entity->head->mime_type, 
-								 );
+								 });
 
 Given a string in B<-data>, applies the correct email mailing list template, 
 depending on what B<-type> is passed, this will be either the PlainText or
@@ -2172,30 +2123,31 @@ sub _apply_template {
 
     my $self = shift;
 
-    my %args = (
-        -data => undef,
-        -type => undef,
-        @_,
-    );
+    my ($args) = @_; 
+#	 (
+#        -content => undef,
+#        -type => undef,
+#        -layout
+#        @_,
+#    );
 
-    croak 'No -data passed for type: ' . $args{-type}
-      if !$args{-data};
-    croak "no type! $!" if !$args{-type};
+    croak 'No -content passed for type: ' . $args->{-type}
+      if !exists($args->{-content});
+    croak "no type! $!" if !exists($args->{-type});
 
-    my $data = $args{-data};
+    my $content = $args->{-content};
 
-    my $new_data;
+    my $template;
     my $template_out = 0;
 
-    warn '$args{-type} in _apply_template:' . $args{-type};
-    if ( $args{-type} eq 'text/plain' ) {
+    if ( $args->{-type} eq 'text/plain' ) {
         $template_out = $self->use_plaintext_email_template;
     }
-    elsif ( $args{-type} eq 'text/html' ) {
+    elsif ( $args->{-type} eq 'text/html' ) {
         $template_out = $self->use_html_email_template;
     }
 
-    if ($template_out) {
+    if ($template_out) { # we're using a template in other words 
         require DADA::App::EmailThemes;
         my $em = DADA::App::EmailThemes->new(
             {
@@ -2206,17 +2158,16 @@ sub _apply_template {
         	plaintext => '<!-- tmpl_var message_body -->', 
 			html      => '<!-- tmpl_var message_body -->', 
         };
-		my $layout = $self->layout_choice({%args});
+		my $layout = $self->layout_choice($args);
 		if($layout ne 'none'){ 
 			$etp = $em->fetch($layout);
 		}
 		
-		
-        if ( $args{-type} eq 'text/plain' ) {
-            $new_data = $etp->{plaintext} || '<!-- tmpl_var message_body -->';
+        if ( $args->{-type} eq 'text/plain' ) {
+            $template = $etp->{plaintext} || '<!-- tmpl_var message_body -->';
         }
         else {
-            $new_data = $etp->{html} || '<!-- tmpl_var message_body -->';
+            $template = $etp->{html} || '<!-- tmpl_var message_body -->';
         }
 
         # if(some-user-set-setting) {
@@ -2226,9 +2177,9 @@ sub _apply_template {
             && $self->{ls}->param('disable_discussion_sending') != 1
             && $self->{ls}->param('group_list') == 1 )
         {
-            $new_data = $self->_depersonalize_mlm_template(
+            $template = $self->_depersonalize_mlm_template(
                 {
-                    -msg => $new_data,
+                    -msg => $template,
                 }
             );
         }
@@ -2236,77 +2187,71 @@ sub _apply_template {
         # / depersonalize
 
         # This adds a message body tag, if you haven't done that, already.
-        $new_data = $self->message_body_tagged(
+        $template = $self->message_body_tagged(
             {
-                -str  => $new_data,
-                -type => $args{-type},
+                -str  => $template,
+                -type => $args->{-type},
             }
         );
 
-        if ( $args{-type} eq 'text/html' ) {
-
-            my $bodycontent     = undef;
-            my $new_bodycontent = undef;
+        if ( $args->{-type} eq 'text/html' ) {
 
             # code below replaces code above - any problems?
             # as long as the message dada is valid HTML...
-            $data =~ m/\<body.*?\>([\s\S]*?)\<\/body\>/i;
-            $bodycontent = $1;
+            
+			unless ($self->layout_choice($args) eq 'none') {
+		        # Body Content Only:
+		        $content = $self->body_content_only($content);
+			}
 
-            if ($bodycontent) {
+            if ($content) {
 
-                $new_bodycontent = $bodycontent;
-
-                # FAKING HTML::Template tags - note!
-                $new_data =~
-                  s/\<\!\-\- tmpl_var message_body \-\-\>/$new_bodycontent/;
-                my $safe_bodycontent = quotemeta($bodycontent);
-
-                $data =~ s/$safe_bodycontent/$new_data/;
-                $new_data = $data;
-
+				my $qm_message_body_tag = quotemeta('<!-- tmpl_var message_body -->');
+				$template =~ s/$qm_message_body_tag/$content/;
+          
             }
             else {
-                $new_data =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$data/;
+                $template =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$content/;
             }
 
         }
         else {
-            $new_data =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$data/;
+            $template =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$content/;
         }
     }
     else {
 
-        $new_data = $data;
+        $template = $content;
     }
 
-    $new_data = $self->_expand_macro_tags(
-        -data => $new_data,
-        -type => $args{-type},
+    $template = $self->_expand_macro_tags(
+        -data => $template,
+        -type => $args->{-type},
     );
 
-    #dude. If there ain't no body...
-    if ( $args{-type} eq 'text/html' ) {
-        if ( $new_data !~ /\<body(.*?)\>/i ) {
+	unless ($self->layout_choice($args) eq 'none') {
+	    #dude. If there ain't no body...
+	    if ( $args->{-type} eq 'text/html' ) {
+	        if ( $template !~ /\<body(.*?)\>/i ) {
 
-            my $title = $self->Subject || 'Mailing List Message';
+				warn 'no <body> tag?!';
+			
+	            my $title = $self->Subject || 'Mailing List Message';
 
-            $new_data = qq{ 
-<html> 
-<head>
-<title>$title</title>
-</head> 
-<body> 
-$new_data
-</body> 
-</html> 
-			};
-        }
-    }
-
-    # seriously...
-
-    return $new_data;
+	            $template = qq{ 
+					<html> 
+						<head>
+							<title>$title</title>
+						</head> 
+						<body> 
+							$template
+						</body> 
+					</html> 
+				};
+	        }
+	    }
+	}
+    return $template;
 
 }
 
@@ -3170,6 +3115,25 @@ sub pre_process_msg_strings {
         }
     }
     return ( $text_ver, $html_ver );
+}
+
+sub body_content_only { 
+	my $self = shift; 
+	my $html = shift; 
+	
+    try {
+        require DADA::App::FormatMessages::Filters::BodyContentOnly;
+        my $bco =
+          DADA::App::FormatMessages::Filters::BodyContentOnly->new;
+        $html = $bco->filter( { -html_msg => $html } );
+    }
+    catch {
+        carp "Problems with filter: $_";
+    };
+	
+	return $html; 
+	
+	
 }
 
 sub DESTROY {

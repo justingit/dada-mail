@@ -1070,6 +1070,8 @@ sub send_email {
 
 sub email_message_preview {
 
+	warn 'email_message_preview';
+	
     my $self = shift;
     my $q    = $self->query();
 
@@ -1104,35 +1106,56 @@ sub email_message_preview {
     my $daemp = DADA::App::EmailMessagePreview->new;
     my $r     = $daemp->fetch( $q->param('id') );
 	my $vs = $r->{vars}->{Subject};
-    my $subject = DADA::Template::Widgets::screen(
-        {
-            -data                     => \$vs,
-            -expr                     => 1,
-            -vars                     => {%$fake_sub_info, %$fake_vars},
-            -list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1,
-            },
-        }
-    );
-
+	
+	my $status = 1; 
+	my $errors = undef; 
+	
+	my $subject = undef; 
+	try {
+	    $subject = DADA::Template::Widgets::screen(
+	        {
+	            -data                     => \$vs,
+	            -expr                     => 1,
+	            -vars                     => {%$fake_sub_info, %$fake_vars},
+	            -list_settings_vars_param => {
+	                -list   => $list,
+	                -dot_it => 1,
+	            },
+	        }
+	    );
+	} catch { 
+		$status = 0; 
+		$errors .= $_; 
+	};
+	
     $fake_sub_info->{'email.subject'}   = $subject;
     $fake_sub_info->{'email.preheader'} = $r->{vars}->{'X-Preheader'};
 	
+	my $scrn = undef; 
 	
-    my $scrn = DADA::Template::Widgets::screen(
-        {
-            -data                     => \$r->{html},
-            -expr                     => 1,
-            -vars                     => {%$fake_sub_info, %$fake_vars},
-            -list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1,
-            },
-        }
-    );
-    return $scrn;
-
+	try {
+	    $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -data                     => \$r->{html},
+	            -expr                     => 1,
+	            -vars                     => {%$fake_sub_info, %$fake_vars},
+	            -list_settings_vars_param => {
+	                -list   => $list,
+	                -dot_it => 1,
+	            },
+	        }
+	    );
+	} catch { 
+		$status = 0; 
+		$errors .= $_; 
+	};
+	
+	if($status == 1){
+		return $scrn;
+	}
+	else { 
+		return $errors; 
+	}
 }
 
 sub send_email_button_widget {

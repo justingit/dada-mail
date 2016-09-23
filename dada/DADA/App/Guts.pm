@@ -1163,10 +1163,10 @@ sub html_to_plaintext {
 		}
 	}
 	else { 
-		carp 'before:' . $args->{-str}; 
+	#	carp 'before:' . $args->{-str}; 
 		my $pt = _chomp_off_body($args->{-str}); 
 		   $pt = convert_to_ascii($pt); 
-		carp 'after:' . $pt; 
+	#	carp 'after:' . $pt; 
 		return $pt; 
 	}		
 }

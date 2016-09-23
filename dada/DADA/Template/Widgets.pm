@@ -1587,9 +1587,11 @@ sub screen {
         $args->{-vars} = {};
     }
     
-    if(! exists($args->{-expr})){ 
-        $args->{-expr} = 0;
-    }    
+  #  if(! exists($args->{-expr})){ 
+  #      $args->{-expr} = 0;
+  #  }    
+   
+   $args->{-expr} = 1;
     
 	if(! exists($args->{-pro})){ 
 		$args->{-pro} = undef; 
