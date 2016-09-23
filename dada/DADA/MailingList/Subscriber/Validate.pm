@@ -541,8 +541,8 @@ sub suspicious_activity_by_ip {
 		# warn '$unique_count' . $unique_count; 
 		
 		next if($unique_count < 3);
-		warn '$c'  . $c; 
-		warn '$ip' . $ip; 
+		#warn '$c'  . $c; 
+		#warn '$ip' . $ip; 
 		if($c eq $ip) { 
 			warn 'IP Address: ' . $ip . ' flagged for suspicious activity in, suspicious_activity_by_ip()';
 			return 0;

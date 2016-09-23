@@ -15,7 +15,7 @@ list_status                      char(1),
 timestamp                       TIMESTAMP DEFAULT NOW()
 ) CHARACTER SET utf8 COLLATE utf8_bin;
 
-CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(80), list, list_type, list_status);
+CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(80), list, list_type, list_status, timestamp);
 
 CREATE TABLE IF NOT EXISTS dada_confirmation_tokens ( 
 id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -25,6 +25,7 @@ email varchar(80),
 data text,
 UNIQUE (token)
 );
+CREATE INDEX dada_confirmation_tokens_index ON dada_confirmation_tokens (id, timestamp, token, email);
 
 
 CREATE TABLE IF NOT EXISTS dada_profiles ( 
