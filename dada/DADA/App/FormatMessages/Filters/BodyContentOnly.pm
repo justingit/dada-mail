@@ -83,9 +83,17 @@ sub filter {
 	
 	if(exists($args->{-html_msg})){ 
 		my $tmp = $args->{-html_msg}; 
-		$tmp = $self->body_content_only($tmp);
 		
-		return $tmp; 
+		if($tmp =~ m/<(.*?)body(.*?)\>/) {
+		
+			$tmp = $self->body_content_only($tmp);
+			return $tmp; 
+		}
+		else { 
+		
+			warn 'HTML doc passed with no body tag?!';
+			return $tmp; 
+		}
 	}
 	else { 
 		croak "you MUST pass your HTML message in, 'html_msg'!"; 

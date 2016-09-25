@@ -404,9 +404,7 @@ sub format_mlm {
             );
         }
 
-		warn '$type' . $type; 
-		warn '$self->layout_choice($args)' . $self->layout_choice($args); 
-		
+
 		unless ($self->layout_choice($args) eq 'none') {
 	        # Body Content Only:
 			
@@ -414,6 +412,7 @@ sub format_mlm {
 			
 		}
 			
+		
 		unless ($self->layout_choice($args) eq 'none') {
 	        try {
 	            require DADA::App::FormatMessages::Filters::InjectThemeStylesheet;
@@ -426,22 +425,16 @@ sub format_mlm {
 	        };
 		}
 		
-        # Inlining
-        if ( $self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1 ) {
-
-            # This should be an option - esp. with Send a Webpage
-            # (I would say the DEFAULT option...)
-            #
-            try {
-                require DADA::App::FormatMessages::Filters::CSSInliner;
-                my $css_inliner =
-                  DADA::App::FormatMessages::Filters::CSSInliner->new;
-                $content = $css_inliner->filter( { -html_msg => $content } );
-            }
-            catch {
-                carp "Problems with filter: $_";
-            };
+		# CSS Inlining
+        try {
+            require DADA::App::FormatMessages::Filters::CSSInliner;
+            my $css_inliner =
+              DADA::App::FormatMessages::Filters::CSSInliner->new;
+            $content = $css_inliner->filter( { -html_msg => $content } );
         }
+        catch {
+            carp "Problems with filter: $_";
+        };
 
         # Change inlined images into separate files we'll link
         # (and hopefully embed later down the chain)
@@ -467,10 +460,11 @@ sub format_mlm {
             my $utt =
               DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
             $content = $utt->filter( { -html_msg => $content } );
-        }
-        catch {
+        } catch {
             carp "Problems with filter: $_";
         };
+		
+		
     }
 
     # This means, we've got a discussion list:
@@ -523,7 +517,6 @@ sub format_mlm {
     }    #/ discussion lists
          # End filtering done before the template is applied
 
-
     # Apply our own mailing list template:
     $content = $self->_apply_template(
 		{
@@ -569,7 +562,22 @@ sub format_mlm {
             -type => $type,
         );
     }
-
+		
+	if($type eq 'text/html') { 
+		# Minify
+		warn 'minifying';
+	    try {
+	        require DADA::App::FormatMessages::Filters::HTMLMinifier;
+	        my $minifier =
+	          DADA::App::FormatMessages::Filters::HTMLMinifier->new;
+	        $content = $minifier->filter( { -html_msg => $content } );
+	    } catch {
+	        carp "Problems with filter: $_";
+	    };	
+	}	
+	
+	
+	
     # End filtering done after the template is applied
 
     # simple validation
@@ -3083,6 +3091,8 @@ sub email_template {
 }
 
 sub pre_process_msg_strings {
+	
+	my $self = shift;
 
     my $text_ver = shift || undef;
     my $html_ver = shift || undef;
@@ -3113,7 +3123,8 @@ sub pre_process_msg_strings {
             $html_ver = $orig_html_ver;
             undef $orig_html_ver;
         }
-    }
+    }	
+	
     return ( $text_ver, $html_ver );
 }
 

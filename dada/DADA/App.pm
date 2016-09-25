@@ -1070,7 +1070,7 @@ sub send_email {
 
 sub email_message_preview {
 
-	warn 'email_message_preview';
+#	warn 'email_message_preview';
 	
     my $self = shift;
     my $q    = $self->query();
@@ -1131,12 +1131,20 @@ sub email_message_preview {
     $fake_sub_info->{'email.subject'}   = $subject;
     $fake_sub_info->{'email.preheader'} = $r->{vars}->{'X-Preheader'};
 	
+	
 	my $scrn = undef; 
+	my $msg  = $r->{html};
+	my $returning_plaintext = 0; 
+	
+	if(length($msg) <= 0) {
+		$msg = $r->{plaintext};
+		$returning_plaintext = 1; 
+	}
 	
 	try {
 	    $scrn = DADA::Template::Widgets::screen(
 	        {
-	            -data                     => \$r->{html},
+	            -data                     => \$msg, 
 	            -expr                     => 1,
 	            -vars                     => {%$fake_sub_info, %$fake_vars},
 	            -list_settings_vars_param => {
@@ -1149,7 +1157,10 @@ sub email_message_preview {
 		$status = 0; 
 		$errors .= $_; 
 	};
-	
+	if($returning_plaintext == 1){ 
+		$self->header_props(-type => 'text/plain');
+	}
+
 	if($status == 1){
 		return $scrn;
 	}

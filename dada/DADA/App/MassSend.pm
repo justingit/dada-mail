@@ -796,6 +796,11 @@ sub construct_from_url {
 	my $plaintext_content_from = $draft_q->param('plaintext_content_from') || 'auto';
     my $url_options            = $draft_q->param('url_options')            ||  undef;
 	
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+	
+	warn '$mode' . $mode; 
+	
 	if($mode eq 'text') { 
 		$subject_from = 'input';
 		$content_from = 'content_from_textarea';
@@ -805,19 +810,13 @@ sub construct_from_url {
 			$content_from = 'none';
 		}
 		if(defined(scalar $draft_q->param('text_message_body'))) { 
-			
-			warn q{$plaintext_content_from = 'text';};
-		
 			$plaintext_content_from = 'text';
 		}
 		else { 
-		
 			$plaintext_content_from = 'auto';
-			
-			warn q{$plaintext_content_from = 'auto';};
-		
 		}
 	}
+	warn '$plaintext_content_from' . $plaintext_content_from; 
 	
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
@@ -923,8 +922,10 @@ sub construct_from_url {
 			# ...
 	}
 	else {
+		# $content_from_textarea?
+		
 		$html_message = $draft_q->param('html_message_body');
-	   ( $text_message, $html_message ) = DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
+	   ( $text_message, $html_message ) = $fm->pre_process_msg_strings( $text_message, $html_message );
 	}
 		
     my ( $status, $errors ) = $self->message_tag_check($html_message);
@@ -938,12 +939,12 @@ sub construct_from_url {
     undef($errors);
 
     if(
-			length($text_message) > 0  
+			length($draft_q->param('text_message_body')) > 0  
 		 && $plaintext_content_from eq 'text'
 	 ) {
 		$text_message = $draft_q->param('text_message_body');
     } elsif (
-			length($text_message) <= 0 
+			length($text_message) <= 0  #? Hmm...
 		 || $plaintext_content_from eq 'auto'
 	 ) {
  		
@@ -974,25 +975,43 @@ sub construct_from_url {
     undef($status);
     undef($errors);
 	
+	warn 'length($html_message)' . length($html_message); 
+	warn 'length($text_message)' . length($text_message); 
+	if(
+		length($html_message) <= 0
+		&& length($text_message) >= 0
+		&& $ls->param('mass_mailing_convert_plaintext_to_html') == 1){ 
+			
+			warn 'I made it here?!';
+			
+			$html_message = plaintext_to_html( { -str => $text_message } );	
+			
+			warn '$html_message' . $html_message; 
+	}
 	
-	$html_message = $fm->format_mlm( 
-		{
-			-content => $html_message, 
-			-type  => 'text/html', 
-			-crop_html_options => {	
-		        enabled                          => scalar $draft_q->param('crop_html_content'),
-		        crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
-		        crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
-			}, 
-			-rel_to_abs_options => { 
-				enabled => 1, 
-				base    => $base, 
-			},
-			-layout => $draft_q->param('layout'),
-		}
-	);	
+	warn 'length($html_message)' . length($html_message); 
+	warn 'length($text_message)' . length($text_message); 
+	
+	if(length($html_message) > 0) {
+		$html_message = $fm->format_mlm( 
+			{
+				-content => $html_message, 
+				-type  => 'text/html', 
+				-crop_html_options => {	
+			        enabled                          => scalar $draft_q->param('crop_html_content'),
+			        crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
+			        crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
+				}, 
+				-rel_to_abs_options => { 
+					enabled => 1, 
+					base    => $base, 
+				},
+				-layout => $draft_q->param('layout'),
+			}
+		);	
+	}
+	
 	if( length($text_message) > 0){
-
 		$text_message = $fm->format_mlm(
 			{
 				-content => $text_message, 
@@ -1001,13 +1020,17 @@ sub construct_from_url {
 		);
 	}
 	
-	# This is cheating: 
-    require DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
-	my $tag       = quotemeta('<!-- tmpl_var list_settings.logo_image_url -->');
-	my $tag_value = $ls->param('logo_image_url');
-	# Sigh.
-	$html_message =~ s/$tag/$tag_value/g; 
+	warn 'length($html_message)' . length($html_message); 
+	warn 'length($text_message)' . length($text_message); 
+
+	if(length($html_message) > 0) {
+	
+		# This is cheating: 
+		my $tag       = quotemeta('<!-- tmpl_var list_settings.logo_image_url -->');
+		my $tag_value = $ls->param('logo_image_url');
+		# Sigh.
+		$html_message =~ s/$tag/$tag_value/g; 
+	}
 	
     try { 
         ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) 
@@ -1076,7 +1099,8 @@ sub construct_from_url {
 		); 
 	}
 	
-	warn q{$draft_q->param('preheader')} . $draft_q->param('preheader'); 
+#	warn '$html_message' . $html_message; 
+	
 	
 	return { 
 		status       => 1, 
@@ -1866,7 +1890,7 @@ sub list_invite {
         }
 
         ( $text_message_body, $html_message_body ) =
-          DADA::App::FormatMessages::pre_process_msg_strings( $text_message_body, $html_message_body );
+          $fm->pre_process_msg_strings( $text_message_body, $html_message_body );
 
         require MIME::Entity;
         my $entity;

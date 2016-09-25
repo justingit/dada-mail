@@ -1,5 +1,8 @@
-package DADA::App::FormatMessages::Filters::CSSInliner;
+package DADA::App::FormatMessages::Filters::HTMLMinifier;
 use strict; 
+
+
+warn 'in DADA::App::FormatMessages::Filters::HTMLMinifier';
 
 use lib qw(
 	../../../../
@@ -79,7 +82,18 @@ sub _init  {
 sub can_use_filter { 
 	my $self = shift;
 	try { 
-		require CSS::Inliner; 
+		require HTML::Packer; 
+	} catch { 
+		warn 'cannot use HTML::Packer:' . $_; 
+		return 0;
+	};
+	return 1; 
+}
+
+sub can_use_CSS_Packer { 
+	my $self = shift;
+	try { 
+		require CSS::Packer; 
 	} catch { 
 		return 0;
 	};
@@ -90,27 +104,37 @@ sub filter {
 	my $self   = shift; 
 	my ($args) = @_; 
 	my $html;
-
 	
 	if(exists($args->{-html_msg})){ 
 		$html = $args->{-html_msg};		
+		
 		return $html 
 			if ! $self->can_use_filter;
+			
+		require HTML::Packer; 
 		
-		require CSS::Inliner; 
-		my $inliner = CSS::Inliner->new(
-			{
-				leave_style => 1,
-				relaxed     => 1
+		my $p  = HTML::Packer->init;
+		my $minified; 
+		if($self->can_use_CSS_Packer) {
+			$minified = $p->minify( \$html, {
+			    remove_comments => 0,
+			    remove_newlines => 1,
+			    do_stylesheet   => 'minify',
+			});
+		}
+		else { 
+			if($self->can_use_CSS_Packer) {
+				$minified = $p->minify( \$html, {
+				    remove_comments => 0,
+				    remove_newlines => 1,
+				   # do_stylesheet   => 'minify',
+				});
 			}
-		);
-		$inliner->read(
-			{
-				html => $html,
-			}
-		);
-		$html = $inliner->inlinify();
-		return $html; 
+				
+		}
+		# warn '$minified' . $minified; 
+		return $minified; 
+			
 	}
 	else { 
 		croak "you MUST pass your HTML message in, 'html_msg'!"; 
