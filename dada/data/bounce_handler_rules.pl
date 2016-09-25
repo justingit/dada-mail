@@ -1343,6 +1343,23 @@ qr/No Such User Here|The email account that you tried to reach does not exist/
             Action => { add_to_score => 'hardbounce_score', }
         }
     },
+	
+    {
+        exceeded_the_max_emails_per_hour => {
+            Examine => {
+                Message_Fields => {
+                    'Notification_regex' => [qr/exceeded the max emails per hour/],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {}
+        }
+    },
+	
+	
 
     {
         permanent_error => {

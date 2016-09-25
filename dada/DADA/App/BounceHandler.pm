@@ -455,19 +455,26 @@ sub parse_all_bounces {
 
                     if ( $need_to_delete == 1 ) {
                         if ( $ls->param('bounce_handler_forward_msgs_to_list_owner') ) {
-                            my $r = $self->forward_to_list_owner(
-                                {
-                                    -ls_obj => $ls,
-                                    -msg    => $full_msg
-                                }
-                            );
-                            if ( $r == 1 ) {
-                                $log .= "Forwarding bounces message to the List Owner ("
-                                  . $ls->param('list_owner_email') . ")\n";
-                            }
-                            else {
-                                $log .= "Problems forwarding message to the List Owner!\n";
-                            }
+                            
+							if($diag->{matched_rule} eq 'exceeded_the_max_emails_per_hour') { 
+								warn 'Bounce is because of exceeding an hourly sending limit - 
+									  NOT forwarding bounced message, so to stop an infite loop!';
+							}
+							else {
+								my $r = $self->forward_to_list_owner(
+	                                {
+	                                    -ls_obj => $ls,
+	                                    -msg    => $full_msg
+	                                }
+	                            );
+	                            if ( $r == 1 ) {
+	                                $log .= "Forwarding bounces message to the List Owner ("
+	                                  . $ls->param('list_owner_email') . ")\n";
+	                            }
+	                            else {
+	                                $log .= "Problems forwarding message to the List Owner!\n";
+	                            }
+							}
                         }
                     }
 
