@@ -12,18 +12,7 @@ Key:
 [*] Naw...
 [?] Someday
 
-Work locally dummy. 
 
-
-Make 4 versions of mailing list message layout
-	* default - all bells/whistels
-	* footer only
-	* discussion list specific
-	* none
-
-Ability to switch out between all these options in Send a Message screen. 
-
-Finalize Confirmation HTML email
 
 Make the system work if HTML or Plaintext email is not available. If no HTML, just send plaintext. 
 	we'll then slowly build up the collection of TML versions of the email's that we have. 

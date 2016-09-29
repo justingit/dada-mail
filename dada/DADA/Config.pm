@@ -1491,86 +1491,9 @@ $MIME_TOOLS_PARAMS //= {
 
     fallback_field_values => '',
 
-    # Email Templates
-
-    confirmation_message_subject => undef,
-    confirmation_message         => undef,
 
 
-
-	# Subscription Requests
-	# List Owner
-
-    subscription_approval_request_message_subject   => undef,
-    subscription_approval_request_message           => undef,
-	
-	# Subscriber
-    subscription_request_approved_message_subject   => undef,
-    subscription_request_approved_message           => undef,
-
-	# Subscriber  
-    subscription_request_denied_message_subject     => undef,
-    subscription_request_denied_message             => undef,
-
-
-	# Unsubscription Requests
-	# List Owner
-    unsubscription_approval_request_message_subject => undef,
-	unsubscription_approval_request_message         => undef,
-
-	# Subscriber
-    unsubscription_request_approved_message_subject => undef,
-    unsubscription_request_approved_message         => undef,
-
-	# Subscriber
-    unsubscription_request_denied_message_subject   => undef,
-    unsubscription_request_denied_message           => undef,
-
-    
-    subscribed_message_subject => undef,
-    subscribed_message         => undef, 
-
-    subscribed_by_list_owner_message_subject => undef,
-    subscribed_by_list_owner_message         => undef,
-
-    unsubscribed_by_list_owner_message_subject => undef,
-    unsubscribed_by_list_owner_message         => undef,
-
-    unsubscribed_message_subject => undef, 
-    unsubscribed_message         => undef,
-
-
-    mailing_list_message_from_phrase => undef, 
-    mailing_list_message_to_phrase   => undef,
-    mailing_list_message_subject     => undef,
-    mailing_list_message             => undef,
-    mailing_list_message_html        => undef,
-    
-    digest_message_subject           => undef, 
-    digest_message                   => undef, 
-    digest_message_html              => undef, 
-    
-
-    send_archive_message_subject     => undef,
-    send_archive_message             => undef,
-    send_archive_message_html        => undef,
-
-    you_are_already_subscribed_message_subject => undef, 
-    you_are_already_subscribed_message => undef,
-
-    you_are_not_subscribed_message         => undef,
-    you_are_not_subscribed_message_subject => undef,
-
-    admin_subscription_notice_message_subject => undef,
-    admin_subscription_notice_message         => undef,
-
-    unsubscription_notice_message_subject => undef,
-    unsubscription_notice_message         => undef,
-
-    admin_unsubscription_notice_message_subject => undef,
-    admin_unsubscription_notice_message         => undef,
-
-    enable_email_template_expr                  => 0,
+    enable_email_template_expr                  => 1,
 
     # HTML Screen Templates
 

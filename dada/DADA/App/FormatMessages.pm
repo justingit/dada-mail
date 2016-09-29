@@ -284,7 +284,8 @@ sub format_headers_and_body {
     if ( !exists( $args->{-format_body} ) ) {
         $args->{-format_body} = 1;
     }
-
+	warn q{$args->{-format_body}} . $args->{-format_body}; 
+	
     if ( $args->{-convert_charset} == 1 ) {
         try {
             $entity = $self->change_charset( { -entity => $entity } );
@@ -860,6 +861,8 @@ sub _format_body {
                 );
 
                 if ( $args->{-format_mlm} == 1 ) {
+					
+					# Layout? 
                     $content = $self->format_mlm(
                         {
                             -content           => $content,
@@ -882,10 +885,18 @@ sub _format_body {
 
             }
         }
+		warn '$entity->head->mime_type' . $entity->head->mime_type; 
+		warn '$is_att' . $is_att; 
+		
         if (   ( $entity->head->mime_type eq 'text/html' )
             && ( $is_att != 1 ) )
         {
 
+			warn '$self->no_list' . $self->no_list; 
+			warn q{defined( $self->{list} )} . defined( $self->{list} ); 
+			warn '$self->mass_mailing' . $self->mass_mailing; 
+			warn q{$self->{ls}->param('tracker_track_opens_method')} . $self->{ls}->param('tracker_track_opens_method'); 
+			
             if ( $self->no_list != 1 ) {
 
                 #warn '$self->no_list != 1';
@@ -896,17 +907,21 @@ sub _format_body {
 
                     #warn '$entity->head->mime_type' . $entity->head->mime_type;
                     #warn q{$self->{ls}->param('tracker_track_opens_method')};
-
-                    if ( $self->{ls}->param('tracker_track_opens_method') eq
-                        'directly' && $entity->head->mime_type eq 'text/html' )
-                    {
-                        $content = $self->_add_opener_image($content);
-                        $changes = 1;
-                    }
+					
+					if($self->mass_mailing == 1) {
+	                    if ( $self->{ls}->param('tracker_track_opens_method') eq
+	                        'directly' && $entity->head->mime_type eq 'text/html' )
+	                    {
+	                        $content = $self->_add_opener_image($content);
+	                        $changes = 1;
+	                    }
+					}
                 }
             }
         }
-
+		else	{ 
+			warn 'well, no opener image for us...';
+		}
         #warn '$changes' . $changes;
         if ( $changes == 1 ) {
             my $io = $body->open('w');
@@ -1015,6 +1030,9 @@ sub _add_opener_image {
     my $url =
 '<!-- tmpl_var PROGRAM_URL -->/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/spacer.png';
 
+warn '$self->no_list' . $self->no_list; 
+warn q{$self->{ls}->param('tracker_track_email')} . $self->{ls}->param('tracker_track_email'); 
+
     if ( $self->no_list != 1 ) {
         if ( $self->{ls}->param('tracker_track_email') == 1 ) {
             $url =
@@ -1029,10 +1047,13 @@ sub _add_opener_image {
 
     if ( $content =~ m/\<\/body(.*?)\>/i ) {
 
+		warn q{$content =~ m/\<\/body(.*?)\>/i};
         #</body>
         $content =~ s/(\<\/body(.*?)\>)/$img_opener_code\n$1/i;
     }
     else {
+		warn 'else...';
+		
         # No end body tag?!
         $content .= "\n" . $img_opener_code;
     }
@@ -2275,9 +2296,13 @@ sub layout_choice {
 		if(!defined($args->{-layout})){ 
 			delete($args->{-layout}); 
 		}
+		else { 
+			warn 'Passed: $args->{-layout}' . $args->{-layout}; 
+		}
 	}
 	
 	if(exists($args->{-layout})){
+		warn '$args->{-layout} exists.';
 		if($args->{-layout} eq 'none'){ 
 			return 'none';
 		}
@@ -2290,6 +2315,7 @@ sub layout_choice {
 		}
 	}
 	else {
+		warn '$args->{-layout} does not exist.';
 		if (   $self->no_list != 1
 			&& $self->mass_mailing == 1
 			&& $self->list_type eq 'list'
@@ -2302,7 +2328,7 @@ sub layout_choice {
 			$layout = 'mailing_list_message';
 		}
 	}
-	warn '$layout' . $layout; 
+	warn 'returning $layout' . $layout; 
 	return $layout; 
 }
 

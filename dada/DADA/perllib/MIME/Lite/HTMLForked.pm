@@ -56,6 +56,7 @@ use MIME::Lite;
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 
+
 require Exporter;
 
 @ISA     = qw(Exporter);
@@ -354,8 +355,12 @@ sub parse {
             # else add part to mail
             if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
                 $images_read{$urlAbs} = 1;
-                push( @mail, $self->create_image_part($urlAbs) );
-            }
+				
+				my $img_part = $self->create_image_part($urlAbs);
+				if(defined($img_part)){
+					push( @mail, $img_part);
+				}
+			}
         }
 
         # For flash part (embed)
@@ -372,7 +377,11 @@ sub parse {
             # Exit with extern configuration, don't include image
             if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
                 $images_read{$urlAbs} = 1;
-                push( @mail, $self->create_image_part($urlAbs) );
+				
+				my $img_part = $self->create_image_part($urlAbs);
+				if(defined($img_part)){
+                	push( @mail, $img_part );
+				}
             }
         }
 
@@ -395,8 +404,12 @@ sub parse {
             # Exit with extern configuration, don't include image
             if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
                 $images_read{$urlAbs} = 1;
-                push( @mail, $self->create_image_part($urlAbs) );
-            }
+				
+				my $img_part = $self->create_image_part($urlAbs);
+				if(defined($img_part)) {
+					push( @mail, $img_part );
+            	}
+			}
         }
 
         # For new images create part
@@ -406,7 +419,10 @@ sub parse {
             && ( !$images_read{$urlAbs} ) )
         {
             $images_read{$urlAbs} = 1;
-            push( @mail, $self->create_image_part($urlAbs) );
+			my $img_part = $self->create_image_part($urlAbs);
+			if(defined($img_part)) {
+				push( @mail, $img_part );
+        	}
         }
     }
 
@@ -622,7 +638,13 @@ sub include_javascript(\%$$) {
 sub pattern_input_image {
     my ( $self, $deb, $url, $fin, $base, $ref_tab_mail ) = @_;
     my $ur = URI::URL->new( $url, $base )->abs;
-    if ( $self->{_include} ne 'extern' ) { push( @$ref_tab_mail, $self->create_image_part($ur) ); }
+    if ( $self->{_include} ne 'extern' ) {
+	
+		my $img_part = $self->create_image_part($ur);
+		if(defined($img_part)){
+			 push( @$ref_tab_mail,  $img_part); 
+		 }
+	 }
     if   ( $self->{_include} eq 'cid' ) { return '<input ' . $deb . ' src="cid:' . $ur . '"' . $fin; }
     else                                { return '<input ' . $deb . ' src="' . $ur . '"' . $fin; }
 }
@@ -643,6 +665,11 @@ sub create_image_part {
     my ( $self, $ur, $typ ) = @_;
     my ( $type, $buff1 );
 	
+	warn '$ur:' . $ur; 
+	warn 'length($ur)' . length($ur); 
+	warn 'defined($ur)' . defined($ur); 
+	return undef if (length($ur) == 0) || (! defined $ur); 
+
 	# This is asolutely ridiculous. 
     # Create MIME type
     if    ($typ)                   { $type = $typ; }
@@ -698,9 +725,34 @@ sub cid (\%$) {
     # but as string can get long, I need to revert it to have
     # difference at begin of url to avoid max size of cid
     # I remove scheme always same in a document.
-    $url = reverse( substr( $url, 7 ) );
-    return reverse( split( "", unpack( "h" . length($url), $url ) ) ) . '@MIME-Lite-HTML-' . $VERSION;
+	#$url =~ s{http://}{};
+	#$url =~ s{https://}{};
+    #$url =~ s/\//_/g; 
+	#return $url; 
+	
+	return $self->md5_checksum($url); 
+	#$url = reverse( substr( $url, 7 ) );
+    #return reverse( split( "", unpack( "h" . length($url), $url ) ) ) . '@MIME-Lite-HTML-' . $VERSION;
 }
+
+use Carp qw(carp croak);
+use Try::Tiny; 
+sub md5_checksum {
+
+	my $self = shift; 
+    my $data = shift;
+
+    try {
+        require Digest::MD5;
+    }
+    catch {
+        carp "Can't use Digest::MD5?! - $_";
+        return undef;
+    };
+    return Digest::MD5::md5_hex( $data );
+}
+
+
 
 #------------------------------------------------------------------------------
 # link_form

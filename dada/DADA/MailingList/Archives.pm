@@ -951,6 +951,49 @@ sub _zap_sig_html {
 }
 
 
+sub string_between_markers { 
+
+	my $self        = shift; 
+	my $str         = shift; 
+	my $begin       = shift || '<!-- start message content -->'; 
+	my $end         = shift || '<!-- end message content -->';
+	
+	my $qm_begin = quotemeta($begin);
+	my $qm_end = quotemeta($end);
+	
+	$str =~ s/($qm_begin|$qm_end)/\n$1\n/g;
+	
+	my @str_lines   = split(/\n|\r/, $str);
+	my $n_str = undef; 
+	
+	my $switch = 0; 
+	
+    for my $line(@str_lines){ 
+		if($line =~ m/$qm_begin/){  
+			$switch = 1;
+			next; 
+		}
+		
+		if($line =~ m/$qm_end/){  
+    		$switch = 0;
+    		next;
+   
+    	}
+    	next 
+    		if $switch == 0; 
+    	
+    	$n_str .= $line . "\n"; 
+    
+	}
+	
+	if(! $n_str){ 
+		return $str;
+	}else{ 
+		return $n_str; 
+	}
+}
+
+
 
 
 sub _highlight_quoted_text { 
@@ -1261,38 +1304,37 @@ sub _rearrange_cid_img_tags {
 	$body_copy =~ s/\>/\>\n/g;
 	$body_copy =~ s/\</\n\</g;
 	
-	if($self->can_display_attachments){ 
-		my @lines = split("\n", $body_copy); 
-		for my $line(@lines){ 
-			
-			
-			if($line =~ m/\"(cid\:(.*?))\"/){ 
-				push(@cids, $1); 
-			}
+
+	my @lines = split("\n", $body_copy); 
+	for my $line(@lines){ 
+		
+		
+		if($line =~ m/\"(cid\:(.*?))\"/){ 
+			push(@cids, $1); 
 		}
-		
-	
-		for my $this_cid(@cids){
-		
-		
-			my $img_url = $DADA::Config::PROGRAM_URL . '?flavor=show_img&list=' . $self->{list} . '&id=' . $args{-key} . '&cid=' . $this_cid;  
-	
-			my $link_wo_cid = $img_url; 
-			   $link_wo_cid =~ s/cid\://; 
-			
-				
-			my $qm_this_cid = quotemeta($this_cid); 
-			
-			$body =~ s/$qm_this_cid/$link_wo_cid/g;
-		}
-		
-	 	return $body; 
-	 	
-	}else{ 
-	
-		$body =~ s/\<img(.*?)(src=|src=\")(cid\:)(.*?)\>/<img$1$2$4>/g; #basically, just get rid of 'em and call it a day.
-		return $body; 	
 	}
+	
+
+	for my $this_cid(@cids){
+	
+		warn '$this_cid' . $this_cid; 
+		
+	
+		my $img_url = $DADA::Config::PROGRAM_URL . '/show_img/' . $self->{list} . '/' . $args{-key} . '/' . $this_cid;  
+
+		my $link_wo_cid = $img_url; 
+		   $link_wo_cid =~ s/cid\://; 
+		
+			
+		my $qm_this_cid = quotemeta($this_cid); 
+		
+		warn '$link_wo_cid' . $link_wo_cid; 
+		
+		$body =~ s/$qm_this_cid/$link_wo_cid/g;
+	}
+	
+ 	return $body; 
+
 
 }
 
@@ -1733,6 +1775,10 @@ sub _take_off_sigs {
 			
 			if($content){ 
 				if($entity->head->mime_type eq 'text/html'){ 
+					
+					$content = $self->string_between_markers($content);
+					
+					
 					$content = $self->_zap_sig_html($content);
 				}else{ 
 					$content = $self->_zap_sig_plaintext($content);
@@ -1891,6 +1937,9 @@ sub massaged_msg_for_display {
             -body => $body,
         );		
         if ( $self->{ls}->param('stop_message_at_sig') == 1 ) {
+			
+			$body = $self->string_between_markers($body);
+			
             $body = $self->_zap_sig_html($body);
         }
 

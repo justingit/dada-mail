@@ -881,14 +881,16 @@ sub remove_bounces {
             );
 			
 			$dap->send_out_message( 
-			{ 
-				-message => 'unsubscribed_because_of_bouncing',
-				-email => $d_email,
-	            -subscriber_vars          => { 'subscriber.email' => $d_email, },
-	            -vars                     => { 
-					Plugin_Name        => $self->config->{Plugin_Name}, 
+				{ 
+					-message => 'unsubscribed_because_of_bouncing',
+					-email => $d_email,
+					-tmpl_params => {
+			            -subscriber_vars          => { 'subscriber.email' => $d_email, },
+			            -vars                     => { 
+							Plugin_Name        => $self->config->{Plugin_Name}, 
+						}
+					}
 				}
-			}
 			); 
 
         }

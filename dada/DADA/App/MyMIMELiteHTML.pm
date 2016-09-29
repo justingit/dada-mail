@@ -196,7 +196,10 @@ sub parse {
             # else add part to mail
             if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
                 $images_read{$urlAbs} = 1;
-                push( @mail, $self->create_image_part($urlAbs) );
+				my $img_part = $self->create_image_part($urlAbs);
+				if(defined($img_part)){
+					push( @mail, $img_part)
+				}
             }
         }
 
@@ -214,8 +217,11 @@ sub parse {
             # Exit with extern configuration, don't include image
             if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
                 $images_read{$urlAbs} = 1;
-                push( @mail, $self->create_image_part($urlAbs) );
-            }
+				my $img_part = $self->create_image_part($urlAbs);
+				if(defined($img_part)){
+					push( @mail, $img_part)
+				}
+			}
         }
 
         # For flash part (object)
@@ -237,7 +243,10 @@ sub parse {
             # Exit with extern configuration, don't include image
             if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
                 $images_read{$urlAbs} = 1;
-                push( @mail, $self->create_image_part($urlAbs) );
+				my $img_part = $self->create_image_part($urlAbs);
+				if(defined($img_part)){
+					push( @mail, $img_part)
+				}
             }
         }
 
@@ -248,7 +257,10 @@ sub parse {
             && ( !$images_read{$urlAbs} ) )
         {
             $images_read{$urlAbs} = 1;
-            push( @mail, $self->create_image_part($urlAbs) );
+			my $img_part = $self->create_image_part($urlAbs);
+			if(defined($img_part)){
+				push( @mail, $img_part)
+			}
         }
     }
 
@@ -411,17 +423,39 @@ sub include_javascript(\%$$) {
 sub cid (\%$) {
     my ( $self, $url ) = @_;
 
+	#warn 'cid $url:"' . $url . '"'; 
+	
+	$url = strip($url); 
+	
     require URI;
 
     my $filename = DADA::App::Guts::uriescape( ( URI->new($url)->path_segments )[-1] );
-
-    # rfc say: don't use '/'. So I do a pack on it.
-    # but as string can get long, I need to revert it to have
-    # difference at begin of url to avoid max size of cid
-    # I remove scheme always same in a document.
-    $url = reverse( substr( $url, 7 ) );
-    return reverse( split( "", unpack( "h" . length($url), $url ) ) ) . $filename;
+	
+	
+	my $r = $self->md5_checksum($url) . '_' . $filename; 
+	 
+	# warn 'returning: ' . $r;
+	 return $r; 
 }
+
+use Carp qw(carp croak);
+use Try::Tiny; 
+sub md5_checksum {
+
+	my $self = shift; 
+    my $data = shift;
+
+    try {
+        require Digest::MD5;
+    }
+    catch {
+        carp "Can't use Digest::MD5?! - $_";
+        return undef;
+    };
+    return Digest::MD5::md5_hex( $data );
+}
+
+
 
 sub build_mime_object {
     my ( $self, $html, $txt, $ref_mail ) = @_;

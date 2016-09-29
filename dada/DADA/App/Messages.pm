@@ -209,6 +209,9 @@ sub send_generic_email {
 
 sub send_multipart_email {
 
+	warn 'at send_multipart_email' ;
+	
+
     my $self = shift;
     my ($args) = @_;
 
@@ -284,12 +287,14 @@ sub send_multipart_email {
         $self->fm->override_validation_type('expr');
     }
 
+	warn 'calling format_message';
     $entity = $self->fm->format_message(
         {
             -entity => $entity
         }
     );
 
+	warn 'calling email_template';
     $entity = $self->fm->email_template(
         {
             -entity => $entity,
@@ -310,9 +315,12 @@ sub send_multipart_email {
         $self->mh->test(1);
     }
     
+	warn 'calling send';
 	$self->mh->send( $self->mh->return_headers($header_str),
         Body => $body_str, );
 
+		warn 'done in send_multipart_email';
+		return 1; 
 }
 
 sub send_abuse_report {
@@ -1260,12 +1268,11 @@ sub send_out_message {
     my $self = shift;
     my ($args) = @_;
 
+	use Data::Dumper;
+	warn 'send_out_message args:' . Dumper($args);
 
-    if ( !exists( $args->{-vars} ) ) {
-        $args->{-vars} = {};
-    }
-    if ( !exists( $args->{-subscriber_vars} ) ) {
-        $args->{-subscriber_vars} = {};
+    if ( !exists( $args->{-tmpl_params} ) ) {
+        $args->{-tmpl_params} = {};
     }
 	
     if ( !exists( $args->{-email} ) ) {
@@ -1276,6 +1283,8 @@ sub send_out_message {
 
     my $etp = $self->emt->fetch( $args->{-message} );
 
+	warn 'calling send_multipart_email';
+	
     $self->send_multipart_email(
         {
             -headers => {
@@ -1290,14 +1299,7 @@ sub send_out_message {
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
-            -tmpl_params    => {
-                -list_settings_vars_param => {
-                    -list   => $self->list,
-                    -dot_it => 1,
-                },
-				 -subscriber_vars => $args->{-subscriber_vars} 
-                -vars => $args->{-vars},
-            },
+            -tmpl_params    => $args->{-tmpl_params}
         }
     );
 

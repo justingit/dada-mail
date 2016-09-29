@@ -13,7 +13,7 @@ my $dbi_obj;
 
 use DADA::Config qw(!:DEFAULT);
 
-my $t = 1; # $DADA::Config::DEBUG_TRACE->{DADA_Mail_Send};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_Mail_Send};
 
 use DADA::Logging::Usage;
 my $log = new DADA::Logging::Usage;
@@ -3137,6 +3137,8 @@ sub _pop_before_smtp {
 
 sub _email_batched_finished_notification {
 
+	warn 'at _email_batched_finished_notification';
+	
     # Amazon SES may have a limit of 1 message/sec,
     # so we give ourselves a little space after a mass mailing
     sleep(1);
@@ -3193,18 +3195,43 @@ sub _email_batched_finished_notification {
     require DADA::App::Messages;
     my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
 
+	warn 'calling send_out_message()';
+	
+	my $message_subject = $fm->_decode_header( $fields->{Subject} ); 
+
+    require DADA::Template::Widgets;
+        my $message_subject = DADA::Template::Widgets::screen(
+            {
+                -data => \$message_subject,
+			    -list_settings_vars_param => { -list => $self->{list} },
+				-vars    => {
+			        addresses_sent_to   => $args->{-emails_sent},
+			        mailing_start_time  => $formatted_start_time,
+			        mailing_finish_time => $formatted_end_time,
+			        total_mailing_time  => $total_time,
+			        last_email_send_to  => $args->{-last_email},
+			        message_subject     => $message_subject,
+			        %$m_report,
+			    }
+			}
+        );
+		
     $dap->send_out_message(
         {
             -message => 'mass_mailing_finished_notification',
-            -vars    => {
-                addresses_sent_to   => $args->{-emails_sent},
-                mailing_start_time  => $formatted_start_time,
-                mailing_finish_time => $formatted_end_time,
-                total_mailing_time  => $total_time,
-                last_email_send_to  => $args->{-last_email},
-                message_subject => $fm->_decode_header( $fields->{Subject} ),
-                %$m_report,
-            }
+			-email   => $self->{ls}->param('list_owner_email'),
+            -tmpl_params => {
+                -list_settings_vars_param => { -list => $self->{list} },
+				-vars    => {
+	                addresses_sent_to   => $args->{-emails_sent},
+	                mailing_start_time  => $formatted_start_time,
+	                mailing_finish_time => $formatted_end_time,
+	                total_mailing_time  => $total_time,
+	                last_email_send_to  => $args->{-last_email},
+	                message_subject => $message_subject,
+	                %$m_report,
+	            }
+			}
         }
     );
     return 1;

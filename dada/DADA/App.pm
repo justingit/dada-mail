@@ -11828,11 +11828,13 @@ sub email_password {
             {
                 -message => 'list_password_reset_confirmation_message',
                 -email   => scalar $q->param('email'),
-                -vars    => {
-                    random_string => $random_string,
-                    REMOTE_HOST   => $ENV{REMOTE_HOST},
-                    REMOTE_ADDR   => $ENV{REMOTE_ADDR},
-                },
+				-tmpl_params => {
+	                -vars    => {
+	                    random_string => $random_string,
+	                    REMOTE_HOST   => $ENV{REMOTE_HOST},
+	                    REMOTE_ADDR   => $ENV{REMOTE_ADDR},
+	                },
+				},
             },
 
         );

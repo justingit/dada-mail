@@ -459,7 +459,8 @@ sub construct_and_send {
     }
 
     try {
-        $con->{entity} = $con->{fm}->format_headers_and_body(
+		warn 'format_headers_and_body'; 
+        $con->{entity} = $con->{fm_obj}->format_headers_and_body(
             {
                 -entity => $con->{entity},
             }
@@ -1015,7 +1016,8 @@ sub construct_from_url {
 		$text_message = $fm->format_mlm(
 			{
 				-content => $text_message, 
-				-type  => 'text/plain'
+				-type  => 'text/plain',
+				-layout => $draft_q->param('layout'),
 			}
 		);
 	}
