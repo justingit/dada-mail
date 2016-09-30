@@ -1582,37 +1582,6 @@ $MIME_TOOLS_PARAMS //= {
     send_msg_copy_to             => 0,
     rewrite_anounce_from_header  => 1,
 
-    not_allowed_to_post_msg_subject => undef, ,
-    not_allowed_to_post_msg         => undef,
-
-    invalid_msgs_to_owner_msg_subject => undef,
-    invalid_msgs_to_owner_msg => undef,
-
-    moderation_msg_subject => undef, 
-    moderation_msg => undef,
-    
-    await_moderation_msg_subject => undef,
-    await_moderation_msg => undef,
-    
-    accept_msg_subject => undef,
-    accept_msg => undef,
-    
-    rejection_msg_subject => undef,
-    rejection_msg => undef,
-    
-    msg_too_big_msg_subject => undef,
-    msg_too_big_msg         => undef,
-    
-    msg_received_msg_subject => undef, 
-    msg_received_msg         => undef, 
-    
-    msg_soft_size_limit      => 2621440, 
-    msg_hard_size_limit      => 5242880, 
-    
-    
-    msg_labeled_as_spam_msg_subject => undef,
-    msg_labeled_as_spam_msg => undef,
-
     digest_enable               => 0, 
     digest_schedule             => 86400, 
     digest_last_archive_id_sent => undef, 

@@ -182,8 +182,7 @@ sub post_process_get {
         if($args->{-all_settings} == 1) { 
             my $start_time = time; 
             my $html_settings          = $self->_html_settings;
-            my $email_message_settings = $self->_email_message_settings; 
-        
+            
             for ( keys %DADA::Config::LIST_SETUP_DEFAULTS ) {
                 if ( !exists( $li->{$_} ) || length( $li->{$_} ) == 0 ) {
                  	if(exists($html_settings->{$_})) {
@@ -330,18 +329,6 @@ sub param {
                 warn 'setting that cache has all vals' if $t; 
                 $self->{_cached_all_settings} = 1; 
                 warn 'returning val for, ' . $name if $t; 
-                return $self->{cached_settings}->{$name}; 
-		    }
-		}
-		elsif($self->_email_message_setting($name)){ 
-            if($self->{cached_settings}->{_cached_all_settings} == 1) {
-                # Guess it's... blank. 
-                return ''; 
-		    }
-		    else { 
-                $self->{cached_settings} = {}; 
-                $self->{cached_settings} = $self->get(-all_settings => 1); 
-                $self->{_cached_all_settings} = 1; 
                 return $self->{cached_settings}->{$name}; 
 		    }
 		}

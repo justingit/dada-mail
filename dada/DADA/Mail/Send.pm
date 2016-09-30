@@ -76,6 +76,8 @@ my %allowed = (
     child_ct_obj => undef,
 
     Ext_Request => undef,
+	
+	email_themes_obj => undef, 
 
 );
 
@@ -162,6 +164,18 @@ sub _init {
     my $parser = new MIME::Parser;
     $parser = DADA::App::Guts::optimize_mime_parser($parser);
     $self->{parser} = $parser;
+	
+    require DADA::App::EmailThemes;
+    my $em = DADA::App::EmailThemes->new(
+        {
+            -list  => $self->{list},
+			-name  => 'default',
+			-cache => 1, 
+        }
+    );
+	$self->email_themes_obj($em); 
+	
+	
 
 }
 
@@ -934,15 +948,8 @@ sub mail_sending_options_test {
     my $orig_debug_pop3 = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3};
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = 1;
 
-    require DADA::App::EmailThemes;
-    my $em = DADA::App::EmailThemes->new(
-        {
-            -list => $self->{list},
-			-name => 'default',
-            
-        }
-    );
-    my $etp = $em->fetch('mail_sending_options_test_message');
+    
+    my $etp = $self->email_themes_obj->fetch('mail_sending_options_test_message');
 
     require DADA::App::Messages;
     my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
@@ -2882,15 +2889,20 @@ sub _make_general_headers {
     if ( $self->im_mass_sending == 1 ) {
 
         if ( $self->list_type eq 'invitelist' ) {
-
-            $from_phrase  = $self->{ls}->param('invite_message_from_phrase');
+			
+		    my $etp = $self->email_themes_obj->fetch('invite_message');
+            $from_phrase  = $etp->{vars}->{from_phrase}; 
+			undef $etp; 
+			
             $from_address = $self->{ls}->param('list_owner_email');
 
         }
         else {
-            $from_phrase =
-              $self->{ls}->param('mailing_list_message_from_phrase');
+		    my $etp = $self->email_themes_obj->fetch('mailing_list_message');
+            $from_phrase = $etp->{vars}->{from_phrase}; 
             $from_address = $self->{ls}->param('list_owner_email');
+			undef $etp; 
+			
         }
     }
     else {
@@ -3356,15 +3368,21 @@ sub _mail_merge {
     my $To_header = '';
 
     if ( $self->list_type eq 'invitelist' ) {
+	    
+		my $etp = $self->email_themes_obj->fetch('invite_message');
         $To_header = $args->{-fm_obj}->format_phrase_address(
-            $self->{ls}->param('invite_message_to_phrase'),
+            $etp->{vars}->{to_phrase}, 
             $subscriber_vars->{'subscriber.email'}
         );
+		undef $etp; 
     }
     else {
+		
+		my $etp = $self->email_themes_obj->fetch('mailing_list_message');
+		
         $To_header =
           $args->{-fm_obj}->format_phrase_address(
-            $self->{ls}->param('mailing_list_message_to_phrase'),
+			$etp->{vars}->{to_phrase},
             $subscriber_vars->{'subscriber.email'} );
     }
     if ( $entity_cp->head->get( 'To', 0 ) ) {

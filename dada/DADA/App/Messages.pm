@@ -1162,52 +1162,6 @@ sub send_newest_archive {
     }
 }
 
-# This one's weird, since it's a part of Bridge
-
-sub send_not_allowed_to_post_msg {
-
-    my $self = shift;
-    my ($args) = @_;
-
-    if ( !exists( $args->{-email} ) ) {
-        warn 'you MUST pass the -email param to use this method!';
-        return undef;
-    }
-    my $email = $args->{-email};
-
-    my $etp = $self->emt->fetch('not_allowed_to_post_msg');
-
-    $self->send_multipart_email(
-        {
-            -headers => {
-                From => $self->fm->format_phrase_address(
-                    $etp->{vars}->{from_phrase},
-                    $self->ls->param('list_owner_email')
-                ),
-                To => $self->fm->format_phrase_address(
-                    $etp->{vars}->{to_phrase}, $email
-                ),
-                Subject => $etp->{vars}->{subject},
-            },
-            -plaintext_body => $etp->{plaintext},
-            -html_body      => $etp->{html},
-            -tmpl_params    => {
-                -list_settings_vars_param => { -list => $self->list },
-                -subscriber_vars          => {
-                    'subscriber.email' => $email
-                },
-                -vars => {
-                    original_subject => $args->{-original_subject},
-                },
-            },
-
-            -test => $self->test,
-        }
-    );
-
-}
-
-
 
 sub send_unsubscription_request_denied_message {
 

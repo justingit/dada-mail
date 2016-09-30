@@ -17,7 +17,7 @@ use strict;
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
-
+use Try::Tiny; 
 use Carp qw(cluck); 
 
 #---------------------------------------------------------------------#
@@ -199,7 +199,7 @@ sub cgi_test_pop3_ajax {
 
     my ( $pop3_obj, $pop3_status, $pop3_log );
 
-    eval {
+    try {
         require DADA::App::POP3Tools;
         ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::mail_pop3client_login(
             {
@@ -212,10 +212,10 @@ sub cgi_test_pop3_ajax {
                 USESSL    => scalar $q->param('use_ssl'),
             }
         );
+    } catch {
+        $r .= $_;
     };
-    if ($@) {
-        $r .= $@;
-    }
+	
     if ( defined($pop3_obj) ) {
         $pop3_obj->Close();
     }
@@ -328,15 +328,26 @@ EOF
 
     for my $messagename (@$awaiting_msgs) {
         my $parser = $parser;#!?
-        my $entity;
+       
 
         # unescape URI encoded stuff:
         $messagename =~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
 
-        eval { $entity = $parser->parse_data( safely_encode( $mod->get_msg( { -msg_id => $messagename } ) ) ); };
+		my $entity = undef; 
+        try { 
+			$entity = $parser->parse_data( 
+				safely_encode( 
+					$mod->get_msg( 
+						{ 
+							-msg_id => $messagename 
+						} 
+					) 
+				) 
+			); 
+		} catch { 
+			# ... 
+		};
         if ( !$entity ) {
-
-            #die "no entity found! die'ing!";
             $r .= "can't show message $messagename: $@\n";
         }
         else {
@@ -1219,15 +1230,12 @@ sub inject_msg {
     require File::Slurp;
     my $msg = File::Slurp::read_file($filename, binmode => ':encoding(' . $DADA::Config::HTML_CHARSET . ')');
 
-    eval { 
+    try { 
         $msg = decode( 'UTF-8', $msg );
-    }; 
-    if($@){ 
-        warn 'extra decoding did not work: ' . $@; 
-    }
-    else { 
-        warn 'extra decoding worked!'; 
-    }
+    } catch {
+        warn 'extra decoding did not work: ' . $_; 
+    };
+   
     
     my $n   = unlink($filename);
     if ( $n != 1 ) {
@@ -1482,7 +1490,7 @@ sub pop3_login {
         my $status;
         my $log;
 
-        eval {
+        try {
             ( $pop, $status, $log ) = DADA::App::POP3Tools::mail_pop3client_login(
                 {
                     server    => $ls->param('discussion_pop_server'),
@@ -1493,15 +1501,13 @@ sub pop3_login {
                     AUTH_MODE => $ls->param('discussion_pop_auth_mode'),
                 }
             );
-        };
-        if ( !$@ ) {
-            return ( $pop, $status, $log );
-        }
-        else {
-            $r .= "Problems Logging in:\n$@";
-            warn $@;
+        } catch { 
+            $r .= "Problems Logging in:\n$_";
+            warn $_;
             return ( undef, undef, $r );
-        }
+		};		
+        
+		return ( $pop, $status, $log );
     }
 
     return $r;
@@ -1754,7 +1760,7 @@ sub validate_msg {
 
             $r .= "\t* Loading SpamAssassin directly.\n";
 
-            eval {
+            try {
 
                 require Mail::SpamAssassin;
 
@@ -1876,11 +1882,10 @@ sub validate_msg {
                     $r .=
 "\t* SpamAssassin 2.x and 3.x are currently supported, you have version $Mail::SpamAssassin::VERSION, skipping test\n";
                 }
-            };
-
-            if ( !$@ ) {
+            
+			} catch { 
                 $r .= "\t* SpamAssassin doesn't seem to be available. Skipping test - option should be disabled!\n";
-            }
+			};
         }
         elsif ( $ls->param('find_spam_assassin_score_by') eq 'looking_for_embedded_headers' ) {
 
@@ -2060,7 +2065,7 @@ sub send_msg_too_big {
     my $size         = shift;
     my $entity;
 
-    eval {
+    try {
         $entity = $parser->parse_data($$full_msg_ref);
         if ( !$entity ) {
             warn "couldn't create a new entity in send_msg_too_big, passing.";
@@ -2072,48 +2077,30 @@ sub send_msg_too_big {
         my $dfm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
 
         my $subject = $entity->head->get( 'Subject', 0 );
-        $subject =~ s/\n//g;
-        $subject = $dfm->_decode_header($subject);
-		
-		require DADA::App::EmailThemes; 
-		my $em = DADA::App::EmailThemes->new(
-			{ 
-				-list      => $ls->param('list'),
-				
-				
-			}
-		);
-		my $etp = $em->fetch('msg_too_big_msg');
+           $subject =~ s/\n//g;
+           $subject = $dfm->_decode_header($subject);
 		
 		require DADA::App::Messages;
 	    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
-		$dap->send_generic_email(
-            {
-                -headers => {
-                    To      => $from_address,
-                    Subject => $etp->{vars}->{subject},
-                },
-                -body        => $etp->{plaintext},
-                -tmpl_params => {
-                    -list_settings_vars_param => { -list => $ls->param('list'), -dot_it => 1, },
-                    -subscriber_vars => { 'subscriber.email' => $from_address, },
-                    -vars            => {
-                        original_subject         => $subject,
-                        size_of_original_message => sprintf( "%.1f", ( $size / 1024 ) ),
-                    }
-                }
-            }
-        );
-    };
-
-    if ( !$@ ) {
-        return 1;
-    }
-    else {
-        warn "Wasn't able to process message in send_msg_too_big: $@";
+		$dap->send_out_message(
+			{ 
+				-message => 'msg_too_big_msg', 
+				-email   => $from_address,
+		        -tmpl_params => {
+		            -list_settings_vars_param => { -list => $ls->param('list'), -dot_it => 1, },
+		            -subscriber_vars => { 'subscriber.email' => $from_address, },
+		            -vars            => {
+		                original_subject         => $subject,
+		                size_of_original_message => sprintf( "%.1f", ( $size / 1024 ) ),
+		            }
+		        }
+			}
+		);
+	} catch {
+        warn "Wasn't able to process message in send_msg_too_big: $_";
         return 0;
-    }
-
+    };
+	return 1; 
 }
 
 sub notify_of_delivery {
@@ -2144,9 +2131,13 @@ sub notify_of_delivery {
     chomp($rough_from);
     my $from_address = undef;
 
-    my $from_address;
+    my $from_address = undef;
     if ( defined($rough_from) ) {
-        eval { $from_address = ( Email::Address->parse($rough_from) )[0]->address; };
+        try { 
+			$from_address = ( Email::Address->parse($rough_from) )[0]->address; 
+		} catch { 
+			warn $_; 
+		};
     }
 
     my $original_subject = $entity->head->get( 'Subject', 0 );
@@ -2316,9 +2307,13 @@ sub strip_file_attachments {
     my $ls  = shift;
     my $r;
 
-    my $entity;
+    my $entity = undef;
 
-    eval { $entity = $parser->parse_data( ${$msg} ) };
+    try { 
+		$entity = $parser->parse_data( ${$msg} ) 
+	} catch { 
+		warn $_; 
+	};
     if ( !$entity ) {
         die "no entity found! die'ing!";
     }
@@ -2444,16 +2439,17 @@ sub deliver_copy {
 
     $mh->test($test_mail);
 
-    my $entity;
-
-    eval { 
+    my $entity = undef; 
+    try { 
         
         $entity = $parser->parse_data(
             safely_encode(
                 $msg
                 )
             ) 
-    };
+    } catch { 
+		warn $_; 
+	};
 
     if ( !$entity ) {
         $r .= "\t* Message sucks!\n";
@@ -2522,11 +2518,14 @@ sub deliver {
     );
 
     $mh->test($test_mail);
-
-    my $entity;
-
     $msg = safely_encode($msg);
-    eval { $entity = $parser->parse_data($msg); };
+
+    my $entity = undef;
+    try { 
+		$entity = $parser->parse_data($msg); 
+	} catch { 
+		warn $_; 
+	};
 
     if ( !$entity ) {
         $r .= "\t* Message sucks!\n";
@@ -2550,15 +2549,15 @@ sub deliver {
 
             if ( exists( $headers{From} ) ) {
 
-                eval { $f_a = ( Email::Address->parse( $headers{From} ) )[0]->address; };
-            }
-
-            if ( !$@ ) {
-                $r .= "\t* Going to skip sending original poster ($f_a) a copy of their own  message...\n";
-                $mh->do_not_send_to( [$f_a] );
-            }
-            else {
-                $r .= "\t* Problems not sending copy to original sender: $@\n\n";
+                try { 
+					$f_a = ( Email::Address->parse( $headers{From} ) )[0]->address; 
+					
+	                $r .= "\t* Going to skip sending original poster ($f_a) a copy of their own  message...\n";
+	                $mh->do_not_send_to( [$f_a] );
+					
+				} catch { 
+					$r .= "\t* Problems not sending copy to original sender: $_\n\n";
+				};
             }
         }
 
@@ -2609,11 +2608,13 @@ sub archive {
         my $la =
           DADA::MailingList::Archives->new( { -list => $ls->param('list') } );
 
-        my $entity;
+        my $entity = undef;
 
-        eval {
+        try {
             $msg    = safely_encode($msg);
             $entity = $parser->parse_data($msg);
+        } catch {
+			warn $_; 
         };
 
         if ($entity) {
@@ -2623,14 +2624,11 @@ sub archive {
                 $Subject = $la->strip_subjects_appended_list_name($Subject);
             }
 
-            eval {
-
+            try {
                 $la->set_archive_info( $msg_id, $Subject, undef, undef, $saved_msg, );
+            } catch {
+                warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! message did not archive correctly!: $_";
             };
-
-            if ($@) {
-                warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! message did not archive correctly!: $@";
-            }
         }
         else {
             warn "Problem archiving message...";
@@ -2653,7 +2651,11 @@ sub send_msg_not_from_subscriber {
     my $from_address;
     if ( defined($rough_from) ) {
         ;
-        eval { $from_address = ( Email::Address->parse($rough_from) )[0]->address; };
+        try { 
+			$from_address = ( Email::Address->parse($rough_from) )[0]->address; 
+		} catch { 
+			warn $_; 
+		};
     }
 
     if ( $from_address && $from_address ne '' ) {
@@ -2664,19 +2666,26 @@ sub send_msg_not_from_subscriber {
 "Message is from List Email ($from_address)? Not sending, 'not_allowed_to_post_msg' so to not send message back to list!";
         }
         else {
-            my $att = $entity->as_string;
-            $att = safely_decode($att);
-
+			
 			require DADA::App::Messages;
 		    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
-			$dap->send_not_allowed_to_post_msg(
-                {
-                    -email      => $from_address,
-                    #-attachment => safely_encode($att),
-                    -original_subject => $original_subject, 
-
-                },
-            );
+			$dap->send_out_message(
+				{
+					-message => 'not_allowed_to_post_msg',
+					-email => $from_address,
+				}, 
+	            -tmpl_params    => {
+	                -list_settings_vars_param => { 
+						-list => $ls->param('list'), 
+					},
+	                -subscriber_vars          => {
+	                    'subscriber.email' => $from_address
+	                },
+	                -vars => {
+	                     original_subject => $original_subject, 
+	                },
+	            },
+			);
         }
 
     }
@@ -2697,7 +2706,11 @@ sub send_spam_rejection_message {
     my $from_address;
     if ( defined($rough_from) ) {
         ;
-        eval { $from_address = ( Email::Address->parse($rough_from) )[0]->address; };
+        try { 
+			$from_address = ( Email::Address->parse($rough_from) )[0]->address; 
+		} catch { 
+			warn $_; 
+		}; 
     }
 
     if ( $from_address && $from_address ne '' ) {
@@ -2707,26 +2720,17 @@ sub send_spam_rejection_message {
           DADA::MailingList::Settings->new( { -list => $ls->param('list') } );
 
 
-  		require DADA::App::EmailThemes; 
-  		my $em = DADA::App::EmailThemes->new(
-  			{ 
-  				-list      => $ls->param('list'),
-  				
-  				
-  			}
-  		);
-  		my $etp = $em->fetch('msg_labeled_as_spam_msg');
-
+  
 		require DADA::App::Messages;
-	    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
-		$dap->send_generic_email(
+	    my $dap = DADA::App::Messages->new(
+			{
+				-list => $ls->param('list'),
+			}
+		);
+		$dap->send_out_email(
             {
-                -headers => {
-                    To      => $from_address,
-                    From    => $ls->param('list_owner_email'),
-                    Subject => $etp->{vars}->{subject},
-                },
-                -body        => $etp->{plaintext},
+				-message => 'msg_labeled_as_spam_msg',
+				-email => $from_address, 
                 -tmpl_params => {
                     -list_settings_vars       => $ls->params,
                     -list_settings_vars_param => { -dot_it => 1, },
@@ -2757,51 +2761,23 @@ sub send_invalid_msgs_to_owner {
     my $rough_from = $entity->head->get( 'From', 0 );
     my $from_address;
     if ( defined($rough_from) ) {
-        ;
-        eval { $from_address = ( Email::Address->parse($rough_from) )[0]->address; };
+        try { 
+			$from_address = ( Email::Address->parse($rough_from) )[0]->address; 
+		} catch { 
+			warn $_; 
+		};
     }
 
     if ( $from_address && $from_address ne '' ) {
 
-
-  		require DADA::App::EmailThemes; 
-  		my $em = DADA::App::EmailThemes->new(
-  			{ 
-  				-list      => $ls->param('list'),
-  				
-  				
-  			}
-  		);
-  		my $etp = $em->fetch('invalid_msgs_to_owner_msg');
+		my $original_subject = $entity->head->get('Subject',0);
 		
-        my $original_subject = $entity->head->get( 'Subject', 0 );
-        
-        my $reply = MIME::Entity->build(
-            Type    => "multipart/mixed",
-            From    => $ls->param('list_owner_email'),
-            To      => $ls->param('list_owner_email'),
-            Subject => $etp->{vars}->{subject},
-        );
-
-        $reply->attach(
-            Type     => 'text/plain',
-            Encoding => $ls->param('plaintext_encoding'),
-            Data     => $etp->{plaintext},
-        );
-
-        my %msg_headers = DADA::App::Messages::_mime_headers_from_string( $reply->stringify_header );
-
+		require DADA::App::Messages;
 	    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
-		$dap->send_generic_email(
-            {
-                -list    => $ls->param('list'),
-                -headers => {
-                    %msg_headers,
-
-                    # Hack? Or bug somewhere else...
-                    #'Content-Type' => 'multipart/mixed',
-                },
-                -body        => $reply->stringify_body,
+		$dap->send_out_message(
+			{ 
+				-message => 'invalid_msgs_to_owner_msg', 
+				-email   => $ls->param('list_owner_email'),
                 -tmpl_params => {
                     -list_settings_vars       => $ls->params,
                     -list_settings_vars_param => { -dot_it => 1, },
@@ -2813,8 +2789,8 @@ sub send_invalid_msgs_to_owner {
                         original_subject => $original_subject, 
                     },
                 },
-            }
-        );
+			}
+		);
     }
     else {
         warn "Problem with send_invalid_msgs_to_owner!";
@@ -2864,10 +2840,11 @@ sub handle_errors {
 
         # $from should probably be simply the email address, not the entire header...
         #
-        eval { $from = ( Email::Address->parse($from) )[0]->address; };
-        if ($@) {
-            warn "this was a problem parsing the email address from the header? '$@'";
-        }
+        try { 
+			$from = ( Email::Address->parse($from) )[0]->address; 
+		} catch {
+            warn "this was a problem parsing the email address from the header? '$_'";
+        };
 
         my $message_id = $entity->head->get( 'Message-Id', 0 );
         $message_id =~ s/\n//g;
@@ -3021,14 +2998,12 @@ sub create_checksum {
 
 sub can_use_spam_assassin {
 
-    eval { require Mail::SpamAssassin; };
-
-    if ( !$@ ) {
-        return 1;
-    }
-    else {
+    try { 
+		require Mail::SpamAssassin; 
+	} catch {
         return 0;
     }
+	return 1; 
 
 }
 
@@ -3063,21 +3038,18 @@ sub find_return_path {
     my $msg = shift;
     my $rp;
 
-    eval {
+    try {
 
         $msg = safely_encode($msg);
-
         my $entity = $parser->parse_data($msg);
         $rp = $entity->head->get( 'Return-Path', 0 );
 		$entity->purge; 
-    };
-    if ( !$@ ) {
-        chomp $rp;
-        return $rp;
-    }
-    else {
-        return undef;
-    }
+    } catch { 
+		warn $_; 
+		return undef;
+	};
+    chomp $rp;
+    return $rp;
 }
 
 sub cgi_show_plugin_config {
@@ -3584,11 +3556,6 @@ sub moderation_msg {
                 -tmpl_params => {
                     -list_settings_vars       => $ls->get,
                     -list_settings_vars_param => { -dot_it => 1, },
-
-                    #-subscriber_vars =>
-                    #	{
-                    #		#'subscriber.email' =>  $args->{-from},
-                    #	},
                     -vars => {
                         moderation_confirmation_link => $confirmation_link,
                         moderation_deny_link         => $deny_link,
@@ -3628,17 +3595,18 @@ sub send_moderation_msg {
     my $parser = $args->{-parser};
 
     my $entity;
-    eval {
+    try {
         $entity = $parser->parse_data(
             DADA::App::Guts::safely_encode(
 
                 $self->get_msg( { -msg_id => $args->{-msg_id} } )
             )
         );
-    };
-    if ( !$entity ) {
-        die "no entity found! die'ing!";
-    }
+    } catch { 
+		 warn "no entity found! $_";
+		 return undef; 
+	};
+	
     require DADA::App::FormatMessages;
     my $dfm = DADA::App::FormatMessages->new( -List => $self->{list} );
 
@@ -3653,48 +3621,26 @@ sub send_moderation_msg {
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
 
-	require DADA::App::EmailThemes; 
-	my $em = DADA::App::EmailThemes->new(
-		{ 
-			-list      => $self->{list},
-			
-			
-		}
-	);
-	my $etp = $em->fetch('await_moderation_msg');
-	
-    my $reply = MIME::Entity->build(
-        Type     => "text/plain",
-        Encoding => $ls->param('plaintext_encoding'),
-        To       => $from, # really?
-        Subject  => $etp->{vars}->{subject},
-        Data     => $etp->{plaintext},
-    );
-
 	require DADA::App::Messages;
     my $dap = DADA::App::Messages->new({-list => $self->{list}});
-	$dap->send_generic_email(
-        {
-            -headers => { DADA::App::Messages::_mime_headers_from_string( $reply->stringify_header ), },
+	$dap->send_out_message(
+		{ 
+			-message => 'await_moderation_msg', 
+			-email   => $from,
+		    -tmpl_params => {
+		        -list_settings_vars       => $ls->params,
+		        -list_settings_vars_param => { -dot_it => 1, },
+		        -subscriber_vars          => { 'subscriber.email' => $args->{-from}, },
+		        -vars                     => {
+		            message_subject => $subject,
+		            message_from    => $args->{-from},
+		            msg_id          => $args->{-msg_id},
+		            Plugin_Name     => $Plugin_Config->{Plugin_Name},
+		        }
+		    }
+		}
+	);
 
-            -body        => $reply->stringify_body,
-            -tmpl_params => {
-                -list_settings_vars       => $ls->params,
-                -list_settings_vars_param => { -dot_it => 1, },
-                -subscriber_vars          => { 'subscriber.email' => $args->{-from}, },
-                -vars                     => {
-
-                    message_subject => $subject,
-                    message_from    => $args->{-from},
-                    msg_id          => $args->{-msg_id},
-                    Plugin_Name     => $Plugin_Config->{Plugin_Name},
-
-                }
-            },
-        }
-    );
-	
-	$reply->purge; 
 	$entity->purge;
 }
 
@@ -3719,14 +3665,12 @@ sub send_accept_msg {
     my $parser = $args->{-parser};
 
     my $entity;
-    eval {
-        $entity =
-          $parser->parse_data( DADA::App::Guts::safely_encode( $self->get_msg( { -msg_id => $args->{-msg_id} } ) ) );
-    };
-    if ( !$entity ) {
-        die "no entity found! die'ing!";
-
-    }
+    try {
+        $entity = $parser->parse_data( DADA::App::Guts::safely_encode( $self->get_msg( { -msg_id => $args->{-msg_id} } ) ) );
+    } catch { 
+    	warn "no entity found! $_";
+		return undef
+	};
 
     require DADA::App::FormatMessages;
     my $dfm = DADA::App::FormatMessages->new( -List => $self->{list} );
@@ -3740,32 +3684,13 @@ sub send_accept_msg {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
-
-	require DADA::App::EmailThemes; 
-	my $em = DADA::App::EmailThemes->new(
-		{ 
-			-list      => $ls->param('list'),
-			
-			
-		}
-	);
-	my $etp = $em->fetch('accept_msg');
 	
-	
-    my $reply = MIME::Entity->build(
-        Type     => "text/plain",
-        Encoding => $ls->param('plaintext_encoding'),
-        To       => $from,
-        Subject  => $etp->{vars}->{subject},
-        Data     => $etp->{vars}->{plaintext},
-    );
-
 	require DADA::App::Messages;
     my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
-	$dap->send_generic_email(
-        {
-            -headers     => { DADA::App::Messages::_mime_headers_from_string( $reply->stringify_header ), },
-            -body        => $reply->stringify_body,
+	$dap->send_out_message(
+		{
+			-message => 'accept_message',
+			-email   => $from, 
             -tmpl_params => {
                 -list_settings_vars       => $ls->params,
                 -list_settings_vars_param => { -dot_it => 1, },
@@ -3776,13 +3701,9 @@ sub send_accept_msg {
                     msg_id          => $args->{-msg_id},
                     Plugin_Name     => $Plugin_Config->{Plugin_Name},
                 }
-            },
-        }
-    );
-
-	#$reply->purge; 
-	#$entity->purge;
-	
+            }
+		}	
+	);
 }
 
 sub send_reject_msg {
@@ -3806,14 +3727,13 @@ sub send_reject_msg {
     my $parser = $args->{-parser};
 
     my $entity;
-    eval {
+    try {
         $entity =
           $parser->parse_data( DADA::App::Guts::safely_encode( $self->get_msg( { -msg_id => $args->{-msg_id} } ) ) );
 
+    } catch {
+        warn "no entity found! $_";
     };
-    if ( !$entity ) {
-        die "no entity found! die'ing!";
-    }
 
     require DADA::App::FormatMessages;
     my $dfm = DADA::App::FormatMessages->new( -List => $self->{list} );
@@ -3827,36 +3747,25 @@ sub send_reject_msg {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 	
-	require DADA::App::EmailThemes; 
-	my $em = DADA::App::EmailThemes->new(
-		{ 
-			-list      => $ls->param('list'),
-			
-			
+	
+	
+	
+	require DADA::App::Messages;
+    my $dap = DADA::App::Messages->new(
+		{
+			-list => $ls->param('list'),
 		}
 	);
-	my $etp = $em->fetch('rejection_msg');
 	
-    my $reply = MIME::Entity->build(
-        Type     => "text/plain",
-        Encoding => $ls->param('plaintext_encoding'),
-        To       => $from,
-        Subject  => $etp->{vars}->{subject},
-        Data     => $etp->{plaintext},
-    );
-
-
-	require DADA::App::Messages;
-    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
-	$dap->send_generic_email(
+	$dap->send_out_email(
         {
-            -headers     => { DADA::App::Messages::_mime_headers_from_string( $reply->stringify_header ), },
-            -body        => $reply->stringify_body,
+			-message => 'rejection_msg',
+			-email => $from,
             -tmpl_params => {
                 -list_settings_vars       => $ls->params,
                 -list_settings_vars_param => { -dot_it => 1, },
                 -subscriber_vars          => {
-                    'subscriber.email' => $args->{-from},
+                    'subscriber.email' => $from,
 
                 },
                 -vars => {
@@ -3870,9 +3779,6 @@ sub send_reject_msg {
             },
         }
     );
-	
-	#$reply->purge; 
-	#$entity->purge;
 	
 }
 

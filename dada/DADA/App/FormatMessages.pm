@@ -1920,7 +1920,7 @@ sub _list_name_subject {
         "list_name" )
     {
         $orig_subject = '['
-          . '<!-- tmpl_var list_settings.list_name -->' . '] '
+          . $self->{ls}->param('list_name') . '] '
           .  $orig_subject;
 	#	  warn '$orig_subject' . $orig_subject;
     }
@@ -1928,7 +1928,7 @@ sub _list_name_subject {
         "list_shortname" )
     {
         $orig_subject = '['
-          . '<!-- tmpl_var list_settings.list -->' . '] '
+          . $self->{ls}->param('list') . '] '
           . $orig_subject;
 		#  warn '$orig_subject' . $orig_subject;
 	

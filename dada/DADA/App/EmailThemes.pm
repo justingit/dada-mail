@@ -20,6 +20,7 @@ my %allowed = (
     name      => 'default',
 	theme_dir => $DADA::Config::SUPPORT_FILES->{dir} . '/themes/email', 
 	name      => 'default',
+	cache     => 0,
 );
 
 sub new {
@@ -74,6 +75,12 @@ sub _init {
     if ( exists( $args->{-theme_dir} ) ) {
         $self->theme_dir( $args->{-theme_dir} );
     }
+    if ( exists( $args->{-cache} ) ) {
+        $self->cache( $args->{-cache} );
+    }
+	
+	$self->{tmp_store} = {}; 
+	
 }
 
 sub fetch {
@@ -84,43 +91,52 @@ sub fetch {
 		warn 'you need to pass the name of the theme file you want returned';
 		return {};
 	}
+	
+	if($self->cache() == 1 && exists($self->{tmp_store}->{$fn})){ 
+		return $self->{tmp_store}->{$fn};
+	}
+	else { 
+	
+	    my $pt_file = make_safer(
+	        $self->theme_dir . '/' . $self->name . '/dist/' . $fn . '.txt' );
+	    my $html_file = make_safer(
+	        $self->theme_dir . '/' . $self->name . '/dist/' . $fn . '.html' );
 
-    my $pt_file = make_safer(
-        $self->theme_dir . '/' . $self->name . '/dist/' . $fn . '.txt' );
-    my $html_file = make_safer(
-        $self->theme_dir . '/' . $self->name . '/dist/' . $fn . '.html' );
+	    my $pt   = undef;
+	    my $html = undef;
 
-    my $pt   = undef;
-    my $html = undef;
+	    if ( -e $pt_file ) {
+	        $pt = $self->slurp($pt_file);
+	    }
+	    else {
+	        warn '$pt_file does not exist at, ' . $pt_file;
+	    }
+	    if ( -e $html_file ) {
+	        $html = $self->slurp($html_file);
+	        if ( defined( $self->list ) ) {
+	            $html = $self->munge_logo_img($html);
+	        }
+	    }
+	    else {
+	        warn '$html_file does not exist at, ' . $html_file;
+	    }
 
-    if ( -e $pt_file ) {
-        $pt = $self->slurp($pt_file);
-    }
-    else {
-        warn '$pt_file does not exist at, ' . $pt_file;
-    }
-    if ( -e $html_file ) {
-        $html = $self->slurp($html_file);
-        if ( defined( $self->list ) ) {
-            $html = $self->munge_logo_img($html);
-        }
-    }
-    else {
-        warn '$html_file does not exist at, ' . $html_file;
-    }
+	    my $vars = {};
+	    if ( length($pt) > 0 ) {
+	        ( $vars, $pt ) = $self->strip_and_return_vars($pt);
+	    }
 
-    my $vars = {};
-    if ( length($pt) > 0 ) {
-        ( $vars, $pt ) = $self->strip_and_return_vars($pt);
-    }
+	    my $r = {
+	        html      => $html,
+	        plaintext => $pt,
+	        vars      => $vars,
+	    };
 
-    my $r = {
-        html      => $html,
-        plaintext => $pt,
-        vars      => $vars,
-    };
-
-    return $r;
+		if($self->cache() == 1){ 
+			$self->{tmp_store}->{$fn} = $r; 
+		}
+		return $r;
+	}
 }
 
 sub strip_and_return_vars {
