@@ -1874,10 +1874,10 @@ sub _list_name_subject {
 
     my $self         = shift;
     my $orig_subject = shift;
-    warn 'in _list_name_subject before decode: ' . $orig_subject
+    warn 'in _list_name_subject before decode ($orig_subject): ' . $orig_subject
       if $t;
     $orig_subject = $self->_decode_header($orig_subject);
-    warn 'in _list_name_subject after decode: ' . $orig_subject
+    warn 'in _list_name_subject after decode ($orig_subject): ' . $orig_subject
       if $t;
 
     my $list      = $self->{ls}->param('list');
@@ -1889,35 +1889,49 @@ sub _list_name_subject {
       s/\[($list|$list_name)\]//;    # This only looks for list shortname...
     $orig_subject =~ s/^((RE:|AW:|FW:|WG:)\s+)+//i;    # AW & WG are German!
 
-    my $re = $1;
-    $re =~ s/^(\s+)//;
-    $re =~ s/(\s+)$//;
+#	warn '$orig_subject:' . $orig_subject ;
 
-    # there must be some strange named capture that isn't being undef'd, so if
-    # it already holds a value, it gets set to, $re. Weird.
-    if ( $re =~ m/UTF\-8/ ) {
-
-        #warn 'undef!';
-        $re = undef;
-    }
-
-    $re = ' ' . $re if $re;
-
+#
+#    my $re = $1;
+#	
+#	warn '$re:' . $re; 
+ #   $re =~ s/^(\s+)//;
+#	warn '$re:' . $re; 
+ #   $re =~ s/(\s+)$//;
+#	warn '$re:' . $re; 
+#
+#
+#
+#   # there must be some strange named capture that isn't being undef'd, so if
+#    # it already holds a value, it gets set to, $re. Weird.
+#   if ( $re =~ m/UTF\-8/ ) {
+#
+#        #warn 'undef!';
+#        $re = undef;
+#		warn '$re:' . $re; 
+#    }
+#
+#    $re = ' ' . $re if $re;
+#	warn '$re:' . $re; 
+	
     $orig_subject =~ s/^(\s+)//;
 
     if ( $self->{ls}->param('prefix_discussion_list_subjects_with') eq
         "list_name" )
     {
         $orig_subject = '['
-          . '<!-- tmpl_var list_settings.list_name -->' . ']'
-          . "$re $orig_subject";
+          . '<!-- tmpl_var list_settings.list_name -->' . '] '
+          .  $orig_subject;
+	#	  warn '$orig_subject' . $orig_subject;
     }
     elsif ( $self->{ls}->param('prefix_discussion_list_subjects_with') eq
         "list_shortname" )
     {
         $orig_subject = '['
-          . '<!-- tmpl_var list_settings.list -->' . ']'
-          . "$re $orig_subject";
+          . '<!-- tmpl_var list_settings.list -->' . '] '
+          . $orig_subject;
+		#  warn '$orig_subject' . $orig_subject;
+	
     }
 
     warn 'in _list_name_subject before encode2: ' . $orig_subject

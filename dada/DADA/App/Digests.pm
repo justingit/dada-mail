@@ -22,11 +22,11 @@ use Try::Tiny;
 
 use vars qw($AUTOLOAD);
 
-my $t =  1; #$DADA::Config::DEBUG_TRACE->{DADA_App_Digests};
+my $t =  $DADA::Config::DEBUG_TRACE->{DADA_App_Digests};
 
 my %allowed = ( 
-	test => 1, 
-	mock_run => 1, 
+	test => 0, 
+	mock_run => 0, 
 );
 
 sub new {

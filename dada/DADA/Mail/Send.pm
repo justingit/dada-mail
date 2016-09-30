@@ -3137,7 +3137,7 @@ sub _pop_before_smtp {
 
 sub _email_batched_finished_notification {
 
-	warn 'at _email_batched_finished_notification';
+	#warn 'at _email_batched_finished_notification';
 	
     # Amazon SES may have a limit of 1 message/sec,
     # so we give ourselves a little space after a mass mailing
@@ -3195,8 +3195,10 @@ sub _email_batched_finished_notification {
     require DADA::App::Messages;
     my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
 
-	warn 'calling send_out_message()';
+#	warn 'calling send_out_message()';
 	
+warn 'subject before:' . $fm->_decode_header( $fields->{Subject} ); 
+
 	my $message_subject = $fm->_decode_header( $fields->{Subject} ); 
 
     require DADA::Template::Widgets;
@@ -3215,6 +3217,9 @@ sub _email_batched_finished_notification {
 			    }
 			}
         );
+
+		warn 'subject after:' . $message_subject;
+		
 		
     $dap->send_out_message(
         {
