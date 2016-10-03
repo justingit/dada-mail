@@ -2695,6 +2695,7 @@ sub send_last_archived_msg_mass_mailing {
     my ( $head, $body ) = $la->massage_msg_for_resending(
         -key     => $newest_entry,
         '-split' => 1,
+		-zap_sigs => 0, 
     );
 
     require DADA::Mail::Send;

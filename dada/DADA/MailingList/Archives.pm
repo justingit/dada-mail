@@ -1688,6 +1688,7 @@ sub massage_msg_for_resending {
 	my $self = shift; 
 	my %args = (-key        => undef, 
 				'-split'     => 0,  
+				-zap_sigs    => 1,
 				@_); 
 
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($args{-key}, 1);
@@ -1700,8 +1701,10 @@ sub massage_msg_for_resending {
 	
 	
 	my $entity = $self->_entity_from_raw_msg($raw_msg); 
-	   $entity = $self->_take_off_sigs($entity); 
-	
+	   
+	if($args{-zap_sigs} == 1){
+		$entity = $self->_take_off_sigs($entity); 
+	}
 	# These may be out of date, so let's get rid of them.
 	for my $header(
 		'From', 

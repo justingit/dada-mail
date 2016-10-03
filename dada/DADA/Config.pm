@@ -1502,14 +1502,6 @@ $MIME_TOOLS_PARAMS //= {
     html_unsubscribed_message         => undef,
     html_subscription_request_message => undef,
 
-    # Send a List Invitation
-
-    invite_message_from_phrase => undef, 
-    invite_message_to_phrase   => undef,
-    invite_message_text        => undef,
-    invite_message_html        => undef,
-    invite_message_subject     => undef,
-
     # Features
     admin_menu               => undef,
     disabled_screen_view     => 'hide',
@@ -1581,6 +1573,9 @@ $MIME_TOOLS_PARAMS //= {
     send_invalid_msgs_to_owner   => 1,
     send_msg_copy_to             => 0,
     rewrite_anounce_from_header  => 1,
+
+    msg_soft_size_limit      => 2621440, 
+    msg_hard_size_limit      => 5242880, 
 
     digest_enable               => 0, 
     digest_schedule             => 86400, 

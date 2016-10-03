@@ -11485,28 +11485,43 @@ sub send_archive {
         # DEV: This is stupid, and I don't think it's a great idea.
         $subject = $archive->_parse_in_list_info( -data => $subject );
         ### /
-
+		
+		require DADA::App::EmailThemes; 
+		my $em = DADA::App::EmailThemes->new(
+			{ 
+				-list      => $list,
+			}
+		);
+		my $etp = $em->fetch('send_archive_message');
+		
+        require DADA::App::FormatMessages;
+        my $fm = DADA::App::FormatMessages->new( -List => $list );
+		
         require MIME::Lite;
 
         # DEV: This should really be moved to DADA::App::Messages...
         my $msg = MIME::Lite->new(
-            From => '"<!-- tmpl_var list_settings.list_name -->" <'
-              . $from_email . '>',
-            To => '"<!-- tmpl_var list_settings.list_name -->" <'
-              . $to_email . '>',
-            Subject => $ls->param('send_archive_message_subject'),
+            From => $fm->format_phrase_address(
+				$etp->{vars}->{from_phrase}, 
+				$from_email
+			), 
+            To => $fm->format_phrase_address(
+				$etp->{vars}->{to_phrase}, 
+				$to_email
+			),	
+            Subject => $etp->{vars}->{subject},
             Type    => 'multipart/mixed',
         );
 
         my $pt = MIME::Lite->new(
             Type     => 'text/plain',
-            Data     => $ls->param('send_archive_message'),
+            Data     => $etp->{plaintext},
             Encoding => $ls->param('plaintext_encoding')
         );
 
         my $html = MIME::Lite->new(
             Type     => 'text/html',
-            Data     => $ls->param('send_archive_message_html'),
+            Data     => $etp->{html},
             Encoding => $ls->param('html_encoding'),
         );
 

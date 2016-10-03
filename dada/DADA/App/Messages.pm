@@ -113,29 +113,10 @@ sub send_generic_email {
 
     my $self = shift;
     my ($args) = @_;
-
-    # We'll use this, later
-    # DEV: strange - passing the -list param should probably be requird...
-
-    # /We'll use this, later
-
-    my $expr = 1;    # Default it to 1, if there's no list.
-    if ( defined( $self->list ) ) {
-        if ( $self->ls->param('enable_email_template_expr') == 1 ) {
-            $expr = 1;
-        }
-        else {
-            $expr = 0;
-        }
-    }
-
-    if ( !exists( $args->{-headers} ) ) {
-        $args->{-headers} = {};
-    }
-    if ( !exists( $args->{-headers}->{To} ) ) {
-        $args->{-headers}->{To} = $args->{-email};
-    }
-
+	
+    $self->fm->use_header_info(1);
+    $self->fm->use_email_templates(0);
+	
     if ( !exists( $args->{-tmpl_params} ) ) {
         if ( defined( $self->list ) ) {
 
@@ -147,54 +128,60 @@ sub send_generic_email {
             $args->{-tmpl_params} = {};
         }
     }
+	
+	my $entity; 
 
-    my $data = {
-          ( defined( $self->list ) )
-        ? ( $self->mh->list_headers, )
-        : (),
-        %{ $args->{-headers} },
-        Body => $args->{-body},
-    };
+	if(exists($args->{-entity})){ 		
+	    $entity = $self->fm->email_template(
+	        {
+	            -entity => $args->{-entity},
+	            %{ $args->{-tmpl_params} },
+	        }
+	    );
+	}
+	else {
 
-    while ( my ( $key, $value ) = each %{$data} ) {
-        $data->{$key} = safely_encode($value);
-    }
+	    if ( !exists( $args->{-headers} ) ) {
+	        $args->{-headers} = {};
+	    }
+	    if ( !exists( $args->{-headers}->{To} ) ) {
+	        $args->{-headers}->{To} = $args->{-email};
+	    }
+	    my $data = {
+	          ( defined( $self->list ) )
+	        ? ( $self->mh->list_headers, )
+	        : (),
+	        %{ $args->{-headers} },
+	        Body => $args->{-body},
+	    };
 
-    $self->fm->use_header_info(1);
-    $self->fm->use_email_templates(0);
+	    while ( my ( $key, $value ) = each %{$data} ) {
+	        $data->{$key} = safely_encode($value);
+	    }
+		
+	    my ($email_str) = $self->fm->format_message(
+	        {
+	            -msg => $self->fm->string_from_dada_style_args(
+	                {
+	                    -fields => $data,
+	                }
+	            )
+	        }
+	    );
 
-  # Some templates always uses HTML::Template::Expr, example, the sending
-  # preferences. This makes sure that the correct templating system is validated
-  # correctly.
-  # As far as I know, this really is only needed for the sending prefs test.
-  #
-    if ( $args->{-tmpl_params}->{-expr} == 1 ) {
-        $self->override_validation_type('expr');
-    }
-    my ($email_str) = $self->fm->format_message(
-        {
-            -msg => $self->fm->string_from_dada_style_args(
-                {
-                    -fields => $data,
-                }
-            )
-        }
-    );
+	    $email_str = safely_decode($email_str);
 
-    $email_str = safely_decode($email_str);
+	    my $entity = $self->fm->email_template(
+	        {
+	            -entity => $self->fm->get_entity( { -data => safely_encode($email_str), } ),
+	            %{ $args->{-tmpl_params} },
+	        }
+	    );
+		
+	}
 
-    my $entity = $self->fm->email_template(
-        {
-            -entity =>
-              $self->fm->get_entity( { -data => safely_encode($email_str), } ),
-            -expr => $expr,
-            %{ $args->{-tmpl_params} },    # note: this may have -expr param.
-
-        }
-    );
     my $msg = $entity->as_string;
     my ( $header_str, $body_str ) = split( "\n\n", $msg, 2 );
-
     my $header_str = safely_decode( $entity->head->as_string );
     my $body_str   = safely_decode( $entity->body_as_string );
 
@@ -1116,14 +1103,15 @@ sub send_newest_archive {
         && $newest_entry > 1 )
     {
 		
-		warn 'weve got an entry!'; 
+		# warn 'weve got an entry!'; 
 
         my ( $head, $body ) = $la->massage_msg_for_resending(
             -key     => $newest_entry,
             '-split' => 1,
+			-zap_sigs => 0, 
         );
 		
-		warn '$body!' . $body; 
+		warn '$body after massage_msg_for_resending' . $body; 
 
         if ( $self->test == 1 ) {
 			warn 'testing!';
@@ -1236,8 +1224,6 @@ sub send_out_message {
     my $email = $args->{-email};
 
     my $etp = $self->emt->fetch( $args->{-message} );
-
-	warn 'calling send_multipart_email';
 	
     $self->send_multipart_email(
         {

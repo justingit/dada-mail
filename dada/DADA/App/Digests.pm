@@ -22,7 +22,7 @@ use Try::Tiny;
 
 use vars qw($AUTOLOAD);
 
-my $t =  $DADA::Config::DEBUG_TRACE->{DADA_App_Digests};
+my $t =  1; #$DADA::Config::DEBUG_TRACE->{DADA_App_Digests};
 
 my %allowed = ( 
 	test => 0, 
@@ -118,7 +118,7 @@ sub _init {
 sub should_send_digest {
     my $self = shift;
 	
-	if($self->mock_run == 1){
+	if($self->mock_run() == 1){
 		my $keys = $self->{a_obj}->get_archive_entries('normal');
 		if ( scalar( @{$keys} ) == 0 ) {
 			return 0; 
@@ -145,9 +145,9 @@ sub archive_ids_for_digest {
     my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
  
     if ( scalar( @{$keys} ) == 0 ) {
-		# ... 
+		return $ids; 
     }
-	elsif($self->mock_run == 1){ 
+	elsif($self->mock_run() == 1){ 
 		my $c = 4;
 		 
 		for(@$keys){ 
@@ -197,11 +197,11 @@ sub send_digest {
     my $self = shift;
     my $r;
 
-	if($self->mock_run == 1){ 
+	if($self->mock_run() == 1){ 
 		$r .= "MOCK RUN!\n";
 	}
 	
-	if($self->mock_run != 1){ 
+	if($self->mock_run() != 1){ 
 	    my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
 	     if(defined($digest_last_archive_id_sent)){ 
 	         $r .= "\t* " . 'Last Archived Message ID Sent: ' . $digest_last_archive_id_sent
@@ -223,63 +223,13 @@ sub send_digest {
 
 		$r .=  "\tSending Digest.\n";
         $self->send_out_digest();
-
-=cut
-		
-        try { 
-			$entity = $fm->format_headers_and_body(
-				{
-					-entity => $entity
-				}
-			 ); 
-		
-		} catch { 
-			warn $_; 
-			$r .= $_; 
-		};
-
-	    my $final_header = safely_decode( $entity->head->as_string );
-	    my $final_body   = safely_decode( $entity->body_as_string );
-
-        require DADA::Mail::Send;
-        my $mh = DADA::Mail::Send->new(
-            {
-                -list   => $self->{list},
-                -ls_obj => $self->{ls_obj},
-            }
-        );
-
-        $mh->test( $self->test );
-
-        my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
-
-        my $message_id;
-
-        $message_id = $mh->mass_send(
-            {
-                -msg                 => {%mailing},
-                -mass_mailing_params => {
-                    -delivery_preferences => 'digest',
-                },
-
-                #                    -partial_sending => $partial_sending,
-                #                    ( $process =~ m/test/i )
-                #                    ? (
-                #                        -mass_test      => 1,
-                #                        -test_recipient => $og_test_recipient,
-                #                      )
-                #                    : ( -mass_test => 0, )
-                #
-            }
-        );
-		
-		$r .= "Returning msg_id: " . $message_id . "\n";
-=cut
-		
-		# Then, reset the digest, where we left off,
 		my $keys = $self->archive_ids_for_digest();
 
-		if($self->mock_run != 0){
+		use Data::Dumper; 
+		$r .= Dumper($keys);
+
+		if($self->mock_run() != 1){
+			$r .= "\nsaving:" . $keys->[-1] . "\n";
 	        $self->{ls_obj}->save(
 				{
 					-settings  => {

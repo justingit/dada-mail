@@ -791,8 +791,9 @@ sub edit {
 		}
     );
 
-    require DADA::Template::Widgets;
 
+=cut	
+    require DADA::Template::Widgets;
     my $mailing_list_message_from_phrase = $ls->param('mailing_list_message_from_phrase');
     $mailing_list_message_from_phrase = DADA::Template::Widgets::screen(
         {
@@ -805,7 +806,8 @@ sub edit {
     );
     my $mailing_list_message_from =
       Email::Address->new( $mailing_list_message_from_phrase, $ls->param('list_owner_email') )->format();
-
+=cut
+	
     my $done = $q->param('done') || 0;
 
     my $ses_params = {};
@@ -856,7 +858,7 @@ sub edit {
                 find_spam_assassin_score_by_looking_for_embedded_headers =>
                   ( $ls->param('find_spam_assassin_score_by') eq 'looking_for_embedded_headers' ) ? 1 : 0,
                 list_email_status                        => $list_email_status,
-                mailing_list_message_from                => $mailing_list_message_from,
+               # mailing_list_message_from                => $mailing_list_message_from,
                 digest_schedule_popup_menu               => $digest_schedule_popup_menu,
                 error_list_email_set_to_list_owner_email => $list_email_errors->{list_email_set_to_list_owner_email},
                 error_list_email_set_to_list_admin_email => $list_email_errors->{list_email_set_to_list_admin_email},
@@ -2672,19 +2674,19 @@ sub send_msg_not_from_subscriber {
 			$dap->send_out_message(
 				{
 					-message => 'not_allowed_to_post_msg',
-					-email => $from_address,
-				}, 
-	            -tmpl_params    => {
-	                -list_settings_vars_param => { 
-						-list => $ls->param('list'), 
-					},
-	                -subscriber_vars          => {
-	                    'subscriber.email' => $from_address
-	                },
-	                -vars => {
-	                     original_subject => $original_subject, 
-	                },
-	            },
+					-email => $from_address, 
+	            	-tmpl_params    => {
+		                -list_settings_vars_param => { 
+							-list => $ls->param('list'), 
+						},
+		                -subscriber_vars          => {
+		                    'subscriber.email' => $from_address
+		                },
+		                -vars => {
+		                     original_subject => $original_subject, 
+		                }
+					}
+	            }
 			);
         }
 
@@ -2755,9 +2757,6 @@ sub send_invalid_msgs_to_owner {
 
     $msg = safely_encode($msg);
     my $entity = $parser->parse_data($msg);
-
-    require DADA::App::Messages;
-
     my $rough_from = $entity->head->get( 'From', 0 );
     my $from_address;
     if ( defined($rough_from) ) {
@@ -3332,6 +3331,7 @@ use strict;
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts qw(!:DEFAULT);
 use MIME::Entity;
+use Try::Tiny; 
 
 sub new {
     my $class = shift;
@@ -3449,7 +3449,7 @@ sub moderation_msg {
 
     my $self = shift;
     my ($args) = @_;
-    my $reply;
+	
     my $r; 
 
     if ( !$args->{-msg} ) {
@@ -3525,34 +3525,61 @@ sub moderation_msg {
     }
     push( @moderators, $ls->param('list_owner_email') );    # always addressed
 
-    # loop through recepients
-    for my $to_address (@moderators) {                      # recepient loop
-        $reply = MIME::Entity->build(
-            Type    => "multipart/mixed",
-            Subject => $ls->param('moderation_msg_subject'),
-            To      => $to_address,
-        );
-        $r .= "\t* Sent moderation request to $to_address\n";
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $self->{list},
+			-cache     => 1,
+		}
+	);
+	my $etp = $em->fetch('moderation_msg');
+	
+	my $msg_entity = MIME::Entity->build(
+    	Type    => "multipart/alternative",
+		Charset => $ls->param('charset_value'),
+	); 
+    $msg_entity->attach(
+        Type     => 'text/plain',
+        Encoding => $ls->param('plaintext_encoding'),
+        Data     => $etp->{plaintext},
+    );
+    $msg_entity->attach(
+        Type     => 'text/html',
+        Encoding => $ls->param('html_encoding'),
+        Data     => $etp->{html},
+    );
+	
+	my $r_entity;
 
-        # attach parts
-        $reply->attach(
-            Type     => 'text/plain',
-            Encoding => $ls->param('plaintext_encoding'),
-            Data     => $ls->param('moderation_msg'),
-        );
-        $reply->attach(
-            Type        => 'message/rfc822',
-            Disposition => "inline",
-            Data        => DADA::App::Guts::safely_decode( DADA::App::Guts::safely_encode( $entity->as_string ) ),
-        );
+	for my $to_address (@moderators) {                      # recepient loop
 
-        # send the message
+	    $r_entity = MIME::Entity->build(
+	        Type    => "multipart/mixed",
+	        Subject => $etp->{vars}->{subject},
+	        To      => $dfm->format_phrase_address(
+							$etp->{vars}->{to_phrase},
+							$to_address,
+						),
+	        From    => $dfm->format_phrase_address(
+							$etp->{vars}->{from_phrase},
+							$ls->param('list_owner_email'),
+						),
+
+	    );
+	    $r .= "\t* Sent moderation request to $to_address\n";
+	
+		$r_entity->add_part($msg_entity);
+	    $r_entity->attach(
+	        Type        => 'message/rfc822',
+	        Disposition => "inline",
+	        Data        => DADA::App::Guts::safely_decode( DADA::App::Guts::safely_encode( $entity->as_string ) ),
+	    );
+
         require DADA::App::Messages;
-        DADA::App::Messages::send_generic_email(
+		 my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
+         $dap->send_generic_email(
             {
-                -list        => $self->{list},
-                -headers     => { DADA::App::Messages::_mime_headers_from_string( $reply->stringify_header ), },
-                -body        => $reply->stringify_body,
+				-entity      => $r_entity, 
                 -tmpl_params => {
                     -list_settings_vars       => $ls->get,
                     -list_settings_vars_param => { -dot_it => 1, },
@@ -3569,8 +3596,7 @@ sub moderation_msg {
     }
 	
 	$entity->purge;
-	$reply->purge;
-	 
+
     return $r; 
 }
 
