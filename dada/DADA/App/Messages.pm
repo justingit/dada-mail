@@ -1233,7 +1233,8 @@ sub send_out_message {
                     $self->ls->param('list_owner_email')
                 ),
                 To => $self->fm->format_phrase_address(
-                    $etp->{vars}->{to_phrase}, $email,
+                    $etp->{vars}->{to_phrase}, 
+					$email,
                 ),
                 Subject => $etp->{vars}->{subject},
             },

@@ -145,7 +145,7 @@ sub archive_ids_for_digest {
     my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
  
     if ( scalar( @{$keys} ) == 0 ) {
-		return $ids; 
+		return [];
     }
 	elsif($self->mock_run() == 1){ 
 		my $c = 4;
@@ -161,25 +161,28 @@ sub archive_ids_for_digest {
             ($self->archive_time_2_ctime($digest_last_archive_id_sent) + int($self->{ls_obj}->param('digest_schedule'))) > $self->{ctime}){ 
                 # not the time to send out a digest!
                 #....           
-        }
-        for (@$keys) {            
-            if (   
-                # after our last one was sent out (redundant?)
-                $self->archive_time_2_ctime($_) > $self->archive_time_2_ctime($digest_last_archive_id_sent) 
+				return [];
+	    }
+		else {
+	        for (@$keys) {            
+	            if (   
+	                # after our last one was sent out (redundant?)
+	                $self->archive_time_2_ctime($_) > $self->archive_time_2_ctime($digest_last_archive_id_sent) 
                 
-                &&
-                # Is within the digest_schedule
-                $self->archive_time_2_ctime($_) >  $self->{ctime}  - (int($self->{ls_obj}->param('digest_schedule')))
+	                &&
+	                # Is within the digest_schedule
+	                $self->archive_time_2_ctime($_) >  $self->{ctime}  - (int($self->{ls_obj}->param('digest_schedule')))
                 
-                # BUT less than right now 
-                && $self->archive_time_2_ctime($_) < $self->{ctime} 
-            ) 
-            {
-                push( @$ids, $_ );
-            }
-        }
-    }
-
+	                # BUT less than right now 
+	                && $self->archive_time_2_ctime($_) < $self->{ctime} 
+	            ) 
+	            {
+	                push( @$ids, $_ );
+	            }
+	        }
+	    }
+	}
+	
     if ($t) {
         warn 'ids to make digest: ';
         for (@$ids) {
