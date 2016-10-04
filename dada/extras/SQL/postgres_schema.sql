@@ -147,3 +147,13 @@ user_id VARCHAR(225) NOT NULL,
 action VARCHAR(225) NOT NULL, 
 timestamp INT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS dada_email_message_previews (
+id serial not null UNIQUE,
+list varchar(16),
+created_timestamp TIMESTAMP DEFAULT NOW(),
+vars text,
+plaintext text,
+html text
+);
+
