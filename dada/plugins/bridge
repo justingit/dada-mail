@@ -447,7 +447,11 @@ sub mod {
     my $mod = SimpleModeration->new( { -List => $list } );
     my $msg_id = $q->param('msg_id');
     my ($valid_msg, $imm_r) = $mod->is_moderated_msg($msg_id);
-    $r .= $imm_r; 
+    
+	
+	# $r .= $imm_r; 
+
+	
 
     if ( $valid_msg == 1 ) {
         $r .= "<p>Message appears to be valid and exists</p>";
@@ -455,12 +459,14 @@ sub mod {
         if ( $q->param('process') eq 'confirm' ) {
             my $g_msg = $mod->get_msg( { -msg_id => $msg_id } );
             # Change content-transfer-encoding?
-            $r .= process(
+            $r .= "<pre>\n";
+			$r .= process(
                 {
                     -ls  => $ls,
                     -msg => \$g_msg,
                 }
             );
+            $r .= "\n</pre>";
 
             $r .= "<p>Message has been sent!</p>";
             if ( $ls->param('send_moderation_accepted_msg') == 1 ) {
@@ -3812,12 +3818,8 @@ sub is_moderated_msg {
 
     my $self   = shift;
     my $msg_id = shift;
-    my $r = ''; 
-    
-    $r .= '<pre>';
-    $r .= "looking for:\n";
-    $r .= $self->mod_msg_filename($msg_id) . "\n";
-    $r .= '</pre>';
+	
+	my $r =$self->mod_msg_filename($msg_id); 
 
     if ( -e $self->mod_msg_filename($msg_id) ) {
         return (1, $r);

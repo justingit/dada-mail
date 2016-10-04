@@ -976,22 +976,22 @@ sub construct_from_url {
     undef($status);
     undef($errors);
 	
-	warn 'length($html_message)' . length($html_message); 
-	warn 'length($text_message)' . length($text_message); 
+#	warn 'length($html_message)' . length($html_message); 
+#	warn 'length($text_message)' . length($text_message); 
 	if(
 		length($html_message) <= 0
 		&& length($text_message) >= 0
 		&& $ls->param('mass_mailing_convert_plaintext_to_html') == 1){ 
 			
-			warn 'I made it here?!';
+			#warn 'I made it here?!';
 			
 			$html_message = plaintext_to_html( { -str => $text_message } );	
 			
-			warn '$html_message' . $html_message; 
+			#warn '$html_message' . $html_message; 
 	}
 	
-	warn 'length($html_message)' . length($html_message); 
-	warn 'length($text_message)' . length($text_message); 
+#	warn 'length($html_message)' . length($html_message); 
+#	warn 'length($text_message)' . length($text_message); 
 	
 	if(length($html_message) > 0) {
 		$html_message = $fm->format_mlm( 
@@ -1022,8 +1022,8 @@ sub construct_from_url {
 		);
 	}
 	
-	warn 'length($html_message)' . length($html_message); 
-	warn 'length($text_message)' . length($text_message); 
+#	warn 'length($html_message)' . length($html_message); 
+#	warn 'length($text_message)' . length($text_message); 
 
 	if(length($html_message) > 0) {
 	
@@ -1853,154 +1853,102 @@ sub list_invite {
 
         }
 
-        # DEV: Headers.  Ugh, remember this is in, "Send a Webpage" as well.
-        my %headers = ();
-        for my $h (
-            qw(
-            Reply-To
-            Return-Path
-            X-Priority
-            Subject
-			X-Preheader
-            )
-          )
-        {
-
-            if ( defined( $q->param($h) ) ) {
-                if ( $h eq 'Subject' ) {
-                    $headers{$h} = $fm->_encode_header( 'Subject', $q->param($h) );
-                }
-                else {
-                    $headers{$h} = strip( scalar $q->param($h) );
-                }
-            }
-        }
-
-        #/Headers
-
-        my $text_message_body = $q->param('text_message_body') || undef;
-        if ( $q->param('use_text_message') != 1 ) {
-            $text_message_body = undef;
-        }
-        my $html_message_body = $q->param('html_message_body') || undef;
-        if ( $q->param('use_html_message') != 1 ) {
-            $html_message_body = undef;
-        }
-
-        if ( $text_message_body eq undef && $html_message_body eq undef ) {
+		require DADA::App::EmailThemes; 
+		my $em = DADA::App::EmailThemes->new(
+			{ 
+				-list      => $self->{list},
+			}
+		);
+		my $etp          = $em->fetch('invite_message');
+		my $subject      = $etp->{vars}->{subject};
+		my $text_message = $etp->{plaintext};
+		my $html_message = $etp->{html};
+		
+        if ( $text_message eq undef && $html_message eq undef ) {
             return $self->report_mass_mail_errors( "Message will be sent blank! Stopping!", $root_login );
         }
 
-        ( $text_message_body, $html_message_body ) =
-          $fm->pre_process_msg_strings( $text_message_body, $html_message_body );
+        ( $text_message, $html_message ) =
+          $fm->pre_process_msg_strings( $text_message, $html_message );
 
-        require MIME::Entity;
-        my $entity;
+		my $mailHTML = undef; 
+		my ($mlo_status, $mlo_errors, $MIMELiteObj, $md5);
+					
+	    try { 
+			require DADA::App::MyMIMELiteHTML;
+		    $mailHTML = new DADA::App::MyMIMELiteHTML(
+		        'IncludeType'                    => 'cid',
+		        'TextCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
+		        'HTMLCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
+		        HTMLEncoding                     => scalar $self->{ls_obj}->param('html_encoding'),
+		        TextEncoding                     => scalar $self->{ls_obj}->param('plaintext_encoding'),
+		        (
+		              ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
+		            ? ( Debug => 1, )
+		            : ()
+		        ),
+		    );
+	        ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) 
+				= $mailHTML->parse(
+					safely_encode($html_message), 
+					safely_encode($text_message)
+				); 
+	    } catch { 
+	        my $errors = "Problems sending HTML! \n
+	        * Are you trying to send a webpage via URL instead?
+	        * Have you entered anything in the, HTML Version?
+	        * Returned Error: $_
+	        ";
+			return { 
+				status       => 0, 
+				errors       => $errors,
+			};
+	    }; 
+	    if($mlo_status == 0){ 
+			return { 
+				status       => 0, 
+				errors       => $mlo_errors,
+			};
+	    }
+		
+	    use MIME::Parser;
+	    my $parser = new MIME::Parser;
+	    $parser = optimize_mime_parser($parser);
 
-        if ( $text_message_body and $html_message_body ) {
+	    my $entity = $parser->parse_data( $MIMELiteObj->as_string );
 
-            $text_message_body = safely_encode($text_message_body);
-            $html_message_body = safely_encode($html_message_body);
+	     $entity->head->add(
+		 	'Subject',
+			$subject
+		);
 
-            my ( $status, $errors ) = $self->message_tag_check($text_message_body);
-            if ( $status == 0 ) {
-                return $self->report_mass_mail_errors( $errors, $root_login );
-            }
-            undef($status);
-            undef($errors);
+	    $fm->use_header_info(1);
+	    $fm->use_email_templates(0);
 
-            my ( $status, $errors ) = $self->message_tag_check($html_message_body);
-            if ( $status == 0 ) {
-                return $self->report_mass_mail_errors( $errors, $root_login );
-            }
-            undef($status);
-            undef($errors);
+	    if ( $args->{-tmpl_params}->{-expr} == 1 ) {
+	        $fm->override_validation_type('expr');
+	    }
 
-            $entity = MIME::Entity->build(
-                Type    => 'multipart/alternative',
-                Charset => $li->{charset_value},
-                %headers,
-            );
-            $entity->attach(
-                Type     => 'text/plain',
-                Data     => $text_message_body,
-                Encoding => $li->{plaintext_encoding},
-                Charset  => $li->{charset_value},
-            );
-            $entity->attach(
-                Type     => 'text/html',
-                Data     => $html_message_body,
-                Encoding => $li->{html_encoding},
-                Charset  => $li->{charset_value},
-            );
-        }
-        elsif ($html_message_body) {
-
-            $html_message_body = safely_encode($html_message_body);
-
-            my ( $status, $errors ) = $self->message_tag_check($html_message_body);
-            if ( $status == 0 ) {
-                return $self->report_mass_mail_errors( $errors, $root_login );
-            }
-            undef($status);
-            undef($errors);
-
-            $entity = MIME::Entity->build(
-                Type     => 'text/html',
-                Data     => $html_message_body,
-                Encoding => $li->{html_encoding},
-                Charset  => $li->{charset_value},
-                %headers,
-            );
-        }
-        elsif ($text_message_body) {
-            $text_message_body = safely_encode($text_message_body);
-
-            my ( $status, $errors ) = $self->message_tag_check($text_message_body);
-            if ( $status == 0 ) {
-                return $self->report_mass_mail_errors( $errors, $root_login );
-            }
-            undef($status);
-            undef($errors);
-
-            $entity = MIME::Entity->build(
-                Type     => 'text/plain',
-                Data     => $text_message_body,
-                Encoding => $li->{plaintext_encoding},
-                Charset  => $li->{charset_value},
-                %headers,
-            );
-        }
-        else {
-
-            warn
-"$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning: both text and html versions of invitation message blank?!";
-
-            my ( $status, $errors ) = $self->message_tag_check( $ls->param('invite_message_text') );
-            if ( $status == 0 ) {
-                return $self->report_mass_mail_errors( $errors, $root_login );
-            }
-            undef($status);
-            undef($errors);
-
-            $entity = MIME::Entity->build(
-                Type     => 'text/plain',
-                Data     => safely_encode( $ls->param('invite_message_text') ),
-                Encoding => $li->{plaintext_encoding},
-                Charset  => $li->{charset_value},
-                %headers,
-            );
-
-        }
-
-
-        $fm->Subject( $headers{Subject} );
+        $fm->Subject(
+			$subject
+		); 	
         $fm->mass_mailing(1);
         $fm->use_email_templates(0);
         $fm->list_type('invitelist');
 
+	    $entity = $fm->format_message(
+	        {
+	            -entity => $entity
+	        }
+	    );
+		
         try { 
-			$entity = $fm->format_headers_and_body({-entity => $entity}); 
+			$entity = $fm->format_headers_and_body(
+				{
+					-entity    => $entity,
+		  		    -format_mlm => 0, 
+				}
+		); 
 		
 		} catch { 
             return $self->report_mass_mail_errors( $_, $root_login );
@@ -2013,24 +1961,16 @@ sub list_invite {
         my $mh = DADA::Mail::Send->new(
             {
                 -list   => $self->{list},
-                -ls_obj => $self->{ls_obj},
-            }
-        );
-
-        require DADA::Mail::Send;
-        my $mh = DADA::Mail::Send->new(
-            {
-                -list   => $self->{list},
                 -ls_obj => $ls,
+				
+				
             }
         );
+		$mh->list_type('invitelist'); 
+		
         if ( exists( $args->{-Ext_Request} ) ) {
             $mh->Ext_Request( $args->{-Ext_Request} );
         }
-
-        # translate the glob into a hash
-
-        $mh->list_type('invitelist');
 
         $mh->mass_test(1)
           if ( $process =~ m/test/i );

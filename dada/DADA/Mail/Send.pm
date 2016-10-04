@@ -3340,6 +3340,8 @@ sub _mail_merge {
 
     $labeled_data{'list.confirmation_token'} =
       $confirmation_token;    # list invites? Messed up.
+	  
+	  
     $labeled_data{'list_unsubscribe_link'} = $DADA::Config::PROGRAM_URL . '/t/'
       . $labeled_data{'list.confirmation_token'} . '/';
 

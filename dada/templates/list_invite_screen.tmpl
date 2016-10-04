@@ -32,8 +32,6 @@
 
 <div id="list_invite"></div> 
 
-
-
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 	
 	<!-- tmpl_include send_email_button_action_notice_widget.tmpl -->
@@ -218,78 +216,10 @@
 	</fieldset> 
 <!-- /tmpl_if -->
 
-
-
-<div id="customize_invite_message_button">
-		<ul class="button-group even-1">
-			<li>
-				<input 
-					type="button" 
-					value="Customize Your List Invitation Message..." 
-					class="button warning large button show_customize_invite_message"
-				>
-			</li>
-		</ul>
-</div>
 	
 </div> 
-
-<div id="customize_invite_message_form">
-	
-	 
-	<!-- tmpl_include send_email_headers_widget.tmpl --> 
-
-
-	<fieldset>
-	<legend>Message Body</legend>
-
-	<div id="tabs"> 
-		<ul>
-			<li>
-				<a href="#html_message">
-					HTML Version
-				</a>
-			</li>
-			<li class="ui-tabs-selected">
-				<a href="#plaintext_message">
-					PlainText Version
-				</a>
-			</li>
-			</ul>
-
-
-	 <div id="html_message"> 
-
-		<p>
-		 <input type="checkbox" id="use_html_message" name="use_html_message" value="1" > 
-		 <label for="use_html_message">
-		  Use the HTML Version
-		 </label>
-	    </p>
-		<!-- tmpl_include html_message_form_field_widget.tmpl --> 
-	</div>
-
-
-	 <div id="plaintext_message"> 
-	
-		<p>
-		 <input type="checkbox" id="use_text_message" name="use_text_message" value="1" checked="checked" > 
-		 <label for="use_text_message">
-		  Use the PlainText Version
-		 </label>
-	    </p>
-	  <textarea name="text_message_body" id="text_message_body" cols="80" rows="30"><!-- tmpl_var list_settings.invite_message_text escape="HTML" --></textarea> 
-	</div> 
-	</fieldset>
-	</div> 
-</div> 
-
 </div>
-
-
-
 </div>
-
 
 </form> 
 

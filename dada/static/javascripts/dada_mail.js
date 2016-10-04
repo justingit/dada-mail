@@ -4163,6 +4163,10 @@ function ChangeMassMailingButtonLabel(first_run) {
 
 
 function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpage - did they fill in a URL? */
+	if($("#list_invite").length){ 
+		return true;
+	}
+	
 	if ($("#f").val() == 'send_url_email') {
 		if($("#content_from_url").prop("checked") === true) {
 			if (

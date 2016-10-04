@@ -171,7 +171,7 @@ sub send_generic_email {
 
 	    $email_str = safely_decode($email_str);
 
-	    my $entity = $self->fm->email_template(
+	   $entity = $self->fm->email_template(
 	        {
 	            -entity => $self->fm->get_entity( { -data => safely_encode($email_str), } ),
 	            %{ $args->{-tmpl_params} },
@@ -196,7 +196,7 @@ sub send_generic_email {
 
 sub send_multipart_email {
 
-	warn 'at send_multipart_email' ;
+#	warn 'at send_multipart_email' ;
 	
 
     my $self = shift;
@@ -1081,6 +1081,8 @@ sub send_not_subscribed_message {
 
 sub send_newest_archive {
 
+	warn 'in send_newest_archive';
+	
     my $self = shift;
     my ($args) = @_;
 
@@ -1118,6 +1120,7 @@ sub send_newest_archive {
             $self->mh->test(1);
         }
 
+		warn 'calling send_generic_email';
         $self->send_generic_email(
             {
                 -email   => $email,
