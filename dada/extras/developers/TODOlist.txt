@@ -13,10 +13,6 @@ Key:
 [?] Someday
 
 
-
-Make the system work if HTML or Plaintext email is not available. If no HTML, just send plaintext. 
-	we'll then slowly build up the collection of TML versions of the email's that we have. 
-
 * Make using Email::MIME::CreateHTML an option if available - and maybe the dfault, unless NOT avalable, 
 	* make slight tweak so that LWP resolver doesn't die with unfound resource 
 		- just a warning is just fine... 
@@ -69,9 +65,6 @@ Guess we'll have to figure out a policy on what to do with the full HTML documen
 
 Should CKEdit have the stylesheet already loaded in? What happens if you edit the underlying HTML?
 
-* Make using Email::MIME::CreateHTML an option if available - and maybe the dfault, unless NOT avalable, 
-	* make slight tweak so that LWP resolver doesn't die with unfound resource 
-		- just a warning is just fine... 
 
 * Does format_headers_and_body with -msg param. still... work?
 

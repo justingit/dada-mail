@@ -232,8 +232,7 @@ sub cgi_user_error {
                         -list  => $list,
                         -email => $email,
                         -type  => 'sub_confirm_list'
-                    },    #what?
-                    -dada_pseudo_tag_filter => 1,
+                    },
                     -vars                   => {
                         %{ $args->{-vars} },
                         rm             => $rm,

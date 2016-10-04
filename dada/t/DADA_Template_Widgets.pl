@@ -84,7 +84,6 @@ Welcome to <!-- tmpl_var boring_name -->
    {
        -data                   => \$scalar,
        -vars                   => {boring_name => "Site Name", boring_description => 'Site Descripton'}, 
-       -dada_pseudo_tag_filter => 1, 
    }
 );
 
@@ -153,7 +152,6 @@ $r =  DADA::Template::Widgets::screen(
            -email => 'this@example.com', 
            -type  => 'list',
        },
-    -dada_pseudo_tag_filter => 1, 
    }
    
 );
@@ -184,7 +182,6 @@ $r =  DADA::Template::Widgets::screen(
            -email => 'this@example.com', 
            -type  => 'list',
        },
-    -dada_pseudo_tag_filter => 1, 
    }
    
 );
@@ -226,7 +223,6 @@ $r =  DADA::Template::Widgets::screen(
            -email => 'this@example.com', 
            -type  => 'list',
        },
-    -dada_pseudo_tag_filter => 1, 
    }
    
 );
@@ -287,7 +283,6 @@ $r =  DADA::Template::Widgets::screen(
    {
    -data                   => \$d,
     -subscriber_vars        => $subscriber,
-    -dada_pseudo_tag_filter => 1, 
    }
    
 );
@@ -356,7 +351,6 @@ $r =  DADA::Template::Widgets::screen(
        {
            -list  => $list, 
        },
-   -dada_pseudo_tag_filter => 1, 
    }
 );
 
@@ -406,8 +400,7 @@ $r =  DADA::Template::Widgets::screen(
    {
    -data                     => \$d, 
    -list_settings_vars       => $list_settings, 
-   -dada_pseudo_tag_filter   => 1, 
-   }
+}
 );
 
 like($r, qr/list: $list/); 
@@ -504,12 +497,6 @@ $d = q{
 
 };
 
-my $f = $d; 
-
-DADA::Template::Widgets::dada_pseudo_tag_filter(\$f); 
-
-like($f, qr/\<\!\-\- tmpl_if subscriber\.first_name \-\-\>/, "Looks like the transformation was successful!"); 
-#diag $f; 
 eval { 
 	$r =  DADA::Template::Widgets::screen(
 	   {
@@ -518,7 +505,6 @@ eval {
 	       {
 	           -list  => $list, 
 	       },
-	   -dada_pseudo_tag_filter => 1, 
 	   }
 	); 
 	#diag $r; 

@@ -779,7 +779,6 @@ sub confirm {
                             -email => $email,
                             -type  => 'sub_confirm_list'
                         },
-                        -dada_pseudo_tag_filter => 1,
                         -vars                   => {
                             CAPTCHA_string => $CAPTCHA_string,
                             flavor         => 't',
@@ -1465,7 +1464,6 @@ sub unsubscription_request {
                         -email => $email,
                         -type  => 'list'
                     },
-                    -dada_pseudo_tag_filter => 1,
                     -vars                   => { email => $email, subscriber_email => $email },
 
                 }
@@ -1881,7 +1879,6 @@ sub complete_unsubscription {
                             -data                     => \$s,
                             -with                     => 'list',
                             -list_settings_vars_param => { -list => $ls->param('list') },
-                            -dada_pseudo_tag_filter   => 1,
                             -subscriber_vars          => { 'subscriber.email' => $email },
                         }
                     );
@@ -2026,7 +2023,6 @@ sub pl_unsubscription_request {
                 -screen                   => 'unsubscription_request_screen.tmpl',
                 -with                     => 'list',
                 -list_settings_vars_param => { -list => $ls->param('list') },
-                -dada_pseudo_tag_filter   => 1,
                 -subscriber_vars          => { 'subscriber.email' => $email },
             }
         );
@@ -2058,7 +2054,6 @@ sub pl_unsubscription_request {
                         -screen                   => 'unsubscription_request_screen.tmpl',
                         -with                     => 'list',
                         -list_settings_vars_param => { -list => $ls->param('list') },
-                        -dada_pseudo_tag_filter   => 1,
                         -subscriber_vars          => { 'subscriber.email' => $email },
                     }
                 );
@@ -2209,7 +2204,6 @@ sub complete_pl_unsubscription_request {
                         -email => $data->{email},
                         -type  => 'list'
                     },
-                    -dada_pseudo_tag_filter => 1,
                     -vars                   => {
                         email            => $data->{email},
                         subscriber_email => $data->{email},
@@ -2249,7 +2243,6 @@ sub complete_pl_unsubscription_request {
                         -email => $data->{email},
                         -type  => 'list'
                     },
-                    -dada_pseudo_tag_filter => 1,
                     -vars                   => {
                         email            => $data->{email},
                         subscriber_email => $data->{email},
@@ -2416,7 +2409,6 @@ sub subscription_requests {
                         -email => $email,
                         -type  => 'list'
                     },
-                    -dada_pseudo_tag_filter => 1,
                     -vars                   => {
                         email            => $email,
                         subscriber_email => $email,
@@ -2461,7 +2453,6 @@ sub subscription_requests {
                         -email => $email,
                         -type  => 'list'
                     },
-                    -dada_pseudo_tag_filter => 1,
                     -vars                   => {
                         email            => $email,
                         subscriber_email => $email,
@@ -2661,7 +2652,6 @@ sub _subscription_confirmation_success_msg {
                     -email => $args->{-email},
                     -type  => 'sub_confirm_list'
                 },
-                -dada_pseudo_tag_filter => 1,
             }
         );
     }
@@ -2677,7 +2667,6 @@ sub _subscription_confirmation_success_msg {
                     -email => $args->{-email},
                     -type  => 'sub_confirm_list'
                 },
-                -dada_pseudo_tag_filter => 1,
             }
         );
     }
@@ -2715,7 +2704,6 @@ sub _subscription_successful_message {
                     -email => $args->{-email},
                     -type  => 'list'
                 },
-                -dada_pseudo_tag_filter => 1,
                 -vars                   => {
                     chrome           => $args->{-chrome},
                     email            => $args->{-email},
@@ -2734,7 +2722,6 @@ sub _subscription_successful_message {
                     -email => $args->{-email},
                     -type  => 'list'
                 },
-                -dada_pseudo_tag_filter => 1,
                 -vars                   => {
                     chrome           => $args->{-chrome},
                     email            => $args->{-email},
@@ -2778,7 +2765,6 @@ sub _subscription_requires_approval_message {
                     -email => $args->{-email},
                     -type  => 'sub_request_list'
                 },
-                -dada_pseudo_tag_filter => 1,
                 -vars                   => {
                     chrome           => $args->{-chrome},
                     email            => $args->{-email},
@@ -2797,7 +2783,6 @@ sub _subscription_requires_approval_message {
                     -email => $args->{-email},
                     -type  => 'sub_request_list'
                 },
-                -dada_pseudo_tag_filter => 1,
                 -vars                   => {
                     chrome           => $args->{-chrome},
                     email            => $args->{-email},

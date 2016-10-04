@@ -1026,7 +1026,9 @@ sub _add_opener_image {
 
     my $self    = shift;
     my $content = shift;
-
+	return $content 
+		if $self->no_list == 1; 
+		
     my $url =
 '<!-- tmpl_var PROGRAM_URL -->/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/spacer.png';
 
@@ -2808,8 +2810,6 @@ parameter. The C<-entity> parameter should be populated like so:
 
 ( Probably should elaborate...) 
 
-The subroutine also passes the C<-dada_pseudo_tag_filter> (set to 1) automatically to C<screen>.
-
 =cut
 
 sub email_template {
@@ -2837,7 +2837,6 @@ sub email_template {
             next if $_ eq '-entity';
             $screen_vars->{$_} = $args->{$_};
         }
-        $screen_vars->{-dada_pseudo_tag_filter} = 1;
 
         my $special_headers = {
             Subject       => 'email.subject',
@@ -2935,7 +2934,6 @@ sub email_template {
                 next if $_ eq '-entity';
                 $screen_vars->{$_} = $args->{$_};
             }
-            $screen_vars->{-dada_pseudo_tag_filter} = 1;
 
             my $body    = $args->{-entity}->bodyhandle;
             my $content = $args->{-entity}->bodyhandle->as_string;
@@ -2994,7 +2992,6 @@ sub email_template {
         next if $_ eq '-entity';
         $screen_vars->{$_} = $args->{$_};
     }
-    $screen_vars->{-dada_pseudo_tag_filter} = 1;
 
     #warn 'all headers:' . $args->{-entity}->head->as_string;
     for my $header (

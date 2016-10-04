@@ -11,10 +11,10 @@
 =head4 Powered by Foundation for Emails
 
 Foundation for Emails (L<http://foundation.zurb.com/emails.html>) is a framework to develop 
-HTML email messages that, "Suck Less": are beautiful, resposive, and look correctly in most HTML-capable 
+HTML email messages that, "Sucks Less": they're beautiful, resposive, and look correctly in most HTML-capable 
 email readers - even Outlook. 
 
-Work with these HTML emails via SASS Workflow documented here, 
+Work with these HTML emails via SASS Workflow documented here:
 
 L<https://foundation.zurb.com/emails/docs/sass-guide.html>
 
@@ -35,7 +35,8 @@ you can use to customize the look and feel of your email messages.
 
 B<TODO>:
 
-Currently, Dada Mail only comes with one email theme (so ), but 
+Currently, Dada Mail only comes with one email theme, but should support additional themes in the future, with the idea
+that people can create and share their own themes. 
 
 =head4 Mass Mailing Email Layouts
 
@@ -59,5 +60,10 @@ Currently, the following layout options are available:
 
 Without needing to send a test message out, you can now preview how your mass mailing will look, right in the Send a Message
 screen. This makes it easy to try different layouts and other options out, before comitting to sending to your entire mailing list. 
+
+=head4 Set an image and social network links in messages
+
+The newly improved HTML email messages also support showing a logo, and list social media likns - these all can be set 
+under B<Mailing List - List Information>
 
 =cut

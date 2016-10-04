@@ -10750,7 +10750,6 @@ sub list_archive {
                         -vars                     => $ls->get,
                         -list_settings_vars       => $ls->get,
                         -list_settings_vars_param => { -dot_it => 1 },
-                        -dada_pseudo_tag_filter   => 1,
                         -subscriber_vars_param =>
                           { -use_fallback_vars => 1, -list => $list },
                     },

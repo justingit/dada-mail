@@ -328,7 +328,6 @@ sub admin_template {
 																	-list   => $list, 
 																	-dot_it => 1, 
 															 	},
-										-dada_pseudo_tag_filter   => 1, 	
 									}
 								); 
 								
@@ -892,7 +891,6 @@ sub list_template {
     my $final_list_template = DADA::Template::Widgets::screen(
         {
             -data                   => \$list_template,
-            -dada_pseudo_tag_filter => 1,
             -vars                   => {
                 title              => $args{ -Title },
                 'profile.email'    => $prof_email,

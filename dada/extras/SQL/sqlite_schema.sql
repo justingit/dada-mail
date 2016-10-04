@@ -135,7 +135,7 @@ timestamp INT UNSIGNED NOT NULL
 CREATE TABLE IF NOT EXISTS dada_email_message_previews (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 list varchar(16),
-created_timestamp TIMESTAMP DEFAULT NOW(),
+created_timestamp TIMESTAMP,
 vars text,
 plaintext mediumtext,
 html mediumtext

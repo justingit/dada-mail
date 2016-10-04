@@ -254,9 +254,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_rate_limit_hits}{CREATE TABLE IF NOT EXISTS $rate_limit_hits_table};	
 
 
-		
-		print 'query: ' . $_ . "\n\n"; 
-        my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
+        my $sth = $dbh->prepare($_) or croak $DBI::errstr . 'query:' . $_; 
 
        $sth->execute
 			or croak "cannot do statement $DBI::errstr\n"; 

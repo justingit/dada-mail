@@ -2037,7 +2037,6 @@ sub _parse_in_list_info {
             -list_settings_vars       => $self->{ls}->params,
             -list_settings_vars_param => {-dot_it => 1},
 			-subscriber_vars_param    => {-list => $self->{list}, -use_fallback_vars => 1},
-            -dada_pseudo_tag_filter   => 1, 
 
         }, 
 

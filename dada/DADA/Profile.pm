@@ -1087,7 +1087,7 @@ sub send_profile_reset_password_email {
 	
     require DADA::App::Messages;
     my $dap = DADA::App::Messages->new({-list => $self->_config_profile_host_list});
-	$dap->send_generic_email(
+	$dap->send_multipart_email(
         {
             -email   => $self->{email},
             -headers => {
@@ -1095,7 +1095,7 @@ sub send_profile_reset_password_email {
                 From    => $self->_config_profile_email(1),
                 To      => $self->{email},
             },
-            -body        => $etp->{plaintext},
+            -plaintext_body  => $etp->{plaintext},
             -tmpl_params => {
                 -vars => {
                     auth_code                             => $auth_code,
@@ -1178,15 +1178,14 @@ sub send_update_profile_email_email {
 
 	require DADA::App::Messages;
     my $dap = DADA::App::Messages->new({-list => $self->_config_profile_host_list});
-	$dap->send_generic_email(
+	$dap->send_multipart_email(
         {
             -headers => {
-                Subject =>
-                  $etp->{vars}->{subject},
+                Subject => $etp->{vars}->{subject},
                 From => $self->_config_profile_email(1),
                 To   => $args->{-updated_email},
             },
-            -body        => $etp->{plaintext},
+            -plaintext_body => $etp->{plaintext},
             -tmpl_params => {
                 -vars => {
                     'profile.update_email_auth_code' => $args->{-update_email_auth_code},
@@ -1235,15 +1234,14 @@ sub send_update_email_notification {
 	
 	require DADA::App::Messages;
     my $dap = DADA::App::Messages->new({-list => $self->_config_profile_host_list});
-	$dap->send_generic_email(
+	$dap->send_multipart_email(
         {
-            -list    => $self->_config_profile_host_list, 
             -headers => {
                 Subject => $etp->{vars}->{subject},
                 From => $self->_config_profile_email(1),
                 To   => $self->_config_profile_email,
             },
-            -body        => $etp->{plaintext},
+            -plaintext_body => $etp->{plaintext},
             -tmpl_params => {
                 -vars => {
 					'profile.prev_email'             => $args->{-prev_email}, 
