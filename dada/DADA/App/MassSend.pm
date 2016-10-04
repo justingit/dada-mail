@@ -1768,30 +1768,22 @@ sub list_invite {
                     -Root_Login => $root_login,
                     -List       => $self->{list},
                 },
-                -expr => 1,
                 -vars => {
-                    using_no_wysiwyg_editor => 1,
-
                     screen => 'add',
                     list_type_isa_list =>
                       1,    # I think this only works with Subscribers at the moment, so no need to do a harder check...
                             # This is sort of weird, as it default to the "Send a Message" Subject
                     mass_mailing_type => 'invite',
-                    Subject           => $ls->param('invite_message_subject'),
                     field_names       => $field_names,
 
                     verified_addresses        => $verified_addresses,
                     invited_already_addresses => $invited_already_addresses,
 
-                    html_message_body_content            => $li->{invite_message_html},
-                    html_message_body_content_js_escaped => js_enc( $li->{invite_message_html} ),
                     MAILOUT_AT_ONCE_LIMIT                => $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
                     mailout_will_be_queued               => $mailout_will_be_queued,
                     num_list_mailouts                    => $num_list_mailouts,
                     num_total_mailouts                   => $num_total_mailouts,
                     active_mailouts                      => $active_mailouts,
-
-                    using_no_wysiwyg_editor => 1,
                 },
                 -list_settings_vars       => $li,
                 -list_settings_vars_param => { -dot_it => 1, },
@@ -2504,16 +2496,26 @@ sub just_subscribed_mass_mailing {
     $fm->mass_mailing(1);
     $fm->list_type('just_subscribed');
     $fm->use_email_templates(0);
-
+	
+	
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $self->{list},
+		}
+	);
+	my $etp = $em->fetch('subscribed_by_list_owner_message');
+	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+
     my ( $header_glob, $message_string ) = $fm->format_headers_and_body(
 		{
 	        -msg => $fm->string_from_dada_style_args(
 	            {
 	                -fields => {
-	                    Subject => $ls->param('subscribed_by_list_owner_message_subject'),
-	                    Body    => $ls->param('subscribed_by_list_owner_message'),
+	                    Subject => $etp->{vars}->{subject},
+	                    Body    => $etp->{plaintext},
 	                },
 	            }
 	        )
@@ -2575,6 +2577,15 @@ sub just_unsubscribed_mass_mailing {
     $fm->mass_mailing(1);
     $fm->list_type('just_unsubscribed');
 
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $self->{list},
+		}
+	);
+	my $etp = $em->fetch('unsubscribed_by_list_owner_message');
+	
+
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     my ( $header_glob, $message_string ) = $fm->format_headers_and_body(
@@ -2582,8 +2593,8 @@ sub just_unsubscribed_mass_mailing {
 	        -msg => $fm->string_from_dada_style_args(
 	            {
 	                -fields => {
-	                    Subject => $ls->param('unsubscribed_by_list_owner_message_subject'),
-	                    Body    => $ls->param('unsubscribed_by_list_owner_message'),
+	                    Subject => $etp->{vars}->{subject},
+	                    Body    => $etp->{plaintext},
 	                },
 	            }
 	        )

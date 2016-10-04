@@ -185,7 +185,7 @@ sub setup {
         'archive_options'                 => \&archive_options,
         'adv_archive_options'             => \&adv_archive_options,
         'back_link'                       => \&back_link,
-        'edit_type'                       => \&edit_type,
+#        'edit_type'                       => \&edit_type,
         'edit_html_type'                  => \&edit_html_type,
         'list_options'                    => \&list_options,
         'web_services'                    => \&web_services,
@@ -8732,6 +8732,7 @@ sub back_link {
     }
 }
 
+=cut
 sub edit_type {
 
     my $self    = shift;
@@ -8923,6 +8924,8 @@ sub edit_type {
 
     }
 }
+
+=cut
 
 sub edit_html_type {
 

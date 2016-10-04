@@ -1,0 +1,49 @@
+=pod
+
+=head1 Dada Mail 9 to Dada Mail 10 Upgrade Guide
+
+This guide was compiled to get you ready for upgrade to Dada Mail v10.
+
+=head2 Focus
+
+We've worked primarily on getting our email messages sent by Dada Mail to use 
+really beautiful and awesome HTML produced by the Foundation for Emails Framework, 
+as well as the plaintext fallback. 
+
+You can learn more about Foudnation for Emails, here: 
+
+L<http://foundation.zurb.com/emails.html>
+
+In past versions of Dada Mail, ALL transctional email messages had a plaintext-only 
+"option" available. The HTML emails look so much better, and probably rank much higher on usability. We're excited!
+
+To support Foundation for Emails, we've had to make I<considerable> changes to 
+the internal code of Dada Mail. A new dependency is now required to run Dada Mail: 
+the Perl CPAN module, B<LWP>. 
+
+The following CPAN Perl Modules aren't required, but definitely recommended to 
+have the best experience when running Dada Mail: 
+
+=over
+
+=item * CSS::Inliner
+
+=item * HTML::Parser
+
+=item * HTML::Packer
+
+=item * CSS::Packer
+
+=back
+
+Because the workflow to create the new HTML emails is based on Foundation for Emails SASS workflow 
+(L<https://foundation.zurb.com/emails/docs/sass-guide.html>),
+which is done offline (via your desktop/laptop/etc), we've removed the ability to edit these messages 
+from within Dada Mail through the B<Apperance - Email Message Templates> screen. The HTML produced by the 
+framework is exceptionally complex - they just cannot be easily edited by hand. Using the SASS workflow 
+is actally pretty approachable by a competent web designer or developer. 
+
+We will try to create instructions on how to fetch a starter collection of email message templates, so you 
+may create your own customized email themes. 
+
+=cut
