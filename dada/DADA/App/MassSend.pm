@@ -229,20 +229,14 @@ sub send_email {
         return ( $headers, $body );
     }
     elsif ( $process =~ m/preview/i ) {
-     
-	 	warn 'preview!'; 
-		
-		warn 'save_as_draft';
-	    my $draft_id = $self->save_as_draft(
+     	    my $draft_id = $self->save_as_draft(
             {
                 -cgi_obj => $q,
                 -list    => $self->{list},
                 -json    => 0,
             }
         );
-		
-		warn 'construct_and_send';
-        my $construct_r = $self->construct_and_send(
+		my $construct_r = $self->construct_and_send(
             {
                 -draft_id => $draft_id,
                 -screen   => 'send_email',
@@ -257,16 +251,12 @@ sub send_email {
             carp 'done with construct_and_send!';
         }
         if ( $construct_r->{status} == 0 ) {
-			warn 'status is 0?!';
             return $self->report_mass_mail_errors(
 				$construct_r->{errors}, 
 				$root_login
 			);
         }
 		else { 
-			
-			use Data::Dumper; 
-			warn '$construct_r->{vars}' . Dumper($construct_r->{vars});
 			
 			require DADA::App::EmailMessagePreview; 
 			my $daemp = DADA::App::EmailMessagePreview->new; 
@@ -449,7 +439,7 @@ sub construct_and_send {
     }
 
     if ( $con->{status} == 0 && $t == 1 ) {
-        warn '$con->{errors}: ' . $con->{errors};
+        # warn '$con->{errors}: ' . $con->{errors};
     }
     if ( $con->{status} == 0 ) {
         return {
@@ -459,7 +449,6 @@ sub construct_and_send {
     }
 
     try {
-		warn 'format_headers_and_body'; 
         $con->{entity} = $con->{fm_obj}->format_headers_and_body(
             {
                 -entity => $con->{entity},
@@ -567,12 +556,7 @@ sub construct_and_send {
             $self->{ah_obj}
               ->set_archive_info( $message_id, $mailing{Subject}, undef, undef,
                 $mh->saved_message );
-        }
-		
-		
-		use Data::Dumper; 
-		warn Dumper($con->{vars});
-		
+        }		
         return {
         	status       => 1, 
 			errors       => undef, 
@@ -585,13 +569,6 @@ sub construct_and_send {
     }
     else {
      
-	 	#warn '$con->{subject}' . $con->{subject}; 
-	 	# Dry run:
-		
-		use Data::Dumper; 
-		warn Dumper($con->{vars});
-		
-		
         return { 
 			status       => 1, 
 			errors       => undef, 
@@ -800,8 +777,6 @@ sub construct_from_url {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 	
-	warn '$mode' . $mode; 
-	
 	if($mode eq 'text') { 
 		$subject_from = 'input';
 		$content_from = 'content_from_textarea';
@@ -817,7 +792,6 @@ sub construct_from_url {
 			$plaintext_content_from = 'auto';
 		}
 	}
-	warn '$plaintext_content_from' . $plaintext_content_from; 
 	
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
@@ -976,22 +950,13 @@ sub construct_from_url {
     undef($status);
     undef($errors);
 	
-#	warn 'length($html_message)' . length($html_message); 
-#	warn 'length($text_message)' . length($text_message); 
 	if(
 		length($html_message) <= 0
 		&& length($text_message) >= 0
 		&& $ls->param('mass_mailing_convert_plaintext_to_html') == 1){ 
 			
-			#warn 'I made it here?!';
-			
 			$html_message = plaintext_to_html( { -str => $text_message } );	
-			
-			#warn '$html_message' . $html_message; 
 	}
-	
-#	warn 'length($html_message)' . length($html_message); 
-#	warn 'length($text_message)' . length($text_message); 
 	
 	if(length($html_message) > 0) {
 		$html_message = $fm->format_mlm( 
@@ -1021,10 +986,6 @@ sub construct_from_url {
 			}
 		);
 	}
-	
-#	warn 'length($html_message)' . length($html_message); 
-#	warn 'length($text_message)' . length($text_message); 
-
 	if(length($html_message) > 0) {
 	
 		# This is cheating: 
@@ -1100,9 +1061,6 @@ sub construct_from_url {
 			}
 		); 
 	}
-	
-#	warn '$html_message' . $html_message; 
-	
 	
 	return { 
 		status       => 1, 

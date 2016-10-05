@@ -13,7 +13,7 @@ use Carp qw(croak carp);
 
 use DADA::App::Guts; 
 
-my $t = 1; 
+my $t = 0; 
 
 my %allowed = (
 

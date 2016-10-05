@@ -1213,8 +1213,8 @@ sub send_out_message {
     my $self = shift;
     my ($args) = @_;
 
-	use Data::Dumper;
-	warn 'send_out_message args:' . Dumper($args);
+#	use Data::Dumper;
+#	warn 'send_out_message args:' . Dumper($args);
 
     if ( !exists( $args->{-tmpl_params} ) ) {
         $args->{-tmpl_params} = {};

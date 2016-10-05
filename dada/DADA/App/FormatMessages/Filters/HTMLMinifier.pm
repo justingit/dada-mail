@@ -20,7 +20,7 @@ use Try::Tiny;
 # Need to ship with: 
 use DADA::App::Guts; 
 
-my $t = 1; 
+my $t = 0; 
 
 my %allowed = (
 

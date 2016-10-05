@@ -228,8 +228,8 @@ sub send_digest {
         $self->send_out_digest();
 		my $keys = $self->archive_ids_for_digest();
 
-		use Data::Dumper; 
-		$r .= Dumper($keys);
+#		use Data::Dumper; 
+#		$r .= Dumper($keys);
 
 		if($self->mock_run() != 1){
 			$r .= "\nsaving:" . $keys->[-1] . "\n";

@@ -1317,19 +1317,10 @@ sub _rearrange_cid_img_tags {
 
 	for my $this_cid(@cids){
 	
-		warn '$this_cid' . $this_cid; 
-		
-	
 		my $img_url = $DADA::Config::PROGRAM_URL . '/show_img/' . $self->{list} . '/' . $args{-key} . '/' . $this_cid;  
-
 		my $link_wo_cid = $img_url; 
 		   $link_wo_cid =~ s/cid\://; 
-		
-			
 		my $qm_this_cid = quotemeta($this_cid); 
-		
-		warn '$link_wo_cid' . $link_wo_cid; 
-		
 		$body =~ s/$qm_this_cid/$link_wo_cid/g;
 	}
 	

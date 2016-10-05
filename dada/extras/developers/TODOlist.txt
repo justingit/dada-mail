@@ -12,6 +12,8 @@ Key:
 [*] Naw...
 [?] Someday
 
+Remove List- headers from trasnactio nemails 
+
 
 * Make using Email::MIME::CreateHTML an option if available - and maybe the dfault, unless NOT avalable, 
 	* make slight tweak so that LWP resolver doesn't die with unfound resource 

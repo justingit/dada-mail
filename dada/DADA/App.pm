@@ -3082,8 +3082,8 @@ sub api {
     my %incoming_headers = map { $_ => $q->http($_) } $q->http();
     if ( $DADA::Config::DEBUG_TRACE->{DADA_App_WebServices} == 1 ) {
         warn "Incoming Headers for API call:";
-        use Data::Dumper;
-        warn Dumper( {%incoming_headers} );
+       	require Data::Dumper;
+        warn Data::Dumper::Dumper( {%incoming_headers} );
     }
 
     if ( !defined($pi_public_key) && !defined($pi_digest) ) {

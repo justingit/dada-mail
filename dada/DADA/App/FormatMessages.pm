@@ -175,8 +175,6 @@ sub _init {
 
         $self->Subject( $self->{ls}->param('list_name') );
 
-# just a shortcut...
-# warn "_init in DADA::App::FormatMessages saving - mime_encode_words_in_headers";
         if ( $self->{ls}->param('mime_encode_words_in_headers') == 1 ) {
             $self->im_encoding_headers(1);
         }
@@ -267,14 +265,9 @@ sub format_headers_and_body {
     my $entity;
 
     if ( exists( $args->{-msg} ) ) {
-        warn 'args -msg';
-        warn '$args->{-msg}' . $args->{-msg};
         $entity = $self->{parser}->parse_data( safely_encode( $args->{-msg} ) );
-        warn '$entity->as_string' . $entity->as_string;
     }
     elsif ( exists( $args->{-entity} ) ) {
-
-        # warn 'args -entity';
         $entity = $args->{-entity};
     }
     else {
@@ -284,8 +277,6 @@ sub format_headers_and_body {
     if ( !exists( $args->{-format_body} ) ) {
         $args->{-format_body} = 1;
     }
-	warn q{$args->{-format_body}} . $args->{-format_body}; 
-	
     if ( $args->{-convert_charset} == 1 ) {
         try {
             $entity = $self->change_charset( { -entity => $entity } );
@@ -326,12 +317,10 @@ sub format_headers_and_body {
     # or how about, count?
 
     if ( exists( $args->{-entity} ) ) {
-
-        # warn 'returning -entity';
         return $entity;
     }
     elsif ( exists( $args->{-msg} ) ) {
-        warn 'returning -msg';
+
         my $has = $entity->head->as_string;
         my $bas = $entity->body_as_string;
         $entity->purge;
@@ -376,9 +365,6 @@ sub format_mlm {
     if ( !exists( $args->{-rel_to_abs_options} ) ) {
         $args->{-rel_to_abs_options} = { enabled => 0, };
     }
-
-    #use Data::Dumper;
-    #warn '$args->{-rel_to_abs_options}' . Dumper($args->{-rel_to_abs_options});
 
     if ( !exists( $args->{-crop_html_options} ) ) {
         $args->{-crop_html_options} = { enabled => 0, };
@@ -547,14 +533,11 @@ sub format_mlm {
         }
     }
 	
-	#warn 'before _expand_macro_tags';
     if ( $self->no_list != 1 ) {
         $content = $self->_expand_macro_tags(
             -data => $content,
             -type => $type,
-        );
-		#warn '_expand_macro_tags called';
-		
+        );		
     }
 
     if ( $DADA::Config::GIVE_PROPS_IN_EMAIL == 1 ) {
@@ -566,7 +549,8 @@ sub format_mlm {
 		
 	if($type eq 'text/html') { 
 		# Minify
-		warn 'minifying';
+		warn 'minifying'
+			if $t;
 	    try {
 	        require DADA::App::FormatMessages::Filters::HTMLMinifier;
 	        my $minifier =
@@ -652,13 +636,9 @@ sub rel_to_abs {
             warn '$link looks to contain tags? skipping.'
               if $t;
         }
-
-        #		elsif($self->_ignore_this_url($link) == 1) {
-        #		    warn "skipping: $link"
-        #		        if $t;
-        #		}
         else {
-            warn 'pushing: ' . $link if $t;
+            warn 'pushing: ' . $link 
+				if $t;
             push( @links_to_look_at, $link );
         }
 
@@ -753,7 +733,8 @@ sub crop_html {
             else {
                 warn 'cannot crop html: '
                   . 'cannot find id, '
-                  . $args->{crop_html_content_selector_label};
+                  . $args->{crop_html_content_selector_label}
+				  	if $t;
                 return $html;
             }
         }
@@ -769,7 +750,8 @@ sub crop_html {
             else {
                 warn 'cannot crop html: '
                   . 'cannot find class, '
-                  . $args->{crop_html_content_selector_label};
+                  . $args->{crop_html_content_selector_label}
+				  	if $t;
                 return $html;
             }
         }
@@ -785,7 +767,8 @@ sub crop_html {
 
     }
     catch {
-        warn 'cannot crop html: ' . $_;
+        warn 'cannot crop html: ' . $_
+			if $t;
         return $html;
     };
 }
@@ -798,7 +781,6 @@ sub _format_body {
     my $entity = shift;
     my ($args) = @_;
 
-    warn '$args->{-format_mlm}' . $args->{-format_mlm};
     my @parts = $entity->parts;
 
     if (@parts) {
@@ -811,7 +793,8 @@ sub _format_body {
 
             }
             catch {
-                warn 'Formatting single entity failed!' . $_;
+                warn 'Formatting single entity failed!' . $_
+					if $t;
                 next;
             };
 
@@ -819,7 +802,8 @@ sub _format_body {
                 $parts[$i] = $n_entity;
             }
             else {
-                warn 'no $n_entity returned?!';
+                warn 'no $n_entity returned?!'
+					if $t;
             }
 
         }
@@ -885,29 +869,12 @@ sub _format_body {
 
             }
         }
-		warn '$entity->head->mime_type' . $entity->head->mime_type; 
-		warn '$is_att' . $is_att; 
-		
         if (   ( $entity->head->mime_type eq 'text/html' )
             && ( $is_att != 1 ) )
         {
 
-			warn '$self->no_list' . $self->no_list; 
-			warn q{defined( $self->{list} )} . defined( $self->{list} ); 
-			warn '$self->mass_mailing' . $self->mass_mailing; 
-			warn q{$self->{ls}->param('tracker_track_opens_method')} . $self->{ls}->param('tracker_track_opens_method'); 
-			
             if ( $self->no_list != 1 ) {
-
-                #warn '$self->no_list != 1';
-
                 if ( defined( $self->{list} ) ) {
-
-                    #warn q{ if ( defined( $self->{list} ) ) };
-
-                    #warn '$entity->head->mime_type' . $entity->head->mime_type;
-                    #warn q{$self->{ls}->param('tracker_track_opens_method')};
-					
 					if($self->mass_mailing == 1) {
 	                    if ( $self->{ls}->param('tracker_track_opens_method') eq
 	                        'directly' && $entity->head->mime_type eq 'text/html' )
@@ -920,9 +887,9 @@ sub _format_body {
             }
         }
 		else	{ 
-			warn 'well, no opener image for us...';
+			warn 'well, no opener image for us...'
+				if $t;
 		}
-        #warn '$changes' . $changes;
         if ( $changes == 1 ) {
             my $io = $body->open('w');
             $content = safely_encode($content);
@@ -1022,8 +989,6 @@ sub _give_props {
 
 sub _add_opener_image {
 
-    #warn '_add_opener_image';
-
     my $self    = shift;
     my $content = shift;
 	return $content 
@@ -1032,8 +997,6 @@ sub _add_opener_image {
     my $url =
 '<!-- tmpl_var PROGRAM_URL -->/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/spacer.png';
 
-warn '$self->no_list' . $self->no_list; 
-warn q{$self->{ls}->param('tracker_track_email')} . $self->{ls}->param('tracker_track_email'); 
 
     if ( $self->no_list != 1 ) {
         if ( $self->{ls}->param('tracker_track_email') == 1 ) {
@@ -1048,14 +1011,9 @@ warn q{$self->{ls}->param('tracker_track_email')} . $self->{ls}->param('tracker_
       . '" width="1" height="1" /><!--/open_img-->';
 
     if ( $content =~ m/\<\/body(.*?)\>/i ) {
-
-		warn q{$content =~ m/\<\/body(.*?)\>/i};
-        #</body>
         $content =~ s/(\<\/body(.*?)\>)/$img_opener_code\n$1/i;
     }
     else {
-		warn 'else...';
-		
         # No end body tag?!
         $content .= "\n" . $img_opener_code;
     }
@@ -1119,7 +1077,8 @@ sub _create_multipart {
         my @parts = $entity->parts();
         my $i     = 0;
         if ( !@parts ) {
-            warn 'multipart/mixed with no parts?! Something is screwy....';
+            warn 'multipart/mixed with no parts?! Something is screwy....'
+				if $t;
         }
         else {
             my $i;
@@ -1170,8 +1129,6 @@ with an autogenerated PlainText or HTML version.
 
 sub _make_multipart {
 
-	warn '_make_multipart';
-	
     my $self   = shift;
     my $entity = shift;
     require MIME::Entity;
@@ -1343,8 +1300,6 @@ sub _format_headers {
             my $og_from = $entity->head->get( 'From', 0 );
             chomp($og_from);
 
-            #warn '$og_from ' . $og_from;
-
             $entity->head->delete('From');
             $entity->head->add( 'From', safely_encode( $self->_pp($og_from) ) );
 
@@ -1409,7 +1364,6 @@ q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}
             }
         }
         elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'none' ) {
-
             #...
         }
     }
@@ -2164,8 +2118,6 @@ HTML version.
 
 sub _apply_template {
 
-	warn '_apply_template';
-
     my $self = shift;
 
     my ($args) = @_; 
@@ -2279,7 +2231,8 @@ sub _apply_template {
 	    if ( $args->{-type} eq 'text/html' ) {
 	        if ( $template !~ /\<body(.*?)\>/i ) {
 
-				warn 'no <body> tag?!';
+				warn 'no <body> tag?!'
+					if $t;
 			
 	            my $title = $self->Subject || 'Mailing List Message';
 
@@ -2305,20 +2258,17 @@ sub layout_choice {
 	my ($args) = @_; 
 	my $layout = undef; 
 	
-	#use Data::Dumper; 
-	#warn '$args' . Dumper($args);
-	
 	if(exists($args->{-layout})){ 
 		if(!defined($args->{-layout})){ 
 			delete($args->{-layout}); 
 		}
 		else { 
-			warn 'Passed: $args->{-layout}' . $args->{-layout}; 
+			warn 'Passed: $args->{-layout}' . $args->{-layout}
+				if $t; 
 		}
 	}
 	
 	if(exists($args->{-layout})){
-		warn '$args->{-layout} exists.';
 		if($args->{-layout} eq 'none'){ 
 			return 'none';
 		}
@@ -2331,7 +2281,6 @@ sub layout_choice {
 		}
 	}
 	else {
-		warn '$args->{-layout} does not exist.';
 		if (   $self->no_list != 1
 			&& $self->mass_mailing == 1
 			&& $self->list_type eq 'list'
@@ -2344,7 +2293,6 @@ sub layout_choice {
 			$layout = 'mailing_list_message';
 		}
 	}
-	warn 'returning $layout' . $layout; 
 	return $layout; 
 }
 
@@ -2411,7 +2359,8 @@ sub subscription_confirmationation {
     }
     else {
 
-        warn "can't find sub confirm link: \n" . $args->{-str};
+        warn "can't find sub confirm link: \n" . $args->{-str}
+			if $t;
 
         $args->{-str} =
 'To subscribe to, "<!-- tmpl_var list_settings.list_name -->", click the link below:
@@ -2831,7 +2780,6 @@ sub email_template {
     }
     if ( $args->{-first_pass} == 1 ) {
 
-        # warn 'first pass!';
         my $screen_vars = {};
         for ( keys %{$args} ) {
             next if $_ eq '-entity';
@@ -2843,11 +2791,8 @@ sub email_template {
             'X-Preheader' => 'email.preheader',
         };
 
-# warn q{$args->{-entity}->head->as_string} . $args->{-entity}->head->as_string;
-
         for ( keys %$special_headers ) {
 
-            # warn '$_' . $_;
             my $og_header = $args->{-entity}->head->get( $_, 0 );
             $og_header = $self->_decode_header($og_header);
             my $header = DADA::Template::Widgets::screen(
@@ -2855,10 +2800,6 @@ sub email_template {
                     %{$screen_vars}, -data => \$og_header,
                 }
             );
-
-            # warn '$header' . $header;
-            # warn q{$special_headers->{$_}} . $special_headers->{$_};
-
             $args->{-vars}->{ $special_headers->{$_} } = $header;
 
         }
@@ -2941,12 +2882,6 @@ sub email_template {
 
             if ($content) {
 
-                # use Data::Dumper;
-                # warn '%screen_vars ' . Dumper($screen_vars);
-                # And, that's it.
-
-                # warn q{keys %$screen_vars} . keys %$screen_vars;
-
                 $content = DADA::Template::Widgets::screen(
                     {
                         %{$screen_vars},
@@ -2993,7 +2928,6 @@ sub email_template {
         $screen_vars->{$_} = $args->{$_};
     }
 
-    #warn 'all headers:' . $args->{-entity}->head->as_string;
     for my $header (
         'Subject',    'X-Preheader',
         'From',       'To',
@@ -3003,14 +2937,6 @@ sub email_template {
         'List-Unsubscribe'
       )
     {
-
-        #warn '$header:' . $header;
-        #if($args->{-entity}->head->get($header, 0)){
-        #	warn '$header value:' .$args->{-entity}->head->get($header, 0);
-        #}
-        #else {
-        #	warn 'header has no value.';
-        #}
 
         if ( $args->{-entity}->head->get( $header, 0 ) ) {
             warn "looking at header:" . $header

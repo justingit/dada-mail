@@ -109,7 +109,7 @@ sub fetch {
 	        $pt = $self->slurp($pt_file);
 	    }
 	    else {
-	        warn '$pt_file does not exist at, ' . $pt_file;
+	        # warn '$pt_file does not exist at, ' . $pt_file;
 	    }
 	    if ( -e $html_file ) {
 	        $html = $self->slurp($html_file);
@@ -118,7 +118,7 @@ sub fetch {
 	        }
 	    }
 	    else {
-	        warn '$html_file does not exist at, ' . $html_file;
+	        # warn '$html_file does not exist at, ' . $html_file;
 	    }
 
 	    my $vars = {};
