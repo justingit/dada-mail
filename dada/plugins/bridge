@@ -166,7 +166,6 @@ sub cgi_main {
         'manual_start'                => \&admin_cgi_manual_start,
         'admin_cgi_manual_start_ajax' => \&admin_cgi_manual_start_ajax,
         'cgi_test_pop3_ajax'          => \&cgi_test_pop3_ajax,
-        'edit_email_msgs'             => \&cgi_edit_email_msgs,
         'mod'                         => \&mod,
     );
 
@@ -3089,113 +3088,7 @@ sub cgi_show_plugin_config {
 
 }
 
-sub cgi_edit_email_msgs {
 
-    my $q = shift; 
-    my $process = $q->param('process') || undef;
-    my $done    = $q->param('done')    || undef;
-
-    require DADA::Template::Widgets;
-
-    require DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-
-    require DADA::App::FormatMessages;
-    my $dfm = DADA::App::FormatMessages->new( -List => $list );
-
-    if ( !$process ) {
-
-        require DADA::Template::Widgets;
-        my $scrn = DADA::Template::Widgets::wrap_screen(
-            {
-                -screen         => 'plugins/bridge/edit_email_msgs.tmpl',
-                -with           => 'admin',
-                -wrapper_params => {
-                    -Root_Login => $root_login,
-                    -List       => $list,
-                },
-                -list => $list,
-                -vars => {
-                    screen      => 'using_bridge',
-                    title       => 'Email Templates',
-                    done        => $done,
-                    Plugin_Name => $Plugin_Config->{Plugin_Name},
-                    Plugin_URL  => $Plugin_Config->{Plugin_URL},
-                },
-                -list_settings_vars       => $ls->get( -all_settings => 1 ),
-                -list_settings_vars_param => { -dot_it               => 1, },
-            }
-        );
-        return ({}, $scrn);
-
-    }
-    else {
-
-        for (
-            qw(
-            not_allowed_to_post_msg_subject
-            not_allowed_to_post_msg
-            moderation_msg_subject
-            moderation_msg
-            await_moderation_msg_subject
-            await_moderation_msg
-            accept_msg_subject
-            accept_msg
-            rejection_msg_subject
-            rejection_msg
-            msg_too_big_msg_subject
-            msg_too_big_msg
-            msg_labeled_as_spam_msg_subject
-            msg_labeled_as_spam_msg
-            )
-          )
-        {
-
-            # a very odd place to put this, but, hey,  easy enough.
-            if ( $q->param('revert') ) {
-                $q->param( $_, '' );
-            }
-            else {
-                my $tmp_setting = $q->param($_);
-                $tmp_setting =~ s/\r\n/\n/g;
-                $q->param( $_, $tmp_setting );
-            }
-        }
-
-        $ls->save_w_params(
-            {
-                -associate => $q,
-                -settings  => {
-                    msg_received_msg                  => '',
-                    msg_received_msg_subject          => '',
-                    not_allowed_to_post_msg_subject   => '',
-                    not_allowed_to_post_msg           => '',
-                    invalid_msgs_to_owner_msg_subject => '',
-                    invalid_msgs_to_owner_msg         => '',
-                    moderation_msg_subject            => '',
-                    moderation_msg                    => '',
-                    await_moderation_msg_subject      => '',
-                    await_moderation_msg              => '',
-                    accept_msg_subject                => '',
-                    accept_msg                        => '',
-                    rejection_msg_subject             => '',
-                    rejection_msg                     => '',
-                    msg_too_big_msg_subject           => '',
-                    msg_too_big_msg                   => '',
-                    msg_labeled_as_spam_msg_subject   => '',
-                    msg_labeled_as_spam_msg           => '',
-
-                    digest_message_subject => '',
-                    digest_message         => '',
-                    digest_message_html    => '',
-                    
-
-                }
-            }
-        );
-        return({-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?flavor=plugins&plugin=bridge&prm=edit_email_msgs&done=1'}, undef);
-    }
-}
 
 sub inject {
 
