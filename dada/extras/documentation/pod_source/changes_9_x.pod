@@ -8,24 +8,27 @@ This is a bugfix release for issues found in the v9.6.0 release.
 
 =head3 Changes to StopForumSpam Integration
 
-Originally, if the StopForumSpam service was down, any address given to it to be checked would return a 0 status, meaning that the address is listed as problematic in StopForumSpam's database. This could lead to a lot of false negatives, which is absurd behavior.
+Originally, if the StopForumSpam service was down, any address given to it to be checked would return a, C<0> status, meaning that the address is listed as problematic in StopForumSpam's database. This could lead to a lot of false negatives, which is absurd default behavior.
 
 This has now been changed: if the StopForumSpam service is unavailable, the check is basically skipped, until the service is back up. 
 
-We've forked the version of StopFormSpam that's available on CPAN, which reflects this behavior. That version can be found here: 
+We've forked the version of StopFormSpam that's available on CPAN, which reflects this new behavior. That version can be found here: 
 
 L<https://github.com/justingit/p5-stopforumspam/>
 
+and is also shipped with Dada Mail.
 
 =head3 Control Panel Notifcations: optimized
 
 If you look within the menu items in the List Control Panel, you'll see various pieces of information, like the number of subscribers you have next to, B<Membership - View>, or your Sending Options next to, B<Sending - Options> 
 
-These pieces of information were being fetched individually; each one required a call to the Dada Mail app. This adds up, as there could be more than 9 little pieces of information that's fetched! To counteract this, we've changed how this all works, so only I<one> request from the app is required to fill in all these piecesw of information. 
+These pieces of information were being fetched individually; each one required a call to the Dada Mail app. This adds up, as there could be more than 9 little pieces of information that's fetched! To correct this, we've changed how this all works, so only I<one> request from the app is required to fill in all these pieces of information. 
 
 =head3 Hourly email quota bounced Messages handled better
 
-It seems that recently, cPanel-based hosts are bouncing back messages you send with an, "you're over your email quota!" email. These are now handled correctly by the Bounce Handler, by basically ignoring them, as the problem isn't because of the address you're trying to send to. Bounce Handler will also not resend the bounced message to the List Owner if that option is enabled, since doing so will fail, and bounce I<back> to the Bounce Handler. Sending "you're over your email quota!" bounced emails is extremely short-sighted, because of problems like this. For cPanel-based hosting accounts, it doesn't seem to be an easy way to see what your hourly email quota is, and no one way to query it programatically. (Why not?)
+It seems that recently, cPanel-based hosts are bouncing back messages you send with an, "you're over your email quota!" message. These are now handled correctly by the Bounce Handler, by basically ignoring them, as the problem isn't because of the address you're trying to send to, so shouldn't count against an address in the Scorecard. 
+
+Bounce Handler will also not resend the bounced message to the List Owner if that option is enabled, since doing so will fail, and bounce I<back> to the Bounce Handler. Sending "you're over your email quota!" bounced emails is extremely short-sighted, because of problems like this. For cPanel-based hosting accounts, it doesn't seem to be an easy way to see what your hourly email quota is, and no one way to query it programatically. (Why not?)
 
 For reasons like this, we do highly suggest using Amazon SES with Dada Mail for people getting serious with their mailing lists: 
 
