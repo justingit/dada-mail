@@ -25,8 +25,8 @@ Copy the distribution to the directory you would like to install Dada Mail under
 Uncompress Dada Mail - this will create a new directory named C<dada>.
 Change into this directory:
 
-    gunzip dada-9_6_0.tar.gz
-    tar -xvf dada-9_6_0.tar
+    gunzip dada-9_6_1.tar.gz
+    tar -xvf dada-9_6_1.tar
     cd dada
 
 In the C<dada> directory, rename the, C<installer-disabled> directory to simply, C<install> and change into this directory. 
