@@ -583,7 +583,6 @@ sub format_mlm {
     ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
         {
             -data => \$content,
-            -expr => $expr,
         }
     );
     if ( $valid == 0 ) {

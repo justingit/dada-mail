@@ -185,7 +185,8 @@ sub setup {
         'archive_options'                 => \&archive_options,
         'adv_archive_options'             => \&adv_archive_options,
         'back_link'                       => \&back_link,
-        'edit_html_type'                  => \&edit_html_type,
+        'email_themes'                    => \&email_themes, 
+		'edit_html_type'                  => \&edit_html_type,
         'list_options'                    => \&list_options,
         'web_services'                    => \&web_services,
         'mail_sending_options'            => \&mail_sending_options,
@@ -8730,6 +8731,90 @@ sub back_link {
 
     }
 }
+
+
+sub email_themes  { 
+
+	my $self    = shift;
+    my $q       = $self->query();
+    my $process = $q->param('process') || undef;
+
+    my $done = $q->param('done') || undef;
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'email_themes'
+      );
+    if ( !$checksout ) { return $error_msg; }
+
+    my $list = $admin_list;
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+    if ( !$process ) {
+		
+		
+		require DADA::App::EmailThemes; 
+		my $dap = DADA::App::EmailThemes->new({-list => $list});
+		my $at = $dap->available_themes(); 
+		
+        require HTML::Menu::Select;
+		my $email_theme_name_widget = HTML::Menu::Select::popup_menu(
+            {
+                name    => 'email_theme_name',
+                id      => 'email_theme_name',
+                default => $ls->param('email_theme_name'),
+                labels  => {},
+                values => $at,
+            }
+          );
+		  
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'email_themes_screen.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -list => $list,
+                -vars => {
+                    screen     => 'email_themes',
+                    title      => 'Email Themes',
+                    root_login => $root_login,
+                    done       => $done,
+					email_theme_name_widget => $email_theme_name_widget, 
+                },
+                -list_settings_vars       => $ls->get( -all_settings => 1 ),
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+
+            }
+        );
+        return $scrn;
+
+    }
+    else {
+
+        $ls->save_w_params(
+            {
+                -associate => $q,
+                -settings  => {
+                    email_theme_name         => undef,
+                }
+            }
+        );
+
+        $self->header_type('redirect');
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=email_themes&done=1' );
+    }
+}
+
 
 
 sub edit_html_type {

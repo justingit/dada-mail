@@ -1531,10 +1531,6 @@ sub screen {
         $args->{-vars} = {};
     }
     
-	if(! exists($args->{-pro})){ 
-		$args->{-pro} = undef; 
-	}
-
     # This is for mispelings: 
 	foreach('-list_settings_param', 'list_settings_param', 'list_settings_vars_params', '-list_settings_vars_params', 'list_settings_params', '-list_settings_params'){ 
 		if(exists($args->{$_})){ 
@@ -2287,34 +2283,20 @@ sub wrap_screen {
 	}
 }
 
-
-
-
 sub validate_screen { 
 	my ($args) = @_; 
-	eval { 
-		my $scrn = screen({%$args, -pro  => 0}); 
-		# I like the idea of forcing it to use HTML::Template, as the H::T::Pro does not barf, 
-		# when finding things it does not like.
+	try { 
+		my $scrn = screen({%$args}); 
+	} catch {
+		return (0, $_);
 	};
-	if($@){ 
-		return (0, $@);
-	}
-	else { 
-		return (1, undef); 
-	}
+	return (1, undef); 
 }
-
-
-
 
 sub decode_str { 
 	my $ref = shift;
  	   ${$ref} = safely_decode(${$ref}); 
 }
-
-
-
 
 sub not_defined { 
     my $ref = shift;

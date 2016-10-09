@@ -35,10 +35,10 @@ sub remove_field {
             push ( @no_homers, $_ );
         }
     }
-    my @keep_these_colums = @no_homers;
+    my @keep_these_columns = @no_homers;
     my $keep_these_str    = 'email, ';
     my $make_these_str    = ',';
-    for (@keep_these_colums) {
+    for (@keep_these_columns) {
         $keep_these_str .= $_ . ', ';
     }
     $keep_these_str =~ s/\, $//;

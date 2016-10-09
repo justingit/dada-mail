@@ -1,0 +1,177 @@
+=head1 Dada Mail Email Themes
+
+Dada Mail's Email Themes are created using the Foundation for Emails Framework: 
+
+L<http://foundation.zurb.com/emails.html>
+
+You don't necessarily have to use this framework at all, 
+as the templates that make up the email theme itself are shipped with Dada Mail already compiled.
+We do like this framework though, 
+as it does make the task of creating the complicated HTML required for email messages into a doable job, 
+via the Inky templating language (L<http://foundation.zurb.com/emails/docs/inky.html>).  
+
+=head1 Anatomy of a Dada Mail Email Theme. 
+
+Dada Mail's Email Themes are installed in your C<dada_mail_support_files> directory, 
+under the path, 
+C<dada_mail_support_files/themes/email>. 
+Each email theme lives in a directory whose name is the same as the theme's name.  
+For example, the included theme is called, C<default>, 
+and if you navigate into the C<dada_mail_support_files/themes/email> directory, 
+you should see a directory also called, C<default>. 
+
+Inside the, C<dada_mail_support_files/themes/email/default/dist> directory, 
+are all the template files that make up the email theme.
+For example, 
+the subscription confirmation message that gets sent out to confirm a new subscription is made up of two templates, 
+
+=over
+
+=item * confirmation_message.html
+
+=item * confirmation_message.txt
+
+=back
+
+C<confirmation_message.html> holds the HTML version of the message you're most likely to view. 
+
+C<confirmation_message.txt> holds the backup, plaintext version of the message you may not see in your mail reader, 
+unless you specifically have configured your mail reader to only see text emails,
+or if your using a mail reader that only supports plaintext! 
+Dada Mail supports both, 
+as is good style. 
+C<confirmation_message.txt> is a bit more than this, though. 
+If you open up the file, you may see the following:
+
+	---
+	to_phrase: <!-- tmpl_var list_settings.list_name --> Subscriber
+	from_phrase: <!-- tmpl_var list_settings.list_name --> Owner
+	preheader: Confirmation is a click away!
+	subject: <!-- tmpl_var list_settings.list_name --> Mailing List Subscription Confirmation
+	---
+
+	<!-- tmpl_var email.preheader -->
+
+	Ready to Join, <!-- tmpl_var list_settings.list_name -->?
+	
+	(... the rest of the template)
+
+Email templates with a, C<.txt> file ending also holds the plaintext version of the template, 
+as well as variables used in the email message itself. 
+You'll see these variables located at the top of the file between the pair of lines made up of triple dashes:
+
+	---
+	to_phrase: <!-- tmpl_var list_settings.list_name --> Subscriber
+	from_phrase: <!-- tmpl_var list_settings.list_name --> Owner
+	preheader: Confirmation is a click away!
+	subject: <!-- tmpl_var list_settings.list_name --> Mailing List Subscription Confirmation
+	---
+
+In fact, C<.txt> email template files have B<YAML Front Matter> (YFM) sections. 
+These sections are optional, and will be removed when being used as a template.
+They do include important data, 
+like the Subject of the email message template (C<subject>). 
+Even though YFM looks very similar to actual email headers, 
+B<they are NOT>. 
+The data is actually in the B<YAML> format,
+with YAML syntax rules and escape sequences. 
+
+Most email messages are created with two files, 
+but really,
+only the C<.txt> version is absolutely necessary. 
+
+You'll also see Dada Mail's template tags, 
+like this one: 
+
+	<!-- tmpl_var list_settings.list_name -->
+
+These tags will be replaced by the values they correspond to. You can learn about 
+Dada Mail's template tags in its own docs: 
+
+L<http://dadamailproject.com/d/features-email_template_syntax.pod.html>
+
+=head1 Creating a New Email Theme
+
+There's currently no file that contains metadata about your email theme, 
+so for example, 
+if you rename the theme directory, 
+you've renamed the theme. 
+If you copy the email theme directory, 
+you've essentially created a new theme!
+Make changes to the files in your new theme,
+and you've customized your theme!
+
+This is a naïve approach to creating and customizing a new theme,
+but for minor changes to the text copy,
+it may be all you will want/need to do. 
+
+If you decide to go this route,
+one suggestion is to only copy over the email template files that you truly want to customize - 
+there are a B<lot> of files that make up an email theme!
+Dada Mail will happily fall back into using the C<default> email template file, 
+if it can't find that file in your own email theme. 
+A customized email theme could potentially only have one customized file!
+
+If problems are found in the template you've customized,
+Dada Mail will fallback to using the file from the default email theme. 
+Check Dada Mail's error log for more information on what the error may be.
+
+
+=head2 The Sophisticated (by not impossible) Way To Create a New Email Theme
+
+Another way to create a new email theme is to start with a new Foundation For Emails
+project,
+then merge the existing Dada Mail default theme project. 
+
+Starting a new Foundation for Emails project is covered here: 
+
+L<http://foundation.zurb.com/emails/docs/sass-guide.html>
+
+In a B<separate> directory, you'll want to download the existing Dada Mail default theme from github: 
+
+L<https://github.com/justingit/dada_mail_foundation_email_templates/archive/v10_0_0-alpha1_2016_10_05.tar.gz>
+
+Each release of Dada Mail also have a release of the default theme, 
+so make sure those two releases correspond to each other. 
+
+The file listing  of the download looks something like this, 
+
+	example.config.json
+	gulpfile.babel.js
+	package.json
+	src
+
+Copy these files into the starter Foundation for Emails Project - you'll be overwriting some files from the Foundation starter project, 
+so don't worry about that. 
+You're now all set to develop your own theme. 
+
+The Dada Mail default theme download only contains the source files (in, C<src>), 
+which you will want to compile to create the B<dist> directory by running the server:  
+
+http://foundation.zurb.com/emails/docs/sass-guide.html#running-the-server
+
+The C<dist> directory contains the files that will correspond to your new email theme. 
+
+Back on your server, 
+find your, 
+C<dada_mail_support_files> directory. 
+
+Inside this directory, 
+navigate to, 
+C<themes/email>. 
+The directory holds all the email themes for your installation. 
+There should be a directory already present called,
+C<default>. 
+Create a new directory - the name of the directory will become the name of your email theme. 
+In this new directory,
+move the C<dist> directory you have compiled. 
+Your theme is now ready to be used! 
+
+=head1 Using Your New Email Theme
+
+Log into your mailing list, 
+and navigate to,
+B<Appearance - Email Themes>. 
+Select the theme you would like to use, 
+and save your changes. 
+Done!
