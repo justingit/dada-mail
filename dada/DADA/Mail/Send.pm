@@ -2996,19 +2996,21 @@ sub list_headers {
         $lh{'List-URL'} =
 '<<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/>';
 
-        # List-Subscribe
-        if ( $self->{ls}->param('closed_list') == 1 ) {
-            if ( exists( $lh{'List-Subscribe'} ) ) {
-                delete( $lh{'List-Subscribe'} );
-            }
-        }
-        else {
-            $lh{'List-Subscribe'} =
-'<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>';
-        }
+		if($self->im_mass_sending) {
+	        # List-Subscribe
+	        if ( $self->{ls}->param('closed_list') == 1 ) {
+	            if ( exists( $lh{'List-Subscribe'} ) ) {
+	                delete( $lh{'List-Subscribe'} );
+	            }
+	        }
+	        else {
+	            $lh{'List-Subscribe'} =
+					'<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>';
+	        }
 
-        $lh{'List-Unsubscribe'} =
-'<mailto:<!-- tmpl_var list_settings.list_owner_email -->?Subject=Unsubscribe%20from%20<!-- tmpl_var list_settings.list_name escape="url" -->>, <<!-- tmpl_var list_unsubscribe_link -->>';
+	        $lh{'List-Unsubscribe'} =
+				'<mailto:<!-- tmpl_var list_settings.list_owner_email -->?Subject=Unsubscribe%20from%20<!-- tmpl_var list_settings.list_name escape="url" -->>, <<!-- tmpl_var list_unsubscribe_link -->>';
+		}
 
         # List-Owner
         $lh{'List-Owner'} =
@@ -3072,6 +3074,7 @@ sub list_headers {
         return ();
     }
 }
+
 
 sub _cipher_decrypt {
     my $self = shift;
