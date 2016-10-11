@@ -1,0 +1,33 @@
+Content-Transfer-Encoding: binary
+Content-Type: multipart/mixed; boundary="_----------=_1198434985218600"
+MIME-Version: 1.0
+X-Mailer: MIME::Lite 3.01 (F2.74; T1.18; A1.74; B3.07; Q3.07)
+Date: Sun, 23 Dec 2007 18:36:25 UT
+From: "[from_phrase]" <from@example.com>
+To: "[to_phrase]" <to@example.com>
+Subject: [subject]
+
+This is a multi-part message in MIME format.
+
+--_----------=_1198434985218600
+Content-Disposition: inline
+Content-Length: 58
+Content-Transfer-Encoding: binary
+Content-Type: text/plain
+
+ 
+
+Var1: <!-- tmpl_var var1 -->
+Var2: [var2]
+Var3: [var3]
+
+--_----------=_1198434985218600
+Content-Disposition: inline
+Content-Transfer-Encoding: base64
+Content-Type: image/png
+
+W3ZhcjFdGgoAAAANSUhEUgAAAAEAAAABCAMAAAAoyzS7AAAABGdBTUEAANbY1E9YMgAAABl0RVh0
+U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAGUExURf///wAAAFXC034AAAABdFJOUwBA
+5thmAAAADElEQVR42mJgAAgwAAACAAFPbVnhAAAAAElFTkSuQmCCRmlsZW5hbWU=
+
+--_----------=_1198434985218600--

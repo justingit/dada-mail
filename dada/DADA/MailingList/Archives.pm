@@ -1888,9 +1888,7 @@ sub massaged_msg_for_display {
 		$body = safely_decode($body);
 		 
 		
-        if ( $self->{ls}->param('stop_message_at_sig') == 1 ) {
-            $body = $self->_zap_sig_plaintext($body);
-        }
+        $body = $self->_zap_sig_plaintext($body);
 
         $body = $self->massage($body);
         $body = $self->_parse_in_list_info(
@@ -1930,12 +1928,11 @@ sub massaged_msg_for_display {
             -key  => $args->{-key},
             -body => $body,
         );		
-        if ( $self->{ls}->param('stop_message_at_sig') == 1 ) {
-			
-			$body = $self->string_between_markers($body);
-			
-            $body = $self->_zap_sig_html($body);
-        }
+			$body = $self->string_between_markers($body);			
+            
+			# This is more backwards compatible stuff:
+			$body = $self->_zap_sig_html($body);
+        
 
         $body = $self->massage($body);
 		
@@ -2741,23 +2738,18 @@ sub _decode_header {
 	my $new_header = undef; 
 	my $can_use_mime_encodewords = 1; 
 	
-	if($self->{ls}->param('mime_encode_words_in_headers') == 1){ 
-		try { 
-			require MIME::EncWords;
-		} catch {
-			$can_use_mime_encodewords = 0; 
-			carp "MIME::EncWords is returning with an error: $@"; 		
-			return $header;
-		};
+	try { 
+		require MIME::EncWords;
+	} catch {
+		$can_use_mime_encodewords = 0; 
+		carp 'MIME::EncWords is returning with an error:' . $_; 		
+		return $header;
+	};
 
-		if($can_use_mime_encodewords == 1){ 
-				$new_header = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
-				return $new_header;
-		}		
-	}
-	else { 
-		return $header; 
-	}
+	if($can_use_mime_encodewords == 1){ 
+			$new_header = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
+			return $new_header;
+	}		
 }
 
 sub DESTROY { 

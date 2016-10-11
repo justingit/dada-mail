@@ -3878,7 +3878,6 @@ sub mail_sending_advanced_options {
                     html_encoding                => undef,
                     strip_message_headers        => 0,
                     verp_return_path             => 0,
-                    mime_encode_words_in_headers => 0,
                 }
             }
         );
@@ -7684,7 +7683,6 @@ sub adv_archive_options {
                     archive_show_hour_and_minute  => 0,
                     archive_show_second           => 0,
                     archive_index_count           => 10,
-                    stop_message_at_sig           => 0,
                     publish_archives_rss          => 0,
                     ping_archives_rss             => 0,
                     html_archives_in_iframe       => 0,
@@ -7853,24 +7851,18 @@ sub edit_archived_msg {
                             }
                             else {
                                 my $value = $headers{$h};
-                                if ( $ls->param('mime_encode_words_in_headers')
-                                    == 1 )
-                                {
-                                    if ( $h =~ m/To|From|Cc|Reply\-To|Subject/ )
-                                    {
-                                        $value = $ah->_decode_header($value);
-                                    }
+                                if ( $h =~ m/To|From|Cc|Reply\-To|Subject/ ){
+                                    $value = $ah->_decode_header($value);
                                 }
-                                $form_blob .= $q->p(
-                                    $q->textfield(
-                                        -value => $value,
-                                        -id    => $h,
-                                        -name  => $h,
-                                        -class => 'full'
-                                    )
-                                );
+								$form_blob .= $q->p(
+                                	$q->textfield(
+	                                    -value => $value,
+	                                    -id    => $h,
+	                                    -name  => $h,
+	                                    -class => 'full'
+                                	)
+								);
                             }
-
                             $form_blob .= '</td></tr>';
                         }
 
@@ -8185,8 +8177,7 @@ sub edit_archived_msg {
 
                     # Dum, what to do here?
                     if ( $h =~ m/To|From|Cc|Reply\-To|Subject/ ) {
-                        $value = $fm->_encode_header( $h, $value )
-                          if $fm->im_encoding_headers;
+                        $value = $fm->_encode_header( $h, $value );
                     }
                     $entity->head->replace( $h, $value );
                 }

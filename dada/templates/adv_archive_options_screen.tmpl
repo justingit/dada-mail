@@ -55,50 +55,6 @@
 
 	<div class="row">
 	   <div class="small-12 columns">   
-		   <input 
-		   		type="checkbox" 
-				name="stop_message_at_sig" 
-				id="stop_message_at_sig" 
-				value="1" 
-				<!-- tmpl_if list_settings.stop_message_at_sig -->checked="checked"<!--/tmpl_if-->
-			>
-
-		    <label for="stop_message_at_sig">
-				 Show archived messages without the Mailing List Template applied
-		    </label>
-	
-			<div class="alert-box info radius">
-				<p>
-			    Plain text messages will be displayed after a double underscore plus 
-			    a space (&quot;__ &quot;) is reached on a line by itself, and until 
-			    a double dash plus a space (&quot;-- &quot;) is reached on a line by 
-			    itself.
-			   </p>
-			   <p>
-			    Similarly, HTML messages will be displayed <strong>unless</strong> 
-			    the content of the messages falls between the opening comment 
-			    tags: 
-			   </p>
-			   <p>
-			    <ul>
-			     <li><em>&lt;!--opening--&gt;</em></li>
-			     <li><em>&lt;!--/opening--&gt;</em></li>
-			    </ul>
-			   </p>
-			   <p>
-			    or the signature comment tags:
-			   </p>
-			   <p>
-			    <ul>
-			     <li><em>&lt;!--signature--&gt;</em></li>
-			     <li><em>&lt;!--/signature--&gt;</em></li>
-			    </ul>
-			   </p>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-	   <div class="small-12 columns">   
     	   <input 
 		   	type="checkbox" 
 			name="style_quoted_archive_text"

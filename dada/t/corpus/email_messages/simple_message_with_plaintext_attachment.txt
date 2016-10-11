@@ -1,0 +1,38 @@
+Content-Transfer-Encoding: binary
+Content-Type: multipart/mixed; boundary="_----------=_1198435417220800"
+MIME-Version: 1.0
+X-Mailer: MIME::Lite 3.01 (F2.74; T1.18; A1.74; B3.07; Q3.07)
+Date: Sun, 23 Dec 2007 18:43:37 UT
+From: "[from_phrase]" <from@example.com>
+To: "[to_phrase]" <to@example.com>
+Subject: [subject]
+
+This is a multi-part message in MIME format.
+
+--_----------=_1198435417220800
+Content-Disposition: inline
+Content-Length: 58
+Content-Transfer-Encoding: binary
+Content-Type: text/plain
+
+ 
+
+Var1: <!-- tmpl_var var1 -->
+Var2: [var2]
+Var3: [var3]
+
+--_----------=_1198435417220800
+Content-Disposition: attachment
+Content-Length: 176
+Content-Transfer-Encoding: binary
+Content-Type: message/rfc822
+
+
+
+This is a plain text message (message/rfc822), but is has an attachment 
+disposition and should not be seen as something to template out. 
+
+rfc822<!-- tmpl_var var1 -->rfc822
+
+
+--_----------=_1198435417220800--

@@ -1,0 +1,67 @@
+Return-Path: <>
+Delivery-Date: Thu, 07 May 2009 11:03:07 -0400
+Received-SPF: pass (mxus6: domain of bounce.example.com designates
+74.208.4.198 as permitted sender) client-ip=74.208.4.198;
+envelope-from=postmaster@bounce.example.com;
+helo=bounce.example.com;
+Received: from bounce.example.com (bounce.example.com
+[74.208.4.198])
+by mx.example.com (node=mxus6) with ESMTP (Nemesis)
+id 0MKorw-1M257r1AOh-0001Ph for xxx@example.com.com; Thu, 07 May 2009 11:03:07
+-0400
+Received: from mout by mous0.example.com id 0MKp0C-1M256t0XaG-000NMl;
+Thu, 07 May 2009 11:02:07 -0400
+Date: Thu, 07 May 2009 11:02:07 -0400
+From: Mail Delivery System <mailer-daemon@example.com>
+To: xxx@example.com.com
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <0MKp0C-1M256t0XaG-000NMl@mous0.example.com>
+X-Original-Id: 0MKp8S-1M256p3PJt-000g9f
+Envelope-To: xxx@example.com.com
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of
+its recipients. The following addresses failed:
+
+<bouncing.email@example.com>
+
+SMTP error from remote server after RCPT command:
+host mx1.example[65.55.37.88]:
+550 Requested action not taken: mailbox unavailable
+
+
+--- The header of the original message is following. ---
+
+Received: from infong488.example.com (infong488.lxa.example.com
+[74.208.16.29])
+by mrelay.example.com (node=mrus0) with ESMTP (Nemesis)
+id 0MKp8S-1M256p3PJt-000g9f; Thu, 07 May 2009 11:02:05 -0400
+Received: from 115.133.212.224 (IP may be forged by CGI script)
+by infong488.example.com with HTTP
+id 3oUdm4-1M256p2vdC-0007MU; Thu, 07 May 2009 11:02:03 -0400
+X-Sender-Info: <119134035@infong488.example.com>
+Precedence: bulk
+Date: Thu, 07 May 2009 11:02:03 -0400
+From: "Test List" <xxx@example.com>
+To: "Test List Subscriber" <xxx@exampl>
+Reply-To: "Test List" <xxx@example.com>
+X-Priority: 3
+List: dadatest
+List-Archive:
+<http://example.com/cgi-bin/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.infong488.schlund.de>
+List-Owner: <xxx@example.com>
+List-Subscribe: <http://example.com/cgi-bin/dada/mail.cgi/s/dadatest/>
+List-Unsubscribe: <http://example.com/cgi-bin/dada/mail.cgi/u/dadatest/>
+List-URL: <http://example.com/cgi-bin/dada/mail.cgi/list/dadatest/>
+Message-ID: <20090507110112.30203023@example.com>
+X-Mailer: Dada Mail 3.0.2
+Content-type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+MIME-Version: 1.0
+Subject: Test List Day-to-day (410)
+X-Provags-ID: V01U2FsdGVkX1/VJ3qhgR9rnHKUAaSAA11Mdgwdn162xLtfNoF
+oM3acTU58XOSdHRK7SstXBVsBiEF2RwdFaGY4JdvnpemWLhNmM
+3BUqZHuFB0=

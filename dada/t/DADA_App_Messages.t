@@ -91,11 +91,14 @@ diag 'length of $msg: ' . length($msg);
 my $entity = $parser->parse_data(safely_encode($msg)); 
 #diag 'defined $entity' . (defined($entity));
 #warn '$entity->body->as_string' . $entity->body->as_string; 
-use Data::Dumper; 
-diag '$entity' . Dumper($entity); 
+#use Data::Dumper; 
+#diag '$entity' . Dumper($entity); 
 
-my $pt_body = safely_decode($entity->parts(0)->bodyhandle->as_string); 
-my $html_body = safely_decode($entity->parts(1)->parts(0)->bodyhandle->as_string);
+diag $entity->dump_skeleton; 
+
+my $pt_body    = safely_decode($entity->parts(0)->bodyhandle->as_string); 
+
+my $html_body = safely_decode($entity->parts(1)->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('From', 0))
@@ -217,56 +220,6 @@ undef $msg_str;
 
 
 
-# ALternative Saved Text
-ok(
-	$ls->save({ -settings => 
-		{
-			subscribed_message         => $alt_message_body, 
-			subscribed_message_subject => $alt_message_subject,	
-		},	
-	}),
-);
-$dap->send_subscribed_message(
-	{
-        -email  => $email, 
-	}
-);
-$msg = slurp($mh->test_send_file); 
-$entity = $parser->parse_data(safely_encode($msg)); 
-$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
-
-ok(
-	decode_header($entity->head->get('Subject', 0))
-	eq
-	"Email: mytest\@example.com List Name: " . $ls->param('list_name'), 
-	"Subject: Set Correctly"
-);
-	
-
-my $list_name = $ls->param('list_name'); 
-like($msg_str, qr/List Name\: $list_name/, "Found: List Name"); 
-undef($list_name); 
-
-like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
-like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-
-like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name2"); 
-
-# Reset: 
-ok(
-	$ls->save({ -settings => 
-		{
-			subscribed_message         => undef, 
-			subscribed_message_subject => undef,	
-		},	
-	}),
-);
-ok(unlink($mh->test_send_file)); 
-undef $msg; 
-undef $entity; 
-undef $msg_str; 
-
 
 ##################################
 # send_owner_happenings - subscribed
@@ -376,59 +329,6 @@ undef $msg_str;
 
 
 
-# ALternative Saved Text
-ok(
-	$ls->save({ -settings => 
-		{
-			you_are_already_subscribed_message         => $alt_message_body, 
-			you_are_already_subscribed_message_subject => $alt_message_subject,	
-		},	
-	}),
-);
-$dap->send_you_are_already_subscribed_message(
-	{
-        -email  => $email, 
-	}
-);
-$msg     = slurp($mh->test_send_file); 
-$entity  = $parser->parse_data(safely_encode($msg)); 
-$msg_str = safely_decode($entity->bodyhandle->as_string);
-
-undef $sub;
-$sub = $entity->head->get('Subject', 0);
-chomp $sub; 
-
-ok(
-	decode_header($entity->head->get('Subject', 0))
-	eq
-	"Email: mytest\@example.com List Name: " . $ls->param('list_name'), 
-	"Subject: Set Correctly"
-);
-
-my $list_name = $ls->param('list_name'); 
-like($msg_str, qr/List Name\: $list_name/, "Found: List Name"); 
-undef($list_name); 
-
-like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
-like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name3"); 
-
-# Reset: 
-ok(
-	$ls->save({ -settings => 
-		{
-			you_are_already_subscribed_message         => undef, 
-			you_are_already_subscribed_message_subject => undef,	
-		},	
-	}),
-);
-ok(unlink($mh->test_send_file));
-undef $msg; 
-undef $entity; 
-undef $msg_str; 
-
-
 
 
 ############################
@@ -496,58 +396,6 @@ undef $msg;
 undef $entity; 
 undef $msg_str; 
 
-
-
-# ALternative Saved Text
-ok(
-	$ls->save({ -settings => 
-		{
-			unsubscribed_message         => $alt_message_body, 
-			unsubscribed_message_subject => $alt_message_subject,	
-		},	
-	}),
-);
-$dap->send_unsubscribed_message(
-	{
-        -email  => $email, 
-	}
-);
-
-
-$msg     = slurp($mh->test_send_file); 
-$entity  = $parser->parse_data(safely_encode($msg)); 
-$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
-
-
-
-ok(
-	decode_header($entity->head->get('Subject', 0))
-	eq
-	"Email: mytest\@example.com List Name: " . $ls->param('list_name'), 
-	"Subject: Set Correctly"
-);
-
-my $list_name = $ls->param('list_name'); 
-like($msg_str, qr/List Name\: $list_name/, "Found: List Name"); 
-undef($list_name); 
-
-like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
-like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name4"); 
-
-# Reset: 
-ok(
-	$ls->save({
-		-settings => {
-			unsubscribed_message         => undef, 
-			unsubscribed_message_subject => undef,	
-		},	
-	}),
-);
-ok(unlink($mh->test_send_file)); 
-undef $msg; 
-undef $entity; 
-undef $msg_str; 
 
 
 
@@ -791,218 +639,6 @@ Body
 # TODO ALSO is to make sure templating is happening (althoug I think it is...) 
 
 #/ [ 2099456 ] 3.0.0 - Send last msg to new subscribers msg corrupted?
-
-##################################
-# send_not_allowed_to_post_msg
-
-my $fake_message_back = qq{
-To: list\@example.com
-From: $email
-Subject: Dud
-
-This isn't getting too far, is it?
-};
-
-$dap->send_not_allowed_to_post_msg(
-	{
-		-email      => $email,	
-		-attachment => $fake_message_back, 
-	},
-);
-
-my $q_fake_message_back = quotemeta($fake_message_back);
-
-$msg     = slurp($mh->test_send_file); 
-
-$entity  = $parser->parse_data(safely_encode($msg)); 
-diag '$entity->as_string ' . safely_encode($entity->as_string); 
- 
-my @parts = $entity->parts; 
-
-#diag '$parts[0]->bodyhandle->as_string ' . safely_encode($parts[0]->bodyhandle->as_string); 
-#diag '$parts[1]->as_string ' . safely_encode($parts[1]->as_string); 
-
-my $msg_str0 = safely_decode($entity->bodyhandle->as_string);
-TODO: {
-	    local $TODO = 'There is, I think a bug in the test itself, dealing with an encoding issue, but this needs to be double-checked.';
-
-	ok(
-		decode_header($entity->head->get('From', 0))
-		eq
-		"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
-		"From: Set Correctly"
-	);
-
-}
-
-TODO: {
-	    local $TODO = 'There is, I think a bug in the test itself, dealing with an encoding issue, but this needs to be double-checked.';
-	ok(
-		decode_header($entity->head->get('To', 0))
-		eq
-		"\"" . $ls->param('list_name') . "\" \<$email_name\@$email_domain\>", 
-		"To: Set Correctly 9"
-	);
-}
-
-#diag q{decode_header($entity->head->get('Subject', 0))} . decode_header($entity->head->get('Subject', 0)); 
-ok(
-	decode_header($entity->head->get('Subject', 0))
-	eq
-	"Not Allowed to Post On " . $ls->param('list_name'), 
-	"Subject: Set Correctly"
-);
-
-
-my $natp_msg = quotemeta('But, it doesn\'t seem that you currently have permission to do so.'); 
-diag '$msg_str0' . $msg_str0; 
-like($msg_str0, qr/$natp_msg/, "Body Set Correctly");
-
-my $list_name = $ls->param('list_name'); 
-like($msg_str0, qr/$list_name/, "Found: List Name"); 
-undef($list_name); 
-
-
-
-
-ok(unlink($mh->test_send_file));
-undef $msg; 
-undef $entity; 
-undef $msg_str0; 
-
-
-
-# ALternative Saved Text
-ok(
-	$ls->save({ -settings => 
-		{
-			not_allowed_to_post_msg         => $alt_message_body, 
-			not_allowed_to_post_msg_subject => $alt_message_subject,	
-		},	
-	}),
-);
-$dap->send_not_allowed_to_post_msg(
-	{
-        -email      => $email, 
-		-attachment => $fake_message_back, 
-	}
-);
-
-
-$msg     = slurp($mh->test_send_file); 
-
-# This is a multipart message, it needs something fancier... 
-$entity  = $parser->parse_data(safely_encode($msg)); 
-@parts = $entity->parts; 
-$msg_str = safely_decode($entity->bodyhandle->as_string);
-diag $msg_str; 
-
-
-TODO: {
-	    local $TODO = 'There is, I think a bug in the test itself, dealing with an encoding issue, but this needs to be double-checked.';
-	ok(
-		decode_header($entity->head->get('Subject', 0))
-		eq
-		"Email: mytest\@example.com List Name: " . $ls->param('list_name'), 
-		"Subject: Set Correctly"
-	);
-}
-
-
-my $list_name = $ls->param('list_name'); 
-like($msg_str, qr/List Name\: $list_name/, "Found: List Name"); 
-undef($list_name); 
-
-like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-
-TODO: {
-	    local $TODO = 'There is, I think a bug in the test itself, dealing with an encoding issue, but this needs to be double-checked.';
-
-			like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
-};
-
-
-TODO: {
-	    local $TODO = 'There is, I think a bug in the test itself, dealing with an encoding issue, but this needs to be double-checked.';
-		# Hmm! Not sure what to do about this...
-		like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-};
-
-like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name5"); 
-
-# Reset: 
-ok(
-	$ls->save({ -settings =>
-		{
-			confirmation_message         => undef, 
-			confirmation_message_subject => undef,	
-		},	
-	}),
-);
-ok(unlink($mh->test_send_file)); 
-undef $msg;
-undef $entity; 
-undef $msg_str; 
-
-
-
-$dap->send_not_allowed_to_post_msg(
-	{
-        -email      => $email, 
-		-attachment => $fake_message_back, 
-	}
-);
-$msg     = slurp($mh->test_send_file); 
-$entity  = $parser->parse_data(safely_encode($msg)); 
-@parts = $entity->parts; 
-$msg_str = safely_decode($entity->bodyhandle->as_string);
-diag $msg_str;
-
-TODO: {
-	    local $TODO = 'There is, I think a bug in the test itself, dealing with an encoding issue, but this needs to be double-checked.';
-	ok(
-		decode_header($entity->head->get('Subject', 0))
-		eq
-		"Email: mytest\@example.com List Name: " . $ls->param('list_name'), 
-		"Subject: Set Correctly"
-	);
-};
-
-
-my $list_name = $ls->param('list_name'); 
-like($msg_str, qr/List Name\: $list_name/, "Found: List Name"); 
-undef($list_name); 
-
-TODO: {
-	    local $TODO = 'There is, I think a bug in the test itself, dealing with an encoding issue, but this needs to be double-checked.';
-		like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-};
-
-like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
-
-# Hmm! Not sure what to do about this...
-TODO: {
-	    local $TODO = 'There is, I think a bug in the test itself, dealing with an encoding issue, but this needs to be double-checked.';
-
-		like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-
-};
-
-like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name6"); 
-
-# Reset: 
-ok(
-	$ls->save({ -settings => 
-		{
-			confirmation_message         => undef, 
-			confirmation_message_subject => undef,	
-		},	
-	}),
-);
-ok(unlink($mh->test_send_file));
-undef $msg; 
-undef $entity; 
-undef $msg_str; 
 
 
  

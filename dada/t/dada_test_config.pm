@@ -32,7 +32,12 @@ $DADA::Config::PROGRAM_USAGE_LOG        = $DADA::Config::FILES . '/dada.txt';
 	    dir => 'static',
 	    url => undef,
 	};
-	
+
+
+	`mkdir static/themes`;
+	`mkdir static/themes/email`;
+	`mkdir static/themes/email/default`;
+	`cp -rX /Users/justin/Documents/DadaMail/git/dada_mail_foundation_email_templates/dist static/themes/email/default/dist`;
 
 }
 
@@ -546,6 +551,9 @@ sub wipe_out {
 	if(-e './test_only_dada_files'){ 
 		warn "wiping out didn't work!"; 
 	}
+	
+	`rm -rf static/themes`;
+	
 }
 
 sub MySQL_test_enabled { 

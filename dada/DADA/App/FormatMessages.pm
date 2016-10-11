@@ -76,7 +76,6 @@ my %allowed = (
     originating_message_url => undef,
 
     reset_from_header   => 1,
-    im_encoding_headers => 0,
     mass_mailing        => 0,
     list_type           => 'list',
     no_list             => 0,
@@ -174,10 +173,6 @@ sub _init {
         $self->{list} = $args->{-List};
 
         $self->Subject( $self->{ls}->param('list_name') );
-
-        if ( $self->{ls}->param('mime_encode_words_in_headers') == 1 ) {
-            $self->im_encoding_headers(1);
-        }
     }
     else {
         $self->no_list(1);
@@ -1519,10 +1514,16 @@ sub _encode_header {
 
     my $new_value = undef;
 
-    return $value
-      unless $self->im_encoding_headers;
-
     require MIME::EncWords;
+
+	my $charset = undef; 
+	if($self->no_list == 1){ 
+		$charset = $DADA::Config::LIST_SETUP_DEFAULTS{charset_value};
+	}
+	else { 
+		$charset = $self->{ls}->param('charset_value');
+	}
+
 
     if (   $label eq 'Subject'
         || $label eq 'List'
@@ -1536,11 +1537,12 @@ sub _encode_header {
         # Bug: https://rt.cpan.org/Ticket/Display.html?id=84295
         my $MaxLineLen = -1;
 
+
         $new_value = MIME::EncWords::encode_mimewords(
             $value,
             Encoding   => 'Q',
             MaxLineLen => $MaxLineLen,
-            Charset    => $self->{ls}->param('charset_value'),
+            Charset    => $charset
         );
 
     }
@@ -1555,7 +1557,7 @@ sub _encode_header {
                 MIME::EncWords::encode_mimewords(
                     $phrase,
                     Encoding => 'Q',
-                    Charset  => $self->{ls}->param('charset_value'),
+                    Charset  => $charset,
                 )
             );
         }
@@ -1581,19 +1583,14 @@ sub _decode_header {
     warn '$header before:' . safely_encode($header)
       if $t;
 
-    unless ( $self->im_encoding_headers ) {
-        return $header;
-    }
-    else {
-        require MIME::EncWords;
-        my $dec =
-          MIME::EncWords::decode_mimewords( $header, Charset => '_UNICODE_' );
-        $dec = safely_decode($dec);
+    require MIME::EncWords;
+    my $dec =
+      MIME::EncWords::decode_mimewords( $header, Charset => '_UNICODE_' );
+    $dec = safely_decode($dec);
 
-        warn 'safely_encode($dec) after: ' . safely_encode($dec)
-          if $t;
-        return $dec;
-    }
+    warn 'safely_encode($dec) after: ' . safely_encode($dec)
+      if $t;
+    return $dec;
 }
 
 sub _mime_charset {

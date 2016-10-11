@@ -1,0 +1,28 @@
+From <listowner@example.com>
+Return-path: <listowner@example.com>
+Envelope-to: bridgetest@dadamailproject.com
+Delivery-date: Mon, 22 Feb 2010 21:58:24 -0500
+Received: from hedwig.summersault.com ([12.161.105.148] helo=vmail0.summersault.com)
+	by vhost1.summersault.com with esmtps (TLSv1:AES256-SHA:256)
+	(Exim 4.69 (FreeBSD))
+	(envelope-from <justin@skazat.com>)
+	id 1Njkyd-000N1N-SY
+	for bridgetest@dadamailproject.com; Mon, 22 Feb 2010 21:58:23 -0500
+Received: (qmail 55140 invoked by uid 89); 23 Feb 2010 02:58:24 -0000
+Received: from unknown (HELO ?192.168.1.101?) (67.162.152.230)
+  by hedwig.summersault.com with SMTP; 23 Feb 2010 02:58:24 -0000
+From: List Owner <listowner@example.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Subject: TEst
+Date: Mon, 22 Feb 2010 19:58:22 -0700
+Message-Id: <61C2F9F8-33CB-48DC-8430-A62B4A8C8A13@skazat.com>
+To: listemail@example.com
+Mime-Version: 1.0 (Apple Message framework v1077)
+X-Mailer: Apple Mail (2.1077)
+X-Spam-Status: No, score=1.2
+X-Spam-Score: 12
+X-Spam-Bar: +
+X-Spam-Flag: NO
+
+TUFSS8Kh4oSiwqPCouKInsKnwrbigKLCqsK6TUFSSw==

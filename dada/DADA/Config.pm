@@ -1252,8 +1252,8 @@ $MIME_TOOLS_PARAMS //= {
     
 
     # Mass Mailing Options
-    mass_mailing_convert_plaintext_to_html => 0,
-    mass_mailing_block_css_to_inline_css   => 0,
+    mass_mailing_convert_plaintext_to_html => 1,
+    mass_mailing_block_css_to_inline_css   => 1,
 
     #quotas
     use_subscription_quota => 0,
@@ -1397,7 +1397,6 @@ $MIME_TOOLS_PARAMS //= {
     strip_message_headers                  => 0,
     add_sendmail_f_flag                    => 1,
     verp_return_path                       => 0,
-    mime_encode_words_in_headers           => 1,
 
     # view list prefs
 
@@ -1433,7 +1432,6 @@ $MIME_TOOLS_PARAMS //= {
     sort_archives_in_reverse              => 1,
     disable_archive_js                    => 1,
     style_quoted_archive_text             => 1,
-    stop_message_at_sig                   => 1,
     publish_archives_rss                  => 1,
     ping_archives_rss                     => 0,
     html_archives_in_iframe               => 0,
@@ -1467,6 +1465,8 @@ $MIME_TOOLS_PARAMS //= {
     invites_check_for_already_invited => 1,
     invites_prohibit_reinvites        => 1,
 
+
+	email_theme_name => undef, 
     #  Mailing List Template Prefs
 
     get_template_data => 'from_default_template',

@@ -1,0 +1,92 @@
+Return-path: <simoni@vhost1.example.com>
+Envelope-to: listowner@example.com
+Delivery-date: Fri, 09 Dec 2011 00:30:06 -0500
+Received: from simoni by vhost1.example.com with local (Exim 4.69 (FreeBSD))
+	(envelope-from <simoni@vhost1.example.com>)
+	id 1RYt26-000M4B-Ev
+	for listowner@example.com; Fri, 09 Dec 2011 00:30:06 -0500
+Date: Fri, 09 Dec 2011 00:30:06 -0500
+From: MAILER-DAEMON@p3plsmtp04-01.prod.phx3.secureserver.net
+To: listowner@example.com
+X-BeenThere: "Bounce Handler" <bouncehandler@example.com>
+X-Mailer: Pro Dada 4.9.0 Stable 12/06/11 
+Content-type: text/plain; charset=UTF-8
+Subject: failure notice
+Message-Id: <E1RYt26-000M4B-Ev@vhost1.example.com>
+
+Your mail message to the following address(es) could not be delivered. This
+is a permanent error. Please verify the addresses and try again. If you are
+still having difficulty sending mail to these addresses, please contact
+Customer Support at 480-624-2500.
+
+<subscriber@example.com>:
+child status 100...The e-mail message could not be delivered because the user's mailfolder is full.
+
+--- Below this line is a copy of the message.
+
+Return-Path: <bouncehandler@example.com>
+Received: (qmail 5962 invoked from network); 8 Dec 2011 16:25:14 -0000
+Received: from unknown (HELO p3pismtp01-036.prod.phx3.secureserver.net) ([10.6.12.63])
+          (envelope-sender <bouncehandler@example.com>)
+          by p3plsmtp04-01.prod.phx3.secureserver.net (qmail-1.03) with SMTP
+          for <subscriber@example.com>; 8 Dec 2011 16:25:14 -0000
+X-IronPort-Anti-Spam-Result: Ak0CAHXk4E4MoWmXmWdsb2JhbABDhQaWbI1VgSAiAQEBAQEICwsHFCWBcgEBAQUBASAaCQggEQEBAQwbBQIJDw4CAgQtCyETBQwIBASHbqV/kSyBNIhxgRYEiC6MPJJF
+Received: from vhost1.example.com ([12.161.105.151])
+  by p3pismtp01-036.prod.phx3.secureserver.net with ESMTP; 08 Dec 2011 09:21:15 -0700
+Received: from simoni by vhost1.example.com with local (Exim 4.69 (FreeBSD))
+	(envelope-from <bouncehandler@example.com>)
+	id 1RYgig-000BSJ-B5
+	for subscriber@example.com; Thu, 08 Dec 2011 11:21:14 -0500
+Date: Thu, 08 Dec 2011 11:21:14 -0500
+From: "Test List" <listowner@example.com>
+To: "Test List Subscriber" <subscriber@example.com>
+X-Priority: 3
+List: dadatest
+List-Archive: <http://example.com/cgi-bin/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.vhost1.example.com>
+List-Owner: <listowner@example.com>
+List-Post: NO
+List-Subscribe: =?UTF-8?Q?=3Chttp=3A//dadamailproject=2Ecom/cgi-bin/dada/mail=2Ecgi/s/dada?=
+ =?UTF-8?Q?=5Fannounce/simon/compustaff=2Ecom/=3E?=
+List-Unsubscribe: =?UTF-8?Q?=3Chttp=3A//dadamailproject=2Ecom/cgi-bin/dada/mail=2Ecgi/u/dada?=
+ =?UTF-8?Q?=5Fannounce/simon/compustaff=2Ecom/=3E?=
+List-URL: <http://example.com/cgi-bin/dada/mail.cgi/list/dadatest/>
+Message-ID: <20111207180210.28549468@example.com>
+X-Mailer: Pro Dada 4.9.0 Stable 12/06/11 
+Content-type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+MIME-Version: 1.0
+Subject: Dada Mail v4.9.0 Released
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - vhost1.example.com
+X-AntiAbuse: Original Domain - compustaff.com
+X-AntiAbuse: Originator/Caller UID/GID - [1015 1004] / [26 6]
+X-AntiAbuse: Sender Address Domain - example.com
+X-Source: /usr/local/bin/perl
+X-Source-Args: /usr/bin/perl mail.cgi 
+X-Source-Dir: justinsimoni.com:/example.com/cgi-bin/dada
+
+(Mailing list information, including how to remove yourself, is located at =
+the end of this message.)
+__=20
+
+yadda yadda=20
+
+--=20
+=20
+Forward this Message to a Friend:
+http://example.com/cgi-bin/dada/mail.cgi/archive/dadatest/2011=
+1207180210/#forward_to_a_friend
+
+Subscription Reminder: You're Subscribed to, Test List=20
+Using the address: subscriber@example.com
+
+From: listowner@example.com
+PO BOX 18234 =0D
+Denver, CO=0D
+80218
+
+Unsubscribe Automatically:
+http://example.com/cgi-bin/dada/mail.cgi/u/dadatest/simon/comp=
+ustaff.com/=3D=

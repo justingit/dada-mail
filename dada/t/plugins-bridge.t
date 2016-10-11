@@ -197,7 +197,6 @@ unlink $mh->test_send_file;
 
 # Now, we gotta do it, with encoding explicatly on: 
 $ls->param('charset',                        "utf-8\tutf-8"        ); 
-$ls->param('mime_encode_words_in_headers',   1                     ); 
 
 ( $status, $errors, $r ) = bridge::inject(
 	{ 
