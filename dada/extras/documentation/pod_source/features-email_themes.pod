@@ -117,7 +117,7 @@ Dada Mail will fallback to using the file from the default email theme.
 Check Dada Mail's error log for more information on what the error may be.
 
 
-=head2 The Sophisticated (by not impossible) Way To Create a New Email Theme
+=head2 Create a New Email Theme Using the Foundation for Emails Workflow
 
 Another way to create a new email theme is to start with a new Foundation For Emails
 project,

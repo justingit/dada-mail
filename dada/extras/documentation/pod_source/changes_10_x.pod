@@ -2,7 +2,7 @@
 
 =encoding utf-8
 
-=head1 10.0.0 Alpha 1
+=head1 10.0.0 Beta 1
 
 =head2 Features
 
@@ -22,17 +22,15 @@ L<https://github.com/justingit/dada_mail_foundation_email_templates>
 
 which you may use as a starter for your own customized email templates for Dada Mail. 
 
-B<(TODO>: 
+Here's how to do that: 
 
-Create documention on how to do that!
+L<http://dadamailproject.com/d/features-email_themes.pod>
 
 =head4 Email Themes
 
 Dada Mail now has support for, B<Email Themes>: collections of email templates that you may use to customize the look and feel of your email messages. 
 
-B<TODO>:
-
-Currently, Dada Mail only comes with one email theme, but should support additional themes in the future, with the idea that people can create and share their own themes. 
+Currently, Dada Mail comes with one email theme and supports additional themes, helping people can create and share their own themes. 
 
 =head4 Mass Mailing Email Layouts
 
