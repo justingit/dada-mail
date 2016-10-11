@@ -665,9 +665,9 @@ sub create_image_part {
     my ( $self, $ur, $typ ) = @_;
     my ( $type, $buff1 );
 	
-	warn '$ur:' . $ur; 
-	warn 'length($ur)' . length($ur); 
-	warn 'defined($ur)' . defined($ur); 
+#	warn '$ur:' . $ur; 
+#	warn 'length($ur)' . length($ur); 
+#	warn 'defined($ur)' . defined($ur); 
 	return undef if (length($ur) == 0) || (! defined $ur); 
 
 	# This is asolutely ridiculous. 

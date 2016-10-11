@@ -274,14 +274,14 @@ sub send_multipart_email {
         $self->fm->override_validation_type('expr');
     }
 
-	warn 'calling format_message';
+#	warn 'calling format_message';
     $entity = $self->fm->format_message(
         {
             -entity => $entity
         }
     );
 
-	warn 'calling email_template';
+#	warn 'calling email_template';
     $entity = $self->fm->email_template(
         {
             -entity => $entity,
@@ -302,11 +302,11 @@ sub send_multipart_email {
         $self->mh->test(1);
     }
     
-	warn 'calling send';
+#	warn 'calling send';
 	$self->mh->send( $self->mh->return_headers($header_str),
         Body => $body_str, );
 
-		warn 'done in send_multipart_email';
+#		warn 'done in send_multipart_email';
 		return 1; 
 }
 
@@ -482,7 +482,7 @@ sub send_subscribed_message {
 
     my $etp = $self->emt->fetch('subscribed_message');
 
-	warn '$etp->{html}' . $etp->{html}; 
+	# warn '$etp->{html}' . $etp->{html}; 
 	
     $self->send_multipart_email(
         {
@@ -657,7 +657,7 @@ sub subscription_approval_request_message {
     }
     my $email = $args->{-email};
 
-	warn '$email:' . $email; 
+	# warn '$email:' . $email; 
 	
     $self->send_multipart_email(
         {
@@ -1081,7 +1081,7 @@ sub send_not_subscribed_message {
 
 sub send_newest_archive {
 
-	warn 'in send_newest_archive';
+	# warn 'in send_newest_archive';
 	
     my $self = shift;
     my ($args) = @_;
@@ -1113,14 +1113,14 @@ sub send_newest_archive {
 			-zap_sigs => 0, 
         );
 		
-		warn '$body after massage_msg_for_resending' . $body; 
+		# warn '$body after massage_msg_for_resending' . $body; 
 
         if ( $self->test == 1 ) {
-			warn 'testing!';
+			# warn 'testing!';
             $self->mh->test(1);
         }
 
-		warn 'calling send_generic_email';
+		# warn 'calling send_generic_email';
         $self->send_generic_email(
             {
                 -email   => $email,
