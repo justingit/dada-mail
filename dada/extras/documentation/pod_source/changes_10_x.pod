@@ -1,0 +1,62 @@
+=pod
+
+=encoding utf-8
+
+=head1 10.0.0 Beta 1
+
+=head2 Features
+
+=head3 Enhanced Email Messages
+
+=head4 Powered by Foundation for Emails
+
+Foundation for Emails (L<http://foundation.zurb.com/emails.html>) is a framework to develop HTML email messages that, "Sucks Less": they're beautiful, responsive, and look correctly in most HTML-capable email readers - even Outlook. 
+
+Work with these HTML emails via SASS Workflow documented here:
+
+L<https://foundation.zurb.com/emails/docs/sass-guide.html>
+
+Dada Mail's quiver of HTML email templates has been turned into its own Github project at, 
+
+L<https://github.com/justingit/dada_mail_foundation_email_templates>
+
+which you may use as a starter for your own customized email templates for Dada Mail. 
+
+Here's how to do that: 
+
+L<http://dadamailproject.com/d/features-email_themes.pod>
+
+=head4 Email Themes
+
+Dada Mail now has support for, B<Email Themes>: collections of email templates that you may use to customize the look and feel of your email messages. 
+
+Currently, Dada Mail comes with one email theme and supports additional themes, helping people can create and share their own themes. 
+
+=head4 Mass Mailing Email Layouts
+
+Email Themes include the ability to choose a specific layout for your mass mailing to be wrapped up in. 
+
+Currently, the following layout options are available: 
+
+=over
+
+=item *  Full Layout
+
+=item * Minimal Layout
+
+=item * For Discussion List Messages
+
+=item * Don't use a Layout 
+
+=back
+
+=head4 Mass Mailing Preview
+
+Without needing to send a test message out, you can now preview how your mass mailing will look, right in the Send a Message screen. This makes it easy to try different layouts and other options out, before comitting to sending to your entire mailing list. 
+
+=head4 Set an image and social network links in messages
+
+The newly improved HTML email messages also support showing a logo, and list social media likns - these all can be set 
+under B<Mailing List - List Information>
+
+=cut

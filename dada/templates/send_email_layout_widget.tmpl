@@ -1,0 +1,55 @@
+<div class="row">
+	<div class="row">
+		<div class="small-12 columns">
+				<label for="layout_default">
+					<input 
+						type="radio"
+						name="layout"
+						id="layout_default"
+						value="default"
+						<!-- tmpl_unless expr="((list_settings.group_list == 1) && (list_settings.disable_discussion_sending != 1))" --> 
+							checked="checked"
+						<!-- /tmpl_unless -->
+						>
+						Full Layout
+					</label>
+					
+					
+					<label for="layout_minimal">
+						<input 
+							type="radio"
+							name="layout"
+							id="layout_minimal"
+							value="minimal"
+							>
+							Minimal Layout
+						</label>
+					
+					
+					
+					<label for="layout_discussion">
+						<input 
+							type="radio"
+							name="layout"
+							id="layout_discussion"
+							value="discussion"
+							<!-- tmpl_if expr="((list_settings.group_list == 1) && (list_settings.disable_discussion_sending != 1))" --> 
+								checked="checked"
+							<!-- /tmpl_if -->
+							>
+							For Discussion List Messages
+						</label>
+					
+					
+					<label for="layout_none">
+						<input 
+							type="radio"
+							name="layout"
+							id="layout_none"
+							value="none"
+							>
+							Don't use a Layout
+						</label>
+		</div>
+	</div>
+</div>

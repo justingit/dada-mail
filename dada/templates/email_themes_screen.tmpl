@@ -1,0 +1,56 @@
+<!-- begin email_themes_screen.tmpl -->
+
+<!-- tmpl_set name="title" value="Appearance &#187; Email Themes" -->
+<div id="screen_meta" data-menu_highlight="email_themes"></div>
+
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Appearance
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Email Themes
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+</div>
+
+<!-- tmpl_if done -->
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+<!--/tmpl_if-->
+
+
+
+<form 
+	action="<!-- tmpl_var S_PROGRAM_URL -->" 
+	method="post" 
+	name="default_form" 
+	id="default_form" 
+	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+>
+    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
+	<input type="hidden" name="process" value="1">
+	<input type="hidden" name="flavor"  value="email_themes">
+	
+	<div class="row">
+		
+		<div class="small-12 columns">
+			<label for="email_theme_name">
+				Theme
+				<!-- tmpl_var email_theme_name_widget -->
+			</label>
+		</div>
+	</div>
+	
+	
+	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
+</form>
+
+<!-- end email_themes_screen.tmpl -->
