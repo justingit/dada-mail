@@ -639,14 +639,14 @@ sub construct_from_text {
   		{
   			-content => $html_message, 
   			-type   => 'text/html', 
-			-layout => $draft_q->param('layout'),
+			-layout => scalar $draft_q->param('layout'),
 		}
   	);	
   	$text_message = $fm->format_mlm(
 		{ 
 			-content => $text_message, 
 			-type  => 'text/plain',
-			-layout => $draft_q->param('layout'),
+			-layout => scalar $draft_q->param('layout'),
 		}
 	);
 	
@@ -813,8 +813,8 @@ sub construct_from_url {
 		};
     }
 
-    my $url               = strip( $draft_q->param('url') );
-    my $remove_javascript = $draft_q->param('remove_javascript') || 0;
+    my $url               = strip( scalar $draft_q->param('url') );
+    my $remove_javascript = scalar $draft_q->param('remove_javascript') || 0;
 
     my @attachments       = $self->has_attachments( { -cgi_obj => $draft_q } );
     my $num_attachments   = scalar(@attachments);
@@ -830,9 +830,9 @@ sub construct_from_url {
         )
       )
     {
-        if ( defined( $draft_q->param($h) ) ) {
+        if ( defined( scalar $draft_q->param($h) ) ) {
             if ( $h eq 'Subject' ) {
-                $headers{$h} = $fm->_encode_header( 'Subject', $draft_q->param($h) );
+                $headers{$h} = $fm->_encode_header( 'Subject', scalar $draft_q->param($h) );
             }
             else {
                 $headers{$h} = strip( scalar $draft_q->param($h) );
@@ -972,7 +972,7 @@ sub construct_from_url {
 					enabled => 1, 
 					base    => $base, 
 				},
-				-layout => $draft_q->param('layout'),
+				-layout => scalar $draft_q->param('layout'),
 			}
 		);	
 	}
@@ -982,7 +982,7 @@ sub construct_from_url {
 			{
 				-content => $text_message, 
 				-type  => 'text/plain',
-				-layout => $draft_q->param('layout'),
+				-layout => scalar $draft_q->param('layout'),
 			}
 		);
 	}
@@ -1070,7 +1070,7 @@ sub construct_from_url {
 		md5          => $md5, 
 		vars         => {
 			Subject       => $headers{Subject},
-			'X-Preheader' => $draft_q->param('X-Preheader'),
+			'X-Preheader' => scalar $draft_q->param('X-Preheader'),
 		},
 		text_message => $text_message, 
 		html_message => $html_message, 

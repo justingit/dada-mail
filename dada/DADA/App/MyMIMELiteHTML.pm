@@ -342,9 +342,11 @@ sub include_css(\%$$) {
         else {
             my $err =
               "Looking for css to include:, '" . $ur . "' was not successful - removing from message and ignoring";
-            $self->set_err($err);
-            carp $err;
-
+            
+			  if($ur ne 'css/app.css'){
+				$self->set_err($err);
+	            carp $err;
+			}
             # DEV: so, why was this returning an open <style> tag?
             # Because that's dumb.
             return '';    #<style type="text/css">';

@@ -3048,7 +3048,7 @@ sub grab_url {
             }
     	}
     	else { 
-    	    carp "Problem fetching webpage, '$url':" . $res->status_line;
+    	    # carp "Problem fetching webpage, '$url':" . $res->status_line;
     		if(wantarray){ 
                 return (undef, $res, undef); 
             }
@@ -3069,7 +3069,7 @@ sub grab_url {
     		}
         }
     	else { 
-    	    carp "Problem fetching webpage, '$url':" . $res->status_line;
+    	    # carp "Problem fetching webpage, '$url':" . $res->status_line;
     		if(wantarray){ 
                 return (undef, $res, undef); 
             }

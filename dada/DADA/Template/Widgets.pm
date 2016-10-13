@@ -518,13 +518,17 @@ sub default_screen {
         my $all_list_info        = $ls->get;
         my $all_list_info_dotted = $ls->get( -dotted => 1 );
 
-        my $ah = DADA::MailingList::Archives->new(
-            {
-                -list => $list,
-                ( ($reusable_parser) ? ( -parser => $reusable_parser ) : () )
-            }
-        );
+		my $ah = undef; 
+		if($ls->param('show_archives') == 1){   
 
+	        $ah = DADA::MailingList::Archives->new(
+	            {
+	                -list => $list,
+	                ( ($reusable_parser) ? ( -parser => $reusable_parser ) : () )
+	            }
+	        );
+		}
+		
         unless($ls->param('hide_list') == 1 && $ls->param('private_list') == 1){ 
             $l_count++;
 
@@ -534,30 +538,35 @@ sub default_screen {
             $all_list_info_dotted->{'list_settings.info'} =
               _email_protect({-string => $all_list_info_dotted->{'list_settings.info'}} );
 
-            my $ne      = $ah->newest_entry;
-            my $subject = $ah->get_archive_subject($ne);
-               $subject = $ah->_parse_in_list_info( -data => $subject );
-               
-			   # this is so atrocious.
-	            $all_list_info_dotted->{latest_archive_date} = date_this(
-	           -Packed_Date   => $ne,
-	           -Write_Month   => $ls->param('archive_show_month'),
-	           -Write_Day     => $ls->param('archive_show_day'),
-	           -Write_Year    => $ls->param('archive_show_year'),
-	           -Write_H_And_M => $ls->param('archive_show_hour_and_minute'),
-	           -Write_Second  => $ls->param('archive_show_second')
-	           );
+  			my $ne; 
+  			my $subject; 
+  			if($ls->param('show_archives') == 1){   
+              	$ne      = $ah->newest_entry;
+              	$subject = $ah->get_archive_subject($ne);
+                  $subject = $ah->_parse_in_list_info( -data => $subject );
+
+  			   # this is so atrocious.
+  	            $all_list_info_dotted->{latest_archive_date} = date_this(
+  	           -Packed_Date   => $ne,
+  	           -Write_Month   => $ls->param('archive_show_month'),
+  	           -Write_Day     => $ls->param('archive_show_day'),
+  	           -Write_Year    => $ls->param('archive_show_year'),
+  	           -Write_H_And_M => $ls->param('archive_show_hour_and_minute'),
+  	           -Write_Second  => $ls->param('archive_show_second')
+  	           );
 			   
-			  $all_list_info_dotted->{latest_archive_id} = $ne;
-            # These two things are sort of strange.
-            $all_list_info_dotted->{latest_archive_blurb} =
-              $ah->message_blurb();
-            $all_list_info_dotted->{latest_archive_subject} = $subject;
-
+  				  $all_list_info_dotted->{latest_archive_id} = $ne;
+  	            # These two things are sort of strange.
+  	            $all_list_info_dotted->{latest_archive_blurb} =
+  	              $ah->message_blurb();
+  	            $all_list_info_dotted->{latest_archive_subject} = $subject;
+  			}
+		
+		
             push ( @list_information, $all_list_info_dotted );
-
-            $reusable_parser = $ah->{parser} if !$reusable_parser;
-
+  			if($ls->param('show_archives') == 1){   
+  				$reusable_parser = $ah->{parser} if !$reusable_parser;
+  			}
         }
     }
 
@@ -786,6 +795,9 @@ sub html_archive_list {
 
 	
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+	
+	return '' 
+		if $ls->param('show_archives') != 1;
 	
 	require DADA::Profile; 
 	my $prof = DADA::Profile->new(

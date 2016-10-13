@@ -343,65 +343,42 @@ my $subject;
 
 $ls->param('prefix_list_name_to_subject', 1); 
 $ls->param('prefix_discussion_list_subjects_with', 'list_name'); 
-$prefix = quotemeta('[<!-- tmpl_var list_settings.list_name -->]'); 
+$prefix = quotemeta('['.$ls->param('list_name').']'); 
 
 undef $fm; 
 $fm = DADA::App::FormatMessages->new(-List => $list);
 $subject = 'Subject'; 
 $subject = $fm->_list_name_subject($subject); 
+diag '$subject' . $subject; 
 like($subject, qr/$prefix Subject/, "Subject set correctly (list name)");
-
-
 undef $fm; 
+
 $ls->param('prefix_discussion_list_subjects_with', 'list_shortname'); 
 $subject = 'Subject';
-$prefix = quotemeta('[<!-- tmpl_var list_settings.list -->]');  
-
+$prefix = quotemeta('['.$ls->param('list').']'); 
 $fm = DADA::App::FormatMessages->new(-List => $list);
 $subject = $fm->_list_name_subject($subject); 
-like($subject, qr/$prefix Subject/, "Subject set correctly (list)");
+diag '$subject' . $subject; 
 
+like($subject, qr/$prefix Subject/, "Subject set correctly (list)");
 undef $fm;
 $fm = DADA::App::FormatMessages->new(-List => $list);
  
 $subject = 'Re: [' . $ls->param('list') . '] Subject';
-my $new_subject = quotemeta('[<!-- tmpl_var list_settings.list -->] Re: Subject'); 
-
+my $new_subject = quotemeta('[' . $ls->param('list') . '] Re: Subject'); 
 
 like($fm->_list_name_subject($subject), qr/$new_subject/, "Subject set correctly with reply 1"); 
 undef $fm; 
 undef $new_subject; 
 
 
-# Forward
-$fm = DADA::App::FormatMessages->new(-List => $list);
-$subject = 'Fw: [' . $ls->param('list') . '] Subject';
-$new_subject = quotemeta('[<!-- tmpl_var list_settings.list -->] Fw: Subject'); 
-
-like($fm->_list_name_subject($subject), qr/$new_subject/, "Subject set correctly with forward 1"); 
-undef $fm; 
-undef $new_subject;
-
-
-
-
-
-$ls->param('prefix_list_name_to_subject', 1); 
-$ls->param('prefix_discussion_list_subjects_with', 'list_name');
-
-$fm = DADA::App::FormatMessages->new(-List => $list);
-
-$subject = 'Re: [' . $ls->param('list_name') . '] Subject';
-
-$new_subject = quotemeta('[<!-- tmpl_var list_settings.list_name -->] Re: Subject'); 
-
 
 
 ## BIG TODO: 
 #
 #eval { 
-	
-	like($fm->_list_name_subject($subject), qr/$new_subject/, "Subject set correctly with reply for, 'list_name'"); 
+#	
+#	like($fm->_list_name_subject($subject), qr/$new_subject/, "Subject set correctly with reply for, 'list_name'"); 
 
 #};
 #diag $@ if $@; 

@@ -541,6 +541,7 @@ sub format_mlm {
             -type => $type,
         );
     }
+
 		
 	if($type eq 'text/html') { 
 		# Minify
@@ -1825,76 +1826,34 @@ sub _list_name_subject {
     # This is awful code, yuck!
 
     my $self         = shift;
-    my $orig_subject = shift;
-    warn 'in _list_name_subject before decode ($orig_subject): ' . $orig_subject
-      if $t;
-    $orig_subject = $self->_decode_header($orig_subject);
-    warn 'in _list_name_subject after decode ($orig_subject): ' . $orig_subject
-      if $t;
+    my $subject = shift;
+    $subject = $self->_decode_header($subject);
 
     my $list      = $self->{ls}->param('list');
     my $list_name = $self->{ls}->param('list_name');
-
-# This really needs to look for both list name and list short name... I'm thinking...
-
-    $orig_subject =~
-      s/\[($list|$list_name)\]//;    # This only looks for list shortname...
-    $orig_subject =~ s/^((RE:|AW:|FW:|WG:)\s+)+//i;    # AW & WG are German!
-
-#	warn '$orig_subject:' . $orig_subject ;
-
-#
-#    my $re = $1;
-#	
-#	warn '$re:' . $re; 
- #   $re =~ s/^(\s+)//;
-#	warn '$re:' . $re; 
- #   $re =~ s/(\s+)$//;
-#	warn '$re:' . $re; 
-#
-#
-#
-#   # there must be some strange named capture that isn't being undef'd, so if
-#    # it already holds a value, it gets set to, $re. Weird.
-#   if ( $re =~ m/UTF\-8/ ) {
-#
-#        #warn 'undef!';
-#        $re = undef;
-#		warn '$re:' . $re; 
-#    }
-#
-#    $re = ' ' . $re if $re;
-#	warn '$re:' . $re; 
+	my $qm_list = quotemeta($list);
+	my $qm_list_name = quotemeta($list_name);
 	
-    $orig_subject =~ s/^(\s+)//;
-
-    if ( $self->{ls}->param('prefix_discussion_list_subjects_with') eq
-        "list_name" )
-    {
-        $orig_subject = '['
-          . $self->{ls}->param('list_name') . '] '
-          .  $orig_subject;
-	#	  warn '$orig_subject' . $orig_subject;
-    }
-    elsif ( $self->{ls}->param('prefix_discussion_list_subjects_with') eq
-        "list_shortname" )
-    {
-        $orig_subject = '['
-          . $self->{ls}->param('list') . '] '
-          . $orig_subject;
-		#  warn '$orig_subject' . $orig_subject;
+	if($subject =~ m/^\[($qm_list|$qm_list_name)\]/){ 
+		# And, we're done!
+		return $subject;
+	}
+	elsif($subject =~ m/^(RE:|AW:|FW:|WG:)\s*\[($qm_list|$qm_list_name)\]/i){ 
+		# And, we're done!
+		return $subject;
+	}
+	else { 
+		if($self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_name"){ 
+			$subject = '[' . $list_name . '] ' . $subject; 
+		}
+		elsif($self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_shortname"){ 
+			$subject = '[' . $list . '] ' . $subject; 
+		}
+	}
 	
-    }
+    $subject = $self->_encode_header( 'Subject', $subject );
 
-    warn 'in _list_name_subject before encode2: ' . $orig_subject
-      if $t;
-
-    $orig_subject = $self->_encode_header( 'Subject', $orig_subject );
-
-    warn 'in _list_name_subject after encode2: ' . $orig_subject
-      if $t;
-
-    return $orig_subject;
+    return $subject;
 
 }
 
@@ -2130,6 +2089,8 @@ sub _apply_template {
 
     my $content = $args->{-content};
 
+	warn '$content' . $content; 
+	
     my $template;
     my $template_out = 0;
 
@@ -2140,7 +2101,11 @@ sub _apply_template {
         $template_out = $self->use_html_email_template;
     }
 
+	warn '$template_out' . $template_out; 
+	warn '$self->layout_choice($args)' . $self->layout_choice($args); 
+	
     if ($template_out) { # we're using a template in other words 
+	
         require DADA::App::EmailThemes;
         my $em = DADA::App::EmailThemes->new(
             {
@@ -2176,6 +2141,8 @@ sub _apply_template {
                 }
             );
         }
+		
+		warn '$template' . $template; 
 
         # / depersonalize
 
@@ -2186,6 +2153,7 @@ sub _apply_template {
                 -type => $args->{-type},
             }
         );
+		warn '$template' . $template; 
 
         if ( $args->{-type} eq 'text/html' ) {
 
@@ -2197,13 +2165,15 @@ sub _apply_template {
 		        $content = $self->body_content_only($content);
 			}
 
-            if ($content) {
+            if ($content) { # shouldn't this be if ($template?)
 
 				my $qm_message_body_tag = quotemeta('<!-- tmpl_var message_body -->');
 				$template =~ s/$qm_message_body_tag/$content/;
+				warn '$template' . $template;
           
             }
             else {
+				warn 'no content?';
                 $template =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$content/;
             }
 
@@ -2213,7 +2183,7 @@ sub _apply_template {
         }
     }
     else {
-
+		warn 'here for some reason';
         $template = $content;
     }
 
@@ -2245,6 +2215,9 @@ sub _apply_template {
 	        }
 	    }
 	}
+	
+	warn '$template' . $template; 
+	
     return $template;
 
 }
@@ -3089,18 +3062,29 @@ sub pre_process_msg_strings {
 
 sub body_content_only { 
 	my $self = shift; 
-	my $html = shift; 
+	my $og_html = shift; 
+	my $html;
 	
     try {
         require DADA::App::FormatMessages::Filters::BodyContentOnly;
         my $bco =
           DADA::App::FormatMessages::Filters::BodyContentOnly->new;
-        $html = $bco->filter( { -html_msg => $html } );
+        $html = $bco->filter( { -html_msg => $og_html } );
+		
+		if(length($html) <= 0){ 
+			warn 'filter returned no data, trying naive...';
+			$html = $bco->naive_body_only($og_html);
+			if(length($html) <= 0){ 
+				warn 'naive returned no data, returning original';
+				$html = $og_html;
+			}
+		}
+			undef $bco; 
     }
     catch {
         carp "Problems with filter: $_";
     };
-	
+		
 	return $html; 
 	
 	

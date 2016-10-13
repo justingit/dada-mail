@@ -87,7 +87,10 @@ sub filter {
 		if($tmp =~ m/<(.*?)body(.*?)\>/) {
 		
 			$tmp = $self->body_content_only($tmp);
+		#	warn '$tmp' . $tmp; 
+			
 			return $tmp; 
+			
 		}
 		else { 
 		

@@ -3009,12 +3009,12 @@ sub list_headers {
 	        }
 
 	        $lh{'List-Unsubscribe'} =
-				'<mailto:<!-- tmpl_var list_settings.list_owner_email -->?Subject=Unsubscribe%20from%20<!-- tmpl_var list_settings.list_name escape="url" -->>, <<!-- tmpl_var list_unsubscribe_link -->>';
+				'<mailto:' . $self->{ls}->param('list_owner_email') . '?Subject=Unsubscribe%20from%20<!-- tmpl_var list_settings.list_name escape="URL" -->>, <<!-- tmpl_var list_unsubscribe_link -->>';
 		}
 
         # List-Owner
-        $lh{'List-Owner'} =
-          '<<!-- tmpl_var list_settings.list_owner_email -->>';
+        #$lh{'List-Owner'} = '<<!-- tmpl_var list_settings.list_owner_email -->>';
+		$lh{'List-Owner'} = '<' . $self->{ls}->param('list_owner_email') . '>';
 
         # List-Archive
         if ( $self->{ls}->param('show_archives') ne "0" ) {

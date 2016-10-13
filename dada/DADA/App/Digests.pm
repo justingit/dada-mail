@@ -25,7 +25,7 @@ use vars qw($AUTOLOAD);
 my $t =  $DADA::Config::DEBUG_TRACE->{DADA_App_Digests};
 
 my %allowed = ( 
-	test => 0, 
+	test     => 0, 
 	mock_run => 0, 
 );
 
@@ -344,12 +344,12 @@ sub send_out_digest {
         );
 
         my $process = 'test'; 
-#        if($test == 1){ 
-#            $process = 'test'; 
-#        }
-#        else { 
-#            $process = 1; 
-#        }
+        if($self->test() == 1){ 
+            $process = 'test'; 
+        }
+        else { 
+            $process = 1; 
+        }
 		
         my ( $status, $errors, $message_id, $md5 ) = $dam->construct_and_send(
             {
@@ -360,6 +360,9 @@ sub send_out_digest {
             }
         );
         
+		if($status == 0) { 
+			warn 'problem creating digest message:' . $errors;
+		}
 		$dam->delete_draft($draft_id); 
 		
 
