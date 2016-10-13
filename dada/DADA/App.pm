@@ -124,8 +124,7 @@ sub setup {
         'membership'                    => \&membership,
         'also_member_of'                => \&also_member_of,
         'admin_change_profile_password' => \&admin_change_profile_password,
-        'admin_profile_delivery_preferences' =>
-          \&admin_profile_delivery_preferences,
+        'admin_profile_delivery_preferences' => \&admin_profile_delivery_preferences,
         'validate_update_email'          => \&validate_update_email,
         'validate_remove_email'          => \&validate_remove_email,
         'mailing_list_history'           => \&mailing_list_history,
@@ -137,21 +136,7 @@ sub setup {
         'add_email'                      => \&add_email,
         'delete_email'                   => \&delete_email,
         'subscription_options'           => \&subscription_options,
-        'admin_menu_drafts_notification' => \&admin_menu_drafts_notification,
-        'admin_menu_subscriber_count_notification' =>
-          \&admin_menu_subscriber_count_notification,
-        'admin_menu_mailing_monitor_notification' =>
-          \&admin_menu_mailing_monitor_notification,
-        'admin_menu_archive_count_notification' =>
-          \&admin_menu_archive_count_notification,
-        'admin_menu_mail_sending_options_notification' =>
-          \&admin_menu_mail_sending_options_notification,
-        'admin_menu_mailing_sending_mass_mailing_options_notification' =>
-          \&admin_menu_mailing_sending_mass_mailing_options_notification,
-        'admin_menu_bounce_handler_notification' =>
-          \&admin_menu_bounce_handler_notification,
-        'admin_menu_tracker_notification' => \&admin_menu_tracker_notification,
-        'admin_menu_bridge_notification'  => \&admin_menu_bridge_notification,
+		'admin_menu_notifications'       => \&admin_menu_notifications, 
         'send_email'                      => \&send_email,
         'email_message_preview'           => \&email_message_preview,
         'send_email_button_widget'        => \&send_email_button_widget,

@@ -305,7 +305,7 @@ jQuery(document).ready(function($){
 				if (sendMailingListMessage(fid, itsatest) === true) {
 					if($("#f").val() != 'list_invite') {
 						save_msg(false);
-						admin_menu_drafts_notification();
+						//admin_menu_drafts_notification();
 					}
 					if($("#f").val() == 'list_invite' && itsatest == true) {
 						// alert('now were sending out a test message!');
