@@ -35,14 +35,19 @@ have the best experience when running Dada Mail:
 
 These modules and other, optional CPAN Perl modules used by Dada Mail have been bundled together in one CPAN Module called, C<Bundle::DadaMail>. You can now just install this one module, and have all those other modules installed in one step. 
 
+=head2 No more "Appearance - Email Message Templates" list control panel
+
 Because the workflow to create the new HTML emails is based on Foundation for Emails SASS workflow (L<https://foundation.zurb.com/emails/docs/sass-guide.html>),
 which is done offline (via your desktop/laptop/etc), 
-we've removed the ability to edit these messages from within Dada Mail through the B<Apperance - Email Message Templates> screen. 
+we've removed the ability to edit these messages from within Dada Mail through the B<Appearance - Email Message Templates> screen. 
 The HTML produced by the  framework is exceptionally complex - they just cannot be easily edited by hand. 
 Using the SASS workflow is actally pretty approachable by a competent web designer or developer. 
 
 Here's how to work with email themes, and create your own:
 
 L<http://dadamailproject.com/d/features-email_themes.pod>
+
+Each theme is available for all mailing lists. 
+
 
 =cut
