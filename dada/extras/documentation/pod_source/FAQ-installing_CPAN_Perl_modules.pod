@@ -6,19 +6,21 @@
 
 Many of Dada Mail's most advanced features rely on additional code libraries, called B<CPAN Perl Modules> to be installed and available on the web server that Dada Mail runs on. These features are usually entirely optional, meaning Dada Mail will run just fine without them, but your experiene will be enhanced if they are available. 
 
-Usually, if a feature is unavailable because of a missing CPAN Perl module, there will be an alert either in the included Dada Mail Installer, where you would initially configure this feature; or from within the list control panel, where you would enable/work the feature. 
+Usually, if a feature is unavailable because of a missing CPAN Perl module, there will be an alert either in the included Dada Mail Installer where you would initially configure this feature; or from within the list control panel, where you would enable/work the feature. 
 
-Dada Mail does already ship with many included CPAN Perl modules, but it can't ship with all of them, as they could potentially need additional configuration, a dependency outside of Dada Mail's and Perl's immediate ecosystem, or code compilation. 
+Dada Mail does already ship with many included CPAN Perl modules, but it can't ship with all of them, as they could potentially need additional configuration, a dependency outside of Dada Mail's or Perl's immediate ecosystem, or code compilation. 
 
-A fairly exhaustive list of all the CPAN Perl Modules Dada Mail ships with, as well as optional modules you may install for additional features can be found here: 
+A list of these optional modules to install can be found in the C<Bundle::DadaMail> module: 
 
-L<http://dadamailproject.com/d/DadaMail.pm.html>
+L<https://metacpan.org/pod/distribution/Bundle-DadaMail/lib/Bundle/DadaMail.pm>
 
-We try to keep this list up-to-date, but other modules for optional features may be required, that haven't yet been added to this list.
+A fairly exhaustive list of all the CPAN Perl Modules Dada Mail ships with can be found in the, C<Bundle::DadaMailXXL> module:
+
+L<https://metacpan.org/pod/distribution/Bundle-DadaMail/lib/Bundle/DadaMailXXL.pm>
 
 In this FAQ, we're going to focus on using the cPanel Perl Module Installer, which may be available to you, if you're running a hosting account powered by cPanel.  
 
-If you're not, you may have to ask your hosting support to install these modules. If you have full access to your webserver, the tradional ways of installing CPAN Perl modules will work just fine for you - either using a package manager released by the vendor of your operating system, or by using the C<cpan> or C<cpanm> command line tools. It's a little trickier, but certainly not impossible, to install Perl module without root privileges, but you'll need access to the command line. 
+If you're not, you may have to ask your hosting support to install these modules. If you have full access to your webserver, the traditional ways of installing CPAN Perl modules will work just fine for you - either using a package manager released by the vendor of your operating system, or by using the C<cpan> or C<cpanm> command line tools. It's a little trickier, but certainly not impossible, to install Perl module without root privileges, but you'll need access to the command line. 
 
 Some resources: 
 
@@ -27,6 +29,7 @@ L<http://perl-begin.org/topics/cpan/life-with-cpan/non-root/>
 L<https://github.com/miyagawa/cpanminus>
 
 L<http://stackoverflow.com/questions/2980297/how-can-i-use-cpan-as-a-non-root-user>
+
 
 =head1 Using the cPanel Perl Module Installer
 

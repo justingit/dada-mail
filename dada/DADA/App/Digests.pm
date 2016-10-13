@@ -24,7 +24,10 @@ use vars qw($AUTOLOAD);
 
 my $t =  $DADA::Config::DEBUG_TRACE->{DADA_App_Digests};
 
-my %allowed = ( test => 0, );
+my %allowed = ( 
+	test     => 0, 
+	mock_run => 0, 
+);
 
 sub new {
     my $that = shift;
@@ -95,6 +98,7 @@ sub _init {
         warn 'ctime_2_archive_time:'
           . $self->ctime_2_archive_time( int( $self->{ctime} ) - int( $self->{ls_obj}->param('digest_schedule') ) )
           if $t;
+
         $self->{ls_obj}->save(
 			{
             	-settings  => {
@@ -102,6 +106,7 @@ sub _init {
           	   }
 			}
         );
+		
         undef( $self->{ls_obj} );
         $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     }
@@ -112,12 +117,24 @@ sub _init {
 
 sub should_send_digest {
     my $self = shift;
-    if ( scalar @{ $self->archive_ids_for_digest } ) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
+	
+	if($self->mock_run() == 1){
+		my $keys = $self->{a_obj}->get_archive_entries('normal');
+		if ( scalar( @{$keys} ) == 0 ) {
+			return 0; 
+		}
+		else { 
+			return 1;
+		}
+	}
+	else {
+	    if ( scalar @{ $self->archive_ids_for_digest } ) {
+	        return 1;
+	    }
+	    else {
+	        return 0;
+	    }
+	}
 }
 
 sub archive_ids_for_digest {
@@ -125,44 +142,57 @@ sub archive_ids_for_digest {
     my $self = shift;
     my $keys = $self->{a_obj}->get_archive_entries('normal');
     my $ids  = [];
-
     my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
-    
-    # no archives available? no digest.
+ 
     if ( scalar( @{$keys} ) == 0 ) {
-        return [];
+		return [];
     }
+	elsif($self->mock_run() == 1){ 
+		my $c = 4;
+		 
+		for(@$keys){ 
+			$c--;
+			push(@$ids, $_);
+			last if $c == 0; 
+		}
+	}	
     else { 
         if(
             ($self->archive_time_2_ctime($digest_last_archive_id_sent) + int($self->{ls_obj}->param('digest_schedule'))) > $self->{ctime}){ 
                 # not the time to send out a digest!
-                return [];            
-        }
-        for (@$keys) {            
-            if (   
-                # after our last one was sent out (redundant?)
-                $self->archive_time_2_ctime($_) > $self->archive_time_2_ctime($digest_last_archive_id_sent) 
+                #....           
+				return [];
+	    }
+		else {
+	        for (@$keys) {            
+	            if (   
+	                # after our last one was sent out (redundant?)
+	                $self->archive_time_2_ctime($_) > $self->archive_time_2_ctime($digest_last_archive_id_sent) 
                 
-                &&
-                # Is within the digest_schedule
-                $self->archive_time_2_ctime($_) >  $self->{ctime}  - (int($self->{ls_obj}->param('digest_schedule')))
+	                &&
+	                # Is within the digest_schedule
+	                $self->archive_time_2_ctime($_) >  $self->{ctime}  - (int($self->{ls_obj}->param('digest_schedule')))
                 
-                # BUT less than right now 
-                && $self->archive_time_2_ctime($_) < $self->{ctime} 
-            ) 
-            {
-                push( @$ids, $_ );
-            }
+	                # BUT less than right now 
+	                && $self->archive_time_2_ctime($_) < $self->{ctime} 
+	            ) 
+	            {
+	                push( @$ids, $_ );
+	            }
+	        }
+	    }
+	}
+	
+    if ($t) {
+        warn 'ids to make digest: ';
+        for (@$ids) {
+            warn "$_\n";
         }
-        if ($t) {
-            warn 'ids to make digest: ';
-            for (@$ids) {
-                warn "$_\n";
-            }
-        }
-        @$ids = reverse(@$ids); 
-        return $ids;
-    }
+    }	
+    @$ids = reverse(@$ids); 
+    return $ids;
+	
+	
 }
 
 sub send_digest {
@@ -170,87 +200,47 @@ sub send_digest {
     my $self = shift;
     my $r;
 
-    my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
-     if(defined($digest_last_archive_id_sent)){ 
-         $r .= "\t* " . 'Last Archived Message ID Sent: ' . $digest_last_archive_id_sent
-         . ' (' . scalar(localtime($self->archive_time_2_ctime($self->{ls_obj}->param('digest_last_archive_id_sent')))) .')' . "\n";
-     }
-     else { 
-         $r .= "\t * No archived messages sent as a digest.\n"; 
-     }
+	if($self->mock_run() == 1){ 
+		$r .= "MOCK RUN!\n";
+	}
+	
+	if($self->mock_run() != 1){ 
+	    my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
+	     if(defined($digest_last_archive_id_sent)){ 
+	         $r .= "\t* " . 'Last Archived Message ID Sent: ' . $digest_last_archive_id_sent
+	         . ' (' . scalar(localtime($self->archive_time_2_ctime($self->{ls_obj}->param('digest_last_archive_id_sent')))) .')' . "\n";
+	     }
+	     else { 
+	         $r .= "\t * No archived messages sent as a digest.\n"; 
+	     }
 
-     if(defined($digest_last_archive_id_sent)){ 
-         my $time_since_last_digest_sent = $self->{ctime} - $self->archive_time_2_ctime($digest_last_archive_id_sent);
-         $r .= "\t* Digests sent every: " .      formatted_runtime($self->{ls_obj}->param('digest_schedule')) . "\n"; 
-         $r .= "\t* Last digest message sent: " . formatted_runtime($time_since_last_digest_sent) . " ago.\n"; 
-     }
+	     if(defined($digest_last_archive_id_sent)){ 
+	         my $time_since_last_digest_sent = $self->{ctime} - $self->archive_time_2_ctime($digest_last_archive_id_sent);
+	         $r .= "\t* Digests sent every: " .      formatted_runtime($self->{ls_obj}->param('digest_schedule')) . "\n"; 
+	         $r .= "\t* Last digest message sent: " . formatted_runtime($time_since_last_digest_sent) . " ago.\n"; 
+	     }
+	}
      
+	
     if ( $self->should_send_digest ) {
 
-        require DADA::App::FormatMessages;
-        my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-           $fm->mass_mailing(1);
-
-        my $entity = $self->create_digest_msg_entity();
-
-        my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;
-           $msg_as_string = safely_decode($msg_as_string);
-
-        my ( $final_header, $final_body );
-        eval { ( $final_header, $final_body ) = $fm->format_headers_and_body( -msg => $msg_as_string ); };
-
-        #        if ($@) {
-        #            report_mass_mail_errors( $@, $list, $root_login );
-        #            return;
-        #        }
-
-        require DADA::Mail::Send;
-        my $mh = DADA::Mail::Send->new(
-            {
-                -list   => $self->{list},
-                -ls_obj => $self->{ls_obj},
-            }
-        );
-
-        #
-        #
-        #
-        $mh->test( $self->test );
-        #
-        #
-        #
-        my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
-
-        my $message_id;
-
-        $message_id = $mh->mass_send(
-            {
-                -msg                 => {%mailing},
-                -mass_mailing_params => {
-                    -delivery_preferences => 'digest',
-                },
-
-                #                    -partial_sending => $partial_sending,
-                #                    ( $process =~ m/test/i )
-                #                    ? (
-                #                        -mass_test      => 1,
-                #                        -test_recipient => $og_test_recipient,
-                #                      )
-                #                    : ( -mass_test => 0, )
-                #
-            }
-        );
-
-		# Then, reset the digest, where we left off,
+		$r .=  "\tSending Digest.\n";
+        $self->send_out_digest();
 		my $keys = $self->archive_ids_for_digest();
 
-        $self->{ls_obj}->save(
-			{
-				-settings  => {
-              	  digest_last_archive_id_sent => $keys->[-1], 
-            	}
-			}
-        );
+#		use Data::Dumper; 
+#		$r .= Dumper($keys);
+
+		if($self->mock_run() != 1){
+			$r .= "\nsaving:" . $keys->[-1] . "\n";
+	        $self->{ls_obj}->save(
+				{
+					-settings  => {
+	              	  digest_last_archive_id_sent => $keys->[-1], 
+	            	}
+				}
+	        );
+		}
     }
     else {
         $r .= "\t* No new messages to create a digest message\n";
@@ -287,15 +277,24 @@ sub ctime_2_archive_time {
     return message_id($ctime);
 }
 
-sub create_digest_msg_entity {
+sub send_out_digest {
 
     my $self = shift;
+	
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
+	
+	
     my $vars = $self->digest_ht_vars;
     require DADA::Template::Widgets;
 
-    my $subject_tmpl = $self->{ls_obj}->param('digest_message_subject');
-    my $pt_tmpl      = $self->{ls_obj}->param('digest_message');
-    my $html_tmpl    = $self->{ls_obj}->param('digest_message_html');
+	require DADA::App::EmailThemes; 
+	my $dap = DADA::App::EmailThemes->new({-list => $self->{list}}); 
+    my $ep = $dap->fetch('digest_message');
+
+    my $subject_tmpl = $ep->{vars}->{subject};
+    my $pt_tmpl      = $ep->{plaintext};
+    my $html_tmpl    = $ep->{html};
 
     my $subject_scr = DADA::Template::Widgets::screen(
         {
@@ -313,6 +312,8 @@ sub create_digest_msg_entity {
             -list_settings_vars_param => { -list => $self->{list} },
         }
     );
+	
+	
     my $html_scrn = DADA::Template::Widgets::screen(
         {
             -data                     => \$html_tmpl,
@@ -321,6 +322,61 @@ sub create_digest_msg_entity {
             -list_settings_vars_param => { -list => $self->{list} },
         }
     );
+
+	require CGI; 
+    my $qq = CGI->new();
+       $qq->delete_all();
+        
+        $qq->param('Subject', $subject_scr); 
+        $qq->param('html_message_body', $html_scrn); 
+        $qq->param('text_message_body', $pt_scrn); 
+		$qq->param('f', 'send_email');
+        $qq->param('draft_role', 'draft'); 
+    
+        require DADA::App::MassSend; 
+        my $dam = DADA::App::MassSend->new({-list => $self->{list}}); 
+        my $draft_id = $dam->save_as_draft(
+            {
+                -cgi_obj => $qq,
+                -list    => $self->{list},
+                -json    => 0,
+            }
+        );
+
+        my $process = 'test'; 
+        if($self->test() == 1){ 
+            $process = 'test'; 
+        }
+        else { 
+            $process = 1; 
+        }
+		
+        my ( $status, $errors, $message_id, $md5 ) = $dam->construct_and_send(
+            {
+                -draft_id => $draft_id,
+                -screen   => 'send_email',
+                -role     => 'draft',
+                -process  => $process,
+            }
+        );
+        
+		if($status == 0) { 
+			warn 'problem creating digest message:' . $errors;
+		}
+		$dam->delete_draft($draft_id); 
+		
+
+
+		return $draft_id; 
+		
+	
+=cut
+	
+	
+	
+	
+	
+	
     require MIME::Entity;
     my $entity = MIME::Entity->build(
         Type    => 'multipart/alternative',
@@ -341,6 +397,9 @@ sub create_digest_msg_entity {
     );
 
     return $entity;
+
+=cut
+	
 
 }
 

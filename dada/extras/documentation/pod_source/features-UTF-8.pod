@@ -62,10 +62,6 @@ internally. This should be the default for email messages.
 
 =back
 
-=head3 Encode Message Headers
-
-Have this option checked. 
-
 =head2 SQL Backends
 
 =head3 Database

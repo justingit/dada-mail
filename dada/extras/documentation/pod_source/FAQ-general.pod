@@ -786,9 +786,8 @@ http://dadamailproject.com/d/requirements.pod.html
 
 Yes it does, but Dada Mail I<should> come with all the CPAN modules that are needed within the distribution itself. 
 
-Currently, this is done by copying a local perllib into the, I<dada/DADA/perllib> directory of the Dada Mail distribution. 
+These modules are listed in the following bundle: 
 
-If you'd like to have the CPAN modules required installed in your site-wide perl library, a Dada Mail-specific CPAN Bundle is located in the: I<dada/DADA/extras/developers/DadaMail.pm> file. 
 
 =head2 What is Dada Mail?
 

@@ -951,6 +951,49 @@ sub _zap_sig_html {
 }
 
 
+sub string_between_markers { 
+
+	my $self        = shift; 
+	my $str         = shift; 
+	my $begin       = shift || '<!-- start message content -->'; 
+	my $end         = shift || '<!-- end message content -->';
+	
+	my $qm_begin = quotemeta($begin);
+	my $qm_end = quotemeta($end);
+	
+	$str =~ s/($qm_begin|$qm_end)/\n$1\n/g;
+	
+	my @str_lines   = split(/\n|\r/, $str);
+	my $n_str = undef; 
+	
+	my $switch = 0; 
+	
+    for my $line(@str_lines){ 
+		if($line =~ m/$qm_begin/){  
+			$switch = 1;
+			next; 
+		}
+		
+		if($line =~ m/$qm_end/){  
+    		$switch = 0;
+    		next;
+   
+    	}
+    	next 
+    		if $switch == 0; 
+    	
+    	$n_str .= $line . "\n"; 
+    
+	}
+	
+	if(! $n_str){ 
+		return $str;
+	}else{ 
+		return $n_str; 
+	}
+}
+
+
 
 
 sub _highlight_quoted_text { 
@@ -1261,38 +1304,28 @@ sub _rearrange_cid_img_tags {
 	$body_copy =~ s/\>/\>\n/g;
 	$body_copy =~ s/\</\n\</g;
 	
-	if($self->can_display_attachments){ 
-		my @lines = split("\n", $body_copy); 
-		for my $line(@lines){ 
-			
-			
-			if($line =~ m/\"(cid\:(.*?))\"/){ 
-				push(@cids, $1); 
-			}
+
+	my @lines = split("\n", $body_copy); 
+	for my $line(@lines){ 
+		
+		
+		if($line =~ m/\"(cid\:(.*?))\"/){ 
+			push(@cids, $1); 
 		}
-		
-	
-		for my $this_cid(@cids){
-		
-		
-			my $img_url = $DADA::Config::PROGRAM_URL . '?flavor=show_img&list=' . $self->{list} . '&id=' . $args{-key} . '&cid=' . $this_cid;  
-	
-			my $link_wo_cid = $img_url; 
-			   $link_wo_cid =~ s/cid\://; 
-			
-				
-			my $qm_this_cid = quotemeta($this_cid); 
-			
-			$body =~ s/$qm_this_cid/$link_wo_cid/g;
-		}
-		
-	 	return $body; 
-	 	
-	}else{ 
-	
-		$body =~ s/\<img(.*?)(src=|src=\")(cid\:)(.*?)\>/<img$1$2$4>/g; #basically, just get rid of 'em and call it a day.
-		return $body; 	
 	}
+	
+
+	for my $this_cid(@cids){
+	
+		my $img_url = $DADA::Config::PROGRAM_URL . '/show_img/' . $self->{list} . '/' . $args{-key} . '/' . $this_cid;  
+		my $link_wo_cid = $img_url; 
+		   $link_wo_cid =~ s/cid\://; 
+		my $qm_this_cid = quotemeta($this_cid); 
+		$body =~ s/$qm_this_cid/$link_wo_cid/g;
+	}
+	
+ 	return $body; 
+
 
 }
 
@@ -1646,6 +1679,7 @@ sub massage_msg_for_resending {
 	my $self = shift; 
 	my %args = (-key        => undef, 
 				'-split'     => 0,  
+				-zap_sigs    => 1,
 				@_); 
 
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($args{-key}, 1);
@@ -1658,8 +1692,10 @@ sub massage_msg_for_resending {
 	
 	
 	my $entity = $self->_entity_from_raw_msg($raw_msg); 
-	   $entity = $self->_take_off_sigs($entity); 
-	
+	   
+	if($args{-zap_sigs} == 1){
+		$entity = $self->_take_off_sigs($entity); 
+	}
 	# These may be out of date, so let's get rid of them.
 	for my $header(
 		'From', 
@@ -1733,6 +1769,10 @@ sub _take_off_sigs {
 			
 			if($content){ 
 				if($entity->head->mime_type eq 'text/html'){ 
+					
+					$content = $self->string_between_markers($content);
+					
+					
 					$content = $self->_zap_sig_html($content);
 				}else{ 
 					$content = $self->_zap_sig_plaintext($content);
@@ -1848,9 +1888,7 @@ sub massaged_msg_for_display {
 		$body = safely_decode($body);
 		 
 		
-        if ( $self->{ls}->param('stop_message_at_sig') == 1 ) {
-            $body = $self->_zap_sig_plaintext($body);
-        }
+        $body = $self->_zap_sig_plaintext($body);
 
         $body = $self->massage($body);
         $body = $self->_parse_in_list_info(
@@ -1890,9 +1928,11 @@ sub massaged_msg_for_display {
             -key  => $args->{-key},
             -body => $body,
         );		
-        if ( $self->{ls}->param('stop_message_at_sig') == 1 ) {
-            $body = $self->_zap_sig_html($body);
-        }
+			$body = $self->string_between_markers($body);			
+            
+			# This is more backwards compatible stuff:
+			$body = $self->_zap_sig_html($body);
+        
 
         $body = $self->massage($body);
 		
@@ -1985,7 +2025,6 @@ sub _parse_in_list_info {
             -list_settings_vars       => $self->{ls}->params,
             -list_settings_vars_param => {-dot_it => 1},
 			-subscriber_vars_param    => {-list => $self->{list}, -use_fallback_vars => 1},
-            -dada_pseudo_tag_filter   => 1, 
 
         }, 
 
@@ -2699,23 +2738,18 @@ sub _decode_header {
 	my $new_header = undef; 
 	my $can_use_mime_encodewords = 1; 
 	
-	if($self->{ls}->param('mime_encode_words_in_headers') == 1){ 
-		try { 
-			require MIME::EncWords;
-		} catch {
-			$can_use_mime_encodewords = 0; 
-			carp "MIME::EncWords is returning with an error: $@"; 		
-			return $header;
-		};
+	try { 
+		require MIME::EncWords;
+	} catch {
+		$can_use_mime_encodewords = 0; 
+		carp 'MIME::EncWords is returning with an error:' . $_; 		
+		return $header;
+	};
 
-		if($can_use_mime_encodewords == 1){ 
-				$new_header = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
-				return $new_header;
-		}		
-	}
-	else { 
-		return $header; 
-	}
+	if($can_use_mime_encodewords == 1){ 
+			$new_header = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
+			return $new_header;
+	}		
 }
 
 sub DESTROY { 

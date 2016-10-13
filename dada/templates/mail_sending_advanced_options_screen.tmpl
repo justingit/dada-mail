@@ -69,28 +69,6 @@
 		</div>
 		<div class="row">
 			<div class="small-12 columns">
-				<label for="mime_encode_words_in_headers">
-					<input 
-						type="checkbox" 
-						name="mime_encode_words_in_headers" 
-						id="mime_encode_words_in_headers" 
-						value="1" 
-						<!-- tmpl_if list_settings.mime_encode_words_in_headers -->checked="checked"<!--/tmpl_if-->
-					>		
-					Encode message headers
-				</label>
-				<div class="alert-box info radius"> 
-					Non-ASCII characters will be specially encoded in the To, From, Cc and Subject headers. 
-				</div>
-				<!-- tmpl_unless can_mime_encode --> 
-					<div class="alert-box alert radius"> 
-						Warning! The MIME::EncWords CPAN module needs to be installed, for this option to work correctly!
-					</div>
-				<!-- /tmpl_unless --> 
-			</div>
-		</div>
-		<div class="row">
-			<div class="small-12 columns">
 				<label for="verp_return_path">
 					<input 
 						type="checkbox" 

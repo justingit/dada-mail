@@ -585,7 +585,6 @@ sub draft_index {
             role                          => $hashref->{role},
             Subject                       => scalar $q->param('Subject'),
 
-
             schedule_activated             => scalar $q->param('schedule_activated'),
             schedule_type                  => scalar $q->param('schedule_type'),
             schedule_single_ctime          => scalar $q->param('schedule_single_ctime'),
@@ -746,7 +745,8 @@ sub params_to_save {
         backdate_datetime              => 1,
         test_recipient                 => 1,
         Subject                        => 1,
-        subject_from                   => 1, 
+        subject_from                   => 1,
+		'X-Preheader'                  => 1,  
         schedule_activated             => 1,
         schedule_type                  => 1,
         
@@ -760,6 +760,8 @@ sub params_to_save {
         schedule_html_body_checksum    => 1,
         
         schedule_recurring_only_mass_mail_if_primary_diff => 1, 
+		
+		layout                         => 1,
         
 
     };
@@ -780,13 +782,15 @@ sub params_to_save {
         $params->{ $_ . '.rangestart' } = 1;
         $params->{ $_ . '.rangeend' }   = 1;
     }
+	
+    $params->{attachment1} = 1;
+    $params->{attachment2} = 1;
+    $params->{attachment3} = 1;
+    $params->{attachment4} = 1;
+    $params->{attachment5} = 1;
+	
     if ( $args->{-screen} eq 'send_email' ) {
-
-        $params->{attachment1} = 1;
-        $params->{attachment2} = 1;
-        $params->{attachment3} = 1;
-        $params->{attachment4} = 1;
-        $params->{attachment5} = 1;
+		#... 
     }
     elsif ( $args->{-screen} eq 'send_url_email' ) {
 

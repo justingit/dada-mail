@@ -97,6 +97,10 @@ msg_id text,
 url text
 ); 
 
+
+-- change 'text' to, 'varchar(255)', add index: 
+-- ALTER TABLE `dada_mass_mailing_event_log` ADD INDEX  `dada_mass_mailing_event_log_index` (`list`,`remote_addr`, `msg_id`, `event`, timestamp);
+
 CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log (
 id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
 list varchar(16),
@@ -148,3 +152,12 @@ action VARCHAR(225) NOT NULL,
 timestamp INT UNSIGNED NOT NULL
 );
 CREATE INDEX dada_rate_limit_hits_all_index ON dada_rate_limit_hits (user_id, action, timestamp);
+
+CREATE TABLE IF NOT EXISTS dada_email_message_previews (
+id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
+list varchar(16),
+created_timestamp TIMESTAMP DEFAULT NOW(),
+vars text,
+plaintext mediumtext,
+html mediumtext
+);

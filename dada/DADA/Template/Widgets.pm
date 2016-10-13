@@ -429,7 +429,6 @@ sub list_popup_login_form {
 			return screen( 
 				{ 
 					-screen => 'text_box_login_form.tmpl', 
-			        -expr   => 1, 
 			        -vars   => { 
 
 			            list_popup_menu => $list_popup_menu, 
@@ -448,7 +447,6 @@ sub list_popup_login_form {
 			return screen(
 			    {
 			        -screen => 'list_popup_login_form.tmpl',		
-			        -expr   => 1, 
 			        -vars   => { 
 		            
 			            list_popup_menu => $list_popup_menu, 
@@ -520,13 +518,17 @@ sub default_screen {
         my $all_list_info        = $ls->get;
         my $all_list_info_dotted = $ls->get( -dotted => 1 );
 
-        my $ah = DADA::MailingList::Archives->new(
-            {
-                -list => $list,
-                ( ($reusable_parser) ? ( -parser => $reusable_parser ) : () )
-            }
-        );
+		my $ah = undef; 
+		if($ls->param('show_archives') == 1){   
 
+	        $ah = DADA::MailingList::Archives->new(
+	            {
+	                -list => $list,
+	                ( ($reusable_parser) ? ( -parser => $reusable_parser ) : () )
+	            }
+	        );
+		}
+		
         unless($ls->param('hide_list') == 1 && $ls->param('private_list') == 1){ 
             $l_count++;
 
@@ -536,30 +538,35 @@ sub default_screen {
             $all_list_info_dotted->{'list_settings.info'} =
               _email_protect({-string => $all_list_info_dotted->{'list_settings.info'}} );
 
-            my $ne      = $ah->newest_entry;
-            my $subject = $ah->get_archive_subject($ne);
-               $subject = $ah->_parse_in_list_info( -data => $subject );
-               
-			   # this is so atrocious.
-	            $all_list_info_dotted->{latest_archive_date} = date_this(
-	           -Packed_Date   => $ne,
-	           -Write_Month   => $ls->param('archive_show_month'),
-	           -Write_Day     => $ls->param('archive_show_day'),
-	           -Write_Year    => $ls->param('archive_show_year'),
-	           -Write_H_And_M => $ls->param('archive_show_hour_and_minute'),
-	           -Write_Second  => $ls->param('archive_show_second')
-	           );
+  			my $ne; 
+  			my $subject; 
+  			if($ls->param('show_archives') == 1){   
+              	$ne      = $ah->newest_entry;
+              	$subject = $ah->get_archive_subject($ne);
+                  $subject = $ah->_parse_in_list_info( -data => $subject );
+
+  			   # this is so atrocious.
+  	            $all_list_info_dotted->{latest_archive_date} = date_this(
+  	           -Packed_Date   => $ne,
+  	           -Write_Month   => $ls->param('archive_show_month'),
+  	           -Write_Day     => $ls->param('archive_show_day'),
+  	           -Write_Year    => $ls->param('archive_show_year'),
+  	           -Write_H_And_M => $ls->param('archive_show_hour_and_minute'),
+  	           -Write_Second  => $ls->param('archive_show_second')
+  	           );
 			   
-			  $all_list_info_dotted->{latest_archive_id} = $ne;
-            # These two things are sort of strange.
-            $all_list_info_dotted->{latest_archive_blurb} =
-              $ah->message_blurb();
-            $all_list_info_dotted->{latest_archive_subject} = $subject;
-
+  				  $all_list_info_dotted->{latest_archive_id} = $ne;
+  	            # These two things are sort of strange.
+  	            $all_list_info_dotted->{latest_archive_blurb} =
+  	              $ah->message_blurb();
+  	            $all_list_info_dotted->{latest_archive_subject} = $subject;
+  			}
+		
+		
             push ( @list_information, $all_list_info_dotted );
-
-            $reusable_parser = $ah->{parser} if !$reusable_parser;
-
+  			if($ls->param('show_archives') == 1){   
+  				$reusable_parser = $ah->{parser} if !$reusable_parser;
+  			}
         }
     }
 
@@ -582,7 +589,6 @@ sub default_screen {
         {
 			-with   => 'list', 
             -screen => 'default_screen.tmpl',
-            -expr   => 1,
             -vars   => {
 				can_use_JSON       => scalar DADA::App::Guts::can_use_JSON(), 
                 list_popup_menu    => $list_popup_menu,
@@ -617,8 +623,7 @@ sub list_page {
 	
     my $template = wrap_screen(
         {
-        -expr                     => 1, 
-		-with                     => 'list', 
+        -with                     => 'list', 
         -screen                   => 'list_page_screen.tmpl',
         -list_settings_vars       => $ls->get,
         -list_settings_vars_param => {
@@ -712,7 +717,6 @@ sub admin {
         {
             -screen         => 'admin_screen.tmpl',
             -with           => 'list',
-            -expr           => 1,
             -wrapper_params => {
                 -Use_Custom => 0,
             },
@@ -792,6 +796,9 @@ sub html_archive_list {
 	
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 	
+	return '' 
+		if $ls->param('show_archives') != 1;
+	
 	require DADA::Profile; 
 	my $prof = DADA::Profile->new(
 		{
@@ -844,7 +851,6 @@ sub html_archive_list {
 	                        -vars                     => $ls->get, 
 	                        -list_settings_vars       => $ls->get, 
 	                        -list_settings_vars_param => {-dot_it => 1},                    
-	                        -dada_pseudo_tag_filter   => 1, 
 							-subscriber_vars_param    => {-use_fallback_vars => 1, -list => $ls->param('list')},
 
 	                        }
@@ -1093,8 +1099,7 @@ sub login_switch_popup_menu_widget {
 	return DADA::Template::Widgets::screen(
 		{
 		    -screen => 'login_switch_popup_menu_widget.tmpl',
-			-expr   => 1, 
-		    -vars   => { 
+			-vars   => { 
 				num_lists               => $num_lists, 
 				login_switch_popup_menu => $login_switch_popup_menu, 
 		        location                => $location, 
@@ -1280,7 +1285,6 @@ sub amazon_ses_requirements_widget {
 	return screen(
 		{
 			-screen => 'amazon_ses_requirements_widget.tmpl',
-#			-expr   => 1, 
 			-vars   => {
 				amazon_ses_has_needed_cpan_modules  => $amazon_ses_has_needed_cpan_modules, 
 				amazon_ses_required_modules         => $amazon_ses_required_modules, 
@@ -1356,15 +1360,6 @@ which should be a filename to whatever template you'd like to use.
 
 In B<H::T>, it maps to the C<filename> parameter. 
 
-If the data you're giving C<screen> is an HTML::Template::Expr template, you may also pass over the, 
-C<-expr> parameter with a value of, C<1>: 
-
- print DADA::Template::Widgets::screen(
-    {
-        -screen => 'somefile.tmpl',
-        -expr   => 1, 
-    }
- );
 
 Variables to be used in the template can be passed using the, C<-vars> parameter, which maps to the, 
 B<H::T> parameter, C<param>. C<-vars> should hold a reference to a hash: 
@@ -1381,45 +1376,6 @@ This will print:
 
  I wanted to say: This!
 
-There is one small B<HTML::Template> filter that turns the very B<very> simple (oldstyle) Dada 
-Mail template-like files into something B<HTML::Template> can use. In the beginning (gather 'round, kids)
-Dada Mail didn't have a Templating system (really) at all, and just used regex search and replace - 
-sort of like everyone did, before they knew better. Old style Dada Mail variables looked like this: 
-
- [var1]
-
-These oldstyle variables will still work, but do remember to pass the, C<-dada_pseudo_tag_filter>
-with a value of, C<1> to enable this filter: 
-
- my $scalar = 'I wanted to say: [var1]'; 
- print DADA::Template::Widgets::screen(
-    {
-        -data                   => \$scalar,
-        -vars                   => {var1 => "This!"}, 
-        -dada_pseudo_tag_filter => 1, 
-    }
- );
-
-This will print:
-
- I wanted to say: This!
-
-My suggestion is to try not to mix the two dialects and note that we'll I<probably> be moving to 
-using the B<H::T> default template conventions, so as to make geeks and nerds more comfortable with 
-the program. Saying that, you I<can> mix the two dialects and everything should work. This may be 
-interesting in a pinch, where you want to say something like: 
-
- Welcome to [boring_name]
- 
- <!-- tmpl_if boring_description --> 
-  My boring description: 
-  
-    [boring_description]
-    
- <!--/tmpl_if--> 
-
-since the oldstyle Dada Mail template stuff didn't have any sort of idea of a C<if> block. I'm not 
-really considering adding support either. 
 
 And that's basically screen. Learn HTML::Template and memorize the mappings and you'll be right at home. 
 
@@ -1586,20 +1542,6 @@ sub screen {
     if(! exists($args->{-vars})){ 
         $args->{-vars} = {};
     }
-    
-    if(! exists($args->{-expr})){ 
-        $args->{-expr} = 0;
-    }    
-    
-	if(! exists($args->{-pro})){ 
-		$args->{-pro} = undef; 
-	}
-
-    if(! exists($args->{-dada_pseudo_tag_filter})){ 
-        $args->{-dada_pseudo_tag_filter} = 0;
-    }
-    
-
     
     # This is for mispelings: 
 	foreach('-list_settings_param', 'list_settings_param', 'list_settings_vars_params', '-list_settings_vars_params', 'list_settings_params', '-list_settings_params'){ 
@@ -1826,51 +1768,10 @@ sub screen {
 
 	# Which templating engine to use? 
 	#
-	my $template;
-	my $engine = 'html_template'; 
- 
-	if($args->{-expr} == 1){ 
-
-		# DEV: 
-		# I'm still using H::T::Expr on all templates that require H::T::Expr
-		# syntax, even though H::T::Pro supports it, because H::T::Expr will
-		# barf of variable names w/dots in them. 
-		# What to do? 
-		# * Write a filter to remove dots, replace with, "_dot_" instead?
-		# * change any variables with a dot name with, "_dot_" too. Will 
-		# That inpose too much of a speed hit?
-		# 
-		# HTML::Template::Pro also doesn't work with tmpl_set
-		
-		$engine = 'html_template_expr';  
-	}
-	elsif ( $args->{-pro} == 1
-        && HAS_HTML_TEMPLATE_PRO )
-    {
-        $engine = 'html_template_pro'; 
-    }
-    elsif (defined($args->{-pro}) && $args->{-pro} == 0 ) {
-            $engine = 'html_template'; 
-    }
-    elsif ( $DADA::Config::TEMPLATE_SETTINGS->{engine} =~ m/HTML Template Pro|Best/i
-        && HAS_HTML_TEMPLATE_PRO )
-    {
-        $engine = 'html_template_pro'; 
-    }
-    else { 
-            $engine = 'html_template';
-    }	
-	#print "engine is $engine\n"; 
-
-	
+	my $template; 	
 	my $filters = []; 
- 	if($args->{-screen} && $engine ne 'html_template'){
-		
-		# HTML::Template now has a open_mode, where you can 
-		# set your encoding for opening. Hurrah!
-		# Not sure about HTML::Template::Pro - nothing in the docs say 
-		# anything about encoding, which is weird. 
-		#
+
+ 	if(exists($args->{-screen})){
 		
 		push(@$filters, 
 				{ 
@@ -1892,14 +1793,6 @@ sub screen {
 		},
 	);
 	 
-	if($args->{-dada_pseudo_tag_filter} == 1){ 
-		push(@$filters, 
-		{ 
-			sub    => \&dada_pseudo_tag_filter,
-			format => 'scalar' 
-		}
-		);
-	}
 	# This is very strange - but filters break images (binary stuff) 
 	if(exists($args->{-img})){ 
 		if($args->{-img} == 1){ 
@@ -1907,88 +1800,29 @@ sub screen {
 		}
 	}
 	
-
-	if($engine eq 'html_template'){ 
-		require HTML::Template;		
-		# print "version is $HTML::Template::VERSION\n";
-		if($args->{-screen}){
-			 $template = HTML::Template->new(
-			 	%Global_Template_Options, 
-				filename  => $args->{-screen},
-				filter    => $filters,    
-				open_mode => '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',
-			);
+	require HTML::Template::MyExpr;
+	
+	if(exists($args->{-screen})){ 
+		$template = HTML::Template::MyExpr->new(
+			%Global_Template_Options, 
+			filename => $args->{-screen},
+			filter   => $filters, 
+		);
+	}elsif(exists($args->{-data})){ 
+		
+		if($args->{-decode_before} == 1){ 
+			${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
 		}
-		elsif($args->{-data}){ 
-
-			if($args->{-decode_before} == 1){ 
-				${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
-			}
-			require HTML::Template;
-			$template = HTML::Template->new(
+		
+		$template = HTML::Template::MyExpr->new(
 			%Global_Template_Options, 
 			scalarref => $args->{-data},
-			filter => $filters,   
-			);
-		}
-		else { 
-			croak "you MUST pass either a scarlarref in, '-date' or a filename in, '-screen'!"; 
-		}	
+			filter    => $filters, 
+		);
+	}else{ 
+		croak "you MUST pass either a scarlarref in, '-data' or a filename in, '-screen'!"; 
 	}
-	elsif($engine eq 'html_template_expr'){ 
-		require HTML::Template::MyExpr;
-	 	        #HTML::Template::MyExpr->register_function(
-	 	        #    not_defined => \&not_defined
-	 	        #);
-		
-		if($args->{-screen}){ 
-			$template = HTML::Template::MyExpr->new(
-				%Global_Template_Options, 
-				filename => $args->{-screen},
-				filter   => $filters, 
-			);
-		}elsif($args->{-data}){ 
-			
-			if($args->{-decode_before} == 1){ 
-				${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
-			}
-			
-			$template = HTML::Template::MyExpr->new(
-				%Global_Template_Options, 
-				scalarref => $args->{-data},
-				filter    => $filters, 
-			);
-		}else{ 
-			croak "you MUST pass either a scarlarref in, '-date' or a filename in, '-screen'!"; 
-		}
-	}
-	elsif($engine eq 'html_template_pro'){
-		
-			if($args->{-screen}){ 
-				$template = HTML::Template::Pro->new(
-					%Global_Template_Options, 
-					filename => $args->{-screen},
-					filter   => $filters, 
-				);
-			}elsif($args->{-data}){ 
-				
-				if($args->{-decode_before} == 1){ 
-					${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
-				}
-				else { 
-				}
-				$template = HTML::Template::Pro->new(
-					%Global_Template_Options, 
-					scalarref => $args->{-data},
-					filter => $filters,   
-				);
-			}else{ 
-				croak "you MUST pass either a scarlarref in, '-data' or a filename in, '-screen'!"; 
-			}
-	}
-	else { 
-		croak "Invalid Templating Engine $engine"; 
-	}
+
 
 	my %date_params = date_params(); 
 	my %final_params = (
@@ -2004,53 +1838,15 @@ sub screen {
    $template->param(%final_params); 
 	%_ht_tmpl_set_params = (); 
 	if(exists($args->{-return_params})){ 
-		if($args->{-return_params} == 1){ 	
-			if($engine eq 'html_template_pro'){
-				
-				# This won't work with H::T::Pro, since 
-				# filters aren't run until ->output is called, not before, 
-				# like H::T (which does things in two passes)
-				# So, you'll have to pick them up, afterwards...
-				#
-				# return (safely_decode($template->output(), 1), {$template->param()}); 
-			
-				
-				my $str = safely_decode($template->output(), 1);
-				# ... like this. 
-				
-				%final_params = (%final_params, %_ht_tmpl_set_params); 
-				#use Data::Dumper; 
-				#die Dumper({%final_params});
-				return ($str, {%final_params}); 
-			}
-			else { 
-				#use Data::Dumper; 
-				#die Dumper({%final_params}); 
-				
-				return ($template->output(), {%final_params});	
-
-			}
+		if($args->{-return_params} == 1){ 		
+			return ($template->output(), {%final_params});	
 		}
-		else { 
-			if($engine eq 'html_template_pro'){
-				# No, I do not know why I have to decode what H::T::Pro gives me. 
-								 
-				return safely_decode($template->output(), 1); 
-			}
-			else { 
-								 
-				return $template->output();
-			}
+		else { 					 
+			return $template->output();
 		}
 	}
 	else { 
-		if($engine eq 'html_template_pro'){
-			# No, I do not know why I have to decode what H::T::Pro gives me. 
-			return safely_decode($template->output(), 1); 
-		}
-		else { 
-			return $template->output();
-		}
+		return $template->output();
 	}
 }
 
@@ -2499,34 +2295,20 @@ sub wrap_screen {
 	}
 }
 
-
-
-
 sub validate_screen { 
 	my ($args) = @_; 
-	eval { 
-		my $scrn = screen({%$args, -pro  => 0}); 
-		# I like the idea of forcing it to use HTML::Template, as the H::T::Pro does not barf, 
-		# when finding things it does not like.
+	try { 
+		my $scrn = screen({%$args}); 
+	} catch {
+		return (0, $_);
 	};
-	if($@){ 
-		return (0, $@);
-	}
-	else { 
-		return (1, undef); 
-	}
+	return (1, undef); 
 }
-
-
-
 
 sub decode_str { 
 	my $ref = shift;
  	   ${$ref} = safely_decode(${$ref}); 
 }
-
-
-
 
 sub not_defined { 
     my $ref = shift;
@@ -2541,40 +2323,6 @@ sub not_defined {
     }
     return 0;
 }
-sub dada_pseudo_tag_filter { 
-
-    my $text_ref = shift;
-    
-	if(!defined($$text_ref)){ return; }
-
-	$$text_ref =~ s{\[tmpl_else\]}{<!-- tmpl_else -->}g;
-	
-	# This one doesn't make too much sense:
-	$$text_ref =~ s{\[tmpl_else\s(\w+?)\]}{<!-- tmpl_else $1 -->}g;
-    
-	$$text_ref =~ s{\[((\w+?)|subscriber\.\w+?|list_settings\.\w+?)\]}{<!-- tmpl_var $1 -->}g; # Match 1 or more word (alphanum + _), non-greedy
-
-
-	$$text_ref =~ s{\[(profile\.\w+?)\]}{<!-- tmpl_var $1 -->}g; # Match 1 or more word (alphanum + _), non-greedy
-
-
-
-    # I know I said I wasn't going to do it, but I did it. 
-
-    $$text_ref =~ s{\[tmpl_if\s((\w+?)|subscriber\.\w+?|list_settings\.\w+?)\]}{<!-- tmpl_if $1 -->}g;
-    $$text_ref =~ s{\[/tmpl_if\]}{<!-- /tmpl_if -->}g;
-    
-    
-    
-    $$text_ref =~ s{\[tmpl_unless\s((\w+?)|subscriber\.\w+?|list_settings\.\w+?)\]}{<!-- tmpl_unless $1 -->}g;
-    $$text_ref =~ s{\[/tmpl_unless\]}{<!-- /tmpl_unless -->}g;
-    
-    $$text_ref =~ s{\[tmpl_loop\s((\w+?)|subscriber\.\w+?|list_settings\.\w+?)\]}{<!-- tmpl_loop $1 -->}g; 
-    $$text_ref =~ s{\[/tmpl_loop\]}{<!-- /tmpl_loop -->}g;
-   
-   
-}
-
 sub hack_in_tmpl_set_support {
     my $text_ref = shift;
 

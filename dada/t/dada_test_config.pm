@@ -28,7 +28,16 @@ $DADA::Config::PROGRAM_USAGE_LOG        = $DADA::Config::FILES . '/dada.txt';
 				croak "I couldn't make a tmp directory - heavens!"; 
 		}		
 	}
-	
+	$DADA::Config::SUPPORT_FILES = {
+	    dir => 'static',
+	    url => undef,
+	};
+
+
+	`mkdir static/themes`;
+	`mkdir static/themes/email`;
+	`mkdir static/themes/email/default`;
+	`cp -rX /Users/justin/Documents/DadaMail/git/dada_mail_foundation_email_templates/dist static/themes/email/default/dist`;
 
 }
 
@@ -250,9 +259,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_rate_limit_hits}{CREATE TABLE IF NOT EXISTS $rate_limit_hits_table};	
 
 
-		
-		print 'query: ' . $_ . "\n\n"; 
-        my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
+        my $sth = $dbh->prepare($_) or croak $DBI::errstr . 'query:' . $_; 
 
        $sth->execute
 			or croak "cannot do statement $DBI::errstr\n"; 
@@ -544,6 +551,9 @@ sub wipe_out {
 	if(-e './test_only_dada_files'){ 
 		warn "wiping out didn't work!"; 
 	}
+	
+	`rm -rf static/themes`;
+	
 }
 
 sub MySQL_test_enabled { 

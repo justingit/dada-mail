@@ -816,9 +816,9 @@ $ADMIN_MENU //= [
 				},
 
 				{
-				-Title      => 'Email Message Templates',
-				-Title_URL  => "$S_PROGRAM_URL?flavor=edit_type",
-				-Function   => 'edit_type',
+				-Title      => 'Email Themes',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=email_themes",
+				-Function   => 'email_themes',
 				-Activated  => 1,
 				},
 
@@ -1230,6 +1230,11 @@ $MIME_TOOLS_PARAMS //= {
         # (Dummy)
         list_info => undef,
 
+	logo_image_url       => undef,
+	facebook_page_url    => undef,
+	twitter_url          => undef,
+	google_plus_page_url => undef,
+
     # Mailing List >> List Password
     password         => '',      # you'll need to encrypt it to use this...
     cipher_key       => undef,
@@ -1247,8 +1252,8 @@ $MIME_TOOLS_PARAMS //= {
     
 
     # Mass Mailing Options
-    mass_mailing_convert_plaintext_to_html => 0,
-    mass_mailing_block_css_to_inline_css   => 0,
+    mass_mailing_convert_plaintext_to_html => 1,
+    mass_mailing_block_css_to_inline_css   => 1,
 
     #quotas
     use_subscription_quota => 0,
@@ -1392,7 +1397,6 @@ $MIME_TOOLS_PARAMS //= {
     strip_message_headers                  => 0,
     add_sendmail_f_flag                    => 1,
     verp_return_path                       => 0,
-    mime_encode_words_in_headers           => 1,
 
     # view list prefs
 
@@ -1428,7 +1432,6 @@ $MIME_TOOLS_PARAMS //= {
     sort_archives_in_reverse              => 1,
     disable_archive_js                    => 1,
     style_quoted_archive_text             => 1,
-    stop_message_at_sig                   => 1,
     publish_archives_rss                  => 1,
     ping_archives_rss                     => 0,
     html_archives_in_iframe               => 0,
@@ -1462,6 +1465,8 @@ $MIME_TOOLS_PARAMS //= {
     invites_check_for_already_invited => 1,
     invites_prohibit_reinvites        => 1,
 
+
+	email_theme_name => undef, 
     #  Mailing List Template Prefs
 
     get_template_data => 'from_default_template',
@@ -1486,86 +1491,9 @@ $MIME_TOOLS_PARAMS //= {
 
     fallback_field_values => '',
 
-    # Email Templates
-
-    confirmation_message_subject => undef,
-    confirmation_message         => undef,
 
 
-
-	# Subscription Requests
-	# List Owner
-
-    subscription_approval_request_message_subject   => undef,
-    subscription_approval_request_message           => undef,
-	
-	# Subscriber
-    subscription_request_approved_message_subject   => undef,
-    subscription_request_approved_message           => undef,
-
-	# Subscriber  
-    subscription_request_denied_message_subject     => undef,
-    subscription_request_denied_message             => undef,
-
-
-	# Unsubscription Requests
-	# List Owner
-    unsubscription_approval_request_message_subject => undef,
-	unsubscription_approval_request_message         => undef,
-
-	# Subscriber
-    unsubscription_request_approved_message_subject => undef,
-    unsubscription_request_approved_message         => undef,
-
-	# Subscriber
-    unsubscription_request_denied_message_subject   => undef,
-    unsubscription_request_denied_message           => undef,
-
-    
-    subscribed_message_subject => undef,
-    subscribed_message         => undef, 
-
-    subscribed_by_list_owner_message_subject => undef,
-    subscribed_by_list_owner_message         => undef,
-
-    unsubscribed_by_list_owner_message_subject => undef,
-    unsubscribed_by_list_owner_message         => undef,
-
-    unsubscribed_message_subject => undef, 
-    unsubscribed_message         => undef,
-
-
-    mailing_list_message_from_phrase => undef, 
-    mailing_list_message_to_phrase   => undef,
-    mailing_list_message_subject     => undef,
-    mailing_list_message             => undef,
-    mailing_list_message_html        => undef,
-    
-    digest_message_subject           => undef, 
-    digest_message                   => undef, 
-    digest_message_html              => undef, 
-    
-
-    send_archive_message_subject     => undef,
-    send_archive_message             => undef,
-    send_archive_message_html        => undef,
-
-    you_are_already_subscribed_message_subject => undef, 
-    you_are_already_subscribed_message => undef,
-
-    you_are_not_subscribed_message         => undef,
-    you_are_not_subscribed_message_subject => undef,
-
-    admin_subscription_notice_message_subject => undef,
-    admin_subscription_notice_message         => undef,
-
-    unsubscription_notice_message_subject => undef,
-    unsubscription_notice_message         => undef,
-
-    admin_unsubscription_notice_message_subject => undef,
-    admin_unsubscription_notice_message         => undef,
-
-    enable_email_template_expr                  => 0,
+    enable_email_template_expr                  => 1,
 
     # HTML Screen Templates
 
@@ -1573,14 +1501,6 @@ $MIME_TOOLS_PARAMS //= {
     html_subscribed_message           => undef,
     html_unsubscribed_message         => undef,
     html_subscription_request_message => undef,
-
-    # Send a List Invitation
-
-    invite_message_from_phrase => undef, 
-    invite_message_to_phrase   => undef,
-    invite_message_text        => undef,
-    invite_message_html        => undef,
-    invite_message_subject     => undef,
 
     # Features
     admin_menu               => undef,
@@ -1654,36 +1574,8 @@ $MIME_TOOLS_PARAMS //= {
     send_msg_copy_to             => 0,
     rewrite_anounce_from_header  => 1,
 
-    not_allowed_to_post_msg_subject => undef, ,
-    not_allowed_to_post_msg         => undef,
-
-    invalid_msgs_to_owner_msg_subject => undef,
-    invalid_msgs_to_owner_msg => undef,
-
-    moderation_msg_subject => undef, 
-    moderation_msg => undef,
-    
-    await_moderation_msg_subject => undef,
-    await_moderation_msg => undef,
-    
-    accept_msg_subject => undef,
-    accept_msg => undef,
-    
-    rejection_msg_subject => undef,
-    rejection_msg => undef,
-    
-    msg_too_big_msg_subject => undef,
-    msg_too_big_msg         => undef,
-    
-    msg_received_msg_subject => undef, 
-    msg_received_msg         => undef, 
-    
     msg_soft_size_limit      => 2621440, 
     msg_hard_size_limit      => 5242880, 
-    
-    
-    msg_labeled_as_spam_msg_subject => undef,
-    msg_labeled_as_spam_msg => undef,
 
     digest_enable               => 0, 
     digest_schedule             => 86400, 
@@ -1794,8 +1686,8 @@ $ATTACHMENT_TEMPFILE //= 0;
 $MAIL_VERP_SEPARATOR //= '-';
 
 
-$VERSION = 9.6.1;
-$VER     = '9.6.1 10/05/16';
+$VERSION = 10.0.0;
+$VER     = '10.0.0 Beta 1 10/11/16';
 
 #
 #
@@ -1840,6 +1732,7 @@ $PROGRAM_NAME //= "Dada Mail";
     'Content-Disposition'       => undef,
     'MIME-Version'              => undef,
     Subject                     => '(no subject)',
+	'X-Preheader'               => undef,
     Body                        => 'blank',
 ) unless keys %EMAIL_HEADERS;
 
@@ -1886,7 +1779,7 @@ $PROGRAM_NAME //= "Dada Mail";
   Content-Base
 
   MIME-Version
-
+  X-Preheader
   Subject
   ) unless scalar @EMAIL_HEADERS_ORDER;
 

@@ -262,6 +262,14 @@ sub translate {
             }
 
         }
+        elsif ( $info =~ /^show_img/ ) {
+			
+            my ( $pi_flavor, $pi_list, $pi_id, $pi_cid ) = split( '/', $info );
+            $q->param( 'flavor', 'show_img' );
+            $q->param( 'list', $pi_list );
+            $q->param( 'id', $pi_id );
+            $q->param( 'cid', $pi_cid );
+		}
         elsif ( $info =~ /^img/ ) {
 
             my ( $pi_flavor, $img_name, $extran ) = split( '/', $info );

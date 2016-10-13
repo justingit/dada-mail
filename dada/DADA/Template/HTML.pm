@@ -149,7 +149,7 @@ sub admin_template {
 	
 	# DEV: ?!?!
 
-	my $f = $q->param('f') || undef;
+	my $f = scalar $q->param('f') || undef;
 	if (! defined(scalar $q->param('flavor'))) { 
 	    $q->param('flavor', $f);
 	}
@@ -216,7 +216,7 @@ sub admin_template {
 			{
 				-privileges  => 'user',   
 				-ls_obj      => $ls,
-				-flavor      => $q->param('flavor'), 
+				-flavor      => scalar $q->param('flavor'), 
 				-for_mobile  => 0, 
 				-style       => 'side_bar',
 				
@@ -291,7 +291,12 @@ sub admin_template {
 	#my $login_switch_popup_menu_widget = ''; 
 	my $login_switch_widget = ''; 
 	if($Yeah_Root_Login){  
-		$login_switch_widget = DADA::Template::Widgets::login_switch_widget({-list => $args{-List}, ($q->param('flavor') ? (-f => scalar $q->param('flavor')) : ())}); 
+		$login_switch_widget = DADA::Template::Widgets::login_switch_widget(
+			{
+				-list => $args{-List}, 
+				(scalar $q->param('flavor') ? (-f => scalar $q->param('flavor')) : ())
+			}
+		); 
 	#	$login_switch_popup_menu_widget = DADA::Template::Widgets::login_switch_popup_menu_widget({-list => $args{-List}, ($q->param('flavor') ? (-f => scalar $q->param('flavor')) : ())});
 	}
 
@@ -328,7 +333,6 @@ sub admin_template {
 																	-list   => $list, 
 																	-dot_it => 1, 
 															 	},
-										-dada_pseudo_tag_filter   => 1, 	
 									}
 								); 
 								
@@ -892,7 +896,6 @@ sub list_template {
     my $final_list_template = DADA::Template::Widgets::screen(
         {
             -data                   => \$list_template,
-            -dada_pseudo_tag_filter => 1,
             -vars                   => {
                 title              => $args{ -Title },
                 'profile.email'    => $prof_email,

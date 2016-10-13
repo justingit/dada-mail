@@ -2887,6 +2887,18 @@ sub setup_support_files_dir {
     }
     installer_dircopy( $source_package, $target_loc );
     unlink( make_safer( $target_loc . '/README.txt' ) );
+
+
+    my $theme_source_package = make_safer('../extras/packages/themes');
+    my $theme_target_loc     = make_safer( $install_path . '/themes' );
+    if ( -d $theme_target_loc ) {
+        backup_dir($theme_target_loc);
+    }
+    installer_dircopy( $theme_source_package, $theme_target_loc );
+	
+	
+    unlink( make_safer( $target_loc . '/README.txt' ) );
+	
     return 1;
 }
 

@@ -402,9 +402,9 @@ With this option enabled, you can make statements, such as this:
  Hello <!-- tmpl_var subscriber.first_name -->, 
  
  <!-- tmpl_if expr="subscriber.favorite_fruit eq 'apples'" -->
- I see you like apples!
+	 I see you like apples!
  <!-- tmpl_else -->
- You don't like apples?!
+	 You don't like apples?!
  <!-- /tmpl_if -->
 
 This will print: 
@@ -419,20 +419,5 @@ set to something other than apples, this would be printed:
  Hello John,
  
  You don't like apples?!
-
-=head2 Old-Style Template Tags
-
-Prior to Dada Mail 4, template tags and templates themselves used the old-style format. 
-
-Old-style template tags look like this: 
-
- [tag]
-
-They were simply just a string, surrounded by square brackets. 
-
-We'd like to move away from that, so that syntax is now, deprecated. These types of
-tags still work, 100%. If you're upgrading, you shouldn't find any problems, B<yet>, 
-but please do not use the old-style tags in any feature templating you do. 
-
 
 =cut

@@ -8,10 +8,11 @@ use lib qw(
 
 use vars qw($AUTOLOAD); 
 use DADA::Config qw(!:DEFAULT);
+use DADA::App::Guts; 
 
 use Carp qw(croak carp); 
-#use Try::Tiny; 
-use CSS::Inliner; 
+use Try::Tiny; 
+
 
 # Need to ship with: 
 use DADA::App::Guts; 
@@ -75,43 +76,40 @@ sub _init  {
 	
 }
 
+sub can_use_filter { 
+	my $self = shift;
+	try { 
+		require CSS::Inliner; 
+	} catch { 
+		return 0;
+	};
+	return 1; 
+}
 
 sub filter { 
 	my $self   = shift; 
 	my ($args) = @_; 
 	my $html;
+
 	
 	if(exists($args->{-html_msg})){ 
-	#	try{ 
-	#		require CSS::Inliner; 
-			my $inliner = CSS::Inliner->new(
-				{
-					leave_style => 1,
-					relaxed     => 1
-				}
-			);
-			$inliner->read(
-				{
-					html => $args->{-html_msg}
-				}
-			);
-			$html = $inliner->inlinify();
-	#	}
-	#	catch { 
-	#		carp 'Problems using CSS::Inliner: ' . $_; 
-	#		return $args->{-html_msg};
-	#	};
-	
-	# Soon. Soon!
-	#use HTML::Packer;
-	#use CSS::Packer;
-	#my $minified = $PACKER->minify( \$inlined, {
-	#    remove_comments => 1,
-	#    remove_newlines => 1,
-	#    do_stylesheet   => 'minify', # needs CSS::Packer
-	#});
-	
-	
+		$html = $args->{-html_msg};		
+		return $html 
+			if ! $self->can_use_filter;
+		
+		require CSS::Inliner; 
+		my $inliner = CSS::Inliner->new(
+			{
+				leave_style => 1,
+				relaxed     => 1
+			}
+		);
+		$inliner->read(
+			{
+				html => $html,
+			}
+		);
+		$html = $inliner->inlinify();
 		return $html; 
 	}
 	else { 

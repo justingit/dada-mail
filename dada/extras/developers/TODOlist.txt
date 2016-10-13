@@ -12,6 +12,64 @@ Key:
 [*] Naw...
 [?] Someday
 
+Remove List- headers from trasnactio nemails 
+
+
+* Make using Email::MIME::CreateHTML an option if available - and maybe the dfault, unless NOT avalable, 
+	* make slight tweak so that LWP resolver doesn't die with unfound resource 
+		- just a warning is just fine... 
+
+Other things we may want to look for, for embeddignn images? 
+
+'bgsound' => {'src'=>1},
+'body'    => {'background'=>1},
+'img'     => {'src'=>1},
+'input'   => {'src'=>1},
+'table'   => {'background'=>1},
+'td'      => {'background'=>1},
+'th'      => {'background'=>1},
+'tr'      => {'background'=>1}
+
+
+
+
+
+Send a Webpage ourselves
+	(Love to inline all linkned stylesheets beforehand - MIME::Lite::HTML takes care of that - 
+	AND inlining images, grr!)
+
+	Grab Webpage
+	
+	Apply Template?
+		- do we just take the <body> content? 
+			- want this as its own "filter"
+		- or, attempt to inject our own css into the page (we need our own css...)
+			- but template now comprised both a <head> and a <body> so results are goign to be WEIRD
+				- vote for taking just content from body... BUT: 
+		- We can also make it an option: 
+			- Apply template (using only the <body> of the template...)
+			- do NOT apply template (use this for Send a Webpage screen, as well...)
+			- and then we can have > 1 templates too choose from: the all-encompassing template, and a bare bones template, 
+			that just has unsub/pysical address information. 
+	THEN make into multipart/related mime message
+	
+	WHATEVER we do, we probably need to a preview button, that also allows you to send a test message out? 
+	(or two buttons, whatever - next to the template picker?)
+
+
+
+* So mailing list mssage content: 
+Inject stylesheet into start of <head>, or right before body, or if there's o body, well, you gotta make one ,inlinify (removing stylesheet) - if CSS::Inliner isk avalable, then add to already inlined template.
+
+Sigh! 
+Guess we'll have to figure out a policy on what to do with the full HTML document, if we're just taking what's in the body tag?
+
+
+Should CKEdit have the stylesheet already loaded in? What happens if you edit the underlying HTML?
+
+
+* Does format_headers_and_body with -msg param. still... work?
+
 why is the bridge plugin sched job taking so much processing time, when all the lists are using mail fowards?!
 
 Problems w/Safari in the Membership >> View screen. 

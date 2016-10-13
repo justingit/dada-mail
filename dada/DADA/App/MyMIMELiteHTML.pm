@@ -66,17 +66,17 @@ sub parse {
         }
         else {
             $html_ver = safely_decode($content);
-            if ( $self->{crop_html_content} == 1 ) {
-                $html_ver = $self->crop_html($html_ver);
-            }
+            #if ( $self->{crop_html_content} == 1 ) {
+            #    $html_ver = $self->crop_html($html_ver);
+            #}
         }
         $rootPage = $url1 || $res->base;
     }
     else {
         $html_ver = $url_page;
-        if ( $self->{crop_html_content} == 1 ) {
-            $html_ver = $self->crop_html($html_ver);
-        }
+        #if ( $self->{crop_html_content} == 1 ) {
+        #    $html_ver = $self->crop_html($html_ver);
+        #}
         $rootPage = $url1;
         $html_md5 = md5_checksum( \$html_ver );
     }
@@ -196,7 +196,10 @@ sub parse {
             # else add part to mail
             if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
                 $images_read{$urlAbs} = 1;
-                push( @mail, $self->create_image_part($urlAbs) );
+				my $img_part = $self->create_image_part($urlAbs);
+				if(defined($img_part)){
+					push( @mail, $img_part)
+				}
             }
         }
 
@@ -214,8 +217,11 @@ sub parse {
             # Exit with extern configuration, don't include image
             if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
                 $images_read{$urlAbs} = 1;
-                push( @mail, $self->create_image_part($urlAbs) );
-            }
+				my $img_part = $self->create_image_part($urlAbs);
+				if(defined($img_part)){
+					push( @mail, $img_part)
+				}
+			}
         }
 
         # For flash part (object)
@@ -237,7 +243,10 @@ sub parse {
             # Exit with extern configuration, don't include image
             if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
                 $images_read{$urlAbs} = 1;
-                push( @mail, $self->create_image_part($urlAbs) );
+				my $img_part = $self->create_image_part($urlAbs);
+				if(defined($img_part)){
+					push( @mail, $img_part)
+				}
             }
         }
 
@@ -248,7 +257,10 @@ sub parse {
             && ( !$images_read{$urlAbs} ) )
         {
             $images_read{$urlAbs} = 1;
-            push( @mail, $self->create_image_part($urlAbs) );
+			my $img_part = $self->create_image_part($urlAbs);
+			if(defined($img_part)){
+				push( @mail, $img_part)
+			}
         }
     }
 
@@ -330,9 +342,11 @@ sub include_css(\%$$) {
         else {
             my $err =
               "Looking for css to include:, '" . $ur . "' was not successful - removing from message and ignoring";
-            $self->set_err($err);
-            carp $err;
-
+            
+			  if($ur ne 'css/app.css'){
+				$self->set_err($err);
+	            carp $err;
+			}
             # DEV: so, why was this returning an open <style> tag?
             # Because that's dumb.
             return '';    #<style type="text/css">';
@@ -411,17 +425,39 @@ sub include_javascript(\%$$) {
 sub cid (\%$) {
     my ( $self, $url ) = @_;
 
+	#warn 'cid $url:"' . $url . '"'; 
+	
+	$url = strip($url); 
+	
     require URI;
 
     my $filename = DADA::App::Guts::uriescape( ( URI->new($url)->path_segments )[-1] );
-
-    # rfc say: don't use '/'. So I do a pack on it.
-    # but as string can get long, I need to revert it to have
-    # difference at begin of url to avoid max size of cid
-    # I remove scheme always same in a document.
-    $url = reverse( substr( $url, 7 ) );
-    return reverse( split( "", unpack( "h" . length($url), $url ) ) ) . $filename;
+	
+	
+	my $r = $self->md5_checksum($url) . '_' . $filename; 
+	 
+	# warn 'returning: ' . $r;
+	 return $r; 
 }
+
+use Carp qw(carp croak);
+use Try::Tiny; 
+sub md5_checksum {
+
+	my $self = shift; 
+    my $data = shift;
+
+    try {
+        require Digest::MD5;
+    }
+    catch {
+        carp "Can't use Digest::MD5?! - $_";
+        return undef;
+    };
+    return Digest::MD5::md5_hex( $data );
+}
+
+
 
 sub build_mime_object {
     my ( $self, $html, $txt, $ref_mail ) = @_;
@@ -525,68 +561,6 @@ sub build_mime_object {
 
     $self->{_MAIL} = $mail;
 
-}
-
-sub crop_html {
-    
-    
-    my $self = shift;
-    my $html = shift;
-
-  #  warn 'crop_html'; 
-  #  warn q{$self->{crop_html_content_selector_type}} . $self->{crop_html_content_selector_type}; 
-  #  warn q{$self->{crop_html_content_selector_label}} . $self->{crop_html_content_selector_label}; 
-  #  warn q{$self->{crop_html_content}} . $self->{crop_html_content}; 
-
-    try {
-        require HTML::Tree;
-        require HTML::Element;
-        require HTML::TreeBuilder;
-
-        my $root = HTML::TreeBuilder->new(
-            ignore_unknown      => 0,
-            no_space_compacting => 1,
-            store_comments      => 1,
-        );
-
-        $root->parse($html);
-        $root->eof();
-        $root->elementify();
-        my $replace_tag = undef;
-        my $crop        = undef;
-        if ( $self->{crop_html_content_selector_type} eq 'id' ) {
-            if ( $replace_tag = $root->look_down( "id", $self->{crop_html_content_selector_label} ) ) {
-                $crop = $replace_tag->as_HTML( undef, '  ' );
-            }
-            else {
-                warn 'cannot crop html: ' . 'cannot find id, ' . $self->{crop_html_content_selector_label};
-                return $html;
-            }
-        }
-        elsif ( $self->{crop_html_content_selector_type} eq 'class' ) {
-            if ( $replace_tag = $root->look_down( "class", $self->{crop_html_content_selector_label} ) ) {
-                $crop = $replace_tag->as_HTML( undef, '  ' );
-            }
-            else {
-                warn 'cannot crop html: ' . 'cannot find class, ' . $self->{crop_html_content_selector_label};
-                return $html;
-            }
-        }
-
-        my $body_tag = $root->find_by_tag_name('body');
-        $body_tag->delete_content();
-        $body_tag->push_content(
-            HTML::Element->new(
-                '~literal', 'text' => $crop,
-            )
-        );
-        return $root->as_HTML( undef, '  ' );
-
-    }
-    catch {
-        warn 'cannot crop html: ' . $_;
-        return $html;
-    };
 }
 
 1;
