@@ -949,26 +949,34 @@ sub mail_sending_options_test {
     my $orig_debug_pop3 = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3};
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = 1;
 
-    
+
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
+	
     my $etp = $self->email_themes_obj->fetch('mail_sending_options_test_message');
 
     require DADA::App::Messages;
     my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
 
+
     $dap->send_multipart_email(
         {
             -headers => {
-                To => $dap->fm->format_phrase_address(
+                To => $fm->format_phrase_address(
                     $etp->{vars}->{to_phrase},
                     $dap->ls->param('list_owner_email')
                 ),
-                From => $self->fm->format_phrase_address(
+                From => $fm->format_phrase_address(
                     $etp->{vars}->{from_phrase},
                     $dap->ls->param('list_owner_email')
                 ),
                 Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
+            -tmpl_params    => {
+                -list_settings_vars_param => { -list => $self->{list} },
+                # -vars => {},
+            },
         }
     );
 
