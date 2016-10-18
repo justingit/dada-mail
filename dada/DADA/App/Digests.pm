@@ -357,7 +357,10 @@ sub send_out_digest {
                 -screen   => 'send_email',
                 -role     => 'draft',
                 -process  => $process,
-            }
+			    -mass_mailing_params => {
+					-delivery_preferences => 'digest',
+            	}
+			}
         );
         
 		if($status == 0) { 
@@ -365,43 +368,12 @@ sub send_out_digest {
 		}
 		$dam->delete_draft($draft_id); 
 		
-
-
 		return $draft_id; 
 		
-	
-=cut
-	
-	
-	
-	
-	
-	
-    require MIME::Entity;
-    my $entity = MIME::Entity->build(
-        Type    => 'multipart/alternative',
-        Charset => $self->{ls_obj}->param('charset_value'),
-        Subject => $subject_scr,
-    );
-    $entity->attach(
-        Type     => 'text/plain',
-        Data     => $pt_scrn,
-        Encoding => $self->{ls_obj}->param('plaintext_encoding'),
-        Charset  => $self->{ls_obj}->param('charset_value'),
-    );
-    $entity->attach(
-        Type     => 'text/html',
-        Data     => $html_scrn,
-        Encoding => $self->{ls_obj}->param('html_encoding'),
-        Charset  => $self->{ls_obj}->param('charset_value'),
-    );
-
-    return $entity;
-
-=cut
-	
-
 }
+
+
+
 
 sub digest_ht_vars {
 

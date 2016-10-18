@@ -108,6 +108,7 @@ sub _lock_pop3_check {
 
     my ($args) = @_;
 	
+	# this needs semphore locking, doofus. 
     
     if(! exists($args->{name})){ 
         croak "You need to supply a name! for _lock_pop3_check"; 

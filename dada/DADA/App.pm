@@ -328,50 +328,13 @@ sub setup {
 
 sub teardown {
     my $self = shift;
-    $self->clean_out_mime_cache();
-
+	
     if ( $DADA::Config::SCHEDULED_JOBS_OPTIONS->{run_at_teardown} == 1 ) {
         $self->run_pseudo_cron();
     }
 }
 
-sub clean_out_mime_cache {
 
-    my $self = shift;
-
-    my $dir  = make_safer( $DADA::Config::TMP . '/_mime_cache' );
-    my $file = undef;
-    my @files;
-
-    if ( -d $dir ) {
-        opendir( DIR, $dir ) or die "$!";
-        while ( defined( $file = readdir DIR ) ) {
-            next if $file =~ /^\.\.?$/;
-            $file =~ s(^.*/)();
-            $file = make_safer( $dir . '/' . $file );
-            if ( -f $file ) {
-                if ( -M $file > 3 ) {
-                    warn 'deleting file:' . $file;
-                    my $unlink_check = unlink($file);
-                    if ( $unlink_check != 1 ) {
-                        warn "deleting tmp file didn't work for: " . $file;
-                    }
-                }
-            }
-
-        }
-        closedir(DIR);
-    }
-    else {
-        if ( mkdir( $dir, $DADA::Config::DIR_CHMOD ) ) {
-
-            # good!
-        }
-        else {
-            warn "couldn't make dir, $dir";
-        }
-    }
-}
 
 sub run_pseudo_cron {
 
@@ -14674,6 +14637,14 @@ sub schedules {
         catch {
             $r .= "* Error: $_\n";
         };
+		
+        $r .= "Cleaning Out MIME Cache:\n" . '-' x 72 . "\n";
+        try {
+            $r .= $dast->clean_out_mime_cache();
+        }
+        catch {
+            $r .= "* Error: $_\n";
+        };
 
         undef($dast);
 
@@ -14709,6 +14680,15 @@ sub schedules {
         $r .= "Rate Limits:\n" . '-' x 72 . "\n";
         try {
             $r .= $dast->expire_rate_limit_checks($list);
+        }
+        catch {
+            $r .= "* Error: $_\n";
+        };
+    }
+    elsif ( $schedule eq 'mime_cache' ) {
+        $r .= "Cleaning Out MIME Cache:\n" . '-' x 72 . "\n";
+        try {
+            $r .= $dast->clean_out_mime_cache();
         }
         catch {
             $r .= "* Error: $_\n";

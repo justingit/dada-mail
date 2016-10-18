@@ -127,6 +127,16 @@ sub expire_rate_limit_checks {
 	return " Done!\n";
 }
 
+sub clean_out_mime_cache { 
+	my $self = shift;
+	require   DADA::App::MIMECache; 
+	my $dam = DADA::App::MIMECache->new; 
+	$dam->clean_out; 
+	undef $dam; 
+	return " Done!\n";
+
+}
+
 sub DESTORY {}
 sub END {}
 

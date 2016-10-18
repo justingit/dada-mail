@@ -401,7 +401,13 @@ sub construct_and_send {
     if ( exists( $args->{-dry_run} ) ) {
         $dry_run = $args->{-dry_run};
     }
-
+	
+    if (! exists( $args->{-mass_mailing_params} ) ) {
+		$args->{-mass_mailing_params} = {
+			-delivery_preferences => 'individual',
+		};
+	}
+	
     if ( $args->{-screen} eq 'send_email' ) {
 
         my $can_use_mime_lite_html = 1;
@@ -513,7 +519,10 @@ sub construct_and_send {
                         -no_dupes => $multi_list_send_no_dupes,
                     },
                     -also_send_to => [@alternative_list],
-                    ( $process =~ m/test/i )
+					
+				    -mass_mailing_params => $args->{-mass_mailing_params},
+					
+					 ( $process =~ m/test/i )
                     ? (
                         -mass_test      => 1,
                         -test_recipient => $draft_q->param('test_recipient'),
