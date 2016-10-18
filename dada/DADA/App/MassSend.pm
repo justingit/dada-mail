@@ -559,13 +559,17 @@ sub construct_and_send {
 
         }
 
-        if (   ( $self->are_we_archiving_based_on_params($draft_q) == 1 )
-            && ( $process !~ m/test/i ) )
-        {
-            $self->{ah_obj}
-              ->set_archive_info( $message_id, $mailing{Subject}, undef, undef,
-                $mh->saved_message );
-        }		
+		# no archives for digests.
+		if($args->{-mass_mailing_params}->{-delivery_preferences} ne 'digest') {		
+	        if (   ( $self->are_we_archiving_based_on_params($draft_q) == 1 )
+	            && ( $process !~ m/test/i ) )
+	        {
+	            $self->{ah_obj}
+	              ->set_archive_info( $message_id, $mailing{Subject}, undef, undef,
+	                $mh->saved_message );
+	        }		
+		}
+		
         return {
         	status       => 1, 
 			errors       => undef, 
