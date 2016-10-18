@@ -127,7 +127,7 @@ sub clean_out {
         }
     }
 	
-	$self->unlock_file; 
+	$self->unlock_file($lock); 
 	
 }
 
