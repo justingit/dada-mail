@@ -975,6 +975,7 @@ sub mail_sending_options_test {
                 Subject => $etp->{vars}->{subject},
             },
             -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
             -tmpl_params    => {
                 -list_settings_vars_param => { -list => $self->{list} },
                 # -vars => {},
