@@ -232,7 +232,7 @@ sub send_digest {
 #		$r .= Dumper($keys);
 
 		if($self->mock_run() != 1){
-			$r .= "\nsaving:" . $keys->[-1] . "\n";
+			# $r .= "\nsaving:" . $keys->[-1] . "\n";
 	        $self->{ls_obj}->save(
 				{
 					-settings  => {
