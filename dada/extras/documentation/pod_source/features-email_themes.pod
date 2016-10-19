@@ -141,7 +141,8 @@ The file listing  of the download looks something like this,
 	package.json
 	src
 
-Copy these files into the starter Foundation for Emails Project - you'll be overwriting some files from the Foundation starter project, 
+Copy these files into the starter Foundation for Emails Project - 
+you'll be overwriting some files from the Foundation starter project, 
 so don't worry about that. 
 You're now all set to develop your own theme. 
 
@@ -150,7 +151,11 @@ which you will want to compile to create the B<dist> directory by running the se
 
 http://foundation.zurb.com/emails/docs/sass-guide.html#running-the-server
 
-The C<dist> directory contains the files that will correspond to your new email theme. 
+we use the following to compile: 
+
+	npm run build
+
+The C<dist> directory now contains the files that will correspond to your new email theme. 
 
 Back on your server, 
 find your, 
