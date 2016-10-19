@@ -98,20 +98,18 @@ url text
 ); 
 
 
--- change 'text' to, 'varchar(255)', add index: 
--- ALTER TABLE `dada_mass_mailing_event_log` ADD INDEX  `dada_mass_mailing_event_log_index` (`list`,`remote_addr`, `msg_id`, `event`, timestamp);
-
 CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log (
 id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
 list varchar(16),
 timestamp TIMESTAMP DEFAULT NOW(),
-remote_addr text, 
-msg_id text, 
-event text,
-details text,
+remote_addr varchar(255), 
+msg_id varchar(255), 
+event varchar(255),
+details varchar(255),
 email varchar(80), 
 user_agent varchar(255)
 ); 
+CREATE INDEX dada_mass_mailing_event_log_index ON dada_mass_mailing_event_log (`list`,`remote_addr`, `msg_id`, `event`, timestamp);
 
 CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
 id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
