@@ -12,7 +12,7 @@
 
 Foundation for Emails (L<http://foundation.zurb.com/emails.html>) is a framework to develop HTML email messages that, "Sucks Less": they're beautiful, responsive, and look correctly in most HTML-capable email readers - even Outlook. 
 
-Work with these HTML emails via SASS Workflow documented here:
+Work with these HTML emails via Sass Workflow documented here:
 
 L<https://foundation.zurb.com/emails/docs/sass-guide.html>
 
@@ -52,7 +52,7 @@ Currently, the following layout options are available:
 
 =head4 Mass Mailing Preview
 
-Without needing to send a test message out, you can now preview how your mass mailing will look, right in the Send a Message screen. This makes it easy to try different layouts and other options out, before comitting to sending to your entire mailing list. 
+Without needing to send a test message out, you may now preview how your mass mailing will look, right in the Send a Message screen. This makes it easy to try different layouts and other options out, before comitting to sending to your entire mailing list. 
 
 =head4 Set a logo image as well as social network links in your email messages
 

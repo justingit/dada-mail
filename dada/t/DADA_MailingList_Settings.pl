@@ -281,25 +281,6 @@ foreach my $html_setting(keys %{$ls->_html_settings}){
     ok(defined($ls->param($html_setting)), $html_setting . ' is defined');  
 }
 
-
-
-undef($ls); 
-my $ls = DADA::MailingList::Settings->new({-list => $list});
-foreach my $html_setting(keys %{$ls->_email_message_settings}){ 
-    $li = $ls->get(-all_settings => 0);
-    ok(! defined($li->{$html_setting}), $html_setting . ' is not defined - that\'s OK');
-    #diag $li->{$html_setting}; 
-}
-foreach my $html_setting(keys %{$ls->_email_message_settings}){ 
-    $li = $ls->get(-all_settings => 1);
-    ok(defined($li->{$html_setting}), $html_setting . ' is defined - weve explicitly asked for it');
-}
-undef($ls); 
-my $ls = DADA::MailingList::Settings->new({-list => $list});
-foreach my $html_setting(keys %{$ls->_email_message_settings}){ 
-    ok(defined($ls->param($html_setting)), $html_setting . ' is defined');  
-}
-
 my $list2 = dada_test_config::create_test_list({-name => 'test2'});
 
 $ls->save(
