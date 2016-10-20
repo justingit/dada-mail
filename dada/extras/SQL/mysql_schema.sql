@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
 id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
 list varchar(16),
 timestamp TIMESTAMP DEFAULT NOW(),
-remote_addr text,
+remote_addr varchar(255),
 msg_id text, 
 url text,
 email varchar(80),
