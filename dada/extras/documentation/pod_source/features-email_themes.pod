@@ -129,7 +129,7 @@ L<http://foundation.zurb.com/emails/docs/sass-guide.html>
 
 In a B<separate> directory, you'll want to download the existing Dada Mail default theme from github: 
 
-L<https://github.com/justingit/dada_mail_foundation_email_templates/archive/v10_0_0-beta1_2016_10_14.tar.gz>
+L<https://github.com/justingit/dada_mail_foundation_email_templates/archive/v10_0_0-beta2_2016_10_22.tar.gz>
 
 Each release of Dada Mail also have a release of the default theme, 
 so make sure those two releases correspond to each other. 

@@ -617,13 +617,15 @@ sub edit {
     
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
+    #  group_list_pp_mode                         => 0,
+    
+	
     my %bridge_settings_defaults = (
         disable_discussion_sending                 => 0,
         
         msg_soft_size_limit                        => undef, 
         msg_hard_size_limit                        => undef,
         group_list                                 => 0,
-        group_list_pp_mode                         => 0,
         group_list_pp_mode_from_phrase             => undef,
         prefix_list_name_to_subject                => 0,
         no_prefix_list_name_to_subject_in_archives => 0,

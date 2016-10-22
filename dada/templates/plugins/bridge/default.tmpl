@@ -614,24 +614,29 @@
 					</div> 
 				</div> 
 			</div>
-			<div class="row">
-				<div class="small-12 columns">
-					<label for="group_list_pp_mode">
-					<input 
-						type="checkbox" 
-						name="group_list_pp_mode" 
-						id="group_list_pp_mode" 
-						value="1" 
-						<!--tmpl_if list_settings.group_list_pp_mode -->checked="checked"<!--/tmpl_if-->
-					>
-						Send messages, &quot;On Behalf Of&quot; (p.p. mode)
-					</label>
-					<div class="alert-box info radius">
-						Discussion List messages will be sent as the List Owner, on behalf of List Members. 
-					</div>
-				</div> 
+			
+			<!-- tmpl_if comment -->
+				<div class="row">
+					<div class="small-12 columns">
+						<label for="group_list_pp_mode">
+						<input 
+							type="checkbox" 
+							name="group_list_pp_mode" 
+							id="group_list_pp_mode" 
+							value="1" 
+							<!--tmpl_if list_settings.group_list_pp_mode -->checked="checked"<!--/tmpl_if-->
+						>
+							Send messages, &quot;On Behalf Of&quot; (p.p. mode)
+						</label>
+					
+					</div> 
+				</div>
+			<!-- /tmpl_if -->
+			
+			<div class="alert-box info radius">
+				Discussion List messages are sent using the List Owner's email address, on behalf of List Members. 
 			</div>
-
+			
 			<div class="row">
 				<div class="small-12 columns">
 					<label for="group_list_pp_mode_from_phrase">

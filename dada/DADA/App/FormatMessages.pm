@@ -1290,10 +1290,12 @@ sub _format_headers {
     }
     $entity->head->add( 'X-Original-From', $entity->head->get( 'From', 0 ) );
 
+    #  && $self->{ls}->param('group_list_pp_mode') == 1
+	
     if (   $self->mass_mailing == 1
         && $self->{ls}->param('group_list') == 1
         && defined( $self->{ls}->param('discussion_pop_email') )
-        && $self->{ls}->param('group_list_pp_mode') == 1 )
+		)
     {
         if ( $entity->head->count('From') ) {
             my $og_from = $entity->head->get( 'From', 0 );

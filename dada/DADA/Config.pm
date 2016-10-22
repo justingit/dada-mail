@@ -1521,7 +1521,7 @@ $MIME_TOOLS_PARAMS //= {
     # Bridge Plugin:
 
     group_list                     => 0,
-	group_list_pp_mode             => 1, 
+#	group_list_pp_mode             => 1, 
 	group_list_pp_mode_from_phrase => '<!-- tmpl_var original_from_phrase default="Subscriber" --> <!-- tmpl_var subscriber.email --> [<!-- tmpl_var list_settings.list_name -->]',  
 	                                    
     open_discussion_list => 0,
@@ -1687,7 +1687,7 @@ $MAIL_VERP_SEPARATOR //= '-';
 
 
 $VERSION = 10.0.0;
-$VER     = '10.0.0 Beta 1 10/14/16';
+$VER     = '10.0.0 Beta 2 10/22/16';
 
 #
 #

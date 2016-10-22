@@ -1,4 +1,4 @@
-package DADA::App::MIMECache; 
+package DADA::App::MIMECache;
 
 use lib qw(
   ../../.
@@ -6,18 +6,14 @@ use lib qw(
 );
 
 use Fcntl qw(
-
   :DEFAULT
   :flock
   LOCK_SH
-
   O_RDONLY
   O_CREAT
   O_WRONLY
   O_TRUNC
-
 );
-
 
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
@@ -30,8 +26,8 @@ use strict;
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_MimeCache};
 
 my %allowed = (
-	lockfile  => undef, 
-	num_files => 1000, 
+    lockfile  => undef,
+    num_files => 1000,
 );
 
 sub new {
@@ -75,39 +71,39 @@ sub AUTOLOAD {
 
 sub _init {
     my $self = shift;
-    $self->lockfile(make_safer( $DADA::Config::TMP . '/_mime_cache.lock' ));
-	
-	
+    $self->lockfile( make_safer( $DADA::Config::TMP . '/_mime_cache.lock' ) );
 }
 
-sub clean_out { 
-	
-	my $self = shift; 
-	
+sub clean_out {
+
+    my $self = shift;
+
     my $lock = $self->lock_file();
 
-	if(!defined($lock)){ 
-		# Too busy, I guess. 
-		return 0; 
-	}
-	
+    if ( !defined($lock) ) {
+
+        # Too busy, I guess.
+        return 0;
+    }
+
     my $dir  = make_safer( $DADA::Config::TMP . '/_mime_cache' );
     my $file = undef;
     my @files;
- 	my $c = 0; 
+    my $c = 0;
 
     if ( -d $dir ) {
         opendir( DIR, $dir ) or die "$!";
         while ( defined( $file = readdir DIR ) ) {
             next if $file =~ /^\.\.?$/;
-            
-			$c++; 
-			last 
-				if $c >= $self->num_files; 
-			
-			$file =~ s(^.*/)();
+
+            $c++;
+            last
+              if $c >= $self->num_files;
+
+            $file =~ s(^.*/)();
             $file = make_safer( $dir . '/' . $file );
-            if (-f $file && -M $file > 3 ) {
+            if ( -f $file && -M $file > 3 ) {
+
                 # warn 'deleting file:' . $file;
                 my $unlink_check = unlink($file);
                 if ( $unlink_check != 1 ) {
@@ -126,15 +122,15 @@ sub clean_out {
             warn "couldn't make dir, $dir";
         }
     }
-	
-	$self->unlock_file($lock); 
-	
+
+    $self->unlock_file($lock);
+
 }
 
 sub lock_file {
-	
-	my $self = shift; 
-	
+
+    my $self = shift;
+
     my $i = 0;
 
     my $countdown = shift || 0;
@@ -153,8 +149,10 @@ sub lock_file {
             sleep 1;
             redo if ++$count < $countdown;
 
-            carp "Couldn't lock semaphore file '" . $self->lockfile . "' because: '$!', exiting with error to avoid file corruption!";
-			return undef; 
+            carp "Couldn't lock semaphore file '"
+              . $self->lockfile
+              . "' because: '$!', exiting with error to avoid file corruption!";
+            return undef;
         }
     }
 
@@ -173,4 +171,4 @@ sub unlock_file {
 
 }
 
-1; 
+1;

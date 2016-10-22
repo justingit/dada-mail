@@ -210,7 +210,6 @@ sub verify_change_list_shortname {
 		}
 	}
 	
-	
     require DADA::Template::Widgets;
      my $scrn = DADA::Template::Widgets::screen(
          {

@@ -131,9 +131,6 @@ sub save {
 
     my $self   = shift;
     my ($args) = @_;
-	
-#    require Data::Dumper; 
-#    warn 'save $args:' . Data::Dumper::Dumper($args); 
 
 	if ( !exists( $args->{-plaintext} ) ) {
 	    croak "You MUST pass a, '-plaintext' parameter!";

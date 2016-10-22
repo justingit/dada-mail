@@ -94,42 +94,6 @@ for my $test_file (@files) {
     undef $template;
 }
 
-
-=cut
-
-SKIP: {
-
-	eval { require HTML::Template::Pro };
-	skip "HTML::Template::Pro is not installed", 2 if $@;
-
-	for my $test_file (@files) {
-	    eval {
-	        my $template = HTML::Template::Pro->new(
-	            path              => $dir,
-	            die_on_bad_params => 0,
-	            loop_context_vars => 1,
-	            filename          => $test_file,
-	            filter            => [
-	                {
-	                    sub    => \&shh_tmpl_set,
-	                    format => 'scalar'
-	                }
-	            ],
-	        );
-	        my $foo = $template->output();
-	    };
-	    ok( !$@, "$test_file through HTML::Template::Pro" );
-	    if ($@) {
-	        diag($@);
-	    }
-	    undef $template;
-	}
-}
-
-=cut
-
-
-
 my $template_strings = {};
 
 my @list_settings = qw(
