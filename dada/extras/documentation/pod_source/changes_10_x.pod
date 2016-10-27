@@ -2,7 +2,7 @@
 
 =encoding utf-8
 
-=head1 10.0.0 Beta 2
+=head1 10.0.0
 
 =head2 Features
 
