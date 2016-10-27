@@ -797,23 +797,6 @@ sub edit {
 	        id       => 'msg_hard_size_limit',
 		}
     );
-
-
-=cut	
-    require DADA::Template::Widgets;
-    my $mailing_list_message_from_phrase = $ls->param('mailing_list_message_from_phrase');
-    $mailing_list_message_from_phrase = DADA::Template::Widgets::screen(
-        {
-            -data                     => \$mailing_list_message_from_phrase,
-            -list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1,
-            }
-        }
-    );
-    my $mailing_list_message_from =
-      Email::Address->new( $mailing_list_message_from_phrase, $ls->param('list_owner_email') )->format();
-=cut
 	
     my $done = $q->param('done') || 0;
 

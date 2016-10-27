@@ -1,3 +1,7 @@
+=pod
+
+=encoding utf-8
+
 =head1 Dada Mail Email Themes
 
 Dada Mail's Email Themes are created using the Foundation for Emails Framework: 
@@ -180,3 +184,5 @@ B<Appearance - Email Themes>.
 Select the theme you would like to use, 
 and save your changes. 
 Done!
+
+=cut

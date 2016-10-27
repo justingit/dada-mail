@@ -3412,18 +3412,16 @@ sub _mail_merge {
         $expr = 1;
     }
 
-=cut	
-    carp "ORIGINAL ENTITY: \n";
-    carp '-' x 72 . "\n";
-    carp $entity->as_string;
-    carp '-' x 72 . "\n";
-
-    carp "LABELED DATA\n" ;
-    carp '-' x 72 . "\n";
-    use Data::Dumper;
-    carp Dumper({%labeled_data});
-    carp '-' x 72 . "\n";
-=cut
+#    carp "ORIGINAL ENTITY: \n";
+#    carp '-' x 72 . "\n";
+#    carp $entity->as_string;
+#    carp '-' x 72 . "\n";
+#
+#    carp "LABELED DATA\n" ;
+#    carp '-' x 72 . "\n";
+#    use Data::Dumper;
+#    carp Dumper({%labeled_data});
+#    carp '-' x 72 . "\n";
 
     my $entity_cp = $args->{-fm_obj}->email_template(
         {
@@ -3441,14 +3439,11 @@ sub _mail_merge {
         }
     );
 
-=cut
 	
-    carp "MODIFIED ENTITY\n";
-    carp '-' x 72 . "\n";
-    carp $entity_cp->as_string;
-    carp '-' x 72 . "\n";
-=cut
-
+#    carp "MODIFIED ENTITY\n";
+#    carp '-' x 72 . "\n";
+#    carp $entity_cp->as_string;
+#    carp '-' x 72 . "\n";
     my $msg = $entity_cp->as_string;
     $msg = safely_decode($msg);
 

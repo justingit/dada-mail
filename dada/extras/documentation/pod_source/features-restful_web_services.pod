@@ -647,7 +647,7 @@ C<message_id> is the message id associated with this particular mass mailing.
 
 =head1 Debugging Problems
 
-The actual underlying module for Dada Mail's web services, C<DADA::App::WebServices>, may have debugging turned on. This also will return additional debugging information to the client itslf, B<including sensitive information (like the private key!).
+The actual underlying module for Dada Mail's web services, C<DADA::App::WebServices>, may have debugging turned on. This also will return additional debugging information to the client itslf, B<including sensitive information (like the private key!)>.
 
 This debugging may be turned on from within the installer. See:
 L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Debugging>
