@@ -6,10 +6,9 @@ This guide was compiled to get you ready to upgrade to Dada Mail v10.
 
 =head2 Focus
 
-We've worked primarily on getting our email messages sent by Dada Mail to use 
-really beautiful and awesome HTML produced by the Foundation for Emails Framework, as well as still utilizing a plaintext fallback. 
+This release primarily focuses on getting our email messages sent by Dada Mail to use the really beautiful and awesome HTML produced by the B<Foundation for Emails Framework>. 
 
-You can learn more about Foudnation for Emails, here: 
+You can learn more about Foudnation for Emails here: 
 
 L<http://foundation.zurb.com/emails.html>
 
@@ -33,14 +32,23 @@ have the best experience when running Dada Mail:
 
 =back
 
-These modules and other, optional CPAN Perl modules used by Dada Mail have been bundled together in one CPAN Module called, C<Bundle::DadaMail>. You can now just install this one module, and have all those other modules installed in one step. 
+=head2 New Dada Mail-Specific CPAN Modules
+
+There are many optional CPAN Perl modules that Dada Mail takes advantage of. Now, all these Perl modules have been bundled together in one CPAN Module called, C<Bundle::DadaMail>. Now, just install C<Bundle::DadaMail> and have all those other modules installed in one step. 
+
+Another CPAN Perl Module, called C<Bundle::DadaMailXXL> has also been created that bundles B<all> the CPAN Perl modules used in Dada Mail, including what's listed in C<Bundle::DadaMail>, in case you would like to install all the dependencies required for Dada Mail.
+
+More information: 
+
+L<http://dadamailproject.com/d/FAQ-general.pod.html#how_do_you_install__cpan_perl_modules>
+
 
 =head2 No more "Appearance - Email Message Templates" list control panel
 
 Because the workflow to create the new HTML emails is based on Foundation for Emails SASS workflow (L<https://foundation.zurb.com/emails/docs/sass-guide.html>),
 which is done offline (via your desktop/laptop/etc), 
 we've removed the ability to edit these messages from within Dada Mail through the B<Appearance - Email Message Templates> screen. 
-The HTML produced by the  framework is exceptionally complex - they just cannot be easily edited by hand. 
+The HTML templates produced by the  framework is exceptionally complex - they just cannot be easily edited by hand. 
 Using the SASS workflow is actally pretty approachable by a competent web designer or developer. 
 
 Here's how to work with email themes, and create your own:
@@ -49,5 +57,6 @@ L<http://dadamailproject.com/d/features-email_themes.pod>
 
 Each theme is available for all mailing lists. 
 
+In it's place, B<Appearance - Email Themes> screen will now allow you to select the email theme that you would like to use. 
 
 =cut

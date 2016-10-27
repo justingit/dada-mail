@@ -10,19 +10,17 @@
 
 =head4 Powered by Foundation for Emails
 
-Foundation for Emails (L<http://foundation.zurb.com/emails.html>) is a framework to develop HTML email messages that, "Sucks Less": they're beautiful, responsive, and look correctly in most HTML-capable email readers - even Outlook. 
+Foundation for Emails (L<http://foundation.zurb.com/emails.html>) is a framework to develop HTML email messages that, "I<Sucks Less>": they're beautiful, responsive, and look correctly in most HTML-capable email readers - even Outlook! 
 
-Work with these HTML emails via Sass Workflow documented here:
+Work with these HTML emails via Sass Workflow:
 
 L<https://foundation.zurb.com/emails/docs/sass-guide.html>
 
-Dada Mail's quiver of HTML email templates has been turned into its own Github project at, 
+Dada Mail's quiver of HTML email templates has been turned into its own Github project: 
 
 L<https://github.com/justingit/dada_mail_foundation_email_templates>
 
-which you may use as a starter for your own customized email templates for Dada Mail. 
-
-Here's how to do that: 
+which you may use as a starter for your own customized email templates for Dada Mail:
 
 L<http://dadamailproject.com/d/features-email_themes.pod>
 
@@ -30,13 +28,13 @@ L<http://dadamailproject.com/d/features-email_themes.pod>
 
 Dada Mail now has support for B<Email Themes>: collections of email templates that you may use to customize the look and feel of your email messages. 
 
-Currently, Dada Mail comes with one email theme and supports additional themes.
+Currently, Dada Mail comes with one email theme and supports additional custom themes.
 
 =head4 Mass Mailing Email Layouts
 
 Email Themes include the ability to choose a specific layout for your mass mailing to be wrapped up in. 
 
-Currently, the following layout options are available: 
+Currently, the following layouts are available: 
 
 =over
 
@@ -53,6 +51,10 @@ Currently, the following layout options are available:
 =head4 Mass Mailing Preview
 
 Without needing to send a test message out, you may now preview how your mass mailing will look, right in the Send a Message screen. This makes it easy to try different layouts and other options out, before comitting to sending to your entire mailing list. 
+
+=head4 Preheader support 
+
+Set a B<Preheader> for your mass mailings in the Send a Message and Send a Webpage screens. Use the preheader to summarize, preview, and entice subscribers into reading the rest of your message. 
 
 =head4 Set a logo image as well as social network links in your email messages
 
