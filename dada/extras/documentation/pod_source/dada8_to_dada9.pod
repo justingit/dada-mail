@@ -20,7 +20,7 @@ Along with utilizing Foundation, many of Dada Mail's user interfaces have drasti
 
 The administration login now uses a much more compact design to either log into a mailing list, or to create a new one. Both forms are still there, but now in a tab interface, so only one form is shown at a time. 
 
-=head4 Reorganizaiton of top-level menus
+=head4 Reorganization of top-level menus
 
 Many items in the navigation bar for the list control panel have been moved around and renamed. 
 
