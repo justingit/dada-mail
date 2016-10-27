@@ -359,7 +359,7 @@ sub run_pseudo_cron {
         || $scheduled_jobs_last_ran == 0 )
     {
         warn 'running scheduled jobs at teardown @ ' . scalar( localtime() );
-        $self->schedules;
+        $self->schedules({-at_teardown => 1});
     }
     else {
         #...
@@ -14598,6 +14598,11 @@ sub schedules {
     # and figure out inject stuff.... sigh.
 
     my $self = shift;
+	my ($args) = @_; 
+	if(!exists($args->{-at_teardown})){ 
+		$args->{-at_teardown} = 0; 
+	}
+	
     my $q    = $self->query;
 
     my $t = time;
@@ -14609,6 +14614,22 @@ sub schedules {
 
     my $r;
     $r .= "Started: " . scalar localtime($t) . "\n";
+	
+	my $user = $ENV{ LOGNAME } || $ENV{ USER } || $ENV{ USERNAME } || getlogin || getpwuid( $< );
+	
+	if(defined($user)) {
+		$r .= 'Running as uid:, ' . $user . "\n";
+	}
+	else  {
+		$r .= 'Running as unknown uid' . "\n";
+	}
+	
+	if($args->{-at_teardown} == 1){ 
+		$r .= "Running after regular script execution.\n";
+	}
+	else { 
+		$r .= "Running as dedicated schedule.\n";		
+	}
 
     require DADA::App::ScheduledTasks;
     my $dast = DADA::App::ScheduledTasks->new;
