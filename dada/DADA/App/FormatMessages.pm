@@ -2107,8 +2107,8 @@ sub _apply_template {
         $template_out = $self->use_html_email_template;
     }
 
-	warn '$template_out' . $template_out; 
-	warn '$self->layout_choice($args)' . $self->layout_choice($args); 
+#	warn '$template_out' . $template_out; 
+#	warn '$self->layout_choice($args)' . $self->layout_choice($args); 
 	
     if ($template_out) { # we're using a template in other words 
 	
@@ -2148,7 +2148,7 @@ sub _apply_template {
             );
         }
 		
-		warn '$template' . $template; 
+		#warn '$template' . $template; 
 
         # / depersonalize
 
@@ -2159,7 +2159,7 @@ sub _apply_template {
                 -type => $args->{-type},
             }
         );
-		warn '$template' . $template; 
+		#warn '$template' . $template; 
 
         if ( $args->{-type} eq 'text/html' ) {
 
@@ -2175,11 +2175,11 @@ sub _apply_template {
 
 				my $qm_message_body_tag = quotemeta('<!-- tmpl_var message_body -->');
 				$template =~ s/$qm_message_body_tag/$content/;
-				warn '$template' . $template;
+				#warn '$template' . $template;
           
             }
             else {
-				warn 'no content?';
+				#warn 'no content?';
                 $template =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$content/;
             }
 
@@ -2189,7 +2189,7 @@ sub _apply_template {
         }
     }
     else {
-		warn 'here for some reason';
+		#warn 'here for some reason';
         $template = $content;
     }
 
@@ -2222,7 +2222,7 @@ sub _apply_template {
 	    }
 	}
 	
-	warn '$template' . $template; 
+	#warn '$template' . $template; 
 	
     return $template;
 
