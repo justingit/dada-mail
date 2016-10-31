@@ -153,7 +153,7 @@ You're now all set to develop your own theme.
 The Dada Mail default theme download only contains the source files (in, C<src>), 
 which you will want to compile to create the B<dist> directory by running the server:  
 
-http://foundation.zurb.com/emails/docs/sass-guide.html#running-the-server
+L<http://foundation.zurb.com/emails/docs/sass-guide.html#running-the-server> 
 
 we use the following to compile: 
 
