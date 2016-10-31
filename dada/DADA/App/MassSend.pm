@@ -246,15 +246,29 @@ sub send_email {
             }
         );
 		
+		#use Data::Dumper; 
+		#warn Dumper($construct_r);
+		
         if($t) { 
             carp '$construct_r->{mid} ' . $construct_r->{mid};
             carp 'done with construct_and_send!';
         }
         if ( $construct_r->{status} == 0 ) {
-            return $self->report_mass_mail_errors(
-				$construct_r->{errors}, 
-				$root_login
-			);
+            #return $self->report_mass_mail_errors(
+			#	$construct_r->{errors}, 
+			#	$root_login
+			#);
+	        require JSON;
+			
+	        my $json    = JSON->new->allow_nonref;
+	        my $return  = { status => 0, errors => $construct_r->{errors} };
+	        my $headers = {
+	            '-Cache-Control' => 'no-cache, must-revalidate',
+	            -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
+	            -type            => 'application/json',
+	        };
+	        my $body = $json->pretty->encode($return);
+	        return ( $headers, $body );
         }
 		else { 
 			
@@ -275,9 +289,11 @@ sub send_email {
 	            -type            => 'application/json',
 	        };
 	        my $body = $json->pretty->encode($return);
-	        if($t == 1){ 
-	            require Data::Dumper; 
-	        }
+#			warn $body; 
+			
+	        #if($t == 1){ 
+	        #    require Data::Dumper; 
+	        #}
 			
 	        return ( $headers, $body );
 		}

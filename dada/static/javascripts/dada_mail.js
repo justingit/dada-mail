@@ -244,7 +244,8 @@ jQuery(document).ready(function($){
 			if($(this).hasClass("preview") === true){ 
 				
 				//alert('preview!');
-					
+
+				
 				var request = $.ajax({
 					url:       $("#s_program_url").val(),
 					type:      "POST",
@@ -252,6 +253,11 @@ jQuery(document).ready(function($){
 					cache:     false,
 					data: $("#mass_mailing").serialize() + '&process=preview',
 					success: function(content) {
+						
+						if(content.status === 0){ 
+							alert(content.errors); 
+							return false; 
+						}
 						
 						//alert('requrest success!');
 						

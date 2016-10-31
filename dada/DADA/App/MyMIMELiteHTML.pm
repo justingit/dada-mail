@@ -101,9 +101,9 @@ sub parse {
 
     # Means successful, but blank. Blank is no good for us.
     if ( !$html_ver && !$txt_ver) {
-        $self->set_err('Webpage content is blank.');
+        $self->set_err('Sorry, there is no content.');
         if (wantarray) {
-            return ( 0, 'Webpage content is blank.', $self->{_MAIL}, $html_md5 );
+            return ( 0, 'Sorry, there is no content.', $self->{_MAIL}, $html_md5 );
         }
         else {
             return undef;
