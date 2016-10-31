@@ -2,7 +2,7 @@ package DADA::App::FormatMessages::Filters::HTMLMinifier;
 use strict; 
 
 
-warn 'in DADA::App::FormatMessages::Filters::HTMLMinifier';
+# warn 'in DADA::App::FormatMessages::Filters::HTMLMinifier';
 
 use lib qw(
 	../../../../
