@@ -1092,7 +1092,7 @@ sub email_message_preview {
 	my $fake_vars = {};
     $fake_vars->{'list_unsubscribe_link'} = $DADA::Config::PROGRAM_URL . '/t/'  . 'CONFIRMATION_TOKEN' . '/';
 	  
-	warn q{$fake_vars->{'list_unsubscribe_link'}} . $fake_vars->{'list_unsubscribe_link'}; 
+	# warn q{$fake_vars->{'list_unsubscribe_link'}} . $fake_vars->{'list_unsubscribe_link'}; 
 	
     require DADA::App::EmailMessagePreview;
     my $daemp = DADA::App::EmailMessagePreview->new;
