@@ -35,6 +35,9 @@ $TEST_SQL_PARAMS = {
 		confirmation_tokens_table          => 'test_dada_confirmation_tokens',
 		message_drafts_table               => 'test_dada_message_drafts',
 		rate_limit_hits_table              => 'test_dada_rate_limit_hits',
+		
+		email_message_previews_table       => 'test_dada_email_message_previews', 
+		
 	}, 
 
 	PostgreSQL => { 
@@ -64,6 +67,9 @@ $TEST_SQL_PARAMS = {
 		message_drafts_table               => 'test_dada_message_drafts',
 		rate_limit_hits_table              => 'test_dada_rate_limit_hits',
 
+		email_message_previews_table       => 'test_dada_email_message_previews', 
+
+
 	}, 
 
 	SQLite => {
@@ -87,6 +93,9 @@ $TEST_SQL_PARAMS = {
 		confirmation_tokens_table          => 'test_dada_confirmation_tokens',
 		message_drafts_table               => 'test_dada_message_drafts',
 		rate_limit_hits_table              => 'test_dada_rate_limit_hits',			
+		email_message_previews_table       => 'test_dada_email_message_previews', 
+	
+	
 	},
 	
 

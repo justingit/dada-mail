@@ -1902,6 +1902,9 @@ sub _config_import {
 		message_drafts_table               => 'dada_message_drafts', 
 		rate_limit_hits_table              => 'dada_rate_limit_hits',
 		
+		email_message_previews_table       => 'dada_email_message_previews', 
+		
+		
 		dbtype => 'SQLite',
 		database => 'dadamail',
         

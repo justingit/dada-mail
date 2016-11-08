@@ -76,7 +76,6 @@ sub _sql_init {
     }
 
 
-	$self->{sql_params}->{email_message_previews_table} = 'dada_email_message_previews'; 
 
     require DADA::App::DBIHandle;
     my $dbi_obj = DADA::App::DBIHandle->new;

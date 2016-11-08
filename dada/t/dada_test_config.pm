@@ -240,6 +240,8 @@ my @statements = split(';', $sql);
 		my $confirmation_tokens_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{confirmation_tokens_table};
 		my $message_drafts_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{message_drafts_table};
 		my $rate_limit_hits_table               = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{rate_limit_hits_table}; 
+		my $email_message_previews_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{email_message_previews_table}; 
+						
 						
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE IF NOT EXISTS $settings_table}; 
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE IF NOT EXISTS $subscribers_table}; 
@@ -257,6 +259,9 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_rate_limit_hits}{CREATE TABLE IF NOT EXISTS $rate_limit_hits_table};	
+
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_email_message_previews}{CREATE TABLE IF NOT EXISTS $email_message_previews_table};	
+
 
 
         my $sth = $dbh->prepare($_) or croak $DBI::errstr . 'query:' . $_; 
@@ -339,6 +344,7 @@ my @statements = split(';', $sql);
 		my $confirmation_tokens_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{confirmation_tokens_table};
 		my $message_drafts_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{message_drafts_table};
 		my $rate_limit_hits_table               = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{rate_limit_hits_table}; 
+		my $email_message_previews_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{email_message_previews_table}; 
 		
 		
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE $settings_table}; 
@@ -365,6 +371,8 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_rate_limit_hits}{CREATE TABLE IF NOT EXISTS $rate_limit_hits_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_email_message_previews}{CREATE TABLE IF NOT EXISTS $email_message_previews_table};	
+
 
 		#print 'query: ' . $_; 
 			
@@ -408,6 +416,7 @@ sub destroy_MySQL_db {
 		confirmation_tokens_table
 		message_drafts_table
 		rate_limit_hits_table
+		email_message_previews_table
 		)){ 
 			
 #			carp "removing: " . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{$_}; 
@@ -478,6 +487,7 @@ my @statements = split(';', $sql);
 		my $confirmation_tokens_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{confirmation_tokens_table};
 		my $message_drafts_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{message_drafts_table};
 		my $rate_limit_hits_table               = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{rate_limit_hits_table}; 
+		my $email_message_previews_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{email_message_previews_table}; 
 	
 		
 		
@@ -498,6 +508,8 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
 		$_ =~ s{CREATE TABLE dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 		$_ =~ s{CREATE TABLE dada_rate_limit_hits}{CREATE TABLE IF NOT EXISTS $rate_limit_hits_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_email_message_previews}{CREATE TABLE IF NOT EXISTS $email_message_previews_table};	
+
 
 		print "query: $_"; 
 
