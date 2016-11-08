@@ -6,23 +6,22 @@
 
 =begin html
 
+
+<p>
+	<a href="http://foundation.zurb.com/emails.html">Foundation for Emails</a> - Dada Mail's shipped email templates are 
+	created using this Framework. 
+</p>
+
+<p><a href="https://mjml.io/">MJML</a> another email markup language to help simplify writing responsive HTML email messages. 
 <p>
 	<a href="http://briangraves.github.io/ResponsiveEmailPatterns/">Responsive Email Patterns</a><br>
 	<em>A collection of patterns and modules for responsive emails.</em>
 </p>
-<p>
-	<a href="http://zurb.com/playground/responsive-email-templates">Responsive Email Templates by Zurb</a>
-</p>
-
-<p><a href="http://zurb.com/ink/">Ink by Zurb</a> is an entire framework for producing beautiful HTML email messages.</p> 
-
 
 <p>
 	<a href="http://htmlemailboilerplate.com/">HTML Email Boilerplate.</a>
 </p>
-<p>
-	<a href="http://emailbtn.net/">Bulletproof Email Buttons</a>
-</p>
+
 <p>
 	<a href="http://emailbg.net/">Bulletproof Email Background Images</a>
 </p>
