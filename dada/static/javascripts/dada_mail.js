@@ -4173,10 +4173,12 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 	}
 
 	if ($("#Subject").val().length <= 0) {
-		var no_subject_msg = "The Subject: header of this message has been left blank. Send anyways?";
-		if (!confirm(no_subject_msg)) {
-			alert('Mass Mailing canceled.');
-			return false;
+		if ($("#subject_from_title_tag").prop("checked") !== true) {
+			var no_subject_msg = "The Subject: header of this message has been left blank. Send anyways?";
+			if (!confirm(no_subject_msg)) {
+				alert('Mass Mailing canceled.');
+				return false;
+			}
 		}
 	}
 	else if(itsatest === false) {

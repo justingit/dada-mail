@@ -2,6 +2,31 @@
 
 =encoding utf-8
 
+=head1 10.0.1
+
+=head2 Focus 
+
+This is a bug-fix release for issues found in v10.0.0 of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3  Data in Email Templates not properly UTF-8 Decoded
+
+L<https://github.com/justingit/dada-mail/issues/604>
+
+=head3 Previews do not work on upgraded Dada Mails, because the table previews are stored is never created 
+
+L<https://github.com/justingit/dada-mail/issues/606>
+
+=head3  Schedule and Stationary screens do not have Preview button
+
+L<https://github.com/justingit/dada-mail/issues/605>
+
+=head3 Using Preview with no content gives no results
+
+L<https://github.com/justingit/dada-mail/issues/603>
+
+
 =head1 10.0.0
 
 =head2 Features
