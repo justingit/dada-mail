@@ -156,6 +156,11 @@ sub fetch {
         if ( length($pt) > 0 ) {
             ( $vars, $pt ) = $self->strip_and_return_vars($pt);
         }
+		foreach(keys %$vars){ 
+			$vars->{$_} = safely_decode($vars->{$_});
+		}
+		$pt   = safely_decode($pt);
+		$html = safely_decode($html);
 
         my $r = {
             html      => $html,
