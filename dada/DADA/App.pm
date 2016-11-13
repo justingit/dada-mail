@@ -14615,7 +14615,10 @@ sub schedules {
     my $r;
     $r .= "Started: " . scalar localtime($t) . "\n";
 	
+	$r .= 'PID: ' . "$$\n";
+		
 	my $user = $ENV{ LOGNAME } || $ENV{ USER } || $ENV{ USERNAME } || getlogin || getpwuid( $< );
+	
 	
 	if(defined($user)) {
 		$r .= 'Running as uid:, ' . $user . "\n";
