@@ -12,6 +12,12 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+Core5Filemanager replacement: 
+	https://github.com/servocoder/RichFilemanager
+
+
+
 screencasts
 	Preview Button 
 	demo (not tutorial) on making themes
