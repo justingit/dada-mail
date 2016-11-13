@@ -112,10 +112,14 @@ sub parse {
 
     goto BUILD_MESSAGE unless $html_ver;
 
-    if ( $self->{_remove_jscript} == 1 ) {
-        $html_ver = scrub_js($html_ver); 
-    }
-    
+
+	
+
+    #if ( $self->{_remove_jscript} == 1 ) {
+    #    $html_ver = scrub_js($html_ver); 
+    #}
+    	
+	
     # Get all multimedia part (img, flash) for later create a MIME part
     # for each of them
     my $analyzer = HTML::LinkExtor->new;
@@ -148,7 +152,10 @@ sub parse {
     for my $url (@l) {
         my $urlAbs = absUrl( $$url[2], $rootPage );
         chomp $urlAbs;    # Sometime a strange cr/lf occur
-
+		
+		
+		#warn '$$url[2]' . $$url[2]; 
+		
         # Replace relative href found to absolute one
         if (
                ( $$url[0] eq 'a' )
@@ -165,6 +172,11 @@ sub parse {
             ( !$url_remplace{$urlAbs} )
           )                                       # ni les urls deja remplacees
         {
+			
+			#warn 'here!';
+			#warn '$$url[2]' . $$url[2]; 
+			#warn q{pattern_href($urlAbs,"href",$1)} . pattern_href($urlAbs,"href",$1); 
+			
             $html_ver =~ s/\s href \s* = \s* [\"']? \Q$$url[2]\E ([\"'>])
 		           /pattern_href($urlAbs,"href",$1)/giemx;
             print "Replace ", $$url[2], " with ", $urlAbs, "\n"
@@ -295,6 +307,7 @@ sub parse {
           if ($html_ver);
         $txt_ver = $self->fill_template( $txt_ver, $self->{_HASH_TEMPLATE} );
     }
+
 
     $self->build_mime_object( $html_ver, $txt_ver || undef, \@mail );
 	
