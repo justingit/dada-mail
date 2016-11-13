@@ -61,6 +61,21 @@
             <!-- /tmpl_unless -->
         </div> 
     </div> 
+	
+	
+    <div class="row">
+        <div class="small-12 columns">
+			<label for="email_embed_images_as_attachments">  
+	            <input type="checkbox" 
+	                name="email_embed_images_as_attachments" 
+	                id="email_embed_images_as_attachments" 
+	                value="1" 
+	                <!-- tmpl_if list_settings.email_embed_images_as_attachments -->checked="checked"<!-- /tmpl_if --> 
+	             >
+                Embed images in HTML Messages as attachments
+            </label>
+        </div>
+    </div>
     
 	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
 

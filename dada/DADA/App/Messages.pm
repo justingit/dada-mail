@@ -209,6 +209,11 @@ sub send_multipart_email {
     else {
         $expr = 0;
     }
+	
+	my $url_options            = 'cid';
+	if($self->ls->param('email_embed_images_as_attachments') != 1){ 
+		$url_options = 'extern'; 
+	}
 
     $args->{-headers} = {}
       if !exists( $args->{-headers} );
@@ -218,7 +223,7 @@ sub send_multipart_email {
     my $mailHTML = new DADA::App::MyMIMELiteHTML(
 
         #  remove_jscript                   => $remove_javascript,
-        'IncludeType' => 'cid',
+        'IncludeType' => $url_options,
         'TextCharset' => scalar $self->ls->param('charset_value'),
         'HTMLCharset' => scalar $self->ls->param('charset_value'),
         HTMLEncoding  => scalar $self->ls->param('html_encoding'),

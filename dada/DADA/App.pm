@@ -2494,6 +2494,7 @@ sub mass_mailing_options {
                 -settings  => {
                     mass_mailing_convert_plaintext_to_html => 0,
                     mass_mailing_block_css_to_inline_css   => 0,
+					email_embed_images_as_attachments      => 0,
                 },
                 -also_save_for => $also_save_for_list,
             }

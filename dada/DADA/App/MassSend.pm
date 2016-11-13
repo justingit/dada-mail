@@ -801,16 +801,20 @@ sub construct_from_url {
 	my $subject_from           = $draft_q->param('subject_from')           || 'input';
 	my $content_from           = $draft_q->param('content_from')           || 'url';
 	my $plaintext_content_from = $draft_q->param('plaintext_content_from') || 'auto';
-    my $url_options            = $draft_q->param('url_options')            ||  undef;
-	
+    
+
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+
+
+	my $url_options            = 'cid';
+	if($ls->param('email_embed_images_as_attachments') != 1){ 
+		$url_options = 'extern'; 
+	}
 	
 	if($mode eq 'text') { 
 		$subject_from = 'input';
-		$content_from = 'content_from_textarea';
-		$url_options = 'cid';
-		
+		$content_from = 'content_from_textarea';		
 		if(! defined(scalar $draft_q->param('html_message_body'))) { 
 			$content_from = 'none';
 		}
@@ -877,9 +881,9 @@ sub construct_from_url {
     }
     
     my $mailHTML = new DADA::App::MyMIMELiteHTML(
-        remove_jscript                   => $remove_javascript,
-        'IncludeType'                    => $url_options,
-        'TextCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
+        remove_jscript                   => $remove_javascript,  
+	    'IncludeType'                    => $url_options,
+   	    'TextCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
         'HTMLCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
         HTMLEncoding                     => scalar $self->{ls_obj}->param('html_encoding'),
         TextEncoding                     => scalar $self->{ls_obj}->param('plaintext_encoding'),
@@ -1684,6 +1688,11 @@ sub list_invite {
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     my $li = $ls->get;
 
+	my $url_options            = 'cid';
+	if($ls->param('email_embed_images_as_attachments') != 1){ 
+		$url_options = 'extern'; 
+	}
+	
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
 
@@ -1782,7 +1791,6 @@ sub list_invite {
     elsif (
         $process =~ m/send test invitation|send a test invitation|send invitations|send\: invit|send\: test invit/i )
     {    # $process is dependent on the label of the button - which is not a good idea
-
         my @address                 = $q->multi_param('address');
         my @already_invited_address = $q->multi_param('already_invited_address');
 
@@ -1856,7 +1864,7 @@ sub list_invite {
 	    try { 
 			require DADA::App::MyMIMELiteHTML;
 		    $mailHTML = new DADA::App::MyMIMELiteHTML(
-		        'IncludeType'                    => 'cid',
+		        'IncludeType'                    => $url_options,
 		        'TextCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
 		        'HTMLCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
 		        HTMLEncoding                     => scalar $self->{ls_obj}->param('html_encoding'),

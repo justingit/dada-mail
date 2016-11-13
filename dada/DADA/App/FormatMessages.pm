@@ -2094,8 +2094,6 @@ sub _apply_template {
     croak "no type! $!" if !exists($args->{-type});
 
     my $content = $args->{-content};
-
-	warn '$content' . $content; 
 	
     my $template;
     my $template_out = 0;
