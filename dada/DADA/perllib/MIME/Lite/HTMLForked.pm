@@ -696,7 +696,11 @@ sub create_image_part {
     }
 
     # Create part
-    my $mail = new MIME::Lite( Data => $buff1, Encoding => 'base64' );
+    my $mail = new MIME::Lite( 
+		Data => $buff1, 
+		Encoding => 'base64',
+		Disposition => "inline",
+		);
 
     $mail->attr( "Content-type" => $type );
 
@@ -709,9 +713,9 @@ sub create_image_part {
     }
 
     # Remove header for Eudora client
-    $mail->replace( "X-Mailer"            => "" );
-    $mail->replace( "MIME-Version"        => "" );
-    $mail->replace( "Content-Disposition" => "" );
+   # $mail->replace( "X-Mailer"            => "" );
+   # $mail->replace( "MIME-Version"        => "" );
+   # $mail->replace( "Content-Disposition" => "" );
     return $mail;
 }
 
