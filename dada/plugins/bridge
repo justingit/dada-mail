@@ -1109,7 +1109,6 @@ sub start {
             }
         }
 		
-		sleep(1);
 		
     }    # LIST_QUEUE?
 
