@@ -2,6 +2,15 @@
 
 =encoding utf-8
 
+=head1 10.0.2
+
+This is mostly a bug-fix release for issues found in v10.0.0 of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 
+
+
 =head1 10.0.1
 
 =head2 Focus 
