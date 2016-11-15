@@ -3385,6 +3385,11 @@ sub mail_sending_options {
 
         my $also_save_for_list = $ls->also_save_for_list($q);
 
+
+		# This will not work for multiple lists, as the password will be encrypted with the wrong cipher key. D'oh!
+		# WHAT TO DO?!
+		# Handle it in save() I guess... 
+		# 
         $ls->save_w_params(
             {
                 -associate => $q,
