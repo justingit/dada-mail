@@ -4,16 +4,7 @@
 
 =head1 10.0.2
 
-This is mostly a bug-fix release for issues found in v10.0.0 of Dada Mail. 
-
-=head2 Bugfixes
-
-=head3 
-
-
-=head1 10.0.1
-
-=head2 Focus 
+This is mostly a bug-fix release for issues found in v10.0.1 of Dada Mail. 
 
 =head2 Changes
 
@@ -26,8 +17,6 @@ Look for the option in the List Control Panel under, B<Mass Mailing: Options>.
 This will affect all email messages sent out from a mailing list, 
 not just messages sent out in a mass mailing. 
 
-This is a bug-fix release for issues found in v10.0.0 of Dada Mail. 
-
 =head3 Content-Disposition header added to embeded image attachments
 
 Related to the abov change, the C<Content-Disposition> header appears to have been missing from the 
@@ -37,7 +26,7 @@ We hope the iclusion of this header will stop this from happenig in most mail re
 
 =head3 Bridge, Lock Files, and zombie processes
 
-This is a big one, if you are running discussio mailing lists. 
+This is a big one, if you are running discussion mailing lists. 
 We've made a few changes, to help make running multiple mailing lists with Bridge a lot smoother. 
 
 The first change we've made is making sure the lockfile created is specifically named for the mailing list being worked on. 
@@ -54,9 +43,14 @@ Upgrading could help you out, immensely.
 
 =head3 Javascript Scrubber Disabled
 
-For the time being, the Javascript scrubber for Dada Mail has been disabled, as it also breaks HTML links that have template tags embedded within them. 
+For the time being, the Javascript scrubber for Dada Mail has been disabled, 
+as it also breaks HTML links that have template tags embedded within them. 
 
+=head1 10.0.1
 
+=head2 Focus 
+
+This is mostly a bug-fix release for issues found in v10.0.0 of Dada Mail. 
 
 =head2 Bugfixes
 
