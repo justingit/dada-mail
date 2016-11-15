@@ -15,7 +15,48 @@ This is mostly a bug-fix release for issues found in v10.0.0 of Dada Mail.
 
 =head2 Focus 
 
+=head2 Changes
+
+=head3 New Option for HTML Email Messages: Embed of Link Images
+
+By default, all images in an HTML message are attached and embedded within the email message itself. 
+
+This can lead to large email messages, so we've added a new option to simply link to these images instead. 
+Look for the option in the List Control Panel under, B<Mass Mailing: Options>. 
+This will affect all email messages sent out from a mailing list, 
+not just messages sent out in a mass mailing. 
+
 This is a bug-fix release for issues found in v10.0.0 of Dada Mail. 
+
+=head3 Content-Disposition header added to embeded image attachments
+
+Related to the abov change, the C<Content-Disposition> header appears to have been missing from the 
+MIME part that relates to the attached images. 
+This may cause the embedded image to show up by itself at the end of a message, depending on your mail reader. 
+We hope the iclusion of this header will stop this from happenig in most mail readers. 
+
+=head3 Bridge, Lock Files, and zombie processes
+
+This is a big one, if you are running discussio mailing lists. 
+We've made a few changes, to help make running multiple mailing lists with Bridge a lot smoother. 
+
+The first change we've made is making sure the lockfile created is specifically named for the mailing list being worked on. 
+In the past, the SAME lockfile was used for all mailing lists, 
+so if there was a problem with one mailing list, 
+the next mailing list worked on may not be successful, because the lock was still "live", basically. 
+Bridge would also not unlock the lockfile if there was say, a error with logging into the POP3 server, 
+causing problems on additional runs of the plugin. 
+This may culminate into zombie processes of Dada Mail, as well as perhaps even the POP3 daemon, which may have a connection kept open by a zombie process. 
+All of this isn't good stuff, and we hope to have cleared out this problem. 
+
+If you're experiencing zombie processes, and you're running mailing lists with Bridge enabled, these above issues may be affecting you. 
+Upgrading could help you out, immensely. 
+
+=head3 Javascript Scrubber Disabled
+
+For the time being, the Javascript scrubber for Dada Mail has been disabled, as it also breaks HTML links that have template tags embedded within them. 
+
+
 
 =head2 Bugfixes
 
