@@ -12,15 +12,30 @@ Key:
 [*] Naw...
 [?] Someday
 
+Make some sort of dupe message stopper. Hash accepted messages, perhaps, save hash, 
+compare to messages coming in, and reject messages that match the hash, after x times? 
+
+Read in message, save hash of BODY (only body) and Message-ID (Which should be uique)
+Test: see if there are three messages stored that have the same hash, OR Messge-ID. If so? Test FAILS
+HOUSEKEEPING: Get rid of records that are x days old (60?). Since we're only saving the hash, this should be a BIG tabe
+
+
+
+CREATE TABLE IF NOT EXISTS dada_bridge_message_dupe_trove ( 
+	id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	list varchar(16),
+	body_hash VARCHAR(225) NOT NULL, 
+	content_id VARCHAR(225) NOT NULL,
+);
+CREATE INDEX dada_bridge_message_dupe_trove_all_index ON dada_bridge_message_dupe_trove (list, body_hash, content_id);
+
+
+
+
 
 Core5Filemanager replacement: 
 	https://github.com/servocoder/RichFilemanager
 
-
-
-screencasts
-	Preview Button 
-	demo (not tutorial) on making themes
 
 * Make using Email::MIME::CreateHTML an option if available - and maybe the dfault, unless NOT avalable, 
 	* make slight tweak so that LWP resolver doesn't die with unfound resource 
