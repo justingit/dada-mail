@@ -79,96 +79,119 @@ sub clean_out {
     my $self = shift;
 
     my $lock = $self->lock_file();
-
     if ( !defined($lock) ) {
-
         # Too busy, I guess.
         return 0;
     }
+	else {
 
-    my $dir  = make_safer( $DADA::Config::TMP . '/_mime_cache' );
-    my $file = undef;
-    my @files;
-    my $c = 0;
+	    my $dir  = make_safer( $DADA::Config::TMP . '/_mime_cache' );
+	    my $file = undef;
+	    my @files;
+	    my $c = 0;
 
-    if ( -d $dir ) {
-        opendir( DIR, $dir ) or die "$!";
-        while ( defined( $file = readdir DIR ) ) {
-            next if $file =~ /^\.\.?$/;
+	    if ( -d $dir ) {
+	        if(opendir( DIR, $dir )) {
+		        while ( defined( $file = readdir DIR ) ) {
+		            next if $file =~ /^\.\.?$/;
+		            $c++;
+		            last
+		              if $c >= $self->num_files;
 
-            $c++;
-            last
-              if $c >= $self->num_files;
-
-            $file =~ s(^.*/)();
-            $file = make_safer( $dir . '/' . $file );
-            if ( -f $file && -M $file > 3 ) {
-
-                # warn 'deleting file:' . $file;
-                my $unlink_check = unlink($file);
-                if ( $unlink_check != 1 ) {
-                    warn "deleting tmp file didn't work for: " . $file;
-                }
-            }
-        }
-        closedir(DIR);
-    }
-    else {
-        if ( mkdir( $dir, $DADA::Config::DIR_CHMOD ) ) {
-
-            # good!
-        }
-        else {
-            warn "couldn't make dir, $dir";
-        }
-    }
-
-    $self->unlock_file($lock);
+		            $file =~ s(^.*/)();
+		            $file = make_safer( $dir . '/' . $file );
+		            if ( -f $file && -M $file > 3 ) {
+		                my $unlink_check = unlink($file);
+		                if ( $unlink_check != 1 ) {
+		                    warn "couldn't delete tmp: " . $file;
+		                }
+		            }
+		        }
+		        closedir(DIR);
+			}
+			else { 
+                warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! Could not open directory: '" . $dir ."' $!";
+				return undef; 
+			}
+	    }
+	    else {
+	        if ( mkdir( $dir, $DADA::Config::DIR_CHMOD ) ) {
+	            # good!
+	        }
+	        else {
+	            warn "couldn't make dir, $dir";
+	        }
+	    }
+	    $self->unlock_file($lock);
+	}
 
 }
 
 sub lock_file {
 
     my $self = shift;
-
     my $i = 0;
 
-    my $countdown = shift || 0;
+	if(-f $self->lockfile){ 
+		if(-M $self->lockfile > 1){ 
+			$self->remove_lockfile(); 
+		}
+	}
 
-    open my $fh, ">", $self->lockfile
-      or croak "Can't open semaphore file " . $self->lockfile . " because: $!";
+    my $countdown = shift || 10;
 
-    chmod $DADA::Config::FILE_CHMOD, $self->lockfile;
-
-    {
-        my $count = 0;
+    if ( open my $fh, ">", $self->lockfile ) {
+        chmod $DADA::Config::FILE_CHMOD, $self->lockfile;
         {
-
-            flock $fh, LOCK_EX | LOCK_NB and last;
-
-            sleep 1;
-            redo if ++$count < $countdown;
-
-            carp "Couldn't lock semaphore file '"
-              . $self->lockfile
-              . "' because: '$!', exiting with error to avoid file corruption!";
-            return undef;
+            my $count = 0;
+            {
+                flock $fh, LOCK_EX | LOCK_NB and last;
+                sleep 1;
+				$count++; 
+                redo if $count < $countdown;
+				
+                carp "Couldn't lock semaphore file '"
+                  . $self->lockfile
+                  . "' because: '$!', exiting with error to avoid file corruption!";
+                return undef;
+            }
         }
+	    return $fh;
+    }
+    else {
+        warn "Can't open semaphore file " . $self->lockfile . " because: $!";
     }
 
-    return $fh;
 
+
+}
+
+
+sub remove_lockfile { 
+	my $self = shift; 
+	
+    my $unlink_check = unlink($self->lockfile);
+    if ( $unlink_check != 1 ) {
+        warn "deleting," . $self->lockfile . " failed: " . $!;
+    	return 0; 
+	}
+	else { 
+		return 1;
+	}
 }
 
 sub unlock_file {
 
     my $self = shift;
-
     my $fh = shift || croak "You must pass a filehandle to unlock!";
-    close($fh) or carp q{Couldn't unlock semaphore file for, } . $fh . ' ' . $!;
-
-    return 1;
-
+    if(close($fh)){ 
+		$self->remove_lockfile();
+	    return 1;
+	}
+	else { 
+		warn q{Couldn't unlock semaphore file for, } . $fh . ' ' . $!;
+		return 0; 
+	}
 }
 
 1;
