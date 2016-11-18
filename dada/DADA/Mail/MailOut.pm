@@ -2012,7 +2012,7 @@ sub lock_file {
     }
 
     my $file      = shift || croak "You must pass a file to lock!";
-    my $countdown = shift || 0;
+    my $countdown = shift || 10;
 
     my $lockfile = make_safer( $file . '.lock' );
 

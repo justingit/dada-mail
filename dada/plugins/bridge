@@ -948,8 +948,11 @@ sub start {
         my $lock_file_fh = undef;
         if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
             $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check( { name => 'bridge-' . $list . '.lock' } );
+			if(!defined($lock_file_fh)){ 
+				$r .= "couldn't get a lock for $list, skipping.";
+	            next LIST_QUEUE;
+			}
         }
-
         my ( $pop3_obj, $pop3_status, $pop3_log ) = pop3_login($ls);
 
         $r .= $pop3_log;
@@ -1295,7 +1298,12 @@ sub message_was_deleted_check {
     my $lock_file_fh = undef;
     if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
         $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check( { name => 'bridge-' . $ls->param('list') . '.lock', } );
-    }
+		if(!defined($lock_file_fh)){ 
+			$r .= "couldn't get a lock for " . $ls->param('list') . ", skipping.";
+            return $r; 
+		}
+    	
+	}
 
     my ( $pop3_obj, $pop3_status, $pop3_log ) = pop3_login($ls);
 
@@ -1451,8 +1459,12 @@ sub test_pop3 {
 
         my $lock_file_fh = undef;
         if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
-
             $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check( { name => 'bridge-' . $l . '.lock', } );
+			if(!defined($lock_file_fh)){ 
+				$r .= "couldn't get a lock for " . $l . ", skipping.";
+	            next;
+			}
+			
         }
 
         my ( $pop3_obj, $pop3_status, $pop3_log ) = pop3_login($ls);
