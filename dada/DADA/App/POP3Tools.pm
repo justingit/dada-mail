@@ -107,9 +107,7 @@ sub mail_pop3client_login {
 sub _lock_pop3_check { 
 
     my ($args) = @_;
-	
-	# this needs semphore locking, doofus. 
-    
+	    
     if(! exists($args->{name})){ 
         croak "You need to supply a name! for _lock_pop3_check"; 
     }
@@ -122,23 +120,25 @@ sub _lock_pop3_check {
 			_remove_pop3_check($args);
 		}
 	}
-    
-	#sysopen(POP3_SAFETYLOCK, _lockfile_name($args),  O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD ) 
 	
-	open my $POP3_SAFETYLOCK, ">", _lockfile_name($args)
-		or croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error - Cannot open list lock file " . _lockfile_name($args) . " - $!";
-	chmod($DADA::Config::FILE_CHMOD , _lockfile_name($args)); 
-	{
-		my $sleep_count = 0; 
-		{ 
-			flock $POP3_SAFETYLOCK, LOCK_EX | LOCK_NB and last; 
-			sleep 1;
-			redo if ++$sleep_count < 11; 		
-			croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: Server is way too busy to open semaphore file , " . _lockfile_name($args) . " -   $!\n";
+	if(open my $POP3_SAFETYLOCK, ">", _lockfile_name($args)) {
+		chmod($DADA::Config::FILE_CHMOD , _lockfile_name($args)); 
+		{
+			my $sleep_count = 0; 
+			{ 
+				flock $POP3_SAFETYLOCK, LOCK_EX | LOCK_NB and last; 
+				sleep 1;
+				redo if ++$sleep_count < 11; 		
+				warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: Server is too busy to open semaphore file , " . _lockfile_name($args) . " -   $!\n";
+				return undef; 
+			}
 		}
+		return $POP3_SAFETYLOCK; 
 	}
-	
-	return $POP3_SAFETYLOCK; 
+	else { 
+		warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error - Cannot open list lock file " . _lockfile_name($args) . " - $!";
+		return undef; 
+	}
 }
 
 
