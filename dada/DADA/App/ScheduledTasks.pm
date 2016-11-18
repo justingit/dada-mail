@@ -16,7 +16,21 @@ use DADA::App::Guts;
 
 use vars qw($AUTOLOAD); 
 
-my %allowed = (); 
+use Fcntl qw(
+  :DEFAULT
+  :flock
+  LOCK_SH
+  O_RDONLY
+  O_CREAT
+  O_WRONLY
+  O_TRUNC
+);
+
+my %allowed = (
+    lockfile  => undef,
+);
+
+
 
 sub new {
 
@@ -63,10 +77,9 @@ sub AUTOLOAD {
 
 
 
-sub _init { 
-
+sub _init {
 	my $self = shift; 
-		
+    $self->lockfile( make_safer( $DADA::Config::TMP . '/_scheduled_tasks.lock' ) );
 }
 
 
@@ -129,13 +142,86 @@ sub expire_rate_limit_checks {
 
 sub clean_out_mime_cache { 
 	my $self = shift;
-	require   DADA::App::MIMECache; 
-	my $dam = DADA::App::MIMECache->new; 
-	$dam->clean_out; 
-	undef $dam; 
-	return " Done!\n";
+	
+	if($DADA::Config::MIME_TOOLS_PARAMS->{tmp_to_core} != 1){ 	
+		require   DADA::App::MIMECache; 
+		my $dam = DADA::App::MIMECache->new; 
+		$dam->clean_out; 
+		undef $dam; 
+		return " Done!\n";
+	}
+	else { 
+		return "MIME files written in core, skipping!\n";
+	}
 
 }
+
+sub lock_file {
+
+    my $self = shift;
+
+    my $i = 0;
+
+    my $countdown = shift || 10;
+
+	if(-f $self->lockfile){ 
+		if(-M $self->lockfile > 1){ 
+			$self->remove_lockfile(); 
+		}
+	}
+	
+    if ( open my $fh, ">", $self->lockfile ) {
+        chmod $DADA::Config::FILE_CHMOD, $self->lockfile;
+        {
+            my $count = 0;
+            {
+                flock $fh, LOCK_EX | LOCK_NB and last;
+
+                sleep 1;
+				$count++;
+                redo if $count < $countdown;
+
+                carp "Couldn't lock semaphore file '"
+                  . $self->lockfile
+                  . "' because: '$!', exiting with error to avoid file corruption!";
+                return undef;
+            }
+        }
+		return $fh;
+    }
+    else {
+        warn "Can't open semaphore file " . $self->lockfile . " because: $!";
+		return undef;
+    }
+}
+
+sub remove_lockfile { 
+	my $self = shift; 
+	
+    my $unlink_check = unlink($self->lockfile);
+    if ( $unlink_check != 1 ) {
+        warn "deleting," . $self->lockfile . " failed: " . $!;
+    	return 0; 
+	}
+	else { 
+		return 1;
+	}
+}
+
+sub unlock_file {
+
+    my $self = shift;
+    my $fh = shift || croak "You must pass a filehandle to unlock!";
+    if(close($fh)){ 
+		$self->remove_lockfile();
+	    return 1;
+	}
+	else { 
+		warn q{Couldn't unlock semaphore file for, } . $fh . ' ' . $!;
+		return 0; 
+	}
+}
+
 
 sub DESTORY {}
 sub END {}

@@ -14643,121 +14643,132 @@ sub schedules {
     require DADA::App::ScheduledTasks;
     my $dast = DADA::App::ScheduledTasks->new;
 
-    if ( $schedule eq '_all' ) {
-        $r .= "\nMonitor:\n" . '-' x 72 . "\n";
-        try {
-            $r .= $dast->mass_mailing_monitor($list);
-        }
-        catch {
-            $r .= "* Error: $_\n";
-        };
-
-        $r .= "Mass Mailing Schedules:\n" . '-' x 72 . "\n";
-        try {
-            $r .= $dast->scheduled_mass_mailings($list);
-        }
-        catch {
-            $r .= "* Error: $_\n";
-        };
-
-        $r .= "Rate Limits:\n" . '-' x 72 . "\n";
-        try {
-            $r .= $dast->expire_rate_limit_checks($list);
-        }
-        catch {
-            $r .= "* Error: $_\n";
-        };
+    my $lock = $dast->lock_file();
+	sleep(5);
+    if ( !defined($lock) ) {
+		$r .= "Scheduled Tasks may be running in a different process, stopping.\n";
+    }
+	else {
 		
-        $r .= "Cleaning Out MIME Cache:\n" . '-' x 72 . "\n";
-        try {
-            $r .= $dast->clean_out_mime_cache();
-        }
-        catch {
-            $r .= "* Error: $_\n";
-        };
+	    if ( $schedule eq '_all' ) {
+	        $r .= "\nMonitor:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->mass_mailing_monitor($list);
+	        }
+	        catch {
+	            $r .= "* Error: $_\n";
+	        };
 
-        undef($dast);
+	        $r .= "Mass Mailing Schedules:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->scheduled_mass_mailings($list);
+	        }
+	        catch {
+	            $r .= "* Error: $_\n";
+	        };
 
-        for my $plugin ( keys %$DADA::Config::PLUGINS_ENABLED ) {
-            if ( exists( $DADA::Config::PLUGINS_ENABLED->{$plugin} ) ) {
-                next if ( $DADA::Config::PLUGINS_ENABLED->{$plugin} != 1 );
-                next
-                  if !
-                  exists(
-                    $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run} );
-                $r .= "Plugin: $plugin\n" . '-' x 72 . "\n";
-                try {
-                    require 'plugins/' . $plugin;
-                    $r .= $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run}
-                      ->($list);
-                }
-                catch {
-                    $r .= "* Error: $_\n";
-                };
-            }
-        }
-    }
-    elsif ( $schedule eq 'mass_mailing_monitor' ) {
-        $r .= "Monitor:\n" . '-' x 72 . "\n";
-        try {
-            $r .= $dast->mass_mailing_monitor($list);
-        }
-        catch {
-            $r .= "* Error: $_\n";
-        };
-    }
-    elsif ( $schedule eq 'rate_limit_checks' ) {
-        $r .= "Rate Limits:\n" . '-' x 72 . "\n";
-        try {
-            $r .= $dast->expire_rate_limit_checks($list);
-        }
-        catch {
-            $r .= "* Error: $_\n";
-        };
-    }
-    elsif ( $schedule eq 'mime_cache' ) {
-        $r .= "Cleaning Out MIME Cache:\n" . '-' x 72 . "\n";
-        try {
-            $r .= $dast->clean_out_mime_cache();
-        }
-        catch {
-            $r .= "* Error: $_\n";
-        };
-    }
-    elsif ( $schedule eq 'scheduled_mass_mailings' ) {
-        $r .= "Mass Mailing Schedules:\n" . '-' x 72 . "\n";
-        try {
-            $r .= $dast->scheduled_mass_mailings($list);
-        }
-        catch {
-            $r .= "* Error: $_\n";
-        };
-    }
-    elsif ($schedule eq 'bridge'
-        || $schedule eq 'bounce_handler' )
-    {
-        if ( $DADA::Config::PLUGINS_ENABLED->{$schedule} != 1 ) {
+	        $r .= "Rate Limits:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->expire_rate_limit_checks($list);
+	        }
+	        catch {
+	            $r .= "* Error: $_\n";
+	        };
+		
+	        $r .= "Cleaning Out MIME Cache:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->clean_out_mime_cache();
+	        }
+	        catch {
+	            $r .= "* Error: $_\n";
+	        };
 
-            #....
-        }
-        else {
+	      
 
-            $r .= "Plugin: $schedule\n" . '-' x 72 . "\n";
+	        for my $plugin ( keys %$DADA::Config::PLUGINS_ENABLED ) {
+	            if ( exists( $DADA::Config::PLUGINS_ENABLED->{$plugin} ) ) {
+	                next if ( $DADA::Config::PLUGINS_ENABLED->{$plugin} != 1 );
+	                next
+	                  if !
+	                  exists(
+	                    $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run} );
+	                $r .= "Plugin: $plugin\n" . '-' x 72 . "\n";
+	                try {
+	                    require 'plugins/' . $plugin;
+	                    $r .= $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run}
+	                      ->($list);
+	                }
+	                catch {
+	                    $r .= "* Error: $_\n";
+	                };
+	            }
+	        }
+	    }
+	    elsif ( $schedule eq 'mass_mailing_monitor' ) {
+	        $r .= "Monitor:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->mass_mailing_monitor($list);
+	        }
+	        catch {
+	            $r .= "* Error: $_\n";
+	        };
+	    }
+	    elsif ( $schedule eq 'rate_limit_checks' ) {
+	        $r .= "Rate Limits:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->expire_rate_limit_checks($list);
+	        }
+	        catch {
+	            $r .= "* Error: $_\n";
+	        };
+	    }
+	    elsif ( $schedule eq 'mime_cache' ) {
+	        $r .= "Cleaning Out MIME Cache:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->clean_out_mime_cache();
+	        }
+	        catch {
+	            $r .= "* Error: $_\n";
+	        };
+	    }
+	    elsif ( $schedule eq 'scheduled_mass_mailings' ) {
+	        $r .= "Mass Mailing Schedules:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->scheduled_mass_mailings($list);
+	        }
+	        catch {
+	            $r .= "* Error: $_\n";
+	        };
+	    }
+	    elsif ($schedule eq 'bridge'
+	        || $schedule eq 'bounce_handler' )
+	    {
+	        if ( $DADA::Config::PLUGINS_ENABLED->{$schedule} != 1 ) {
 
-            try {
-                require 'plugins/' . $schedule;
-                $r .= $DADA::Config::PLUGIN_RUNMODES->{$schedule}->{sched_run}
-                  ->($list);
-            }
-            catch {
-                $r .= "* Error: $_\n";
-            };
-        }
-    }
-    else {
-        $r .= 'No such schedule:"' . $schedule . '"';
-    }
+	            #....
+	        }
+	        else {
 
+	            $r .= "Plugin: $schedule\n" . '-' x 72 . "\n";
+
+	            try {
+	                require 'plugins/' . $schedule;
+	                $r .= $DADA::Config::PLUGIN_RUNMODES->{$schedule}->{sched_run}
+	                  ->($list);
+	            }
+	            catch {
+	                $r .= "* Error: $_\n";
+	            };
+	        }
+	    }
+	    else {
+	        $r .= 'No such schedule:"' . $schedule . '"';
+	    }
+	}
+	
+    $dast->unlock_file($lock);
+	undef($dast);
+	
     my $end_t   = time;
     my $total_t = $end_t - $t;
     $r .= "Finished: " . scalar localtime($end_t) . "\n";
