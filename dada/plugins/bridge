@@ -2132,7 +2132,7 @@ sub send_msg_too_big {
 
 sub notify_of_delivery {
 
-	warn 'in notify_of_delivery'; 
+	# warn 'in notify_of_delivery'; 
     my ($args) = @_;
 
     if ( !exists( $args->{-ls} ) ) {
@@ -2595,7 +2595,7 @@ sub deliver {
         );
 
 
-		warn '$r:' . $r; 
+		# warn '$r:' . $r; 
 
         return ( $msg_id, $mh->saved_message, $r );
 
@@ -3165,7 +3165,7 @@ sub inject {
         my $report;
          
         try {
-			warn 'validate_msg';
+			# warn 'validate_msg';
             ( $status, $errors, $report ) = validate_msg( $ls, \$msg );
         } catch { 
             warn 'couldn\'t validate_msg?!'; 
@@ -3176,7 +3176,7 @@ sub inject {
             
             if ($status == 1) {
                 if ( $ls->param('send_received_msg') == 1 ) {
-					warn 'notify_of_delivery'; 
+					# warn 'notify_of_delivery'; 
                     notify_of_delivery(
                         {
                             -ls        => $ls,
@@ -3185,7 +3185,7 @@ sub inject {
                         }
                     );
                 }
-				warn 'process';
+				# warn 'process';
                 $r .= process(
                     {
                         -ls        => $ls,
@@ -3194,7 +3194,7 @@ sub inject {
                     }
                 );
 
-				warn 'append_message_to_file';
+				# warn 'append_message_to_file';
                 my ( $amtf_status, $amtf_r ) = append_message_to_file( $ls, $msg );
                 $r .= $amtf_r;
                 return ( $status, $errors, $r );
@@ -3202,7 +3202,7 @@ sub inject {
             }
             else {
 
-				warn 'handle_errors';
+				# warn 'handle_errors';
                 $r .= "\tMessage did not pass verification.\n";
                 $r .= handle_errors( $ls, $errors, $msg );
                 
@@ -3220,7 +3220,7 @@ sub inject {
             
             $r .= "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
             return ( 0, { irrecoverable_error => 1 }, $r );
-			warn '$r' .  $r;
+			# warn '$r' .  $r;
 
         }; 
         return ( $status, $errors, $r );

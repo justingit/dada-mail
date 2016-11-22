@@ -560,7 +560,7 @@ sub message_history_html {
 	    );
 	#}
     if ( defined($html) ) {
-        warn 'message_history_html cached in file';
+        # warn 'message_history_html cached in file';
     }
 
     if ( !defined($html) ) {

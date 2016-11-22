@@ -3224,7 +3224,7 @@ sub _email_batched_finished_notification {
 
 #	warn 'calling send_out_message()';
 	
-warn 'subject before:' . $fm->_decode_header( $fields->{Subject} ); 
+#warn 'subject before:' . $fm->_decode_header( $fields->{Subject} ); 
 
 	my $message_subject = $fm->_decode_header( $fields->{Subject} ); 
 
@@ -3245,7 +3245,7 @@ warn 'subject before:' . $fm->_decode_header( $fields->{Subject} );
 			}
         );
 
-		warn 'subject after:' . $message_subject;
+	#	warn 'subject after:' . $message_subject;
 		
 		
     $dap->send_out_message(

@@ -86,8 +86,8 @@ ok( $reuse2 eq undef, 'reuse_key is undef.' );
 #diag '$test_mid:' . $test_mid; 
 my $coded = $lc->redirect_encode( $test_mid, $lc->redirect_tagify($test_url) );
 my $looks_like = $DADA::Config::PROGRAM_URL . '/r/' . $list . '/' . $key . '/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/';
-warn '$coded:'.$coded;
-warn '$looks_like;' . $looks_like; 
+#warn '$coded:'.$coded;
+#warn '$looks_like;' . $looks_like; 
 
 ok( $coded eq $looks_like, "coded '$coded' looks like: '$looks_like'");
 
