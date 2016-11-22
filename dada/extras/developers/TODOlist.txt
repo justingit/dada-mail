@@ -11,7 +11,15 @@ Key:
 [x] Done. 
 [*] Naw...
 [?] Someday
+	
 
+* Work on build script, and docs on build script
+* Double-check commadn line works correctly, and add ALL options to command line
+* Double check PSGI docs are up to date, 
+* and make new tutorial on working with Dada Mail in a container 
+	https://robn.io/docker-perl/
+	
+	
 * Blog 
 Using Tracker to figure out if messages are sending correctly  
 
