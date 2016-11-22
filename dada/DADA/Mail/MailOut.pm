@@ -2037,7 +2037,7 @@ sub lock_file {
             redo if ++$count < $countdown;
 
             croak
-"Couldn't lock semaphore file '$lockfile' for '$file' because: '$!', exiting with error to avoid file corruption!";
+"Couldn't lock semaphore file '$lockfile' for '$file' because: '$!', exiting.!";
 
         }
     }

@@ -183,14 +183,14 @@ sub lock_file {
 
                 carp "Couldn't lock semaphore file '"
                   . $self->lockfile
-                  . "' because: '$!', exiting with error to avoid file corruption!";
+                  . "' because: '$!', exiting.";
                 return undef;
             }
         }
 		return $fh;
     }
     else {
-        warn "Can't open semaphore file " . $self->lockfile . " because: $!";
+        carp "Can't open semaphore file " . $self->lockfile . " because: $!";
 		return undef;
     }
 }
@@ -200,7 +200,7 @@ sub remove_lockfile {
 	
     my $unlink_check = unlink($self->lockfile);
     if ( $unlink_check != 1 ) {
-        warn "deleting," . $self->lockfile . " failed: " . $!;
+        carp "deleting," . $self->lockfile . " failed: " . $!;
     	return 0; 
 	}
 	else { 
@@ -217,7 +217,7 @@ sub unlock_file {
 	    return 1;
 	}
 	else { 
-		warn q{Couldn't unlock semaphore file for, } . $fh . ' ' . $!;
+		carp q{Couldn't unlock semaphore file for, } . $fh . ' ' . $!;
 		return 0; 
 	}
 }

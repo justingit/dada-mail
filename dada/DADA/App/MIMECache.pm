@@ -152,7 +152,7 @@ sub lock_file {
 				
                 carp "Couldn't lock semaphore file '"
                   . $self->lockfile
-                  . "' because: '$!', exiting with error to avoid file corruption!";
+                  . "' because: '$!', exiting";
                 return undef;
             }
         }
