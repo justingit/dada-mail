@@ -12,6 +12,10 @@ Key:
 [*] Naw...
 [?] Someday
 
+* Blog 
+Using Tracker to figure out if messages are sending correctly  
+
+
 Make some sort of dupe message stopper. Hash accepted messages, perhaps, save hash, 
 compare to messages coming in, and reject messages that match the hash, after x times? 
 
