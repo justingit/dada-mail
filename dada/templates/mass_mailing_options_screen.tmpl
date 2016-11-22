@@ -77,6 +77,74 @@
         </div>
     </div>
     
+	
+	
+    <h4>
+		Default Mass Mailing Layout
+  	</h4>
+  
+    <div class="row">
+		<div class="small-1 columns">
+		</div>	
+		<div class="small-11 columns">
+			<label for="mass_mailing_default_layout_default">
+				<input 
+					type="radio"
+					name="mass_mailing_default_layout"
+					id="mass_mailing_default_layout_default"
+					value="default"
+					<!-- tmpl_if expr="(currently_selected_layout eq 'default')" -->
+						checked="checked"
+					<!-- /tmpl_if -->
+					>
+					Full Layout
+			</label>
+		
+		
+			<label for="mass_mailing_default_layout_minimal">
+					<input 
+						type="radio"
+						name="mass_mailing_default_layout"
+						id="mass_mailing_default_layout_minimal"
+						value="minimal"
+						<!-- tmpl_if expr="(currently_selected_layout eq 'minimal')" -->
+							checked="checked"
+						<!-- /tmpl_if -->
+						>
+						Minimal Layout
+					</label>
+		
+		
+		
+			<label for="mass_mailing_default_layout_discussion">
+					<input 
+						type="radio"
+						name="mass_mailing_default_layout"
+						id="mass_mailing_default_layout_discussion"
+						value="discussion"
+						<!-- tmpl_if expr="(currently_selected_layout eq 'discussion')" -->
+							checked="checked"
+						<!-- /tmpl_if -->
+						>
+						For Discussion List Messages
+					</label>
+		
+		
+				<label for="mass_mailing_default_layout_none">
+					<input 
+						type="radio"
+						name="mass_mailing_default_layout"
+						id="mass_mailing_default_layout_none"
+						value="none"
+						<!-- tmpl_if expr="(currently_selected_layout eq 'none')" -->
+							checked="checked"
+						<!-- /tmpl_if -->
+						>
+						Don't use a Layout
+			</label>
+        </div>
+    </div>
+	
 	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
 
 </fieldset> 

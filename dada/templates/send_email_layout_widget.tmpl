@@ -1,4 +1,4 @@
-<div class="row">
+
 	<div class="row">
 		<div class="small-12 columns">
 				<label for="layout_default">
@@ -7,9 +7,9 @@
 						name="layout"
 						id="layout_default"
 						value="default"
-						<!-- tmpl_unless expr="((list_settings.group_list == 1) && (list_settings.disable_discussion_sending != 1))" --> 
+						<!-- tmpl_if expr="(default_layout eq 'default')" -->							
 							checked="checked"
-						<!-- /tmpl_unless -->
+						<!-- /tmpl_if -->
 						>
 						Full Layout
 					</label>
@@ -21,6 +21,9 @@
 							name="layout"
 							id="layout_minimal"
 							value="minimal"
+							<!-- tmpl_if expr="(default_layout eq 'minimal')" -->							
+								checked="checked"
+							<!-- /tmpl_if -->
 							>
 							Minimal Layout
 						</label>
@@ -33,7 +36,7 @@
 							name="layout"
 							id="layout_discussion"
 							value="discussion"
-							<!-- tmpl_if expr="((list_settings.group_list == 1) && (list_settings.disable_discussion_sending != 1))" --> 
+							<!-- tmpl_if expr="(default_layout eq 'discussion')" -->							
 								checked="checked"
 							<!-- /tmpl_if -->
 							>
@@ -47,9 +50,12 @@
 							name="layout"
 							id="layout_none"
 							value="none"
+							<!-- tmpl_if expr="(default_layout eq 'none')" -->							
+								checked="checked"
+							<!-- /tmpl_if -->
+							
 							>
 							Don't use a Layout
 						</label>
 		</div>
 	</div>
-</div>

@@ -132,6 +132,17 @@ sub send_email {
             }
         );
     }
+	
+	my $default_layout = $self->{ls_obj}->param('mass_mailing_default_layout') || undef; 
+	if(!defined($default_layout)) { 
+		if($self->{ls_obj}->param('group_list') == 1 && $self->{ls_obj}->param('disable_discussion_sending') != 1){ 
+			$default_layout = 'discussion'; 
+		}
+		else { 
+			$default_layout = 'default'; 
+		}
+	}
+
 
     if ( !$process ) {
 
@@ -194,6 +205,7 @@ sub send_email {
                     schedule_last_checked_frt => scalar formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
                       can_use_datetime => scalar DADA::App::Guts::can_use_datetime(), 
                       sched_flavor => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor},
+					default_layout => $default_layout, 
                     %wysiwyg_vars,
                     %$ses_params,
                 },
@@ -1269,6 +1281,18 @@ sub send_url_email {
             }
         );
     }
+	
+	my $default_layout = $self->{ls_obj}->param('mass_mailing_default_layout') || undef; 
+	if(!defined($default_layout)) { 
+		if($self->{ls_obj}->param('group_list') == 1 && $self->{ls_obj}->param('disable_discussion_sending') != 1){ 
+			$default_layout = 'discussion'; 
+		}
+		else { 
+			$default_layout = 'default'; 
+		}
+	}
+	
+	
 
     if ( !$process ) {
         my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
@@ -1338,7 +1362,7 @@ sub send_url_email {
                     can_use_datetime  => scalar DADA::App::Guts::can_use_datetime(), 
                     can_use_HTML_Tree => scalar DADA::App::Guts::can_use_HTML_Tree(), 
                     sched_flavor      => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor},
-
+					default_layout => $default_layout, 
 
                     %wysiwyg_vars,
                     %$ses_params,

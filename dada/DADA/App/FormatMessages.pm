@@ -2254,18 +2254,31 @@ sub layout_choice {
 		}
 	}
 	else {
-		if (   $self->no_list != 1
-			&& $self->mass_mailing == 1
-			&& $self->list_type eq 'list'
-			&& $self->{ls}->param('disable_discussion_sending') != 1
-			&& $self->{ls}->param('group_list') == 1 )
-		{			
-			$layout = 'mailing_list_message-discussion';
-		}
-		else { 
+		
+		my $mass_mailing_default_layout = $self->{ls}->param('mass_mailing_default_layout') || undef; 
+		if(defined($mass_mailing_default_layout)) {
+			#warn 'defined $mass_mailing_default_layout';
 			$layout = 'mailing_list_message';
+			if($mass_mailing_default_layout ne 'default'){
+				$layout .= '-' . $mass_mailing_default_layout;
+			}
+			#warn '$layout' . $layout; 
+		}
+		else {
+			if (   $self->no_list != 1
+				&& $self->mass_mailing == 1
+				&& $self->list_type eq 'list'
+				&& $self->{ls}->param('disable_discussion_sending') != 1
+				&& $self->{ls}->param('group_list') == 1 )
+			{			
+				$layout = 'mailing_list_message-discussion';
+			}
+			else { 
+				$layout = 'mailing_list_message';
+			}
 		}
 	}
+	#warn 'returning $layout ' . $layout; 
 	return $layout; 
 }
 

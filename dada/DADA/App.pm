@@ -2452,6 +2452,8 @@ sub mass_mailing_options {
     my $process = $q->param('process') || undef;
     my $done    = $q->param('done') || undef;
 
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+	
     if ( !$process ) {
 
         my $can_use_css_inliner = 1;
@@ -2461,6 +2463,16 @@ sub mass_mailing_options {
         catch {
             $can_use_css_inliner = 0;
         };
+		
+		my $currently_selected_layout = $ls->param('mass_mailing_default_layout') || undef; 
+		if(!defined($currently_selected_layout)) { 
+			if($ls->param('group_list') == 1 && $ls->param('disable_discussion_sending') != 1){ 
+				$currently_selected_layout = 'discussion'; 
+			}
+			else { 
+				$currently_selected_layout = 'default'; 
+			}
+		}
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -2472,9 +2484,10 @@ sub mass_mailing_options {
                     -List       => $list,
                 },
                 -vars => {
-                    done                => $done,
-                    can_use_css_inliner => $can_use_css_inliner,
-                    root_login          => $root_login,
+                    done                      => $done,
+                    can_use_css_inliner       => $can_use_css_inliner,
+					currently_selected_layout => $currently_selected_layout, 
+                    root_login                => $root_login,
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -2485,8 +2498,6 @@ sub mass_mailing_options {
         return $scrn;
     }
     else {
-        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-
         my $also_save_for_list = $ls->also_save_for_list($q);
         $ls->save_w_params(
             {
@@ -2495,7 +2506,8 @@ sub mass_mailing_options {
                     mass_mailing_convert_plaintext_to_html => 0,
                     mass_mailing_block_css_to_inline_css   => 0,
 					email_embed_images_as_attachments      => 0,
-                },
+                	mass_mailing_default_layout            => undef, 
+				},
                 -also_save_for => $also_save_for_list,
             }
         );
@@ -5983,7 +5995,7 @@ sub admin_profile_delivery_preferences {
     if ( !$checksout ) {
 
         if ( $process eq 'ajax' ) {
-            warn 'here.';
+            # warn 'here.';
 
             require JSON;
             my $json = JSON->new->allow_nonref;
