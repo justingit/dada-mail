@@ -2,6 +2,26 @@
 
 =encoding utf-8
 
+=head1 10.0.3
+
+This is mostly a bug-fix release for issues found in v10.0.2 of Dada Mail. 
+
+=head2 Changes 
+
+=head3 Set default layout for mass mailings
+
+This is a small feature, but could be useful for people who normally send messages using Bridge, but want to 
+use a layout that's not the default (Full) layout. 
+Now, you may set which template is used by default, on allyour mass mailings. 
+Look in the B<Mass Mailing: Options> screen for the option to set this up under, B< Default Mass Mailing Layout>
+
+=head3 Work on Scheduled Tasks
+
+This release has more work on scheduled tasks, and making sure that they're not run concurrently, 
+which could cause the tasks needed to be done, done two or more times. There's also work on quashig any
+ race conditions that could potentially happen. 
+This work is a continuation of the work described below under, B<Bridge, Lock Files, and zombie processes>. 
+
 =head1 10.0.2
 
 This is mostly a bug-fix release for issues found in v10.0.1 of Dada Mail. 
