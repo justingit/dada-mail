@@ -2,6 +2,8 @@
 
 <!-- tmpl_set name="title" value="Appearance &#187; Email Themes" -->
 <div id="screen_meta" data-menu_highlight="email_themes"></div>
+<div id="email_themes_screen"></div> 
+
 
 <div class="row hide-for-small-only" id="control_panel_breadcrumbs">
 	<div class="medium-10 small-9 columns">
@@ -41,16 +43,21 @@
 	
 	<div class="row">
 		
-		<div class="small-12 columns">
+		<div class="small-4 columns">
 			<label for="email_theme_name">
-				Theme
 				<!-- tmpl_var email_theme_name_widget -->
 			</label>
 		</div>
+		<div class="small-8 columns">
+			<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
+		</div>	
 	</div>
 	
+	<div style=" min-height:100vh">
+		<iframe style="width: 100%;height: 100vh;position: relative;" id="preview_window" frameborder="0" allowfullscreen style="border:1px solid black"></iframe>
+	</div>
 	
-	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
+
 </form>
 
 <!-- end email_themes_screen.tmpl -->

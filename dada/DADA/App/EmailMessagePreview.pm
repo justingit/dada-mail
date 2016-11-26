@@ -89,6 +89,7 @@ sub id_exists {
 
     my $self = shift;
     my $id   = shift;
+	my $list = shift; #what.
 
     if ( !defined($id) || $id eq '' ) {
         return 0;
@@ -102,7 +103,7 @@ sub id_exists {
       if $t;
 
     my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $self->{list}, $id )
+    $sth->execute( $list, $id )
       or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     warn 'QUERY: ' . $query
@@ -160,7 +161,7 @@ sub save {
         warn 'execute params: ' 
 			. Data::Dumper::Dumper(
 				[
-					$self->{list}, 
+					 $args->{-list}, 
 					$vars,
 					$args->{-plaintext},
 					$args->{-html}
@@ -168,7 +169,7 @@ sub save {
 			); 
     }
     $sth->execute(
-		$self->{list}, 
+		 $args->{-list}, 
 		$vars, 
 		$args->{-plaintext}, 
 		$args->{-html}, 
