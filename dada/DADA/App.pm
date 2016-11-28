@@ -1094,10 +1094,42 @@ sub email_message_preview {
 	  
 	# warn q{$fake_vars->{'list_unsubscribe_link'}} . $fake_vars->{'list_unsubscribe_link'}; 
 	
-    require DADA::App::EmailMessagePreview;
-    my $daemp = DADA::App::EmailMessagePreview->new;
-    my $r     = $daemp->fetch( $q->param('id') );
-	my $vs = $r->{vars}->{Subject};
+	my $r  = {}; 
+	my $vs = undef; 
+	
+	
+	my $from_id = 1; 
+	my $id               = $q->param('id') || undef;
+	my $email_theme_name = $q->param('email_theme_name') || undef;
+	
+	if(!defined($id) && defined($email_theme_name)) { 
+		$from_id = 0; 
+	}
+	else { 
+		$from_id = 1; 
+	}
+	if($from_id == 1){
+	    
+		require DADA::App::EmailMessagePreview;
+	    my $daemp = DADA::App::EmailMessagePreview->new;
+	    $r     = $daemp->fetch( $id );
+	}
+	else { 
+		require DADA::App::EmailThemes; 
+		my $em = DADA::App::EmailThemes->new(
+			{
+				-list       => $list, 
+				-theme_name => $email_theme_name, 
+			}
+		);
+		my $etp = $em->fetch('preview'); 
+		$r = { 
+			vars => {Subject => 'Preview Subject', 'X-Preheader' => 'Preview Preheader'},
+			html => $etp->{html},
+		}
+	}
+	
+	$vs = $r->{vars}->{Subject};
 	
 	my $status = 1; 
 	my $errors = undef; 
@@ -8760,14 +8792,20 @@ sub email_themes  {
 		require DADA::App::EmailThemes; 
 		my $dap = DADA::App::EmailThemes->new({-list => $list});
 		my $at = $dap->available_themes(); 
-		
+		my $at_labels = {}; 
+		foreach(@$at){ 
+			my $l = $_; 
+			$l =~ s/_/ /g; 
+			$l = join " ", map {ucfirst} split " ", $l;
+			$at_labels->{$_} = $l;
+		}
         require HTML::Menu::Select;
 		my $email_theme_name_widget = HTML::Menu::Select::popup_menu(
             {
                 name    => 'email_theme_name',
                 id      => 'email_theme_name',
                 default => $ls->param('email_theme_name'),
-                labels  => {},
+                labels  => $at_labels,
                 values => $at,
             }
           );

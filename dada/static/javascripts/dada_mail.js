@@ -670,6 +670,33 @@ jQuery(document).ready(function($){
 	}
 	
 	
+	if ($("#email_themes_screen").length) {
+		
+		loadIframe(); 
+		$('#' + 'email_theme_name').change(function () {
+			loadIframe(); 
+		});
+		
+		
+		
+		function loadIframe() {
+			
+			var id = 'preview_window';
+			var url = $("#s_program_url").val() 
+			+ '?flavor=email_message_preview&email_theme_name=' 
+			+ $("#email_theme_name option:selected").val();
+			
+			
+		    var $iframe = $('#' + id);
+		    if ( $iframe.length ) {
+		        $iframe.attr('src',url);   
+		        return false;
+		    }
+		    return true;
+		}
+	
+	}
+	
 	if($("#transform_to_pro").length){ 
 		
 		$("body").on("click", ".verify_pro_dada", function(event) {				
