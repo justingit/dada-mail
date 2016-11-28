@@ -2,7 +2,17 @@
 
 =encoding utf-8
 
+=head1 10.1.0
+
+=head2 Focus 
+
+B<Themes!> Dada Mail now comes with 10+ new themes, to complement the Default theme that first 
+shipped with v10.0.0. Themes can be selected per mailing list in, B<Appearance: Email Themes>. 
+A preview of the selected theme will be shown below the form on this screen. 
+
 =head1 10.0.3
+
+=head2 Focus 
 
 This is mostly a bug-fix release for issues found in v10.0.2 of Dada Mail. 
 
