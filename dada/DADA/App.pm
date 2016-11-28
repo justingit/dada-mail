@@ -5587,6 +5587,8 @@ sub validate_remove_email {
     my $process          = xss_filter( scalar $q->param('process') ) || 0;
     my @remove_from_list = $q->multi_param('remove_from_list');
     my $return_to        = xss_filter( scalar $q->param('return_to') ) || 0;
+
+
     my $for_multiple_lists =
       xss_filter( scalar $q->param('for_multiple_lists') ) || 0;
 
@@ -8799,12 +8801,15 @@ sub email_themes  {
 			$l = join " ", map {ucfirst} split " ", $l;
 			$at_labels->{$_} = $l;
 		}
+		
+		my $default_theme = $ls->param('email_theme_name') || 'default';
+		
         require HTML::Menu::Select;
 		my $email_theme_name_widget = HTML::Menu::Select::popup_menu(
             {
                 name    => 'email_theme_name',
                 id      => 'email_theme_name',
-                default => $ls->param('email_theme_name'),
+                default => $default_theme,
                 labels  => $at_labels,
                 values => $at,
             }
@@ -8838,13 +8843,15 @@ sub email_themes  {
 
     }
     else {
-
+		
+        my $also_save_for_list = $ls->also_save_for_list($q);
         $ls->save_w_params(
             {
                 -associate => $q,
                 -settings  => {
                     email_theme_name         => undef,
-                }
+                }, 
+                -also_save_for => $also_save_for_list,
             }
         );
 
