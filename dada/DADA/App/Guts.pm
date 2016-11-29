@@ -1178,6 +1178,9 @@ sub _chomp_off_body {
 	
 	my $str   = shift;
 	my $n_str = $str;
+	my $sep = 'N_E_W_LI_N_E___S_E_P_E_R_A_T_O_R';
+       $str =~ s/\n/$sep/g;
+	
 	
 	if (
 		$n_str =~ m/\<(.*?)body(.*?)\>(.*?)\<\/body\>/m
@@ -1189,9 +1192,11 @@ sub _chomp_off_body {
 	}
 		
 	if(!$n_str){
-		
+        $str =~ s/$sep/\n/g;
 		return $str; 
 	}else{ 
+	 	$n_str =~ s/$sep/\n/g;
+		
 		return $n_str;
 	}
 }
@@ -3196,7 +3201,7 @@ sub can_use_Amazon_SES {
     try { 
         require Net::Amazon::SES;        
     } catch { 
-		warn 'Amazon SES is not supported:' . $_; 
+		carp 'Amazon SES is not supported:' . $_; 
         $can_use_Amazon_SES = 0;
     };
     return $can_use_Amazon_SES;

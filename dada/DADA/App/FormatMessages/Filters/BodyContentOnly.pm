@@ -175,12 +175,18 @@ sub naive_body_only {
 	my $self = shift; 
 	my $html = shift; 
 	
-    $html =~ s/\n//g;
+	my $sep = 'N_E_W_LI_N_E___S_E_P_E_R_A_T_O_R';
+       $html =~ s/\n/$sep/g;
+
     if ( $html =~ m/\<(.*?)body(.*?)\>(.*?)\<\/body\>/m
 	 ) {
         $body = $3;
     }
 	my $r = $body; 
+	
+	$r =~ s/$sep/\n/g; 
+	
+	
 	my $body = undef; 
     return $r;
 	
