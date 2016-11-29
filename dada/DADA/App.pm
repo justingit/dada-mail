@@ -14701,9 +14701,10 @@ sub schedules {
     my $dast = DADA::App::ScheduledTasks->new;
 
     my $lock = $dast->lock_file();
-	sleep(5);
     if ( !defined($lock) ) {
 		$r .= "Scheduled Tasks may be running in a different process, stopping.\n";
+		warn "PID: $$ Scheduled Tasks may be running in a different process, stopping.\n";
+		
     }
 	else {
 		
@@ -14823,7 +14824,10 @@ sub schedules {
 	    }
 	}
 	
-    $dast->unlock_file($lock);
+	if(defined($lock)){
+		$dast->unlock_file($lock);
+	}
+	
 	undef($dast);
 	
     my $end_t   = time;

@@ -181,43 +181,46 @@ sub lock_file {
 				$count++;
                 redo if $count < $countdown;
 
-                carp "Couldn't lock semaphore file '"
-                  . $self->lockfile
-                  . "' because: '$!', exiting.";
+                carp "PID: $$ Couldn't create an exclusive semaphore file at, '" . $self->lockfile . "': $!";
                 return undef;
             }
         }
 		return $fh;
     }
     else {
-        carp "Can't open semaphore file " . $self->lockfile . " because: $!";
+        carp "PID: $$ Can't open semaphore file at, '" . $self->lockfile . "': $!";
 		return undef;
     }
 }
 
 sub remove_lockfile { 
 	my $self = shift; 
-	
-    my $unlink_check = unlink($self->lockfile);
-    if ( $unlink_check != 1 ) {
-        carp "deleting," . $self->lockfile . " failed: " . $!;
-    	return 0; 
+	# warn "PID: $$ deleting file: " . $self->lockfile;
+	if(-f $self->lockfile){
+	    my $unlink_check = unlink($self->lockfile);
+	    if ( $unlink_check != 1 ) {
+	        carp "PID: $$ Deleting semaphore file at, '" . $self->lockfile . "' failed: $!";
+	    	return 0; 
+		}
+		else { 
+			return 1;
+		}
 	}
-	else { 
-		return 1;
+	else{ 
+        # carp "PID: $$ Semaphore does not exist to delete at, '" . $self->lockfile;
 	}
 }
 
 sub unlock_file {
 
     my $self = shift;
-    my $fh = shift || croak "You must pass a filehandle to unlock!";
+    my $fh    = shift || croak "PID: $$ You must pass a filehandle to unlock!";
     if(close($fh)){ 
 		$self->remove_lockfile();
 	    return 1;
 	}
 	else { 
-		carp q{Couldn't unlock semaphore file for, } . $fh . ' ' . $!;
+		carp "PID: $$ " . q{Couldn't unlock semaphore file for, } . $fh . ' ' . $!;
 		return 0; 
 	}
 }
