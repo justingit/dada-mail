@@ -61,6 +61,10 @@ sub subscription_check {
     if(! exists($args->{-mode})) { 
         $args->{-mode} = 'user';
     }
+	
+    if(! exists($args->{-captcha_params})) { 
+		$args->{-captcha_params} = {}; 
+	}
     
     my %skip;
     for(@{ $args->{-skip} }) { 
@@ -216,6 +220,28 @@ sub subscription_check {
 		$args->{-type}    eq 'list'
 		&& $args->{-mode} eq 'user'
 	){ 
+
+		$errors->{captcha_challenge_failed} = 0; 
+		$args->{-captcha_params}
+        require DADA::Security::AuthenCAPTCHA;
+        
+		my $cap = DADA::Security::AuthenCAPTCHA->new;
+        my $result = $cap->check_answer(
+            $DADA::Config::RECAPTCHA_PARAMS->{private_key},
+            $args->{-captcha_params}->{remote_addr},
+			unde, 
+			$crf, 
+		);
+        if ( $result->{is_valid} == 1 ) {
+            $captcha_auth   = 1;
+            $captcha_worked = 1;
+        }
+        else {
+            $captcha_worked = 0;
+            $captcha_auth   = 0;
+        }
+		
+		
 
 		$errors->{stop_forum_spam_check_failed} = 0;
 	    if ( !$skip{stop_forum_spam_check_failed} ) {		

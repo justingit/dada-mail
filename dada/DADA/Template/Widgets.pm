@@ -2639,6 +2639,7 @@ sub subscription_form {
 		if($args->{-form_type} eq 'minimal'){ 
  			$tmpl_name = 'minimal_subscription_form.tmpl'; 
 		}
+		
         return screen({
             -screen => $tmpl_name, 
             -vars   => {
@@ -2663,12 +2664,15 @@ sub subscription_form {
   
     }
     else { 
-  return screen({
+
+		require DADA::Security::AuthenCAPTCHA;
+		my $cap = DADA::Security::AuthenCAPTCHA->new;
+		my $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
+
+		return screen({
             -screen => 'subscription_form_widget.tmpl', 
             -vars   => {
-                            
                             single_list              => 0, 
-                            
                             subscriber_fields        => $named_subscriber_fields,
                             list                     => $list, 
                             email                    => $args->{-email},
@@ -2681,7 +2685,7 @@ sub subscription_form {
 							profile_logged_in        => $args->{-profile_logged_in}, 
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
-							
+							recaptcha_html           => $CAPTCHA_string,							
                         }
                     });      
     }

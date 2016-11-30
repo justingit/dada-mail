@@ -322,6 +322,10 @@ sub subscribe {
             -email  => $email,
             -type   => 'list',
             -fields => $fields, 
+			-captcha_params => {
+				remote_addr =>  $ENV{'REMOTE_ADDR'},
+				response    => scalar $q->param('g-recaptcha-response'),
+			},
             ( $ls->param('allow_blacklisted_to_subscribe') == 1 )
             ? ( -skip => ['black_listed'], )
             : (),

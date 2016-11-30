@@ -399,7 +399,7 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 <p><a href="mailto:$ENV{SERVER_ADMIN}">Contact the Server Admin</a></p>
 <p>Time of error: <strong>$TIME</strong></p> 	
 </div>
-
+<pre>$error</pre>
 </body> 
 </html> 
 };
@@ -9932,7 +9932,9 @@ sub resend_conf_captcha {
             my $result =
               $cap->check_answer(
                 $DADA::Config::RECAPTCHA_PARAMS->{private_key},
-                $ENV{'REMOTE_ADDR'}, $ccf, $crf, );
+                $ENV{'REMOTE_ADDR'}, 
+				$ccf, 
+				$crf, );
             if ( $result->{is_valid} == 1 ) {
                 $captcha_auth   = 1;
                 $captcha_worked = 1;

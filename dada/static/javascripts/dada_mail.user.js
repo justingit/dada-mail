@@ -57,23 +57,42 @@
 
 	if ($("#subscription_form").length) {
 		$("#subscription_form").validate({
+		   ignore: ".ignore",
 			debug: false,
 			rules: {
 				email: {
 					required: true,
 					email: true
+				},
+				"captcha_check": {
+				     required: function() {
+						 if($('#captcha_check').val() == "true"){
+							 return false; 
+						 }
+						 else {
+					         if(grecaptcha.getResponse() == '') {
+					             return true;
+					         } else {
+					             return false;
+					         }
+						 }
+				     }
 				}
 			},
 			messages: {
 				email: {
 					required: "Please type in your email address",
 					email:    "Please make sure the email address you have typed is valid."
+				},
+				captcha_check: { 
+					required: "Please solve the CAPTCHA",
 				}
 			}
 		});
 	}
 	
 	if ($("#unsubscription_form").length) {
+				
 		$("#unsubscription_form").validate({
 			debug: false,
 			rules: {
@@ -86,7 +105,7 @@
 				email: {
 					required: "Please type in your email address",
 					email:    "Please make sure the email address you have typed is valid."
-				}
+				}	
 			}
 		});
 	}
