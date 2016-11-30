@@ -1172,58 +1172,30 @@ sub html_to_plaintext {
 }
 
 
-sub _chomp_off_body { 
-	
-	# This is dumb. 
-	
-	my $str   = shift;
-	my $n_str = $str;
-	my $sep = 'N_E_W_LI_N_E___S_E_P_E_R_A_T_O_R';
-       $str =~ s/\n/$sep/g;
-	
-	
-	if (
-		$n_str =~ m/\<(.*?)body(.*?)\>(.*?)\<\/body\>/m
-	) {
-	    $n_str = $3;		
-		if($n_str =~ m/\<body.*?\>|<\/body\>/i){ 
-			$n_str = _chomp_off_body_thats_being_difficult($n_str); 		
-		}		
-	}
-		
-	if(!$n_str){
-        $str =~ s/$sep/\n/g;
-		return $str; 
-	}else{ 
-	 	$n_str =~ s/$sep/\n/g;
-		
-		return $n_str;
-	}
+sub _chomp_off_body {
+    my $str   = shift;
+    my $n_str = $str;
+
+    if ( $n_str =~ m/\<body.*?\>|<\/body\>/i ) {
+        $n_str =~ m/\<body.*?\>([\s\S]*?)\<\/body\>/i;
+        $n_str = $1;
+
+        #$n_str = strip($n_str);
+        if ( $n_str =~ m/\<body.*?\>/ ) {    #seriously?
+
+            $n_str =~ s/\<body/\<x\-body/g;
+
+            $n_str =~ s/\<\/body/\<\/x-body/g;
+        }
+    }
+
+    if ( !$n_str ) {
+        return $str;
+    }
+    else {
+        return $n_str;
+    }
 }
-
-sub _chomp_off_body_thats_being_difficult { 
-
-	my $str   = shift; 
-	my $n_str = '';
-	
-	# body tags will now be on their own line, regardless.
-	$str =~ s/(\<body.*?\>|<\/body\>)/\n$1\n/gi; 
-	
-
-	my @lines = split("\n", $str); 
-		for (@lines){ 
-			if(/\<body(.*?)\>/i .. /\<\/body\>/i)	{
-				next if /\<body(.*?)\>/i || /\<\/body\>/i;
-				$n_str .= $_ . "\n";
-			}
-		}
-	if(!$n_str){ 
-		return $str; 
-	}else{ 
-		return $n_str;
-	}
-}
-
 
 
 
