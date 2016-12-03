@@ -82,7 +82,7 @@ require Exporter;
   scrub_js
   md5_checksum
   can_use_LWP_Simple
-  can_use_AuthenCAPTCHA
+  can_use_Google_reCAPTCHA
   can_use_JSON
   can_use_datetime
   can_use_HTML_Tree
@@ -3129,10 +3129,11 @@ sub can_use_LWP_Simple {
 	};
 	return $can_use_lwp_simple;
 }
-sub can_use_AuthenCAPTCHA { 
+
+sub can_use_Google_reCAPTCHA { 
 	my $can_use_captcha = 1; 
     try {
-        require DADA::Security::AuthenCAPTCHA;
+        require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
         $can_use_captcha = 1;
     }
     catch {
@@ -3174,7 +3175,7 @@ sub can_use_Amazon_SES {
     try { 
         require Net::Amazon::SES;        
     } catch { 
-		carp 'Amazon SES is not supported:' . $_; 
+		# carp 'Amazon SES is not supported:' . $_; 
         $can_use_Amazon_SES = 0;
     };
     return $can_use_Amazon_SES;

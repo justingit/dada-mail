@@ -1,4 +1,4 @@
-package DADA::Security::AuthenCAPTCHA;
+package require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;;
 
 use strict; 
 
@@ -9,11 +9,11 @@ use DADA::Config qw(!:DEFAULT);
 
 use Carp qw(croak carp); 
 
-if (eval "require DADA::Security::AuthenCAPTCHA::$DADA::Config::CAPTCHA_TYPE") {
-    use base "DADA::Security::AuthenCAPTCHA::$DADA::Config::CAPTCHA_TYPE";
+if (eval "require require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;::$DADA::Config::CAPTCHA_TYPE") {
+    use base "require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;::$DADA::Config::CAPTCHA_TYPE";
     
 }else{ 
-    die("cannot find 'DADA::Security::AuthenCAPTCHA::$DADA::Config::CAPTCHA_TYPE', $!");
+    die("cannot find 'require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;::$DADA::Config::CAPTCHA_TYPE', $!");
 }
 
 

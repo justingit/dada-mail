@@ -5,7 +5,7 @@ use strict;
 use Carp qw(carp croak);
 use DADA::App::Guts; 
 use Try::Tiny; 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
+my $t = 1; # $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
 
 sub new {
 
@@ -43,6 +43,11 @@ sub subscription_check {
     my $self = shift;
     my ($args) = @_;
 
+	if($t){ 
+		require Data::Dumper; 
+		warn 'subscription_check passed args:' . Data::Dumper::Dumper($args);
+	}
+	
     if ( !exists( $args->{-email} ) ) {
         $args->{-email} = '';
     }
@@ -221,26 +226,33 @@ sub subscription_check {
 		&& $args->{-mode} eq 'user'
 	){ 
 
-		$errors->{captcha_challenge_failed} = 0; 
-		$args->{-captcha_params}
-        require DADA::Security::AuthenCAPTCHA;
-        
-		my $cap = DADA::Security::AuthenCAPTCHA->new;
-        my $result = $cap->check_answer(
-            $DADA::Config::RECAPTCHA_PARAMS->{private_key},
-            $args->{-captcha_params}->{remote_addr},
-			unde, 
-			$crf, 
-		);
-        if ( $result->{is_valid} == 1 ) {
-            $captcha_auth   = 1;
-            $captcha_worked = 1;
-        }
-        else {
-            $captcha_worked = 0;
-            $captcha_auth   = 0;
-        }
-		
+	    if ( !$skip{captcha_challenge_failed} ) {		
+			$errors->{captcha_challenge_failed} = 0; 
+	        if(!defined($args->{-captcha_params})){ 
+				$errors->{captcha_challenge_failed} = 1; 
+			}
+			elsif(
+				! defined($args->{-captcha_params}->{-remote_addr})
+				||
+				! defined($args->{-captcha_params}->{-response})
+			) { 
+				$errors->{captcha_challenge_failed} = 1; 
+			}
+			else {
+				require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+				my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+		        my $result = $cap->check_answer(
+		            $args->{-captcha_params}->{-remote_addr},
+					$args->{-captcha_params}->{-response},
+				);
+		        if ( $result->{is_valid} == 1 ) {
+					$errors->{captcha_challenge_failed} = 0; 
+		        }
+		        else {
+					$errors->{captcha_challenge_failed} = 1; 
+		        }
+			}
+		}
 		
 
 		$errors->{stop_forum_spam_check_failed} = 0;
@@ -358,6 +370,10 @@ sub subscription_check {
         }
     }
     
+	if($t){ 
+		require Data::Dumper; 
+		warn 'returning: ' . Data::Dumper::Dumper({status => $status, errors => $errors});
+	}
     return ( $status, $errors );
 
 }

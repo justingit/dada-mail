@@ -164,7 +164,7 @@ BEGIN{ use_ok('DADA::MailingList::Subscriber'); }
 BEGIN{ use_ok('DADA::MailingList'); }
 
 # well, this may not work, since it's gotta be configured... hmmm
-# BEGIN{ use_ok('DADA::Security::AuthenCAPTCHA'); }
+# BEGIN{ use_ok('require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;'); }
 # Yeah - I was right. 
 
 BEGIN{ use_ok('DADA::Security::Password'); }

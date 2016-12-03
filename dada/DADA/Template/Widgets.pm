@@ -1119,15 +1119,15 @@ sub archive_send_form {
     # ?!?!
     $captcha_fail = defined $captcha_fail ? $captcha_fail : 0;
 
-    my $can_use_captcha = can_use_AuthenCAPTCHA(); 
+    my $can_use_captcha = can_use_Google_reCAPTCHA(); 
 	
     if($captcha_archive_send_form == 1 && $can_use_captcha == 1){ 
             my $captcha_worked = 0; 
             my $captcha_auth   = 1; 
 
-            require DADA::Security::AuthenCAPTCHA; 
-            my $cap = DADA::Security::AuthenCAPTCHA->new; 
-               $CAPTCHA_string = $cap->get_html($DADA::Config::RECAPTCHA_PARAMS->{public_key});  
+            require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA; 
+            my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new; 
+               $CAPTCHA_string = $cap->get_html();  
     }
 
 	return DADA::Template::Widgets::screen(
@@ -2640,6 +2640,10 @@ sub subscription_form {
  			$tmpl_name = 'minimal_subscription_form.tmpl'; 
 		}
 		
+		require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+		my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+		my $CAPTCHA_string = $cap->get_html();
+		
         return screen({
             -screen => $tmpl_name, 
             -vars   => {
@@ -2654,6 +2658,7 @@ sub subscription_form {
 							profile_logged_in        => $args->{-profile_logged_in}, 
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
+							recaptcha_html           => $CAPTCHA_string,							
 							
                         },
 						-list_settings_vars_param => {
@@ -2665,9 +2670,9 @@ sub subscription_form {
     }
     else { 
 
-		require DADA::Security::AuthenCAPTCHA;
-		my $cap = DADA::Security::AuthenCAPTCHA->new;
-		my $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
+		require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+		my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+		my $CAPTCHA_string = $cap->get_html();
 
 		return screen({
             -screen => 'subscription_form_widget.tmpl', 

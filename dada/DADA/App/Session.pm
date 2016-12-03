@@ -627,10 +627,10 @@ sub enforce_admin_cgi_security {
 			        my $CAPTCHA_string  = '';
 			        my $cap; 
 		            	
-			        if ( can_use_AuthenCAPTCHA() == 1 ) {
-			            require DADA::Security::AuthenCAPTCHA;
-			            $cap    = DADA::Security::AuthenCAPTCHA->new;
-			            $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
+			        if ( can_use_Google_reCAPTCHA() == 1 ) {
+			            require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+			            $cap    = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+			            $CAPTCHA_string = $cap->get_html();
 			            $add_vars->{captcha_string}  = $CAPTCHA_string;
 			            $add_vars->{can_use_captcha} = 1;
 			        }

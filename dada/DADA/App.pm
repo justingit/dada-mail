@@ -2923,7 +2923,7 @@ sub list_options {
         $can_use_mx_lookup = 1;
     }
 
-    my $can_use_captcha       = can_use_AuthenCAPTCHA();
+    my $can_use_captcha       = can_use_Google_reCAPTCHA();
     my $can_use_StopForumSpam = can_use_StopForumSpam();
 
     if ( !$process ) {
@@ -5428,6 +5428,7 @@ sub validate_update_email {
                             'profile_fields',
                             'stop_forum_spam_check_failed',
                             'suspicious_activity_by_ip_check_failed',
+							'captcha_challenge_failed',
                             (
                                 $ls->param(
                                     'allow_admin_to_subscribe_blacklisted') == 1
@@ -7518,7 +7519,7 @@ sub archive_options {
 
     if ( !$process ) {
 
-        my $can_use_captcha = can_use_AuthenCAPTCHA();
+        my $can_use_captcha = can_use_Google_reCAPTCHA();
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -9873,7 +9874,7 @@ sub resend_conf {
     my $can_use_captcha = 0;
 
     if ( $ls->param('limit_sub_confirm_use_captcha') == 1 ) {
-        $can_use_captcha = can_use_AuthenCAPTCHA();
+        $can_use_captcha = can_use_Google_reCAPTCHA();
     }
     if ( $can_use_captcha == 1 ) {
         $self->resend_conf_captcha();
@@ -9915,26 +9916,19 @@ sub resend_conf_captcha {
     my $captcha_worked = 0;
     my $captcha_auth   = 1;
 
-    my $crf =
-         xss_filter( scalar $q->param('recaptcha_response_field') )
-      || xss_filter( scalar $q->param('g-recaptcha-response') )
-      || undef;
-
-    my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field') ) || '';
-
+    my $crf = xss_filter( scalar $q->param('g-recaptcha-response') || undef;
+	
     if ( $admin_override_enabled != 1 ) {
         if ( !$crf ) {
             $captcha_worked = 0;
         }
         else {
-            require DADA::Security::AuthenCAPTCHA;
-            my $cap = DADA::Security::AuthenCAPTCHA->new;
-            my $result =
-              $cap->check_answer(
-                $DADA::Config::RECAPTCHA_PARAMS->{private_key},
+            require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+            my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+            my $result = $cap->check_answer(
                 $ENV{'REMOTE_ADDR'}, 
-				$ccf, 
-				$crf, );
+				$crf, 
+			);
             if ( $result->{is_valid} == 1 ) {
                 $captcha_auth   = 1;
                 $captcha_worked = 1;
@@ -9972,7 +9966,6 @@ sub resend_conf_captcha {
             $q->param( 'email', $email );
             $q->delete(
                 'flavor',                    'rm',
-                'recaptcha_challenge_field', 'recaptcha_response_field',
                 'g-recaptcha-response',      'token'
             );
             $q->param( 'flavor', 's' );
@@ -10162,7 +10155,10 @@ sub show_error {
         return $self->list_page();
     }
 
-    if ( $error ne 'already_sent_sub_confirmation' ) {
+    if ( 
+	$error ne 'already_sent_sub_confirmation'
+	&& 
+	$error ne 'captcha_challenge_failed') {
         return $self->default();
     }
 
@@ -11352,26 +11348,19 @@ sub send_archive {
     # CAPTCHA STUFF
 
     my $captcha_fail    = 0;
-    my $can_use_captcha = can_use_AuthenCAPTCHA();
+    my $can_use_captcha = can_use_Google_reCAPTCHA();
 
     if ( $ls->param('captcha_archive_send_form') == 1 && $can_use_captcha == 1 )
     {
-        require DADA::Security::AuthenCAPTCHA;
-        my $cap = DADA::Security::AuthenCAPTCHA->new;
-
-        my $crf =
-             xss_filter( scalar $q->param('recaptcha_response_field') )
-          || xss_filter( scalar $q->param('g-recaptcha-response') )
-          || undef;
-
-        my $ccf =
-          xss_filter( scalar $q->param('recaptcha_challenge_field') ) || '';
+        require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+        my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+        my $crf = xss_filter( scalar $q->param('g-recaptcha-response') || undef;
 
         if ($crf) {
-            my $result =
-              $cap->check_answer(
-                $DADA::Config::RECAPTCHA_PARAMS->{private_key},
-                $ENV{'REMOTE_ADDR'}, $ccf, $crf, );
+            my $result = $cap->check_answer(
+			  	$ENV{'REMOTE_ADDR'}, 
+				$crf
+			);
 
             if ( $result->{is_valid} != 1 ) {
                 $errors++;
@@ -11703,23 +11692,17 @@ sub email_password {
     }
     else {
 
-        if ( can_use_AuthenCAPTCHA() ) {
-            require DADA::Security::AuthenCAPTCHA;
-            my $cap = DADA::Security::AuthenCAPTCHA->new;
+        if ( can_use_Google_reCAPTCHA() ) {
+            require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+            my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
 
             my $captcha_worked;
+            my $crf = xss_filter( scalar $q->param('g-recaptcha-response') ) || undef;
 
-            my $ccf =
-              xss_filter( scalar $q->param('recaptcha_challenge_field') ) || '';
-            my $crf =
-                 xss_filter( scalar $q->param('recaptcha_response_field') )
-              || xss_filter( scalar $q->param('g-recaptcha-response') )
-              || undef;
-
-            my $result =
-              $cap->check_answer(
-                $DADA::Config::RECAPTCHA_PARAMS->{private_key},
-                $ENV{'REMOTE_ADDR'}, $ccf, $crf );
+            my $result =  $cap->check_answer(
+                $ENV{'REMOTE_ADDR'}, 
+				$crf 
+			);
             if ( $result->{is_valid} == 1 ) {
                 $captcha_worked = 1;
             }
@@ -11733,12 +11716,10 @@ sub email_password {
                 my $can_use_captcha = 0;
                 my $CAPTCHA_string  = '';
                 my $cap;
-                if ( can_use_AuthenCAPTCHA() == 1 ) {
-                    require DADA::Security::AuthenCAPTCHA;
-                    $cap = DADA::Security::AuthenCAPTCHA->new;
-                    $CAPTCHA_string =
-                      $cap->get_html(
-                        $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
+                if ( can_use_Google_reCAPTCHA() == 1 ) {
+                    require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+                    $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+                    $CAPTCHA_string = $cap->get_html();
                     $add_vars->{captcha_string}  = $CAPTCHA_string;
                     $add_vars->{can_use_captcha} = 1;
                     $add_vars->{selected_list}   = $list;
@@ -13266,14 +13247,12 @@ sub profile_login {
             my $CAPTCHA_string  = '';
             my $cap             = undef;
             if ( $DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1 ) {
-                $can_use_captcha = can_use_AuthenCAPTCHA();
+                $can_use_captcha = can_use_Google_reCAPTCHA();
             }
             if ( $can_use_captcha == 1 ) {
-                require DADA::Security::AuthenCAPTCHA;
-                my $cap = DADA::Security::AuthenCAPTCHA->new;
-                $CAPTCHA_string =
-                  $cap->get_html(
-                    $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
+                require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+                my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+                $CAPTCHA_string = $cap->get_html();
             }
 
             $scrn = DADA::Template::Widgets::wrap_screen(
@@ -13414,19 +13393,12 @@ sub profile_register {
         $prof->remove();
     }
 
-    my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field') ) || '';
-
-    my $crf =
-         xss_filter( scalar $q->param('recaptcha_response_field') )
-      || xss_filter( scalar $q->param('g-recaptcha-response') )
-      || undef;
-
+    my $crf = xss_filter( scalar $q->param('g-recaptcha-response') || undef;
     my ( $status, $errors ) = $prof->is_valid_registration(
         {
             -email                     => $register_email,
             -email_again               => $register_email_again,
             -password                  => $register_password,
-            -recaptcha_challenge_field => $ccf,
             -recaptcha_response_field  => $crf,
         }
     );

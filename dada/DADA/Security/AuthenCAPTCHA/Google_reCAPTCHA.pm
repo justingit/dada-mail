@@ -1,4 +1,4 @@
-package DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+package require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;::Google_reCAPTCHA;
 use lib qw(../../../ ../../../DADA/perllib); 
 use DADA::Config qw(!:DEFAULT); 
 
@@ -36,28 +36,21 @@ sub check_answer {
     my $self = shift; 
     
     my (
-		$private_key, 
 		$remoteip,
-		$captcha_challenge_field, 
 		$response,
 	) = @_; 
 	
 	my $result = {}; 
 		
-	if(!defined($private_key)){ 
-		$result->{is_valid} = 0;
-		return $result; 
-	}
-	elsif(!defined($response)){ 
+	if(!defined($response)){ 
 		$result->{is_valid} = 0;
 		return $result; 		
 	}
 	else {
 		try {
-		
 			require Google::reCAPTCHA;
 			my $c = Google::reCAPTCHA->new(
-				secret => $private_key,
+				secret =>  $DADA::Config::RECAPTCHA_PARAMS->{private_key},
 			);
 		
 			# Verifying the user's response 
@@ -70,7 +63,7 @@ sub check_answer {
 			}
 		} catch { 
 			warn "Problem with Google reCAPTCHA (v2):" . $_; 
-			 $result->{is_valid} = 0;
+			 $result->{is_valid} = 1;
 		};
 	}
     return $result;

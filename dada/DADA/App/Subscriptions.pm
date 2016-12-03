@@ -13,7 +13,7 @@ use Try::Tiny;
 
 use vars qw($AUTOLOAD);
 use strict;
-my $t =  $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
+my $t =  1; #$DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
 
 my %allowed = ( test => 0, );
 
@@ -236,7 +236,9 @@ sub subscribe {
         warn 'sent over Vars:';
         require Data::Dumper;
         warn Data::Dumper::Dumper( { $q->Vars } );
-    }
+    
+		warn 'subscribe args: ' . Data::Dumper::Dumper($args); 
+	}
 
     my $list = xss_filter( scalar $q->param('list') );
     warn '$list: ' . $list
@@ -317,20 +319,25 @@ sub subscribe {
     # step is even needed, just so we don't have to do this, twice. It would
     # clarify a bunch of things, I think.
     
+	warn 'here.';
+	
     my ( $status, $errors ) = $lh->subscription_check(
         {
             -email  => $email,
             -type   => 'list',
             -fields => $fields, 
 			-captcha_params => {
-				remote_addr =>  $ENV{'REMOTE_ADDR'},
-				response    => scalar $q->param('g-recaptcha-response'),
+				-remote_addr =>  $ENV{'REMOTE_ADDR'},
+				-response    => scalar $q->param('g-recaptcha-response'),
 			},
             ( $ls->param('allow_blacklisted_to_subscribe') == 1 )
             ? ( -skip => ['black_listed'], )
             : (),
         }
     );
+	
+	warn 'here.';
+	
 
     # This is kind of strange...
     my $skip_sub_confirm_if_logged_in = 0;
@@ -468,8 +475,14 @@ sub subscribe {
         }
     }
 
+	warn 'here.';
+	
     if ( $status == 0 ) {
-        my $r = {
+    
+	warn 'here.';
+	
+	
+	    my $r = {
             status   => 0,
             list     => $list,
             email    => $email,
@@ -496,7 +509,9 @@ sub subscribe {
             }
         }
         elsif ( $args->{-html_output} == 1 ) {
+			warn 'here.';
             if ( $ls->param('use_alt_url_sub_confirm_failed') == 1 ) {
+				warn 'here.';
                 return ({-redirect_uri => $self->alt_redirect($r)}, undef);
             }
             else {
@@ -515,6 +530,7 @@ sub subscribe {
                   settings_possibly_corrupted
                   already_sent_sub_confirmation
                   invalid_profile_fields
+				  captcha_challenge_failed
                   undefined
                 );
 
@@ -731,27 +747,21 @@ sub confirm {
       if $t;
     if ( $ls->param('captcha_sub') == 1 ) {
 		
-        if ( can_use_AuthenCAPTCHA() == 1 ) {
+        if ( can_use_Google_reCAPTCHA() == 1 ) {
             warn '>>>> Captcha step is enabled...'
               if $t;
             my $captcha_worked = 0;
             my $captcha_auth   = 1;
 			
-			my $ccf = xss_filter( scalar $q->param('recaptcha_challenge_field') ) || ''; 
-			my $crf = xss_filter( scalar $q->param('recaptcha_response_field') ) 
-			|| xss_filter( scalar $q->param('g-recaptcha-response') ) 
-			|| undef; 
-			
+			my $crf = xss_filter( scalar $q->param('g-recaptcha-response') || undef; 
             if ( !$crf ) {
                 $captcha_worked = 0;
             }
             else {
-                require DADA::Security::AuthenCAPTCHA;
-                my $cap    = DADA::Security::AuthenCAPTCHA->new;
+                require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+                my $cap    = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
                 my $result = $cap->check_answer(
-                    $DADA::Config::RECAPTCHA_PARAMS->{private_key},
 					$ENV{'REMOTE_ADDR'}, 
-                    $ccf,
                     $crf,
                 );
                 if ( $result->{is_valid} == 1 ) {
@@ -770,8 +780,8 @@ sub confirm {
                 }
                 warn '>>>> >>>> Showing confirm_captcha_step_screen screen'
                   if $t;
-                my $cap            = DADA::Security::AuthenCAPTCHA->new;
-                my $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
+                my $cap            = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+                my $CAPTCHA_string = $cap->get_html();
                 require DADA::Template::Widgets;
                 my $r = DADA::Template::Widgets::wrap_screen(
                     {
@@ -814,8 +824,29 @@ sub confirm {
         {
             -email => $email,
             ( $ls->param('allow_blacklisted_to_subscribe') == 1 )
-            ? ( -skip => [ 'black_listed', 'already_sent_sub_confirmation', 'invite_only_list', 'profile_fields', 'stop_forum_spam_check_failed', 'suspicious_activity_by_ip_check_failed'], )
-            : ( -skip => [                 'already_sent_sub_confirmation', 'invite_only_list', 'profile_fields', 'stop_forum_spam_check_failed', 'suspicious_activity_by_ip_check_failed' ], ),
+            ? ( -skip => [
+					 qw(
+					 	black_listed
+						already_sent_sub_confirmation
+						invite_only_list
+						profile_fields
+						stop_forum_spam_check_failed
+						suspicious_activity_by_ip_check_failed
+						stop_forum_spam_check_failed
+						captcha_challenge_failed
+					)
+					], )
+            : ( -skip => [ 
+							qw(
+							already_sent_sub_confirmation
+							invite_only_list
+							profile_fields
+							stop_forum_spam_check_failed
+							suspicious_activity_by_ip_check_failed
+							stop_forum_spam_check_failed
+							captcha_challenge_failed
+							)], 
+						),
         }
     );
 
@@ -2497,8 +2528,14 @@ sub error_token_undefined {
 }
 
 sub fancy_data {
+
     my $self = shift;
     my ($args) = @_;
+	
+	if($t){ 
+		require Data::Dumper; 
+		warn 'fancy_data passed args:' . Data::Dumper::Dumper($args);
+	}
     if ( !exists( $args->{-type} ) ) {
         $args->{-type} = 'perl';
     }
@@ -2545,6 +2582,17 @@ sub fancy_data {
               . uriescape( $data->{list} )
               . '&error=already_sent_sub_confirmation';
         }
+        elsif ( $_ eq 'captcha_challenge_failed' ) {
+            $return->{error_descriptions}->{captcha_challenge_failed} = 'use redirect';
+            $return->{redirect_required} = 'subscription_requires_captcha';
+            $return->{redirect}->{url} =
+                $DADA::Config::PROGRAM_URL
+              . '?flavor=show_error&email='
+              . uriescape( $data->{email} )
+              . '&list='
+              . uriescape( $data->{list} )
+              . '&error=captcha_challenge_failed';
+		}
         elsif ( $_ eq 'invalid_list' ) {
             $return->{error_descriptions}->{invalid_list} = 'use redirect';
             $return->{redirect_required} = 'invalid_list';
@@ -2619,6 +2667,11 @@ sub fancy_data {
     if ( !exists( $data->{redirect}->{query} ) ) {
         $data->{redirect}->{query} = '';
     }
+
+	if($t){ 
+		require Data::Dumper; 
+		warn 'fancy_data returning: ' . Data::Dumper::Dumper($return);
+	}
 
     if ( $args->{-type} eq 'json' ) {
         require JSON;

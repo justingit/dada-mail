@@ -91,6 +91,10 @@ for my $list(DADA::App::Guts::available_lists()){
 																over_subscription_quota 
 																already_sent_sub_confirmation
 																profile_fields
+																stop_forum_spam_check_failed
+																suspicious_activity_by_ip_check_failed
+																stop_forum_spam_check_failed
+																captcha_challenge_failed
 															)],
 												}
 											); 

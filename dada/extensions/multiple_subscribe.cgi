@@ -224,6 +224,10 @@ sub subscribe_emails {
             {
                 -email  => $email,
                 -fields => $fields, 
+				-captcha_params => {
+					-remote_addr =>  $ENV{'REMOTE_ADDR'},
+					-response    => scalar $q->param('g-recaptcha-response'),
+				},
                 ( $li->{email_your_subscribed_msg} == 1 )
                 ? ( -skip => ['subscribed'], )
                 : (),

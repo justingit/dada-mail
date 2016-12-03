@@ -1,4 +1,4 @@
-package DADA::Security::AuthenCAPTCHA::reCAPTCHA;
+package require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;::reCAPTCHA;
 use strict; 
 use lib qw(../../../ ../../../DADA/perllib); 
 
