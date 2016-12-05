@@ -85,6 +85,7 @@ sub subscription_check {
     if ( !$skip{no_list} ) {
         if ( DADA::App::Guts::check_if_list_exists( -List => $self->{list} ) == 0 ) {
             $errors->{no_list} = 1;
+			# short circuiting. 
             return ( 0, $errors );
         }
     }
@@ -101,6 +102,8 @@ sub subscription_check {
         if ( !$skip{invalid_email} ) {
             $errors->{invalid_email} = 1
               if DADA::App::Guts::check_for_valid_email($email) == 1;
+			  # short circuiting. 
+              return ( 0, $errors );
         }
     }
     else {
@@ -110,7 +113,53 @@ sub subscription_check {
             }
         }
     }
-    
+	
+	if (
+		$args->{-type}    eq 'list'
+		&& $args->{-mode} eq 'user'
+	){ 
+	    if (
+			!$skip{captcha_challenge_failed} 
+			&& defined($DADA::Config::RECAPTCHA_PARAMS->{public_key})
+			&& defined($DADA::Config::RECAPTCHA_PARAMS->{private_key})
+			&& $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
+			&& can_use_Google_reCAPTCHA()
+		) {		
+			$errors->{captcha_challenge_failed} = 0; 
+	        if(!defined($args->{-captcha_params})){ 
+				$errors->{captcha_challenge_failed} = 1; 
+			    # short circuiting. 
+	            return ( 0, $errors );
+			}
+			elsif(
+				! defined($args->{-captcha_params}->{-remote_addr})
+				||
+				! defined($args->{-captcha_params}->{-response})
+			) { 
+				$errors->{captcha_challenge_failed} = 1; 
+			    # short circuiting. 
+	            return ( 0, $errors );
+			}
+			else {
+				require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+				my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+		        my $result = $cap->check_answer(
+		            $args->{-captcha_params}->{-remote_addr},
+					$args->{-captcha_params}->{-response},
+				);
+		        if ( $result->{is_valid} == 1 ) {
+					$errors->{captcha_challenge_failed} = 0; 
+					delete($errors->{captcha_challenge_failed});
+		        }
+		        else {
+					$errors->{captcha_challenge_failed} = 1; 
+	  			 	# short circuiting. 
+	                return ( 0, $errors );
+		        }
+			}
+		}
+	}
+	
     if ( !$skip{subscribed} ) {
         $errors->{subscribed} = 1
           if $self->{lh}->check_for_double_email(
@@ -226,33 +275,7 @@ sub subscription_check {
 		&& $args->{-mode} eq 'user'
 	){ 
 
-	    if ( !$skip{captcha_challenge_failed} ) {		
-			$errors->{captcha_challenge_failed} = 0; 
-	        if(!defined($args->{-captcha_params})){ 
-				$errors->{captcha_challenge_failed} = 1; 
-			}
-			elsif(
-				! defined($args->{-captcha_params}->{-remote_addr})
-				||
-				! defined($args->{-captcha_params}->{-response})
-			) { 
-				$errors->{captcha_challenge_failed} = 1; 
-			}
-			else {
-				require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
-				my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
-		        my $result = $cap->check_answer(
-		            $args->{-captcha_params}->{-remote_addr},
-					$args->{-captcha_params}->{-response},
-				);
-		        if ( $result->{is_valid} == 1 ) {
-					$errors->{captcha_challenge_failed} = 0; 
-		        }
-		        else {
-					$errors->{captcha_challenge_failed} = 1; 
-		        }
-			}
-		}
+
 		
 
 		$errors->{stop_forum_spam_check_failed} = 0;

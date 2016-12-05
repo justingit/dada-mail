@@ -753,7 +753,7 @@ sub confirm {
             my $captcha_worked = 0;
             my $captcha_auth   = 1;
 			
-			my $crf = xss_filter( scalar $q->param('g-recaptcha-response') || undef; 
+			my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef; 
             if ( !$crf ) {
                 $captcha_worked = 0;
             }

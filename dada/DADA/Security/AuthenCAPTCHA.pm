@@ -1,4 +1,4 @@
-package require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;;
+package DADA::Security::AuthenCAPTCHA;;
 
 use strict; 
 

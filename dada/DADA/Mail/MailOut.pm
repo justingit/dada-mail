@@ -997,15 +997,8 @@ sub countsubscriber {
     sysopen( FH, $file, O_RDWR | O_CREAT, $DADA::Config::FILE_CHMOD )
       or croak "can't open '$file' because: $!";
 
-    if ( $^O =~ /solaris/g ) {
-        flock( FH, LOCK_SH )
-          or croak "can't flock '$file' because: $!";
-    }
-    else {
         flock( FH, LOCK_EX )
           or croak "can't flock '$file' because: $!";
-    }
-
     seek( FH, 0, 0 ) or croak "can't rewind counter: $!";
     truncate( FH, 0 ) or croak "can't truncate counter: $!";
 
@@ -1063,14 +1056,8 @@ sub pause {
 
         sysopen( FH, $file, O_RDWR | O_CREAT, $DADA::Config::FILE_CHMOD ) or croak "can't open '$file' because: $!";
 
-        if ( $^O =~ /solaris/g ) {
-            flock( FH, LOCK_SH )
-              or croak "can't flock '$file' because: $!";
-        }
-        else {
-            flock( FH, LOCK_EX )
-              or croak "can't flock '$file' because: $!";
-        }
+        flock( FH, LOCK_EX )
+          or croak "can't flock '$file' because: $!";
 
         seek( FH, 0, 0 ) or croak "can't rewind pause: $!";
         truncate( FH, 0 ) or croak "can't truncate pause: $!";
@@ -1115,10 +1102,10 @@ sub set_controlling_pid {
     open my $pid_fh, '>', $file
       or croak "can't open '$file' because: $!";
 
-    if ( $^O !~ /solaris/g ) {    # as far as I can, shared locks are probably pretty useless, anyways...
-        flock( $pid_fh, LOCK_SH )
-          or croak "can't flock '$file' because: $!";
-    }
+#    if ( $^O !~ /solaris/g ) {    # as far as I can, shared locks are probably pretty useless, anyways...
+ #       flock( $pid_fh, LOCK_SH )
+  #        or croak "can't flock '$file' because: $!";
+  #  }
 
     print $pid_fh $pid;
     close $pid_fh

@@ -9916,7 +9916,7 @@ sub resend_conf_captcha {
     my $captcha_worked = 0;
     my $captcha_auth   = 1;
 
-    my $crf = xss_filter( scalar $q->param('g-recaptcha-response') || undef;
+    my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
 	
     if ( $admin_override_enabled != 1 ) {
         if ( !$crf ) {
@@ -11354,7 +11354,7 @@ sub send_archive {
     {
         require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
         my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
-        my $crf = xss_filter( scalar $q->param('g-recaptcha-response') || undef;
+        my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
 
         if ($crf) {
             my $result = $cap->check_answer(
@@ -13393,7 +13393,7 @@ sub profile_register {
         $prof->remove();
     }
 
-    my $crf = xss_filter( scalar $q->param('g-recaptcha-response') || undef;
+    my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
     my ( $status, $errors ) = $prof->is_valid_registration(
         {
             -email                     => $register_email,

@@ -133,6 +133,9 @@ VER                    => $DADA::Config::VER,
 
 DATA_CACHE             => $DADA::Config::DATA_CACHE, 
 
+captcha_on_subscribe_form => $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form},
+
+
 GIVE_PROPS_IN_HTML            => $DADA::Config::GIVE_PROPS_IN_HTML, 
 GIVE_PROPS_IN_SUBSCRIBE_FORM  => $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM, 
 GIVE_PROPS_IN_ADMIN           => $DADA::Config::GIVE_PROPS_IN_ADMIN, 
@@ -1119,7 +1122,11 @@ sub archive_send_form {
     # ?!?!
     $captcha_fail = defined $captcha_fail ? $captcha_fail : 0;
 
-    my $can_use_captcha = can_use_Google_reCAPTCHA(); 
+    my $can_use_captcha = can_use_Google_reCAPTCHA(); 	
+	$can_use_captcha = 0 
+		if ! defined $DADA::Config::RECAPTCHA_PARAMS->{public_key};
+	$can_use_captcha = 0 
+		if ! defined $DADA::Config::RECAPTCHA_PARAMS->{private_key};
 	
     if($captcha_archive_send_form == 1 && $can_use_captcha == 1){ 
             my $captcha_worked = 0; 
@@ -2615,7 +2622,20 @@ sub subscription_form {
 		}
 			
     }
-            
+    		
+	my $CAPTCHA_string = undef;
+	
+	if(
+		           $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
+		&& defined $DADA::Config::RECAPTCHA_PARAMS->{public_key}
+		&& defined $DADA::Config::RECAPTCHA_PARAMS->{private_key}
+		&& can_use_Google_reCAPTCHA() == 1  
+		) {
+			require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+			my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+		    $CAPTCHA_string = $cap->get_html();
+	}     
+	
     if(
 		$list && 
 		check_if_list_exists( -List=> $list, -Dont_Die  => 1) > 0
@@ -2624,7 +2644,6 @@ sub subscription_form {
         my $ls = DADA::MailingList::Settings->new({-list => $list}); 
   
 
-      
 		# This is so that we don't show the entire form, if we don't have to:
 		if(
 			
@@ -2640,9 +2659,7 @@ sub subscription_form {
  			$tmpl_name = 'minimal_subscription_form.tmpl'; 
 		}
 		
-		require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
-		my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
-		my $CAPTCHA_string = $cap->get_html();
+
 		
         return screen({
             -screen => $tmpl_name, 
@@ -2669,10 +2686,6 @@ sub subscription_form {
   
     }
     else { 
-
-		require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
-		my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
-		my $CAPTCHA_string = $cap->get_html();
 
 		return screen({
             -screen => 'subscription_form_widget.tmpl', 

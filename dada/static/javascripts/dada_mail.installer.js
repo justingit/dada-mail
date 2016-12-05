@@ -405,34 +405,8 @@ function test_CAPTCHA_configuration() {
 		$("#" + target_div).show();
 	}
 	
-	var flavor = ''; 
-	if($("#captcha_type_default").prop("checked") === true) { 
-		flavor = 'default'; 
-	}
-	else if($("#captcha_type_google_recaptcha").prop("checked") === true) { 
-		flavor = 'google_recaptcha'; 
-	}		
-	else if($("#captcha_type_recaptcha").prop("checked") === true) { 
-		flavor = 'recaptcha'; 		
-	}
-	else { 
-		alert("Unknown CAPTCHA Type!"); 
-	}
-	if(flavor == 'default') { 
-		var request = $.ajax({
-			url: $("#self_url").val(),
-			type: "POST",
-			cache: false,
-			data: {
-				flavor: 'cgi_test_default_CAPTCHA'
-			},
-			dataType: "html"
-		});
-		request.done(function(content) {
-			$("#" + target_div).html(content);
-		});
-	}
-	else if(flavor == 'google_recaptcha'){ 
+	var flavor = 'google_recaptcha'; 
+	//if(flavor == 'google_recaptcha'){ 
 		
 		
 		var request = $.ajax({
@@ -463,43 +437,8 @@ function test_CAPTCHA_configuration() {
 			console.log('status: ' + xhr.status);
 			console.log('thrownError:' + thrownError);
 		}); 
+		//}
 
-		
-	}
-	else { 
-		var request = $.ajax({
-			url: $("#self_url").val(),
-			type: "POST",
-			cache: false,
-			data: {
-				flavor: 'cgi_test_CAPTCHA_reCAPTCHA',
-				captcha_reCAPTCHA_public_key: $("#captcha_reCAPTCHA_public_key").val()
-			},
-			dataType: "html"
-		});
-		request.done(function(content) {
-			//alert("done!"); 
-			$("#" + target_div).html(content);
-			
-			$.getScript("http://www.google.com/recaptcha/api/js/recaptcha_ajax.js", function(data, textStatus, jqxhr) {
-			  Recaptcha.create($("#captcha_reCAPTCHA_public_key").val(),
-			    "recaptcha_example",
-			    {
-			      theme: "red",
-			      callback: Recaptcha.focus_response_field,
-			    }
-			  );
-		    }); 
-			
-		});
-		request.error(function(xhr, ajaxOptions, thrownError) {
-			alert('status: ' + xhr.status);
-			alert('thrownError:' + thrownError);
-			console.log('status: ' + xhr.status);
-			console.log('thrownError:' + thrownError);
-		}); 
-
-	}
 }
 
 function test_captcha_reCAPTCHA_Mailhide_configuration() {

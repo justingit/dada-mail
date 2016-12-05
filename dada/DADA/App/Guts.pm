@@ -52,7 +52,7 @@ require Exporter;
   encode_html_entities
   plaintext_to_html
   check_list_setup
-  make_all_list_files
+  
   message_id
   check_list_security
   user_error
@@ -1995,60 +1995,6 @@ sub user_error {
 
 
 
-=pod
-
-=head2 make_all_list_files
-
-	make_all_list_files(-List => $list); 
-
-makes all the list files needed for a Dada Mail list. 
-
-=cut
-
- 
-sub make_all_list_files { 
-
-	my %args = (-List => undef, @_); 
-	
-	my $list = $args{-List}; 
-	
-	 #untaint 
-	$list = make_safer($list); 
-	$list =~ /(.*)/; 
-	$list = $1; 
-	
-	
-	if($DADA::Config::SUBSCRIBER_DB_TYPE eq 'PlainText'){ 
-		# make email list file
-		open(LIST, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', "$DADA::Config::FILES/$list.list")
-			or croak "couldn't open $DADA::Config::FILES/$list.list for reading: $!\n";
-		flock(LIST, LOCK_SH);
-		close (LIST);
-		
-		#chmod!
-		chmod($DADA::Config::FILE_CHMOD , "$DADA::Config::FILES/$list.list"); 	
-	
-		# make e-mail blacklist file
-		open(LIST, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', "$DADA::Config::FILES/$list.black_list")
-			or croak "couldn't open $DADA::Config::FILES/$list.black_list for reading: $!\n";
-		flock(LIST, LOCK_SH);
-		close (LIST);
-		#chmod!
-		chmod($DADA::Config::FILE_CHMOD , "$DADA::Config::FILES/$list.black_list"); 	 
-	
-	}
-	
-	#do some hardcore guessin'
-	chmod($DADA::Config::FILE_CHMOD , 
-	"$DADA::Config::FILES/mj\-$list",
-	"$DADA::Config::FILES/mj\-$list.db",
-	"$DADA::Config::FILES/mj\-$list.pag",
-	"$DADA::Config::FILES/mj\-$list.dir",
-	);  
-	
-	return 1; 
-	
-}
 
 
 =pod
@@ -3132,12 +3078,18 @@ sub can_use_LWP_Simple {
 
 sub can_use_Google_reCAPTCHA { 
 	my $can_use_captcha = 1; 
-    try {
+	
+	#return 0 
+	#	if ! defined $DADA::Config::RECAPTCHA_PARAMS->{public_key};
+	#return 0 
+	#	if ! defined $DADA::Config::RECAPTCHA_PARAMS->{private_key};
+    
+	try {
         require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
         $can_use_captcha = 1;
     }
     catch {
-        carp "CAPTCHA Not working correctly?: $_";
+        # carp "CAPTCHA Not working correctly?: $_";
         $can_use_captcha = 0;
     };
 	return $can_use_captcha;

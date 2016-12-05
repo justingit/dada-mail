@@ -66,7 +66,8 @@
 				},
 				"captcha_check": {
 				     required: function() {
-						 if($('#captcha_check').val() == "true"){
+						 // is this field even there? 
+						 if($('#captcha_check').length() <= 0){ 
 							 return false; 
 						 }
 						 else {

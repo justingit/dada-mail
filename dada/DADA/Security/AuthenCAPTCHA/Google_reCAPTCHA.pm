@@ -1,4 +1,4 @@
-package require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;::Google_reCAPTCHA;
+package DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
 use lib qw(../../../ ../../../DADA/perllib); 
 use DADA::Config qw(!:DEFAULT); 
 
@@ -25,7 +25,7 @@ sub _init {
 
 sub get_html { 
     my $self = shift; 
-	my $key  = shift; 
+	my $key  = shift || $DADA::Config::RECAPTCHA_PARAMS->{public_key}; 
     return '<div class="g-recaptcha" data-sitekey="' 
 	. $key 
 	. '"></div>';
