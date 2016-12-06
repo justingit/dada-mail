@@ -462,20 +462,6 @@ for(@expr_tmpls){
 	ok($status == 1); 
 	ok($errors eq undef); 
 }
-for(@expr_tmpls){ 
-	my $d = dada_test_config::slurp('t/corpus/templates/' . $_); 
-	my ($status, $errors) = DADA::Template::Widgets::validate_screen(
-		{ 
-			-data => \$d, 
-			-expr => 0,
-			-pro  => 0,  
-		}
-	); 
-	# These will fail, if you have HTML::Template::Pro, since it can 
-	# Handle -expr stuff, no problemo, OR it doesn't die if it fails. Ugh!
-	ok($status == 0); 
-	ok(defined($errors)); 
-}
 # /validate_screen
 
 

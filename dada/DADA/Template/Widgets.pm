@@ -1124,9 +1124,9 @@ sub archive_send_form {
 
     my $can_use_captcha = can_use_Google_reCAPTCHA(); 	
 	$can_use_captcha = 0 
-		if ! defined $DADA::Config::RECAPTCHA_PARAMS->{public_key};
+		if length($DADA::Config::RECAPTCHA_PARAMS->{public_key}) <= 0;
 	$can_use_captcha = 0 
-		if ! defined $DADA::Config::RECAPTCHA_PARAMS->{private_key};
+		if length($DADA::Config::RECAPTCHA_PARAMS->{private_key}) <= 0;
 	
     if($captcha_archive_send_form == 1 && $can_use_captcha == 1){ 
             my $captcha_worked = 0; 
@@ -2542,12 +2542,18 @@ sub subscription_form {
 	if(! exists($args->{-show_fieldset})) { 
 		$args->{-show_fieldset} = 1;
 	}
-
 	
 	if(! exists($args->{-subscription_form_id})) { 
 		$args->{-subscription_form_id} = undef;
 	}
 
+	if(! exists($args->{-add_recaptcha_js})) { 
+		$args->{-add_recaptcha_js} = 0;
+	}
+
+	
+	
+	
     
     my @available_lists = available_lists(-Dont_Die => 1); 
     if(! $available_lists[0]){ 
@@ -2627,13 +2633,18 @@ sub subscription_form {
 	
 	if(
 		           $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
-		&& defined $DADA::Config::RECAPTCHA_PARAMS->{public_key}
-		&& defined $DADA::Config::RECAPTCHA_PARAMS->{private_key}
+		&& length($DADA::Config::RECAPTCHA_PARAMS->{public_key}) > 1
+		&& length($DADA::Config::RECAPTCHA_PARAMS->{private_key}) > 1
 		&& can_use_Google_reCAPTCHA() == 1  
 		) {
 			require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
 			my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
 		    $CAPTCHA_string = $cap->get_html();
+	}
+	else { 
+		if($args->{-add_recaptcha_js} == 1){ 
+			$args->{-add_recaptcha_js} = 0; 
+		}
 	}     
 	
     if(
@@ -2675,6 +2686,7 @@ sub subscription_form {
 							profile_logged_in        => $args->{-profile_logged_in}, 
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
+							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
 							recaptcha_html           => $CAPTCHA_string,							
 							
                         },
@@ -2703,6 +2715,7 @@ sub subscription_form {
 							profile_logged_in        => $args->{-profile_logged_in}, 
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
+							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
 							recaptcha_html           => $CAPTCHA_string,							
                         }
                     });      

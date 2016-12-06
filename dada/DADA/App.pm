@@ -6030,7 +6030,6 @@ sub admin_profile_delivery_preferences {
     if ( !$checksout ) {
 
         if ( $process eq 'ajax' ) {
-            # warn 'here.';
 
             require JSON;
             my $json = JSON->new->allow_nonref;
@@ -8394,6 +8393,7 @@ sub html_code {
         }
     );
 
+
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen         => 'html_code_screen.tmpl',
@@ -8408,7 +8408,12 @@ sub html_code {
                 jquery_head_code  => $jquery_head_code,
                 jquery_body_code  => $jquery_body_code,
                 subscription_form => DADA::Template::Widgets::subscription_form(
-                    { -list => $list, -ignore_cgi => 1, -show_fieldset => 0 }
+                    { 
+						-list => $list, 
+						-ignore_cgi => 1, 
+						-show_fieldset => 0, 
+						-add_recaptcha_js => 1,
+					}
                 ),
                 minimal_subscription_form =>
                   DADA::Template::Widgets::subscription_form(
@@ -8416,7 +8421,9 @@ sub html_code {
                         -list          => $list,
                         -form_type     => 'minimal',
                         -ignore_cgi    => 1,
-                        -show_fieldset => 0
+                        -show_fieldset => 0,
+						-add_recaptcha_js => 1,
+						
                     }
                   ),
             },
@@ -8454,7 +8461,8 @@ sub preview_jquery_plugin_subscription_form {
                         -ignore_cgi    => 1,
                         -show_fieldset => 0,
                         -subscription_form_id =>
-                          'dada_mail_modal_subscription_form'
+                          'dada_mail_modal_subscription_form', 
+  						-add_recaptcha_js => 1,
                     }
                 )
             }

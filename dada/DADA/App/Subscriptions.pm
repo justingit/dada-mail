@@ -318,9 +318,7 @@ sub subscribe {
     # I really wish this was done, after we look and see if the confirmation
     # step is even needed, just so we don't have to do this, twice. It would
     # clarify a bunch of things, I think.
-    
-	warn 'here.';
-	
+
     my ( $status, $errors ) = $lh->subscription_check(
         {
             -email  => $email,
@@ -335,9 +333,6 @@ sub subscribe {
             : (),
         }
     );
-	
-	warn 'here.';
-	
 
     # This is kind of strange...
     my $skip_sub_confirm_if_logged_in = 0;
@@ -474,14 +469,9 @@ sub subscribe {
             }
         }
     }
-
-	warn 'here.';
 	
     if ( $status == 0 ) {
-    
-	warn 'here.';
-	
-	
+
 	    my $r = {
             status   => 0,
             list     => $list,
@@ -509,9 +499,7 @@ sub subscribe {
             }
         }
         elsif ( $args->{-html_output} == 1 ) {
-			warn 'here.';
             if ( $ls->param('use_alt_url_sub_confirm_failed') == 1 ) {
-				warn 'here.';
                 return ({-redirect_uri => $self->alt_redirect($r)}, undef);
             }
             else {

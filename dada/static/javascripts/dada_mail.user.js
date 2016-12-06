@@ -55,6 +55,7 @@
 		}
 	}
 
+
 	if ($("#subscription_form").length) {
 		$("#subscription_form").validate({
 		   ignore: ".ignore",
@@ -67,7 +68,7 @@
 				"captcha_check": {
 				     required: function() {
 						 // is this field even there? 
-						 if($('#captcha_check').length() <= 0){ 
+						 if($('#captcha_check').length <= 0){ 
 							 return false; 
 						 }
 						 else {

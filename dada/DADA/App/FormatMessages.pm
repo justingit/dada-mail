@@ -2187,7 +2187,6 @@ sub _apply_template {
         }
     }
     else {
-		#warn 'here for some reason';
         $template = $content;
     }
 

@@ -3078,12 +3078,6 @@ sub can_use_LWP_Simple {
 
 sub can_use_Google_reCAPTCHA { 
 	my $can_use_captcha = 1; 
-	
-	#return 0 
-	#	if ! defined $DADA::Config::RECAPTCHA_PARAMS->{public_key};
-	#return 0 
-	#	if ! defined $DADA::Config::RECAPTCHA_PARAMS->{private_key};
-    
 	try {
         require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
         $can_use_captcha = 1;
