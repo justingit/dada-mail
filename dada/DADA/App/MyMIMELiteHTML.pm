@@ -464,7 +464,7 @@ sub md5_checksum {
         require Digest::MD5;
     }
     catch {
-        carp "Can't use Digest::MD5?! - $_";
+        carp "Can't use Digest::MD5?" . substr($_, 0, 100) . '...';
         return undef;
     };
     return Digest::MD5::md5_hex( $data );

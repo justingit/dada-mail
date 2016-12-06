@@ -399,7 +399,7 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 <p><a href="mailto:$ENV{SERVER_ADMIN}">Contact the Server Admin</a></p>
 <p>Time of error: <strong>$TIME</strong></p> 	
 </div>
-<pre>$error</pre>
+
 </body> 
 </html> 
 };
@@ -7635,7 +7635,7 @@ sub adv_archive_options {
             require HTML::Scrubber;
         }
         catch {
-            carp "HTML::Scrubber not working correctly?: $_";
+            carp "HTML::Scrubber not working correctly?:" . substr($_, 0, 100) . '...';
             $can_use_html_scrubber = 0;
         };
 
@@ -7644,7 +7644,7 @@ sub adv_archive_options {
             require Captcha::reCAPTCHA::Mailhide;
         }
         catch {
-            carp "reCAPTCHA Mailhide not working correctly?: $_";
+            carp "reCAPTCHA Mailhide not working correctly?:"  . substr($_, 0, 100) . '...';
             $can_use_recaptcha_mailhide = 0;
         }
         finally {

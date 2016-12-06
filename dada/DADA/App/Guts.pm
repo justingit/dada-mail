@@ -2941,7 +2941,7 @@ sub grab_url {
         require LWP;
     }
     catch {
-        carp "LWP not installed! $!";
+        carp "LWP not installed?" . substr($_, 0, 100) . '...';
 		if(wantarray){ 
             return (undef, undef, undef); 
         }
@@ -3017,7 +3017,7 @@ sub scrub_js {
 	    $scrubber->style(1); # I can't figure out how to put this in the options...
 		$html = $scrubber->scrub($html); 
 	} catch { 
-		carp "Cannot use HTML::Scrubber: $_"; 
+		carp "Cannot use HTML::Scrubber:" . substr($_, 0, 100) . '...'; 
 	};
 	
 	return $html;	
@@ -3034,7 +3034,7 @@ sub md5_checksum {
         require Digest::MD5;
     }
     catch {
-        carp "Can't use Digest::MD5?! - $_";
+        carp "Can't use Digest::MD5?" . substr($_, 0, 100) . '...';
         return undef;
     };
     return Digest::MD5::md5_hex( safely_encode($$data) );
@@ -3083,7 +3083,7 @@ sub can_use_Google_reCAPTCHA {
         $can_use_captcha = 1;
     }
     catch {
-        # carp "CAPTCHA Not working correctly?: $_";
+        carp "CAPTCHA Not working correctly?:" . substr($_, 0, 100) . '...';
         $can_use_captcha = 0;
     };
 	return $can_use_captcha;
@@ -3096,7 +3096,7 @@ sub can_use_JSON {
         $can_use_json = 1;
     }
     catch {
-        carp "JSON not installed?: $_";
+        carp "JSON not installed?:" . substr($_, 0, 100) . '...';
         $can_use_json = 0;
     };
 	return $can_use_json;
@@ -3121,7 +3121,7 @@ sub can_use_Amazon_SES {
     try { 
         require Net::Amazon::SES;        
     } catch { 
-		# carp 'Amazon SES is not supported:' . $_; 
+		carp 'Amazon SES is not supported:' . substr($_, 0, 100) . '...'; 
         $can_use_Amazon_SES = 0;
     };
     return $can_use_Amazon_SES;
@@ -3133,7 +3133,7 @@ sub can_use_StopForumSpam {
     try { 
         require WWW::StopForumSpam;        
     } catch { 
-		warn 'WWW::StopForumSpam is not supported:' . $_; 
+		warn 'WWW::StopForumSpam is not supported:' . substr($_, 0, 100) . '...'; 
         $can_use_StopForumSpam = 0;
     };
     return $can_use_StopForumSpam;

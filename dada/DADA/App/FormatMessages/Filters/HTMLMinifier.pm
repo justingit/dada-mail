@@ -84,7 +84,7 @@ sub can_use_filter {
 	try { 
 		require HTML::Packer; 
 	} catch { 
-		warn 'cannot use HTML::Packer:' . $_; 
+		warn 'cannot use HTML::Packer:' . substr($_, 0, 100) . '...';
 		return 0;
 	};
 	return 1; 

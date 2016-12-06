@@ -403,7 +403,7 @@ sub format_mlm {
 	            $content = $its->filter( { -html_msg => $content } );
 	        }
 	        catch {
-	            carp "Problems with filter: $_";
+	            carp "Problems with filter:" . substr($_, 0, 100) . '...';
 	        };
 		}
 		
@@ -415,7 +415,7 @@ sub format_mlm {
             $content = $css_inliner->filter( { -html_msg => $content } );
         }
         catch {
-            carp "Problems with filter: $_";
+            carp "Problems with filter:" . substr($_, 0, 100) . '...';;
         };
 
         # Change inlined images into separate files we'll link
@@ -432,7 +432,7 @@ sub format_mlm {
                 $content = $iei->filter( { -html_msg => $content } );
             }
             catch {
-                carp "Problems with filter: $_";
+                carp "Problems with filter:" . substr($_, 0, 100) . '...';
             };
         }
 
@@ -443,7 +443,7 @@ sub format_mlm {
               DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
             $content = $utt->filter( { -html_msg => $content } );
         } catch {
-            carp "Problems with filter: $_";
+            carp "Problems with filter: " . substr($_, 0, 100) . '...';
         };
 		
 		
@@ -473,7 +473,7 @@ sub format_mlm {
             $content = $rul->filter( { -data => $content } );
         }
         catch {
-            carp "Problems with filter: $_";
+            carp "Problems with filter:"  . substr($_, 0, 100) . '...';
         };
 
         # I am doing this, twice?
@@ -484,7 +484,7 @@ sub format_mlm {
             $content = $utt->filter( { -html_msg => $content } );
         }
         catch {
-            carp "Problems with filter: $_";
+            carp "Problems with filter:"  . substr($_, 0, 100) . '...';
         };
 
         if ( $self->{ls}->param('discussion_template_defang') == 1 ) {
@@ -553,7 +553,7 @@ sub format_mlm {
 	          DADA::App::FormatMessages::Filters::HTMLMinifier->new;
 	        $content = $minifier->filter( { -html_msg => $content } );
 	    } catch {
-	        carp "Problems with filter: $_";
+	        carp "Problems with filter:" . substr($_, 0, 100) . '...';
 	    };	
 	}	
 	
@@ -762,8 +762,7 @@ sub crop_html {
 
     }
     catch {
-        warn 'cannot crop html: ' . $_
-			if $t;
+        warn 'cannot crop html: ' . substr($_, 0, 100) . '...';
         return $html;
     };
 }
@@ -788,8 +787,7 @@ sub _format_body {
 
             }
             catch {
-                warn 'Formatting single entity failed!' . $_
-					if $t;
+                warn 'Formatting single entity failed!' . substr($_, 0, 100) . '...';
                 next;
             };
 
@@ -1152,7 +1150,7 @@ sub _make_multipart {
             $new_data = $utt->filter( { -html_msg => $new_data } );
         }
         catch {
-            carp "Problems with filter: $_";
+            carp "Problems with filter:" . substr($_, 0, 100) . '...';
         };
 
     }
@@ -3098,7 +3096,7 @@ sub body_content_only {
 			undef $bco; 
     }
     catch {
-        carp "Problems with filter: $_";
+        carp "Problems with filter:" . substr($_, 0, 100) . '...';;
     };
 		
 	return $html; 
