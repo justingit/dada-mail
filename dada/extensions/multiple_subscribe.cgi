@@ -208,6 +208,11 @@ sub subscribe_emails {
     $debug_info .= "Attempting to Subscribe..."
       if $Debug == 1;
 
+
+	my $skip_tests = [];
+	my $prev_status = undef; 
+	my $prev_errors = {}; 
+	
     foreach my $this_list (@lists) {
         my $lh = DADA::MailingList::Subscribers->new( { -list => $this_list } );
         my $ls = DADA::MailingList::Settings->new( { -list => $this_list } );
@@ -220,6 +225,35 @@ sub subscribe_emails {
             }
         }
         
+		my $l_skip_tests = $skip_tests; 
+        if($li->{email_your_subscribed_msg} == 1 ){ 
+			push(@$l_skip_tests, 'subscribed');
+		}
+		
+	   
+	   if(exists($prev_errors->{captcha_challenge_failed})){ 
+		   if($prev_errors->{captcha_challenge_failed} == 1){ 
+			   # uh oh. 
+			   # So, this is just going to fail 2x, so we might as well let it. 
+		   }
+		   else { 
+			   # if we try the same test 2x with the same repsonse, it'll 
+			   # fail, even if the captcha was correctly challenged, 
+			   # so you need to skip this. 
+		   		push(@$l_skip_tests, 'captcha_challenge_failed');
+		   }
+	   }
+	   if(exists($prev_errors->{stop_forum_spam_check_failed})){ 
+		   if($prev_errors->{stop_forum_spam_check_failed} == 1){ 
+			   # uh oh. 
+		   }
+		   else { 
+		   		push(@$l_skip_tests, 'stop_forum_spam_check_failed');
+		   }
+	   }
+	   
+		
+		
         my ( $status, $errors ) = $lh->subscription_check(
             {
                 -email  => $email,
@@ -228,12 +262,12 @@ sub subscribe_emails {
 					-remote_addr =>  $ENV{'REMOTE_ADDR'},
 					-response    => scalar $q->param('g-recaptcha-response'),
 				},
-                ( $li->{email_your_subscribed_msg} == 1 )
-                ? ( -skip => ['subscribed'], )
-                : (),
-
+				-skip => $l_skip_tests, 
             },
         );
+		
+		undef($l_skip_tests); 
+		
 
         my $error_report = [];
         foreach ( keys %$errors ) {
