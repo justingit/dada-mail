@@ -42,7 +42,7 @@ sub verify_sender {
 		($status, $result) = $ses_obj->verify_sender($args);
 	}
 	catch { 
-		carp $_; 
+		carp 'problems verifying sender: ' . substr($_, 0, 100) . '...'; 
 	};
 	return ($status, $result);
 }
@@ -63,7 +63,7 @@ sub sender_verified {
 		($status, $result) = $ses_obj->sender_verified($email);
 	}
 	catch { 
-		carp $_; 
+		carp 'Problems with sender_verified:' . substr($_, 0, 100) . '...';; 
 	};
     if($result eq 'Success'){ 
         return 1; 
@@ -94,7 +94,7 @@ sub get_stats {
 		($status, $result) = $ses_obj->get_stats();
 	}
 	catch { 
-		warn $_; 
+		warn "Problems wth get_stats:"  . substr($_, 0, 100) . '...';; 
 		return (undef, undef, undef, undef); 
 	};
 	

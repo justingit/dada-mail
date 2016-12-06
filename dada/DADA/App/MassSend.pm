@@ -1123,6 +1123,7 @@ sub construct_from_url {
 }
 
 sub _add_attachments { 
+	warn '_add_attachments' if $t; 
 	my $self = shift; 
 	my ($args) = @_; 
 	
@@ -2115,6 +2116,7 @@ sub draft_message_values {
 
 sub has_attachments {
 
+	warn 'has_attachments' if $t; 
     my $self = shift;
 
     my ($args) = @_;
@@ -2134,7 +2136,7 @@ sub has_attachments {
 
     for ( 1 .. $num ) {
         my $filename = $q->param( 'attachment' . $_ );
-        warn '$filename:' . $filename
+        carp '$filename:' . $filename
           if $t;
 
 		# I shouldn't have to do this: 

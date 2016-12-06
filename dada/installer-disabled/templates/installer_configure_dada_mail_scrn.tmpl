@@ -1829,24 +1829,37 @@
 		<!-- tmpl_if show_captcha_options --> 
 
 			<label for="configure_captcha">
-				<input type="checkbox" name="configure_captcha" id="configure_captcha" value="1">			
+				<input 
+					type="checkbox" 
+					name="configure_captcha" 
+					id="configure_captcha" 
+					value="1"
+					>			
 				Configure CAPTCHA Options
 			</label>
 
 			<div id="captcha_options">
 				<div class="panel">
+				<div class="row">
+					<div class="small-12 columns">
+						<label for="captcha_on_subscribe_form">
+							<input 
+								type="checkbox" 
+								name="captcha_on_subscribe_form" 
+								id="captcha_on_subscribe_form" 
+								value="1" 
+								checked="check" 
+							>
+							Add CAPTCHA on all subscription forms
+						</label>
+					</div>
+				</div>
+				
+
 	
 					<div class="alert-box info radius"> 
 						<ul>
-							<!-- tmpl_if can_use_GD --> 
-									<li>
-										<strong>Default</strong> CAPTCHA is Supported.
-									</li>
-							<!-- tmpl_else --> 
-								<li>
-									The <strong>GD</strong> CPAN module needs to be installed, for reCAPTCHA support. 
-								</li> 
-							<!-- /tmpl_if --> 
+
 							
 							<!-- tmpl_if can_use_CAPTCHA_Google_reCAPTCHA --> 
 								<li>
@@ -1858,18 +1871,7 @@
 								</li>
 							<!-- /tmpl_if -->
 							
-							
-		
-							<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA --> 
-								<li>
-									<strong>reCAPTCHA v1</strong> is supported.
-								</li>
-							<!-- tmpl_else --> 
-								<li>
-									The <strong>CAPTCHA::reCAPTCHA</strong> CPAN module needs to be installed, for reCAPTCHA support. 
-								</li> 
-							<!-- /tmpl_if --> 
-							
+														
 							<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA_Mailhide --> 
 								<li> 
 									<strong>reCAPTCHA Mailhide</strong> is supported.
@@ -1882,63 +1884,30 @@
 						</ul>
 					</div> 
 		
-					<h4>CAPTCHA Type</h4>
-
-					<label for="captcha_type_default">
 						<input 
-							type="radio" 
-							name="captcha_type" 
-							id="captcha_type_default" 
-							value="Default" 
-							checked="checked" 
-							class="radiochangeDisplayState" 
-							data-target="recaptcha_settings" 
-							data-state="hide"
-						>
-						Default CAPTCHA Type
-					</label>
-
-					<label for="captcha_type_google_recaptcha">
-						<input 
-							type="radio" 
+							type="hidden" 
 							name="captcha_type" 
 							id="captcha_type_google_recaptcha" 
 							value="Google_reCAPTCHA" 
-							class="radiochangeDisplayState"
-							data-target="recaptcha_settings"
-							data-state="show"
+
 						>
-						reCAPTCHA v2 (recommended)
-					</label>
+						<!-- reCAPTCHA v2 (recommended) --> 
 
-
-					<label for="captcha_type_recaptcha">
-						<input 
-							type="radio"
-							name="captcha_type"
-							id="captcha_type_recaptcha"
-							value="reCAPTCHA"
-							class="radiochangeDisplayState"
-							data-target="recaptcha_settings"
-							data-state="show"
-						>
-						reCAPTCHA v1
-					</label>
-
-					<div id="recaptcha_settings"> 
+						<div class="alert-box info radius">
 						More Information: 
-						<a href="https://www.google.com/recaptcha" target="_blank">
-							https://www.google.com/recaptcha
-						</a>
+							<a href="https://www.google.com/recaptcha" target="_blank">
+								https://www.google.com/recaptcha
+							</a>
+						</div>
 
 						<label  for="captcha_reCAPTCHA_public_key">
-							reCPATCHA Site key:
+							reCAPTCHA Site key:
 						</label> 
 						<input type="text" name="captcha_reCAPTCHA_public_key" id="captcha_reCAPTCHA_public_key" value="">
 
 
 						<label  for="captcha_reCAPTCHA_private_key">
-							reCPATCHA Secret key:
+							reCAPTCHA Secret key:
 						</label> 
 						<input
 							type="text"
@@ -1946,7 +1915,9 @@
 							id="captcha_reCAPTCHA_private_key"
 							value=""
 						>
-					</div> 
+						
+						
+						
 		
 					<input
 						type="button"

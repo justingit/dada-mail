@@ -52,7 +52,7 @@ require Exporter;
   encode_html_entities
   plaintext_to_html
   check_list_setup
-  make_all_list_files
+  
   message_id
   check_list_security
   user_error
@@ -82,7 +82,7 @@ require Exporter;
   scrub_js
   md5_checksum
   can_use_LWP_Simple
-  can_use_AuthenCAPTCHA
+  can_use_Google_reCAPTCHA
   can_use_JSON
   can_use_datetime
   can_use_HTML_Tree
@@ -1184,7 +1184,6 @@ sub _chomp_off_body {
         if ( $n_str =~ m/\<body.*?\>/ ) {    #seriously?
 
             $n_str =~ s/\<body/\<x\-body/g;
-
             $n_str =~ s/\<\/body/\<\/x-body/g;
         }
     }
@@ -1196,8 +1195,6 @@ sub _chomp_off_body {
         return $n_str;
     }
 }
-
-
 
 =pod
 
@@ -1994,60 +1991,6 @@ sub user_error {
 
 
 
-=pod
-
-=head2 make_all_list_files
-
-	make_all_list_files(-List => $list); 
-
-makes all the list files needed for a Dada Mail list. 
-
-=cut
-
- 
-sub make_all_list_files { 
-
-	my %args = (-List => undef, @_); 
-	
-	my $list = $args{-List}; 
-	
-	 #untaint 
-	$list = make_safer($list); 
-	$list =~ /(.*)/; 
-	$list = $1; 
-	
-	
-	if($DADA::Config::SUBSCRIBER_DB_TYPE eq 'PlainText'){ 
-		# make email list file
-		open(LIST, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', "$DADA::Config::FILES/$list.list")
-			or croak "couldn't open $DADA::Config::FILES/$list.list for reading: $!\n";
-		flock(LIST, LOCK_SH);
-		close (LIST);
-		
-		#chmod!
-		chmod($DADA::Config::FILE_CHMOD , "$DADA::Config::FILES/$list.list"); 	
-	
-		# make e-mail blacklist file
-		open(LIST, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', "$DADA::Config::FILES/$list.black_list")
-			or croak "couldn't open $DADA::Config::FILES/$list.black_list for reading: $!\n";
-		flock(LIST, LOCK_SH);
-		close (LIST);
-		#chmod!
-		chmod($DADA::Config::FILE_CHMOD , "$DADA::Config::FILES/$list.black_list"); 	 
-	
-	}
-	
-	#do some hardcore guessin'
-	chmod($DADA::Config::FILE_CHMOD , 
-	"$DADA::Config::FILES/mj\-$list",
-	"$DADA::Config::FILES/mj\-$list.db",
-	"$DADA::Config::FILES/mj\-$list.pag",
-	"$DADA::Config::FILES/mj\-$list.dir",
-	);  
-	
-	return 1; 
-	
-}
 
 
 =pod
@@ -2994,7 +2937,7 @@ sub grab_url {
         require LWP;
     }
     catch {
-        carp "LWP not installed! $!";
+        carp "LWP not installed?" . substr($_, 0, 100) . '...';
 		if(wantarray){ 
             return (undef, undef, undef); 
         }
@@ -3070,7 +3013,7 @@ sub scrub_js {
 	    $scrubber->style(1); # I can't figure out how to put this in the options...
 		$html = $scrubber->scrub($html); 
 	} catch { 
-		carp "Cannot use HTML::Scrubber: $_"; 
+		carp "Cannot use HTML::Scrubber:" . substr($_, 0, 100) . '...'; 
 	};
 	
 	return $html;	
@@ -3087,7 +3030,7 @@ sub md5_checksum {
         require Digest::MD5;
     }
     catch {
-        carp "Can't use Digest::MD5?! - $_";
+        carp "Can't use Digest::MD5?" . substr($_, 0, 100) . '...';
         return undef;
     };
     return Digest::MD5::md5_hex( safely_encode($$data) );
@@ -3128,14 +3071,15 @@ sub can_use_LWP_Simple {
 	};
 	return $can_use_lwp_simple;
 }
-sub can_use_AuthenCAPTCHA { 
+
+sub can_use_Google_reCAPTCHA { 
 	my $can_use_captcha = 1; 
-    try {
-        require DADA::Security::AuthenCAPTCHA;
+	try {
+        require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
         $can_use_captcha = 1;
     }
     catch {
-        carp "CAPTCHA Not working correctly?: $_";
+        carp "CAPTCHA Not working correctly?:" . substr($_, 0, 100) . '...';
         $can_use_captcha = 0;
     };
 	return $can_use_captcha;
@@ -3148,7 +3092,7 @@ sub can_use_JSON {
         $can_use_json = 1;
     }
     catch {
-        carp "JSON not installed?: $_";
+        carp "JSON not installed?:" . substr($_, 0, 100) . '...';
         $can_use_json = 0;
     };
 	return $can_use_json;
@@ -3173,7 +3117,7 @@ sub can_use_Amazon_SES {
     try { 
         require Net::Amazon::SES;        
     } catch { 
-		carp 'Amazon SES is not supported:' . $_; 
+		carp 'Amazon SES is not supported:' . substr($_, 0, 100) . '...'; 
         $can_use_Amazon_SES = 0;
     };
     return $can_use_Amazon_SES;
@@ -3185,7 +3129,7 @@ sub can_use_StopForumSpam {
     try { 
         require WWW::StopForumSpam;        
     } catch { 
-		warn 'WWW::StopForumSpam is not supported:' . $_; 
+		warn 'WWW::StopForumSpam is not supported:' . substr($_, 0, 100) . '...'; 
         $can_use_StopForumSpam = 0;
     };
     return $can_use_StopForumSpam;

@@ -117,6 +117,28 @@
 			</div> 
 		<!-- /tmpl_if -->
 
+
+		<!-- tmpl_if recaptcha_html --> 
+			<div class="row">
+				<div class="large-4 medium-4 columns">
+					&nbsp;
+				</div> 
+			
+				<div class="large-8 medium-8 columns">
+					<input 
+						type="hidden"
+						 class="captcha_check required" 
+						 name="captcha_check" 
+						 id="captcha_check"
+						>
+					<!-- tmpl_var recaptcha_html -->
+				</div>
+			</div>
+			<!-- tmpl_if add_recaptcha_js -->
+				    <script src='https://www.google.com/recaptcha/api.js'></script>
+			<!-- /tmpl_if --> 
+		<!-- /tmpl_if -->
+		
 		<div class="row">
 			<div class="large-4 medium-4 columns">
 				&nbsp;
@@ -130,6 +152,7 @@
 						>
 			</div>
 		</div>
+
 
 		<!-- tmpl_if give_props --> 
 		    <p style="font-size:10px;font-family:Verdana,Arial,sans-serif;"><a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial,sans-serif;">Powered by <!-- tmpl_var name="PROGRAM_NAME" --> <!-- tmpl_var VER --> Mailing List Manager</a></p>

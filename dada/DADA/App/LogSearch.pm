@@ -248,7 +248,6 @@ sub log_line_report {
 		
 	if(exists($args->{-list})){ 	
 		if($list ne $args->{-list}) { 
-			#warn 'here.' . $args->{-line}; 
 			return {};
 		} 
 	}

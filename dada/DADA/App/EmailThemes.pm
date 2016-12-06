@@ -248,7 +248,7 @@ sub strip_and_return_vars {
         return @r;
     }
     catch {
-        warn $_;
+        warn substr($_, 0, 100) . '...';
         return ( undef, $str );
     }
 }

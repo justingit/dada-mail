@@ -266,11 +266,7 @@ sub setup {
         cgi_test_magic_template           => \&cgi_test_magic_template, 
         cgi_test_magic_template_diag_box => \&cgi_test_magic_template_diag_box, 
         cgi_test_amazon_ses_configuration => \&cgi_test_amazon_ses_configuration,
-        cgi_test_CAPTCHA_reCAPTCHA        => \&cgi_test_CAPTCHA_reCAPTCHA,
         cgi_test_CAPTCHA_Google_reCAPTCHA => \&cgi_test_CAPTCHA_Google_reCAPTCHA,
-        
-        #cgi_test_CAPTCHA_reCAPTCHA_iframe  => \&cgi_test_CAPTCHA_reCAPTCHA_iframe,
-        cgi_test_default_CAPTCHA            => \&cgi_test_default_CAPTCHA,
         cgi_test_captcha_reCAPTCHA_Mailhide => \&cgi_test_captcha_reCAPTCHA_Mailhide,
         #cgi_test_FastCGI                    => \&cgi_test_FastCGI,
         cl_run                               => \&cl_run, 
@@ -787,8 +783,6 @@ sub scrn_configure_dada_mail {
                 can_use_MySQL                      => scalar test_can_use_MySQL(),
                 can_use_Pg                         => scalar test_can_use_Pg(),
                 can_use_SQLite                     => scalar test_can_use_SQLite(),
-                can_use_GD                         => scalar test_can_use_GD(),
-                can_use_CAPTCHA_reCAPTCHA          => scalar test_can_use_CAPTCHA_reCAPTCHA(),
                 can_use_CAPTCHA_Google_reCAPTCHA   => scalar test_can_use_CAPTCHA_Google_reCAPTCHA(),
 
                 can_use_CAPTCHA_reCAPTCHA_Mailhide => scalar test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
@@ -1251,16 +1245,8 @@ sub grab_former_config_vals {
         || keys %{$BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS} )
     {
         $opt->{'configure_captcha'} = 1;
-
-        if ( $BootstrapConfig::CAPTCHA_TYPE eq 'Default' ) {
-            $opt->{'captcha_type'} = 'Default';
-        }
-        elsif ( $BootstrapConfig::CAPTCHA_TYPE eq 'reCAPTCHA' ) {
-            $opt->{'captcha_type'} = 'reCAPTCHA';
-        }
-        elsif ( $BootstrapConfig::CAPTCHA_TYPE eq 'Google_reCAPTCHA' ) {
-            $opt->{'captcha_type'} = 'Google_reCAPTCHA';
-        }
+		
+		$opt->{'captcha_type'} = 'Google_reCAPTCHA';
 
 
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{public_key} ) ) {
@@ -1268,6 +1254,9 @@ sub grab_former_config_vals {
         }
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{private_key} ) ) {
             $opt->{'captcha_reCAPTCHA_private_key'} = $BootstrapConfig::RECAPTCHA_PARAMS->{private_key};
+        }
+        if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{on_subscribe_form} ) ) {
+            $opt->{'captcha_on_subscribe_form'} = $BootstrapConfig::RECAPTCHA_PARAMS->{on_subscribe_form};
         }
 
         if ( defined( $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key} ) ) {
@@ -1640,7 +1629,7 @@ sub query_params_to_install_params {
 	  
       configure_captcha
       captcha_type
-      captcha_reCAPTCHA_remote_addr
+	  captcha_on_subscribe_form
       captcha_reCAPTCHA_public_key
       captcha_reCAPTCHA_private_key
       captcha_reCAPTCHA_Mailhide_public_key
@@ -2299,8 +2288,10 @@ sub create_dada_config_file {
     my $captcha_params = {};
     if ( $ip->{-configure_captcha} == 1 ) {
         $captcha_params->{configure_captcha}             = 1;
-        $captcha_params->{captcha_type}                  = clean_up_var( $ip->{-captcha_type} );
-        $captcha_params->{captcha_reCAPTCHA_remote_addr} = clean_up_var( $ip->{-captcha_reCAPTCHA_remote_addr} );
+        $captcha_params->{captcha_type}                  = 'Google_reCAPTCHA';
+        $captcha_params->{captcha_on_subscribe_form}     = clean_up_var( $ip->{-captcha_on_subscribe_form} );
+
+		$captcha_params->{captcha_reCAPTCHA_remote_addr} = clean_up_var( $ip->{-captcha_reCAPTCHA_remote_addr} );
         $captcha_params->{captcha_reCAPTCHA_public_key}  = clean_up_var( $ip->{-captcha_reCAPTCHA_public_key} );
         $captcha_params->{captcha_reCAPTCHA_private_key} = clean_up_var( $ip->{-captcha_reCAPTCHA_private_key} );
         $captcha_params->{captcha_reCAPTCHA_Mailhide_public_key} =
@@ -3691,17 +3682,8 @@ sub test_can_use_SQLite {
     }
 }
 
-sub test_can_use_CAPTCHA_reCAPTCHA {
-    eval { require Captcha::reCAPTCHA; };
-    if ($@) {
-        carp $@;
-        $Big_Pile_Of_Errors .= $@;
-        return 0;
-    }
-    else {
-        return 1;
-    }
-}
+
+
 
 sub test_can_use_CAPTCHA_Google_reCAPTCHA {
     eval { require Google::reCAPTCHA; };
@@ -3716,20 +3698,10 @@ sub test_can_use_CAPTCHA_Google_reCAPTCHA {
 }
 
 
+
+
 sub test_can_use_CAPTCHA_reCAPTCHA_Mailhide {
     eval { require Captcha::reCAPTCHA::Mailhide; };
-    if ($@) {
-        carp $@;
-        $Big_Pile_Of_Errors .= $@;
-        return 0;
-    }
-    else {
-        return 1;
-    }
-}
-
-sub test_can_use_GD {
-    eval { require GD; };
     if ($@) {
         carp $@;
         $Big_Pile_Of_Errors .= $@;
@@ -3978,91 +3950,6 @@ sub cgi_test_amazon_ses_configuration {
 
 
 
-sub cgi_test_default_CAPTCHA {
-
-    my $self = shift;
-    my $q    = $self->query();
-
-    my $captcha = '';
-    my $errors  = undef;
-    my $captcha = undef;
-
-    eval {
-
-        $DADA::Config::TMP = './';
-
-        require DADA::Security::AuthenCAPTCHA::Default;
-        my $c = DADA::Security::AuthenCAPTCHA::Default->new;
-
-        require DADA::Security::Password;
-        my $secret_phrase = DADA::Security::Password::generate_rand_string(
-            $DADA::Config::GD_SECURITYIMAGE_PARAMS->{rand_string_from},
-            $DADA::Config::GD_SECURITYIMAGE_PARAMS->{rand_string_size}
-        );
-        my $auth_string = $c->_create_CAPTCHA_auth_string($secret_phrase);
-
-        $captcha = $c->inline_img_data( $secret_phrase, $auth_string );
-
-    };
-    if ($@) {
-        $errors = $@;
-    }
-
-    my $r;
-
-    require DADA::Template::Widgets;
-    $r = DADA::Template::Widgets::screen(
-        {
-            -screen => 'captcha_default_test_widget.tmpl',
-            -expr   => 1,
-            -vars   => {
-                errors  => $errors,
-                captcha => $captcha,
-            }
-        }
-    );
-    return $r;
-
-}
-
-sub cgi_test_CAPTCHA_reCAPTCHA {
-
-    my $self = shift;
-    my $q    = $self->query();
-
-    my $captcha_reCAPTCHA_public_key = $q->param('captcha_reCAPTCHA_public_key');
-
-    my $captcha = '';
-    my $errors  = undef;
-    eval {
-        require Captcha::reCAPTCHA;
-        my $c = Captcha::reCAPTCHA->new;
-        $captcha = $c->get_html($captcha_reCAPTCHA_public_key);
-    };
-    if ($@) {
-        $errors = $@;
-    }
-    my $r;
-
-    require DADA::Template::Widgets;
-    $r = DADA::Template::Widgets::screen(
-        {
-            -screen => 'captcha_recaptcha_test_widget.tmpl',
-            -expr   => 1,
-            -vars   => {
-                errors                       => $errors,
-                Self_URL                     => $Self_URL,
-                captcha                      => $captcha,
-                captcha_reCAPTCHA_public_key => $captcha_reCAPTCHA_public_key,
-            }
-        }
-    );
-
-    return $r;
-
-}
-
-
 sub cgi_test_CAPTCHA_Google_reCAPTCHA {
 
     my $self = shift;
@@ -4079,7 +3966,6 @@ sub cgi_test_CAPTCHA_Google_reCAPTCHA {
         my $c = Google::reCAPTCHA->new(
 			secret => $captcha_reCAPTCHA_private_key
 		);
-        #$captcha = $c->get_html($captcha_reCAPTCHA_public_key);
     };
     if ($@) {
         $errors = $@;

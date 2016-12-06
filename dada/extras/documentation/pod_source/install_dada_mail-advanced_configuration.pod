@@ -508,17 +508,23 @@ B<Config Variable:> C<$RATE_LIMITING>.
 
 =head2 Configure CAPTCHA
 
-Dada Mail uses CAPTCHA challenge-response tests optionally for many things: as a additional step to confirm a subscription, for the Forward a Friend form, and other places. 
+Dada Mail uses CAPTCHA challenge-response tests optionally for many things: for the initial signup form, as an additional step to confirm a subscription, the Forward a Friend form, and other places. Dada Mail only supports Google's reCAPTCHA v2. 
 
 Dada Mail also supports Mailhide, which uses the reCAPTCHA system to easily protect email addresses shown in Dada Mail's public archives. 
 
 In this section, we can configure the CAPTCHA options in Dada Mail: 
 
-=head3 CAPTCHA Type
+=head3 Add CAPTCHA on all subscription forms 
 
-Dada Mail allows you to choose between two CAPTCHA types: it's Default, and reCAPTCHA. If available, we suggest using the reCAPTCHA system, as it's more sophisticated, than the CAPTCHA system shipped with Dada Mail. reCAPTCHA does require the, C<CAPTCHA::reCAPTCHA> CPAN module installed. 
+Select this option to add a CAPTCHA to all the subscription forms used by Dada Mail, including the subscrption form for all available mailings on Dada Mail's default screen. 
 
-You'll also need to sign up for an API key at the reCAPTCHA site: L<http://www.google.com/recaptcha>. Once you've signed up, you'll need to input both the Public and Private reCAPTCHA API key into Dada Mail. Dada Mail will also need the Remote Host filled out - this is basically your domain name, (example.com). 
+=head3 reCAPTCHA Site key: 
+
+Plug in your reCAPTCHA Site key here. 
+
+=head3 reCAPTCHA Secret key: 
+
+Plug in your reCAPTCHA Secret key here. 
 
 =head4 Test CAPTCHA Configuration
 

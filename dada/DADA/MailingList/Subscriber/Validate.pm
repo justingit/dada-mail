@@ -5,7 +5,7 @@ use strict;
 use Carp qw(carp croak);
 use DADA::App::Guts; 
 use Try::Tiny; 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
+my $t =  $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
 
 sub new {
 
@@ -43,6 +43,11 @@ sub subscription_check {
     my $self = shift;
     my ($args) = @_;
 
+	if($t){ 
+		require Data::Dumper; 
+		warn 'subscription_check passed args:' . Data::Dumper::Dumper($args);
+	}
+	
     if ( !exists( $args->{-email} ) ) {
         $args->{-email} = '';
     }
@@ -61,6 +66,10 @@ sub subscription_check {
     if(! exists($args->{-mode})) { 
         $args->{-mode} = 'user';
     }
+	
+    if(! exists($args->{-captcha_params})) { 
+		$args->{-captcha_params} = {}; 
+	}
     
     my %skip;
     for(@{ $args->{-skip} }) { 
@@ -76,6 +85,9 @@ sub subscription_check {
     if ( !$skip{no_list} ) {
         if ( DADA::App::Guts::check_if_list_exists( -List => $self->{list} ) == 0 ) {
             $errors->{no_list} = 1;
+			# short circuiting. 
+			warn 'error, no_list'
+				if $t;
             return ( 0, $errors );
         }
     }
@@ -90,18 +102,79 @@ sub subscription_check {
     
     if ( $args->{-type} ne 'black_list' && $args->{-type} ne 'white_list' ) {
         if ( !$skip{invalid_email} ) {
-            $errors->{invalid_email} = 1
-              if DADA::App::Guts::check_for_valid_email($email) == 1;
+              if(DADA::App::Guts::check_for_valid_email($email) == 1) { 
+			  	$errors->{invalid_email} = 1;
+	   				warn 'error, invalid_email'
+	     				if $t;
+	  	   		# short circuiting. 
+	     		return ( 0, $errors );
+			  
+			  }
         }
     }
     else {
         if ( DADA::App::Guts::check_for_valid_email($email) == 1 ) {
             if ( $email !~ m/^\@|\@$/ ) {
                 $errors->{invalid_email} = 1;
+	  			warn 'error, invalid_email'
+	  				if $t;
+	            return ( 0, $errors );
             }
         }
     }
-    
+	
+	if (
+		$args->{-type}    eq 'list'
+		&& $args->{-mode} eq 'user'
+	){ 
+	    if (
+			!$skip{captcha_challenge_failed} 
+			&& length($DADA::Config::RECAPTCHA_PARAMS->{public_key}) > 0
+			&& length($DADA::Config::RECAPTCHA_PARAMS->{private_key}) > 0
+			&& $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
+			&& can_use_Google_reCAPTCHA()
+		) {		
+			$errors->{captcha_challenge_failed} = 0; 
+	        if(!defined($args->{-captcha_params})){ 
+				$errors->{captcha_challenge_failed} = 1; 
+			    # short circuiting. 
+	  			warn 'error, captcha_challenge_failed'
+	  				if $t;
+	            return ( 0, $errors );
+			}
+			elsif(
+				! defined($args->{-captcha_params}->{-remote_addr})
+				||
+				! defined($args->{-captcha_params}->{-response})
+			) { 
+				$errors->{captcha_challenge_failed} = 1; 
+	  			warn 'error, captcha_challenge_failed'
+	  				if $t;
+			    # short circuiting. 
+	            return ( 0, $errors );
+			}
+			else {
+				require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+				my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+		        my $result = $cap->check_answer(
+		            $args->{-captcha_params}->{-remote_addr},
+					$args->{-captcha_params}->{-response},
+				);
+		        if ( $result->{is_valid} == 1 ) {
+					$errors->{captcha_challenge_failed} = 0; 
+					delete($errors->{captcha_challenge_failed});
+		        }
+		        else {
+					$errors->{captcha_challenge_failed} = 1; 
+	  			 	# short circuiting. 
+		  			warn 'error, captcha_challenge_failed'
+		  				if $t;
+	                return ( 0, $errors );
+		        }
+			}
+		}
+	}
+	
     if ( !$skip{subscribed} ) {
         $errors->{subscribed} = 1
           if $self->{lh}->check_for_double_email(
@@ -216,6 +289,9 @@ sub subscription_check {
 		$args->{-type}    eq 'list'
 		&& $args->{-mode} eq 'user'
 	){ 
+
+
+		
 
 		$errors->{stop_forum_spam_check_failed} = 0;
 	    if ( !$skip{stop_forum_spam_check_failed} ) {		
@@ -332,6 +408,10 @@ sub subscription_check {
         }
     }
     
+	if($t){ 
+		require Data::Dumper; 
+		warn 'subscription_check returning: ' . Data::Dumper::Dumper({status => $status, errors => $errors});
+	}
     return ( $status, $errors );
 
 }

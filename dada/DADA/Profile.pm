@@ -579,6 +579,7 @@ sub profile_update_email_report {
                     'profile_fields',
 					'stop_forum_spam_check_failed', 
 					'suspicious_activity_by_ip_check_failed',
+					'captcha_challenge_failed',
                 ],
             }
         );
@@ -850,9 +851,8 @@ sub is_valid_registration {
     my $cap             = undef;
 
 	if($DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1){
-	    if ( can_use_AuthenCAPTCHA() == 1 ) {
-						
-			my $ccf = $args->{ -recaptcha_challenge_field } || '';
+	    if ( can_use_Google_reCAPTCHA() == 1 ) {
+									
 			my $crf = $args->{ -recaptcha_response_field }  || undef;
 		   
 		    if ( ! $crf ) {
@@ -860,11 +860,9 @@ sub is_valid_registration {
 	            $status = 0;
 		    }
 		    else {				
-		        $cap = DADA::Security::AuthenCAPTCHA->new;
+		        $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
 		        my $result = $cap->check_answer(
-	            	$DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
 					$ENV{'REMOTE_ADDR'}, 
-		            $ccf,
 					$crf,
 		        );
 		        if ( $result->{is_valid} == 1 ) {
@@ -1703,7 +1701,7 @@ If CAPTCHA is enabled for Profiles, (via the Config.pm C<$PROFILE_OPTIONS-E<gt>{
 
 =back 
 
-C<-recaptcha_challenge_field> and C<-recaptcha_response_field> map to the 3rd and 4th arguments you have to pass in C<DADA::Security::AuthenCAPTCHA>'s method, C<check_answer>, which is sadly currently under documented, but 
+C<-recaptcha_challenge_field> and C<-recaptcha_response_field> map to the 3rd and 4th arguments you have to pass in C<require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;>'s method, C<check_answer>, which is sadly currently under documented, but 
 follows the same API as Captcha::reCAPTCHA: 
 
 L<http://search.cpan.org/~andya/Captcha-reCAPTCHA/lib/Captcha/reCAPTCHA.pm>

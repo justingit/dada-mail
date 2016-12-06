@@ -133,6 +133,9 @@ VER                    => $DADA::Config::VER,
 
 DATA_CACHE             => $DADA::Config::DATA_CACHE, 
 
+captcha_on_subscribe_form => $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form},
+
+
 GIVE_PROPS_IN_HTML            => $DADA::Config::GIVE_PROPS_IN_HTML, 
 GIVE_PROPS_IN_SUBSCRIBE_FORM  => $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM, 
 GIVE_PROPS_IN_ADMIN           => $DADA::Config::GIVE_PROPS_IN_ADMIN, 
@@ -1119,15 +1122,19 @@ sub archive_send_form {
     # ?!?!
     $captcha_fail = defined $captcha_fail ? $captcha_fail : 0;
 
-    my $can_use_captcha = can_use_AuthenCAPTCHA(); 
+    my $can_use_captcha = can_use_Google_reCAPTCHA(); 	
+	$can_use_captcha = 0 
+		if length($DADA::Config::RECAPTCHA_PARAMS->{public_key}) <= 0;
+	$can_use_captcha = 0 
+		if length($DADA::Config::RECAPTCHA_PARAMS->{private_key}) <= 0;
 	
     if($captcha_archive_send_form == 1 && $can_use_captcha == 1){ 
             my $captcha_worked = 0; 
             my $captcha_auth   = 1; 
 
-            require DADA::Security::AuthenCAPTCHA; 
-            my $cap = DADA::Security::AuthenCAPTCHA->new; 
-               $CAPTCHA_string = $cap->get_html($DADA::Config::RECAPTCHA_PARAMS->{public_key});  
+            require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA; 
+            my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new; 
+               $CAPTCHA_string = $cap->get_html();  
     }
 
 	return DADA::Template::Widgets::screen(
@@ -2535,12 +2542,18 @@ sub subscription_form {
 	if(! exists($args->{-show_fieldset})) { 
 		$args->{-show_fieldset} = 1;
 	}
-
 	
 	if(! exists($args->{-subscription_form_id})) { 
 		$args->{-subscription_form_id} = undef;
 	}
 
+	if(! exists($args->{-add_recaptcha_js})) { 
+		$args->{-add_recaptcha_js} = 0;
+	}
+
+	
+	
+	
     
     my @available_lists = available_lists(-Dont_Die => 1); 
     if(! $available_lists[0]){ 
@@ -2615,7 +2628,25 @@ sub subscription_form {
 		}
 			
     }
-            
+    		
+	my $CAPTCHA_string = undef;
+	
+	if(
+		           $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
+		&& length($DADA::Config::RECAPTCHA_PARAMS->{public_key}) > 1
+		&& length($DADA::Config::RECAPTCHA_PARAMS->{private_key}) > 1
+		&& can_use_Google_reCAPTCHA() == 1  
+		) {
+			require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+			my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+		    $CAPTCHA_string = $cap->get_html();
+	}
+	else { 
+		if($args->{-add_recaptcha_js} == 1){ 
+			$args->{-add_recaptcha_js} = 0; 
+		}
+	}     
+	
     if(
 		$list && 
 		check_if_list_exists( -List=> $list, -Dont_Die  => 1) > 0
@@ -2624,7 +2655,6 @@ sub subscription_form {
         my $ls = DADA::MailingList::Settings->new({-list => $list}); 
   
 
-      
 		# This is so that we don't show the entire form, if we don't have to:
 		if(
 			
@@ -2639,6 +2669,9 @@ sub subscription_form {
 		if($args->{-form_type} eq 'minimal'){ 
  			$tmpl_name = 'minimal_subscription_form.tmpl'; 
 		}
+		
+
+		
         return screen({
             -screen => $tmpl_name, 
             -vars   => {
@@ -2653,6 +2686,8 @@ sub subscription_form {
 							profile_logged_in        => $args->{-profile_logged_in}, 
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
+							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
+							recaptcha_html           => $CAPTCHA_string,							
 							
                         },
 						-list_settings_vars_param => {
@@ -2663,12 +2698,11 @@ sub subscription_form {
   
     }
     else { 
-  return screen({
+
+		return screen({
             -screen => 'subscription_form_widget.tmpl', 
             -vars   => {
-                            
                             single_list              => 0, 
-                            
                             subscriber_fields        => $named_subscriber_fields,
                             list                     => $list, 
                             email                    => $args->{-email},
@@ -2681,7 +2715,8 @@ sub subscription_form {
 							profile_logged_in        => $args->{-profile_logged_in}, 
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
-							
+							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
+							recaptcha_html           => $CAPTCHA_string,							
                         }
                     });      
     }

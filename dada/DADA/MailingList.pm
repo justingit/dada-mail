@@ -75,7 +75,6 @@ sub Create {
 'DADA::MailingList::Settings did not give back the right kind of object!';
     }
 
-    DADA::App::Guts::make_all_list_files( -List => $args->{ -list } );
 
     $args->{ -settings }->{list} = $args->{ -list };
 

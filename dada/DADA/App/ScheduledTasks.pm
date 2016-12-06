@@ -181,14 +181,14 @@ sub lock_file {
 				$count++;
                 redo if $count < $countdown;
 
-                carp "PID: $$ Couldn't create an exclusive semaphore file at, '" . $self->lockfile . "': $!";
+                warn "PID: $$ Couldn't create an exclusive semaphore file at, '" . $self->lockfile . "': $!";
                 return undef;
             }
         }
 		return $fh;
     }
     else {
-        carp "PID: $$ Can't open semaphore file at, '" . $self->lockfile . "': $!";
+        warn "PID: $$ Can't open semaphore file at, '" . $self->lockfile . "': $!";
 		return undef;
     }
 }
@@ -199,7 +199,7 @@ sub remove_lockfile {
 	if(-f $self->lockfile){
 	    my $unlink_check = unlink($self->lockfile);
 	    if ( $unlink_check != 1 ) {
-	        carp "PID: $$ Deleting semaphore file at, '" . $self->lockfile . "' failed: $!";
+	        warn "PID: $$ Deleting semaphore file at, '" . $self->lockfile . "' failed: $!";
 	    	return 0; 
 		}
 		else { 
@@ -207,7 +207,7 @@ sub remove_lockfile {
 		}
 	}
 	else{ 
-        # carp "PID: $$ Semaphore does not exist to delete at, '" . $self->lockfile;
+         warn "PID: $$ Semaphore does not exist to delete at, '" . $self->lockfile;
 	}
 }
 
@@ -220,7 +220,7 @@ sub unlock_file {
 	    return 1;
 	}
 	else { 
-		carp "PID: $$ " . q{Couldn't unlock semaphore file for, } . $fh . ' ' . $!;
+		warn "PID: $$ " . q{Couldn't unlock semaphore file for, } . $fh . ' ' . $!;
 		return 0; 
 	}
 }

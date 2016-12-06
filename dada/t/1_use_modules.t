@@ -25,6 +25,11 @@ eval { require DBI };
 
 
 
+
+BEGIN{ use_ok('DADA::App::BounceHandler'); }
+
+BEGIN{ use_ok('DADA::App::DataCache'); }
+
 SKIP: {
 
 eval { require DBI };
@@ -34,9 +39,30 @@ eval { require DBI };
 
 
 
+BEGIN{ use_ok('DADA::App::Digests'); }
+
+BEGIN{ use_ok('DADA::App::Dispatch'); }
 
 BEGIN{ use_ok('DADA::App::Error'); }
+
+BEGIN{ use_ok('DADA::App::EmailMessagePreview'); }
+BEGIN{ use_ok('DADA::App::EmailThemes'); }
+
+
+
 BEGIN{ use_ok('DADA::App::FormatMessages'); }
+BEGIN{ use_ok('DADA::App::FormatMessages::Filters::BodyContentOnly'); }
+BEGIN{ use_ok('DADA::App::FormatMessages::Filters::CleanUpReplies'); }
+BEGIN{ use_ok('DADA::App::FormatMessages::Filters::CSSInliner'); }
+BEGIN{ use_ok('DADA::App::FormatMessages::Filters::HTMLMinifier'); }
+BEGIN{ use_ok('DADA::App::FormatMessages::Filters::InjectThemeStylesheet'); }
+BEGIN{ use_ok('DADA::App::FormatMessages::Filters::InlineEmbeddedImages'); }
+BEGIN{ use_ok('DADA::App::FormatMessages::Filters::RemoveTokenLinks'); }
+BEGIN{ use_ok('DADA::App::FormatMessages::Filters::UnescapeTemplateTags'); }
+
+
+
+
 BEGIN{ use_ok('DADA::App::GenericDBFile::Backup'); }
 BEGIN{ use_ok('DADA::App::GenericDBFile'); }
 BEGIN{ use_ok('DADA::App::Guts'); }
@@ -50,10 +76,14 @@ BEGIN{ use_ok('DADA::App::Messages'); }
 BEGIN{ use_ok('DADA::App::POP3Tools'); }
 
 
+
+BEGIN{ use_ok('DADA::App::ScheduledTasks'); }
+
 BEGIN{ use_ok('DADA::App::ScreenCache'); }
 BEGIN{ use_ok('DADA::App::Session'); }
 
 BEGIN{ use_ok('DADA::App::Subscriptions'); }
+BEGIN{ use_ok('DADA::App::WebServices'); }
 
 
 BEGIN{ use_ok('DADA::Config'); }
@@ -66,6 +96,8 @@ BEGIN{ use_ok('DADA::Logging::Usage'); }
 
 BEGIN{ use_ok('DADA::Mail::Send'); }
 BEGIN{ use_ok('DADA::Mail::MailOut'); }
+
+
 
 SKIP: {
     eval { require DBI;};
@@ -164,7 +196,7 @@ BEGIN{ use_ok('DADA::MailingList::Subscriber'); }
 BEGIN{ use_ok('DADA::MailingList'); }
 
 # well, this may not work, since it's gotta be configured... hmmm
-# BEGIN{ use_ok('DADA::Security::AuthenCAPTCHA'); }
+# BEGIN{ use_ok('require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;'); }
 # Yeah - I was right. 
 
 BEGIN{ use_ok('DADA::Security::Password'); }
@@ -207,14 +239,6 @@ BEGIN{ use_ok('HTML::Tiny') };
 BEGIN{ use_ok('Captcha::reCAPTCHA') };
 
 
-SKIP: {
-        eval { require GD};
-
-         skip "GD not installed", 1 if $@;
-         # can't wrap in BEGIN cause it'll happen before the eval..
-         use_ok('GD::SecurityImage;'); 
-
-    }
 
 SKIP: {
     eval { require DBI;};
