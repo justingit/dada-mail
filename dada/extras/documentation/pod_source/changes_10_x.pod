@@ -2,6 +2,27 @@
 
 =encoding utf-8
 
+=head1 10.2.0
+
+=head2 Focus
+
+We've added support for showing a B<CAPTCHA on the initial signup form!> 
+
+See the post about this feature for more details: 
+
+L<http://blog.dadamailproject.com/2016/12/06/add-google-recaptcha-on-dada-mail-subscription-forms/>
+
+as well as the docs on advanced installation configuration, 
+
+L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-CAPTCHA>
+
+We've also removed support for reCAPTCHA v1, and the Default CAPTCHA type. You're
+much better served with reCAPTCHA v2, that these are choices just aren't worth your time. 
+
+reCAPTCHA v2 requires the following CPAN module: C<Google::reCAPTCHA>, which you can install on its own, 
+or through our, C<Bundle::DadaMail> module, which will install all the other optional CPAN modules Dada Mail
+takes advantage of. 
+
 =head1 10.1.0
 
 =head2 Focus 
