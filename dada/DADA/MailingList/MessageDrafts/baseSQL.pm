@@ -583,7 +583,8 @@ sub draft_index {
             last_modified_timestamp       => $hashref->{last_modified_timestamp},
             screen                        => $hashref->{screen},
             role                          => $hashref->{role},
-            Subject                       => scalar $q->param('Subject'),
+			# so curious I have to do this here, but not in the ind. draft screen... 
+            Subject                       => safely_decode(scalar $q->param('Subject')),
 
             schedule_activated             => scalar $q->param('schedule_activated'),
             schedule_type                  => scalar $q->param('schedule_type'),
