@@ -143,9 +143,9 @@ sub subscription_check {
 	            return ( 0, $errors );
 			}
 			elsif(
-				! defined($args->{-captcha_params}->{-remote_addr})
+				length($args->{-captcha_params}->{-remote_addr}) <= 0
 				||
-				! defined($args->{-captcha_params}->{-response})
+				length($args->{-captcha_params}->{-response}) <= 0
 			) { 
 				$errors->{captcha_challenge_failed} = 1; 
 	  			warn 'error, captcha_challenge_failed'
