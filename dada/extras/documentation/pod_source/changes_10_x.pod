@@ -2,6 +2,28 @@
 
 =encoding utf-8
 
+=head1 10.2.1
+
+=head2 Focus
+
+This is mostly a bug-fix release for issues found in the v10.2.0 release of Dada Mail. 
+
+=head2 Bugfixes
+
+
+=head3 Subject wrongly encoded in Drafts/Stationery/Schedules screen #614
+
+L<https://github.com/justingit/dada-mail/issues/614>
+
+=head3 Google reCAPTCHA fails on signup form in certain situations #615 
+
+L<https://github.com/justingit/dada-mail/issues/615>
+
+=head3 Membership: View Screen hides buttons in Safari browser #616 
+
+L<https://github.com/justingit/dada-mail/issues/616>
+
+
 =head1 10.2.0
 
 =head2 Focus
