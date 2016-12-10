@@ -125,9 +125,11 @@
 
 
     <form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-    
+    	
+		
          <!-- tmpl_include view_list_table_widget.tmpl --> 
-
+		
+		  
     <div class="row"> 
         <div class="small-1 columns"> 
               <input class="toggleCheckboxes" type="checkbox" data-target_class="address" >
@@ -219,19 +221,19 @@
         <!-- /tmpl_if -->
 
 
-    <!-- tmpl_if total_num -->
-        <!-- tmpl_if EXPR="(type eq 'black_list')" -->
-            <!-- tmpl_if can_filter_subscribers_through_blacklist --> 
-                <!-- tmpl_unless query --> 
-                      <li>
-                           <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=filter_using_black_list" class="small button">
-							   Filter Subscribers Through Black List...
-						   </a>
-				     </li>
-                <!-- /tmpl_unless -->
-            <!--/tmpl_if-->
-        <!--/tmpl_if-->
-    <!--/tmpl_if-->
+	    <!-- tmpl_if total_num -->
+	        <!-- tmpl_if EXPR="(type eq 'black_list')" -->
+	            <!-- tmpl_if can_filter_subscribers_through_blacklist --> 
+	                <!-- tmpl_unless query --> 
+	                      <li>
+	                           <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=filter_using_black_list" class="small button">
+								   Filter Subscribers Through Black List...
+							   </a>
+					     </li>
+	                <!-- /tmpl_unless -->
+	            <!--/tmpl_if-->
+	        <!--/tmpl_if-->
+	    <!--/tmpl_if-->
         
 		<li>
 			<!-- tmpl_include list_download_widget.tmpl -->  

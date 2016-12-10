@@ -2020,8 +2020,9 @@ function view_list_viewport(initial) {
 
 
 	if (initial == 1) {
-		$("#view_list_viewport").height(480); 
+		$("#view_list_viewport").height(725); 
 	}
+
 
 	var target = document.getElementById('view_list_viewport');
 	var spinner = new Spinner(spinner_opts).spin(target);
@@ -2086,6 +2087,7 @@ function view_list_viewport(initial) {
 			$("#domain_break_down").fadeTo(200, 1);
 			google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
 		}
+
 	});
 }
 
