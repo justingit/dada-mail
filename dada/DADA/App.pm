@@ -11440,7 +11440,7 @@ sub send_archive {
         my $msg = MIME::Lite->new(
             From => $fm->format_phrase_address(
 				$etp->{vars}->{from_phrase}, 
-				$from_email
+				$ls->param('list_owner_email'),
 			), 
             To => $fm->format_phrase_address(
 				$etp->{vars}->{to_phrase}, 
