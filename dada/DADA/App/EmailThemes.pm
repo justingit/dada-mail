@@ -157,10 +157,10 @@ sub fetch {
             ( $vars, $pt ) = $self->strip_and_return_vars($pt);
         }
 		foreach(keys %$vars){ 
-			$vars->{$_} = safely_decode($vars->{$_});
+			$vars->{$_} = $vars->{$_};
 		}
-		$pt   = safely_decode($pt);
-		$html = safely_decode($html);
+		$pt   = $pt;
+		$html = $html;
 
         my $r = {
             html      => $html,
@@ -273,7 +273,7 @@ sub slurp {
     my $r;
     my (@r);
 
-    open( F, '<:encoding(UTF-8)', $file )
+    open( F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
       || croak "open $file: $!";
     @r = <F>;
     close(F) || croak "close $file: $!";
@@ -285,9 +285,11 @@ sub slurp {
 
 sub app_css {
     my $self = shift;
-    return $self->slurp(
-        $self->theme_dir . '/' . $self->theme_name . '/dist/css/app.css' );
-}
+	my $css = $self->slurp($self->theme_dir . '/' . $self->theme_name . '/dist/css/app.css' );
+			
+	 $css = $css; 
+	 return $css; 
+ }
 
 sub available_themes {
     my $self = shift;
