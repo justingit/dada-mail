@@ -143,7 +143,9 @@ sub save {
 	my $yaml = YAML::Tiny->new( $args->{-vars} );
 	my $vars = $yaml->write_string; 
 	   $vars = safely_encode($vars);
-   
+       $args->{-plaintext} = safely_encode($args->{-plaintext});
+       $args->{-html}      = safely_encode($args->{-html});
+
 	undef($yaml);
 	   
    my $query; 
@@ -170,9 +172,9 @@ sub save {
     }
     $sth->execute(
 		 $args->{-list}, 
-		$vars, 
-		$args->{-plaintext}, 
-		$args->{-html}, 
+		 $vars, 
+		 $args->{-plaintext}, 
+		 $args->{-html}, 
 	)
       or croak "cannot do statement '$query'! $DBI::errstr\n";
 
@@ -226,7 +228,9 @@ sub fetch {
 		)
 	);  
 	$r->{vars} = $yaml->[0];
-	
+	$r->{plaintext} = safely_decode($r->{plaintext}); 
+	$r->{html}      = safely_decode($r->{html}); 
+
 	undef ($yaml);
 	
     $sth->finish;
