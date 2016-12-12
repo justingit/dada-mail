@@ -93,6 +93,17 @@ sub send_email {
     my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
 
+
+
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $self->{list},
+		}
+	);
+	my $etp          = $em->fetch('mailing_list_message');
+	my $subject      = $etp->{vars}->{subject};
+
     my $process            = xss_filter( strip( scalar $q->param('process') ) );
     my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
     my $restore_from_draft = xss_filter( strip( scalar $q->param('restore_from_draft') ) ) || 'true';
@@ -206,6 +217,11 @@ sub send_email {
                       can_use_datetime => scalar DADA::App::Guts::can_use_datetime(), 
                       sched_flavor => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor},
 					default_layout => $default_layout, 
+					
+					default_subject => $subject,
+					
+					
+					
                     %wysiwyg_vars,
                     %$ses_params,
                 },
@@ -1227,6 +1243,16 @@ sub send_url_email {
 
     my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
+	
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $self->{list},
+		}
+	);
+	my $etp          = $em->fetch('mailing_list_message');
+	my $subject      = $etp->{vars}->{subject};
+	
 
     my $process            = xss_filter( strip( scalar $q->param('process') ) );
     my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
@@ -1238,6 +1264,8 @@ sub send_url_email {
     my $draft_role         = $q->param('draft_role') || 'draft';
 
     my $li = $self->{ls_obj}->get( -all_settings => 1 );
+	
+	
     
     my $can_use_mime_lite_html = 1;
     my $mime_lite_html_error   = undef;
@@ -1364,6 +1392,8 @@ sub send_url_email {
                     can_use_HTML_Tree => scalar DADA::App::Guts::can_use_HTML_Tree(), 
                     sched_flavor      => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor},
 					default_layout => $default_layout, 
+					
+					default_subject => $subject,
 
                     %wysiwyg_vars,
                     %$ses_params,

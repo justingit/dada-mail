@@ -82,7 +82,7 @@
 		     <input type="radio" name="subject_from" id="subject_from_input" value="input" checked="checked">
 		    </div>
    	  		<div class="small-11 columns">
-			 <input type="text" name="Subject" id="Subject" value="<!-- tmpl_var list_settings.mailing_list_message_subject escape="HTML" -->"  >
+			 <input type="text" name="Subject" id="Subject" value="<!-- tmpl_var default_subject escape="HTML" -->"  >
 			</div>
 	    </div>	  	 
       <div class="row collapse">
@@ -97,7 +97,7 @@
  	   </div> 
 			 
 	     <!-- tmpl_else --> 
-	     	<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var list_settings.mailing_list_message_subject escape="HTML" -->"  >
+	     	<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var default_subject escape="HTML" -->"  >
 		<!-- /tmpl_if -->	
 	<!-- /tmpl_if -->
 	</div>
