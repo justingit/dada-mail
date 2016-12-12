@@ -133,7 +133,7 @@ sub save {
     #}
     #	warn '$id:' . $id;
     my $q = $args->{-cgi_obj}; 
-       $q = $self->fill_in_schedule_options($q); 
+	$q = $self->fill_in_schedule_options($q); 
     my $draft = $self->stringify_cgi_params( 
         { 
             -cgi_obj => $q, 
@@ -535,7 +535,10 @@ sub decode_draft {
     open my $fh, '<', \$saved || die $!;
     require CGI;
     my $q = CGI->new($fh);
-    return $q;
+	
+       $q = decode_cgi_obj($q); # this need? 
+    
+	return $q;
 }
 
 sub draft_index {
