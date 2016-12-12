@@ -157,6 +157,7 @@ sub _remove_pop3_check {
 sub _unlock_pop3_check { 
 
     my ($args) = @_;
+	my $fh = undef; 
     
     if(! exists($args->{name})){ 
         croak "You need to supply a name! for _unlock_pop3_check"; 
@@ -164,11 +165,16 @@ sub _unlock_pop3_check {
     if(! exists($args->{fh})){ 
         croak "You need to supply a filehandle in fh! ";
 	}
+	else { 
+		$fh = $args->{fh}; 
+	}
 	
-	close($args->{fh});
-	if(-f _lockfile_name($args)){ 
-		unlink(_lockfile_name($args)) 
-			or carp "couldn't delete lock file: '" . _lockfile_name($args) . "' - $!";
+	if(defined($fh)) {
+		close($fh);
+		if(-f _lockfile_name($args)){ 
+			unlink(_lockfile_name($args)) 
+				or carp "couldn't delete lock file: '" . _lockfile_name($args) . "' - $!";
+		}
 	}
 }
 
