@@ -2,6 +2,30 @@
 
 =encoding utf-8
 
+=head1 10.2.2
+
+=head2 Focus
+
+This is mostly a bug-fix release for issues found in the v10.2.1 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3  No default subject is set in Send a Message or Send a URL screens #618 
+
+L<https://github.com/justingit/dada-mail/issues/618>
+
+=head3 Characters in the Subject header of the, "mass mailing finished notification" may be garbled. #619
+
+L<https://github.com/justingit/dada-mail/issues/619>
+
+=head3 "Forward to a Friend" DMARC issues #613 
+
+L<https://github.com/justingit/dada-mail/issues/613>
+
+=head3 Encoding Issues with HTML Message Body in Send a Message screen #610
+
+L<https://github.com/justingit/dada-mail/issues/610>
+
 =head1 10.2.1
 
 =head2 Focus
@@ -9,7 +33,6 @@
 This is mostly a bug-fix release for issues found in the v10.2.0 release of Dada Mail. 
 
 =head2 Bugfixes
-
 
 =head3 Subject wrongly encoded in Drafts/Stationery/Schedules screen #614
 
