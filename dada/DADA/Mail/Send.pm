@@ -3222,11 +3222,14 @@ sub _email_batched_finished_notification {
     require DADA::App::Messages;
     my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
 
-#	warn 'calling send_out_message()';
-	
-#warn 'subject before:' . $fm->_decode_header( $fields->{Subject} ); 
+	# Not quite sure why this requires encoding before, we decode, 
+	# so this line is suspicious. 
+	$fields->{Subject} = safely_encode($fields->{Subject}); 
 
 	my $message_subject = $fm->_decode_header( $fields->{Subject} ); 
+	
+	# This decode is also supsicious... 
+	   $message_subject = safely_decode($message_subject); 
 
     require DADA::Template::Widgets;
         my $message_subject = DADA::Template::Widgets::screen(

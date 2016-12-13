@@ -670,6 +670,7 @@ sub construct_from_text {
             # I do not like how we treat Subject differently, but I don't have a better idea on what to do.
             if ( $h eq 'Subject' || $h eq 'X-Preheader') {
                 $headers{$h} = $fm->_encode_header( 'Subject', scalar $draft_q->param($h) );
+				
             }
             else {
                 $headers{$h} = strip( scalar $draft_q->param($h) );
@@ -892,7 +893,7 @@ sub construct_from_url {
       )
     {
         if ( defined( scalar $draft_q->param($h) ) ) {
-            if ( $h eq 'Subject' ) {
+            if ( $h eq 'Subject' || $h eq 'X-Preheader') {
                 $headers{$h} = $fm->_encode_header( 'Subject', scalar $draft_q->param($h) );
             }
             else {
@@ -1123,6 +1124,8 @@ sub construct_from_url {
 		); 
 	}
 	
+	my $decoded_subject = $fm->_decode_header( $headers{Subject} ); 
+	
 	return { 
 		status       => 1, 
 		errors       => undef, 
@@ -1130,7 +1133,7 @@ sub construct_from_url {
 		fm_obj       => $fm, 
 		md5          => $md5, 
 		vars         => {
-			Subject       => $headers{Subject},
+			Subject       => $decoded_subject,
 			'X-Preheader' => scalar $draft_q->param('X-Preheader'),
 		},
 		text_message => $text_message, 

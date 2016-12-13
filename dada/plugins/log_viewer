@@ -270,9 +270,15 @@ sub log_lines {
             }
         }
         @lines = @good_lines;
+		undef(@good_lines); 
     }
-
-    return \@lines;
+	my @d = (); 
+	
+	for my $l(@lines){ 
+		push(@d, safely_decode($l)); 
+	}
+	undef @lines; 
+    return \@d;
 }
 
 sub search_logs {
@@ -352,7 +358,9 @@ sub search_logs {
 
                 $return .= '<ul>';
                 for my $diff_lines (@entries) {
-
+					
+					$diff_lines = safely_decode($diff_lines); 
+					
                     # BUGFIX: [ 2124123 ] 3.0.0 - Log viewer does not escape ">" "<" etc.
                     # http://sourceforge.net/tracker/index.php?func=detail&aid=2124123&group_id=13002&atid=113002
                     #$diff_lines = plaintext_to_html({-str =>$diff_lines});
