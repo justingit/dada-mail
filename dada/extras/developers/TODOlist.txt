@@ -12,6 +12,7 @@ Key:
 [*] Naw...
 [?] Someday
 	
+* Image fileames w/spaces are not displayign properly? 
 
 * Work on build script, and docs on build script
 * Double-check commadn line works correctly, and add ALL options to command line
