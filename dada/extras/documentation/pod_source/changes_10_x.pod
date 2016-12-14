@@ -189,7 +189,7 @@ L<https://github.com/justingit/dada_mail_foundation_email_templates>
 
 which you may use as a starter for your own customized email templates for Dada Mail:
 
-L<http://dadamailproject.com/d/features-email_themes.pod>
+L<http://dadamailproject.com/d/features-email_themes.pod.html>
 
 =head4 Email Themes
 

@@ -53,7 +53,7 @@ Using the SASS workflow is actally pretty approachable by a competent web design
 
 Here's how to work with email themes, and create your own:
 
-L<http://dadamailproject.com/d/features-email_themes.pod>
+L<http://dadamailproject.com/d/features-email_themes.pod.html>
 
 Each theme is available for all mailing lists. 
 
