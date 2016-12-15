@@ -1651,7 +1651,14 @@ function setup_attachment_fields() {
 		if($("#attachment" + a_nums[i]).length) {
 			if($("#attachment" + a_nums[i]).val() != ""){
 
-				$("#attachment" + a_nums[i] + "_button").html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + $("#attachment" + a_nums[i]).val());
+				$("#attachment" + a_nums[i] + "_button").html(
+					'<img src="' 
+					+ $("#SUPPORT_FILES_URL").val() 
+					+ '/static/images/attachment_icon.gif" />' 
+					+ decodeURIComponent(
+							$("#attachment" + a_nums[i]).val()
+						)
+					);
 	        }
 			else {
 				$("#attachment" + a_nums[i] + "_remove_button").hide();
@@ -4367,7 +4374,13 @@ function attachments_openKCFinder(field) {
 			var kcfinder_upload_url = escapeRegExp(jQuery("#kcfinder_upload_url").val() + '/');
 			var re = new RegExp(kcfinder_upload_url,'g');
 			var new_val = url.replace(re, '');
-	        jQuery(field).html('<img src="' + jQuery("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
+	        
+			jQuery(field).html(
+				'<img src="' 
+				+ jQuery("#SUPPORT_FILES_URL").val() 
+				+ '/static/images/attachment_icon.gif" />' 
+				+ decodeURIComponent(new_val)
+			);
 			jQuery("#" + jQuery(field).attr("data-attachment")).val(new_val);
 			jQuery("#" + jQuery(field).attr("data-attachment") + '_remove_button').show();
 			window.KCFinder = null;
@@ -4427,7 +4440,12 @@ function SetUrl(url, width, height, alt) {
 	// console.log('new_val: ' + new_val);
 	var field = urlobj;
 
-	jQuery(field).html('<img src="' + jQuery("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
+	jQuery(field).html(
+		'<img src="' 
+		+ jQuery("#SUPPORT_FILES_URL").val() 
+		+ '/static/images/attachment_icon.gif" />' 
+		+ decodeURIComponent(new_val)
+	);
 	jQuery("#" + jQuery(field).attr("data-attachment")).val(new_val);
 	jQuery("#" + jQuery(field).attr("data-attachment") + '_remove_button').show();
 	oWindow = null;

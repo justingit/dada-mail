@@ -445,10 +445,20 @@ sub cid (\%$) {
     require URI;
 
     my $filename = DADA::App::Guts::uriescape( ( URI->new($url)->path_segments )[-1] );
+	my $r; 
 	
-	
-	my $r = $self->md5_checksum($url) . '_' . $filename; 
-	 
+	# Filenames with spaces and "%" escapes make bad names for cid's, 
+	# But I still want the file ending available. 
+	#
+	$filename =~ s/ /\-/g; 
+	$filename =~ s/%20/\-/g;
+	if($filename =~ m/%/){ 
+		my ($ext1) = $filename =~ /((\.[^.\s]+)+)$/;
+		$r = $self->md5_checksum($url) . $ext1; 
+	}
+	else {
+		$r = $self->md5_checksum($url) . '_' . $filename; 
+	}
 	# warn 'returning: ' . $r;
 	 return $r; 
 }

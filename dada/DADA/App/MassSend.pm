@@ -2203,11 +2203,16 @@ sub has_attachments {
 
 sub make_attachment {
 
-    require MIME::Entity;
 
     my $self   = shift;
     my ($args) = @_;
     my $name   = $args->{-name};
+	
+    require MIME::Entity;
+	
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
+
 
     my $filemanager;
     if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
@@ -2226,7 +2231,7 @@ sub make_attachment {
       if $t;
 
     my $filename = $name;
-    $filename =~ s/(.*?)\///;
+       $filename =~ s/(.*?)\///;
 
     warn '$filename: ' . $filename
       if $t;
@@ -2236,17 +2241,18 @@ sub make_attachment {
     warn '$a_type: ' . $a_type
       if $t;
 
-    $filename =~ s!^.*(\\|\/)!!;
-    $filename =~ s/\s/%20/g;
+    $filename =~ s!^.*(\\|\/)!!; # what's this for? 
+  #  $filename =~ s/\s/%20/g;
 
     my %mime_args = (
         Type        => $a_type,
-        Disposition => $self->make_a_disposition($a_type),
-
+       # Disposition => $self->make_a_disposition($a_type),
+	   Disposition => 'attachment',
         #  Datestamp         => 0,
-        Id                 => $filename,
-        Filename           => $filename,
-        'Content-Location' => $filename,
+       # Id                 => $filename,
+       # Filename           => $filename,
+      #  'Content-Location' => $filename,
+	    Filename => $fm->_encode_header('just_phrase', $filename),
         Path               => $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $name,
     );
 
