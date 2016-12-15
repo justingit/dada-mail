@@ -47,8 +47,16 @@
     </div> 
     <div class="row">
         <div class="small-12 columns">
-            <label for="mass_mailing_block_css_to_inline_css" <!-- tmpl_unless can_use_css_inliner -->class="disabled"<!-- /tmpl_unless -->>
-				<input type="checkbox" name="mass_mailing_block_css_to_inline_css" id="mass_mailing_block_css_to_inline_css" value="1" <!-- tmpl_if list_settings.mass_mailing_block_css_to_inline_css -->checked="checked"<!-- /tmpl_if --> >
+            <label for="mass_mailing_block_css_to_inline_css">
+				<input 
+					type="checkbox" 
+					name="mass_mailing_block_css_to_inline_css" 
+					id="mass_mailing_block_css_to_inline_css" 
+					value="1" 
+					<!-- tmpl_if list_settings.mass_mailing_block_css_to_inline_css -->
+						checked="checked"
+					<!-- /tmpl_if -->
+				>
                 Convert CSS &lt;style&gt; blocks to inline styles in HTML messages
             </label>
             <!-- tmpl_unless can_use_css_inliner --> 
