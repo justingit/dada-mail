@@ -138,6 +138,7 @@ sub setup {
         'subscription_options'           => \&subscription_options,
 		'admin_menu_notifications'       => \&admin_menu_notifications, 
         'send_email'                      => \&send_email,
+		'no_draft_available'              => \&no_draft_available, 
         'email_message_preview'           => \&email_message_preview,
         'send_email_button_widget'        => \&send_email_button_widget,
         'mass_mailing_schedules_preview'  => \&mass_mailing_schedules_preview,
@@ -1020,6 +1021,9 @@ sub admin_menu_bridge_notification {
     };
 }
 
+
+
+
 sub send_email {
 
     my $self = shift;
@@ -1059,6 +1063,44 @@ sub send_email {
         return $body;
     }
 }
+
+
+
+sub no_draft_available { 
+	
+    my $self = shift;
+    my $q    = $self->query();
+	
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_email send_url_email'
+      );
+    if ( !$checksout ) { return $error_msg; }
+    my $list = $admin_list;
+	
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen         => 'no_draft_available.tmpl',
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -vars => {
+                screen                  => 'no_draft_available',
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    return $scrn;
+	
+}
+
 
 sub email_message_preview {
 

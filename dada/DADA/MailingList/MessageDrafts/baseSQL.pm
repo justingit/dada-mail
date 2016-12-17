@@ -53,6 +53,48 @@ sub _sql_init {
     $self->{dbh} = $dbi_obj->dbh_obj;
 }
 
+
+sub draft_exists { 
+    warn 'id_exists'
+      if $t;
+
+    my $self = shift;
+    
+	my $id     = shift;
+	my $role   = shift; 
+	my $screen = shift; 
+	
+    if ( !defined($id) || $id eq '' ) {
+        return 0;
+    }
+    my $query = 'SELECT COUNT(*) FROM ' 
+	. $self->{sql_params}->{message_drafts_table} 
+	. ' WHERE list = ? AND id = ? AND role = ? AND screen = ?';
+
+    warn 'QUERY: ' . $query
+      if $t;
+
+    my $sth = $self->{dbh}->prepare($query);
+    $sth->execute( $self->{list}, $id, $role, $screen )
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
+
+    warn 'QUERY: ' . $query
+      if $t;
+
+    my $count = $sth->fetchrow_array;
+    warn '$count:' . $count
+      if $t;
+
+    $sth->finish;
+
+    if ( $count eq undef ) {
+        return 0;
+    }
+    else {
+        return $count;
+    }
+}
+
 sub id_exists {
 
     warn 'id_exists'
@@ -334,8 +376,8 @@ sub has_draft {
     warn 'QUERY: ' . $query
       if $t;
 
-    #    use Data::Dumper;
-    #    warn 'params' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]);
+	  #use Data::Dumper;
+      #warn 'params' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]);
 
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
@@ -343,7 +385,7 @@ sub has_draft {
 
     my $count = $sth->fetchrow_array;
 
-    #    warn '$count ' . $count;
+        warn '$count ' . $count;
 
     $sth->finish;
 

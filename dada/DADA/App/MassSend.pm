@@ -171,6 +171,11 @@ sub send_email {
             }
         );
 
+		if($draft_id == -1){ 
+			my $uri = $DADA::Config::S_PROGRAM_URL . '?f=no_draft_available';
+			return ( { -redirect_uri => $uri }, undef );
+		}
+
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
         my $scrn         = 'send_email';
@@ -230,6 +235,8 @@ sub send_email {
             }
         );
         if ( $restore_from_draft eq 'true' ) {
+
+			
             $scrn = $self->fill_in_draft_msg(
                 {
                     -list     => $self->{list},
@@ -1336,7 +1343,13 @@ sub send_url_email {
                 -cgi_obj => $q,
             }
         );
-
+		
+		if($draft_id == -1){ 
+			my $uri = $DADA::Config::S_PROGRAM_URL . '?f=no_draft_available';
+			return ( { -redirect_uri => $uri }, undef );
+		}
+		
+		
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
 
@@ -1551,21 +1564,49 @@ sub find_draft_id {
     my ($args) = @_;
 
     my $q = $args->{-cgi_obj};
-    my $restore_from_draft = $q->param('restore_from_draft') || 'true';
+    my $restore_from_draft = $q->param('restore_from_draft') || undef; 
+	my $draft_id           = $q->param('draft_id')           || undef; 
+    my $role               = $args->{-role}                  || undef; 	
+	my $screen             = $args->{-screen}                || undef; 	
 
-    my $draft_id = undef;
 
+	# This check short circuits all the searching below. If we're given all
+	# this information, let's trust it, eh? 
+	if(
+		defined($draft_id)
+	 && defined($role) 
+	 && defined($screen)
+	 ){ 
+		if($self->{md_obj}->draft_exists(
+			$draft_id, 
+			$role, 
+			$screen
+			)
+		){ 
+			return $draft_id; 
+		}
+		else{ 
+			return -1; 
+		}
+	}
+	else {
+		# back to what's below
+		$restore_from_draft  = $q->param('restore_from_draft') || 'true';
+	    $draft_id            = undef;
+	}
+	#/
+	
+	
     # Get $draft_id based on if an id is passed, and role:
-
     # $restore_from_draft defaults to, "true" if no param is passed.
     if (   $restore_from_draft ne 'true'
-        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => $args->{-role} } ) )
+        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => $role } ) )
     {
          $draft_id = undef;
     }
     elsif ($restore_from_draft eq 'true'
         && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'draft' } )
-        && $args->{-role} eq 'draft' )
+        && $role eq 'draft' )
     {    # so, only drafts (not stationery),
         if ( defined( $q->param('draft_id') ) ) {
             $draft_id = $q->param('draft_id');
@@ -1576,7 +1617,7 @@ sub find_draft_id {
     }
     elsif ($restore_from_draft eq 'true'
         && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'stationery' } )
-        && $args->{-role} eq 'stationery' )
+        && $role eq 'stationery' )
     {
         if ( defined( $q->param('draft_id') ) ) {
             $draft_id = $q->param('draft_id');
@@ -1588,7 +1629,7 @@ sub find_draft_id {
     }
     elsif ($restore_from_draft eq 'true'
         && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'schedule' } )
-        && $args->{-role} eq 'schedule' )
+        && $role eq 'schedule' )
     {
         if ( defined( $q->param('draft_id') ) ) {
             $draft_id = $q->param('draft_id');
