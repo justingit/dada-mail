@@ -1,4 +1,5 @@
 <!-- begin send_url_email_html_message_form_field_widget.tmpl --> 
+
 <div class="row">
 	<div class="small-12 columns">
 		<input 
@@ -21,6 +22,108 @@
 		</div>
 	</div>
 </div>
+
+
+
+<div class="row">
+	<div class="small-12 columns">
+		<input 
+			type="radio"
+			name="content_from"
+			id="content_from_feed_url"
+			value="url" 
+			checked="checked"
+			class="toggle_send_url_options"
+		>
+		<label for="content_from_feed_url">
+			Grab content from an RSS Feed
+		</label>
+	</div>
+</div>
+<div id="HTML_content_from_feed_url_widget">
+	<div class="row panel">
+		<div class="small-12 columns">
+			<div class="row">
+				<div class="small-12 columns">
+					<input type="url" name="feed_url" id="feed_url"  placeholder="http://" >
+				</div>
+				
+				<div class="row">
+					<div class="small-1 columns">
+					</div>
+					<div class="small-11 columns">
+
+						<div class="row">
+							<div class="small-12 columns">
+								<label for="feed_url_content_type_summary">
+									<input 
+										type="radio" 
+										name="feed_url_content_type" 
+										id="feed_url_content_type_summary" 
+										value="summary" 
+										checked="checked"
+									> 
+									Use Just the Summary
+								</label>
+							</div>
+						</div>
+				
+						<div class="row">
+							<div class="small-12 columns">
+								<label for="feed_url_content_type_content">
+									<input 
+										type="radio" 
+										name="feed_url_content_type" 
+										id="feed_url_content_type_content" 
+										value="content" 
+										> 
+									Use Full Content
+								</label>
+							</div>
+						</div> 
+
+						<div class="row">
+							<div class="small-6 columns">
+								<label for="feed_url_max_entries">
+									Maximum number of entries to include:
+								</label>
+							</div>
+							<div class="small-6 columns">
+							</div>
+						</div>
+						<div class="row">
+							<div class="small-6 columns">
+								<!-- tmpl_var feed_url_max_entries_widget -->
+							</div>
+							<div class="small-6 columns">
+							</div>
+						</div>
+						<!-- tmpl_if comment -->
+				
+						<div class="row">
+							<div class="small-12 columns">
+								<input 
+									type="checkbox"							
+									checked="checked"
+								>
+								<label>
+									Only send the next scheduled mass mailing, 
+									if all feed entries are unqiue from the previous mass mailing
+								</label>
+							</div>
+						</div>
+						<!-- /tmpl_if -->
+				</div>
+			</div>
+				
+			
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
 
 <div class="row">
 	<div class="small-12 columns">

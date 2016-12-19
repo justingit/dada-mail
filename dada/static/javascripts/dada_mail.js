@@ -2754,15 +2754,42 @@ function send_url_options_setup() {
 	var visible = [];
 
 	if ($("#content_from_url").prop("checked") === true) {
-		hidden = ['HTML_content_from_textarea_widget'];
-		visible = ['HTML_content_from_url_widget', 'HTML_content_advanced_options'];
+		hidden = [
+			'HTML_content_from_feed_url_widget', 
+			'HTML_content_from_textarea_widget'
+		];
+		visible = [
+			'HTML_content_from_url_widget', 
+			'HTML_content_advanced_options'
+		];
+	}
+	if ($("#content_from_feed_url").prop("checked") === true) {
+		hidden = [
+			'HTML_content_from_url_widget',
+			'HTML_content_from_textarea_widget'
+		];
+		visible = [
+			'HTML_content_from_feed_url_widget', 
+			'HTML_content_advanced_options'
+		];
 	}
 	if ($("#content_from_textarea").prop("checked") === true) {
-		hidden = ['HTML_content_from_url_widget'];
-		visible = ['HTML_content_from_textarea_widget', 'HTML_content_advanced_options'];
+		hidden = [
+			'HTML_content_from_url_widget',
+			'HTML_content_from_feed_url_widget', 
+		];
+		visible = [
+			'HTML_content_from_textarea_widget', 
+			'HTML_content_advanced_options'
+		];
 	}
 	if ($("#content_from_none").prop("checked") === true) {
-		hidden = ['HTML_content_from_url_widget', 'HTML_content_from_textarea_widget', 'HTML_content_advanced_options'];
+		hidden = [
+			'HTML_content_from_url_widget', 
+			'HTML_content_from_feed_url_widget', 
+			'HTML_content_from_textarea_widget', 
+			'HTML_content_advanced_options'
+		];
 		visible = [];
 	}
 	

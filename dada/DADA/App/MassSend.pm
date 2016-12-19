@@ -962,6 +962,15 @@ sub construct_from_url {
 		undef($md5);
         #/ Redirect tag check	
     }
+    elsif ($content_from eq 'url_feed' ) {
+		my ($f_status, $f_errors, $f_content, $f_md5) = $self->content_from_url_feed(
+				{ 
+					-feed_url     => scalar $draft_q->param('feed_url'), 
+					-max_entries  => scalar $draft_q->param('feed_url_max_entries'), 
+					-content_type => scalar $draft_q->param('feed_url_content_type'), 
+				}
+			); 
+	}
     elsif ($content_from eq 'none' ) {
 			# ...
 	}
@@ -1245,6 +1254,32 @@ sub subject_from_title_tag {
 
 
 
+sub content_from_url_feed { 
+    my $self = shift;
+    my ($args) = @_;
+#	-feed_url     => scalar $draft_q->param('feed_url'), 
+# -max_entries  => scalar $draft_q->param('feed_url_max_entries'), 
+#-content_type => scalar $draft_q->param('feed_url_content_type'), 
+						
+	require XML::FeedPP; 
+
+
+	my $feed = XML::FeedPP->new( $source );
+	print "Title: ", $feed->title(), "\n";
+	print "Date: ", $feed->pubDate(), "\n";
+	foreach my $item ( $feed->get_item() ) {
+		#use Data::Dumper; 
+		#print Dumper($item);
+	     #print "URL: ", $item->link(), "\n";
+	     # print "Title: ", $item->title(), "\n";
+	    #  print "Description: ", $item->description(), "\n";
+		#  print 'content:encoded' . $item->get('content') . "\n";
+		  #print 'description' . $item->description() . "\n";
+	 print 'description' . $item->get('description') . "\n";
+	}
+	
+	
+}
 
 sub send_url_email {
 
@@ -1331,6 +1366,17 @@ sub send_url_email {
 		}
 	}
 	
+    require HTML::Menu::Select;
+	my $feed_url_max_entries_widget; 
+    my $feed_url_max_entries_widget = HTML::Menu::Select::popup_menu(
+        {
+            name    => 'feed_url_max_entries',
+            id      => 'feed_url_max_entries',
+            #default => $ls->param('feed_url_num_feed_entries')
+            values => [(1..100)],
+        }
+      );
+	
 	
 
     if ( !$process ) {
@@ -1410,6 +1456,8 @@ sub send_url_email {
 					default_layout => $default_layout, 
 					
 					default_subject => $subject,
+					
+					feed_url_max_entries => $feed_url_max_entries, 
 
                     %wysiwyg_vars,
                     %$ses_params,
