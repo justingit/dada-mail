@@ -2,6 +2,22 @@
 
 =encoding utf-8
 
+=head1 10.2.3
+
+=head2 Focus
+
+This is mostly a bug-fix release for issues found in the v10.2.2 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 Switching lists when working on a draft causes Server Error #621
+
+L<https://github.com/justingit/dada-mail/issues/621>
+
+=head3  Filenames in attachments are not properly encoded #602 
+
+L<https://github.com/justingit/dada-mail/issues/602>
+
 =head1 10.2.2
 
 =head2 Focus
