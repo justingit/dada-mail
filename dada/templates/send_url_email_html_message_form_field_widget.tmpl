@@ -31,12 +31,12 @@
 			type="radio"
 			name="content_from"
 			id="content_from_feed_url"
-			value="url" 
+			value="feed_url" 
 			checked="checked"
 			class="toggle_send_url_options"
 		>
 		<label for="content_from_feed_url">
-			Grab content from an RSS Feed
+			Grab content from a RSS/Atom feed
 		</label>
 	</div>
 </div>
@@ -113,6 +113,38 @@
 							</div>
 						</div>
 						<!-- /tmpl_if -->
+						
+						
+						<div class="row">
+							<div class="small-12 columns">
+						
+							<label for="feed_url_pre_html">
+								HTML to include <em>before</em> feed (optional)
+							</label> 
+							<textarea 
+								name="feed_url_pre_html" 
+								rows="10" 
+								id="feed_url_pre_html"><!-- tmpl_var feed_url_pre_html escape="HTML" --></textarea>
+						
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="small-12 columns">
+						
+							<label for="feed_url_post_html">
+								HTML to include <em>after</em> feed  (optional)
+							</label>
+							<textarea 
+								name="feed_url_post_html" 
+								rows="10" 
+								id="feed_url_post_html"><!-- tmpl_var feed_url_post_html escape="HTML" --></textarea>
+						
+							</div>
+						</div>
+						
+						
+						
 				</div>
 			</div>
 				

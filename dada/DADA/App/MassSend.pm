@@ -910,10 +910,15 @@ sub construct_from_url {
     }
     
     if($subject_from eq 'title_tag') { 
-       my $url_subject = $self->subject_from_title_tag($draft_q); 
-       if(defined($url_subject)){ 
-            $headers{Subject} = $url_subject; 
-        }
+		if($content_from eq 'feed_url') { 
+			# ... handle this later. 
+		}
+		else {
+	       my $url_subject = $self->subject_from_title_tag($draft_q); 
+	       if(defined($url_subject)){ 
+	            $headers{Subject} = $url_subject; 
+	        }
+		}
     }
     
     my $mailHTML = new DADA::App::MyMIMELiteHTML(
@@ -942,6 +947,8 @@ sub construct_from_url {
 	
     if ($content_from eq 'url' ) {
 		
+	
+		
         # Redirect tag check
         my ( $rtc, $res, $md5 ) = grab_url({-url => $url });
         my ( $status, $errors ) = $self->message_tag_check($rtc);
@@ -962,14 +969,26 @@ sub construct_from_url {
 		undef($md5);
         #/ Redirect tag check	
     }
-    elsif ($content_from eq 'url_feed' ) {
-		my ($f_status, $f_errors, $f_content, $f_md5) = $self->content_from_url_feed(
+    elsif ($content_from eq 'feed_url' ) {
+		
+		my $feed_r = $self->content_from_url_feed(
 				{ 
 					-feed_url     => scalar $draft_q->param('feed_url'), 
 					-max_entries  => scalar $draft_q->param('feed_url_max_entries'), 
 					-content_type => scalar $draft_q->param('feed_url_content_type'), 
+					-pre_html     => scalar $draft_q->param('feed_url_pre_html'), 
+					-post_html    => scalar $draft_q->param('feed_url_post_html'), 
 				}
 			); 
+		
+		 $html_message = $feed_r->{html};
+		
+		 if($subject_from eq 'title_tag') {
+			  $headers{Subject} = $feed_r->{vars}->{title}; 
+		 } 	
+		 
+		 $md5 = $feed_r->{md5};
+			    
 	}
     elsif ($content_from eq 'none' ) {
 			# ...
@@ -1255,30 +1274,108 @@ sub subject_from_title_tag {
 
 
 sub content_from_url_feed { 
-    my $self = shift;
+
+	my $self = shift;
     my ($args) = @_;
-#	-feed_url     => scalar $draft_q->param('feed_url'), 
-# -max_entries  => scalar $draft_q->param('feed_url_max_entries'), 
-#-content_type => scalar $draft_q->param('feed_url_content_type'), 
-						
-	require XML::FeedPP; 
 
-
-	my $feed = XML::FeedPP->new( $source );
-	print "Title: ", $feed->title(), "\n";
-	print "Date: ", $feed->pubDate(), "\n";
-	foreach my $item ( $feed->get_item() ) {
-		#use Data::Dumper; 
-		#print Dumper($item);
-	     #print "URL: ", $item->link(), "\n";
-	     # print "Title: ", $item->title(), "\n";
-	    #  print "Description: ", $item->description(), "\n";
-		#  print 'content:encoded' . $item->get('content') . "\n";
-		  #print 'description' . $item->description() . "\n";
-	 print 'description' . $item->get('description') . "\n";
+	my $feed_url     = $args->{-feed_url};
+	my $max_entries  = $args->{-max_entries};
+	my $content_type = $args->{-content_type};	
+	my $pre_html     = $args->{-pre_html};
+	my $post_html    = $args->{-post_html};
+	
+	my $status = 1; 
+	my $error  = {}; 
+	my $md5    = undef; 
+	
+	my ( $rtc, $res, $md5 ) = grab_url({-url => $feed_url });
+	
+	if(!$rtc){ 
+		return { 
+			status => 1, 
+			errors => {no_content => 1}, 
+			html   => undef, 
+			md5    => undef, 
+			vars   => {},
+		};
 	}
 	
+	my $tmpl_vars = {};
 	
+						
+	require XML::FeedPP; 
+	
+	my $feed = XML::FeedPP->new( $rtc, -type => 'string' );
+
+	$tmpl_vars->{title}    = $feed->title();
+	$tmpl_vars->{pubDate}  = $feed->pubDate();
+	$tmpl_vars->{pre_html}  = $pre_html; 
+	$tmpl_vars->{post_html} = $post_html; 
+	
+	my $entries = []; 
+	
+	my $n = 0; 
+	foreach my $item ( $feed->get_item() ) {
+	
+		$n++;
+		
+		my $description = $item->description() || undef; 
+
+		my $content = $item->get('content:encoded') || undef; 
+		if(!defined($content)){ 
+			$content = $item->get('content') || undef; 
+		}
+		if(!defined($content)){ 
+			$content = $description; 
+		}
+	
+		if(!defined($description)){ 
+			$description = $content; 
+		
+			$description =~ s/\n|\r/ /g; 
+			$description = DADA::App::Guts::encode_html_entities($description, "\200-\377"); 
+
+			my $l    = length($description); 
+			my $size = 525; 
+			my $take = $l < $size ? $l : $size; 
+			$description =  xss_filter(substr($description, 0, $take));
+	
+		}
+	
+		my $entry = { 
+			link         => $item->link(), 	
+			title        => $item->title(),
+			content      => $content, 
+			description  => $description, 
+			content_type => $content_type,
+		};
+	
+		push(@$entries, $entry);
+		if($n >= $max_entries){ 
+			last;
+		}
+	}	
+	$tmpl_vars->{entries} = $entries;
+	
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -screen         => 'mass_mailing_feed.tmpl',
+            -vars           => $tmpl_vars,
+            -list_settings_vars_param => {
+				 -dot_it => 1, 
+				 -list   => $self->{list},
+			},
+        }
+    );
+	
+	return { 
+		status => 1, 
+		errors => undef, 
+		html   => $scrn, 
+		md5    => $md5, 
+		vars   => $tmpl_vars
+	};
 }
 
 sub send_url_email {
@@ -1457,7 +1554,7 @@ sub send_url_email {
 					
 					default_subject => $subject,
 					
-					feed_url_max_entries => $feed_url_max_entries, 
+					feed_url_max_entries_widget => $feed_url_max_entries_widget, 
 
                     %wysiwyg_vars,
                     %$ses_params,

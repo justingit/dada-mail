@@ -385,8 +385,6 @@ sub has_draft {
 
     my $count = $sth->fetchrow_array;
 
-        warn '$count ' . $count;
-
     $sth->finish;
 
     if ( $count eq undef ) {
@@ -847,7 +845,14 @@ sub params_to_save {
         
         $params->{plaintext_content_from} = 1;
         $params->{plaintext_url}          = 1;
-        
+		
+		$params->{feed_url}               = 1; 
+		$params->{feed_url_max_entries}   = 1;
+		$params->{feed_url_content_type}  = 1;
+
+		$params->{feed_url_pre_html}      = 1; 
+		$params->{feed_url_post_html}     = 1; 
+		
         # These aren't used atm. 
         #$params->{url_username}          = 1;
         #$params->{url_password}          = 1;
