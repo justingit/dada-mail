@@ -1450,8 +1450,11 @@ sub create_mass_sending_file {
 		$have_first_recipient = 0; 
 	}
 	# Sending these types of messages to the list owner is very confusing
-	if($type =~ m/_tmp\-just_subscribed\-|_tmp\-just_unsubscribed\-|_tmp\-just_subed_archive\-/){ 
+	elsif($type =~ m/_tmp\-just_subscribed\-|_tmp\-just_unsubscribed\-|_tmp\-just_subed_archive\-/){ 
 		$have_first_recipient = 0; 		
+	}
+	elsif($type =~ m/invitelist/){ 
+		$have_first_recipient = 0; 			
 	}
 
     require     Text::CSV;
