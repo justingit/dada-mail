@@ -341,7 +341,7 @@ sub mass_email {
             $process = 1; 
         }
         # to fetch a draft, I need id, list and role (lame)
-        my ( $status, $errors, $message_id, $md5 ) = $dam->construct_and_send(
+        my $c_r = $dam->construct_and_send(
             {
                 -draft_id => $draft_id,
                 -screen   => 'send_email',
@@ -351,11 +351,11 @@ sub mass_email {
         );
         $dam->delete_draft($draft_id); 
         
-    if ( $status == 0 ) {
+    if ( $c_r->{status} == 0 ) {
        return {
            status => 0,
            results =>  {
-               error => $errors        
+               error => $c_r->{errors},        
             }
          };
     }
@@ -363,7 +363,7 @@ sub mass_email {
         return {
             status  => 1,
             results =>  {
-                message_id => $self->_massaged_key($message_id), 
+                message_id => $self->_massaged_key($c_r->{mid}), 
             }
         };
     }

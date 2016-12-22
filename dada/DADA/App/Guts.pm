@@ -90,6 +90,7 @@ require Exporter;
   md5_checksum
   can_use_LWP_Simple
   can_use_Google_reCAPTCHA
+  can_use_XML_FeedPP
   can_use_JSON
   can_use_datetime
   can_use_HTML_Tree
@@ -3094,6 +3095,22 @@ sub can_use_Google_reCAPTCHA {
     };
 	return $can_use_captcha;
 }
+
+sub can_use_XML_FeedPP { 
+	my $can = 1; 
+	try {
+        require XML::FeedPP;
+        $can = 1;
+    }
+    catch {
+        carp . $_
+			if $t; 
+        $can = 0;
+    };
+	return $can;
+}
+
+
 
 sub can_use_JSON { 
 	my $can_use_json = 1; 

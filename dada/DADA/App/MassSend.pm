@@ -495,9 +495,13 @@ sub construct_and_send {
         croak "unknown screen: " . $args->{-screen};
     }
 
-    if ( $con->{status} == 0 && $t == 1 ) {
-        # warn '$con->{errors}: ' . $con->{errors};
-    }
+	if($t == 1){
+		if($con->{status} == 0){ 
+			require Data::Dumper; 
+			warn '$con' . Data::Dumper::Dumper($con);	
+		}
+	}
+	
     if ( $con->{status} == 0 ) {
         return {
 			 status => 0, 
@@ -511,8 +515,7 @@ sub construct_and_send {
                 -entity => $con->{entity},
             }
         );
-    }
-    catch {
+    } catch {
         return {
 			status => 0, 
 			errors => $_,
@@ -947,8 +950,6 @@ sub construct_from_url {
 	
     if ($content_from eq 'url' ) {
 		
-	
-		
         # Redirect tag check
         my ( $rtc, $res, $md5 ) = grab_url({-url => $url });
         my ( $status, $errors ) = $self->message_tag_check($rtc);
@@ -971,31 +972,34 @@ sub construct_from_url {
     }
     elsif ($content_from eq 'feed_url' ) {
 		
-		my $feed_r = $self->content_from_url_feed(
-				{ 
-					-feed_url     => scalar $draft_q->param('feed_url'), 
-					-max_entries  => scalar $draft_q->param('feed_url_max_entries'), 
-					-content_type => scalar $draft_q->param('feed_url_content_type'), 
-					-pre_html     => scalar $draft_q->param('feed_url_pre_html'), 
-					-post_html    => scalar $draft_q->param('feed_url_post_html'), 
-				}
-			); 
+		if(can_use_XML_FeedPP()) {
+			my $feed_r = $self->content_from_url_feed(
+					{ 
+						-feed_url     => scalar $draft_q->param('feed_url'), 
+						-max_entries  => scalar $draft_q->param('feed_url_max_entries'), 
+						-content_type => scalar $draft_q->param('feed_url_content_type'), 
+						-pre_html     => scalar $draft_q->param('feed_url_pre_html'), 
+						-post_html    => scalar $draft_q->param('feed_url_post_html'), 
+					}
+				); 
+				
+			 $html_message = $feed_r->{html};
 		
-		 $html_message = $feed_r->{html};
-		
-		 if($subject_from eq 'title_tag') {
-			  $headers{Subject} = $feed_r->{vars}->{title}; 
-		 } 	
-		 
-		 $md5 = $feed_r->{md5};
+			 if($subject_from eq 'title_tag') {
+				  $headers{Subject} = $feed_r->{vars}->{title}; 
+			 } 	
+			 $md5 = $feed_r->{md5};
+		 }
+		 else { 
+			 # return loudly about this not working
+		 }
 			    
 	}
     elsif ($content_from eq 'none' ) {
 			# ...
 	}
 	else {
-		# $content_from_textarea?
-		
+		# $content_from_textarea?		
 		$html_message = $draft_q->param('html_message_body');
 	   ( $text_message, $html_message ) = $fm->pre_process_msg_strings( $text_message, $html_message );
 	}
@@ -1160,7 +1164,6 @@ sub construct_from_url {
 	}
 	
 	my $decoded_subject = $fm->_decode_header( $headers{Subject} ); 
-	
 	return { 
 		status       => 1, 
 		errors       => undef, 
@@ -1275,6 +1278,9 @@ sub subject_from_title_tag {
 
 sub content_from_url_feed { 
 
+	warn 'content_from_url_feed' 
+		if $t; 
+	
 	my $self = shift;
     my ($args) = @_;
 
@@ -1285,8 +1291,7 @@ sub content_from_url_feed {
 	my $post_html    = $args->{-post_html};
 	
 	my $status = 1; 
-	my $error  = {}; 
-	my $md5    = undef; 
+	my $error  = {};
 	
 	my ( $rtc, $res, $md5 ) = grab_url({-url => $feed_url });
 	
@@ -1308,7 +1313,7 @@ sub content_from_url_feed {
 	my $feed = XML::FeedPP->new( $rtc, -type => 'string' );
 
 	$tmpl_vars->{title}    = $feed->title();
-	$tmpl_vars->{pubDate}  = $feed->pubDate();
+	# $tmpl_vars->{pubDate}  = $feed->pubDate();
 	$tmpl_vars->{pre_html}  = $pre_html; 
 	$tmpl_vars->{post_html} = $post_html; 
 	
@@ -1343,11 +1348,12 @@ sub content_from_url_feed {
 		}
 	
 		my $entry = { 
-			link         => $item->link(), 	
-			title        => $item->title(),
-			content      => $content, 
-			description  => $description, 
-			content_type => $content_type,
+			link          => $item->link(), 	
+			title         => $item->title(),
+			content       => $content, 
+			description   => $description, 
+			content_type  => $content_type,
+			pubDate_epoch => $item->get_pubDate_epoch(), 
 		};
 	
 		push(@$entries, $entry);
@@ -1355,8 +1361,16 @@ sub content_from_url_feed {
 			last;
 		}
 	}	
-	$tmpl_vars->{entries} = $entries;
 	
+	
+	# DEV: pubDate_epoch will have the time() of the 
+	# entry. We could potentially save this datetime 
+	# like we do for the md5 of the entire body (schedule_html_body_checksum)
+	# and only send when messages are newer than that date. 
+	#
+	
+	$tmpl_vars->{entries} = $entries;
+
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::screen(
         {
@@ -1368,7 +1382,6 @@ sub content_from_url_feed {
 			},
         }
     );
-	
 	return { 
 		status => 1, 
 		errors => undef, 
@@ -1531,6 +1544,7 @@ sub send_url_email {
                     can_use_mime_lite_html     => $can_use_mime_lite_html,
                     mime_lite_html_error       => $mime_lite_html_error,
                     can_use_lwp_simple         => $can_use_lwp_simple,
+					can_use_XML_FeedPP         => scalar can_use_XML_FeedPP(),
                     lwp_simple_error           => $lwp_simple_error,
                     can_display_attachments    => $self->{ah_obj}->can_display_attachments,
                     fields                     => $fields,
