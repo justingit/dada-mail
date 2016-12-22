@@ -222,7 +222,7 @@ sub run_schedules {
                  && $sched->{schedule_recurring_only_mass_mail_if_primary_diff} == 1
                 ){ 
                     $r .= "\t* Checking message content...\n";
-                    my ($status, $errors, $message_id, $md5) = $self->{ms_obj}->construct_and_send(
+                    my $c_r = $self->{ms_obj}->construct_and_send(
                          {
                              -draft_id   => $sched->{id},
                              -screen     => $sched->{screen},
@@ -231,29 +231,26 @@ sub run_schedules {
                              -dry_run    => 1, 
                          }
                      );      
-                     undef($status);       
-                     undef($errors);
-                     undef($message_id);
                      if(
-                            defined($md5) 
+                            defined($c_r->{md5}) 
                          && defined($sched->{schedule_html_body_checksum})
-                         && $md5 eq $sched->{schedule_html_body_checksum}
+                         && $c_r->{md5} eq $sched->{schedule_html_body_checksum}
                     ) { 
                             $r .= "\t\t* Primary Content same as previously sent scheduled mass mailing.\n";
                             $r .= "\t\t* Skipping sending scheduled mass mailing.\n\n"; 
-                            undef($md5); 
+							undef($c_r);
                             next SPECIFIC_SCHEDULES;
                             
                      }
                      else { 
                          $r .= "\t* Looks good! Primary content is different than last scheduled mass mailing.\n";
-                         undef($md5); 
+                         undef($c_r);
                      }
                 }
               
                $r .= "\t\t* Running schedule now!\n";
 
-               my ($status, $errors, $message_id, $md5) = $self->{ms_obj}->construct_and_send(
+			   my $c_r = $self->{ms_obj}->construct_and_send(
                     {
                         -draft_id   => $sched->{id},
                         -screen     => $sched->{screen},
@@ -261,9 +258,6 @@ sub run_schedules {
                         -process    => 1, 
                     }
                 );
-               # $r .= 'schedule_recurring_only_mass_mail_if_primary_diff ' . $sched->{schedule_recurring_only_mass_mail_if_primary_diff} . "\n";
-               #    $r .= 'Saved MD5: ' . $sched->{schedule_html_body_checksum} . "\n";
-               #    $r .= 'MD5: ' . $md5 . "\n"; 
                if($sched->{schedule_type} eq 'recurring') { 
                    $r .= $self->update_schedule(
                         {
@@ -271,20 +265,20 @@ sub run_schedules {
                             -role   => $sched->{role},
                             -screen => $sched->{screen},
                             -vars => { 
-                                schedule_html_body_checksum => $md5, 
+                                schedule_html_body_checksum => $c_r->{md5}, 
                             },
                         }   
                     );
                 }
                 
-                if($status == 1){ 
-                    my $escaped_mid = $message_id; 
+                if($c_r->{status} == 1){ 
+                    my $escaped_mid = $c_r->{mid}; 
                        $escaped_mid =~ s/\>|\<//g; 
                     $r .= "\t* Scheduled Mass Mailing added to the Queue, Message ID: $escaped_mid\n"; 
                 }
                 else { 
-                    $r .= "\t* Scheduled Mass Mailing not sent, reasons:\n$errors\n";
-                    warn        "Scheduled Mass Mailing not sent, reasons:\n$errors\n";
+                    $r .= "\t* Scheduled Mass Mailing not sent, reasons:\n" . $c_r->{mid} . "\n";
+                    warn      "Scheduled Mass Mailing not sent, reasons:\n" . $c_r->{mid} . "\n";
                 }
                 if($sched->{schedule_type} ne 'recurring'){ 
                     $r .= "\t* Deactivating Schedule...\n"; 

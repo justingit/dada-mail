@@ -351,7 +351,7 @@ sub send_out_digest {
             $process = 1; 
         }
 		
-        my ( $status, $errors, $message_id, $md5 ) = $dam->construct_and_send(
+        my $c_r = $dam->construct_and_send(
             {
                 -draft_id => $draft_id,
                 -screen   => 'send_email',
@@ -363,8 +363,8 @@ sub send_out_digest {
 			}
         );
         
-		if($status == 0) { 
-			warn 'problem creating digest message:' . $errors;
+		if($c_r->{status} == 0) { 
+			warn 'problem creating digest message:' . $c_r->{errors};
 		}
 		$dam->delete_draft($draft_id); 
 		
