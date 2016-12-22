@@ -1134,7 +1134,17 @@ sub find_attachment_list {
 				   $entity->head->mime_attr("content-disposition.filename");
 		
 		if($name){ 			
-			push(@$attachment_list, {name => $name, list => $self->{name}, id => $id, PROGRAM_URL => $DADA::Config::PROGRAM_URL });
+			push(
+				@$attachment_list, 
+				{
+					original_name  => $name, 
+					name           => $self->_decode_header($name), 
+					uriescape_name => uriescape($self->_decode_header($name)),
+					list           => $self->{name}, 
+					id             => $id, 
+					PROGRAM_URL     => $DADA::Config::PROGRAM_URL 
+				}
+			);
 		}else{ 
 			#warn "no name?!"; 
 		}	
@@ -1188,6 +1198,8 @@ sub view_file_attachment {
 		-filename => $filename, 
 		-entity   => $entity
 	); 	
+	
+	# These are horrible.
 	if(! defined( $a_entity )){ 
 		$filename =~ s/ /+/g;		
 		$a_entity = $self->_find_filename_attachment_entity(
@@ -1238,6 +1250,9 @@ sub view_file_attachment {
 
 sub _find_filename_attachment_entity { 
 
+	warn '_find_filename_attachment_entity'
+		if $t;
+	
 	my $self = shift; 
 	my %args = (-filename => undef, 
 				-entity   => undef, 
@@ -1246,7 +1261,8 @@ sub _find_filename_attachment_entity {
 				
 	my $entity    = $args{-entity}; 
 	my $filename  = $args{-filename};
-
+	warn '$filename:' . $filename if $t; 
+	
 
 	my @parts = $entity->parts; 
 	
@@ -1262,12 +1278,25 @@ sub _find_filename_attachment_entity {
 					if $s_entity; 
 			}
 	}else{ 
+		
+		warn q{$entity->head->mime_attr("content-type.name"):}            . $entity->head->mime_attr("content-type.name") if $t; ;
+		warn q{$entity->head->mime_attr("content-disposition.filename"):} . $entity->head->mime_attr("content-disposition.filename") if $t; ; 
+		
 		my $name = $entity->head->mime_attr("content-type.name") || 
 			       $entity->head->mime_attr("content-disposition.filename");
+				   
+	   $name = safely_decode($name);
 	
+		warn '$self->_decode_header($name):' . $self->_decode_header($name) if $t;  
+		
 		if($name){ 
-			if($name eq $filename ){ 
+			warn 'name is defined.' if $t; 
+			if($self->_decode_header($name) eq $filename ){ 
+				warn 'yes!' if $t; 
 				return $entity; 
+			}
+			else { 
+ 				warn '"' . $self->_decode_header($name) . '" ne "' . $filename . '"' if $t; 
 			}
 		}
 	}
@@ -1345,8 +1374,6 @@ sub view_inline_attachment {
 	         @_,
 	        ); 
 
-    #require Data::Dumper; 
-    #warn '%args:' . Data::Dumper::Dumper({%args}); 
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($args{-id}, 1);
 	
 	if(! $raw_msg){ 
@@ -1381,11 +1408,6 @@ sub view_inline_attachment {
 	
 	my $r; 	
 	my $h = {}; 
-	
-	#warn '$c_type:' . $c_type; 
-	#warn '$a_entity->head->mime_attr("content-type.name"):' 
-	#. $a_entity->head->mime_attr("content-type.name"); 
-	#warn '$a_entity->as_string:' . $a_entity->as_string; 
 	
 	if($c_type =~ m/image\/gif/){ 
 		$h->{-type} = 'image/gif';
