@@ -2,6 +2,26 @@
 
 =encoding utf-8
 
+=head1 10.2.4
+
+=head2 Focus
+
+This is mostly a bug-fix release for issues found in the v10.2.3 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 Attachments in archived messages with encoded filenames cannot be downloaded #623
+
+L<https://github.com/justingit/dada-mail/issues/623>
+
+=head3  List owner Receives copy of invitation message (with broken invitation link) #624 
+
+L<https://github.com/justingit/dada-mail/issues/624>
+
+=head3  API bug in Mass Mailings Sent by Schedules and Webservices #625 
+
+L<https://github.com/justingit/dada-mail/issues/625>
+
 =head1 10.2.3
 
 =head2 Focus

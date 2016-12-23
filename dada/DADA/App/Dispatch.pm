@@ -280,6 +280,15 @@ sub translate {
               if $img_name;
 
         }
+        elsif ( $info =~ /^file_attachment/ ) {
+			
+            my ( $pi_flavor, $pi_list, $pi_id, $pi_fn ) = split( '/', $info );
+            $q->param( 'flavor', 'file_attachment' );
+            $q->param( 'list', $pi_list );
+            $q->param( 'id', $pi_id );
+            $q->param( 'filename', $pi_fn );
+		}
+		
         elsif ( $info =~ /^json\/subscribe/ ) {
             $q->param( 'flavor', 'restful_subscribe' );
         }

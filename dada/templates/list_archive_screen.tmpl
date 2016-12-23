@@ -130,14 +130,17 @@
 <!-- tmpl_if attachments --> 
 	<div id="archived_attachments_wrapper">
 		<h3>
-			Attachments:
+			Attachments
 		</h3>
 		
 		<ul>  
 			<!-- tmpl_loop attachments -->
 
-				<li>
-					<a href="<!-- tmpl_var PROGRAM_URL -->?flavor=file_attachment&id=<!-- tmpl_var id -->&filename=<!-- tmpl_var name -->&list=<!-- tmpl_var list -->">
+				<li style="list-style:none">
+					<a 
+						href="http://dancingindigochild.local/cgi-bin/dada/mail.cgi/file_attachment/<!-- tmpl_var list -->/<!-- tmpl_var id -->/<!-- tmpl_var uriescape_name -->/"
+						class="button"
+					>
 						<!-- tmpl_var name escape="HTML"-->
 					</a>
 				</li> 
