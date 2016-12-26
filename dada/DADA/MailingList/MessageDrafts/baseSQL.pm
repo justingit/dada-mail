@@ -639,6 +639,9 @@ sub draft_index {
 
             schedule_html_body_checksum    => scalar $q->param('schedule_html_body_checksum'), 
             
+			content_from                   => scalar $q->param('content_from'),
+			feed_url_most_recent_entry     => scalar $q->param('feed_url_most_recent_entry'), 
+			
             schedule_recurring_only_mass_mail_if_primary_diff => scalar $q->param('schedule_recurring_only_mass_mail_if_primary_diff'), 
             
         };
@@ -852,6 +855,8 @@ sub params_to_save {
 
 		$params->{feed_url_pre_html}      = 1; 
 		$params->{feed_url_post_html}     = 1; 
+		
+		$params->{feed_url_most_recent_entry} = 1; 
 		
         # These aren't used atm. 
         #$params->{url_username}          = 1;

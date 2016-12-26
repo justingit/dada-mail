@@ -254,14 +254,17 @@ jQuery(document).ready(function($){
 					data: $("#mass_mailing").serialize() + '&process=preview',
 					success: function(content) {
 						
-						if(content.status === 0){ 
-							alert(content.errors); 
-							return false; 
-						}
+						//if(content.status === 0){ 
+						//	alert(content.errors); 
+						//	return false; 
+						//}
 						
 						//alert('requrest success!');
 						
-						console.log('content.id:' + content.id);
+						console.log('content.id:'     + content.id);
+						console.log('content.status:' + content.status);
+						console.log('content.body:'   + content.body);
+						
 						//if(content.status == 0){
 						//	alert('Problems saving preference:' . content.error)
 						//} else { 
@@ -279,15 +282,33 @@ jQuery(document).ready(function($){
 						  height: '95%',
 						  maxWidth: '640px',
 						};
-						$.colorbox({
-							iframe: true,
-							fastIframe: false,
-							href: $("#s_program_url").val() + '?flavor=email_message_preview&id=' + content.id,
-							opacity: 0.50,
-							maxWidth: '640px',
-							width: '95%',
-							height: '95%'					
-						});
+						
+
+						if(content.status === 0){ 
+							$.colorbox({
+								html: content.body,
+								opacity: 0.50,
+								maxWidth: '640px',
+								width: '95%',
+								height: '95%'					
+							});
+						}
+						else {					
+						
+							$.colorbox({
+								iframe: true,
+								fastIframe: false,
+								href: $("#s_program_url").val() + '?flavor=email_message_preview&id=' + content.id,
+								opacity: 0.50,
+								maxWidth: '640px',
+								width: '95%',
+								height: '95%'					
+							});
+						}
+						
+						
+						
+						
 						$(window).resize(function(){
 						    $.colorbox.resize({
 						      width:  window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
@@ -1832,7 +1853,9 @@ function update_scheduled_mass_mailings_options() {
 		success: function(content) {
 
 			$("#schedule_html_body_checksum").val(content.schedule_html_body_checksum);
-
+			$("#feed_url_most_recent_entry").val(content.feed_url_most_recent_entry);
+			
+			
 			if(content.schedule_activated == "1"){
 				if ($("#schedule_activated").prop("checked") === false) {
 					$('#schedule_activated').prop('checked', true);

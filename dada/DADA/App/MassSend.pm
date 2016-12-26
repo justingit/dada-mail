@@ -278,6 +278,7 @@ sub send_email {
                 -role     => $draft_role,
                 -process  => $process,
 				-dry_run  => 1, 
+				-preview  => 1, 
             }
         );
 		
@@ -289,6 +290,7 @@ sub send_email {
             carp 'done with construct_and_send!';
         }
         if ( $construct_r->{status} == 0 ) {
+			#? 
             #return $self->report_mass_mail_errors(
 			#	$construct_r->{errors}, 
 			#	$root_login
@@ -360,8 +362,10 @@ sub send_email {
         }
         if ( $construct_r->{status} == 0 ) {
             return $self->report_mass_mail_errors(
-				$construct_r->{errors}, 
-				$root_login
+				{ 
+					-errors     => $construct_r->{errors}, 
+					-root_login => $root_login,
+				}
 			);
         }
 
@@ -444,6 +448,7 @@ sub construct_and_send {
     my $process    = $args->{-process};
     my $message_id = undef;
     my $dry_run    = 0;
+    my $preview    = 0;
 
     my $con = {};
 	
@@ -451,6 +456,10 @@ sub construct_and_send {
 	# but I could use it for preview, as well! 
     if ( exists( $args->{-dry_run} ) ) {
         $dry_run = $args->{-dry_run};
+    }
+
+    if ( exists( $args->{-preview} ) ) {
+        $preview = $args->{-preview};
     }
 	
     if (! exists( $args->{-mass_mailing_params} ) ) {
@@ -468,26 +477,22 @@ sub construct_and_send {
         catch {
             $can_use_mime_lite_html = 0;
         };
-        if ( $can_use_mime_lite_html == 1 ) {
-            $con = $self->construct_from_url(
-                {
-                    -cgi_obj => $draft_q,
-                    -mode    => 'text'
-                },
-            );
-        }
-        else {
-            $con = $self->construct_from_text(
-                {
-                    -cgi_obj => $draft_q,
-                }
-            );
-        }
+       
+        $con = $self->construct_from_url(
+            {
+                -cgi_obj => $draft_q,
+                -mode    => 'text'
+				-preview => $preview, 
+				-process  => $process,
+            },
+        );
     }
     elsif ( $args->{-screen} eq 'send_url_email' ) {
         $con = $self->construct_from_url(
             {
                 -cgi_obj => $draft_q,
+				-preview => $preview, 
+				-process  => $process,
             }
         );
     }
@@ -650,181 +655,6 @@ sub construct_and_send {
 
 
 
-sub construct_from_text {
-    warn 'construct_from_text'
-      if $t;
-
-    my $self    = shift;
-    my ($args)  = @_; 
-	
-	my $draft_q = $args->{-cgi_obj};
-	
-
-    require DADA::App::FormatMessages;
-    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-       $fm->mass_mailing(1);
-
-    my %headers = ();
-    for my $h (
-        qw(
-        Reply-To
-        Return-Path
-        X-Priority
-        Subject
-		X-Preheader
-        )
-      )
-    {
-        if ( defined( scalar $draft_q->param($h) ) ) {
-
-            # I do not like how we treat Subject differently, but I don't have a better idea on what to do.
-            if ( $h eq 'Subject' || $h eq 'X-Preheader') {
-                $headers{$h} = $fm->_encode_header( 'Subject', scalar $draft_q->param($h) );
-				
-            }
-            else {
-                $headers{$h} = strip( scalar $draft_q->param($h) );
-            }
-        }
-    }
-
-    #/Headers
-
-    require MIME::Entity;
-
-    my $email_format      = $draft_q->param('email_format');
-    my $attachment        = $draft_q->param('attachment');
-    my $text_message      = $draft_q->param('text_message_body') || undef;
-    my $html_message      = $draft_q->param('html_message_body') || undef;
-    my @attachments       = $self->has_attachments( { -cgi_obj => $draft_q } );
-    my $num_attachments   = scalar(@attachments);
-
-    ( $text_message, $html_message ) =
-      DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
-	  
-	
-  	$html_message = $fm->format_mlm( 
-  		{
-  			-content => $html_message, 
-  			-type   => 'text/html', 
-			-layout => scalar $draft_q->param('layout'),
-		}
-  	);	
-  	$text_message = $fm->format_mlm(
-		{ 
-			-content => $text_message, 
-			-type  => 'text/plain',
-			-layout => scalar $draft_q->param('layout'),
-		}
-	);
-	
-
-    my $entity;
-    if ( $html_message && $text_message ) {
-
-        $text_message = safely_encode($text_message);
-        $html_message = safely_encode($html_message);
-
-        my ( $status, $errors ) = $self->message_tag_check($text_message);
-        if ( $status == 0 ) {
-			return { 
-				status => 0, 
-				errors => $errors, 
-			};
-		}
-        undef($status);
-        undef($errors);
-
-        my ( $status, $errors ) = $self->message_tag_check($html_message);
-        if ( $status == 0 ) {
-            return ( $status, $errors, undef, undef );
-        }
-        undef($status);
-        undef($errors);
-
-        $entity = MIME::Entity->build(
-            Type    => 'multipart/alternative',
-            Charset => $self->{ls_obj}->param('charset_value'),
-            ( ( $num_attachments < 1 ) ? (%headers) : () ),
-        );
-        $entity->attach(
-            Type     => 'text/plain',
-            Data     => $text_message,
-            Encoding => $self->{ls_obj}->param('plaintext_encoding'),
-            Charset  => $self->{ls_obj}->param('charset_value'),
-        );
-        $entity->attach(
-            Type     => 'text/html',
-            Data     => $html_message,
-            Encoding => $self->{ls_obj}->param('html_encoding'),
-            Charset  => $self->{ls_obj}->param('charset_value'),
-        );
-
-    }
-    elsif ($html_message) {
-
-        $html_message = safely_encode($html_message);
-
-        my ( $status, $errors ) = $self->message_tag_check($html_message);
-        if ( $status == 0 ) {
-            return ( $status, $errors, undef, undef );
-        }
-        undef($status);
-        undef($errors);
-
-        $entity = MIME::Entity->build(
-            Type     => 'text/html',
-            Data     => $html_message,
-            Encoding => $self->{ls_obj}->param('html_encoding'),
-            Charset  => $self->{ls_obj}->param('charset_value'),
-            ( ( $num_attachments < 1 ) ? (%headers) : () ),
-        );
-    }
-    elsif ($text_message) {
-
-        $text_message = safely_encode($text_message);
-
-        my ( $status, $errors ) = $self->message_tag_check($text_message);
-        if ( $status == 0 ) {
-            return ( $status, $errors, undef, undef );
-        }
-        undef($status);
-        undef($errors);
-
-        $entity = MIME::Entity->build(
-            Type     => 'text/plain',
-            Data     => $text_message,
-            Encoding => $self->{ls_obj}->param('plaintext_encoding'),
-            Charset  => $self->{ls_obj}->param('charset_value'),
-            ( ( $num_attachments < 1 ) ? (%headers) : () ),
-        );
-    }
-    else {
-        return ( 0, "There's no text in either the PlainText or HTML version of your email message!", undef, undef );
-    }
-
-	if($num_attachments > 0) {
-		$entity = $self->_add_attachments(
-			{
-				-entity  => $entity, 
-				-headers => {%headers}, 
-				-cgi_obj => $draft_q,
-			}
-		); 
-	}
-	
-	return { 
-		status       => 1, 
-		errors       => undef, 
-		entity       => $entity, 
-		fm_obj       => $fm, 
-		md5          => undef,
-		subject      => $headers{Subject}, 
-		text_message => $text_message, 
-		html_message => $html_message, 
-	};
-	
-}
 
 sub construct_from_url {
 
@@ -833,9 +663,19 @@ sub construct_from_url {
 	
 	my $draft_q  = $args->{-cgi_obj}; 
 	my $mode     = 'url';
+	my $preview  = 0; 
+	my $process  = undef; 
+	
 	if(exists($args->{-mode})) { 
 		 $mode = $args->{-mode};
 	}
+    if ( exists( $args->{-preview} ) ) {
+        $preview = $args->{-preview};
+    }
+	
+    if ( exists( $args->{-process} ) ) {
+        $process = $args->{-process};
+    }
 	
 	my $subject_from           = $draft_q->param('subject_from')           || 'input';
 	my $content_from           = $draft_q->param('content_from')           || 'url';
@@ -914,7 +754,7 @@ sub construct_from_url {
     
     if($subject_from eq 'title_tag') { 
 		if($content_from eq 'feed_url') { 
-			# ... handle this later. 
+			# We handle this below
 		}
 		else {
 	       my $url_subject = $self->subject_from_title_tag($draft_q); 
@@ -944,6 +784,9 @@ sub construct_from_url {
 	
     my $MIMELiteObj;
     my $md5; 
+	
+	my $feed_url_vars = {}; 
+	
     my $mlo_status = 1; 
     my $mlo_errors = undef; 
    	my $base = undef; 
@@ -972,26 +815,53 @@ sub construct_from_url {
     }
     elsif ($content_from eq 'feed_url' ) {
 		
+		my $pass_last_read_entry = 0; 
+		if(scalar $draft_q->param('schedule_recurring_only_mass_mail_if_primary_diff') == 1 
+		   && $preview == 0
+		   && $process !~ m/test/i
+		 ){ 
+		 	$pass_last_read_entry;
+		 }
+		
 		if(can_use_XML_FeedPP()) {
-			my $feed_r = $self->content_from_url_feed(
+			my $feed_r = $self->content_from_feed_url(
 					{ 
-						-feed_url     => scalar $draft_q->param('feed_url'), 
-						-max_entries  => scalar $draft_q->param('feed_url_max_entries'), 
-						-content_type => scalar $draft_q->param('feed_url_content_type'), 
-						-pre_html     => scalar $draft_q->param('feed_url_pre_html'), 
-						-post_html    => scalar $draft_q->param('feed_url_post_html'), 
+						-feed_url        => scalar $draft_q->param('feed_url'), 
+						-max_entries     => scalar $draft_q->param('feed_url_max_entries'), 
+						-content_type    => scalar $draft_q->param('feed_url_content_type'), 
+						-pre_html        => scalar $draft_q->param('feed_url_pre_html'), 
+						-post_html       => scalar $draft_q->param('feed_url_post_html'), 
+						
+						(($pass_last_read_entry == 1) ?(
+							-last_read_entry => scalar $draft_q->param('feed_url_most_recent_entry'),
+						) : ())
 					}
 				); 
 				
 			 $html_message = $feed_r->{html};
-		
+			 
 			 if($subject_from eq 'title_tag') {
 				  $headers{Subject} = $feed_r->{vars}->{title}; 
 			 } 	
+			 
+			 # We don't actualy use this, we use 
+			 #$feed_r->{vars}->{most_recent_entry}
 			 $md5 = $feed_r->{md5};
+			 
+			 $feed_url_vars = $feed_r->{vars};
+			 
+			 if(!defined($html_message)){
+		 		return { 
+		 			status       => 0, 
+		 			errors       => 'HTML Version is blank in feed_url',
+		 		};
+			} 
 		 }
 		 else { 
-			 # return loudly about this not working
+	 		return { 
+	 			status       => 0, 
+	 			errors       => 'XML::FeedPP is required.',
+	 		};
 		 }
 			    
 	}
@@ -1171,13 +1041,17 @@ sub construct_from_url {
 		fm_obj       => $fm, 
 		md5          => $md5, 
 		vars         => {
-			Subject       => $decoded_subject,
-			'X-Preheader' => scalar $draft_q->param('X-Preheader'),
+			Subject           => $decoded_subject,
+			'X-Preheader'     => scalar $draft_q->param('X-Preheader'),
+			most_recent_entry => $feed_url_vars->{most_recent_entry},
 		},
 		text_message => $text_message, 
 		html_message => $html_message, 
 	};
 }
+
+
+
 
 sub _add_attachments { 
 	warn '_add_attachments' if $t; 
@@ -1276,19 +1150,20 @@ sub subject_from_title_tag {
 
 
 
-sub content_from_url_feed { 
+sub content_from_feed_url { 
 
-	warn 'content_from_url_feed' 
+	warn 'content_from_feed_url' 
 		if $t; 
 	
 	my $self = shift;
     my ($args) = @_;
 
-	my $feed_url     = $args->{-feed_url};
-	my $max_entries  = $args->{-max_entries};
-	my $content_type = $args->{-content_type};	
-	my $pre_html     = $args->{-pre_html};
-	my $post_html    = $args->{-post_html};
+	my $feed_url        = $args->{-feed_url}        || undef; 
+	my $max_entries     = $args->{-max_entries}     || undef; 
+	my $content_type    = $args->{-content_type}    || undef; 	
+	my $pre_html        = $args->{-pre_html}        || undef; 
+	my $post_html       = $args->{-post_html}       || undef; 
+	my $last_read_entry = $args->{-last_read_entry} || undef; 
 	
 	my $status = 1; 
 	my $error  = {};
@@ -1316,13 +1191,30 @@ sub content_from_url_feed {
 	# $tmpl_vars->{pubDate}  = $feed->pubDate();
 	$tmpl_vars->{pre_html}  = $pre_html; 
 	$tmpl_vars->{post_html} = $post_html; 
-	
+	$tmpl_vars->{most_recent_entry} = undef; 
 	my $entries = []; 
 	
 	my $n = 0; 
 	foreach my $item ( $feed->get_item() ) {
-	
+		my $pubDate_epoch = $item->get_pubDate_epoch();
+		
+		#warn '$pubDate_epoch' . $pubDate_epoch; 
+		
+		
+		if(length($last_read_entry) >= 1){ 
+			if($last_read_entry > $pubDate_epoch){ 
+				next;
+				# probably be, "last", cause entries should go newest -> oldest...
+			}
+		}
+		
 		$n++;
+		if($n == 1){ 
+			# ie:
+			
+			$tmpl_vars->{most_recent_entry} = $pubDate_epoch;
+			warn '$tmpl_vars->{most_recent_entry}' . $tmpl_vars->{most_recent_entry}; 
+		}
 		
 		my $description = $item->description() || undef; 
 
@@ -1353,7 +1245,7 @@ sub content_from_url_feed {
 			content       => $content, 
 			description   => $description, 
 			content_type  => $content_type,
-			pubDate_epoch => $item->get_pubDate_epoch(), 
+			pubDate_epoch => $pubDate_epoch, 
 		};
 	
 		push(@$entries, $entry);
@@ -1362,15 +1254,22 @@ sub content_from_url_feed {
 		}
 	}	
 	
+	# This is successful,
+	# there's just no entries to return, 
+	# so we'll return undef on, html
+	# 
+	if(scalar @$entries <= 0){ 
+		return { 
+			status => 1, 
+			errors => undef, 
+			html   => undef, 
+			md5    => undef, 
+			vars   => {},
+		};
+	}
 	
-	# DEV: pubDate_epoch will have the time() of the 
-	# entry. We could potentially save this datetime 
-	# like we do for the md5 of the entire body (schedule_html_body_checksum)
-	# and only send when messages are newer than that date. 
-	#
 	
 	$tmpl_vars->{entries} = $entries;
-
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::screen(
         {
@@ -1617,6 +1516,7 @@ sub send_url_email {
                 -role     => $draft_role,
                 -process  => $process,
 				-dry_run  => 1, 
+				-preview  => 1, 
             }
         );
 		
@@ -1625,10 +1525,26 @@ sub send_url_email {
             carp 'done with construct_and_send!';
         }
         if ( $construct_r->{status} == 0 ) {
-			return $self->report_mass_mail_errors(
-				$construct_r->{errors}, 
-				$root_login
+			
+			
+			my ($h, $b) = $self->report_mass_mail_errors(
+				{ 
+					-errors => $construct_r->{errors}, 
+					-root_login => $root_login, 
+					-wrap => 0, 
+				}
 			);
+			
+			require JSON;
+	        my $json    = JSON->new->allow_nonref;
+	        my $return  = { status => 0, id => undef, body => $b};
+	        my $headers = {
+	            '-Cache-Control' => 'no-cache, must-revalidate',
+	            -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
+	            -type            => 'application/json',
+	        };
+	        my $body = $json->pretty->encode($return);
+			return ( $headers, $body );
         }
 		else { 
 			require DADA::App::EmailMessagePreview; 
@@ -1677,10 +1593,10 @@ sub send_url_email {
         );
 
         if ( $construct_r->{status} == 0 ) {
-            return $self->report_mass_mail_errors(
-				$construct_r->{errors}, 
-				$root_login
-			);
+            return $self->report_mass_mail_errors({
+				-errors     => $construct_r->{errors}, 
+				-root_login => $root_login
+			});
         }
         if ( $process =~ m/test/i ) {
             $self->wait_for_it($construct_r->{mid});
@@ -2110,7 +2026,12 @@ sub list_invite {
 		my $html_message = $etp->{html};
 		
         if ( $text_message eq undef && $html_message eq undef ) {
-            return $self->report_mass_mail_errors( "Message will be sent blank! Stopping!", $root_login );
+            return $self->report_mass_mail_errors(
+				{
+					-errors     => "Message will be sent blank! Stopping!", 
+					-root_login => $root_login,
+				}
+			);
         }
 
         ( $text_message, $html_message ) =
@@ -2196,7 +2117,12 @@ sub list_invite {
 		); 
 		
 		} catch { 
-            return $self->report_mass_mail_errors( $_, $root_login );
+            return $self->report_mass_mail_errors(
+				{ 
+					-errors     => $_, 
+					-root_login => $root_login
+				}
+			);
 		};
 
 	    my $final_header = safely_decode( $entity->head->as_string );
@@ -2333,6 +2259,7 @@ sub draft_message_values {
     my $hr = { 
         schedule_html_body_checksum => $q_draft->param('schedule_html_body_checksum'),
         schedule_activated          => $q_draft->param('schedule_activated'),
+		feed_url_most_recent_entry  => $q_draft->param('feed_url_most_recent_entry'),
     };
     
     require JSON;
@@ -2708,22 +2635,43 @@ sub redirect_tag_check {
 
 sub report_mass_mail_errors {
 
+	warn 'report_mass_mail_errors';
+	
     my $self       = shift;
-    my $errors     = shift;
-    my $root_login = shift;
-
+	my ($args)     = @_; 
+	
+    my $errors     = $args->{-errors};
+    my $root_login = $args->{-root_login};
+	my $wrap = 1; 
+	if(exists($args->{-wrap})){ 
+		$wrap = $args->{-wrap};
+	}
+	
     require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::wrap_screen(
-        {
-            -with           => 'admin',
-            -wrapper_params => {
-                -Root_Login => $root_login,
-                -List       => $self->{list},
-            },
-            -screen => 'report_mass_mailing_errors_screen.tmpl',
-            -vars   => { errors => $errors }
-        }
-    );
+	my $scrn; 
+	
+	if($wrap == 1){
+	    $scrn = DADA::Template::Widgets::wrap_screen(
+	        {
+	            -with           => 'admin',
+	            -wrapper_params => {
+	                -Root_Login => $root_login,
+	                -List       => $self->{list},
+	            },
+	            -screen => 'report_mass_mailing_errors_screen.tmpl',
+	            -vars   => { errors => $errors }
+	        }
+	    );
+	}
+	else { 
+	    $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'report_mass_mailing_errors_screen.tmpl',
+	            -vars   => { errors => $errors }
+	        }
+	    );
+	}
+	
     return ( {}, $scrn );
 }
 

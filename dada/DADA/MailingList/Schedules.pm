@@ -9,7 +9,7 @@ use lib qw(
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_Schedules};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList_Schedules};
 
 use DADA::MailingList::MessageDrafts;
 use DADA::MailingList::Settings; 
@@ -216,7 +216,9 @@ sub run_schedules {
                 next SPECIFIC_SCHEDULES; 
             }
         
+			
             if($specific_time >= $self->{ls_obj}->param('schedule_last_checked_time')){  
+				
                 if(
                     $sched->{schedule_type}                                  eq 'recurring'
                  && $sched->{schedule_recurring_only_mass_mail_if_primary_diff} == 1
@@ -230,27 +232,59 @@ sub run_schedules {
                              -process    => 1, 
                              -dry_run    => 1, 
                          }
-                     );      
-                     if(
-
-                            defined($c_r->{md5}) 
-                         && defined($sched->{schedule_html_body_checksum})
-                         && $c_r->{md5} eq $sched->{schedule_html_body_checksum}
-                    ) { 
-                            $r .= "\t\t* Primary Content same as previously sent scheduled mass mailing.\n";
-                            $r .= "\t\t* Skipping sending scheduled mass mailing.\n\n"; 
-							undef($c_r);
-                            next SPECIFIC_SCHEDULES;
-                            
-                     }
-                     else { 
-                         $r .= "\t* Looks good! Primary content is different than last scheduled mass mailing.\n";
-                         undef($c_r);
-                     }
+                     );
 					 
-					 undef($cr);
-                }
-              
+					 my $is_feed = 0; 
+					 
+				    if($sched->{screen} eq 'send_url_email' && $sched->{content_from} eq 'feed_url'){ 
+							$is_feed = 1; 
+					}
+					 
+					 warn '$sched->{screen}'                     . $sched->{screen}; 
+					 warn '$sched->{content_from}'               . $sched->{content_from}; 
+					 warn '$sched->{feed_url_most_recent_entry}' . $sched->{feed_url_most_recent_entry}; 
+					 warn '$c_r->{vars}->{most_recent_entry}'    . $c_r->{vars}->{most_recent_entry}; 
+					 warn '$is_feed' . $is_feed; 
+					 if($is_feed == 1) {
+						 if(
+						 length($sched->{feed_url_most_recent_entry}) >= 1
+						 && $sched->{feed_url_most_recent_entry} >= $c_r->{vars}->{most_recent_entry}
+						 ){ 
+	                         $r .= "\t\t* No newer feed entries avalable.\n";
+	                         warn      "* No newer feed entries avalable.\n\n" 
+							 	if $t; 
+							undef($c_r);
+	                         next SPECIFIC_SCHEDULES;      
+	
+						 }
+						 else{ 
+							 $r .= "\t* Looks good! Primary content's most recent feed is newer than the last message that has been sent\n";
+	                         undef($c_r);
+						 }
+					 }
+					 if($is_feed != 1){
+	                     if(
+						 	defined($c_r->{md5}) 
+	                         && defined($sched->{schedule_html_body_checksum})
+	                         && $c_r->{md5} eq $sched->{schedule_html_body_checksum}
+
+	                    ) { 
+	                            $r .= "\t\t* Primary Content same as previously sent scheduled mass mailing.\n";
+	                            $r .= "\t\t* Skipping sending scheduled mass mailing.\n\n"; 
+								undef($c_r);
+	                            next SPECIFIC_SCHEDULES;      
+	                     }
+	                     else { 
+	                         $r .= "\t* Looks good! Primary content is different than last scheduled mass mailing.\n";
+	                         undef($c_r);
+	                     }	 
+
+					 }
+					 undef($c_r);
+     
+      		
+				 }
+				 
                $r .= "\t\t* Running schedule now!\n";
 
 			   my $c_r = $self->{ms_obj}->construct_and_send(
@@ -269,6 +303,7 @@ sub run_schedules {
                             -screen => $sched->{screen},
                             -vars => { 
                                 schedule_html_body_checksum => $c_r->{md5}, 
+								feed_url_most_recent_entry  => $c_r->{vars}->{most_recent_entry},
                             },
                         }   
                     );
@@ -280,8 +315,8 @@ sub run_schedules {
                     $r .= "\t* Scheduled Mass Mailing added to the Queue, Message ID: $escaped_mid\n"; 
                 }
                 else { 
-                    $r .= "\t* Scheduled Mass Mailing not sent, reasons:\n" . $c_r->{mid} . "\n";
-                    warn      "Scheduled Mass Mailing not sent, reasons:\n" . $c_r->{mid} . "\n";
+                    $r .= "\t* Scheduled Mass Mailing not sent, reasons:\n" . $c_r->{errors} . "\n";
+                    warn      "Scheduled Mass Mailing not sent, reasons:\n" . $c_r->{errors} . "\n";
                 }
                 if($sched->{schedule_type} ne 'recurring'){ 
                     $r .= "\t* Deactivating Schedule...\n"; 
