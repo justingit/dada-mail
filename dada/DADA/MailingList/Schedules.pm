@@ -9,7 +9,7 @@ use lib qw(
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList_Schedules};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_Schedules};
 
 use DADA::MailingList::MessageDrafts;
 use DADA::MailingList::Settings; 
@@ -188,8 +188,12 @@ sub run_schedules {
                 $end_time = $specific_time; 
             }
             
-            if($end_time < ($time - 86400)) { # was this supposed to be sent a day ago? 
-                $r .= "\t* Schedule is too late to run - should have ran " . formatted_runtime($time - $end_time) . ' ago.' . "\n"; 
+			# was this supposed to be sent a day ago? 
+            if($end_time < ($time - 86400)) { 
+                $r .= "\t* Schedule is too late to run - should have ran " 
+				. formatted_runtime($time - $end_time)
+				. ' ago.' 
+				. "\n"; 
                 $r .= "Deactivating Schedule...\n"; 
                 $self->deactivate_schedule(
                     {
@@ -240,25 +244,44 @@ sub run_schedules {
 							$is_feed = 1; 
 					}
 					 
-					 warn '$sched->{screen}'                     . $sched->{screen}; 
-					 warn '$sched->{content_from}'               . $sched->{content_from}; 
-					 warn '$sched->{feed_url_most_recent_entry}' . $sched->{feed_url_most_recent_entry}; 
-					 warn '$c_r->{vars}->{most_recent_entry}'    . $c_r->{vars}->{most_recent_entry}; 
-					 warn '$is_feed' . $is_feed; 
+					 #warn '$sched->{screen}'                     . $sched->{screen}; 
+					 #warn '$sched->{content_from}'               . $sched->{content_from}; 
+					 #warn '$sched->{feed_url_most_recent_entry}' . $sched->{feed_url_most_recent_entry}; 
+					 #warn '$c_r->{vars}->{most_recent_entry}'    . $c_r->{vars}->{most_recent_entry}; 
+					 #warn '$is_feed' . $is_feed; 
+					 
 					 if($is_feed == 1) {
+						 
+						 $r .= "\t\tMessage is created from an RSS/Atom Feed.\n";
+						 $r .= "\t\tLooking for entries in the feed that are newer than was previously sent,\n"; 
+						 $r .= "rather than comparing checksums.\n\n";
+						 
 						 if(
 						 length($sched->{feed_url_most_recent_entry}) >= 1
 						 && $sched->{feed_url_most_recent_entry} >= $c_r->{vars}->{most_recent_entry}
 						 ){ 
-	                         $r .= "\t\t* No newer feed entries avalable.\n";
-	                         warn      "* No newer feed entries avalable.\n\n" 
-							 	if $t; 
+	                         $r .= "\t\t* No newer feed entries avalable, most recent entry sent published on, " 
+							 	. scalar localtime($sched->{feed_url_most_recent_entry})
+							    .".\n";
+								
+								# this won't work, as any entries old than feed_url_most_recent_entry won't actually be reported!
+								# . "\nNewest entry in feed published on, " 
+								# .  scalar localtime($c_r->{vars}->{most_recent_entry})
+								
+								
+								
+	                         warn "No newer feed entries avalable, most recent entry sent published on, " 
+							 	. scalar localtime($sched->{feed_url_most_recent_entry}) if $t; 
 							undef($c_r);
 	                         next SPECIFIC_SCHEDULES;      
 	
 						 }
 						 else{ 
-							 $r .= "\t* Looks good! Primary content's most recent feed is newer than the last message that has been sent\n";
+							 $r .= "\t* Primary content's most recent entry ("
+							 	.  scalar localtime($c_r->{vars}->{most_recent_entry})
+								. ")  is newer  than the last message that has been sent ("
+								. scalar localtime($sched->{feed_url_most_recent_entry})
+								. ")\n";
 	                         undef($c_r);
 						 }
 					 }
@@ -275,7 +298,7 @@ sub run_schedules {
 	                            next SPECIFIC_SCHEDULES;      
 	                     }
 	                     else { 
-	                         $r .= "\t* Looks good! Primary content is different than last scheduled mass mailing.\n";
+	                         $r .= "\t* Looks good! Primary content is different than last scheduled mass mailing (checksum check).\n";
 	                         undef($c_r);
 	                     }	 
 
