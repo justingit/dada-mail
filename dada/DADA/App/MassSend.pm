@@ -1268,12 +1268,18 @@ sub content_from_feed_url {
 		};
 	}
 	
-	
 	$tmpl_vars->{entries} = $entries;
-    require DADA::Template::Widgets;
+    
+	require DADA::App::EmailThemes; 
+	my $dap = DADA::App::EmailThemes->new({-list => $self->{list}}); 
+    my $ep = $dap->fetch('feed_message');
+	
+    my $html_tmpl    = $ep->{html};
+	
+	require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::screen(
         {
-            -screen         => 'mass_mailing_feed.tmpl',
+            -data           => \$html_tmpl,
             -vars           => $tmpl_vars,
             -list_settings_vars_param => {
 				 -dot_it => 1, 
