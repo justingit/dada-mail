@@ -1373,7 +1373,6 @@ $MIME_TOOLS_PARAMS //= {
 
     plaintext_encoding                     => 'quoted-printable',
     html_encoding                          => 'quoted-printable',
-    strip_message_headers                  => 0,
     add_sendmail_f_flag                    => 1,
     verp_return_path                       => 0,
 

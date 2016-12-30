@@ -3960,7 +3960,6 @@ sub mail_sending_advanced_options {
                     charset                      => undef,
                     plaintext_encoding           => undef,
                     html_encoding                => undef,
-                    strip_message_headers        => 0,
                     verp_return_path             => 0,
                 }
             }

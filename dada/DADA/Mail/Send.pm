@@ -325,9 +325,6 @@ sub send {
         return -1;
     }
 
-    if ( $self->{ls}->param('strip_message_headers') == 1 ) {
-        %fields = $self->_strip_fields(%fields);
-    }
 
     my $recipient_for_log = $fields{To};
 
@@ -2838,21 +2835,7 @@ sub _domain_for_smtp {
 
 }
 
-sub _strip_fields {
-    my $self   = shift;
-    my %fields = @_;
-    require Email::Address;
 
-    if ( my $to_temp = ( Email::Address->parse( $fields{To} ) )[0] ) {
-        $fields{To} = $to_temp->address();
-    }
-
-    if ( my $from_temp = ( Email::Address->parse( $fields{From} ) )[0] ) {
-        $fields{From} = $from_temp->address();
-    }
-
-    return %fields;
-}
 
 sub _remove_blank_headers {
     my $self    = shift;

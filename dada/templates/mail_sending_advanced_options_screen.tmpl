@@ -108,33 +108,6 @@
 				</label>
 			</div>
 		</div>
-		<div class="row">
-			<div class="small-12 columns">
-				<label for="strip_message_headers">
-					<input
-						type="checkbox" 
-						name="strip_message_headers" 
-						id="strip_message_headers" 
-						value="1" 
-						<!-- tmpl_if list_settings.strip_message_headers -->checked="checked"<!--/tmpl_if-->
-					>
-
-					Send all emails with only the address contained in the 
-					'To' and 'From' message headers
-				</label>
-
-				<div class="alert-box info radius">
-					Some SMTP servers get confused when 'To:' and 'From:' mail 
-					headers contain both the name and address 
-					( &quot;John Smith&quot; &lt;john@smith.com&gt;). With this 
-					option, all messages sent will contain only the address 
-					( john@smith.com ).
-					<em>
-					Most likely, you will not need this option.
-					</em>
-				</div>
-			</div>
-		</div>
 	</fieldset> 
 	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
 
