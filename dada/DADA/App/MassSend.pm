@@ -481,7 +481,7 @@ sub construct_and_send {
         $con = $self->construct_from_url(
             {
                 -cgi_obj => $draft_q,
-                -mode    => 'text'
+                -mode    => 'text',
 				-preview => $preview, 
 				-process  => $process,
             },
