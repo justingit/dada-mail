@@ -16,13 +16,13 @@
 <!-- /tmpl_if --> 
 <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="ddm_<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var given_value escape=HTML -->" <!-- tmpl_if comment -->placeholder="(required)"<!-- /tmpl_if -->>
 </label>
+<!-- /tmpl_loop --> 
 <!-- tmpl_if recaptcha_html --> 
 	<!-- tmpl_var recaptcha_html -->
 	<!-- tmpl_if add_recaptcha_js -->
 		    <script src='https://www.google.com/recaptcha/api.js'></script>
 	<!-- /tmpl_if -->
 <!-- /tmpl_if -->
-<!-- /tmpl_loop --> 
 <!-- /tmpl_if --> 
 <!-- /tmpl_if -->
 <input type="submit" class="button" value="Subscribe">
