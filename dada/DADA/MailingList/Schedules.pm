@@ -216,7 +216,6 @@ sub run_schedules {
                     $r .= " from now"; 
                 }
 				$r .= ")\n";
-				
                 next SPECIFIC_SCHEDULES; 
             }
         
@@ -301,7 +300,6 @@ sub run_schedules {
 	                         $r .= "\t* Looks good! Primary content is different than last scheduled mass mailing (checksum check).\n";
 	                         undef($c_r);
 	                     }	 
-
 					 }
 					 undef($c_r);
      
@@ -351,6 +349,14 @@ sub run_schedules {
                         }
                     );
                 }
+				
+				# Don't want to have this sent more than once, right? 
+				if(
+					$c_r->{status} == 1 
+				 && $sched->{schedule_type} eq 'recurring'
+				 ){ 
+					next SCHEDULES;
+				}
             }
             
             if($sched->{schedule_type} ne 'recurring'){ 
