@@ -15,7 +15,7 @@ I<Mass Mailing - Send a Webpage>
 
 In the I<HTML Version> tab, click the option, 
 
-I<Grab content from a RSS/Atom feed>
+I<Grab content from an RSS/Atom feed>
 
 and enter the URL of the feed in the textbox below this radio button. Additional options are available, 
 including adding HTML content before and after the entries from the feed, setting how many entries are included in the message, 
