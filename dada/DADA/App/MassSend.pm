@@ -1213,7 +1213,7 @@ sub content_from_feed_url {
 			# ie:
 			
 			$tmpl_vars->{most_recent_entry} = $pubDate_epoch;
-			warn '$tmpl_vars->{most_recent_entry}' . $tmpl_vars->{most_recent_entry}; 
+#			warn '$tmpl_vars->{most_recent_entry}' . $tmpl_vars->{most_recent_entry}; 
 		}
 		
 		my $description = $item->description() || undef; 
@@ -1287,6 +1287,7 @@ sub content_from_feed_url {
 			},
         }
     );
+	
 	return { 
 		status => 1, 
 		errors => undef, 
@@ -1387,7 +1388,7 @@ sub send_url_email {
         {
             name    => 'feed_url_max_entries',
             id      => 'feed_url_max_entries',
-            #default => $ls->param('feed_url_num_feed_entries')
+            default => 5,
             values => [(1..100)],
         }
       );
