@@ -1717,7 +1717,12 @@ sub validate_msg {
             $r .= "\t* Discussion List Support is enabled.\n";
 
             my ( $s_status, $s_errors ) =
-              $lh->subscription_check( { -email => $from_address, } );
+              $lh->subscription_check( 
+			  	{ 
+					-email => $from_address, 
+					-mode  => 'admin'
+				} 
+			);
 
             if ( $s_errors->{subscribed} == 1 ) {
                 $r .= "\t\t* From Subscriber: Yes.\n";
