@@ -237,7 +237,7 @@ my @Extension_Names = qw(
 $DADA::Config::PROGRAM_URL   = program_url_guess();
 $DADA::Config::S_PROGRAM_URL = $DADA::Config::PROGRAM_URL; #program_url_guess();
 
-use DADA::Config 9.0.0;
+use DADA::Config 10.0.0;
 use DADA::App::Guts;
 use DADA::Template::Widgets;
 use DADA::Template::HTML;
@@ -2500,10 +2500,23 @@ sub create_sql_tables {
             if ( length($_) > 10 ) {
 
                 # print "\nquery:\n" . $_;
-                my $sth = $dbh->prepare($_);
-                $sth->execute
-                  or croak "cannot do statement! $DBI::errstr\n";
-            }
+				
+				if($_ =~ m/CREATE INDEX/) {
+					# Basically, I don't want this to fail, because 
+					# an index couldn't be made. 
+	                my $sth = $dbh->prepare($_);
+	                $sth->execute
+	                  or carp "cannot do statement! $DBI::errstr\n";
+				
+				}
+				else {
+					# I DO want this to fail,
+					# if a table can't be made.  
+	                my $sth = $dbh->prepare($_);
+	                $sth->execute
+	                  or croak "cannot do statement! $DBI::errstr\n";
+				 }
+			}
         }
 
     };
