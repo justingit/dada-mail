@@ -15,7 +15,7 @@ use strict;
 # For testing, set $Debug to 1
 my $Debug = 0;
 
-use DADA::Config 9.0.0;
+use DADA::Config 10.0.0;
 use DADA::App::Guts;
 use DADA::MailingList::Subscribers;
 use DADA::MailingList::Settings;

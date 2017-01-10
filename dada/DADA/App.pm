@@ -38,7 +38,7 @@ use Carp qw(carp croak);
 
 #---------------------------------------------------------------------#
 
-use DADA::Config 9.0.0;
+use DADA::Config 10.0.0;
 
 use DADA::App::ScreenCache;
 my $c = DADA::App::ScreenCache->new;
