@@ -14,8 +14,6 @@ Key:
 	
 * Save draft message until mass mailing has completed (or forever?). Maybe allow editing of a message during mass mailing? KEep track of state of mailing to restart? 
 
-* Image fileames w/spaces are not displayign properly? 
-
 * Work on build script, and docs on build script
 * Double-check commadn line works correctly, and add ALL options to command line
 * Double check PSGI docs are up to date, 
