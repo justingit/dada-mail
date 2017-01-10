@@ -4,7 +4,6 @@ setting                          varchar(64),
 value                            text
 ) CHARACTER SET utf8 COLLATE utf8_bin;
 
-CREATE INDEX dada_settings_list_index ON dada_settings (list);
 
 CREATE TABLE IF NOT EXISTS dada_subscribers (
 email_id                        int not null primary key auto_increment,
@@ -15,7 +14,6 @@ list_status                      char(1),
 timestamp                       TIMESTAMP DEFAULT NOW()
 ) CHARACTER SET utf8 COLLATE utf8_bin;
 
-CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(80), list, list_type, list_status, timestamp);
 
 CREATE TABLE IF NOT EXISTS dada_confirmation_tokens ( 
 id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -25,7 +23,6 @@ email varchar(80),
 data text,
 UNIQUE (token)
 );
-CREATE INDEX dada_confirmation_tokens_index ON dada_confirmation_tokens (id, timestamp, token(80), email(80));
 
 
 CREATE TABLE IF NOT EXISTS dada_profiles ( 
@@ -76,7 +73,6 @@ format                        text,
 raw_msg                       mediumtext
 ) CHARACTER SET utf8 COLLATE utf8_bin;
  
-CREATE INDEX dada_archives_list_archive_id_index ON dada_archives (list, archive_id);
  
 CREATE TABLE IF NOT EXISTS dada_bounce_scores (
 id                            int not null primary key auto_increment,
@@ -109,7 +105,6 @@ details varchar(255),
 email varchar(80), 
 user_agent varchar(255)
 ); 
-CREATE INDEX dada_mass_mailing_event_log_index ON dada_mass_mailing_event_log (list,remote_addr(80), msg_id(80), event(80), timestamp);
 
 CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
 id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -149,7 +144,6 @@ user_id VARCHAR(225) NOT NULL,
 action VARCHAR(225) NOT NULL, 
 timestamp INT UNSIGNED NOT NULL
 );
-CREATE INDEX dada_rate_limit_hits_all_index ON dada_rate_limit_hits (user_id, action(80), timestamp);
 
 CREATE TABLE IF NOT EXISTS dada_email_message_previews (
 id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -159,3 +153,16 @@ vars text,
 plaintext mediumtext,
 html mediumtext
 );
+
+CREATE INDEX dada_settings_list_index ON dada_settings (list);
+
+CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(80), list, list_type, list_status, timestamp);
+
+CREATE INDEX dada_confirmation_tokens_index ON dada_confirmation_tokens (id, timestamp, token(80), email(80));
+
+CREATE INDEX dada_archives_list_archive_id_index ON dada_archives (list, archive_id);
+
+CREATE INDEX dada_mass_mailing_event_log_index ON dada_mass_mailing_event_log (list,remote_addr(80), msg_id(80), event(80), timestamp);
+
+CREATE INDEX dada_rate_limit_hits_all_index ON dada_rate_limit_hits (user_id, action(80), timestamp);
+
