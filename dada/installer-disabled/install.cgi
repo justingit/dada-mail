@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 use strict;
 
+use 5.10.1;
+
 use FindBin;
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
