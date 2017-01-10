@@ -25,7 +25,7 @@ email varchar(80),
 data text,
 UNIQUE (token)
 );
-CREATE INDEX dada_confirmation_tokens_index ON dada_confirmation_tokens (id, timestamp, token, email);
+CREATE INDEX dada_confirmation_tokens_index ON dada_confirmation_tokens (id, timestamp, token(80), email(80));
 
 
 CREATE TABLE IF NOT EXISTS dada_profiles ( 
@@ -109,7 +109,7 @@ details varchar(255),
 email varchar(80), 
 user_agent varchar(255)
 ); 
-CREATE INDEX dada_mass_mailing_event_log_index ON dada_mass_mailing_event_log (`list`,`remote_addr`, `msg_id`, `event`, timestamp);
+CREATE INDEX dada_mass_mailing_event_log_index ON dada_mass_mailing_event_log (list,remote_addr(80), msg_id(80), event(80), timestamp);
 
 CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
 id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -149,7 +149,7 @@ user_id VARCHAR(225) NOT NULL,
 action VARCHAR(225) NOT NULL, 
 timestamp INT UNSIGNED NOT NULL
 );
-CREATE INDEX dada_rate_limit_hits_all_index ON dada_rate_limit_hits (user_id, action, timestamp);
+CREATE INDEX dada_rate_limit_hits_all_index ON dada_rate_limit_hits (user_id, action(80), timestamp);
 
 CREATE TABLE IF NOT EXISTS dada_email_message_previews (
 id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
