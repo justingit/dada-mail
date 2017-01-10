@@ -313,7 +313,12 @@ sub subscription_check {
 		    if ( !$skip{suspicious_activity_by_ip_check_failed} ) {		
 				if($ls->param('enable_sub_confirm_suspicious_activity_by_ip_protection') == 1) {
 					if (
-						$self->suspicious_activity_by_ip({-ip => $ENV{'REMOTE_ADDR'}}) == 0
+						$self->suspicious_activity_by_ip(
+							{
+								-ip    => $ENV{'REMOTE_ADDR'}. 
+								-email => $email, 
+							}
+						) == 0
 					){ 
 						 $errors->{suspicious_activity_by_ip_check_failed} = 1;
 					}
@@ -628,7 +633,10 @@ sub suspicious_activity_by_ip {
 		#warn '$c'  . $c; 
 		#warn '$ip' . $ip; 
 		if($c eq $ip) { 
-			warn 'IP Address: ' . $ip . ' flagged for suspicious activity in, suspicious_activity_by_ip()';
+			warn 'IP Address: ' 
+			. $ip 
+			. ' flagged for suspicious activity in, suspicious_activity_by_ip(), email: ' 
+			. $args->{-email};
 			return 0;
 		}
 		else { 
