@@ -4,7 +4,6 @@ package DadaMailInstaller;
 use base 'CGI::Application';
 
 #use CGI::Application::Plugin::DebugScreen;
-use CGI::Carp qw(fatalsToBrowser);
 
 use Carp qw(carp croak);
 
