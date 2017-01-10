@@ -1,13 +1,11 @@
-package URI::rtsp;
+package URI::sftp;
 
 use strict;
 use warnings;
 
+use parent 'URI::ssh';
+
 our $VERSION = '1.71';
 $VERSION = eval $VERSION;
-
-use parent 'URI::http';
-
-sub default_port { 554 }
 
 1;

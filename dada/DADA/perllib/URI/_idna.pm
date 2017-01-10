@@ -4,8 +4,20 @@ package URI::_idna;
 # based on Python-2.6.4/Lib/encodings/idna.py
 
 use strict;
+use warnings;
+
 use URI::_punycode qw(encode_punycode decode_punycode);
 use Carp qw(croak);
+
+our $VERSION = '1.71';
+$VERSION = eval $VERSION;
+
+BEGIN {
+  *URI::_idna::_ENV_::JOIN_LEAKS_UTF8_FLAGS = $] < 5.008_003
+    ? sub () { 1 }
+    : sub () { 0 }
+  ;
+}
 
 my $ASCII = qr/^[\x00-\x7F]*\z/;
 
@@ -17,6 +29,8 @@ sub encode {
     for (@labels) {
 	$_ = ToASCII($_);
     }
+
+    return eval 'join(".", @labels, @last_empty)' if URI::_idna::_ENV_::JOIN_LEAKS_UTF8_FLAGS;
     return join(".", @labels, @last_empty);
 }
 
