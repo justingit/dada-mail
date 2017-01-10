@@ -1,6 +1,11 @@
 #!/usr/bin/perl
 use strict;
 
+# uncomment the below line (remove the, "#") to show errors in your browser:
+# use CGI::Carp qw(fatalsToBrowser);
+
+
+
 use 5.10.1;
 
 use FindBin;
