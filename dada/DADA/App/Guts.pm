@@ -3087,12 +3087,24 @@ sub can_use_Google_reCAPTCHA {
 	try {
         require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
         $can_use_captcha = 1;
-    }
-    catch {
+    } catch {
         carp "CAPTCHA Not working correctly?:" . $_
 			if $t; 
         $can_use_captcha = 0;
     };
+	
+	if($can_use_captcha == 1) {
+		if(
+			   length($DADA::Config::RECAPTCHA_PARAMS{public_key})  <= 0
+			|| length($DADA::Config::RECAPTCHA_PARAMS{private_key}) <= 0
+		){ 
+			warn '$DADA::Config::RECAPTCHA_PARAMS are not set up correctly'
+				if $t;
+			
+			$can_use_captcha = 0; 
+		}
+	}
+	
 	return $can_use_captcha;
 }
 
