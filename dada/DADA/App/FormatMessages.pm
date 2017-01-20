@@ -403,7 +403,8 @@ sub format_mlm {
 	            $content = $its->filter( { -html_msg => $content } );
 	        }
 	        catch {
-	            carp "Problems with filter:" . substr($_, 0, 100) . '...';
+	            carp 'Problems with filter:' . $_ if 
+					$t;
 	        };
 		}
 		
@@ -415,7 +416,8 @@ sub format_mlm {
             $content = $css_inliner->filter( { -html_msg => $content } );
         }
         catch {
-            carp "Problems with filter:" . substr($_, 0, 100) . '...';;
+            carp 'Problems with filter:' . $_ if 
+				$t;
         };
 
         # Change inlined images into separate files we'll link
@@ -432,7 +434,8 @@ sub format_mlm {
                 $content = $iei->filter( { -html_msg => $content } );
             }
             catch {
-                carp "Problems with filter:" . substr($_, 0, 100) . '...';
+	            carp 'Problems with filter:' . $_ if 
+					$t;
             };
         }
 
@@ -443,7 +446,8 @@ sub format_mlm {
               DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
             $content = $utt->filter( { -html_msg => $content } );
         } catch {
-            carp "Problems with filter: " . substr($_, 0, 100) . '...';
+            carp 'Problems with filter:' . $_ if 
+				$t;
         };
 		
 		
@@ -473,7 +477,8 @@ sub format_mlm {
             $content = $rul->filter( { -data => $content } );
         }
         catch {
-            carp "Problems with filter:"  . substr($_, 0, 100) . '...';
+            carp 'Problems with filter:' . $_ if 
+				$t;
         };
 
         # I am doing this, twice?
@@ -484,7 +489,8 @@ sub format_mlm {
             $content = $utt->filter( { -html_msg => $content } );
         }
         catch {
-            carp "Problems with filter:"  . substr($_, 0, 100) . '...';
+            carp 'Problems with filter:' . $_ if 
+				$t;
         };
 
         if ( $self->{ls}->param('discussion_template_defang') == 1 ) {
@@ -492,7 +498,8 @@ sub format_mlm {
                 $content = $self->template_defang( { -data => $content } );
             }
             catch {
-                carp "Problem defanging template: $_";
+                carp "Problem defanging template: $_" 
+					if $t;
             };
         }
 
@@ -553,7 +560,8 @@ sub format_mlm {
 	          DADA::App::FormatMessages::Filters::HTMLMinifier->new;
 	        $content = $minifier->filter( { -html_msg => $content } );
 	    } catch {
-	        carp "Problems with filter:" . substr($_, 0, 100) . '...';
+            carp 'Problems with filter:' . $_ if 
+				$t;
 	    };	
 	}	
 	
@@ -1150,7 +1158,8 @@ sub _make_multipart {
             $new_data = $utt->filter( { -html_msg => $new_data } );
         }
         catch {
-            carp "Problems with filter:" . substr($_, 0, 100) . '...';
+            carp 'Problems with filter:' . $_ if 
+				$t;
         };
 
     }
@@ -3096,7 +3105,8 @@ sub body_content_only {
 			undef $bco; 
     }
     catch {
-        carp "Problems with filter:" . substr($_, 0, 100) . '...';;
+        carp 'Problems with filter:' . $_ if 
+			$t;
     };
 		
 	return $html; 
