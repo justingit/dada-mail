@@ -10,6 +10,13 @@
 		<div class="small-12 medium-8 large-8 medium-centered large-centered columns">
 
 
+<div data-alert class="alert-box info radius">
+	Please read below to see if the installation of <!-- tmpl_var PROGRAM_NAME -->
+	was successful, and if any additional steps are required:
+</div> 
+
+
+
 <fieldset> 
 <legend>
 	Installation Log:
@@ -23,47 +30,56 @@
 	<input type="hidden" name="self_url" id="self_url" value="<!-- tmpl_var Self_URL -->" />
 </form> 
 
- <h1>Almost Done!</h1> 
-
 <!-- tmpl_if error_cant_edit_config_dot_pm --> 
 
-	<form> 
+    <div data-alert class="alert-box alert radius">
+		Additional Steps Required!
+	</div>
+
 	<p>
 		You'll have to manually edit your, <strong><em>dada/DADA/Config.pm</em></strong> file. For security reasons, 
-		this installer cannot edit it, itself. 
+		this installer cannot edit it itself. 
 	</p> 
 
 <fieldset> 
-		
-	<p>Find this line in the source code of the <strong><em>dada/DADA/Config.pm</em></strong> file: </p> 
 	
-	<input type="text"  value="$PROGRAM_CONFIG_FILE_DIR = 'auto';" />
+	<form> 
+				
+		<p>Find the following line in the source code of the
+		<strong><em>dada/DADA/Config.pm</em></strong> file: </p> 
 	
-	<p>
-		Change it to:  
-	</p> 
+		<input type="text"  value="$PROGRAM_CONFIG_FILE_DIR = 'auto';" />
 	
-	<input type="text"  value="$PROGRAM_CONFIG_FILE_DIR = '<!-- tmpl_var install_dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->/.configs';" /> 
-
+		<p>
+			Change this line to:  
+		</p> 
+	
+		<input type="text"  value="$PROGRAM_CONFIG_FILE_DIR = '<!-- tmpl_var install_dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->/.configs';" /> 
+	</form>
 
 	</fieldset>
 			
 	<p>
-		And save the copy of the <strong><em>dada/DADA/Config.pm</em></strong> file on your hosting account. 
+		And save the copy of the <strong><em>dada/DADA/Config.pm</em></strong> file.
 	</p> 
 
 
 <!-- /tmpl_if --> 
-<fieldset> 
-    
- <legend>Set the <!-- tmpl_var PROGRAM_NAME --> Cronjob:</legend> 
+
+<div class="panel">
+<h3>
+	<strong> 
+		Required:
+	</strong>
+	Set the <!-- tmpl_var PROGRAM_NAME --> Cronjob
+</h3>
  
  <p>
-     This cronjob makes sure that things like the Mailing Monitor, Scheduled Mass Mailing, Bounce Handler, and Bridge function properly: 
+     This cronjob makes sure that things like the Mailing Monitor, 
+	 Scheduled Mass Mailing, Bounce Handler, and Bridge function properly: 
  </p>
  
  <div data-alert class="alert-box success radius">
-
          <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_silent/
 
  </div> 
@@ -75,53 +91,111 @@
      <label for="cronjob_url">Using the curl command:</label> <br /> 
      <input type="text"  id="cronjob_url" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" --> --user-agent &quot;Mozilla/5.0 (compatible;)&quot; --silent --get --url <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_silent/" />
  </p>
- </fieldset> 
  
+ <p class="text-right">
+ 	<a 
+ 		class="button info small" 
+ 		target="_blank" 
+ 		href="http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html"
+ 	>
+ 		Learn more about cronjobs in <!-- tmpl_var PROGRAM_NAME -->...
+ 	</a>
+ </p>
+</div>
  
- <fieldset> 
-     
- <legend>Rename/Remove the, "installer" Directory!</legend> 
 
-<p>
-	Rename/Remove the, <em>dada/<strong>installer</strong></em> directory! <!-- tmpl_var PROGRAM_NAME --> will not be enabled 
+
+
+
+<div class="panel">
+	<h3>
+	<strong>
+		Required:
+	</strong>
+	Move the, &quot;installer&quot; directory
+</h3> 
+
+<p><!-- tmpl_var PROGRAM_NAME --> will not be enabled 
 	without this directory being removed or renamed. 
+	Click the botton below to rename this directory:
 </p> 
 
 <form> 
 <div class="text-center"> 
-<input type="button" value="Move the, 'dada/installer' Directory, Disable the, 'install.cgi' script" class="cautionary button expand" id="move_installer_dir" />	
+<input type="button" 
+	value="Move the 'dada/installer' directory; disable the 'install.cgi' script" 
+	class="cautionary button expand" 
+	id="move_installer_dir" />	
 </div> 
 </form> 
 <div id="move_results"></div> 
+</div>
 
 
- </fieldset> 
+ 
+<div class="panel">
+<h3>
+	<strong>
+		Optional:
+	</strong> Install the CPAN Perl Modules
+</h3>
 
-<fieldset> 
-     
-<legend>Additional Configuration?</legend> 
+<p>
+	<!-- tmpl_var PROGRAM_NAME -->'s capability is greatly enhanced by installing the following CPAN Perl Module Bundle:
+</p>
+<p><code>Bundle::DadaMail</code></p>
 
-<p>If you want to perform any additional configuration, your outside config file is located at, </p> 
 
-<p><code>
-<!-- tmpl_var install_dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->/.configs/.dada_config
-</code></p> 
-
-</form> 
-	
-</fieldset> 
+ <p class="text-right">
+ 	<a 
+ 		class="button info small" 
+ 		target="_blank" 
+ 		href="http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html"
+ 	>
+ 		Learn more about installing CPAN Perl Modules...
+ 	</a>
+ </p>
+</div>
 
 
 
 <!-- tmpl_if status --> 
 
+<div class="panel">
+	<h3>
+		Ready To Use <!-- tmpl_var PROGRAM_NAME -->?
+	</h3> 
 
-<h1>Ready To Use <!-- tmpl_var PROGRAM_NAME -->?</h1> 
+
+	<form action="<!-- tmpl_var submitted_PROGRAM_URL -->"> 
+			<input 
+			type="submit" 
+			class="success large button expand" 
+			value="Click here to start working with  <!-- tmpl_var PROGRAM_NAME -->" 
+		/>
+	</form>
+</div>
 
 
-<form action="<!-- tmpl_var submitted_PROGRAM_URL -->"> 
-		<input type="submit" class="success large button expand" value="&#187; Start Working With  <!-- tmpl_var PROGRAM_NAME -->! &#171;" />
-</form>
+
+
+
+<div class="panel">
+	     
+<h3>Additional Configuration?</h3> 
+
+<p>
+	If you would like to perform any additional configuration, 
+	your outside config file is located at, </p> 
+
+<p><code>
+<!-- tmpl_var install_dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->/.configs/.dada_config
+</code></p> 
+	
+</div> 
+
+
+
 
 
 <!-- tmpl_else --> 
