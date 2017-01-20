@@ -34,7 +34,21 @@ Optionally, you may also configure the B<WYSIWYG> editors that come bundled with
 
 =head3 Install and Configure WYSIWYG Editors 
 
-If you would like to use the bundled WYSIWYG editors with Dada Mail, check the option, B<Install and Configure WYSIWYG Editors> - which is checked by default. Uncheck this option, if you'd like to skip setting up the WYSIWYG editors - the various options will be hidden. 
+If you would like to use the bundled WYSIWYG editors with Dada Mail, check the option, B<Install and Configure WYSIWYG Editors> - which is checked by default. Uncheck this option, if you'd like to skip setting up the WYSIWYG editors.
+
+Dada Mail has support for two different rich text ediors - B<CKeditor> and B<Tiny MCE>. Both can be installed at the same time, although only can be used at one time. You may switch which one is enabled for your list in the list control panel under, B<Control Panel Settings: Options>
+
+=head4 File Browsers/Uploaders
+
+Dada Mail also has support for variosu File Browser/Uploaders, allowing you to add images you'll host directly to your email messages, as well as add files to your message as attachments. Unlike the rich text editors, only one file browser/uploader can be installed at one time. Both options mostly have feature parity, although their security and sessioining systems differ. We'll explain those, below: 
+
+=head4 Install KCFinder
+
+Select this option to use B<KCFinder> (L<https://kcfinder.sunhater.com>). KCFinder uses PHP Sessions for security, which Dada Mail will provide. If you're having problems utilizing KCFinder, try simply logging out, than back into your list. If you're still having problems, try the B<Core Five FileManager>.
+
+Install Core Five FileManager 	
+
+Select this option to use B<Core Five FileManager> (L<https://github.com/simogeo/Filemanager>). In Dada Mail, Filemanager uses the same sessioning system as Dada Mail itself, which can make for a smoother experience, if KCFinder is not working correctly. 
 
 =head2 Configure Scheduled Jobs 
 
@@ -46,7 +60,7 @@ L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
 =head3 Scheduled Jobs Flavor
 
-The B<Scheduled Jobs Flavor> changes the URL and PATH INFO used to access Dada Mail, to run your scheduled jobs. The idea is that this URL should be slightly unique, so that someone cannot run the schedules themselves. 
+The B<Scheduled Jobs Flavor> changes the URL and PATH INFO used to access Dada Mail, to run your scheduled jobs. The idea is that this URL should be slightly unique, so that an anonymous party cannot run the schedules themselves, just by visiting an easily guessable URL. 
 
 The Scheduled Jobs Flavor should be unqiue, and not be the value of another flavor used by Dada Mail (C<admin>, C<send_email>, etc). An easy way to make sure of this, is just to preceed your flavor with, C<_sched> and then set the rest of the string to whatever you would like. Example, 
 
@@ -54,13 +68,13 @@ The Scheduled Jobs Flavor should be unqiue, and not be the value of another flav
 
 =head3 Log Job Output
 
-When checked, B<Log Job Output> will log anything returned by the jobs run. You'll find this log in the C<.dada_files/.logs/cronjob_output.txt> file. This is helpful with debugging a problem, but this file can get potentially large, quickly, so think of either using this option temporarily, or schedule a cronjob to either rotate, or delete this log periodically. 
+When checked, B<Log Job Output> will log anything returned by the jobs run. You'll find this log in the C<.dada_files/.logs/cronjob_output.txt> file. This is helpful with debugging a problem, but this file can potentially get very large - and quickly, so think of either using this option temporarily, or schedule a cronjob to either rotate, or delete this log.
 
 =head3 Run Periodically After App Execution 
 
-When checked (the default), B<Run Periodically After App Execution> will run the scheduled jobs usually handled by the cronjob simply after a normal execution of the app. This will facilitate using Dada Mail for many of the tasks required of the cronjob if the cronjob itself has not been set. 
+When checked (B<default>), B<Run Periodically After App Execution> will run the scheduled jobs usually handled by the cronjob simply after a normal execution of the app. This will facilitate using Dada Mail for many of the tasks required of the cronjob if the cronjob itself has not been set. 
 
-This running of the scheduled jobs will only happen in this manner no more than every 7 minutes, and won't run if the scheduled jobs are run in any other way, like when the actual cronjob runs, or if the scheduled jobs are run manually. This backround running also happens only if the app is itself executed (by visiting the app in a browser, for example). Thus, it's a good safeguard, but it can't completely replace setting up the cronjob. 
+This running of the scheduled jobs will only happen in this manner no more than every 7 minutes, and won't run if the scheduled jobs are run in any other way, like when the actual cronjob runs, or if the scheduled jobs are run manually. This backround running also happens only if the app is itself executed (by visiting the app in a browser, for example). Thus it's a good safeguard, but it can't completely replace setting up the cronjob. 
 
 B<Config Variable:> C<$SCHEDULED_JOBS_OPTIONS>
 
@@ -351,9 +365,9 @@ B<Config Variable:> C<$TEMPLATE_OPTIONS>.
 
 =head3 Hide Administration Link
 
-Dada Mail usually shows a simple link to the administration login screen, on the bottom of the default screen. If you would rather this link not be so publically advertised, you my check this option. 
+Dada Mail usually shows a simple link to the administration login screen, on the bottom of the default screen. If you would rather this link not be so publically advertised, you my check this option to hide this link.
 
-You may always get to  the administration page by pointing your browser to an address like this: 
+You may always get to the administration page by pointing your browser to an address like this: 
 
 L<http://mysite.com/cgi-bin/dada/mail.cgi/admin>
 
@@ -460,6 +474,12 @@ etc.
 
 B<Global Variable:> C<$SIGN_IN_FLAVOR_NAME>
 
+=head3 Session Options 
+
+=head4 Check for Matching IP Addresses 
+
+Check this option (B<default>) if making sure the IP address saved in the session matches the IP address of the user in the session itself. If the user's IP address changes, the session will be invalidated. 
+
 =head3 Rate Limiting 
 
 When enabled, rate limiting keeps track of the requests of certain features in Dada Mail - features like trying to log into the list control panel, or subscribing to a mailing list. Dada Mail keeps track of these requests by IP Address and can be configured to have a maximum amount of requests per timeframe. If more than the maximum amount of requests are made within the timeframe, the rate limit is said to be B<exceeded>, and further requests will be denied. 
@@ -506,7 +526,7 @@ If more requests than the Max Hits happens within the Timeframe, the feature/fun
 
 B<Config Variable:> C<$RATE_LIMITING>. 
 
-=head2 Configure CAPTCHA
+=head2 Configure CAPTCHA Options
 
 Dada Mail uses CAPTCHA challenge-response tests optionally for many things: for the initial signup form, as an additional step to confirm a subscription, the Forward a Friend form, and other places. Dada Mail only supports Google's reCAPTCHA v2. 
 
@@ -516,7 +536,7 @@ In this section, we can configure the CAPTCHA options in Dada Mail:
 
 =head3 Add CAPTCHA on all subscription forms 
 
-Select this option to add a CAPTCHA to all the subscription forms used by Dada Mail, including the subscrption form for all available mailings on Dada Mail's default screen. 
+Select this option (B<default>) to add a CAPTCHA to all the subscription forms used by Dada Mail, including the subscrption form for all available mailings on Dada Mail's default screen. 
 
 =head3 reCAPTCHA Site key: 
 

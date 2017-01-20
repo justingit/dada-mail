@@ -379,22 +379,25 @@ Dada Mail's installer does support additional global configuration options.
 
 =head3 Completing the Installation and Configuration. 
 
-Once you've filled out the form correctly, click the button labeled, B<Configure Dada Mail!>.
+Once you've filled out the form correctly, click the button labeled, B<Configure Dada Mail>.
+
 The Installer will configure your Dada Mail. 
+
 Once finished, the screen will refresh with the list of steps it has taken. 
 
-=head3 Setup the Scheduled Job (cronjobs)
+=head3 Required: Set the Cronjob 
 
 For many tasks in Dada Mail, 
 including making sure your mass mailings are going out correctly, 
-B<you will need to set up the scheduled job>.
+B<you will need to set up the scheduled job (cronjob)>.
 
 The unique command needed to run the required jobs will be shown. 
-Here's more information on Dada Mail's scheduled job: 
+
+More information on Dada Mail's scheduled job: 
 
 L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
-=head3 Move the, "dada/installer" directory
+=head3 Required: Move the, "installer" directory 
 
 Dada Mail will only start working once you've move the, C<dada/installer> directory out of the way. 
 This is a security precaution, so that someone else doesn't come along and attempt to reconfigure your Dada Mail! 
@@ -409,10 +412,17 @@ There's a possibility, especially if you were issued the warning before filling 
 that you'll have to edit a line in the C<dada/DADA/Config.pm> file. 
 If this is the case, the installer will show you which file to look for and what to changes need to be done. 
 
-Be veyr careful when editing this file,
+Be very careful when editing this file,
 as any error will stop Dada Mail from working. 
 When saving this file, make sure to upload the file in ASCII/Plain Text mode, NOT binary! 
 
+=head3 Optional: Install the CPAN Perl Modules
+
+Dada Mail's capability is greatly enhanced by installing the following CPAN Perl Module Bundle: 
+
+	Bundle::DadaMail
+
+More Information: Installing CPAN Perl Modules L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =head2 Making Additional Edits
 
@@ -427,9 +437,9 @@ L<http://dadamailproject.com/d/global_variables.pod.html>
 
 =head2 Running Dada Mail for the First Time
 
-Once you've gotten the, C<dada/DADA/Config.pm> file edited (if needed) and moved the C<installer> directory out of the way, 
-it's time to begin using Dada Mail. 
-Press the button labeled, C<Start Working With Dada Mail!> to begin!
+Once you've gotten the, C<dada/DADA/Config.pm> file edited (if needed) and moved the C<installer> directory out of the way, it's time to begin using Dada Mail. 
+
+Press the button labeled, C<Start Working With Dada Mail> to begin!
 
 Good Luck! 
 
