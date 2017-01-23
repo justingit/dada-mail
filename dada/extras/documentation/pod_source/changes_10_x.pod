@@ -6,13 +6,19 @@
 
 =head2 Focus
 
-This is mostly a refresh and clarification on the install process and the documentation that goes with it. Little, if anything else has changed. 
+This is mostly a bug-fix release for issues found in the v10.3.2 release of Dada Mail. 
+
+This release also refreshes and clarifies the install process and the documentation that goes with it. 
+
+=head2 Bugfixes
+
+=head3 
 
 =head1 10.3.2
 
 =head2 Focus
 
-This is mostly a bug-fix release for issues found in the v10.3.0 release of Dada Mail. 
+This is mostly a bug-fix release for issues found in the v10.3.1 release of Dada Mail. 
 
 =head2 Bugfixes
 
