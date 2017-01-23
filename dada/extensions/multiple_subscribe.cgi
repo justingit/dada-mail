@@ -213,6 +213,8 @@ sub subscribe_emails {
 	my $prev_status = undef; 
 	my $prev_errors = {}; 
 	
+	my $i = 0; 
+	
     foreach my $this_list (@lists) {
         my $lh = DADA::MailingList::Subscribers->new( { -list => $this_list } );
         my $ls = DADA::MailingList::Settings->new( { -list => $this_list } );
@@ -229,31 +231,36 @@ sub subscribe_emails {
         if($li->{email_your_subscribed_msg} == 1 ){ 
 			push(@$l_skip_tests, 'subscribed');
 		}
-		
-	   
-	   if(exists($prev_errors->{captcha_challenge_failed})){ 
-		   if($prev_errors->{captcha_challenge_failed} == 1){ 
-			   # uh oh. 
-			   # So, this is just going to fail 2x, so we might as well let it. 
+			
+	   if($i > 0){
+		   if(exists($prev_errors->{captcha_challenge_failed})){ 
+			   if($prev_errors->{captcha_challenge_failed} == 1){ 
+				   # uh oh. 
+				   # So, this is just going to fail 2x, so we might as well let it. 
+			   }
+			   else { 
+				   # if we try the same test 2x with the same repsonse, it'll 
+				   # fail, even if the captcha was correctly challenged, 
+				   # so you need to skip this. 
+			   		push(@$l_skip_tests, 'captcha_challenge_failed');
+			   }
 		   }
 		   else { 
-			   # if we try the same test 2x with the same repsonse, it'll 
-			   # fail, even if the captcha was correctly challenged, 
-			   # so you need to skip this. 
-		   		push(@$l_skip_tests, 'captcha_challenge_failed');
+			   push(@$l_skip_tests, 'captcha_challenge_failed');
 		   }
-	   }
-	   if(exists($prev_errors->{stop_forum_spam_check_failed})){ 
-		   if($prev_errors->{stop_forum_spam_check_failed} == 1){ 
-			   # uh oh. 
-		   }
+		   if(exists($prev_errors->{stop_forum_spam_check_failed})){ 
+			   if($prev_errors->{stop_forum_spam_check_failed} == 1){ 
+				   # uh oh. 
+			   }
+			   else { 
+			   		push(@$l_skip_tests, 'stop_forum_spam_check_failed');
+			   }
+		   }	   
 		   else { 
 		   		push(@$l_skip_tests, 'stop_forum_spam_check_failed');
 		   }
 	   }
-	   
-		
-		
+	   	
         my ( $status, $errors ) = $lh->subscription_check(
             {
                 -email  => $email,
@@ -273,10 +280,12 @@ sub subscribe_emails {
         foreach ( keys %$errors ) {
             if($_ eq 'invalid_profile_fields') { 
                 push( @$error_report, { error => 'invalid_profile_fields' } );
+				$prev_errors->{invalid_profile_fields} = 1; 
                 
             }
             else { 
                 push( @$error_report, { error => $_ } ) if $errors->{$_} == 1;
+				$prev_errors->{$_} = 1; 
             }
         }
 
@@ -308,6 +317,7 @@ sub subscribe_emails {
                 {
                     -html_output => 0,
                     -cgi_obj     => $local_q,
+					-skip_tests  => ['captcha_challenge_failed', 'stop_forum_spam_check_failed']
                 }
             );
         }
@@ -336,7 +346,10 @@ sub subscribe_emails {
         else {
             # nothing.
         }
-    }
+		
+		$i++; 
+    
+	}
 
     if ($redirect_url) {
         $debug_info .= $q->redirect( -uri => $redirect_url );

@@ -227,6 +227,10 @@ sub subscribe {
     if ( !exists( $args->{-fh} ) ) {
         $args->{-fh} = \*STDOUT;
     }
+	
+    if ( !exists( $args->{-skip_tests} ) ) {
+		$args->{-skip_tests} = []; 
+	}
 
     my $fh = $args->{-fh};
 
@@ -319,6 +323,11 @@ sub subscribe {
     # step is even needed, just so we don't have to do this, twice. It would
     # clarify a bunch of things, I think.
 
+	my $skip_tests = $args->{-skip_tests};
+	if($ls->param('allow_blacklisted_to_subscribe') == 1){ 
+		push(@$skip_tests, 'black_listed');
+	}
+	
     my ( $status, $errors ) = $lh->subscription_check(
         {
             -email  => $email,
@@ -328,9 +337,7 @@ sub subscribe {
 				-remote_addr =>  $ENV{'REMOTE_ADDR'},
 				-response    => scalar $q->param('g-recaptcha-response'),
 			},
-            ( $ls->param('allow_blacklisted_to_subscribe') == 1 )
-            ? ( -skip => ['black_listed'], )
-            : (),
+			-skip => $skip_tests,
         }
     );
 
