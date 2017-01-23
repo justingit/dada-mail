@@ -160,6 +160,11 @@ SKIP: {
     # This is kinda cheap, since none of the subscribers we've passed have a valid, required field. 
     my $f_emails =  $lh->filter_subscribers_w_meta( { -emails => $email_list, } );
     foreach(@$f_emails){ 
+		
+		# This fails now, since invalid emails don't go through the entire barrage of tests. 
+		#use Data::Dumper; 
+		#diag Dumper($_);
+		
         ok($_->{errors}->{invalid_profile_fields}->{second}->{required} == 1, "yup, required"); 
     }
 
