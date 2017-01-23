@@ -2,6 +2,12 @@
 
 =encoding utf-8
 
+=head1 10.3.3
+
+=head2 Focus
+
+This is mostly a refresh and clarification on the install process and the documentation that goes with it. Little, if anything else has changed. 
+
 =head1 10.3.2
 
 =head2 Focus
