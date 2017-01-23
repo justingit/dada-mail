@@ -1190,6 +1190,9 @@ sub view_file_attachment {
 	
 	my $entity   = $self->_entity_from_raw_msg($raw_msg);
 	
+	if(!defined($entity)){ 
+		warn '$entity not defined';
+	}
 	# I don't like how this is called thrice.... but, oh well...
 	my $a_entity = undef;
 	
@@ -1201,14 +1204,21 @@ sub view_file_attachment {
 	
 	# These are horrible.
 	if(! defined( $a_entity )){ 
+		
+		warn '$a_entity not defined.';
+		
 		$filename =~ s/ /+/g;		
 		$a_entity = $self->_find_filename_attachment_entity(
 			-filename => $filename, 
 			-entity   => $entity
 		);		
 	}
+	
 	# We sort of undo what we just did! 
 	if(! defined( $a_entity )){ 
+		
+		warn '$a_entity still not defined.';
+		
 		$filename =~ s/\+/\%20/g;
 		$a_entity = $self->_find_filename_attachment_entity(
 			-filename => $filename, 
@@ -1216,31 +1226,36 @@ sub view_file_attachment {
 		);		
 	}
 	if(! defined( $a_entity )){ 
+		
+		warn '$a_entity yet again not defined.';
+		
 		return ({-type => 'text/plain'},  'Error: Cannot view attachment!'); 
 	}
 	else { 
-	my $body     = $a_entity->bodyhandle;
-	my $h = {}; 
-	    
-	if($args{-mode} eq 'inline'){ 
-		# ?
-		$h->{-type} = $a_entity->head->mime_type; 
-		
-		return ($h, $body->as_string);
-		
-	}else{ 
-	    $h->{'-Content-disposition'} = 'attachment; filename="' . $filename . '"';
-#	   	$h->{-type}                  = 'application/octet-stream';
-        $h->{-type} = $a_entity->head->mime_type; 
-		}
 	
-	#	# encoded. Yes or no?
-	#	$r .=  $body->as_string; 
+		my $body =  $a_entity->bodyhandle->as_string; 
+
+		my $h = {}; 
+	    
+		if($args{-mode} eq 'inline'){ 
+			# ?
+			$h->{-type} = $a_entity->head->mime_type; 
+			
+			$a_entity->purge;
+	 		undef($a_entity); 
+			
+			return ($h, $body);
+		
+		}else{ 
+		    $h->{'-Content-disposition'} = 'attachment; filename="' . $filename . '"';
+	#	   	$h->{-type}                  = 'application/octet-stream';
+	        $h->{-type} = $a_entity->head->mime_type; 
+		}
 	
 		$a_entity->purge;
  		undef($a_entity); 
 
-		return ($h, $body->as_string);	
+		return ($h, $body);	
 	}
 
 }
@@ -1292,7 +1307,7 @@ sub _find_filename_attachment_entity {
 		if($name){ 
 			warn 'name is defined.' if $t; 
 			if($self->_decode_header($name) eq $filename ){ 
-				warn 'yes!' if $t; 
+				warn 'found a match, returning entity' if $t; 
 				return $entity; 
 			}
 			else { 
