@@ -42,7 +42,7 @@ Test to make sure if everything works, by clicking the button labeled, B<Test CA
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/google_recaptcha/google_recaptcha_v2.jpg width="649" height="716" style="border:1px solid black" />
+<img src="http://dadamailproject.com/images/support/documentation/v10/google_recaptcha/google_recaptcha_v2.jpg" width="649" height="716" style="border:1px solid black" />
 </p>
 
 =end html
