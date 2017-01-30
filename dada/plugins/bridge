@@ -2759,7 +2759,7 @@ sub send_spam_rejection_message {
 				-list => $ls->param('list'),
 			}
 		);
-		$dap->send_out_email(
+		$dap->send_out_message(
             {
 				-message => 'msg_labeled_as_spam_msg',
 				-email => $from_address, 
@@ -3707,7 +3707,7 @@ sub send_reject_msg {
 		}
 	);
 	
-	$dap->send_out_email(
+	$dap->send_out_message(
         {
 			-message => 'rejection_msg',
 			-email => $from,
