@@ -5,9 +5,9 @@
 =head1 Installing CPAN Perl Modules
 
 Many of Dada Mail's most advanced features rely on additional code libraries, called B<CPAN Perl Modules> to be installed and available on the web server that Dada Mail runs on. 
-These features are usually entirely optional, meaning Dada Mail will run just fine without them, but your experiene will be greatly enhanced if they are available. 
+These features are usually entirely optional, meaning Dada Mail will run just fine without them, but your experience will be greatly enhanced if they are available. 
 
-Usually, if a feature is unavailable because of a missing CPAN Perl module, there will be an alert either in the included Dada Mail Installer where you would initially configure this feature; or from within the list control panel, where you would enable/work the feature. 
+Usually, if a feature is unavailable because of a missing CPAN Perl module: there will be an alert either in the included Dada Mail Installer where you would initially configure this feature; or from within the list control panel, where you would enable/work the feature. 
 
 Dada Mail does already ship with many included CPAN Perl modules, but it can't ship with all of them, as they could potentially need additional configuration, a dependency outside of Dada Mail's or Perl's immediate ecosystem, or code compilation. 
 
@@ -51,7 +51,7 @@ Scroll down, and find the form labeled, B<Install a Perl Module>.  In this form 
 
 =end html
 
-The process of fetching the module and installing it will then commence. Prepare to wait a few minutes, as the process does take a littl time. 
+The process of fetching the module and installing it will then commence. Prepare to wait a few minutes, as the process does take a little time. 
 
 A lot of diagnostics will be printed out, much of which you may ignore, unless the install doesn't work correctly. One reason the installation of a module will fail is because a compiler is not available. If you're on a shared host, you may be out of luck, unless your hosting support can help. If you have more control over your account, like access to WHM, you can turn on complier support in there. 
 
