@@ -2,27 +2,55 @@
 
 =head1 CAPTCHA in Dada Mail
 
-=head2 Configuraton
+Dada Mail supports B<Google reCAPTCHA v2>
 
-CAPTCHA can be configured in the included Dada Mail Installer.
+=head2 Setting up Google reCAPTCHA in Dada Mail
 
-If not already shown, click the button, B<Show/Hide Advanced Options...>, then check the option, B<Configure CAPTCHA Options>. Additional CAPTCHA settings will then be revealed. 
+=head3 Create a Site and Secret Key Pair
 
-Dada Mail currently supports three different CAPTCHA types: the B<Default>, image-based CAPTCHA system (based on, C<GD::SecurityImage>),  B<reCAPTCHA v1> and B<reCAPTCHA v2>. v2 is also known as, No-CAPTCHA CAPTCHA as there's no letters/numbers to type - you just have to select the correct images from a group of images. 
+Sign up for the Google reCAPTCHA service at,
 
-We suggest using B<reCAPTCHA v2>. The B<Default>, image-based CAPTCHA isn't always secure, and B<reCAPTCHA v1> will soon be deprecated. B<reCAPTCHA v2> will also the easiest for your users to use. Below, we will only be going over how to configure B<reCAPTCHA v2>.
+L<http://www.google.com/recaptcha/admin>
 
-If B<reCAPTCHA v2> is not available to be utilized, you may have to separately install the required CPAN Perl Module, called, C<Google::reCAPTCHA>. See installing CPAN modules: 
-
-L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
-
-Create a B<reCPATCHA Site key> and B<reCPATCHA Secret key>, 
+and create a site and secret key pair for the site you have Dada Mail installed at, as outlined here:
 
 L<https://developers.google.com/recaptcha/docs/start>
 
-And enter them into the Installer under, B<reCPATCHA Site key> and B<reCPATCHA Secret key>. 
+Make sure you record both the site and secret key somewhere safe - we'll be using them, later.
 
-You may test that your setup is working by clicking the button labeled, B<Test CAPTCHA Configuration...>. If you can view the CAPTCHA, your configuration is working. 
+=head2 Configure Dada Mail to use Google ReCAPTCHA
+
+Plugging in the site and secret keys, and telling Dada Mail to use Google reCAPTCHA is done in Dada Mail's global configuration. 
+
+The easiest way to work with that is through Dada Mail's included web-based installer, so an install or upgrade would be the perfect time to set all this up. 
+
+You can also drop back into the installer to make these configuration changes: L<http://dadamailproject.com/d/install_dada_mail.pod.html#Making-Additional-Global-Configuration-Changes-using-the-Dada-Mail-Installer>
+
+Once in the installer's configure screen, look for B<Advanced Options>.
+
+This is the section where you can setup the plugins/extensions, as well as many of Dada Mail's more advanced features. If you do not see these options, click the button labeled, B<Show/Hide Advanced Options...>
+
+Next, look for a checkbox labeled, B<Configure CAPTCHA Options>. Check the box, and the CAPTCHA options will be revealed.
+
+Dada Mail supports displaying and verifying a CAPTCHA on the initial subscripion form. Check the box labeled, B<Add CAPTCHA on all subscription forms> to enable this feature. 
+
+Plug in the site key and secret key in the textboxes labeled, B<reCAPTCHA Site key:> and, B<reCAPTCHA Secret key:>
+
+Test to make sure if everything works, by clicking the button labeled, B<Test CAPTCHA Configuration...>. If everything works correctly, you'll be shown a working reCAPTCHA v2 widget
+
+
+=begin html
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/documentation/v10/google_recaptcha/google_recaptcha_v2.jpg width="649" height="716" style="border:1px solid black" />
+</p>
+
+=end html
+
+=head3 Required Perl CPAN Module?
+
+Dada Mail's Google reCAPTCHA support requires the C<Google::reCAPTCHA> Perl module, which you can install from CPAN. See, L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+
 
 =head1 Using CAPTCHA in Dada Mail
 
@@ -49,22 +77,6 @@ CAPTCHA protection is available for Dada Mail Profile Registrations.
 =head3 Enabling
 
 CAPTCHA for Profile Registrations is enabled by default. If you'd like to I<disable> CAPTCHA, you can do so in the config variable, C<$PROFILE_OPTIONS>
-
-=head2 CAPTCHA Configuration
-
-CAPTCHA can also be configured directly in your C<.dada_config> file: 
-
-=head3 reCAPTCHA Configuration
-
-Add the following lines to your C<.dada_config> file:
-
-	$CAPTCHA_TYPE     = 'Google_CAPTCHA';
-	$RECAPTCHA_PARAMS = { 
-
-	    public_key     => undef,
-	    private_key    => undef,
-
-	};
 
 =head1 reCAPTCHA Mailhide
 
