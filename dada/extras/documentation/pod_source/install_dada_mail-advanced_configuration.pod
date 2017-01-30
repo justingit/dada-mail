@@ -532,6 +532,8 @@ Dada Mail uses CAPTCHA challenge-response tests optionally for many things: for 
 
 Dada Mail also supports Mailhide, which uses the reCAPTCHA system to easily protect email addresses shown in Dada Mail's public archives. 
 
+B<More Information:> L<http://dadamailproject.com/d/features-CAPTCHA.pod.html>
+
 In this section, we can configure the CAPTCHA options in Dada Mail: 
 
 =head3 Add CAPTCHA on all subscription forms 
