@@ -9515,12 +9515,18 @@ sub subscribe {
 
     my %args = ( -html_output => 1, @_ );
 
+	my $skip_tests = [];
+	if(exists($args{-skip_tests})){ 
+		$skip_tests = $args{-skip_tests};
+	}
+	
     require DADA::App::Subscriptions;
     my $das = DADA::App::Subscriptions->new;
     my ( $headers, $body ) = $das->subscribe(
         {
             -cgi_obj     => $q,
             -html_output => $args{-html_output},
+			-skip_tests  => $skip_tests, 
         }
     );
 
@@ -10018,7 +10024,11 @@ sub resend_conf_captcha {
                 'g-recaptcha-response',      'token'
             );
             $q->param( 'flavor', 's' );
-            $self->subscribe();
+			
+			my $skip_tests = ['captcha_challenge_failed'];
+			
+			
+            $self->subscribe(-skip_tests => $skip_tests);
 
         }
         elsif ( $q->param('rm') eq 'unsubscription_request' ) {
