@@ -244,17 +244,32 @@
 					<div class="small-12 medium-6 large-6 centered columns">	 
 			
 						<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="update_email_form" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-							<input type="hidden" name="original_email" id="original_email" value="<!-- tmpl_var email escape="HTML" -->" >
+							<input 
+								type="hidden" 
+								name="original_email" 
+								id="original_email" 
+								value="<!-- tmpl_var email escape="HTML" -->"
+							>
 					
 					
 							<div class="row">
 								<div class="small-12 columns">
-									<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email escape="HTML" -->" >
+									<input 
+										type="text" 
+										id="updated_email" 
+										name="updated_email" 
+										value="<!-- tmpl_var email escape="HTML" -->"
+									>
 								</div>
 							</div>
 							<div class="row">
 								<div class="small-12 columns">
-									<input type="button" value="Update..." class="warning button expand" id="validate_update_email" >
+									<input 
+										type="button" 
+										value="Update..." 
+										class="warning button expand" 
+										id="validate_update_email"
+									>
 								</div>
 							</div>
 

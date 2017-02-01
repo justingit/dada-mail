@@ -4752,7 +4752,7 @@ sub subscription_requests {
           . $count;
 
         if ( $return_to eq 'membership' ) {
-            $qs .= '&email=' . $return_address;
+            $qs .= '&email=' . uriescape($return_address);
         }
 
         $self->header_type('redirect');
@@ -4796,7 +4796,7 @@ sub subscription_requests {
           . $count;
 
         if ( $return_to eq 'membership' ) {
-            $qs .= '&email=' . $return_address;
+            $qs .= '&email=' . uriescape($return_address);
         }
 
         $self->header_type('redirect');
@@ -4888,7 +4888,7 @@ sub unsubscription_requests {
           . $count;
 
         if ( $return_to eq 'membership' ) {
-            $qs .= '&email=' . $return_address;
+            $qs .= '&email=' . uriescape($return_address);
         }
 
         $self->header_type('redirect');
@@ -4925,7 +4925,7 @@ sub unsubscription_requests {
           . $count;
 
         if ( $return_to eq 'membership' ) {
-            $qs .= '&email=' . $return_address;
+            $qs .= '&email=' . uriescape($return_address);
         }
 
         $self->header_type('redirect');
@@ -5560,14 +5560,19 @@ sub validate_update_email {
         my $return_address = $updated_email;
 
         my $qs =
-          'flavor=' . $return_to . '&update_email_count=' . $total_u_count;
+          'flavor=' 
+		  . $return_to 
+		  . '&update_email_count=' 
+		  . $total_u_count;
 
         if ( $return_to eq 'membership' ) {
-            $qs .= '&email=' . $return_address;
+            $qs .= '&email=' . uriescape($return_address);
         }
 
         $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
+        $self->header_props(
+			-url => $DADA::Config::S_PROGRAM_URL . '?' . $qs
+		);
     }
 
 }
@@ -5750,7 +5755,7 @@ sub validate_remove_email {
           . $full_bl_count;
 
         if ( $return_to eq 'membership' ) {
-            $qs .= '&email=' . $return_address;
+            $qs .= '&email=' . uriescape($return_address);
         }
 
         $self->header_type('redirect');
@@ -6230,7 +6235,7 @@ sub add {
               . '&return_to='
               . $return_to
               . '&return_address='
-              . $return_address
+              . uriescape($return_address)
               . '&chrome='
               . $chrome;
 
@@ -6870,7 +6875,7 @@ sub add_email {
               . $type;
 
             if ( $return_to eq 'membership' ) {
-                $qs .= '&email=' . $return_address;
+                $qs .= '&email=' . uriescape($return_address);
             }
 
             $self->header_type('redirect');
@@ -12203,7 +12208,7 @@ sub remove_subscribers {
       . $bl_count;
 
     if ( $return_to eq 'membership' ) {
-        $qs .= '&email=' . $return_address;
+        $qs .= '&email=' . uriescape($return_address);
     }
 
     $self->header_type('redirect');
@@ -12247,7 +12252,7 @@ sub process_bouncing_addresses {
           . '&black_list_add='
           . $bl_count
           . '&email='
-          . $return_address;
+          . uriescape($return_address);
 
         $self->header_type('redirect');
         $self->header_props( -url => $uri );
@@ -12279,7 +12284,7 @@ sub process_bouncing_addresses {
           . '&bounced_list_moved_to_list_count='
           . $m_count
           . '&email='
-          . $return_address;
+          . uriescape($return_address);
         $self->header_type('redirect');
         $self->header_props( -url => $uri );
 
