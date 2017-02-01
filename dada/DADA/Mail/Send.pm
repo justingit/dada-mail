@@ -731,11 +731,9 @@ sub send {
             }
         }
         else {
-
             unless ( open( MAIL, $live_mailing_settings ) ) {
-                warn
-"$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't pipe to mail program using settings: $DADA::Config::MAIL_SETTINGS or $DADA::Config::MASS_MAIL_SETTINGS: $!";
-                return;
+                warn  "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't pipe to mail program using settings: $DADA::Config::MAIL_SETTINGS or $DADA::Config::MASS_MAIL_SETTINGS: $!";
+                return -1;
             }
         }
 
@@ -1949,7 +1947,7 @@ sub mass_send {
                               . $mailout_id
                               . ' Cannot send to, address: '
                               . $current_email
-                              . 'after 2 x 3 tries, skipping and logging address.';
+                              . ' after 2 x 3 tries, skipping and logging address.';
                             warn $warning;
                             $mailout->log($warning);
                             $mailout->countsubscriber;
