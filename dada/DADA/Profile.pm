@@ -1023,13 +1023,24 @@ sub send_profile_activation_email {
       . '/'
       . $auth_code 
       . '/';
-	  
-      require DADA::App::Messages;
-	   my $dap = DADA::App::Messages->new({-list => $self->_config_profile_host_list});
 	
-		my $etp = $dap->em->fetch('profiles_activation_message'); 
-		
-		$dap->send_multipart_email(		 
+	
+  	require DADA::App::EmailThemes; 
+  	my $em = DADA::App::EmailThemes->new(
+  		{ 
+  			-list      => $self->_config_profile_host_list,
+  		}
+  	);
+	my $etp = $em->fetch('profiles_activation_message'); 
+	
+	require DADA::App::Messages;
+	my $dap = DADA::App::Messages->new(
+		{
+			-list => $self->_config_profile_host_list,
+		}
+	);
+	
+	$dap->send_multipart_email(		 
         {
             -headers => {
 			    Subject => $etp->{vars}->{subject},
