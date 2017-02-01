@@ -2145,6 +2145,9 @@ sub sending_monitor {
                     setTimeout(\"self.location.href='$refresh_url';\",refreshafter);
                 }
 
+
+		        refreshpage(5);
+
                 </script>
 
 
