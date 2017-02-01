@@ -1051,11 +1051,11 @@ sub send_profile_activation_email {
 			-html_body      => $etp->{html},
 	            -tmpl_params => {
 	                -vars => {
-	                    auth_code                    => $auth_code,
-	                    email                        => $self->{email},
-	                    'profile.email'              => $self->{email},
-	                    'profile.email_name'         => $n,
-	                    'profile.email_domain'       => $d,
+	                    auth_code                     => $auth_code,
+	                    email                         => $self->{email},
+	                    'profile.email'               => $self->{email},
+	                    'profile.email_name'          => $n,
+	                    'profile.email_domain'        => $d,
 	                    'app.profile_activation_link' => $profile_activation_link, 
 	                },
 	            },
