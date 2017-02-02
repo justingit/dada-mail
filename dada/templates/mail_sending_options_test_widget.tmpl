@@ -1,34 +1,36 @@
 <!-- begin mail_sending_options_test_widget.tmpl --> 
-
-
-<p>You changes have been saved!</p> 
-	
-	<p>
-		
+<h2>		
 		<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
-			Testing SMTP Sending... 
+			SMTP Sending Test Results:
 		<!--/tmpl_if --> 
 		<!-- tmpl_if expr="list_settings.sending_method eq 'sendmail'" --> 
-			Testing Sending via sendmail... 
+			Sending via sendmail Test Results: 
 		<!--/tmpl_if --> 
 		<!-- tmpl_if expr="list_settings.sending_method eq 'amazon_ses'" --> 
-			Testing Sending via Amazon SES....
+			Sending via Amazon SES Test Results: 
 		<!--/tmpl_if -->
-	</p>
+	
 	<!-- tmpl_if report --> 
-		<h2>
-			Results:
-		</h2><!-- tmpl_loop report -->
-		<p>
-			<strong><!-- tmpl_var SMTP_command --></strong> <!-- tmpl_var message -->
-		</p><!-- /tmpl_loop -->
-	<!-- /tmpl_if --> 
-	<!-- tmpl_if raw_log --> 
-		<h2>
-			Raw Log:
-		</h2>
-<pre><!-- tmpl_var raw_log --></pre>
-<!-- /tmpl_if --> 
+			</h2>
+				<ul>
+					<!-- tmpl_loop report -->
+						<li>
+							<strong>
+								<!-- tmpl_var SMTP_command -->
+							</strong>
+							<br>
+						<!-- tmpl_var message -->
+					</li>
+				<!-- /tmpl_loop -->
+			</ul>
+			<!-- /tmpl_if --> 
+			
+			<!-- tmpl_if raw_log --> 
+				<h2>
+					Raw Log:
+				</h2>
+				<pre><!-- tmpl_var raw_log --></pre>
+		<!-- /tmpl_if --> 
 
 
 <p>
