@@ -2,6 +2,42 @@
 
 =encoding utf-8
 
+=head1 10.3.4
+
+=head2 Focus
+
+This is mostly a bug-fix release for issues found in the v10.3.4 release of Dada Mail. 
+
+=head2 Documenation Updates 
+
+Several of the included docs have been refreshed significantly, including: 
+
+=head3 Google reCAPTCHA v2 Support
+
+L<http://dadamailproject.com/d/features-CAPTCHA.pod.html> 
+
+=head3 Amazon SES Third Party Email Sending Support
+
+L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html> 
+
+=head3 Installing CPAN Perl Modules
+
+L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html> 
+ 
+ =head2 Bugfixes
+
+=head3 Error in Profile.pm #636 
+
+L<https://github.com/justingit/dada-mail/issues/636>
+
+=head3  Plugins - Bridge: Moderation Reject Message, Message label spam email notifications never get sent #634 
+
+L<https://github.com/justingit/dada-mail/issues/634>
+
+=head3  Resend Confirmation Email: Fails if email contains "+" (character is stripped from address). #633 
+
+L<https://github.com/justingit/dada-mail/issues/633>
+
 =head1 10.3.3
 
 =head2 Focus
@@ -12,7 +48,13 @@ This release also refreshes and clarifies the install process and the documentat
 
 =head2 Bugfixes
 
-=head3 
+=head3 Extensions: multiple_subscribe.cgi does not work with Google reCAPTCHA correctly #631
+
+L<https://github.com/justingit/dada-mail/issues/631> 
+
+=head3 Link/Button in public archived message does not work - goes to, "http://dancingindigochild.local/"? #632
+
+L<https://github.com/justingit/dada-mail/issues/632> 
 
 =head1 10.3.2
 
