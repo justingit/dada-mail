@@ -918,10 +918,18 @@ sub mail_sending_options_test {
         catch {
             warn $_;
         };
+		
+		my $line; 
+		if($n_p_t_status == 1){
+			$line = "Ping to server successful!"
+		}
+		else { 
+			$line = "Ping to server was NOT successful."
+		}
         push(
             @$report,
             {
-                line    => '',
+                line    => $line,
                 message => $n_p_t_msg,
             }
         );
@@ -999,13 +1007,11 @@ sub mail_sending_options_test {
                 @$report,
                 {
                     line => $l,
-                    message =>
-'SASL Authentication may not be available on this SMTP server - try POP-before-SMTP Authentication.'
+                    message =>'SASL Authentication may not be available on this SMTP server - try POP-before-SMTP Authentication.'
                 }
             );
         }
-        elsif ( $l =~
-m/250\-AUTH PLAIN LOGIN|250 AUTH LOGIN PLAIN|250\-AUTH\=LOGIN PLAIN/i
+        elsif ( $l =~m/250\-AUTH PLAIN LOGIN|250 AUTH LOGIN PLAIN|250\-AUTH\=LOGIN PLAIN/i
           )
         {
             push(
@@ -1024,18 +1030,25 @@ m/250\-AUTH PLAIN LOGIN|250 AUTH LOGIN PLAIN|250\-AUTH\=LOGIN PLAIN/i
                 @$report,
                 {
                     line => $l,
-                    message =>
-'Looks like there\'s something wrong with your username/password - double check that you entered them right.'
+                    message => 'Looks like there\'s something wrong with your username/password - double check that you entered them right.'
                 }
             );
         }
-        elsif ( $l =~
-m/Authentication succeeded|OK Authenticated|Authentication successful/i
-          )
-        {
+        elsif ( $l =~ m/Authentication succeeded|OK Authenticated|Authentication successful/i){
             push( @$report,
                 { line => $l, message => 'Looks like we logged in OK!' } );
-        }
+		}
+		elsif($l =~ m/54 Message rejected\: Email address is not verified/){
+            push( 
+				@$report,
+                { 
+					line    => $l, 
+					message => 'You\'ll need to verify the address you\'re using 
+					for your List Owner and List Administrator for email sending 
+					using these credentials to be successful.' 
+				} 
+			);
+		}
         elsif ( $l =~ m/235 ok\, go ahead/i ) {
             push( @$report,
                 { line => $l, message => 'Looks like we logged in OK!' } );
@@ -1045,8 +1058,7 @@ m/Authentication succeeded|OK Authenticated|Authentication successful/i
                 @$report,
                 {
                     line => $l,
-                    message =>
-'Looks like we tried to log in, but our login was rejected for some reason.!'
+                    message => 'Looks like we tried to log in, but our login was rejected for some reason.!'
                 }
             );
         }
