@@ -85,34 +85,30 @@
 							value="1"
 							<!-- tmpl_if list_settings.amazon_ses_auto_batch_settings -->checked="checked"<!--/tmpl_if-->
 						>
-							<!-- tmpl_if expr="(type_of_service eq 'mandrill')" --> 
-								Automatically set batching speeds based on your Mandrill limits
-							<!-- tmpl_else --> 
-								Automatically set batching speeds based on your Amazon SES limits
-							<!-- /tmpl_if -->
+						Automatically set batching speeds based on your Amazon SES limits
 					</label>
 				</div>
 			</div>
 		<!-- /tmpl_if -->
 
 		
-			<div id="batch_setting_settings">
-				<div id="manual_batch_settings"> 
-					<div class="row">
-						<div class="large-6 medium-6 columns">
-							<label>
-								Messages Sent Per Batch
-							</label>
-							<!-- tmpl_var mass_send_amount_menu -->
-						</div>
-						<div class="large-6 medium-6 columns">			
-							<label> 
-								Sleep Time Between Batches
-							</label>
-							<!-- tmpl_var bulk_sleep_amount_menu -->
-						</div>
-					</div>	
+	<div id="batch_setting_settings">
+		<div id="manual_batch_settings"> 
+			<div class="row">
+				<div class="large-6 medium-6 columns">
+					<label>
+						Messages Sent Per Batch
+					</label>
+					<!-- tmpl_var mass_send_amount_menu -->
 				</div>
+				<div class="large-6 medium-6 columns">			
+					<label> 
+						Sleep Time Between Batches
+					</label>
+					<!-- tmpl_var bulk_sleep_amount_menu -->
+				</div>
+			</div>	
+		</div>
 
 		
 		<div class="row">
