@@ -196,6 +196,7 @@ sub batch_params {
     my $self = shift;
     my ($args) = @_;
 
+	
     # We can override things, for previewing:
     my $sending_method = $self->{ls}->param('sending_method');
     if ( exists( $args->{-sending_method} ) ) {
@@ -214,14 +215,26 @@ sub batch_params {
 	
 	my $can_use_Amazon_SES      = DADA::App::Guts::can_use_Amazon_SES();
 	
+	#my $ses; 
+	#if($can_use_Amazon_SES){ 
+    require DADA::App::AmazonSES;
+    my $ses = DADA::App::AmazonSES->new;
+	#}
+	
     # Amazon SES:
     if (
-        (
-            $sending_method eq 'amazon_ses' || ( $self->{ls}->param('sending_method') eq 'smtp'
-                && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ )
-        )
-        && $amazon_ses_auto_batch_settings == 1
-		&& $can_use_Amazon_SES             == 1
+    	   $amazon_ses_auto_batch_settings == 1
+	    && $can_use_Amazon_SES             == 1
+		&&
+        ((
+            $sending_method eq 'amazon_ses'
+		)
+		|| 
+		(
+			 $self->{ls}->param('sending_method') eq 'smtp'
+             && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/
+			 && $ses->has_ses_options_set == 1
+        ))
       )
     {
         if ( exists( $self->{_cache}->{batch_params} ) ) {
@@ -257,11 +270,20 @@ sub batch_params {
     # Amazon SES:
     my $using_amazon_ses = 0;
 
+
     if (
-        $sending_method eq 'amazon_ses' && $amazon_ses_auto_batch_settings == 1
-        || (   $self->{ls}->param('sending_method') eq 'smtp'
-            && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/
-            && $amazon_ses_auto_batch_settings == 1 )
+    	$amazon_ses_auto_batch_settings == 1
+	    && $can_use_Amazon_SES             == 1
+		&&
+        ((
+            $sending_method eq 'amazon_ses'
+		)
+		|| 
+		(
+			 $self->{ls}->param('sending_method') eq 'smtp'
+             && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/
+			 && $ses->has_ses_options_set == 1
+        ))
       )
     {
         $using_amazon_ses = 1;
@@ -282,9 +304,6 @@ sub batch_params {
         my $quota_Max24HourSend = undef;
 
         if ( $using_amazon_ses == 1 ) {
-            require DADA::App::AmazonSES;
-            my $ses = DADA::App::AmazonSES->new;
-
             # Save stats, between executions:
             ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
             if ( $ses->_should_get_saved_ses_stats == 1 ) {

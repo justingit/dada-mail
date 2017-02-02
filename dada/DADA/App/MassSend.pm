@@ -1740,23 +1740,28 @@ sub ses_params {
 
 	my $can_use_Amazon_SES      = DADA::App::Guts::can_use_Amazon_SES();
 	
+    require DADA::App::AmazonSES;
+    my $ses = DADA::App::AmazonSES->new;
+	
     my $ses_params = {};
     if (
 		$can_use_Amazon_SES 
-		&& (
-        $self->{ls_obj}->param('sending_method') eq 'amazon_ses'
-        || (   $self->{ls_obj}->param('sending_method') eq 'smtp'
+		&& 
+		
+		(
+			$self->{ls_obj}->param('sending_method') eq 'amazon_ses'
+        ||
+		 ( 
+		 	   $self->{ls_obj}->param('sending_method') eq 'smtp'
             && $self->{ls_obj}->param('smtp_server') =~ m/amazonaws\.com/ )
-      )
+      	    && $ses->has_ses_options_set == 1
+	  	  )
 	  )
     {
         $ses_params->{using_ses} = 1;
-        require DADA::App::AmazonSES;
-        my $ses = DADA::App::AmazonSES->new;
-        $ses_params->{list_owner_ses_verified} = $ses->sender_verified( $self->{ls_obj}->param('list_owner_email') );
-        $ses_params->{list_admin_ses_verified} = $ses->sender_verified( $self->{ls_obj}->param('admin_email') );
-        $ses_params->{discussion_pop_ses_verified} =
-          $ses->sender_verified( $self->{ls_obj}->param('discussion_pop_email') );
+        $ses_params->{list_owner_ses_verified}     = $ses->sender_verified( $self->{ls_obj}->param('list_owner_email') );
+        $ses_params->{list_admin_ses_verified}     = $ses->sender_verified( $self->{ls_obj}->param('admin_email') );
+        $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified( $self->{ls_obj}->param('discussion_pop_email') );
     }
 
     return $ses_params;

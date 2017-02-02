@@ -2621,22 +2621,33 @@ sub change_info {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-    my $ses_params = {};
-    if (
-        $ls->param('sending_method') eq 'amazon_ses'
-        || (   $ls->param('sending_method') eq 'smtp'
-            && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
-      )
-    {
+
+	
+    require DADA::App::AmazonSES;
+    my $ses = DADA::App::AmazonSES->new;
+
+	my $check_ses_verification; 	
+	if($ls->param('sending_method') eq 'amazon_ses'){ 
+		$check_ses_verification = 1; 
+	}
+	elsif(
+		$ls->param('sending_method') eq 'smtp'
+	    && $ls->param('smtp_server') =~ m/amazonaws\.com/
+		&& $ses->has_ses_options_set == 1
+	){ 
+		$check_ses_verification = 1; 	
+	}
+	else { 
+		$check_ses_verification = 0;
+	}
+
+	my $ses_params = {};
+		
+    if ($check_ses_verification == 1){
         $ses_params->{using_ses} = 1;
-        require DADA::App::AmazonSES;
-        my $ses = DADA::App::AmazonSES->new;
-        $ses_params->{list_owner_ses_verified} =
-          $ses->sender_verified( $ls->param('list_owner_email') );
-        $ses_params->{list_admin_ses_verified} =
-          $ses->sender_verified( $ls->param('admin_email') );
-        $ses_params->{discussion_pop_ses_verified} =
-          $ses->sender_verified( $ls->param('discussion_pop_email') );
+        $ses_params->{list_owner_ses_verified}     = $ses->sender_verified( $ls->param('list_owner_email') );
+        $ses_params->{list_admin_ses_verified}     = $ses->sender_verified( $ls->param('admin_email') );
+        $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified( $ls->param('discussion_pop_email') );
     }
     my $errors = 0;
     my $flags  = {};
@@ -3544,21 +3555,28 @@ sub mailing_sending_mass_mailing_options {
 
         my $show_amazon_ses_options = 0;
         my $type_of_service         = 'ses';
-        my $can_use_Amazon_SES      = DADA::App::Guts::can_use_Amazon_SES();
-        if (
-            (
-                $can_use_Amazon_SES == 1
-                && (
-                    $ls->param('sending_method') eq 'amazon_ses'
-                    || (   $ls->param('sending_method') eq 'smtp'
-                        && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
-                )
-            )
-          )
-        {
-            $show_amazon_ses_options = 1;
-        }
+        my $can_use_Amazon_SES      = scalar DADA::App::Guts::can_use_Amazon_SES();
+		
+		if ($can_use_Amazon_SES == 1) { 
+			
+			require DADA::App::AmazonSES;
+			my $ses = DADA::App::AmazonSES->new;
 
+			if(
+				(
+					$ls->param('sending_method') eq 'amazon_ses'
+				)
+			||
+				(
+					$ls->param('sending_method') eq 'smtp'
+					&& $ls->param('smtp_server') =~ m/amazonaws\.com/
+					&& $ses->has_ses_options_set == 1
+				)
+			) {
+				$show_amazon_ses_options = 1;
+			}
+		}
+		
         my @message_amount = ( 1 .. 180 );
         unshift( @message_amount, $batch_size );
 
@@ -3691,6 +3709,9 @@ sub amazon_ses_get_stats {
 
     my $self = shift;
     my $q    = $self->query();
+	
+    require DADA::App::AmazonSES;
+    my $ses = DADA::App::AmazonSES->new;
 
     my ( $admin_list, $root_login, $checksout, $error_msg ) =
       check_list_security(
@@ -3703,20 +3724,17 @@ sub amazon_ses_get_stats {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-    my $has_ses_options = 1;
-    if (   !defined( $DADA::Config::AMAZON_SES_OPTIONS->{AWSAccessKeyId} )
-        || !defined( $DADA::Config::AMAZON_SES_OPTIONS->{AWSSecretKey} ) )
-    {
-        $has_ses_options = 0;
-    }
-
     if (
-        $ls->param('sending_method') eq 'amazon_ses'
-        || (   $ls->param('sending_method') eq 'smtp'
-            && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
-      )
-    {
-
+        (
+			$ls->param('sending_method') eq 'amazon_ses'
+		)
+	||
+		(   
+			$ls->param('sending_method') eq 'smtp'
+            && $ls->param('smtp_server') =~ m/amazonaws\.com/
+        	&& $ses->has_ses_options_set == 1
+      	  )
+	){	
         my $status                           = undef;
         my $SentLast24Hours                  = undef;
         my $Max24HourSend                    = undef;
@@ -3727,20 +3745,19 @@ sub amazon_ses_get_stats {
         my $using_man = 0;
 
         if (
-            $ls->param('sending_method') eq 'amazon_ses'
-            || (   $ls->param('sending_method') eq 'smtp'
-                && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
-            && $has_ses_options == 1
-          )
-        {
-            require DADA::App::AmazonSES;
-            my $ses = DADA::App::AmazonSES->new;
-            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) =
-              $ses->get_stats;
-            $allowed_sending_quota_percentage =
-              $ses->allowed_sending_quota_percentage;
-            $using_ses = 1;
-
+            (
+				$ls->param('sending_method') eq 'amazon_ses'
+			)
+		||
+			(   
+				$ls->param('sending_method') eq 'smtp'
+                && $ls->param('smtp_server') =~ m/amazonaws\.com/
+            	&& $ses->has_ses_options_set == 1
+          	  )
+		){	
+			( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
+			$allowed_sending_quota_percentage = $ses->allowed_sending_quota_percentage;
+			$using_ses = 1;
         }
 
         my $body = DADA::Template::Widgets::screen(
@@ -3749,12 +3766,11 @@ sub amazon_ses_get_stats {
                 -expr   => 1,
                 -vars   => {
                     status          => $status,
-                    has_ses_options => $has_ses_options,
+                    has_ses_options => $ses->has_ses_options_set,
                     MaxSendRate     => commify($MaxSendRate),
                     Max24HourSend   => commify($Max24HourSend),
                     SentLast24Hours => commify($SentLast24Hours),
-                    allowed_sending_quota_percentage =>
-                      $allowed_sending_quota_percentage,
+                    allowed_sending_quota_percentage =>$allowed_sending_quota_percentage,
                     using_ses => $using_ses,
                     using_man => $using_man,
                 }
@@ -3788,8 +3804,7 @@ sub previewBatchSendingSpeed {
       xss_filter( scalar $q->param('enable_bulk_batching') );
     my $mass_send_amount  = xss_filter( scalar $q->param('mass_send_amount') );
     my $bulk_sleep_amount = xss_filter( scalar $q->param('bulk_sleep_amount') );
-    my $amazon_ses_auto_batch_settings =
-      xss_filter( scalar $q->param('amazon_ses_auto_batch_settings') );
+    my $amazon_ses_auto_batch_settings = xss_filter( scalar $q->param('amazon_ses_auto_batch_settings') );
 
     my $per_hour         = 0;
     my $num_subs         = 0;

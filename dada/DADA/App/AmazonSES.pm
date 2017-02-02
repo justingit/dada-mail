@@ -23,13 +23,34 @@ sub new {
 	return $self;
 }
 
-
-
 sub _init { 
 	my $self = shift; 
 }
 
+
+sub has_ses_options_set {
+	 
+	my $self = shift; 
+    my $has_ses_options = 1;
+
+	if (
+		   ! exists( $DADA::Config::AMAZON_SES_OPTIONS->{AWSAccessKeyId})
+        || ! exists( $DADA::Config::AMAZON_SES_OPTIONS->{AWSSecretKey} )
+		) {
+    	return 0;
+	}
+	elsif (   length( $DADA::Config::AMAZON_SES_OPTIONS->{AWSAccessKeyId}) <= 0
+        || length( $DADA::Config::AMAZON_SES_OPTIONS->{AWSSecretKey} )  <= 0) {
+		return 0;
+    }
+	else { 
+		return 1;
+	}
+
+}
+
 sub verify_sender { 
+
 	my $self = shift; 
 	my ($args) = @_; 
 	
