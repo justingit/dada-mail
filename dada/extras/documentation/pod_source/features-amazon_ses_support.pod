@@ -1,3 +1,4 @@
+
 =pod
 
 =head1 Amazon SES Integration with Dada Mail
@@ -41,13 +42,15 @@ When you use Dada Mail with SES, Dada Mail I<will> set the C<Return-Path> header
 
 Dada Mail's included Bounce Handler has rules specifically for Amazon SES, and we do highly suggest using it, if you use Amazon SES, to comply with their terms of services. 
 
-=head1 Configuration
+=head1 Configuration using the SES API
 
 During installation of Dada Mail, you'll need to choose the  B<AWS Region/Endpoint> you would like to utilize, then paste in your B<AWS Access Key ID> and B<AWS Secret Access Key>.
 
 I<That's it.> 
 
-Setting up things on the Amazon AWS side is a little more involved. We will describe the process below: 
+Setting up things on the Amazon AWS side of this equation is a little more involved. We will describe the process below. 
+
+Later, we'll also describe how to set up Dada Mail just to use Amazon SES's SMTP gateway, which does B<not> require you to set up an IAM User and configure the B<AWS Region/Endpoint>, B<AWS Access Key ID>, and B<AWS Secret Access Key> into Dada Mail's configuration. You'll simply need to add the SMTP server, username and password to Dada Mail, like you would for any SMTP Server. 
 
 =head2 Obtaining your AWS Access Key ID and AWS Secret Access Key
 
@@ -227,6 +230,8 @@ Add the following lines I<directly> into your C<.dada_config> file:
 
 I<(using your own B<Access Key ID> and B<Secret Access Key>)>. 
 
+
+
 =head3 Verifying a Domain with Amazon SES
 
 Verifying a Domain with Amazon SES allows you to use any email address belonging to that domain that you would like for your List Owner and List Admin. 
@@ -378,7 +383,8 @@ That email account will receive an email message from Amazon AWS, with a verific
 
 =head4 Other Ways to Verify a Sender
 
-The Amazon SES Dashboard itself allows you to Verify a Sender: 
+The Amazon SES Dashboard its
+elf allows you to Verify a Sender: 
 
 L<https://console.aws.amazon.com/ses/home?#verified-senders-email:>
 
@@ -416,6 +422,75 @@ At no point should Dada Mail send either faster than it should, either by going 
 
 Your SES sending limits themselves should creep up, as you use the service. 
 Keeping the mass sending rates high will show the Amazon AWS system that you're utilizing the system, and they're most likely going to want to raise the limit for you, without further intervention.
+
+=head1 Configure Dada Mail to use the SMTP Gateway Provided by Amazon SES
+
+Rather than using the API, you can use Amazon SES via its SMTP Gateway. There's a few downsides: if you don't set up a IAM user, you won't get automatic batch settings, sending statistics, and you can't verify a sending witin Dada Mail. Mass mailing may not be as fast.  The advantage may be that it's easier to set up. 
+
+First, sign into your AWS console. 
+
+Go to B<Services: SES>.
+
+Once the screen has refreshed: 
+
+Click, B<SMTP Settings> on the left hand menu. 
+
+Copy the server listed by, B<Server Name>. In my case, it's B<email-smtp.us-west-2.amazonaws.com> 
+
+Click the button labeled, B<Create My SMTP Credentials> 
+
+Once the screen has refreshed:
+
+Optionally change the, B<IAM User Name:>, then click the button labeled, B<Create>
+
+Once the screen has refreshed:
+
+Your SMTP Credentials should be ready to be utilized! Click the link labeled, B<Show User SMTP Security Credentials> to reveal your SMTP credentials. 
+
+The B<SMTP Username> and B<SMTP Password> will be revealed. Copy both these values. 
+
+=begin html
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-smtp_credentials.jpg" width="1024" height="388" style="border:1px solid black" /><br /> 
+<em>SMTP Credentials</em> 
+</p>
+
+=end html
+
+In Dada Mail's List Control Panel, go to: B<Sending: Options>. 
+
+Select B<SMTP> (and B<NOT> Amazon Simple Email Service) and fill out the B<SMTP Server>. For this demo it's: B<email-smtp.us-west-2.amazonaws.com>. 
+
+Set, B<Port> to, B<465> 
+
+Check, B<Use Secure Sockets Layer (SSL)> 
+
+Check, B<Use SMTP Authentication (SASL)> 
+
+and fill in the B<Username> and B<Password> with what we just created. 
+
+After you've finished, SES should now be set up for your list. Click the button labeled, B<Save, Then Test> to both save and test your new SMTP configuration. A modal window will be revealed, with the results of the test: 
+
+=begin html
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-smtp_test_results.jpg" width="1024" height="626" style="border:1px solid black" /><br /> 
+<em>SMTP Test Results</em> 
+</p>
+
+=end html
+
+An email will also be sent to the List Owner. B<If that message is received>, the SMTP has been configured correctly, and email sending has been shown to be working: 
+
+=begin html
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-smtp_sending_test_email.jpg" width="694" height="584" style="border:1px solid black" /><br /> 
+<em>SMTP Test Results</em> 
+</p>
+
+=end html
 
 =head2 Request Full Production Access
 
