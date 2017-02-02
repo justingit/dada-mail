@@ -34,9 +34,13 @@ L<https://github.com/justingit/dada-mail/issues/636>
 
 L<https://github.com/justingit/dada-mail/issues/634>
 
-=head3  Resend Confirmation Email: Fails if email contains "+" (character is stripped from address). #633 
+=head3 Resend Confirmation Email: Fails if email contains "+" (character is stripped from address). #633 
 
 L<https://github.com/justingit/dada-mail/issues/633>
+
+=head3 Dada Mail complains of unverified addresses if SES SMTP gateway is used, but no SES keys are added #637 
+
+L<https://github.com/justingit/dada-mail/issues/637> 
 
 =head1 10.3.3
 
