@@ -1211,6 +1211,7 @@ $MIME_TOOLS_PARAMS //= {
 	facebook_page_url    => undef,
 	twitter_url          => undef,
 	google_plus_page_url => undef,
+	youtube_url          => undef, 
 
     # Mailing List >> List Password
     password         => '',      # you'll need to encrypt it to use this...
