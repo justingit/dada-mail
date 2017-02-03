@@ -139,6 +139,7 @@ captcha_on_subscribe_form => $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form
 GIVE_PROPS_IN_HTML            => $DADA::Config::GIVE_PROPS_IN_HTML, 
 GIVE_PROPS_IN_SUBSCRIBE_FORM  => $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM, 
 GIVE_PROPS_IN_ADMIN           => $DADA::Config::GIVE_PROPS_IN_ADMIN, 
+GIVE_PROPS_IN_EMAIL           => $DADA::Config::GIVE_PROPS_IN_EMAIL, 
 
 DEFAULT_ADMIN_SCREEN          => $DADA::Config::DEFAULT_ADMIN_SCREEN, 
 MAIL_SETTINGS                 => $DADA::Config::MAIL_SETTINGS, 
