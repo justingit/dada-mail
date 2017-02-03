@@ -200,10 +200,10 @@
 		</div>
 	</div>
 
-
+	<!-- tmpl_if GIVE_PROPS_IN_HTML -->
 		<div class="row">
 		   <div class="small-12 columns" id="footer">
-				<p>
+				<p style="margin:10px">
 					<a href="http://dadamailproject.com?you_are_beautiful_admin" target="_blank">
 						<img 
 							src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/powered_by_dada_mail.gif" 
@@ -215,6 +215,7 @@
 				</p>   
 			</div>
 		</div>
+	<!-- /tmpl_if -->
 
 
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation.min.js?v=<!-- tmpl_var VER escape=URL -->"></script>
