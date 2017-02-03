@@ -51,7 +51,6 @@ available_templates
 open_template
 list_template
 admin_header_params
-HTML_Footer
 
 );
 
@@ -301,12 +300,7 @@ sub admin_template {
 	}
 
 
-    my $footer_props; 
-    if($DADA::Config::GIVE_PROPS_IN_ADMIN == 1){ 
-		$footer_props = HTML_Footer() . '| <strong><a href="http://dadamailproject.com/purchase/pro.html" target="_blank">Go Pro</a></strong>';
-    }
-
-	my %wysiwyg_vars = ();
+  	my %wysiwyg_vars = ();
 	if($list) { 
 		 %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);  	
 	}
@@ -323,7 +317,6 @@ sub admin_template {
 												title                          => $args{-Title},
 												root_login                     => $args{-Root_Login},
 												content                        => '[_dada_content]',	
-												footer_props                   => $footer_props, 
 												%wysiwyg_vars, 
 												%{ $args{ -vars } }, # content, etc
 												
@@ -881,11 +874,6 @@ sub list_template {
         carp "CAUGHT Error with Sessioning: $_";
     };
 	
-	my $footer_props; 
-	if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1) {
-		$footer_props = DADA::Template::HTML::HTML_Footer(); 
-    }
-    
      my $content_tag = quotemeta('<!-- tmpl_var content -->');
      if ( $list_template !~ m/$content_tag/ ) {
           # warn 'can\'t find content tag in list template'; 
@@ -908,7 +896,6 @@ sub list_template {
                 dada                => '[_dada_content]',
                 profile_widget      => $profile_widget,
                 show_profile_widget => 1,
-				footer_props        => $footer_props, 
 				
 				include_jquery_lib   =>  $header_options->{include_jquery_lib},
                 include_app_user_js  =>  $header_options->{include_app_user_js},
@@ -962,9 +949,7 @@ sub list_template {
 
 }
 
-sub HTML_Footer { 
-	return '<a href="http://dadamailproject.com" target="_blank">Dada Mail ' . $DADA::Config::VER . '</a> | Copyright &copy; 1999-2015, <a href="http://dadamailproject.com/justin" target="_blank">Simoni Creative</a>';	
-}
+
 
 sub open_template_from_url {
     my %args = (

@@ -542,13 +542,6 @@ sub format_mlm {
         );		
     }
 
-    if ( $DADA::Config::GIVE_PROPS_IN_EMAIL == 1 ) {
-        $content = $self->_give_props(
-            -data => $content,
-            -type => $type,
-        );
-    }
-
 		
 	if($type eq 'text/html') { 
 		# Minify
@@ -947,46 +940,7 @@ Given an MIME::Entity (may be multipart) will attempt to:
 
 =cut
 
-sub _give_props {
 
-    my $self = shift;
-    my %args = ( -data => undef, -type => 'text/plain', @_ );
-
-    if ( $DADA::Config::GIVE_PROPS_IN_EMAIL == 1 ) {
-
-        my $html_props = "\n"
-          . '<p style="font:.8em/1.6em Helvetica,Verdana,\'Sans-serif\';text-align:center"><a href="'
-          . $DADA::Config::PROGRAM_URL
-          . '/what_is_dada_mail/">Mailing List Powered by Dada Mail</a></p>'
-          . "\n";
-        my $text_props =
-"\n\nMailing List Powered by Dada Mail\n$DADA::Config::PROGRAM_URL/what_is_dada_mail/\n";
-
-        if ( $args{-type} eq 'text/html' ) {
-
-            if ( $args{-data} =~ m{<!--/signature-->} ) {
-                $args{-data} =~
-                  s{<!--/signature-->}{$html_props<!--/signature-->}i;
-            }
-            elsif ( $args{-data} =~ m{</body>} ) {
-
-                $args{-data} =~ s{</body>}{$html_props</body>}i
-
-            }
-            else {
-
-                $args{-data} = $args{-data} . $html_props;
-            }
-        }
-        else {
-
-            $args{-data} = $args{-data} . $text_props;
-        }
-
-        return $args{-data};
-
-    }
-}
 
 sub _add_opener_image {
 

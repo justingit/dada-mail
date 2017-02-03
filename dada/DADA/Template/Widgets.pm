@@ -2270,10 +2270,6 @@ sub wrap_screen {
 			$list_param = $args->{-list_settings_vars_param}->{-list}; 
 		}
 		
-		if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 && $with eq 'list') {
-			$vars->{footer_props} = DADA::Template::HTML::HTML_Footer(); 
-	    }
-	
 		require DADA::Template::HTML; 	
 		my $template = DADA::Template::HTML::list_template(
 			%{$args->{-wrapper_params}}, # This is currently, "blank" - where is put in here - header_params? 

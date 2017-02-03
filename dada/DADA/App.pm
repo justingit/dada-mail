@@ -211,7 +211,6 @@ sub setup {
         'resend_conf'                   => \&resend_conf,
         'show_error'                    => \&show_error,
         'subscription_form_html'        => \&subscription_form_html,
-        'what_is_dada_mail'             => \&what_is_dada_mail,
         'profile_activate'              => \&profile_activate,
         'profile_register'              => \&profile_register,
         'profile_reset_password'        => \&profile_reset_password,
@@ -237,7 +236,6 @@ sub setup {
 
         # This doesn't really happen, anymore:
         'ur'                               => \&outdated_subscription_urls,
-        'smtm'                             => \&what_is_dada_mail,
         'send_email_testsuite'             => \&send_email_testsuite,
         $DADA::Config::ADMIN_FLAVOR_NAME   => \&admin,
         $DADA::Config::SIGN_IN_FLAVOR_NAME => \&sign_in,
@@ -14601,20 +14599,7 @@ sub contact_mothership {
     return ( $status, $errors, $receipt );
 }
 
-sub what_is_dada_mail {
 
-    my $self = shift;
-    my $q    = $self->query();
-
-    my $scrn = DADA::Template::Widgets::wrap_screen(
-        {
-            -screen => 'what_is_dada_mail.tmpl',
-            -with   => 'list',
-        }
-    );
-    return $scrn;
-
-}
 
 sub plugins {
     my $self   = shift;

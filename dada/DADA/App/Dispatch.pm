@@ -235,11 +235,6 @@ sub translate {
             $q->param( 'extran', $extran );
 
         }
-        elsif ( $info =~ /^smtm/ ) {
-
-            $q->param('what_is_dada_mail');
-
-        }
         elsif ( $info =~ /^spacer_image/ ) {
 
             # spacer_image/list/mid/spacer.png';
@@ -423,10 +418,6 @@ sub translate {
             $q->param( 'email', $pi_email )
               if $pi_email;
 
-        }
-        elsif ( $info =~ /^what_is_dada_mail$/ ) {
-
-            $q->param( 'flavor', 'what_is_dada_mail' );
         }
         elsif ( $info =~ m/^profile/ ) {
 
