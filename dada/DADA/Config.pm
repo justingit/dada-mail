@@ -1387,7 +1387,7 @@ $MIME_TOOLS_PARAMS //= {
 
     # add list prefs
     use_add_list_import_limit              => 1, 
-    add_list_import_limit                  => 1000, 
+    add_list_import_limit                  => 5000, 
     allow_profile_editing => 0, 
     
     # archive prefs
