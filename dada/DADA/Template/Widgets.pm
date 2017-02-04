@@ -601,7 +601,7 @@ sub default_screen {
                 visible_lists      => $visible_lists,
                 error_invalid_list => $args->{ -error_invalid_list },
                 fields             => $named_subscriber_fields,
-                subscription_form  => scalar subscription_form( { -give_props => 0 } ),
+                subscription_form  => scalar subscription_form(),
             },
         }
     );
@@ -638,7 +638,7 @@ sub list_page {
         -vars                     => 
         { 
 			can_use_JSON              => scalar DADA::App::Guts::can_use_JSON(), 
-            subscription_form         => subscription_form({-list => $args{-list}, -email => $args{-email}, -give_props => 0 }), 
+            subscription_form         => subscription_form({-list => $args{-list}, -email => $args{-email}}), 
             error_no_email            => $args{-error_no_email}, 
             html_archive_list         => $html_archive_list, 
 			#allowed_to_view_archives  => $allowed_to_view_archives,  
@@ -2514,10 +2514,6 @@ sub subscription_form {
     if(! exists($args->{-form_type})){ 
 		$args->{-form_type} = 'full';
 	}
-	
-    if(! exists($args->{-give_props})){
-        $args->{-give_props} = $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM; 
-    }
 
     if(! exists($args->{-script_url})){ 
         $args->{-script_url} = $DADA::Config::PROGRAM_URL; 
@@ -2677,7 +2673,6 @@ sub subscription_form {
                             subscriber_fields        => $named_subscriber_fields,
                             list                     => $list, 
                             email                    => $args->{-email},
-                            give_props               => $args->{-give_props}, 
                             script_url               => $args->{-script_url}, 
 							show_fields              => $args->{-show_fields}, 
 							profile_logged_in        => $args->{-profile_logged_in}, 
@@ -2705,7 +2700,6 @@ sub subscription_form {
                             email                    => $args->{-email},
                             list_popup_menu          => list_popup_menu(),
                             list_checkbox_menu       => list_popup_menu(-as_checkboxes => 1), 
-                            give_props               => $args->{-give_props} == 1, 
                             multiple_lists           => $args->{-multiple_lists}, 
                             script_url               => $args->{-script_url}, 
 							show_fields              => $args->{-show_fields}, 

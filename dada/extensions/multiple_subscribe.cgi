@@ -180,7 +180,6 @@ sub subscription_form {
                     {
                         -multiple_lists => 1,
                         -script_url     => $q->url(),
-                        -give_props     => 0
                     }
                 ),
                 error_invalid_email => scalar $q->param('invalid_email'),

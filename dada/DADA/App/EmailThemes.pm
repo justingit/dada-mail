@@ -260,6 +260,13 @@ sub munge_logo_img {
     my $tag       = quotemeta('<!-- tmpl_var list_settings.logo_image_url -->');
     my $tag_value = $self->ls->param('logo_image_url');
     $html =~ s/$tag/$tag_value/g;
+	
+	my $props_url = quotemeta('<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/powered_by_dada_mail.gif'); 
+	my $props_url_value = $DADA::Config::SUPPORT_FILES->{url} . '/static/images/powered_by_dada_mail.gif'; 
+	
+    $html =~ s/$props_url/$props_url_value/g;
+	
+	
     return $html;
 }
 

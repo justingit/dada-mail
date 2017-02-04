@@ -9799,7 +9799,6 @@ sub outdated_subscription_urls {
                     {
                         -list       => $list,
                         -email      => $email,
-                        -give_props => 0,
                         -magic_form => 0,
                     },
                 ),
@@ -10715,7 +10714,6 @@ sub list_archive {
                 {
                     -list       => $ls->param('list'),
                     -email      => $email,
-                    -give_props => 0,
                 }
               );
         }
@@ -11349,7 +11347,6 @@ sub search_archive {
                 {
                     -list       => $ls->param('list'),
                     -email      => $email,
-                    -give_props => 0,
                 }
               );
         }

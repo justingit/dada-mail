@@ -149,7 +149,6 @@ sub cgi_user_error {
                 {
                     -list       => $args->{-list},
                     -email      => $args->{-email},
-                    -give_props => 0
                 }
             );
             if ( $list_exists > 0 ) {
@@ -157,18 +156,17 @@ sub cgi_user_error {
                     {
                         -list       => $args->{-list},
                         -email      => $args->{-email},
-                        -give_props => 0
                     }
                 );
             }
         }
         else {
             $subscription_form =
-              DADA::Template::Widgets::subscription_form( { -email => $args->{-email}, -give_props => 0 } )
+              DADA::Template::Widgets::subscription_form( { -email => $args->{-email}} )
               ;    # -show_hidden =>1 ?!?!?!
             if ( $list_exists > 0 ) {
                 $unsubscription_form =
-                  DADA::Template::Widgets::unsubscription_form( { -email => $args->{-email}, -give_props => 0 } )
+                  DADA::Template::Widgets::unsubscription_form( { -email => $args->{-email}} )
                   ;    # -show_hidden => 1?!?!?!
             }
         }
