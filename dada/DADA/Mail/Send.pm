@@ -1024,7 +1024,7 @@ sub mail_sending_options_test {
             );
         }
         elsif ( $l =~
-            m/535 Incorrect authentication data|535 authorization failed/i )
+            m/535 Incorrect authentication data|535 authorization failed|Authentication Credentials Invalid/i )
         {
             push(
                 @$report,
