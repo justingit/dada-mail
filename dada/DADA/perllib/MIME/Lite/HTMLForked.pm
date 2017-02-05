@@ -668,7 +668,12 @@ sub create_image_part {
 #	warn '$ur:' . $ur; 
 #	warn 'length($ur)' . length($ur); 
 #	warn 'defined($ur)' . defined($ur); 
-	return undef if (length($ur) == 0) || (! defined $ur); 
+	
+	if ((length($ur) == 0) || (! defined $ur)) { 
+		warn 'passed blank url'
+			if $self->{_DEBUG};
+		return undef ;
+	} 
 
 	# This is asolutely ridiculous. 
     # Create MIME type
