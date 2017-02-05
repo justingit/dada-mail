@@ -266,6 +266,11 @@ sub munge_logo_img {
 	
     $html =~ s/$props_url/$props_url_value/g;
 	
+	if($DADA::Config::GIVE_PROPS_IN_EMAIL != 1){
+		my $img = quotemeta($DADA::Config::SUPPORT_FILES->{url} . '/static/images/powered_by_dada_mail.gif');
+		$html =~ s/$img//; 
+	}
+	
 	
     return $html;
 }
