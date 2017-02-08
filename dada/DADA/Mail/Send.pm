@@ -171,7 +171,6 @@ sub _init {
     my $em = DADA::App::EmailThemes->new(
         {
             -list  => $self->{list},
-			-name  => 'default',
 			-cache => 1, 
         }
     );

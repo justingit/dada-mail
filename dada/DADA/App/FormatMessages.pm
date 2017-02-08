@@ -400,7 +400,12 @@ sub format_mlm {
 	            require DADA::App::FormatMessages::Filters::InjectThemeStylesheet;
 	            my $its =
 	              DADA::App::FormatMessages::Filters::InjectThemeStylesheet->new;
-	            $content = $its->filter( { -html_msg => $content } );
+	            $content = $its->filter( 
+					{ 
+						-html_msg => $content, 
+						-list     => $self->{list}, 
+					} 
+				);
 	        }
 	        catch {
 	            carp 'Problems with filter:' . $_ if 

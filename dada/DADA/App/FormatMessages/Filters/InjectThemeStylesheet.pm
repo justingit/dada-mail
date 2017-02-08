@@ -84,7 +84,10 @@ sub filter {
 	
 	if(exists($args->{-html_msg})){ 
 		$html = $args->{-html_msg};		
-		$html = $self->inject_stylesheet($html); 
+		$html = $self->inject_stylesheet({
+			-str => $html, 
+			-list => $args->{-list}, 
+		}); 		
 		return $html; 
 	}
 	else { 
@@ -95,9 +98,12 @@ sub filter {
 
 sub inject_stylesheet { 
 	my $self = shift; 
-	my $html = shift;
 	
-	my $css = $self->grab_css(); 
+	my ($args) = @_; 
+	
+	my $html = $args->{-str};
+	
+	my $css = $self->grab_css($args->{-list}); 
 	
 	$css = qq{ 
 		<!-- start injected css -->
@@ -141,12 +147,11 @@ sub inject_stylesheet {
 
 sub grab_css { 
 	my $self = shift;
-	
+	my $list = shift; 
 	require  DADA::App::EmailThemes; 
 	my $em = DADA::App::EmailThemes->new(
 		{ 
-			-name => 'default',
-			
+			-list   => $list,
 		}
 	);
 	
