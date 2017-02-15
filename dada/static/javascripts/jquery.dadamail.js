@@ -132,14 +132,16 @@
 			
 						
 			$.ajax({
-				url: $("#" + copythis._targetForm).attr("action") + '/json/subscribe',
-				type: using_content_type,
-				dataType: using_datatype,
-				cache: false,
-				data: using_data, 
+				url:         $("#" + copythis._targetForm).attr("action") + '/json/subscribe',
+				type:        using_content_type,
+				dataType:    using_datatype,
+				cache:       false,
+				data:        using_data, 
 			    contentType: "application/json; charset=UTF-8",
-				success: function(data) {
+				success:     function(data) {
+					
 					console.log('data:' + JSON.stringify(data)); 
+	
 					var html = ''; 
 					if(data.status === 0){
 						console.log('Errors: ' + JSON.stringify(data.errors)); 
@@ -150,13 +152,52 @@
 					else { 
 						html += data.success_message;
 					}
+					
 					if(typeof data.redirect_required === 'undefined') {
+							
 						if(data.redirect.using === 1) {
-							if(data.redirect.using_with_query === 1){ 
-								window.location.href = data.redirect.url + '?' + data.redirect.query; 
+							
+							if(data.redirect.in_modal_window === 1){
+																
+								var modal_url = ''; 
+								if(data.redirect.using_with_query === 1){ 
+									modal_url = data.redirect.url + '?' + data.redirect.query; 
+								}
+								else { 
+									modal_url = data.redirect.url;
+								}
+								
+								var responsive_options = {
+									width: '95%',
+									height: '95%',
+									maxWidth: '640px',
+									maxHeight: '480px'
+								};
+								
+								$.colorbox({
+									iframe: true,
+									fastIframe: false,
+									href: modal_url,
+									opacity: 0.50,
+									maxWidth: '640px',
+									width: '95%',
+									height: '95%'					
+								});
+								$(window).resize(function(){
+								    $.colorbox.resize({
+								      width: window.innerWidth   > parseInt(responsive_options.maxWidth)  ? responsive_options.maxWidth  : responsive_options.width,
+								      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+								    });		
+								});
 							}
 							else { 
-								window.location.href = data.redirect.url;
+																
+								if(data.redirect.using_with_query === 1){ 									
+									window.location.href = data.redirect.url + '?' + data.redirect.query; 
+								}
+								else { 									
+									window.location.href = data.redirect.url;
+								}
 							}
 						}
 						else { 
@@ -176,17 +217,19 @@
 							}); 
 							$(window).resize(function(){
 							    $.colorbox.resize({
-							      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+							      width: window.innerWidth   > parseInt(responsive_options.maxWidth)  ? responsive_options.maxWidth  : responsive_options.width,
 							      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
 							    });		
 							});
 						}
 					}
 					else { 
-						/* Success, or Error: it may not be something we can work with: */
+						// Success, or Error: it may not be something we can work with:
 						//alert(data.redirect_required); 
 						window.location.href = data.redirect.url;
 					}
+
+				
 				},
 				error: function(xhr, ajaxOptions, thrownError) {
 					console.log('status: ' + xhr.status);

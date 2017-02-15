@@ -489,6 +489,8 @@ sub subscribe {
                 using_with_query => $ls->param('alt_url_sub_confirm_failed_w_qs'),
                 url              => $ls->param('alt_url_sub_confirm_failed'),
                 query            => '',
+				in_modal_window  => int($ls->param('alt_url_sub_confirm_failed_show_in_modal_window')),
+				
             }
         };
         my $qs = 'list=' . uriescape($list) . '&email=' . uriescape($email) . '&status=0' . '&rm=sub_confirm';
@@ -621,15 +623,20 @@ sub subscribe {
             list     => $list,
             email    => $email,
             redirect => {
-                using            => $ls->param('use_alt_url_sub_confirm_success'),
-                using_with_query => $ls->param('alt_url_sub_confirm_success_w_qs'),
-                url              => $ls->param('alt_url_sub_confirm_success'),
-                query            => '',
+                using                 => $ls->param('use_alt_url_sub_confirm_success'),
+                using_with_query      => $ls->param('alt_url_sub_confirm_success_w_qs'),
+                url                   => $ls->param('alt_url_sub_confirm_success'),
+                query                 => '',
+				in_modal_window       => int($ls->param('alt_url_sub_confirm_success_show_in_modal_window')),
             }
         };
         my $qs = 'list=' . uriescape($list) . '&email=' . uriescape($email) . '&status=1' . '&rm=sub_confirm';
         $qs .= '&' . $_ . '=' . uriescape( $fields->{$_} ) for keys %$fields;
         $r->{redirect}->{query} = $qs;
+
+
+		use Data::Dumper; 
+		warn Dumper($r);
 
         if ( $args->{-html_output} == 0 ) {
             if ( $args->{-return_json} == 1 ) {
@@ -930,6 +937,7 @@ sub confirm {
                 using_with_query => $ls->param('alt_url_sub_failed_w_qs'),
                 url              => $ls->param('alt_url_sub_failed'),
                 query            => '',
+				in_modal_window  => int($ls->param('alt_url_sub_confirm_failed_show_in_modal_window')),
             }
         };
         my $qs = 'list=' . $list . '&rm=sub&status=0&email=' . uriescape($email);

@@ -318,10 +318,6 @@ jQuery(document).ready(function($){
 						return true; 
 					},
 					error: function(xhr, ajaxOptions, thrownError) {
-						
-						//alert('requrest error!');
-						
-						
 						console.log('status: ' + xhr.status);
 						console.log('thrownError:' + thrownError);
 					},

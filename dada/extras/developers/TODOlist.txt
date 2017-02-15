@@ -11,8 +11,22 @@ Key:
 [x] Done. 
 [*] Naw...
 [?] Someday
-	
+
+
+Put check for domain for sendmail - is the list owner/admin the same as the installed domain? 
+
+VCard availability? 
+
+Put "redirect" URL in modal window, make integration into website much easy - one line of Javascript?
+
+Screencast ideas
+(all the new features)
+reCAPTCHA setup
+
+
 * Save draft message until mass mailing has completed (or forever?). Maybe allow editing of a message during mass mailing? KEep track of state of mailing to restart? 
+	* Maybe save where we aer on a mailing (we already do htis?) and have that as an option restart at, 
+	* that would be easy to save in a draft... 
 
 * Work on build script, and docs on build script
 * Double-check commadn line works correctly, and add ALL options to command line

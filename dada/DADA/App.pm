@@ -2982,6 +2982,12 @@ sub list_options {
 
     my $can_use_captcha       = can_use_Google_reCAPTCHA();
     my $can_use_StopForumSpam = can_use_StopForumSpam();
+	
+	my $using_captcha_on_initial_subscribe_form = 0; 
+	if($can_use_captcha == 1 && $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1){ 
+		$using_captcha_on_initial_subscribe_form = 1; 
+	}
+
 
     if ( !$process ) {
         require HTML::Menu::Select;
@@ -3046,6 +3052,7 @@ sub list_options {
                     CAPTCHA_TYPE          => $DADA::Config::CAPTCHA_TYPE,
                     can_use_mx_lookup     => $can_use_mx_lookup,
                     can_use_captcha       => $can_use_captcha,
+					using_captcha_on_initial_subscribe_form => $using_captcha_on_initial_subscribe_form, 
                     can_use_StopForumSpam => $can_use_StopForumSpam,
                     send_subscription_notice_to_popup_menu =>
                       $send_subscription_notice_to_popup_menu,
@@ -3081,60 +3088,58 @@ sub list_options {
             {
                 -associate => $q,
                 -settings  => {
-                    private_list                                => 0,
-                    hide_list                                   => 0,
-                    closed_list                                 => 0,
-                    invite_only_list                            => 0,
-                    get_sub_notice                              => 0,
-                    get_unsub_notice                            => 0,
-                    enable_closed_loop_opt_in                   => 0,
-                    skip_sub_confirm_if_logged_in               => 0,
-                    send_unsub_success_email                    => 0,
-                    send_sub_success_email                      => 0,
-                    send_newest_archive                         => 0,
-                    mx_check                                    => 0,
-                    limit_sub_confirm                           => 0,
-                    limit_sub_confirm_use_captcha               => 0,
-                    enable_sub_confirm_stopforumspam_protection => 0,
-                    enable_sub_confirm_suspicious_activity_by_ip_protection =>
-                      0,
-                    email_your_subscribed_msg               => 0,
-                    email_you_are_not_subscribed_msg        => 0,
-                    use_alt_url_sub_confirm_success         => 0,
-                    alt_url_sub_confirm_success             => '',
-                    alt_url_sub_confirm_success_w_qs        => 0,
-                    use_alt_url_sub_confirm_failed          => 0,
-                    alt_url_sub_confirm_failed              => '',
-                    alt_url_sub_confirm_failed_w_qs         => 0,
-                    use_alt_url_sub_success                 => 0,
-                    alt_url_sub_success                     => '',
-                    alt_url_sub_success_w_qs                => 0,
-                    use_alt_url_sub_failed                  => 0,
-                    alt_url_sub_failed                      => '',
-                    alt_url_sub_failed_w_qs                 => 0,
-                    use_alt_url_subscription_approval_step  => 0,
-                    alt_url_subscription_approval_step      => '',
-                    alt_url_subscription_approval_step_w_qs => 0,
-
-                    use_alt_url_unsub_success               => 0,
-                    alt_url_unsub_success                   => '',
-                    alt_url_unsub_success_w_qs              => 0,
-                    unsub_show_email_hint                   => 0,
-                    one_click_unsubscribe                   => 0,
-                    enable_subscription_approval_step       => 0,
-                    enable_mass_subscribe                   => 0,
-                    enable_mass_subscribe_only_w_root_login => 0,
-                    send_subscribed_by_list_owner_message   => 0,
-                    send_unsubscribed_by_list_owner_message => 0,
-                    send_last_archived_msg_mass_mailing     => 0,
-                    captcha_sub                             => 0,
-
-                    send_subscription_notice_to   => undef,
-                    send_unsubscription_notice_to => undef,
-
-                    alt_send_unsubscription_notice_to       => undef,
-                    alt_send_subscription_notice_to         => undef,
-                    alt_send_admin_unsubscription_notice_to => undef,
+                    private_list                                            => 0,
+                    hide_list                                               => 0,
+                    closed_list                                             => 0,
+                    invite_only_list                                        => 0,
+                    get_sub_notice                                          => 0,
+                    get_unsub_notice                                        => 0,
+                    enable_closed_loop_opt_in                               => 0,
+                    skip_sub_confirm_if_logged_in                           => 0,
+                    send_unsub_success_email                                => 0,
+                    send_sub_success_email                                  => 0,
+                    send_newest_archive                                     => 0,
+                    mx_check                                                => 0,
+                    limit_sub_confirm                                       => 0,
+                    limit_sub_confirm_use_captcha                           => 0,
+                    enable_sub_confirm_stopforumspam_protection             => 0,
+                    enable_sub_confirm_suspicious_activity_by_ip_protection => 0,
+                    email_your_subscribed_msg                               => 0,
+                    email_you_are_not_subscribed_msg                        => 0,
+                    use_alt_url_sub_confirm_success                         => 0,
+                    alt_url_sub_confirm_success                             => '',
+                    alt_url_sub_confirm_success_w_qs                        => 0,
+                    alt_url_sub_confirm_success_show_in_modal_window        => 0, 
+					use_alt_url_sub_confirm_failed                          => 0,
+                    alt_url_sub_confirm_failed                              => '',
+                    alt_url_sub_confirm_failed_w_qs                         => 0,
+					alt_url_sub_confirm_failed_show_in_modal_window         => 0, 
+                    use_alt_url_sub_success                                 => 0,
+                    alt_url_sub_success                                     => '',
+                    alt_url_sub_success_w_qs                                => 0,
+                    use_alt_url_sub_failed                                  => 0,
+                    alt_url_sub_failed                                      => '',
+                    alt_url_sub_failed_w_qs                                 => 0,
+                    use_alt_url_subscription_approval_step                  => 0,
+                    alt_url_subscription_approval_step                      => '',
+                    alt_url_subscription_approval_step_w_qs                 => 0,
+                    use_alt_url_unsub_success                               => 0,
+                    alt_url_unsub_success                                   => '',
+                    alt_url_unsub_success_w_qs                              => 0,
+                    unsub_show_email_hint                                   => 0,
+                    one_click_unsubscribe                                   => 0,
+                    enable_subscription_approval_step                       => 0,
+                    enable_mass_subscribe                                   => 0,
+                    enable_mass_subscribe_only_w_root_login                 => 0,
+                    send_subscribed_by_list_owner_message                   => 0,
+                    send_unsubscribed_by_list_owner_message                 => 0,
+                    send_last_archived_msg_mass_mailing                     => 0,
+                    captcha_sub                                             => 0,
+                    send_subscription_notice_to                             => undef,
+                    send_unsubscription_notice_to                           => undef,
+                    alt_send_unsubscription_notice_to                       => undef,
+                    alt_send_subscription_notice_to                         => undef,
+                    alt_send_admin_unsubscription_notice_to                 => undef,
                 },
                 -also_save_for => $also_save_for_list,
             }
@@ -3143,7 +3148,6 @@ sub list_options {
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
               . '?flavor=list_options&done=1' );
-
     }
 }
 
@@ -7584,7 +7588,6 @@ sub archive_options {
     if ( !$process ) {
 
         my $can_use_captcha = can_use_Google_reCAPTCHA();
-
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'archive_options_screen.tmpl',

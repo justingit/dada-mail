@@ -1206,6 +1206,8 @@ $MIME_TOOLS_PARAMS //= {
     physical_address => '',
         # (Dummy)
         list_info => undef,
+		
+	list_phone_number => undef, 
 
 	logo_image_url       => undef,
 	facebook_page_url    => undef,
@@ -1265,13 +1267,15 @@ $MIME_TOOLS_PARAMS //= {
 	enable_sub_confirm_stopforumspam_protection => 1, 
 	enable_sub_confirm_suspicious_activity_by_ip_protection => 1,
 
-    use_alt_url_sub_confirm_success  => 0,
-    alt_url_sub_confirm_success_w_qs => 0,
-    alt_url_sub_confirm_success      => '',
+    use_alt_url_sub_confirm_success                  => 0,
+    alt_url_sub_confirm_success                      => '',
+    alt_url_sub_confirm_success_w_qs                 => 0,
+	alt_url_sub_confirm_success_show_in_modal_window => 0, 
 
-    use_alt_url_sub_confirm_failed  => 0,
-    alt_url_sub_confirm_failed_w_qs => 0,
-    alt_url_sub_confirm_failed      => '',
+    use_alt_url_sub_confirm_failed                   => 0,
+    alt_url_sub_confirm_failed_w_qs                  => 0,
+    alt_url_sub_confirm_failed                       => '',
+	alt_url_sub_confirm_failed_show_in_modal_window  => 0,
 
     use_alt_url_sub_success  => 0,
     alt_url_sub_success_w_qs => 0,

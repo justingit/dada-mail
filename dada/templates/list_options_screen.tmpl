@@ -169,14 +169,15 @@
           </label>
 	      <div id="closed_list_notice"> 		
 	          <div class="alert-box info radius">  
-	              <p>
+
 	                  <strong>
 	                      Closed List
 	                  </strong>
-	              </p> 
-	              <p>
+				<br>
+				<br>
+
 	                  Your Mailing List will be closed to all new subscriptions
-	              </p>
+
 	          </div> 
 	      </div>
         </div> 
@@ -185,6 +186,7 @@
     
 
      <div id="opened_list_options"> 
+         
          
          <div class="row"> 
             <div class="small-12 columns">
@@ -201,14 +203,13 @@
 				
 		        <div id="not_anyone_can_subscribe_options">
 			        <div class="alert-box info radius">
-			            <p>
+			            
 							<strong>
 								Invitation-Only Mailing List
 							</strong>
-						</p>
-			            <p>
+						<br>
+						<br>
 			            	Subscribers must be Invited (or Subscribed) in the List Control Panel
-			            </p>
 			        </div> 
 		        </div><!-- not_anyone_can_subscribe_options -->
 				
@@ -219,11 +220,24 @@
 
         
         <div id="anyone_can_subscribe_options">         
-			     
+				 
            <fieldset>
                <legend>
                    Subscription Confirmation
                </legend> 
+			   
+				<!-- tmpl_if using_captcha_on_initial_subscribe_form --> 
+					<div class="row"> 
+						<div class="small-12 columns">
+							<div class="alert-box info radius">
+							Google reCAPTCHA enabled on the initial subscription form.
+							</div>
+						</div> 
+					</div>
+				<!-- /tmpl_if -->
+			
+			   
+			   
                
 				<div class="row"> 
 					<div class="small-12 columns">           
@@ -308,7 +322,7 @@
                                     <strong>
                                         Disabled.
                                     </strong> 
-                                    The CAPTCHA system (<strong><!-- tmpl_var CAPTCHA_TYPE --></strong>) needs to be successfully configured.        
+                                    Google reCAPTCHA needs to be correctly configured.  
                                 </p>
                             </div>
                         <!--/tmpl_unless-->
@@ -325,14 +339,13 @@
                          </label>                         
                         
 						 <div class="alert-box info radius">                         
-                             <p>
+                            
                                Usually, if a subscriber attempts to subscribe to a list they're already subscribed to, they'll receive an error stating that they are already subscribed to a particular list. 
                                This could be seen as an easy way for a third party to find out if an individual is subscribed to a list, by simply entering the email address they want to check, when subscribing. 
-                              </p>
-
-                              <p>
-                               With this option checked, an email will instead be sent to the subscriber, stating they are already subscribed, and an error will not be raised by <!-- tmpl_var PROGRAM_NAME -->.
-                              </p> 
+                            <br>
+							<br>
+							   With this option checked, an email will instead be sent to the subscriber, stating they are already subscribed, and an error will not be raised by <!-- tmpl_var PROGRAM_NAME -->.
+                              
                          </div> 
 						 
                      </div> 
@@ -363,10 +376,10 @@
 	                        </div>
 						  <!-- /tmpl_unless -->
 						  
-						  <p>
+						  <div class="alert-box info radius">     
 							  StopForumSpam blocks known IP addresses and email addresses reported widely as abusive. 
 							  (<a href="http://stopforumspam.com" target="_blank">More Information</a>)
-						  </p>
+						  </div>
 					</div>                        
 				</div>
 				
@@ -385,14 +398,14 @@
                          <label for="enable_sub_confirm_suspicious_activity_by_ip_protection">
                           		Enable Suspicious IP Address Activity Protection
                           </label>
-						  <p>
+						  <div class="alert-box info radius">
 							  When enabled, subscription requests will be blocked, 
 							  if multiple subscription requests have been
 							  made with varying email addresses from the same IP Address. 
 							  This option works well working along StopForumSpam and Rate Limiting, as it 
 							  fills the nitch between IP/email addresses not yet listed on 
 							  StopForumSpam, and requests that happen over a longer period than Rate Limiting.
-						  </p>
+						  </div>
 						 
 					</div>                        
 				</div>
@@ -438,13 +451,31 @@
                             </label>
                         </div> 
                     </div>
+					
+                    <div class="row"> 
+ 					 <div class="small-1  columns"></div>
+                      <div class="small-10 offset-1 columns">                          
+                              <input 
+                                 type="checkbox" 
+                                 name="alt_url_sub_confirm_success_show_in_modal_window" 
+                                 id="alt_url_sub_confirm_success_show_in_modal_window" 
+                                 value="1" 
+                                 <!-- tmpl_if list_settings.alt_url_sub_confirm_success_show_in_modal_window -->checked="checked"<!--/tmpl_if-->
+                             >
+                             <label for="alt_url_sub_confirm_success_show_in_modal_window">
+                                  Show the URL instead in a modal window, if that's being used
+                             </label>
+                         </div> 
+                     </div>
+					 
+					 
                     
                     <div class="row"> 
 					 <div class="small-1  columns"></div>
                      <div class="small-11 columns">                          
                            <input type="checkbox" name="use_alt_url_sub_confirm_failed" id="use_alt_url_sub_confirm_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_confirm_failed -->checked="checked"<!--/tmpl_if--> >
                             <label for="use_alt_url_sub_confirm_failed">
-                             If step #1 of the Closed-Loop Opt-In Confirmation fails, 
+                             If Step #1 of the Closed-Loop Opt-In Confirmation fails, 
                              redirect to:
                             </label>
                         </div> 
@@ -471,6 +502,27 @@
                             </label>
                         </div> 
                     </div>
+					
+                    <div class="row"> 
+ 					 <div class="small-1  columns"></div>
+                      <div class="small-10 offset-1 columns">                          
+                              <input 
+                                 type="checkbox" 
+                                 name="alt_url_sub_confirm_failed_show_in_modal_window" 
+                                 id="alt_url_sub_confirm_failed_show_in_modal_window" 
+                                 value="1" 
+                                 <!-- tmpl_if list_settings.alt_url_sub_confirm_failed_show_in_modal_window -->
+								 	checked="checked"
+								<!--/tmpl_if-->
+                             >
+                             <label for="alt_url_sub_confirm_failed_show_in_modal_window">
+                                  Show the URL instead in a modal window, if that's being used
+                             </label>
+                         </div> 
+                     </div>
+					
+					
+					
                     
                 </fieldset><!-- Subscription Confirmation -->  
             
@@ -494,7 +546,7 @@
 						<!-- tmpl_if list_settings.captcha_sub -->checked="checked"<!--/tmpl_if--> 
 					>
                     <label for="captcha_sub" <!-- tmpl_unless can_use_captcha -->class="disabled"<!-- /tmpl_unless -->>
-                     Require solving a CAPTCHA
+                   	  Require solving a CAPTCHA
                     </label>
 					
 					<div class="alert-box info radius">  
@@ -508,7 +560,7 @@
                           <strong>
                            Disabled.
                           </strong> 
-                          The CAPTCHA system (<strong><!-- tmpl_var CAPTCHA_TYPE --></strong>) needs to be successfully configured.        
+                           Google reCAPTCHA needs to be correctly configured.       
                         </p>
                        </div> 
                   <!--/tmpl_unless-->
@@ -702,7 +754,7 @@
 					<!-- tmpl_if list_settings.enable_mass_subscribe_only_w_root_login -->checked="checked"<!-- /tmpl_if -->
 				>
 				<label for="enable_mass_subscribe_only_w_root_login">
-					Only Allow when logged in with the <!-- tmpl_var PROGRAM_NAME --> Root Password
+					Only allow when logged in with the <!-- tmpl_var PROGRAM_NAME --> Root Password
 				</label>
 				<div class="alert-box info radius">  
 					(Inviting subscribers will always be available)
@@ -794,10 +846,9 @@
 		 
 	   	<div class="alert-box info radius">  
 
-		    <p>
 	         The Unsubscription Form will have the user's email address partially shown to help users fill out the form, with the correct email address.     
-	        </p>
-			<p>
+			 <br>
+			 <br>
 	            <strong>
 	                 Example:
 	            </strong>
@@ -809,7 +860,6 @@
 	            <em>
 	                <!-- tmpl_var list_owner_email_anonystar_address -->
 	            </em>
-	        </p>
 		</div>
     </fieldset><!-- Completing the Unsubscription --> 
     
