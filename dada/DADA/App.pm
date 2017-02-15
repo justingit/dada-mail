@@ -2742,26 +2742,18 @@ sub change_info {
         $ls->save(
             {
                 -settings => {
-                    list_owner_email => strip($list_owner_email),
-                    admin_email      => strip($admin_email),
-                    list_name        => $list_name,
-                    info             => $info,
-                    privacy_policy   => $privacy_policy,
-                    physical_address => $physical_address,
-
-                    logo_image_url =>
-                      xss_filter( strip( scalar $q->param('logo_image_url') ) ),
-                    facebook_page_url => xss_filter(
-                        strip( scalar $q->param('facebook_page_url') )
-                    ),
-                    youtube_url => xss_filter(
-                        strip( scalar $q->param('youtube_url') )
-                    ),
-                    twitter_url =>
-                      xss_filter( strip( scalar $q->param('twitter_url') ) ),
-                    google_plus_page_url => xss_filter(
-                        strip( scalar $q->param('google_plus_page_url') )
-                    ),
+                    list_owner_email     => strip($list_owner_email),
+                    admin_email          => strip($admin_email),
+                    list_name            => $list_name,
+                    info                 => $info,
+                    privacy_policy       => $privacy_policy,
+                    physical_address     => $physical_address,
+					list_phone_number    => xss_filter( strip( scalar $q->param('list_phone_number') ) ),
+                    logo_image_url       => xss_filter( strip( scalar $q->param('logo_image_url') ) ),
+                    facebook_page_url    => xss_filter( strip( scalar $q->param('facebook_page_url') )),
+                    youtube_url          => xss_filter( strip( scalar $q->param('youtube_url') )),
+                    twitter_url          => xss_filter( strip( scalar $q->param('twitter_url') ) ),
+                    google_plus_page_url => xss_filter( strip( scalar $q->param('google_plus_page_url') )),
                 }
             }
         );
