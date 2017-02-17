@@ -371,6 +371,11 @@ jQuery(document).ready(function($){
 				customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
 				toolbar: 'DadaMail_Admin'
 			});
+			// This should probably just be strung along the above statement... 
+			var editor = $("#html_message_body").ckeditor().editor;
+			editor.on( 'fileUploadRequest', function( evt ) {
+				evt.data.requestData.flavor = 'image_drag_and_drop';
+			} );
 		}
 
 		$("body").on("click", ".cancel_message", function(event) {

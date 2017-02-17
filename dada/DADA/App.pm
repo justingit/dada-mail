@@ -137,9 +137,10 @@ sub setup {
         'delete_email'                   => \&delete_email,
         'subscription_options'           => \&subscription_options,
 		'admin_menu_notifications'       => \&admin_menu_notifications, 
-        'send_email'                      => \&send_email,
-		'no_draft_available'              => \&no_draft_available, 
-        'email_message_preview'           => \&email_message_preview,
+        'send_email'                     => \&send_email,
+		'image_drag_and_drop'            => \&image_drag_and_drop, 
+		'no_draft_available'             => \&no_draft_available, 
+        'email_message_preview'          => \&email_message_preview,
         'send_email_button_widget'        => \&send_email_button_widget,
         'mass_mailing_schedules_preview'  => \&mass_mailing_schedules_preview,
         'draft_message_values'            => \&draft_message_values,
@@ -1061,6 +1062,109 @@ sub send_email {
         return $body;
     }
 }
+
+
+sub image_drag_and_drop {
+
+    my $self = shift;
+    my $q    = $self->query();
+
+    my $r = {};
+
+    require JSON;
+    my $json = JSON->new->allow_nonref;
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_email send_url_email'
+      );
+    if ( !$checksout ) {
+        $r = {
+            uploaded => 0,
+            error    => {
+                message => "Permission Denied - security check failed!",
+            }
+        };
+    }
+    else {
+        my ( $status, $error, $filename ) = $self->drag_and_drop_file_upload;
+
+        if ( $status == 1 ) {
+            $r = {
+                uploaded => 1,
+                fileName => $filename,
+                url      => $DADA::Config::SUPPORT_FILES->{url}
+                  . '/file_uploads/'
+                  . $filename,
+            };
+        }
+        else {
+            $r = {
+                uploaded => 0,
+                error    => {
+                    message => $error
+                },
+            };
+
+        }
+    }
+
+    $self->header_props( -type => 'application/json' );
+
+    my $body = $json->encode($r);
+    return $body;
+
+}
+
+sub drag_and_drop_file_upload {
+
+    my $self = shift;
+    my $q    = $self->query();
+
+    my $fh = $q->upload('upload');
+
+    my $filename = $q->param('upload');
+    $filename =~ s!^.*(\\|\/)!!;
+    $filename = uriescape($filename);
+    if ( !$filename ) {
+        return ( 0, 'Invalid Filename!', undef );
+    }
+	
+    try {
+	
+        my $outfile =
+          make_safer( $DADA::Config::SUPPORT_FILES->{dir}
+              . '/file_uploads/'
+              . $filename );
+
+
+		 if(-e $outfile){ 
+	         my $rand_string = generate_rand_string_md5();
+			 $filename = $rand_string . '-' . $filename; 
+			 $outfile = make_safer( $DADA::Config::SUPPORT_FILES->{dir}
+			              . '/file_uploads/'
+			              . $filename );
+		 }
+
+        open( OUTFILE, '>', $outfile )
+          or die( "can't write to " . $outfile . ": $!" );
+
+        while ( my $bytesread = read( $fh, my $buffer, 1024 ) ) {
+            print OUTFILE $buffer or die $!;
+        }
+        close(OUTFILE) or die $!;
+        chmod( $DADA::Config::FILE_CHMOD, $outfile );
+		
+    }
+    catch {
+        return ( 0, 'Problems with the upload', undef );
+    };
+
+    return ( 1, undef, $filename );
+
+}
+
 
 
 

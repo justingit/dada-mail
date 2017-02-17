@@ -6,6 +6,10 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 CKEDITOR.editorConfig = function(config) {
     
+	
+	config.uploadUrl      = '<!-- tmpl_var S_PROGRAM_URL -->';
+	config.imageUploadUrl = '<!-- tmpl_var S_PROGRAM_URL -->';
+	
    <!-- tmpl_if configure_file_browser --> 
    config.filebrowserBrowseUrl      = '<!-- tmpl_var file_manager_browse_url -->?type=files';
    config.filebrowserImageBrowseUrl = '<!-- tmpl_var file_manager_browse_url -->?type=images';
