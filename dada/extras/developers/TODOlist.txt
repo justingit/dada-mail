@@ -12,6 +12,8 @@ Key:
 [*] Naw...
 [?] Someday
 
+MUCH larger notification about new versions available 
+
 New CKeditor 4.6.smeting 
 	config.uploadUrl      = 'http://dancingindigochild.local/cgi-bin/dada/goodjob.cgi';
 	config.imageUploadUrl = 'http://dancingindigochild.local/cgi-bin/dada/goodjob.cgi';
