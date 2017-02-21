@@ -47,6 +47,24 @@ Now, Dada Mail can do exactly that. Look for these options in the list control p
 - there's a few places custom redirect URL's can be used. Where this new feature is supported, you'll also see the following option, 
 B<Show the URL instead in a modal window, if that's being used> 
 
+=head2 Bugfixes
+
+=head3 Mailing List Password Reset Broken
+
+L<https://github.com/justingit/dada-mail/issues/640>
+
+=head1 10.3.6
+
+=head2 Focus
+
+This is mostly a bug-fix release for issues found in the v10.3.5 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 Mailing List Message Theme templates only use "default"'s stylesheet when styling the message body itself 
+
+L<https://github.com/justingit/dada-mail/issues/638>
+
 =head1 10.3.5
 
 =head2 Features
