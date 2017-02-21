@@ -95,6 +95,7 @@ require Exporter;
   can_use_datetime
   can_use_HTML_Tree
   can_use_StopForumSpam
+  can_use_Image_Resize
   formatted_runtime
   commify
   generate_rand_string_md5
@@ -3177,6 +3178,17 @@ sub can_use_StopForumSpam {
     return $can_use_StopForumSpam;
 }
 
+sub can_use_Image_Resize { 
+    my $can_use_Image_Resize = 1; 
+    try { 
+        require Image::Resize;        
+    } catch { 
+		warn 'Image::Resize is not supported:' . $_
+			if $t;
+        $can_use_Image_Resize = 0;
+    };
+    return $can_use_Image_Resize;
+}
 
 sub formatted_runtime {
 

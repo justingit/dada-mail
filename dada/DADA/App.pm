@@ -1088,22 +1088,45 @@ sub image_drag_and_drop {
         };
     }
     else {
-        my ( $status, $error, $filename ) = $self->drag_and_drop_file_upload;
+
+		my $list = $admin_list; 
+        my ( $status, $message, $filename, $width, $height ) =
+          $self->drag_and_drop_file_upload($list);
+
+        my $subfolder = 'files';
+        if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/ ) {
+            $subfolder = 'images';
+        }
+
+        # warn 'got back, ' . Dumper([$status, $message, $filename]);
 
         if ( $status == 1 ) {
+
             $r = {
                 uploaded => 1,
                 fileName => $filename,
                 url      => $DADA::Config::SUPPORT_FILES->{url}
                   . '/file_uploads/'
+                  . $subfolder . '/'
                   . $filename,
             };
+
+            if ($message) {
+                $r->{error}->{message} = $message;
+            }
+            if ($width) {
+                $r->{width} = $width;
+            }
+            if ($height) {
+                $r->{height} = $height;
+            }
+
         }
         else {
             $r = {
                 uploaded => 0,
                 error    => {
-                    message => $error
+                    message => $message
                 },
             };
 
@@ -1113,6 +1136,10 @@ sub image_drag_and_drop {
     $self->header_props( -type => 'application/json' );
 
     my $body = $json->encode($r);
+
+    # warn '$r' . Dumper($r);
+    # warn '$body' . $body;
+
     return $body;
 
 }
@@ -1120,32 +1147,73 @@ sub image_drag_and_drop {
 sub drag_and_drop_file_upload {
 
     my $self = shift;
+	my $list = shift; 
     my $q    = $self->query();
 
     my $fh = $q->upload('upload');
 
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+    my $message = undef;
+
     my $filename = $q->param('upload');
+	
+	$filename = $filename; 
+	
     $filename =~ s!^.*(\\|\/)!!;
-    $filename = uriescape($filename);
+    
     if ( !$filename ) {
-        return ( 0, 'Invalid Filename!', undef );
+        return ( 0, 'Invalid Filename!', undef, undef, undef );
     }
+		
+	# Bad Hombres:
+    my @bad_fn = qw(
+		exe com msi bat cgi pl 
+		php phps phtml php3 php4 
+		php5 php6 py pyc pyo 
+		pcgi pcgi3 pcgi4 pcgi5 pchi6
+	);
 	
+	my $bad_fn = {}; 
+	for(@bad_fn){$bad_fn->{'.' . $_} = 1};
+	my ($ext) = $filename =~ /(\.[^.]+)$/;
+		
+	if(exists($bad_fn->{$ext})){ 
+        return ( 0, 'Problems with the upload: unsupported file type', undef, undef, undef );
+	}
+
+    my $subfolder = 'files';
+    if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/ ) {
+        $subfolder = 'images';
+    }
+
+    my $upload_dir =
+      make_safer( $DADA::Config::SUPPORT_FILES->{dir} . '/'
+          . 'file_uploads' . '/'
+          . $subfolder );
+
     try {
-	
-        my $outfile =
-          make_safer( $DADA::Config::SUPPORT_FILES->{dir}
-              . '/file_uploads/'
-              . $filename );
 
+        if ( !-d $upload_dir ) {
+            if ( mkdir( $upload_dir, $DADA::Config::DIR_CHMOD ) ) {
+                if ( -d $upload_dir ) {
+                    chmod( $DADA::Config::DIR_CHMOD, $upload_dir );
+                }
+            }
+        }
 
-		 if(-e $outfile){ 
-	         my $rand_string = generate_rand_string_md5();
-			 $filename = $rand_string . '-' . $filename; 
-			 $outfile = make_safer( $DADA::Config::SUPPORT_FILES->{dir}
-			              . '/file_uploads/'
-			              . $filename );
-		 }
+        my $outfile = make_safer( $upload_dir . '/' . $filename );
+
+        if ( -e $outfile ) {
+            my $rand_string = generate_rand_string_md5();
+            $filename = $rand_string . '-' . $filename;
+            $outfile  = make_safer( $upload_dir . '/' . $filename );
+
+            $message = 'File renamed to, ' . $filename;
+
+            #warn '$message' . $message;
+
+        }
 
         open( OUTFILE, '>', $outfile )
           or die( "can't write to " . $outfile . ": $!" );
@@ -1155,13 +1223,71 @@ sub drag_and_drop_file_upload {
         }
         close(OUTFILE) or die $!;
         chmod( $DADA::Config::FILE_CHMOD, $outfile );
+
+        if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/ ) {
+
+            #warn '$filename is:' . $filename;
+            #warn 'can_use_Image_Resize' . can_use_Image_Resize();
+			if($ls->param('resize_drag_and_drop_images') == 1){
+	            if ( can_use_Image_Resize() == 1 ) {
+	                require Image::Resize;
+	                my $ir = Image::Resize->new($outfile);
+
+	                #warn '$ir->width' . $ir->width;
+
+	                my $w = $ir->width;
+	                if ( $w > 640 ) {
+	                    my $h   = $ir->height;
+	                    my $n_w = 640;
+	                    my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
+
+	                    #warn '$n_h' . $n_h;
+
+	                    my $gd = $ir->resize( $n_w, $n_h );
+
+	                    my $r_fn = 'resized-' . $filename;
+
+	                    #warn '$r_fn' . $r_fn;
+
+	                    my $r_outfile = make_safer( $upload_dir . '/' . $r_fn );
+
+	                    #warn '$r_outfile' . $r_outfile;
+
+	                    open FH, '>', $r_outfile or die $!;
+
+	                    if ( $r_fn =~ m/\.(jpg|jpeg)$/ ) {
+	                        print FH $gd->jpeg() or die $!;
+	                    }
+	                    elsif ( $r_fn =~ m/\.(gif)$/ ) {
+	                        print FH $gd->gif() or die $!;
+	                    }
+	                    elsif ( $r_fn =~ m/\.(png)$/ ) {
+	                        print FH $gd->png() or die $!;
+	                    }
+	                    close(FH) or die $!;
+	                    $filename = $r_fn;
+
+	                    #warn '$filename' . $filename;
+
+	                    $message = 'Image resized and saved at, ' . $filename;
+
+	                    #warn '$message' . $message;
+						
+						$filename = uriescape($filename);
+						
+	                    return ( 1, $message, $filename, $n_w, $n_h );
+
+	                }
+	            }
+			}
+        }
 		
+		$filename = uriescape($filename);
+        return ( 1, $message, $filename );
     }
     catch {
-        return ( 0, 'Problems with the upload', undef );
+        return ( 0, 'Problems with the upload', undef, undef, undef );
     };
-
-    return ( 1, undef, $filename );
 
 }
 
@@ -2665,6 +2791,7 @@ sub mass_mailing_options {
                 -vars => {
                     done                      => $done,
                     can_use_css_inliner       => $can_use_css_inliner,
+					can_use_Image_Resize      => scalar can_use_Image_Resize(),
 					currently_selected_layout => $currently_selected_layout, 
                     root_login                => $root_login,
                 },
@@ -2685,6 +2812,7 @@ sub mass_mailing_options {
                     mass_mailing_convert_plaintext_to_html => 0,
                     mass_mailing_block_css_to_inline_css   => 0,
 					email_embed_images_as_attachments      => 0,
+					resize_drag_and_drop_images            => 0, 
                 	mass_mailing_default_layout            => undef, 
 				},
                 -also_save_for => $also_save_for_list,

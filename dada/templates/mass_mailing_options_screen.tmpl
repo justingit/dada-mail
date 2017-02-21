@@ -84,7 +84,44 @@
             </label>
         </div>
     </div>
-    
+
+    <div class="row">
+        <div class="small-12 columns">
+			<label for="resize_drag_and_drop_images">  
+	            <input type="checkbox" 
+	                name="resize_drag_and_drop_images" 
+	                id="resize_drag_and_drop_images" 
+	                value="1" 
+	                <!-- tmpl_if list_settings.resize_drag_and_drop_images -->
+						checked="checked"
+					<!-- /tmpl_if --> 
+	             >
+               Resize drag-and-drop images
+            </label>
+        </div>
+    </div>
+
+<div class="row">
+	<div class="small-1 columns">
+	</div>
+	<div class="small-11 columns">
+			 <div class="alert-box info radius">
+				 Images wider than 640px will be resized
+				 
+  			   <!-- tmpl_unless can_use_Image_Resize -->
+  			   		<br>
+  					<br> 
+  					The, <code>Image::Resize</code> Perl CPAN module will need to be installed for this 
+  					option to work. 
+  			   <!-- /tmpl_unless -->
+				 
+				 
+			</div>
+		</div>
+	</div>
+			
+
+	    
 	
 	
     <h4>
