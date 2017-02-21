@@ -817,7 +817,8 @@ sub redirect_encode {
 		
 	}
 	else { 
-		carp "Given an invalid email to create a redirect from, '$url' - skipping!";
+		carp "Given an invalid email to create a redirect from, '$url' - skipping!"
+			if $t; 
 		return $url; 
 	}
 
