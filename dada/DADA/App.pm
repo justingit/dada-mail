@@ -11950,8 +11950,8 @@ sub email_password {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     require DADA::Security::Password;
-    warn q{$q->param('pass_auth_id')} . $q->param('pass_auth_id');
-    warn q{$ls->param('pass_auth_id')} . $ls->param('pass_auth_id');
+   # warn q{$q->param('pass_auth_id')} . $q->param('pass_auth_id');
+   # warn q{$ls->param('pass_auth_id')} . $ls->param('pass_auth_id');
 
     if (   ( $ls->param('pass_auth_id') ne "" )
         && ( defined( $ls->param('pass_auth_id') ) )
@@ -11973,11 +11973,16 @@ sub email_password {
 
         require DADA::App::Messages;
         my $dap = DADA::App::Messages->new( { -list => $list } );
-        $dap->send_list_password_reset(
+        $dap->send_out_message(
             {
-                -vars => {
-                    new_password => $new_password,
-                }
+                -message => 'list_password_reset_message',
+                -email   => $ls->param('list_owner_email'),
+				-tmpl_params => {
+	                -list_settings_vars_param => { -list => $list },
+	                -vars    => {
+						new_password => $new_password,
+	                },
+				},
             },
         );
 
@@ -12047,14 +12052,6 @@ sub email_password {
             }
         }
 
-        require DADA::Mail::Send;
-        my $mh = DADA::Mail::Send->new(
-            {
-                -list   => $list,
-                -ls_obj => $ls,
-            }
-        );
-
         my $random_string = DADA::Security::Password::generate_rand_string();
 
         $ls->save(
@@ -12070,8 +12067,9 @@ sub email_password {
         $dap->send_out_message(
             {
                 -message => 'list_password_reset_confirmation_message',
-                -email   => scalar $q->param('email'),
+                -email   => $ls->param('list_owner_email'),
 				-tmpl_params => {
+	                -list_settings_vars_param => { -list => $list },
 	                -vars    => {
 	                    random_string => $random_string,
 	                    REMOTE_HOST   => $ENV{REMOTE_HOST},
@@ -12079,7 +12077,6 @@ sub email_password {
 	                },
 				},
             },
-
         );
 
         require DADA::Logging::Usage;

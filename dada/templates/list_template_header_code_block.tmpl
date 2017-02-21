@@ -1,4 +1,4 @@
-<!-- begin <!-- tmpl_var PROGRAM_NAME --> list_template_header_code_block.tmpl --> 
+<!-- begin list_template_header_code_block.tmpl --> 
 
 <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/app.css?v=<!-- tmpl_var VER escape=URL -->">
 
@@ -7,7 +7,6 @@
 		<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css?v=<!-- tmpl_var VER escape=URL -->" type="text/css" media="screen" >
 	<!-- /tmpl_if -->
 <!-- /tmpl_if -->
-
 
 <!-- tmpl_if include_jquery_lib --> 
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery-2.1.4.min.js"></script>
@@ -25,15 +24,15 @@
 
     <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/modernizr.js?v=<!-- tmpl_var VER escape=URL -->"></script>
 
-
 <!-- tmpl_if include_jquery_lib-->
 	<script type="text/javascript">
 	   var $dm = $.noConflict(true);
 	</script>
 <!-- /tmpl_if -->
-<!-- tmpL_if captcha_on_subscribe_form -->
+<!-- tmpL_if can_use_Google_reCAPTCHA -->
 	   <script src='https://www.google.com/recaptcha/api.js'></script>
 <!-- /tmpl_if -->
+
 
 
 <!-- tmpl_if list_settings.show_archives --> 
@@ -45,4 +44,4 @@
 
 <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css?v=<!-- tmpl_var VER escape=URL -->" type="text/css" media="screen" />
 
-<!-- end <!-- tmpl_var PROGRAM_NAME --> list_template_header_code_block.tmpl --> 
+<!-- end list_template_header_code_block.tmpl --> 

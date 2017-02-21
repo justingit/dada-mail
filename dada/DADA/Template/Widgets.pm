@@ -133,8 +133,8 @@ VER                    => $DADA::Config::VER,
 
 DATA_CACHE             => $DADA::Config::DATA_CACHE, 
 
-captcha_on_subscribe_form => $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form},
-
+captcha_on_subscribe_form  => $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form},
+can_use_Google_reCAPTCHA   => scalar DADA::App::Guts::can_use_Google_reCAPTCHA(), 
 
 GIVE_PROPS_IN_HTML            => $DADA::Config::GIVE_PROPS_IN_HTML, 
 GIVE_PROPS_IN_SUBSCRIBE_FORM  => $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM, 

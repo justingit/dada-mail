@@ -117,6 +117,9 @@ use strict;
 use vars qw(@EXPORT);
 
 
+my $can_use_cache = {}; 
+
+
 # evaluate these once at compile time
 use constant HAS_URI_ESCAPE_XS => eval { require URI::Escape::XS; 1; }; # Much faster, but requires C compiler.
 use constant HAS_URI_ESCAPE    => eval { require URI::Escape; 1; };
@@ -3084,6 +3087,11 @@ sub can_use_LWP_Simple {
 }
 
 sub can_use_Google_reCAPTCHA { 
+	
+	if(exists($can_use_cache->{Google_reCAPTCHA})){ 
+		return $can_use_cache->{Google_reCAPTCHA}; 
+	}
+	
 	my $can_use_captcha = 1; 
 	try {
         require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
@@ -3105,6 +3113,8 @@ sub can_use_Google_reCAPTCHA {
 			$can_use_captcha = 0; 
 		}
 	}
+	
+	$can_use_cache->{Google_reCAPTCHA} = $can_use_captcha;
 	
 	return $can_use_captcha;
 }
