@@ -2,6 +2,51 @@
 
 =encoding utf-8
 
+=head1 10.4.0
+
+=head2 Features
+
+=head3 Drag and Drop File/Image Support in CKEditor! 
+
+We've upgraded the bundled version of CKEditor that comes with Dada Mail to B<v4.6.2>, and
+we've implemented the necessary backend component to allow support for dragging and dropping images 
+and files right into the rich text editor! Images may also be pasted right into the rich text editor, 
+without you needing to save the image to a file beforehand. 
+
+Images (jpg's, png's and gif's) will show up inline; all other supported files 
+will be uploaded, and added to your message as a link. Some files, based on their file ending, will not be 
+allowed for security reasons. 
+
+Since the backend component of this feature is implemented right in Dada Mail, 
+there's no additional setup or configuration required and all security checks are handled
+by Dada Mail.  
+
+The included file managers: KCFInder and Core5 Filemanager, are still bundled with Dada Mail 
+and can work with these new capabilities. Previously drag-and-dropped files/images can be viewed, selected, 
+and reused using either of the file managers. 
+
+By default, images are resized if they're larger than 640px to make the size of your mailing list messages a little 
+nicer for your recipients. This option can be enabled/disabled in the list control panel under, B<Mass Mailing: Options>. 
+Look for the option labeled, B<Resize drag-and-drop images>. Resizing requires the CPAN Perl Module, C<Image::Resize> and 
+can be installed by itself, or by installing the C<Bundle::DadaMail> CPAN Perl Module. 
+
+=head3 Phone numbers! 
+
+You can now add a phone number to your List Information. 
+The phone number will appear with the rest of your contact information, 
+in the footer of your mass mailings. It's a clickable link, which works well for 
+those reading your messages on their mobile device! 
+
+=head3 Redirect links in the modal window
+
+Dada Mail has support to show the results of a subscription in a modal window, using the subscription forms 
+in its own screens, or through its jQuery plugin subscription forms. 
+Dada Mail also has support for redirect your users to a custom page once their done, say, 
+filling out the subscription form. Wouldn't it be great to combine the two? Show the custom URL in the modal window. 
+Now, Dada Mail can do exactly that. Look for these options in the list control panel under, B<Mailing List:Options> 
+- there's a few places custom redirect URL's can be used. Where this new feature is supported, you'll also see the following option, 
+B<Show the URL instead in a modal window, if that's being used> 
+
 =head1 10.3.5
 
 =head2 Features
