@@ -2444,6 +2444,7 @@ sub mass_send {
 	                    -last_email  => $stop_email,
 	                    -msg_id      => $mailout->_internal_message_id,
 	                    -fields      => \%fields,
+						-message_id  => $mailout_id,
 					}
                 );
 
@@ -3224,12 +3225,20 @@ sub _email_batched_finished_notification {
 	# This decode is also supsicious... 
 	   $message_subject = safely_decode($message_subject); 
 
-    require DADA::Template::Widgets;
+	
+	 my $message_id = $args->{-message_id};
+	 $message_id =~ s/\<|\>//; 
+	 $message_id =~ s/\.(.*?)$//; 
+	
+	
+	require DADA::Template::Widgets;
         my $message_subject = DADA::Template::Widgets::screen(
             {
                 -data => \$message_subject,
 			    -list_settings_vars_param => { -list => $self->{list} },
 				-vars    => {
+					mass_test           => scalar $self->mass_test(),
+					message_id          => $message_id,
 			        addresses_sent_to   => $args->{-emails_sent},
 			        mailing_start_time  => $formatted_start_time,
 			        mailing_finish_time => $formatted_end_time,
@@ -3251,6 +3260,8 @@ sub _email_batched_finished_notification {
             -tmpl_params => {
                 -list_settings_vars_param => { -list => $self->{list} },
 				-vars    => {
+					mass_test           => scalar $self->mass_test(),
+					message_id          => $message_id,
 	                addresses_sent_to   => $args->{-emails_sent},
 	                mailing_start_time  => $formatted_start_time,
 	                mailing_finish_time => $formatted_end_time,
