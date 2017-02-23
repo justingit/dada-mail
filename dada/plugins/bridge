@@ -1232,6 +1232,13 @@ sub inject_msg {
     my $run_list = $args->{-list};
     my $list     = $run_list;
     
+
+    if ( check_if_list_exists( -List => $list == 0 )) {
+		warn   'Passed non-existent list, ' . $list . ', bailing.';
+		return 'Passed non-existent list, ' . $list . ', bailing.';
+    }
+	
+	
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $r;
 
