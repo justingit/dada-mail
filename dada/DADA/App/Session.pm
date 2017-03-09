@@ -115,16 +115,19 @@ sub login_cookies {
 
     $session->flush();
 
-    if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
+    if ( 
+	$DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 
+	|| $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 	
+	) {
         try {
-            my $kcfinder_cookie = $self->kcfinder_session_begin;
+            my $kcfinder_cookie = $self->kcfinder_session_begin($session->id);
             if ( defined($kcfinder_cookie) ) {
                 $cookies->[1] = $kcfinder_cookie;
             }
-        }
+		}
         catch {
-            carp "initializing KCFinder session return an error: $_";
-        }
+            carp "initializing KCFinder/RichFilemanager session return an error: $_";
+		}
     }
 
 
@@ -133,7 +136,9 @@ sub login_cookies {
 
 sub kcfinder_session_begin {
 
-    my $self = shift;
+    my $self       = shift;
+	my $session_id = shift; 
+	
     require PHP::Session;
     require CGI::Lite;
     my $new_sess = 0;
@@ -141,11 +146,22 @@ sub kcfinder_session_begin {
     my $cgi     = new CGI::Lite;
     my $cookies = $cgi->parse_cookies;
     my $sess_id = '';
+	
+	
+	my $filemanager_name = undef; 
+	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ){ 
+		$filemanager_name = 'kcfinder';
+	}
+	elsif($DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ){ 
+		$filemanager_name = 'rich_filemanager';
+	}
+	
+	
     if (
-        $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name} } )
+        $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_name} } )
     {
         $sess_id =
-          $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name} };
+          $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_name} };
     }
     else {
         $new_sess = 1;
@@ -157,10 +173,10 @@ sub kcfinder_session_begin {
             'abcdefghijklmnopqrstuvwxyz123456789', 32 );
 
     }
-
+		
     # This makes the session directory, just in case!
     my $dada_sess_dir = make_safer( $DADA::Config::TMP . '/php_sessions' );
-    if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_dir} eq
+    if ( $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_dir} eq
         $dada_sess_dir )
     {
         if ( !-d $dada_sess_dir ) {
@@ -172,59 +188,64 @@ sub kcfinder_session_begin {
         $sess_id,
         {
             create => 1,
-            save_path =>
-              $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_dir},
+            save_path =>  $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_dir},
         }
     );
     my $KCFINDER = {
         disabled =>
-          ( !$DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} ),
+          ( !$DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{enabled} ),
         uploadDir =>
-          $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir},
+          $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{upload_dir},
         uploadURL =>
-          $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url},
+          $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{upload_url},
     };
 
-    $session->set( KCFINDER => $KCFINDER );
-    $session->save;
+    $session->set(KCFINDER           => $KCFINDER);
+    $session->set(rfm_authenticated  => 1); 
+	$session->set(rfm_session_id     => $session_id);
+	$session->save;
+	
 	chmod(
 		$DADA::Config::FILE_CHMOD, 
-		make_safer($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_dir} . '/sess_' . $sess_id)
+		make_safer($DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_dir} . '/sess_' . $sess_id)
 	);
 
 
     if ( $new_sess == 1 ) {
         require CGI;
         my $cookie = CGI::cookie(
-            -name =>
-              $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name},
-            -value => $sess_id,
-            %DADA::Config::COOKIE_PARAMS,
+            -name => $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_name},
+            -value => $sess_id, 
+			%DADA::Config::COOKIE_PARAMS,
         );
         return $cookie;
     }
     else {
         return undef;
     }
-
 }
 
 sub kcfinder_session_end {
     my $self = shift;
-    my $self = shift;
     require PHP::Session;
     require CGI::Lite;
-
+	
+	my $filemanager_name = undef; 
+	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ){ 
+		$filemanager_name = 'kcfinder';
+	}
+	elsif($DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ){ 
+		$filemanager_name = 'rich_filemanager';
+	}
+	
     my $cgi     = new CGI::Lite;
     my $cookies = $cgi->parse_cookies;
     my $sess_id = '';
     if (
-        $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}
-              ->{session_name} } )
+        $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_name} } )
     {
         $sess_id =
-          $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}
-              ->{session_name} };
+          $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_name} };
     }
     else {
         carp "no PHP session?";
@@ -235,11 +256,14 @@ sub kcfinder_session_end {
         {
             create => 1,
             save_path =>
-              $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_dir},
+              $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_dir},
         }
     );
     $session->unregister('KCFINDER');
+	$session->unregister('rfm_authenticated');
+	$session->unregister('rfm_session_id');
     $session->save;
+	
     return 1;
 }
 
@@ -366,12 +390,16 @@ sub logout_cookie {
     $session->flush();
 
     try {
-        if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
+	    if ( 
+		   $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 
+		|| $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 	
+		) {
+
             $self->kcfinder_session_end;
         }
     }
     catch {
-        carp "ending kcfinder session return an error: $_";
+       carp "ending kcfinder/rich filemanager session return an error: $_";
     }
     return $cookie;
 
