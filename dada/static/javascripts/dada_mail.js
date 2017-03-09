@@ -366,16 +366,54 @@ jQuery(document).ready(function($){
 		});
 
 		if ($("#using_ckeditor").length) {
-			$("#html_message_body").ckeditor(
-			function() {}, {
-				customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
-				toolbar: 'DadaMail_Admin'
-			});
-			// This should probably just be strung along the above statement... 
-			var editor = $("#html_message_body").ckeditor().editor;
-			editor.on( 'fileUploadRequest', function( evt ) {
-				evt.data.requestData.flavor = 'image_drag_and_drop';
-			} );
+			
+			if ($("#using_ckeditor").length) {
+			
+				CKEDITOR.replace('html_message_body', {
+					customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
+					toolbar: 'DadaMail_Admin'
+				}
+			);
+			CKEDITOR.on('dialogDefinition', function (event)
+		        {
+		            var editor = event.editor;
+		            var dialogDefinition = event.data.definition;
+		            var dialogName = event.data.name;
+
+		            var cleanUpFuncRef = CKEDITOR.tools.addFunction(function ()
+		            {
+		                // Do the clean-up of filemanager here (called when an image was selected or cancel was clicked)
+		                $('#fm-iframe').remove();
+		                $("body").css("overflow-y", "scroll");
+		            });
+
+		            var tabCount = dialogDefinition.contents.length;
+		            for (var i = 0; i < tabCount; i++) {
+		                var browseButton = dialogDefinition.contents[i].get('browse');
+
+		                if (browseButton !== null) {
+		                    browseButton.hidden = false;
+		                    browseButton.onClick = function (dialog, i)
+		                    {
+		                        editor._.filebrowserSe = this;
+		                        var iframe = $("<iframe id='fm-iframe' class='fm-modal'/>").attr({
+		                            src: $("#rich_filemanager_url")'/index.html' + // Change it to wherever  Filemanager is stored.
+		                                '?CKEditorFuncNum=' + CKEDITOR.instances[event.editor.name]._.filebrowserFn +
+		                                '&CKEditorCleanUpFuncNum=' + cleanUpFuncRef +
+		                                '&langCode=en' +
+		                                '&CKEditor=' + event.editor.name
+		                        });
+
+		                        $("body").append(iframe);
+		                        $("body").css("overflow-y", "hidden");  // Get rid of possible scrollbars in containing document
+		                    }
+		                }
+		            }
+		        });
+				CKEDITOR.on( 'fileUploadRequest', function( evt ) {
+					evt.data.requestData.flavor = 'image_drag_and_drop';
+				} );
+			
 		}
 
 		$("body").on("click", ".cancel_message", function(event) {
