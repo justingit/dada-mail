@@ -1036,6 +1036,7 @@ sub grab_former_config_vals {
         || $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled} == 1
         || $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1
         || $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 )
+        || $BootstrapConfig::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 )
     {
         $opt->{'install_wysiwyg_editors'} = 1;
     }
@@ -1061,6 +1062,9 @@ sub grab_former_config_vals {
         $opt->{'core5_filemanager_connector'} =
           $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{connector};
     }
+    elsif ( $BootstrapConfig::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ) {
+        $opt->{'install_file_browser'} = 'rich_filemanager';
+	}
 
     if ( defined($BootstrapConfig::MAILOUT_STALE_AFTER) 
 	||   defined($BootstrapConfig::MAILOUT_AT_ONCE_LIMIT)) { 
@@ -3029,7 +3033,7 @@ sub install_wysiwyg_editors {
         $tmpl_vars{i_kcfinder_upload_url} =
           $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
 
-        $tmpl_vars{i_session_dir} = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions';
+        $tmpl_vars{i_kcfinder_session_dir} = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions';
 
         if ( !-d $upload_dir ) {
 
@@ -3044,7 +3048,6 @@ sub install_wysiwyg_editors {
         }
     }
     elsif ( $ip->{-install_file_browser} eq 'core5_filemanager' ) {
-
         $self->install_and_configure_core5_filemanager();
 
         my $upload_dir = make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir );
@@ -3057,12 +3060,50 @@ sub install_wysiwyg_editors {
           $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
 
         if ( !-d $upload_dir ) {
-
             # No need to backup this.
             $self->installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
         }
-
     }
+    elsif ( $ip->{-install_file_browser} eq 'core5_filemanager' ) {
+        $self->install_and_configure_rich_filemanager();
+
+        my $upload_dir = make_safer( 
+			$support_files_dir_path 
+			. '/' 
+			. $Support_Files_Dir_Name 
+			. '/' 
+			. $File_Upload_Dir
+		);
+        $tmpl_vars{i_rich_filemanager_enabled} = 1;
+        $tmpl_vars{i_rich_filemanager_url}     = 
+			$ip->{-support_files_dir_url} 
+			. '/' 
+			. $Support_Files_Dir_Name 
+			. '/RichFilemanager';
+			# aways php
+		#$tmpl_vars{i_rich_filemanager_connector} = $ip->{-rich_filemanager_connector};
+        
+        $tmpl_vars{i_rich_filemanager_session_dir} = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions';
+		
+		
+		my $upload_dir = make_safer( 
+			$support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir 
+		);
+        $tmpl_vars{i_rich_filemanager_upload_dir} = $upload_dir;
+        $tmpl_vars{i_rich_filemanager_upload_url} =
+          $ip->{-support_files_dir_url} 
+		  . '/' 
+		  . $Support_Files_Dir_Name 
+		  . '/' . $File_Upload_Dir;
+
+        if ( !-d $upload_dir ) {
+            # No need to backup this.
+            $self->installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
+        }
+    }
+	
+	
+	
 
     my $wysiwyg_options_snippet = DADA::Template::Widgets::screen(
         {
@@ -3190,6 +3231,129 @@ sub install_and_configure_ckeditor {
             );
     }
 
+}
+
+sub install_and_configure_rich_filemanager { 
+
+    my $self = shift;
+    my $ip   = $self->param('install_params');
+
+    my $install_path   = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name;
+    my $source_package = make_safer('../extras/packages/RichFilemanager');
+    my $target_loc     = make_safer( $install_path . '/RichFilemanager' );
+    if ( -d $target_loc ) {
+        backup_dir($target_loc);
+    }
+    installer_dircopy( $source_package, $target_loc );
+    my $support_files_dir_url = $ip->{-support_files_dir_url};
+
+    if ( $ip->{-wysiwyg_editor_install_ckeditor} == 1 ) {
+
+        my $support_files_dir_url = $ip->{-support_files_dir_url};
+
+        my $ckeditor_config_js = DADA::Template::Widgets::screen(
+            {
+                -screen => 'ckeditor_config_js.tmpl',
+                -vars   => {
+                    configure_file_browser  => 1, 
+                    file_manager_browse_url => $support_files_dir_url . '/'
+                      . $Support_Files_Dir_Name
+                      . '/core5_filemanager/index.html',
+                    file_manager_upload_url => $support_files_dir_url . '/'
+                      . $Support_Files_Dir_Name
+                      . '/core5_filemanager/index.html',
+                    support_files_dir_url  => $support_files_dir_url,
+                    Support_Files_Dir_Name => $Support_Files_Dir_Name,
+                }
+            }
+        );
+        my $ckeditor_config_loc = make_safer( $install_path . '/ckeditor/dada_mail_config.js' );
+        installer_chmod( 0777, $ckeditor_config_loc );
+        open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $ckeditor_config_loc or croak $!;
+        print $config_fh $ckeditor_config_js or croak $!;
+        close $config_fh or croak $!;
+        installer_chmod( $DADA::Config::FILE_CHMOD, $ckeditor_config_loc );
+        undef $config_fh;
+
+    }
+
+    if ( $ip->{-wysiwyg_editor_install_tiny_mce} == 1 ) {
+
+        my $kcfinder_enabled = 0;
+
+        my $support_files_dir_url = $ip->{-support_files_dir_url};
+
+        my $tinymce_config_js = DADA::Template::Widgets::screen(
+            {
+                -screen => 'tinymce_config_js.tmpl',
+                -vars   => {
+                    file_manager_browse_url => $support_files_dir_url . '/'
+                      . $Support_Files_Dir_Name
+                      . '/core5_filemanager/index.html',
+                    support_files_dir_url     => $support_files_dir_url,
+                    Support_Files_Dir_Name    => $Support_Files_Dir_Name,
+                    core5_filemanager_enabled => 1,
+                }
+            }
+        );
+        my $tinymce_config_loc = make_safer( $install_path . '/tinymce/dada_mail_config.js' );
+        installer_chmod( 0777, $tinymce_config_loc );
+        open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tinymce_config_loc or croak $!;
+        print $config_fh $tinymce_config_js or croak $!;
+        close $config_fh or croak $!;
+        installer_chmod( $DADA::Config::FILE_CHMOD, $tinymce_config_loc );
+        undef $config_fh;
+
+    }
+
+    my $sess_dir = make_safer( $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions' );
+    if ( !-d $sess_dir ) {
+        $self->installer_mkdir( $sess_dir, $DADA::Config::DIR_CHMOD );
+    }
+    
+
+    # pl config:
+    my $uploads_directory = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
+    my $url_path          = $uploads_directory;
+    my $doc_root          = $ENV{DOCUMENT_ROOT};
+
+    my $core5_filemanager_config_pl = DADA::Template::Widgets::screen(
+        {
+            -screen => 'rich_filemanager_connector_config.tmpl',
+            -vars   => {
+                uploads_directory => $uploads_directory,
+                url_path          => $url_path,
+            }
+        }
+    );
+    my $rich_filemanager_config_loc =
+      make_safer( $install_path . '/RichFilemanager/connectors/php/config.php' );
+    installer_chmod( 0777, $core5_filemanager_config_loc );
+    open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $core5_filemanager_config_loc or croak $!;
+    print $config_fh $core5_filemanager_config_pl or croak $!;
+    close $config_fh or croak $!;
+    installer_chmod( $DADA::Config::FILE_CHMOD, $core5_filemanager_config_loc );
+    undef $config_fh;
+
+    # js config:
+    my $rich_filemanager_config_js = DADA::Template::Widgets::screen(
+        {
+            -screen => 'rich_filemanager_filemanager-config-json.tmpl',
+            -vars   => {
+                previewUrl => $url_path . '/',                       # slash on the end, there.
+               # lang     => $ip->{-core5_filemanager_connector},
+            }
+        }
+    );
+    my $rich_filemanager_config_js_loc =
+      make_safer( $install_path . '/RichFilemanager/config/filemanager.config.json' );
+    installer_chmod( 0777, $rich_filemanager_config_js_loc );
+    open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $rich_filemanager_config_js_loc or croak $!;
+    print $config_fh $rich_filemanager_config_js or croak $!;
+    close $config_fh or croak $!;
+    installer_chmod( $DADA::Config::FILE_CHMOD, $rich_filemanager_config_js_loc );
+    undef $config_fh;
+	
 }
 
 sub install_and_configure_tiny_mce {
