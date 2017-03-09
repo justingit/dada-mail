@@ -1035,7 +1035,7 @@ sub grab_former_config_vals {
     if (   $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled} == 1
         || $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled} == 1
         || $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1
-        || $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 )
+        || $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1
         || $BootstrapConfig::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 )
     {
         $opt->{'install_wysiwyg_editors'} = 1;
@@ -3064,7 +3064,7 @@ sub install_wysiwyg_editors {
             $self->installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
         }
     }
-    elsif ( $ip->{-install_file_browser} eq 'core5_filemanager' ) {
+    elsif ( $ip->{-install_file_browser} eq 'rich_filemanager' ) {
         $self->install_and_configure_rich_filemanager();
 
         my $upload_dir = make_safer( 
@@ -3210,6 +3210,7 @@ sub install_and_configure_ckeditor {
     }
     elsif(
         $ip->{-install_file_browser} ne 'kcfinder' 
+	 && $ip->{-install_file_browser} ne 'rich_filemanager' 
      && $ip->{-install_file_browser} ne 'core5_filemanager'
      ){ 
         $create_ckeditor_config_file = 1;  
@@ -3258,10 +3259,10 @@ sub install_and_configure_rich_filemanager {
                     configure_file_browser  => 1, 
                     file_manager_browse_url => $support_files_dir_url . '/'
                       . $Support_Files_Dir_Name
-                      . '/core5_filemanager/index.html',
+                      . '/RichFilemanager/index.html',
                     file_manager_upload_url => $support_files_dir_url . '/'
                       . $Support_Files_Dir_Name
-                      . '/core5_filemanager/index.html',
+                      . '/RichFilemanager/index.html',
                     support_files_dir_url  => $support_files_dir_url,
                     Support_Files_Dir_Name => $Support_Files_Dir_Name,
                 }
@@ -3317,7 +3318,7 @@ sub install_and_configure_rich_filemanager {
     my $url_path          = $uploads_directory;
     my $doc_root          = $ENV{DOCUMENT_ROOT};
 
-    my $core5_filemanager_config_pl = DADA::Template::Widgets::screen(
+    my $rich_filemanager_connector_config = DADA::Template::Widgets::screen(
         {
             -screen => 'rich_filemanager_connector_config.tmpl',
             -vars   => {
@@ -3328,11 +3329,11 @@ sub install_and_configure_rich_filemanager {
     );
     my $rich_filemanager_config_loc =
       make_safer( $install_path . '/RichFilemanager/connectors/php/config.php' );
-    installer_chmod( 0777, $core5_filemanager_config_loc );
-    open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $core5_filemanager_config_loc or croak $!;
-    print $config_fh $core5_filemanager_config_pl or croak $!;
+    installer_chmod( 0777, $rich_filemanager_config_loc );
+    open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $rich_filemanager_config_loc or croak $!;
+    print $config_fh $rich_filemanager_connector_config or croak $!;
     close $config_fh or croak $!;
-    installer_chmod( $DADA::Config::FILE_CHMOD, $core5_filemanager_config_loc );
+    installer_chmod( $DADA::Config::FILE_CHMOD, $rich_filemanager_config_loc );
     undef $config_fh;
 
     # js config:
@@ -3340,7 +3341,7 @@ sub install_and_configure_rich_filemanager {
         {
             -screen => 'rich_filemanager_filemanager-config-json.tmpl',
             -vars   => {
-                previewUrl => $url_path . '/',                       # slash on the end, there.
+                previewUrl => $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir . '/',
                # lang     => $ip->{-core5_filemanager_connector},
             }
         }

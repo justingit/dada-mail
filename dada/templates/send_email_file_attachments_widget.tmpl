@@ -1,6 +1,6 @@
 <!-- begin send_email_file_attachments_widget.tmpl --> 
 
-<!-- tmpl_if expr="((kcfinder_enabled == 1) || (core5_filemanager_enabled == 1))" -->
+<!-- tmpl_if expr="((kcfinder_enabled == 1) || (core5_filemanager_enabled == 1) || (rich_filemanager_enabled == 1))" -->
 
 	<div id="attachment_widgets"> 
 
@@ -19,6 +19,13 @@
 			<input type="hidden" id="core5_filemanager_upload_url" name="core5_filemanager_upload_url" value="<!-- tmpl_var core5_filemanager_upload_url -->"          >
 		<!-- /tmpl_if -->
 
+		<!-- tmpl_if rich_filemanager_enabled --> 
+			<input type="hidden" id="rich_filemanager_enabled"    name="rich_filemanager_enabled"    value="<!-- tmpl_var rich_filemanager_enabled -->"        >
+			<input type="hidden" id="rich_filemanager_url"        name="rich_filemanager_url"        value="<!-- tmpl_var rich_filemanager_url -->"        >
+			<input type="hidden" id="rich_filemanager_upload_dir" name="rich_filemanager_upload_dir" value="<!-- tmpl_var rich_filemanager_upload_dir -->" >
+			<input type="hidden" id="rich_filemanager_upload_url" name="rich_filemanager_upload_url" value="<!-- tmpl_var rich_filemanager_upload_url -->"          >
+		<!-- /tmpl_if --> 
+		
 		<input type="hidden" id="SUPPORT_FILES_URL"   name="SUPPORT_FILES_URL"   value="<!-- tmpl_var SUPPORT_FILES_URL -->"   > 
 
 		<div class="row">

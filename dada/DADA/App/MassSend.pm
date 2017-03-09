@@ -209,11 +209,19 @@ sub send_email {
                     kcfinder_url          => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{url},
                     kcfinder_upload_dir   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir},
                     kcfinder_upload_url   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url},
+
                     core5_filemanager_url => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{url},
                     core5_filemanager_upload_dir =>
                       $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_dir},
                     core5_filemanager_upload_url =>
                       $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_url},
+
+					rich_filemanager_url => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{url},
+					rich_filemanager_upload_dir =>
+					$DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{upload_dir},
+					rich_filemanager_upload_url =>
+					$DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{upload_url},
+
                     mailout_will_be_queued => $mailout_will_be_queued,
                     num_list_mailouts      => $num_list_mailouts,
                     num_total_mailouts     => $num_total_mailouts,

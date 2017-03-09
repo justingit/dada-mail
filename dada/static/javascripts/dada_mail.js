@@ -127,6 +127,8 @@ jQuery(document).ready(function($){
 				attachments_openKCFinder(this);
 			}else if($("#core5_filemanager_enabled").val() == 1){
 				browsecore5FileManager(this);
+			}else if($("#rich_filemanager_enabled").val() == 1){
+				browserrichFileManager(this);
 			}
 			else {
 				alert("No File Browser set up!");
@@ -364,56 +366,69 @@ jQuery(document).ready(function($){
 			event.preventDefault();
 			preview_message_receivers();
 		});
-
+			
 		if ($("#using_ckeditor").length) {
 			
-			if ($("#using_ckeditor").length) {
-			
-				CKEDITOR.replace('html_message_body', {
-					customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
-					toolbar: 'DadaMail_Admin'
-				}
-			);
-			CKEDITOR.on('dialogDefinition', function (event)
-		        {
-		            var editor = event.editor;
-		            var dialogDefinition = event.data.definition;
-		            var dialogName = event.data.name;
+			CKEDITOR.replace('html_message_body', {
+				customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
+				toolbar: 'DadaMail_Admin'
+			}).on( 'fileUploadRequest', function( evt ) {
+				
+				alert('setting, image_drag_and_drop!');
+				
+				evt.data.requestData.flavor = 'image_drag_and_drop';
+				
+				
+			});
 
-		            var cleanUpFuncRef = CKEDITOR.tools.addFunction(function ()
-		            {
-		                // Do the clean-up of filemanager here (called when an image was selected or cancel was clicked)
-		                $('#fm-iframe').remove();
-		                $("body").css("overflow-y", "scroll");
-		            });
+			CKEDITOR.on('dialogDefinition', function (event) {
+				
+				
+				
+	            var editor = event.editor;
+	            var dialogDefinition = event.data.definition;
+	            var dialogName = event.data.name;
+				
+				
+				//alert('editor.config.filebrowserBrowseUrl: ' + editor.config.filebrowserBrowseUrl);
+				
+	            var cleanUpFuncRef = CKEDITOR.tools.addFunction(function ()
+	            {
+	                // Do the clean-up of filemanager here (called when an image was selected or cancel was clicked)
+	                $('#fm-iframe').remove();
+	                $("body").css("overflow-y", "scroll");
+	            });
 
-		            var tabCount = dialogDefinition.contents.length;
-		            for (var i = 0; i < tabCount; i++) {
-		                var browseButton = dialogDefinition.contents[i].get('browse');
+	            var tabCount = dialogDefinition.contents.length;
+	            for (var i = 0; i < tabCount; i++) {
+	                var browseButton = dialogDefinition.contents[i].get('browse');
 
-		                if (browseButton !== null) {
-		                    browseButton.hidden = false;
-		                    browseButton.onClick = function (dialog, i)
-		                    {
-		                        editor._.filebrowserSe = this;
-		                        var iframe = $("<iframe id='fm-iframe' class='fm-modal'/>").attr({
-		                            src: $("#rich_filemanager_url")'/index.html' + // Change it to wherever  Filemanager is stored.
-		                                '?CKEditorFuncNum=' + CKEDITOR.instances[event.editor.name]._.filebrowserFn +
-		                                '&CKEditorCleanUpFuncNum=' + cleanUpFuncRef +
-		                                '&langCode=en' +
-		                                '&CKEditor=' + event.editor.name
-		                        });
+	                if (browseButton !== null) {
+	                    browseButton.hidden = false;
+	                    browseButton.onClick = function (dialog, i)
+	                    {
+	                        editor._.filebrowserSe = this;
+							var editor_url_query = editor.config.filebrowserBrowseUrl
+								    + '&CKEditorFuncNum=' 
+								    + CKEDITOR.instances[event.editor.name]._.filebrowserFn 
+								    + '&CKEditorCleanUpFuncNum=' 
+								    + cleanUpFuncRef 
+								    + '&langCode=en' 
+								    + '&CKEditor=' 
+									+ event.editor.name;
+							alert('editor_url_query' + editor_url_query);
+	                        var iframe = $("<iframe id='fm-iframe' class='fm-modal'/>").attr({
+	                            src: editor_url_query
+	                        });
 
-		                        $("body").append(iframe);
-		                        $("body").css("overflow-y", "hidden");  // Get rid of possible scrollbars in containing document
-		                    }
-		                }
-		            }
-		        });
-				CKEDITOR.on( 'fileUploadRequest', function( evt ) {
-					evt.data.requestData.flavor = 'image_drag_and_drop';
-				} );
-			
+	                        $("body").append(iframe);
+	                        $("body").css("overflow-y", "hidden");  // Get rid of possible scrollbars in containing document
+	                    }
+	                }
+	            }
+	        });
+						
+
 		}
 
 		$("body").on("click", ".cancel_message", function(event) {
@@ -4488,17 +4503,23 @@ function escapeRegExp(str) {
 
 /* core5 FileManager */
 var urlobj;
-
 function browsecore5FileManager(obj) {
 	urlobj = obj;
 	var core5_filemanager_url = jQuery("#core5_filemanager_url").val() + '/index.html';
-	opencore5FileManager(
+	open_x_FileManagers(
 	core5_filemanager_url, screen.width * 0.7, screen.height * 0.7);
 }
+function browserrichFileManager(obj) {
+	urlobj = obj;
+	var rich_filemanager_url = jQuery("#rich_filemanager_url").val() + '/index.html';
+	open_x_FileManager(
+	rich_filemanager_url, screen.width * 0.7, screen.height * 0.7);
+}
+
 
 var oWindow;
 
-function opencore5FileManager(url, width, height) {
+function open_x_FileManager(url, width, height) {
 	var iLeft = (screen.width - width) / 2;
 	var iTop = (screen.height - height) / 2;
 	var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes";
@@ -4513,12 +4534,16 @@ function opencore5FileManager(url, width, height) {
 
 
 function SetUrl(url, width, height, alt) {
-	var core5_filemanager_upload_url = escapeRegExp(jQuery("#core5_filemanager_upload_url").val() + '/');
-	    core5_filemanager_upload_url + '/';
-		
 	
-	var re = new RegExp(core5_filemanager_upload_url, 'g');
-
+	var x_filemanager_upload_url; 
+	if($("#core5_filemanager_enabled").val() == 1){
+		x_filemanager_upload_url = escapeRegExp(jQuery("#core5_filemanager_upload_url").val() + '/');
+	}else if($("#rich_filemanager_enabled").val() == 1){
+		x_filemanager_upload_url = escapeRegExp(jQuery("#rich_filemanager_upload_url").val() + '/');
+	}
+    x_filemanager_upload_url + '/';		
+	
+	var re = new RegExp(x_filemanager_upload_url, 'g');
 	var path_wo_url_re = escapeRegExp('/dada_mail_support_files/file_uploads/'); 	
 	var re2 = new RegExp(path_wo_url_re, 'g');
 
@@ -4537,6 +4562,7 @@ function SetUrl(url, width, height, alt) {
 	);
 	jQuery("#" + jQuery(field).attr("data-attachment")).val(new_val);
 	jQuery("#" + jQuery(field).attr("data-attachment") + '_remove_button').show();
+	oWindow.close(); 
 	oWindow = null;
 }
 
