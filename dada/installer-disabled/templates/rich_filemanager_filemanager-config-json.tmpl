@@ -1,0 +1,181 @@
+{
+    "_comment": "IMPORTANT : go to the wiki page to know about options configuration https://github.com/servocoder/RichFilemanager/wiki/Configuration-options",
+    "options": {
+        "culture": "en",
+        "theme": "flat-dark",
+        "defaultViewMode": "grid",
+        "localizeGUI": true,
+        "showFullPath": false,
+        "showTitleAttr": false,
+        "showConfirmation": true,
+        "browseOnly": false,
+        "clipboard": true,
+        "searchBox": true,
+        "fileSorting": "NAME_ASC",
+        "folderPosition": "bottom",
+        "quickSelect": false,
+        "charsLatinOnly": false,
+        "logger": false,
+        "capabilities": [
+            "select",
+            "upload",
+            "download",
+            "rename",
+            "copy",
+            "move",
+            "replace",
+            "delete"
+        ]
+    },
+    "filetree": {
+        "enabled": true,
+        "foldersOnly": false,
+        "reloadOnClick": true,
+        "expandSpeed": 200,
+        "showLine": true,
+        "width": 200,
+        "minWidth": 200
+    },
+    "manager": {
+        "dblClickOpen": false,
+        "selection": {
+            "enabled": true,
+            "useCtrlKey": true
+        }
+    },
+    "api": {
+        "lang": "php",
+        "connectorUrl": false,
+        "requestParams": []
+    },
+    "security": {
+        "allowFolderDownload": true,
+        "allowChangeExtensions": false,
+        "allowNoExtension": false,
+        "normalizeFilename": true
+    },
+    "upload": {
+        "multiple": true,
+        "maxNumberOfFiles": 5,
+        "paramName": "files",
+        "chunkSize": false,
+        "fileSizeLimit": 16000000,
+        "policy": "DISALLOW_ALL",
+        "restrictions": [
+            "jpg",
+            "jpe",
+            "jpeg",
+            "gif",
+            "png",
+            "svg",
+            "txt",
+            "pdf",
+            "odp",
+            "ods",
+            "odt",
+            "rtf",
+            "doc",
+            "docx",
+            "xls",
+            "xlsx",
+            "ppt",
+            "pptx",
+            "csv",
+            "ogv",
+            "avi",
+            "mkv",
+            "mp4",
+            "webm",
+            "m4v",
+            "ogg",
+            "mp3",
+            "wav",
+            "zip",
+            "rar",
+            "md"
+        ]
+    },
+    "viewer": {
+        "absolutePath": true,
+        "previewUrl": "<!-- tmpl_var previewUrl -->",
+        "image": {
+            "enabled": true,
+            "showThumbs": true,
+            "thumbMaxWidth": 64,
+            "extensions": [
+                "jpg",
+                "jpe",
+                "jpeg",
+                "gif",
+                "png",
+                "svg"
+            ]
+        },
+        "video": {
+            "enabled": true,
+            "extensions": [
+                "ogv",
+                "mp4",
+                "webm",
+                "m4v"
+            ],
+            "playerWidth": 400,
+            "playerHeight": 222
+        },
+        "audio": {
+            "enabled": true,
+            "extensions": [
+                "ogg",
+                "mp3",
+                "wav"
+            ]
+        },
+        "opendoc": {
+            "enabled": true,
+            "extensions": [
+                "pdf",
+                "odt",
+                "odp",
+                "ods"
+            ],
+            "readerWidth": "640",
+            "readerHeight": "480"
+        },
+        "google": {
+            "enabled": true,
+            "extensions": [
+                "doc",
+                "docx",
+                "xls",
+                "xlsx",
+                "ppt",
+                "pptx"
+            ],
+            "readerWidth": "640",
+            "readerHeight": "480"
+        },
+        "editable": {
+            "enabled": true,
+            "theme": "default",
+            "lineNumbers": true,
+            "lineWrapping": true,
+            "codeHighlight": true,
+            "extensions": [
+                "txt",
+                "csv",
+                "md"
+            ]
+        }
+    },
+    "customScrollbar": {
+    	"enabled": true,
+    	"theme": "inset-2-dark",
+    	"button": true
+    },
+    "extras": {
+        "extra_js": [],
+        "extra_js_async": true
+    },
+    "url": "https://github.com/servocoder/RichFilemanager",
+    "version": "2.2.2"
+}
