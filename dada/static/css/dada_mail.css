@@ -104,3 +104,21 @@ a.menu_disabled:active {
 #recaptcha_area table thead tr th, table tfoot tr th, table tbody tr td, table tr td, table tfoot tr td {
 	line-height: normal;
 }
+
+
+.fm-modal {
+    z-index: 10011; /** Because CKEditor image dialog was at 10010 */
+    width:80%;
+    height:80%;
+    top: 10%;
+    left:10%;
+    border:0;
+    position:fixed;
+    -moz-box-shadow: 0px 1px 5px 0px #656565;
+    -webkit-box-shadow: 0px 1px 5px 0px #656565;
+    -o-box-shadow: 0px 1px 5px 0px #656565;
+    box-shadow: 0px 1px 5px 0px #656565;
+    filter:progid:DXImageTransform.Microsoft.Shadow(color=#656565, Direction=180, Strength=5);
+}
+
+
