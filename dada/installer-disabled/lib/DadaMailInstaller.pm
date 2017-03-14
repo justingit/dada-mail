@@ -3354,6 +3354,38 @@ sub install_and_configure_rich_filemanager {
     close $config_fh or croak $!;
     installer_chmod( $DADA::Config::FILE_CHMOD, $rich_filemanager_config_js_loc );
     undef $config_fh;
+
+
+
+
+    # filemanager.php:
+    my $rich_filemanager_php = DADA::Template::Widgets::screen(
+        {
+            -screen => 'rich_filemanager-filemanager-php.tmpl',
+            -vars   => {
+                i_rich_filemanager_session_dir => $sess_dir,
+            }
+        }
+    );
+    my $rich_filemanager_php_loc =
+      make_safer(
+      	$install_path . '/RichFilemanager/connectors/php/filemanager.php'
+      );
+	  
+	if ( -d $rich_filemanager_php_loc ) {
+		backup_dir($rich_filemanager_php_loc);
+	}
+	  
+    installer_chmod( 0777, $rich_filemanager_php_loc );
+    open my $rich_filemanager_php_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $rich_filemanager_php_loc 
+		or croak $!;
+    print $rich_filemanager_php_fh $rich_filemanager_php 
+		or croak $!;
+    close $rich_filemanager_php_fh 
+		or croak $!;
+    installer_chmod( $DADA::Config::FILE_CHMOD, $rich_filemanager_php_loc );
+    undef $rich_filemanager_php_fh;
+
 	
 }
 
