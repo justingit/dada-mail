@@ -22,13 +22,15 @@ use DADA::Config qw(!:DEFAULT);
 my $verbose; 
 my $archive; 
 my $list; 
+my $test; 
+
 
 
 GetOptions( 
            "verbose"    => \$verbose, 
 		   "archive"    => \$archive, 
 		   "list=s"     => \$list,
-
+		   "test"       => \$test,
 		); 	
 		
 my $msg  = join('', (<STDIN>));
@@ -47,7 +49,8 @@ sub main(){
     }
     else { 
     
-        deliver($list, $msg); 
+		$msg = dm_format($list, $msg); 
+		deliver($list, $msg); 
     
     
     }
@@ -77,7 +80,31 @@ sub validate_list {
 
 
 
+sub dm_format { 
+	
+	my $list = shift; 
+	my $msg = shift; 
 
+    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+    my $li = $ls->get; 
+ 
+
+    require DADA::App::FormatMessages;
+
+    my $fm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
+    $fm->mass_mailing(1);
+
+    my ( $header_str, $body_str ) = $fm->format_headers_and_body(
+        {	
+			-msg             => $msg,
+			  -format_mlm => 1, 
+		}
+	);
+
+    my $all_together = $header_str . "\n\n" . $body_str;
+    return $all_together;
+
+}
 sub deliver { 
 
     my ($list, $msg) = @_; 
@@ -103,12 +130,20 @@ sub deliver {
 					}
 				 );
     
+	
     my %headers = $mh->return_headers($final_header);
     
     my %mailing = (%headers,
                    Body      =>  $final_body,
+				   
+				 ( $test == 1 )
+                  ? (
+                      -mass_test      => 1,
+                    )
+                  : ( -mass_test => 0, )
+				  				  
                    ); 
-          
+				   
     my $message_id = $mh->mass_send(%mailing);
     
     
@@ -117,7 +152,7 @@ sub deliver {
     
      require DADA::MailingList::Archives;
             
-            my $archive = DADA::MailingList::Archives->new({-list => $li});
+            my $archive = DADA::MailingList::Archives->new({-list => $list});
               
               # For now, there's a bug, that won't allow you to snatch this saved message, until sending *starts* which it won't, if you go over queue. Doh! 
               # $archive->set_archive_info($message_id, $headers{Subject}, undef, undef, $mh->saved_message);    
