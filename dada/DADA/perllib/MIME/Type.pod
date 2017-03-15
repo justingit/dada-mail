@@ -1,8 +1,8 @@
+=encoding utf8
+
 =head1 NAME
 
-MIME::Type - Definition of one MIME type
-
-=head1 INHERITANCE
+MIME::Type - description of one MIME type
 
 =head1 SYNOPSIS
 
@@ -29,27 +29,18 @@ MIME types are used in MIME entities, for instance as part of e-mail
 and HTTP traffic.  Sometimes real knowledge about a mime-type is need.
 Objects of C<MIME::Type> store the information on one such type.
 
-This module is built to conform to the MIME types of RFC's 2045 and 2231.
-It follows the official IANA registry at
-F<http://www.iana.org/assignments/media-types/>
-and the collection kept at F<http://www.ltsw.se/knbase/internet/mime.htp>
-
 =head1 OVERLOADED
-
-overload: B<string comparison>
 
 =over 4
 
-When a MIME::Type object is compared to either a string or an other
+=item overload: B<string comparison>
+
+When a MIME::Type object is compared to either a string or another
 MIME::TYpe, the L<equals()|MIME::Type/"Knowledge"> method is called.  Comparison is smart,
 which means that it extends common string comparison with some
 features which are defined in the related RFCs.
 
-=back
-
-overload: B<stringification>
-
-=over 4
+=item overload: B<stringification>
 
 The stringification (use of the object in a place where a string
 is required) will result in the type name, the same as L<type()|MIME::Type/"Attributes">
@@ -67,61 +58,45 @@ example: use of stringification
 
 =head2 Initiation
 
-MIME::Type-E<gt>B<new>(OPTIONS)
-
 =over 4
+
+=item MIME::Type-E<gt>B<new>(%options)
 
 Create (I<instantiate>) a new MIME::Type object which manages one
 mime type.
 
- Option    --Default
- encoding    <depends on type>
- extensions  []
- simplified  <derived from type>
- system      undef
- type        <required>
+ -Option    --Default
+  encoding    <depends on type>
+  extensions  []
+  simplified  <derived from type>
+  system      undef
+  type        <required>
 
-. encoding => '7bit'|'8bit'|'base64'|'quoted-printable'
+=over 2
 
-=over 4
+=item encoding => '7bit'|'8bit'|'base64'|'quoted-printable'
 
 How must this data be encoded to be transported safely.  The default
 depends on the type: mimes with as main type C<text/> will default
 to C<quoted-printable> and all other to C<base64>.
 
-=back
-
-. extensions => REF-ARRAY
-
-=over 4
+=item extensions => REF-ARRAY
 
 An array of extensions which are using this mime.
 
-=back
-
-. simplified => STRING
-
-=over 4
+=item simplified => STRING
 
 The mime types main- and sub-label can both start with C<x->, to indicate
 that is a non-registered name.  Of course, after registration this flag
 can disappear which adds to the confusion.  The simplified string has the
 C<x-> thingies removed and are translated to lower-case.
 
-=back
-
-. system => REGEX
-
-=over 4
+=item system => REGEX
 
 Regular expression which defines for which systems this rule is valid.  The
 REGEX is matched on C<$^O>.
 
-=back
-
-. type => STRING
-
-=over 4
+=item type => STRING
 
 The type which is defined here.  It consists of a I<type> and a I<sub-type>,
 both case-insensitive.  This module will return lower-case, but accept
@@ -133,29 +108,21 @@ upper-case.
 
 =head2 Attributes
 
-$obj-E<gt>B<encoding>
-
 =over 4
+
+=item $obj-E<gt>B<encoding>()
 
 Returns the type of encoding which is required to transport data of this
 type safely.
 
-=back
-
-$obj-E<gt>B<extensions>
-
-=over 4
+=item $obj-E<gt>B<extensions>()
 
 Returns a list of extensions which are known to be used for this
 mime type.
 
-=back
+=item $obj-E<gt>B<simplified>( [$string] )
 
-$obj-E<gt>B<simplified>([STRING])
-
-MIME::Type-E<gt>B<simplified>([STRING])
-
-=over 4
+=item MIME::Type-E<gt>B<simplified>( [$string] )
 
 Returns the simplified mime type for this object or the specified STRING.
 Mime type names can get officially registered.  Until then, they have to
@@ -167,23 +134,16 @@ example: results of simplified()
 
  my $mime = MIME::Type->new(type => 'x-appl/x-zip');
  print $mime->simplified;                     # 'appl/zip'
- print $mime->simplified('text/plain');       # 'text/plain'
+
+ print $mime->simplified('text/PLAIN');       # 'text/plain'
  print MIME::Type->simplified('x-xyz/x-abc'); # 'xyz/abc'
 
-=back
-
-$obj-E<gt>B<system>
-
-=over 4
+=item $obj-E<gt>B<system>()
 
 Returns the regular expression which can be used to determine whether this
 type is active on the system where you are working on.
 
-=back
-
-$obj-E<gt>B<type>
-
-=over 4
+=item $obj-E<gt>B<type>()
 
 Returns the long type of this object, for instance C<'text/plain'>
 
@@ -191,66 +151,61 @@ Returns the long type of this object, for instance C<'text/plain'>
 
 =head2 Knowledge
 
-$obj-E<gt>B<equals>(STRING|MIME)
-
 =over 4
+
+=item $obj-E<gt>B<equals>($string|$mime)
 
 Compare this mime-type object with a STRING or other object.  In case of
 a STRING, simplification will take place.
 
-=back
+=item $obj-E<gt>B<isAscii>()
 
-$obj-E<gt>B<isAscii>
+Old name for L<isText()|MIME::Type/"Knowledge">.
 
-=over 4
+=item $obj-E<gt>B<isBinary>()
 
-Returns false when the encoding is base64, and true otherwise.  All encodings
-except base64 are text encodings.
+Returns true when the type is not known to be text.  See L<isText()|MIME::Type/"Knowledge">.
 
-=back
+=item $obj-E<gt>B<isExperimental>()
 
-$obj-E<gt>B<isBinary>
+[2.00] Return C<true> when the type is defined for experimental
+use; the subtype starts with C<x.>
 
-=over 4
+=item $obj-E<gt>B<isPersonal>()
 
-Returns true when the encoding is base64.
+[2.00] Return C<true> when the type is defined by a person for
+private use; the subtype starts with C<prs.>
 
-=back
-
-$obj-E<gt>B<isRegistered>
-
-=over 4
+=item $obj-E<gt>B<isRegistered>()
 
 Mime-types which are not registered by IANA nor defined in RFCs shall
 start with an C<x->.  This counts for as well the media-type as the
 sub-type.  In case either one of the types starts with C<x-> this
 method will return false.
 
-=back
-
-$obj-E<gt>B<isSignature>
-
-=over 4
+=item $obj-E<gt>B<isSignature>()
 
 Returns true when the type is in the list of known signatures.
 
-=back
+=item $obj-E<gt>B<isText>()
 
-$obj-E<gt>B<mediaType>
+[2.05] All types which may have the charset attribute, are text.  However,
+there is currently no record of attributes in this module... so we guess.
 
-=over 4
+=item $obj-E<gt>B<isVendor>()
+
+[2.00] Return C<true> when the type is defined by a vendor; the subtype
+starts with C<vnd.>
+
+=item $obj-E<gt>B<mediaType>()
 
 The media type of the simplified mime.
 For C<'text/plain'> it will return C<'text'>.
 
 For historical reasons, the C<'mainType'> method still can be used
-to retreive the same value.  However, that method is deprecated.
+to retrieve the same value.  However, that method is deprecated.
 
-=back
-
-$obj-E<gt>B<subType>
-
-=over 4
+=item $obj-E<gt>B<subType>()
 
 The sub type of the simplified mime.
 For C<'text/plain'> it will return C<'plain'>.
@@ -259,9 +214,9 @@ For C<'text/plain'> it will return C<'plain'>.
 
 =head1 DIAGNOSTICS
 
-Error: Type parameter is obligatory.
-
 =over 4
+
+=item Error: Type parameter is obligatory.
 
 When a L<MIME::Type|MIME::Type> object is created, the type itself must be
 specified with the C<type> option flag.
@@ -270,12 +225,12 @@ specified with the C<type> option flag.
 
 =head1 SEE ALSO
 
-This module is part of MIME-Types distribution version 1.23,
-built on December 17, 2007. Website: F<http://perl.overmeer.net/mimetypes/>
+This module is part of MIME-Types distribution version 2.13,
+built on March 07, 2016. Website: F<http://perl.overmeer.net/mimetypes/>
 
 =head1 LICENSE
 
-Copyrights 1999,2001-2007 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 1999,2001-2016 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

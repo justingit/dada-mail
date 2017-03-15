@@ -1,10 +1,11 @@
-# Copyrights 1999,2001-2007 by Mark Overmeer.
+# Copyrights 1999,2001-2016 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.03.
+# Pod stripped from pm file by OODoc 2.02.
 package MIME::Type;
 use vars '$VERSION';
-$VERSION = '1.23';
+$VERSION = '2.13';
+
 
 use strict;
 
@@ -14,9 +15,9 @@ use Carp 'croak';
 #-------------------------------------------
 
 
-use overload '""' => 'type'
-           ,  cmp => 'equals'
-           ;
+use overload
+    '""' => 'type'
+  , cmp  => 'cmp';
 
 #-------------------------------------------
 
@@ -26,13 +27,13 @@ sub new(@) { (bless {}, shift)->init( {@_} ) }
 sub init($)
 {   my ($self, $args) = @_;
 
-    $self->{MT_type}       = $args->{type}
+    my $type = $self->{MT_type} = $args->{type}
        or croak "ERROR: Type parameter is obligatory.";
 
-    $self->{MT_simplified} = $args->{simplified}
-       || ref($self)->simplified($args->{type});
+    $self->{MT_simplified}      = $args->{simplified}
+       || $self->simplified($type);
 
-    $self->{MT_extensions} = $args->{extensions} || [];
+    $self->{MT_extensions}      = $args->{extensions} || [];
 
     $self->{MT_encoding}
        = $args->{encoding}          ? $args->{encoding}
@@ -47,10 +48,7 @@ sub init($)
 
 #-------------------------------------------
 
-
 sub type() {shift->{MT_type}}
-
-#-------------------------------------------
 
 
 sub simplified(;$)
@@ -60,71 +58,49 @@ sub simplified(;$)
     my $mime  = shift;
 
       $mime =~ m!^\s*(?:x\-)?([\w.+-]+)/(?:x\-)?([\w.+-]+)\s*$!i ? lc "$1/$2"
-    : $mime =~ m!text! ? "text/plain"         # some silly mailers...
+    : $mime eq 'text' ? 'text/plain'          # some silly mailers...
     : undef;
 }
 
-#-------------------------------------------
-
 
 sub extensions() { @{shift->{MT_extensions}} }
+sub encoding()   {shift->{MT_encoding}}
+sub system()     {shift->{MT_system}}
 
 #-------------------------------------------
 
 
-sub encoding() {shift->{MT_encoding}}
-
-#-------------------------------------------
-
-
-sub system() {shift->{MT_system}}
-
-#-------------------------------------------
-
-
-sub mediaType() {shift->{MT_simplified} =~ m!^([\w-]+)/! ? $1 : undef}
-
+sub mediaType() {shift->{MT_simplified} =~ m!^([\w.-]+)/! ? $1 : undef}
 sub mainType()  {shift->mediaType} # Backwards compatibility
 
-#-------------------------------------------
+
+sub subType() {shift->{MT_simplified} =~ m!/([\w+.-]+)$! ? $1 : undef}
 
 
-sub subType() {shift->{MT_simplified} =~ m!/([\w-]+)$! ? $1 : undef}
-
-#-------------------------------------------
+sub isRegistered() { lc shift->{MT_type} !~ m{^x\-|/x\-} }
 
 
-sub isRegistered()
-{   local $_ = shift->{MT_type};
-    not (m/^[xX]\-/ || m!/[xX]\-!);
-}
-
-
-#-------------------------------------------
+# http://tools.ietf.org/html/rfc4288#section-3
+sub isVendor()       {shift->{MT_simplified} =~ m!/vnd\.!}
+sub isPersonal()     {shift->{MT_simplified} =~ m!/prs\.!}
+sub isExperimental() {shift->{MT_simplified} =~ m!/x\.!  }
 
 
 sub isBinary() { shift->{MT_encoding} eq 'base64' }
-
-#-------------------------------------------
-
-
-sub isAscii() { shift->{MT_encoding} ne 'base64' }
-
-#-------------------------------------------
+sub isText()   { shift->{MT_encoding} ne 'base64' }
+*isAscii = \&isText;
 
 
 # simplified names only!
-my %sigs = map { ($_ => 1) }
+my %sigs = map +($_ => 1),
   qw(application/pgp-keys application/pgp application/pgp-signature
      application/pkcs10 application/pkcs7-mime application/pkcs7-signature
      text/vCard);
 
 sub isSignature() { $sigs{shift->{MT_simplified}} }
 
-#-------------------------------------------
 
-
-sub equals($)
+sub cmp($)
 {   my ($self, $other) = @_;
 
     my $type = ref $other
@@ -133,5 +109,6 @@ sub equals($)
 
     $self->simplified cmp $type;
 }
+sub equals($) { $_[0]->cmp($_[1])==0 }
 
 1;

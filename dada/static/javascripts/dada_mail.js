@@ -416,8 +416,7 @@ jQuery(document).ready(function($){
 								    + '&langCode=en' 
 								    + '&CKEditor=' 
 									+ event.editor.name;
-							alert('editor_url_query' + editor_url_query);
-	                        var iframe = $("<iframe id='fm-iframe' class='fm-modal'/>").attr({
+							var iframe = $("<iframe id='fm-iframe' class='fm-modal'/>").attr({
 	                            src: editor_url_query
 	                        });
 

@@ -12546,15 +12546,17 @@ sub find_attachment_type {
     my $file_ending = $attach_name;
     $file_ending =~ s/.*\.//;
 
-    require MIME::Types;
-    require MIME::Type;
+	try {
+	    require MIME::Types;
+	    require MIME::Type;
+	    my ( $mimetype, $encoding ) = MIME::Types::by_suffix($filename);
+	    $a_type = $mimetype
+			if ( $mimetype && $mimetype =~ /^\S+\/\S+$/ );    ### sanity check
+	} catch { 
+		#...
+	};
 
-    if ( ( $MIME::Types::VERSION >= 1.005 ) && ( $MIME::Type::VERSION >= 1.005 ) ) {
-        my ( $mimetype, $encoding ) = MIME::Types::by_suffix($filename);
-        $a_type = $mimetype
-          if ( $mimetype && $mimetype =~ /^\S+\/\S+$/ );    ### sanity check
-    }
-    else {
+	if(!$a_type){
         if ( exists( $DADA::Config::MIME_TYPES{ '.' . lc($file_ending) } ) ) {
             $a_type = $DADA::Config::MIME_TYPES{ '.' . lc($file_ending) };
         }
@@ -12562,6 +12564,7 @@ sub find_attachment_type {
             $a_type = $DADA::Config::DEFAULT_MIME_TYPE;
         }
     }
+	
     if ( !$a_type ) {
         warn
 "attachment MIME Type never figured out, letting MIME::Lite handle this...";

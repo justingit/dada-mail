@@ -1445,11 +1445,14 @@ sub send_url_email {
                     kcfinder_url          => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{url},
                     kcfinder_upload_dir   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir},
                     kcfinder_upload_url   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url},
-                    core5_filemanager_url => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{url},
-                    core5_filemanager_upload_dir =>
-                      $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_dir},
-                    core5_filemanager_upload_url =>
-                      $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_url},
+                    
+					core5_filemanager_url        => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{url},
+                    core5_filemanager_upload_dir => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_dir},
+                    core5_filemanager_upload_url => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_url},
+
+					rich_filemanager_url        => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{url},
+                    rich_filemanager_upload_dir => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{upload_dir},
+                    rich_filemanager_upload_url => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{upload_url},
 
 
                     test_sent      => $test_sent,
@@ -2309,6 +2312,9 @@ sub has_attachments {
     elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
         $filemanager = 'core5_filemanager';
     }
+    elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ) {
+        $filemanager = 'rich_filemanager';
+    }
 
     my @ive_got = ();
 
@@ -2367,6 +2373,9 @@ sub make_attachment {
     }
     elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
         $filemanager = 'core5_filemanager';
+    }
+	elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ) {
+        $filemanager = 'rich_filemanager';
     }
 
     if ( !$name ) {
@@ -2451,26 +2460,32 @@ sub find_attachment_type {
     my $file_ending = $attach_name;
     $file_ending =~ s/.*\.//;
 
-    require MIME::Types;
-    require MIME::Type;
-
-    if ( ( $MIME::Types::VERSION >= 1.005 ) && ( $MIME::Type::VERSION >= 1.005 ) ) {
-        my ( $mimetype, $encoding ) = MIME::Types::by_suffix($filename);
-        $a_type = $mimetype
-          if ( $mimetype && $mimetype =~ /^\S+\/\S+$/ );    ### sanity check
-    }
-    else {
+	try {
+	    require MIME::Types;
+	    require MIME::Type;
+	    my ( $mimetype, $encoding ) = MIME::Types::by_suffix($filename);
+	    $a_type = $mimetype
+			if ( $mimetype && $mimetype =~ /^\S+\/\S+$/ );    ### sanity check
+	} catch { 
+		#...
+	};
+	
+	if(!$a_type){
         if ( exists( $DADA::Config::MIME_TYPES{ '.' . lc($file_ending) } ) ) {
             $a_type = $DADA::Config::MIME_TYPES{ '.' . lc($file_ending) };
         }
         else {
-            $a_type = $DADA::Config::DEFAULT_MIME_TYPE;
+            $a_type = $DADA::Config::DEFAULT_MIME_TYPE;			
         }
     }
+	
     if ( !$a_type ) {
         warn "attachment MIME Type never figured out, letting MIME::Entity handle this...";
         $a_type = 'AUTO';
     }
+
+	warn '$a_type' . $a_type; 
+
 
     return $a_type;
 }
