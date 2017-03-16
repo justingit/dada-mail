@@ -2,6 +2,43 @@
 
 =encoding utf-8
 
+=head1 10.5.0 (Beta)
+
+=head2 Features
+
+=head3 Rich Filemanager Support 
+
+Dada Mail has come shipped with multiple file managers: KCFinder, and Core5 Filemanger. We're adding a new 
+filemanager called, B<Rich Filemanager> (L<https://github.com/servocoder/RichFilemanager>) which will be set as the default. 
+
+Rich Filemanager is an update of Core 5 Filemanager, which has shown a slowdown of development and is listed as, "deprecated" by its developer. 
+
+Rich Filemanager comes with some pretty great features and enhancments over Core 5 Filemanager: 
+
+=over
+
+=item * Drag-and-drop support
+
+=item * Clipboard feature: copy, cut, paste, clear
+
+=item * Multiple & chunked uploads support - based on jQuery-File-Upload
+
+=item * New design of multiple upload window; New upload controls for each previewed file (start, abort, resume, delete, etc.)
+
+=item * Online text / code editor - based on codeMirror
+
+=item * Online PDF & OpenOffice documents viewer - based on viewerJS
+
+=item * Online MS Office documents viewer - based on Google Docs Viewer
+
+=item * Extended list of previewed file types via ViewerJS
+
+=back
+
+and more. 
+
+We are not yet removing support either of the two current file managers, so if you're happy with them, keep using them! 
+
 =head1 10.4.0
 
 =head2 Features
