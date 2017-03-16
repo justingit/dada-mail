@@ -3290,7 +3290,7 @@ sub install_and_configure_rich_filemanager {
                 -vars   => {
                     file_manager_browse_url => $support_files_dir_url . '/'
                       . $Support_Files_Dir_Name
-                      . '/core5_filemanager/index.html',
+                      . '/RichFilemanager/index.html',
                     support_files_dir_url     => $support_files_dir_url,
                     Support_Files_Dir_Name    => $Support_Files_Dir_Name,
                     core5_filemanager_enabled => 1,
