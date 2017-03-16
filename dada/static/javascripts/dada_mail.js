@@ -373,18 +373,11 @@ jQuery(document).ready(function($){
 				customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
 				toolbar: 'DadaMail_Admin'
 			}).on( 'fileUploadRequest', function( evt ) {
-				
-				alert('setting, image_drag_and_drop!');
-				
 				evt.data.requestData.flavor = 'image_drag_and_drop';
-				
-				
+								
 			});
 
 			CKEDITOR.on('dialogDefinition', function (event) {
-				
-				
-				
 	            var editor = event.editor;
 	            var dialogDefinition = event.data.definition;
 	            var dialogName = event.data.name;
