@@ -8,8 +8,17 @@
 
 =head3 Rich Filemanager Support 
 
-Dada Mail has come shipped with multiple file managers: KCFinder, and Core5 Filemanger.
+Dada Mail has come shipped with multiple file managers: 
 
+=over
+
+=item * KCFinder
+
+=item * Core5 Filemanger.
+
+=back
+
+These all your to upload/remove files that live on your hosting account, that Dada Mail can then use for inline images and file attachments. 
 
 We're adding a new filemanager called, B<Rich Filemanager> (L<https://github.com/servocoder/RichFilemanager>) which will be set as the default. 
 
@@ -41,7 +50,15 @@ and more.
 
 We will be deprecating support for both Core5 Filemanager and KCFinder, unless these projects release security and feature updates in a timely manner. 
 
+You can learn more about Rich Filemanager on its Github project page: L<https://github.com/servocoder/RichFilemanager>. 
 
+Thanks to all the contribtors to this project for all their hard work! 
+
+=head2 Bugfixes
+
+=head3 Subscribers from Invitations still have, "Subscription Date" set to time of invitation, not cofirmation of subscription #642 
+
+L<https://github.com/justingit/dada-mail/issues/642>
 
 =head1 10.4.0
 
