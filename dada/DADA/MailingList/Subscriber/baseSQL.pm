@@ -424,16 +424,20 @@ sub move {
 
     my $query = 'UPDATE '
       . $self->{sql_params}->{subscriber_table}
-      . ' SET   list_type   = ? 
-                      WHERE list_type   = ? 
-                      AND   email       = ?';
-
-		$query .=' AND list = ' . $self->{dbh}->quote($self->{list}); 
+      . ' SET   list_type = ?,  
+          timestamp = NOW()
+          WHERE list_type = ? 
+          AND   email = ?
+		  AND   list = ?'; 
+	
+	if($self->{sql_params}->{dbtype} eq 'SQLite'){ 
+		$query =~ s/timestamp \= NOW\(\)/timestamp = CURRENT_TIMESTAMP/;
+	}				
+		
     my $sth = $self->{dbh}->prepare($query);
 
-    my $rv =
-      $sth->execute( $args->{ -to }, $self->type, $self->email )
-      or croak "cannot do statement (at move_subscriber)! $DBI::errstr\n";
+    my $rv = $sth->execute( $args->{ -to }, $self->type, $self->email, $self->{list})
+		or croak "cannot do statement (at move_subscriber)! $DBI::errstr\n";
 
     if ( $rv == 1 ) {
 		if ( $DADA::Config::LOG{subscriptions} == 1 ) {
