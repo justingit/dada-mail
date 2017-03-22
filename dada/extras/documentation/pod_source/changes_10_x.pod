@@ -2,14 +2,16 @@
 
 =encoding utf-8
 
-=head1 10.5.0 (Beta)
+=head1 10.5.0
 
 =head2 Features
 
 =head3 Rich Filemanager Support 
 
-Dada Mail has come shipped with multiple file managers: KCFinder, and Core5 Filemanger. We're adding a new 
-filemanager called, B<Rich Filemanager> (L<https://github.com/servocoder/RichFilemanager>) which will be set as the default. 
+Dada Mail has come shipped with multiple file managers: KCFinder, and Core5 Filemanger.
+
+
+We're adding a new filemanager called, B<Rich Filemanager> (L<https://github.com/servocoder/RichFilemanager>) which will be set as the default. 
 
 Rich Filemanager is an update of Core 5 Filemanager, which has shown a slowdown of development and is listed as, "deprecated" by its developer. 
 
@@ -37,7 +39,9 @@ Rich Filemanager comes with some pretty great features and enhancments over Core
 
 and more. 
 
-We are not yet removing support either of the two current file managers, so if you're happy with them, keep using them! 
+We will be deprecating support for both Core5 Filemanager and KCFinder, unless these projects release security and feature updates in a timely manner. 
+
+
 
 =head1 10.4.0
 
