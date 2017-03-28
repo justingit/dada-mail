@@ -135,14 +135,14 @@ sub fetch {
         my $html = undef;
 
         if ( -e $pt_file ) {
-            $pt = $self->slurp($pt_file);
+            $pt = $self->slurp($pt_file, 0);
         }
         else {
             warn '$pt_file does not exist at, ' . $pt_file
               if $t;
         }
         if ( -e $html_file ) {
-            $html = $self->slurp($html_file);
+            $html = $self->slurp($html_file, 1);
             if ( defined( $self->list ) ) {
                 $html = $self->munge_logo_img($html);
             }
@@ -197,7 +197,7 @@ sub filename {
 
         if ( $self->theme_name ne $self->default_theme_name ) {
             require DADA::Template::Widgets;
-            my $test = $self->slurp( make_safer($file_path) );
+            my $test = $self->slurp( make_safer($file_path), 0 );
             my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
                 {
                     -data => \$test,
@@ -277,17 +277,72 @@ sub munge_logo_img {
 
 sub slurp {
 
-    my $self = shift;
-    my ($file) = @_;
+    my $self      = shift;
+    my $file      = shift;
+	my $encoding  = shift || 1; 
 
     local ($/) = wantarray ? $/ : undef;
     local (*F);
     my $r;
     my (@r);
 
-    open( F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
-      || croak "open $file: $!";
-    @r = <F>;
+	# https://metacpan.org/source/VITAHALL/Text-FrontMatter-YAML-0.07/lib/Text/FrontMatter/YAML.pm
+	#sub _init_from_string {
+	#    my $self   = shift;
+	#    my $string = shift;
+	# 
+	#    open my $fh, '<:encoding(UTF-8)', \$string
+	#      or die "internal error: cannot open filehandle on string, $!";
+	# 
+	#    $self->_init_from_fh($fh);
+	#    $self->{'document'} = $string;
+	# 
+	#    close $fh;
+	#}
+
+	# This is sort of strange, as the  string from text is read in as a
+	# filehandler, which ALSO does decoding, so there's a double-decoding going on,
+	# if we do things the correct way. 
+	#
+	# Correct Way 
+	#    open( F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )  || croak "open $file: $!";
+
+
+
+	if($encoding == 1){
+		
+	    open( F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
+	      || croak "can't open $file: $!";
+	    @r = <F>;
+	
+	}
+	else { 
+		
+		# https://metacpan.org/source/VITAHALL/Text-FrontMatter-YAML-0.07/lib/Text/FrontMatter/YAML.pm
+		#sub _init_from_string {
+		#    my $self   = shift;
+		#    my $string = shift;
+		# 
+		#    open my $fh, '<:encoding(UTF-8)', \$string
+		#      or die "internal error: cannot open filehandle on string, $!";
+		# 
+		#    $self->_init_from_fh($fh);
+		#    $self->{'document'} = $string;
+		# 
+		#    close $fh;
+		#}
+
+		# This is sort of strange, as the  string from text is read in as a
+		# filehandler, which ALSO does decoding, so there's a double-decoding going on,
+		# if we do things the correct way. 
+		#
+		# Correct Way 
+		#    open( F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )  || croak "open $file: $!";
+		
+		open( F, '<', $file )  || croak "can't open $file: $!";
+			
+	}
+
     close(F) || croak "close $file: $!";
 
     return $r[0] unless wantarray;
