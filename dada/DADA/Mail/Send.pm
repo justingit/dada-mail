@@ -3229,6 +3229,7 @@ sub _email_batched_finished_notification {
 	 my $message_id = $args->{-message_id};
 	 $message_id =~ s/\<|\>//; 
 	 $message_id =~ s/\.(.*?)$//; 
+	 $message_id =~ s/\/$//; 
 	
 	
 	require DADA::Template::Widgets;
