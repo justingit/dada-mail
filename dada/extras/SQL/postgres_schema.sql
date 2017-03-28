@@ -135,7 +135,7 @@ CREATE TABLE dada_message_drafts (
 id serial not null UNIQUE,
 list varchar(16),
 created_timestamp TIMESTAMP DEFAULT NOW(),
-last_modified_timestamp TIMESTAMP, 
+last_modified_timestamp TIMESTAMP DEFAULT NOW(),
 name varchar(80), 
 screen  varchar(80),
 role varchar(80),

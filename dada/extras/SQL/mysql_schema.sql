@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS dada_message_drafts (
 id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 list varchar(16),
 created_timestamp TIMESTAMP DEFAULT NOW(),
-last_modified_timestamp TIMESTAMP,
+last_modified_timestamp TIMESTAMP DEFAULT NOW(),
 name varchar(80), 
 screen varchar(80),
 role varchar(80),
