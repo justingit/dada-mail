@@ -279,13 +279,19 @@ sub slurp {
 
     my $self      = shift;
     my $file      = shift;
-	my $encoding  = shift || 1; 
+	my $encoding  = shift;
+	
+	if(!defined($encoding)){ 
+		$encoding = 1; 
+	}
 
     local ($/) = wantarray ? $/ : undef;
     local (*F);
     my $r;
     my (@r);
 
+	warn '$encoding' . $encoding; 
+	
 	# https://metacpan.org/source/VITAHALL/Text-FrontMatter-YAML-0.07/lib/Text/FrontMatter/YAML.pm
 	#sub _init_from_string {
 	#    my $self   = shift;
