@@ -1,65 +1,33 @@
 <!-- begin send_email_headers_widget.tmpl --> 
 
 
-	<div id="additional_email_headers">
-		
-<!-- tmpl_if comment -->
-		<div class="row">
-			<div class="large-1 columns">
-				<label for="From"  class="large-text-right">
-					From
-				</label>
-			</div> 
-			<div class="large-11 columns">
-				<input 
-					type="text" 
-					readonly="readonly"
-					value="<!-- tmpl_var list_settings.mailing_list_message_from_phrase  escape="HTML" --> &lt;<!-- tmpl_var list_settings.list_owner_email  escape="HTML" -->&gt;"
-				>
-			</div>
+<div id="additional_email_headers">
+	
+	<div class="row">
+		<div class="large-1 columns">
+			<label for="Reply-To"  class="large-text-right">
+				Reply-To
+			</label>
+		</div> 
+		<div class="large-11 columns">
+			<input type="text" name="Reply-To" id="Reply-To" value="">
 		</div>
-		
+	</div> 
+
+	<!-- tmpl_if priority_popup_menu --> 
 		<div class="row">
 			<div class="large-1 columns">
-				<label for="To" class="large-text-right">
-					To
+				<label  class="large-text-right">
+					Priority
 				</label>
-			</div> 
+			</div>
 			<div class="large-11 columns">
-				<input 
-					type="text" 
-					readonly="readonly"
-					value="<!-- tmpl_var list_settings.mailing_list_message_to_phrase  escape="HTML" --> &lt;...&gt;"
-				> 
+				<!-- tmpl_var name="priority_popup_menu" -->
 			</div>
 		</div> 
-<!-- /tmpl_if -->
-		<div class="row">
-			<div class="large-1 columns">
-				<label for="Reply-To"  class="large-text-right">
-					Reply-To
-				</label>
-			</div> 
-			<div class="large-11 columns">
-				<input type="text" name="Reply-To" id="Reply-To" value="">
-			</div>
-		</div> 
-
-		<!-- tmpl_if priority_popup_menu --> 
-			<div class="row">
-				<div class="large-1 columns">
-					<label  class="large-text-right">
-						Priority
-					</label>
-				</div>
-				<div class="large-11 columns">
-					<!-- tmpl_var name="priority_popup_menu" -->
-				</div>
-			</div> 
-		<!-- /tmpl_if --> 
-		
-
-	</div>
+	<!-- /tmpl_if --> 
+	
+</div>
   
   
   
@@ -67,41 +35,60 @@
 
 
 <div class="row">
+
 	<div class="large-1 columns">
 		<label for="Subject" class="large-text-right">
 			Subject
 		</label>
 	</div>
-	<div class="large-11 columns">				  				
-	<!-- tmpl_if Subject --> 
-		<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var Subject escape="HTML"  -->"  >
-     <!-- tmpl_else --> 
-		 <!-- tmpl_if expr="(screen eq 'send_url_email')" --> 	 
-      <div class="row collapse">
-		    <div class="small-1 columns">
-		     <input type="radio" name="subject_from" id="subject_from_input" value="input" checked="checked">
-		    </div>
-   	  		<div class="small-11 columns">
-			 <input type="text" name="Subject" id="Subject" value="<!-- tmpl_var default_subject escape="HTML" -->"  >
+	
+	
+					  				
+		<!-- tmpl_if Subject --> 
+			<div class="large-11 columns">	
+				<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var Subject escape="HTML"  -->"  >
 			</div>
-	    </div>	  	 
-      <div class="row collapse">
-   	  	 <div class="small-1 columns">
-			 <input type="radio" name="subject_from" id="subject_from_title_tag" value="title_tag"><label for="subject_from_title_tag" >
-		 </div>   	  		
-		 <div class="small-11 columns">
-			 <label for="subject_from_title_tag">
-				 Use the Webpage's &lt;title&gt; as the message's Subject 
-			</label>   
- 	     </div>
- 	   </div> 
-			 
-	     <!-- tmpl_else --> 
-	     	<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var default_subject escape="HTML" -->"  >
-		<!-- /tmpl_if -->	
-	<!-- /tmpl_if -->
+
+  		<!-- tmpl_else --> 
+
+				 <!-- tmpl_if expr="(screen eq 'send_url_email')" --> 	 
+		    		
+					<div class="large-11 columns">	
+						
+						 <div class="row collapse">
+					    	 <div class="small-1 columns">
+					     		<input type="radio" name="subject_from" id="subject_from_input" value="input" checked="checked">
+					    	</div>
+			   	  			<div class="small-11 columns">
+								<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var default_subject escape="HTML" -->"  >
+							</div>
+				    	</div>	  
+					
+						 
+						<div class="row collapse">
+							<div class="small-1 columns">
+								<input type="radio" name="subject_from" id="subject_from_title_tag" value="title_tag"><label for="subject_from_title_tag" >
+							</div>   	  		
+							<div class="small-11 columns">
+								<label for="subject_from_title_tag">
+									Use the Webpage's &lt;title&gt; as the message's Subject 
+								</label>   
+							</div>
+						</div> 
+					</div>
+					
+					
+		     	<!-- tmpl_else --> 
+				
+					<div class="large-11 columns">	
+						<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var default_subject escape="HTML" -->"  >
+					</div>
+				
+				<!-- /tmpl_if -->	
+				
+		<!-- /tmpl_if -->
+		
 	</div>
-		</div>
 
 	<div class="row">
 		<div class="large-1 columns">
@@ -127,7 +114,6 @@
 			</a>
 		</div>
 	</div>
-	
-</div> 
 
-<!-- begin send_email_headers_widget.tmpl --> 
+
+<!-- end send_email_headers_widget.tmpl --> 

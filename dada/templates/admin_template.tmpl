@@ -77,101 +77,127 @@
 	
 </head>
 <body id="Dada"> 
+
+
 	<div class="off-canvas-wrap" data-offcanvas>
 		<div class="inner-wrap">       
+			
+			
 			<!-- mobile navigation -->
+			
 			<nav class="tab-bar hide-for-large-up" role="navigation">
+				
+				
 				<section class="left-medium">
 					<a class="left-off-canvas-toggle menu-icon" href="#">
 						<span>
 						</span>
 					</a>
 				</section>
+				
 				<section class="middle tab-bar-section">
 					<a href="<!-- tmpl_var PROGRAM_URL -->">
 						<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/<!-- tmpl_var PROGRAM_IMG_FILENAME default="dada_mail_logo.png" -->" alt="<!-- tmpl_var PROGRAM_NAME -->">
 					</a>             
 				</section>
+			
+			
 			</nav>
+			
+			
 			<aside class="left-off-canvas-menu">
 				<!-- tmpl_var mobile_admin_menu -->
 			</aside>
 			<!-- /mobile navigation -->
+		
 			
-		<section class="main-section">
+		
+			
 			<nav class="top-bar show-for-large-up" data-topbar role="navigation" id="admin_header">
-				<ul class="title-area">
-					<li class="name">
-						<h3>
-							<a href="<!-- tmpl_var PROGRAM_URL -->">
-								<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/<!-- tmpl_var PROGRAM_IMG_FILENAME default="dada_mail_logo.png"-->" alt="<!-- tmpl_var PROGRAM_NAME -->">
-							</a>
-						</h3>
-					</li>
-				</ul>
-				<section class="top-bar-section">
-				<!-- tmpl_if GIVE_PROPS_IN_ADMIN -->
-					<ul class="left">
-							<li  class="has-form">
-								<a 
-									href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=transform_to_pro" 
-									class="button round alert" 
-									style="font-weight:bold; box-shadow: 0px -2px 14px 0px  rgba(255, 102, 204, 1);"
-								>
-									Transform This Install Into Pro Dada!
+				
+				
+				<section class="main-section">
+					
+					
+					<ul class="title-area">
+						<li class="name">
+							<h3>
+								<a href="<!-- tmpl_var PROGRAM_URL -->">
+									<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/<!-- tmpl_var PROGRAM_IMG_FILENAME default="dada_mail_logo.png"-->" alt="<!-- tmpl_var PROGRAM_NAME -->">
+								</a>
+							</h3>
+						</li>
+					</ul>
+				
+			</section> 
+					<section class="top-bar-section">
+					<!-- tmpl_if GIVE_PROPS_IN_ADMIN -->
+						<ul class="left">
+								<li  class="has-form">
+									<a 
+										href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=transform_to_pro" 
+										class="button round alert" 
+										style="font-weight:bold; box-shadow: 0px -2px 14px 0px  rgba(255, 102, 204, 1);"
+									>
+										Transform This Install Into Pro Dada!
+									</a>
+								</li>
+							</ul>
+						<!-- /tmpl_if -->
+					
+						<ul class="right">
+							<li class="divider">
+							</li>
+							<li>
+								<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
+									Logged in as 
+									<!-- tmpl_if root_login --> 
+										<strong>
+											<!-- tmpl_var PROGRAM_NAME --> Root
+										</strong>
+									<!-- tmpl_else --> 
+										<strong>
+											List Owner
+										</strong>
+									<!-- /tmpl_if -->
+									of  
+									<strong>
+										<!-- tmpl_var list_settings.list_name -->
+									</strong>
+										 (
+										 <em>
+											 <!-- tmpl_var list_settings.list -->
+										</em>
+										)
+								</a>   
+							</li>
+							<!-- tmpl_if login_switch_widget --> 
+								<!-- tmpl_if root_login --> 
+									<li class="divider">
+									</li>
+									<!-- tmpl_var login_switch_widget -->
+									<li class="divider">
+									</li>
+								<!-- /tmpl_if -->
+							<!-- /tmpl_if -->
+							<li class="has-form">
+								<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout" class="button alert">
+									Log Out
 								</a>
 							</li>
 						</ul>
-					<!-- /tmpl_if -->
-					
-					<ul class="right">
-						<li class="divider">
-						</li>
-						<li>
-							<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
-								Logged in as 
-								<!-- tmpl_if root_login --> 
-									<strong>
-										<!-- tmpl_var PROGRAM_NAME --> Root
-									</strong>
-								<!-- tmpl_else --> 
-									<strong>
-										List Owner
-									</strong>
-								<!-- /tmpl_if -->
-								of  
-								<strong>
-									<!-- tmpl_var list_settings.list_name -->
-								</strong>
-									 (
-									 <em>
-										 <!-- tmpl_var list_settings.list -->
-									</em>
-									)
-							</a>   
-						</li>
-						<!-- tmpl_if login_switch_widget --> 
-							<!-- tmpl_if root_login --> 
-								<li class="divider">
-								</li>
-								<!-- tmpl_var login_switch_widget -->
-								<li class="divider">
-								</li>
-							<!-- /tmpl_if -->
-						<!-- /tmpl_if -->
-						<li class="has-form">
-							<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout" class="button alert">
-								Log Out
-							</a>
-						</li>
-					</ul>
-				</section> 
-			</nav>
+					</section>
+
+
+			
+		</nav>	
+							
 		<!-- tmpl_if expr="(list_settings.list_control_panel_style eq 'top_bar')" -->	
 			<div class="show-for-large-up">
 				<!-- tmpl_var admin_top_bar_menu -->
 			</div>
 		<!-- tmpl_else -->
+			
 			<div class="row"  style="width: 100%; margin-left: auto; margin-right: auto; max-width: initial;">
 				<div class="large-2 medium-3 columns">
 					<div class="show-for-large-up">
@@ -182,21 +208,25 @@
 						</div> 
 					</div> 
 				</div>
+			</div>
+				
 		<!-- /tmpl_if -->	
 
-		<!-- tmpl_if expr="(list_settings.list_control_panel_style eq 'top_bar')" -->	
-			<div class="row">
+		<div class="row">
+			<!-- tmpl_if expr="(list_settings.list_control_panel_style eq 'top_bar')" -->		
 				<div class="large-12 medium-12 columns large-centered medium-centered" id="admin_content_area">
-					<!-- tmpl_else -->
+			<!-- tmpl_else -->
 				<div class="large-10 medium-9 columns" id="admin_content_area">
-		<!-- /tmpl_if -->
-		
+			<!-- /tmpl_if -->
 					<!-- tmpl_var content -->
 				</div> 
 			</div>
 		</section>
-	
-			<a class="exit-off-canvas"></a>
+		
+		
+		<a class="exit-off-canvas"></a>
+			
+			
 		</div>
 	</div>
 
