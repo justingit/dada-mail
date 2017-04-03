@@ -245,12 +245,10 @@ sub strip_and_return_vars {
     try {
         my $tfm = Text::FrontMatter::YAML->new( document_string => $str, );
         my @r = ( $tfm->frontmatter_hashref, $tfm->data_text, );
-        return @r;
-    }
-    catch {
+    } catch {
         warn substr($_, 0, 100) . '...';
         return ( undef, $str );
-    }
+    };
 }
 
 sub munge_logo_img {
@@ -290,8 +288,7 @@ sub slurp {
     my $r;
     my (@r);
 
-	warn '$encoding' . $encoding; 
-	
+
 	# https://metacpan.org/source/VITAHALL/Text-FrontMatter-YAML-0.07/lib/Text/FrontMatter/YAML.pm
 	#sub _init_from_string {
 	#    my $self   = shift;
@@ -319,8 +316,6 @@ sub slurp {
 		
 	    open( F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
 	      || croak "can't open $file: $!";
-	    @r = <F>;
-	
 	}
 	else { 
 		
@@ -348,6 +343,8 @@ sub slurp {
 		open( F, '<', $file )  || croak "can't open $file: $!";
 			
 	}
+	
+	 @r = <F>;
 
     close(F) || croak "close $file: $!";
 
