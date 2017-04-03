@@ -9231,6 +9231,8 @@ sub edit_html_type {
             $q->param( $_, $tmp_setting );
         }
 
+        my $also_save_for_list = $ls->also_save_for_list($q);
+		
         $ls->save_w_params(
             {
                 -associate => $q,
@@ -9239,8 +9241,9 @@ sub edit_html_type {
                     html_subscribed_message           => '',
                     html_subscription_request_message => '',
                     html_unsubscribed_message         => '',
-                }
-            }
+                },
+				 -also_save_for => $also_save_for_list,
+            },
         );
 
         $self->header_type('redirect');
