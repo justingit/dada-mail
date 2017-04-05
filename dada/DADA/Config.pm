@@ -1210,6 +1210,7 @@ $MIME_TOOLS_PARAMS //= {
 	list_phone_number => undef, 
 
 	logo_image_url       => undef,
+	website_url          => undef,
 	facebook_page_url    => undef,
 	twitter_url          => undef,
 	google_plus_page_url => undef,
