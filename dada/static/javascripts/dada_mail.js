@@ -4498,7 +4498,7 @@ var urlobj;
 function browsecore5FileManager(obj) {
 	urlobj = obj;
 	var core5_filemanager_url = jQuery("#core5_filemanager_url").val() + '/index.html';
-	open_x_FileManagers(
+	open_x_FileManager(
 	core5_filemanager_url, screen.width * 0.7, screen.height * 0.7);
 }
 function browserrichFileManager(obj) {
