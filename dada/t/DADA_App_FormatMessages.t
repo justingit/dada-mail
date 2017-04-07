@@ -338,32 +338,50 @@ undef $filename;
 # 
 
 
-my $prefix; 
-my $subject; 
 
 $ls->param('prefix_list_name_to_subject', 1); 
 $ls->param('prefix_discussion_list_subjects_with', 'list_name'); 
-$prefix = quotemeta('['.$ls->param('list_name').']'); 
 
 undef $fm; 
-$fm = DADA::App::FormatMessages->new(-List => $list);
-$subject = 'Subject'; 
+my $fm = DADA::App::FormatMessages->new(-List => $list);
+
+
+my $prefix = quotemeta('['.$ls->param('list_name').']'); 
+my $og_s           =                     'Subject';
+my        $subject = $fm->_encode_header('Subject', $og_s); 
+my $prefix_subject = $fm->_encode_header('Subject', $prefix . ' ' . $og_s); 
+
 $subject = $fm->_list_name_subject($subject); 
-diag '$subject' . $subject; 
-like($subject, qr/$prefix Subject/, "Subject set correctly (list name)");
+#diag '$subject' . $subject; 
+#diag '$prefix_subject' . $prefix_subject; 
+like($subject, qr/$prefix_subject/, "Subject set correctly (list name)");
 undef $fm; 
+
+
+
 
 $ls->param('prefix_discussion_list_subjects_with', 'list_shortname'); 
-$subject = 'Subject';
-$prefix = quotemeta('['.$ls->param('list').']'); 
 $fm = DADA::App::FormatMessages->new(-List => $list);
-$subject = $fm->_list_name_subject($subject); 
-diag '$subject' . $subject; 
 
-like($subject, qr/$prefix Subject/, "Subject set correctly (list)");
-undef $fm;
+
+$prefix = quotemeta('['.$ls->param('list').']'); 
+my $og_s           =                     'Subject';
+my        $subject = $fm->_encode_header('Subject', $og_s); 
+my $prefix_subject = $fm->_encode_header('Subject', $prefix . ' ' . $og_s); 
+
+$subject = $fm->_list_name_subject($subject); 
+#diag '$subject' . $subject; 
+#diag '$prefix_subject' . $prefix_subject; 
+like($subject, qr/$prefix_subject/, "Subject set correctly (list name)");
+undef $fm; 
+
+
+
+
+
 $fm = DADA::App::FormatMessages->new(-List => $list);
  
+# This one is most likey broken: 
 $subject = 'Re: [' . $ls->param('list') . '] Subject';
 my $new_subject = quotemeta('[' . $ls->param('list') . '] Re: Subject'); 
 

@@ -10,8 +10,7 @@ use DADA::Config qw(!:DEFAULT);
 
 use Encode qw(encode decode);
 use MIME::Parser;
-use MIME::Entity
-;
+use MIME::Entity;
 use DADA::App::Guts;
 use Try::Tiny;
 use Carp qw(croak carp);
@@ -286,7 +285,13 @@ sub format_headers_and_body {
     }
     else {
         if ( $self->Subject ) {
-            $entity->head->add( 'Subject', safely_encode( $self->Subject ) ); #?
+            $entity->head->add(
+				 'Subject', 
+				 $self->_encode_header(
+				 	'Subject', 
+					$self->Subject
+				) 
+			);
         }
     }
 
@@ -1215,12 +1220,12 @@ sub _format_headers {
         else {
             $new_subject = safely_decode($og_subject);
         }
-        $new_subject = $self->_list_name_subject($new_subject);
-
+        
         $entity->head->delete('Subject');
-
-        # also, probably don't have to re-encode this, as it's encoded... sigh.
-        $entity->head->add( 'Subject', safely_encode($new_subject) );
+        $entity->head->add(
+			'Subject', 
+			$self->_list_name_subject($new_subject)
+		);
     }
 
     # DEV:  Send mass mailings via sendmail, OTHER THAN via a discussion list,
@@ -1268,6 +1273,9 @@ sub _format_headers {
             chomp($og_from);
 
             $entity->head->delete('From');
+			
+			# This shouldn't needed to be, safely_encode()ed, 
+			# as it's shuld be MimeEncoded, thus in bit... 
             $entity->head->add( 'From', safely_encode( $self->_pp($og_from) ) );
 
             if ( $self->{ls}->param('set_to_header_to_list_address') == 1 ) {
@@ -1795,7 +1803,8 @@ Appends, B<$list_name> onto subject.
 
 sub _list_name_subject {
 
-    # This is awful code, yuck!
+	# This method expects the subject to be raw -  MIMEWords encoded
+	# It will return a raw, MIMEWords encoded subject back
 
     my $self         = shift;
     my $subject = shift;
@@ -1808,11 +1817,13 @@ sub _list_name_subject {
 	
 	if($subject =~ m/^\[($qm_list|$qm_list_name)\]/){ 
 		# And, we're done!
+		$subject = $self->_encode_header( 'Subject', $subject );
 		return $subject;
 	}
 	elsif($subject =~ m/^(RE:|AW:|FW:|WG:)\s*\[($qm_list|$qm_list_name)\]/i){ 
 		# And, we're done!
-		return $subject;
+		  $subject = $self->_encode_header( 'Subject', $subject );
+		  return $subject;
 	}
 	else { 
 		if($self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_name"){ 
