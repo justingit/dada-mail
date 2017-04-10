@@ -565,7 +565,10 @@ sub validate_list_email {
     for my $t_list ( available_lists() ) {
 
         my $ls = DADA::MailingList::Settings->new( { -list => $t_list } );
-        if ( cased( $ls->param('list_owner_email') ) eq cased($list_email) ) {
+        if ( 
+			cased( $ls->param('list_owner_email') ) eq 
+			cased($list_email)
+		) {
             if ( $t_list eq $list ) {
                 $errors->{list_email_set_to_list_owner_email} = 1;
             }
@@ -574,7 +577,9 @@ sub validate_list_email {
             }
             $status = 0;
         }
-        if ( cased( $ls->param('admin_email') ) eq cased($list_email) ) {
+        if ( 
+			cased( $ls->param('admin_email') ) eq cased($list_email) 
+		) {
 
             if ( $t_list eq $list ) {
                 $errors->{list_email_set_to_list_admin_email} = 1;
@@ -942,7 +947,10 @@ sub start {
 			undef($ls);
             next LIST_QUEUE;
         }
-        if ( $ls->param('discussion_pop_email') eq $ls->param('list_owner_email') ) {
+        if ( 
+			cased($ls->param('discussion_pop_email')) eq 
+			cased($ls->param('list_owner_email'))
+		) {
             $r .=
 "\t\t***Warning!*** Misconfiguration of plugin! The List Owner email cannot be the same address as the list email address!\n\t\tSkipping $list...\n";
 			undef($ls);
@@ -1579,6 +1587,7 @@ sub validate_msg {
         multiple_from_addresses                  => 0,
         msg_from_list_address                    => 0,
         list_email_address_is_list_owner_address => 0,
+		list_email_address_is_list_admin_address => 0,
         invalid_msg                              => 0,
         multiple_return_path_headers             => 0,
         x_been_there_header_found                => 0,
@@ -1594,11 +1603,21 @@ sub validate_msg {
     my $lh =
       DADA::MailingList::Subscribers->new( { -list => $ls->param('list') } );
 
-    if ( lc_email( $ls->param('discussion_pop_email') ) eq lc_email( $ls->param('list_owner_email') ) ) {
-        $r .=
-"\t\t***Warning!*** Misconfiguration of plugin! The List Owner email cannot be the same address as the list email address!\n";
+    if ( 
+		   lc_email( $ls->param('discussion_pop_email') ) 
+		eq lc_email( $ls->param('list_owner_email') ) 
+	) {
+        $r .= "\t\t***Warning!*** Misconfiguration of plugin! The List Owner email cannot be the same address as the List Email address!\n";
         $errors->{list_email_address_is_list_owner_address} = 1;
     }
+	
+    if ( lc_email( $ls->param('discussion_pop_email') ) eq lc_email( $ls->param('admin_email') ) ) {
+        $r .=
+"\t\t***Warning!*** Misconfiguration of plugin! The List Admin email cannot be the same address as the List Email address!\n";
+        $errors->{list_email_address_is_list_admin_address} = 1;
+    }
+	
+	
 
     my $message_is_blank = 0;
 
