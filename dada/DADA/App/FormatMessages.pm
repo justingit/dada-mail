@@ -267,6 +267,18 @@ sub format_headers_and_body {
     else {
         die "you must pass either a -msg or an -entity";
     }
+	
+	# This is a bugfix to bad MIME creators, 
+	# to stop horrible things from happening: 
+	# "type" should not be an attribute in "Content-Type"
+	if($entity->head->mime_type eq 'multipart/related'){ 
+		if($entity->head->mime_attr("Content-Type.type") eq "text/html"){ 
+			$entity->head->mime_attr("Content-Type.type" => undef);
+		}
+	}
+	
+	
+	
 
     if ( !exists( $args->{-format_body} ) ) {
         $args->{-format_body} = 1;
@@ -823,7 +835,8 @@ sub _format_body {
 
         my $changes = 0;
         my $is_att  = 0;
-        if ( defined( $entity->head->mime_attr('content-disposition') ) ) {
+    
+	    if ( defined( $entity->head->mime_attr('content-disposition') ) ) {
             if ( $entity->head->mime_attr('content-disposition') =~
                 m/attachment/ )
             {
