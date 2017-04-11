@@ -257,6 +257,9 @@ $RATE_LIMITING = {
 	timeframe => <!-- tmpl_var security_rate_limiting_timeframe -->,
 };
 
+$FILE_CHMOD = <!-- tmpl_var security_default_file_permissions default="0644" -->;
+$DIR_CHMOD  = <!-- tmpl_var security_default_directory_permissions default="0755" -->;
+
 <!-- /tmpl_if -->
 
 

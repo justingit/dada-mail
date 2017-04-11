@@ -891,37 +891,13 @@ sub grab_former_config_vals {
     $opt->{'original_dada_root_pass'}              = $BootstrapConfig::PROGRAM_ROOT_PASSWORD;
     $opt->{'original_dada_root_pass_is_encrypted'} = $BootstrapConfig::ROOT_PASS_IS_ENCRYPTED;
 
-    # BACKEND
-    # In v5 and earlier, there was no $BACKEND_DB, so we'll see what we have,
-    if (
-        (
-               $BootstrapConfig::SUBSCRIBER_DB_TYPE eq 'SQL'
-            && $BootstrapConfig::ARCHIVE_DB_TYPE eq 'SQL'
-            && $BootstrapConfig::SETTINGS_DB_TYPE eq 'SQL'
-            && $BootstrapConfig::BOUNCE_SCORECARD_DB_TYPE eq 'SQL'
-            && $BootstrapConfig::CLICKTHROUGH_DB_TYPE eq 'SQL'
-        )
-        || ( $BootstrapConfig::BACKEND_DB_TYPE eq 'SQL' )
-      )
-    {
-        # That means, we have an SQL backend.
-        #%SQL_PARAMS;
-        $opt->{'backend'}      = $BootstrapConfig::SQL_PARAMS{dbtype};
-        $opt->{'sql_server'}   = $BootstrapConfig::SQL_PARAMS{dbserver};
-        $opt->{'sql_database'} = $BootstrapConfig::SQL_PARAMS{database};
-        $opt->{'sql_port'}     = $BootstrapConfig::SQL_PARAMS{port};
-        $opt->{'sql_username'} = $BootstrapConfig::SQL_PARAMS{user};
-        $opt->{'sql_password'} = $BootstrapConfig::SQL_PARAMS{pass};
+    $opt->{'backend'}      = $BootstrapConfig::SQL_PARAMS{dbtype};
+    $opt->{'sql_server'}   = $BootstrapConfig::SQL_PARAMS{dbserver};
+    $opt->{'sql_database'} = $BootstrapConfig::SQL_PARAMS{database};
+    $opt->{'sql_port'}     = $BootstrapConfig::SQL_PARAMS{port};
+    $opt->{'sql_username'} = $BootstrapConfig::SQL_PARAMS{user};
+    $opt->{'sql_password'} = $BootstrapConfig::SQL_PARAMS{pass};
 
-    }
-    elsif ( $BootstrapConfig::BACKEND_DB_TYPE eq 'Default' ) {
-        $opt->{'backend'} = 'default';
-    }
-    elsif ($BootstrapConfig::SUBSCRIBER_DB_TYPE eq 'Default'
-        || $BootstrapConfig::SETTINGS_DB_TYPE eq 'Default' )
-    {
-        $opt->{'backend'} = 'default';
-    }
 
     my @plugin_exts = (
         qw(
@@ -1217,6 +1193,8 @@ sub grab_former_config_vals {
         || defined($BootstrapConfig::SIGN_IN_FLAVOR_NAME) 
 		|| keys    %$BootstrapConfig::CP_SESSION_PARAMS
         || defined($BootstrapConfig::RATE_LIMITING) 
+		|| defined($BootstrapConfig::FILE_CHMOD)
+		|| defined($BootstrapConfig::DIR_CHMOD) 
 	)
     {
         $opt->{'configure_security'} = 1;
@@ -1239,6 +1217,17 @@ sub grab_former_config_vals {
 			$opt->{'security_rate_limiting_max_hits'} = $BootstrapConfig::RATE_LIMITING->{max_hits};
 			$opt->{'security_rate_limiting_timeframe'} = $BootstrapConfig::RATE_LIMITING->{timeframe};
 		}
+		
+        if ( defined($BootstrapConfig::FILE_CHMOD) ) {
+			$opt->{'security_default_file_permissions'} 	 = int(sprintf("%o", $BootstrapConfig::FILE_CHMOD)); 
+			#0755 turns into, 755
+		}
+        if ( defined($BootstrapConfig::DIR_CHMOD) ) {
+			$opt->{'security_default_directory_permissions'} = int(sprintf("%o", $BootstrapConfig::DIR_CHMOD));
+		}
+
+	#	use Data::Dumper; 
+	#	die Dumper($opt)
 
     }
 
@@ -1334,15 +1323,7 @@ sub grab_former_config_vals {
         $opt->{'mime_tools_options_tmp_dir_'} 
 			= $BootstrapConfig::MIME_TOOLS_PARAMS->{tmp_dir_};
 	}
-	
-=cut
-	
-	// { 
-	tmp_to_core    => 0, 
-	tmp_dir        => 'server_default', #server_default, #app_default
-};)
 
-=cut
 	
     my $dash_opt = {};
     for ( keys %$opt ) {
@@ -1462,6 +1443,25 @@ sub scrn_install_dada_mail {
             $q->param( 'program_url', $purl );
         }
     }
+	
+    if ( $q->param('configure_security') == 1 ) {
+
+		my $file_perms = $q->param('security_default_file_permissions') // 644; 
+		$file_perms = '0' . $file_perms;
+		my $dir_perms = $q->param('security_default_directory_permissions') // 755;
+		$dir_perms = '0' . $dir_perms;
+		
+			$DADA::Config::FILE_CHMOD = oct($file_perms);
+			$DADA::Config::DIR_CHMOD  = oct($dir_perms); 
+			
+#			use Data::Dumper; 
+#			die Dumper([$DADA::Config::FILE_CHMOD, $DADA::Config::DIR_CHMOD]); 
+			
+	}
+	
+
+	# This is also very awkward - we have to feed the new file/directory permissions that we may have also set! 
+	# 
 
 
     my ( $log, $status, $errors ) = $self->install_dada_mail();
@@ -1625,6 +1625,9 @@ sub query_params_to_install_params {
 	  security_rate_limiting_enabled
 	  security_rate_limiting_max_hits
 	  security_rate_limiting_timeframe
+	  
+	  security_default_file_permissions
+	  security_default_directory_permissions
 
 	  configure_mime_tools
 	  mime_tools_options_tmp_to_core
@@ -1762,31 +1765,35 @@ sub install_dada_mail {
             }
         }
        
-        # Creating the needed SQL tables
-        if ( $ip->{-backend} eq 'default' || $ip->{-backend} eq '' ) {
 
-            # ...
+        if ( $ip->{-skip_configure_SQL} == 1 ) {
+            $log .= "* Skipping the creation of the SQL Tables...\n";
         }
         else {
-            if ( $ip->{-skip_configure_SQL} == 1 ) {
-                $log .= "* Skipping the creation of the SQL Tables...\n";
+
+            $log .= "* Attempting to create SQL Tables...\n";
+            my $sql_ok = $self->create_sql_tables();
+            if ( $sql_ok == 1 ) {
+                $log .= "* Success!\n";
             }
             else {
-
-                $log .= "* Attempting to create SQL Tables...\n";
-                my $sql_ok = $self->create_sql_tables();
-                if ( $sql_ok == 1 ) {
-                    $log .= "* Success!\n";
-                }
-                else {
-                    $log .= "* Problems Creating SQL Tables! STOPPING!\n";
-                    $errors->{cant_create_sql_tables} = 1;
-                    $status = 0;
-                    return ( $log, $status, $errors );
-                }
+                $log .= "* Problems Creating SQL Tables! STOPPING!\n";
+                $errors->{cant_create_sql_tables} = 1;
+                $status = 0;
+                return ( $log, $status, $errors );
             }
-        }
+        }    
     }
+	
+	$log .= "* Clearing Session Data...\n";
+	my $sess_ok = $self->clear_sessions();
+    if ( $sess_ok == 1 ) {
+        $log .= "* Success!\n";
+    }
+    else {
+        $log .= "* Problems removing session data.\n";
+    }
+	
 
     # Editing the Config.pm file
 
@@ -2095,32 +2102,32 @@ sub create_dada_config_file {
     }
 
     my $SQL_params = {};
-    if ( $ip->{-backend} ne 'default' && $ip->{-backend} ne '' ) {
-        $SQL_params->{configure_SQL} = 1;
+  
+    $SQL_params->{configure_SQL} = 1;
 
-        for (
-            qw(
-            -sql_server
-            -sql_port
-            -sql_database
-            -sql_username
-            -sql_password
-            )
-          )
-        {
-            $ip->{$_} = strip( xss_filter( $ip->{$_} ) );
-        }
-
-        $SQL_params->{backend}      = $ip->{-backend};
-        $SQL_params->{sql_server}   = $ip->{-sql_server};
-        $SQL_params->{sql_database} = clean_up_var( $ip->{-sql_database} );
-        $SQL_params->{sql_port}     = $self->sql_port_from_params(
-										$ip->{-backend}, 
-										$ip->{-sql_port},
-									  );
-        $SQL_params->{sql_username} = clean_up_var( $ip->{-sql_username} );
-        $SQL_params->{sql_password} = clean_up_var( $ip->{-sql_password} );
+    for (
+        qw(
+        -sql_server
+        -sql_port
+        -sql_database
+        -sql_username
+        -sql_password
+        )
+      )
+    {
+        $ip->{$_} = strip( xss_filter( $ip->{$_} ) );
     }
+
+    $SQL_params->{backend}      = $ip->{-backend};
+    $SQL_params->{sql_server}   = $ip->{-sql_server};
+    $SQL_params->{sql_database} = clean_up_var( $ip->{-sql_database} );
+    $SQL_params->{sql_port}     = $self->sql_port_from_params(
+									$ip->{-backend}, 
+									$ip->{-sql_port},
+								  );
+    $SQL_params->{sql_username} = clean_up_var( $ip->{-sql_username} );
+    $SQL_params->{sql_password} = clean_up_var( $ip->{-sql_password} );
+
 
     if ( $ip->{-backend} eq 'SQLite' ) {
         $ip->{-sql_server}   = '';
@@ -2286,6 +2293,10 @@ sub create_dada_config_file {
         $security_params->{security_rate_limiting_enabled} = clean_up_var( $ip->{-security_rate_limiting_enabled} ) || 0;
         $security_params->{security_rate_limiting_max_hits} = clean_up_var( $ip->{-security_rate_limiting_max_hits} ) || 0;
         $security_params->{security_rate_limiting_timeframe} = clean_up_var( $ip->{-security_rate_limiting_timeframe} ) || 0;
+
+        $security_params->{security_default_file_permissions}      = '0' . clean_up_var( $ip->{-security_default_file_permissions} ) || undef;
+        $security_params->{security_default_directory_permissions} = '0' . clean_up_var( $ip->{-security_default_directory_permissions} ) || undef;
+		
     }
 
     my $captcha_params = {};
@@ -2534,6 +2545,95 @@ sub create_sql_tables {
 
     }
 }
+
+
+
+sub clear_sessions {
+    my $self = shift;
+    my $ip   = $self->param('install_params');
+	my $r = undef; 
+	
+    my $sql_file = '';
+    if ( $ip->{-backend} eq 'mysql' ) {
+        $sql_file = 'mysql_schema.sql';
+    }
+    elsif ( $ip->{-backend} eq 'Pg' ) {
+        $sql_file = 'postgres_schema.sql';
+    }
+    elsif ( $ip->{-backend} eq 'SQLite' ) {
+        $sql_file = 'sqlite_schema.sql';
+    }
+
+	
+    eval {
+
+        require DBI;
+
+        my $dbtype   = strip( xss_filter( $ip->{-backend} ) );
+        my $dbserver = strip( xss_filter( $ip->{-sql_server} ) );
+       # my $port     = strip( xss_filter( $ip->{-sql_port} ) );
+	   
+       my $port = $self->sql_port_from_params(
+	   		$ip->{-backend}, 
+			$ip->{-sql_port},
+		  );
+
+        my $database = strip( xss_filter( $ip->{-sql_database} ) );
+        my $user     = strip( xss_filter( $ip->{-sql_username} ) );
+        my $pass     = strip( xss_filter( $ip->{-sql_password} ) );
+
+        my $data_source = '';
+        my $dbh         = undef;
+        if ( $dbtype eq 'SQLite' ) {
+            $data_source = 'dbi:'
+              . $dbtype . ':'
+              . $ip->{-install_dada_files_loc} . '/'
+              . $Dada_Files_Dir_Name
+              . '/.lists/'
+              . 'dadamail';
+            $dbh = DBI->connect( $data_source, "", "" );
+        }
+        else {
+            $data_source = "dbi:$dbtype:dbname=$database;host=$dbserver;port=$port";
+		
+			
+            $dbh = DBI->connect( "$data_source", $user, $pass );
+        }
+
+		my $query = 'TRUNCATE ' . 'dada_sessions'; # <---- HARD CODED!
+		
+		warn '$query:' . $query; 
+		
+		my $sth   = $dbh->prepare($query);
+		$sth->execute or croak "cannot do statement! $DBI::errstr\n";
+		
+		my $php_sess_dir = make_safer($ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions');
+		if(-d $php_sess_dir){ 
+		    my $f;
+		    opendir( PHPSESSDIR, $php_sess_dir ) or die $!;
+		    while ( defined( $f = readdir PHPSESSDIR ) ) {
+
+		        #don't read '.' or '..'
+		        next if $f =~ /^\.\.?$/;
+				
+		        $f =~ s(^.*/)();
+				next unless $f =~ m/^sess/;
+				my $n = unlink( make_safer( $php_sess_dir. '/' . $f ) );
+		    }
+		    closedir(PHPSESSDIR);
+		}
+    };
+    if ($@) {
+        carp $!;
+        $Big_Pile_Of_Errors .= $@;
+        return 0;
+    }
+    else {
+        return 1;
+
+    }
+}
+
 
 sub sql_port_from_params {
 
@@ -2940,7 +3040,7 @@ sub setup_deployment {
     # This is basically for everyone: 
     for(qw(cgi fastcgi psgi)) { 
         if ( -e  make_safer($run->{$_}->{enabled}) ) {
-            installer_chmod( 0644, make_safer($run->{$_}->{enabled}) );
+            installer_chmod( $DADA::Config::FILE_CHMOD, make_safer($run->{$_}->{enabled}) );
             installer_mv( make_safer($run->{$_}->{enabled}), make_safer($run->{$_}->{disabled}) );
         }
     }
@@ -4626,7 +4726,7 @@ sub move_installer_dir {
     eval {
         #`mv ../installer $new_dir_name`;
         installer_mv( make_safer('../installer'), $new_dir_name );
-        installer_chmod( 0644, make_safer('install.cgi') );
+        installer_chmod( $DADA::Config::FILE_CHMOD, make_safer('install.cgi') );
     };
     my $errors = undef;
     if ($@) {
@@ -4694,7 +4794,15 @@ sub installer_rm {
 }
 
 sub installer_chmod {
+	
+
     my ( $octet, $file ) = @_;
+
+	warn 'installer_chmod $octet:' . $octet . ', $file:'  . $file;
+
+
+
+
     my $r = chmod( $octet, $file );
     return $r;
 }
@@ -4754,7 +4862,7 @@ sub create_htaccess_fastcgi {
     open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
     print $htaccess 'AddHandler fcgid-script .fcgi' . "\n" or croak $!;
     close $htaccess or croak $!;
-    installer_chmod( 0644, $htaccess_file );
+    installer_chmod( $DADA::Config::FILE_CHMOD, $htaccess_file );
 }
 
 sub create_htaccess_deny_from_all_file {
@@ -4766,7 +4874,7 @@ sub create_htaccess_deny_from_all_file {
     open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
     print $htaccess "deny from all\n" or croak $!;
     close $htaccess or croak $!;
-    installer_chmod( 0644, $htaccess_file );
+    installer_chmod( $DADA::Config::FILE_CHMOD, $htaccess_file );
 }
 
 sub create_htaccess_no_script_execution {
@@ -4776,7 +4884,7 @@ sub create_htaccess_no_script_execution {
     print $htaccess q|Options -ExecCGI
 AddType text/plain .php .phtml .php3 .pl .cgi| or croak $!;
     close $htaccess or croak $!;
-    installer_chmod( 0644, $htaccess_file );
+    installer_chmod( $DADA::Config::FILE_CHMOD, $htaccess_file );
 }
 
 sub create_htaccess_no_directory_index {
@@ -4787,7 +4895,7 @@ sub create_htaccess_no_directory_index {
     open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or warn $!;
     print $htaccess q|Options -Indexes| or warn $!;
     close $htaccess or warn $!;
-    installer_chmod( 0644, $htaccess_file );
+    installer_chmod( $DADA::Config::FILE_CHMOD, $htaccess_file );
 	
 }
 
@@ -4798,7 +4906,7 @@ sub create_blank_index_file {
     open my $index, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $index_file or warn $!;
     print $index '' or warn $!;
     close $index    or warn $!;
-    installer_chmod( 0644, $index_file );
+    installer_chmod( $DADA::Config::FILE_CHMOD, $index_file );
 }
 
 sub guess_home_dir {

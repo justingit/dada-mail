@@ -176,7 +176,7 @@ sub reconfigure {
 	}
 	else { 
 		if($chmoded_installer_script == 0){ 
-			chmod_installer_script(0644);
+			chmod_installer_script($DADA::Config::FILE_CHMOD);
 		}
 
 		require DADA::Template::Widgets;
