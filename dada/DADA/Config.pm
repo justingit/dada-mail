@@ -999,7 +999,7 @@ $EMAIL_CASE //= 'lc_all';
 
 $LIST_IN_ORDER //= 0;
 
-$FILE_CHMOD //= 0666;
+$FILE_CHMOD //= 0644;
 $DIR_CHMOD  //= 0755;
 
 $HTML_CHARSET //= 'UTF-8';
