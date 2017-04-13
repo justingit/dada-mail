@@ -1479,6 +1479,8 @@ sub scrn_install_dada_mail {
         }
     );
 
+	my $ip   = $self->param('install_params');
+
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'installer_install_dada_mail_scrn.tmpl',
@@ -1504,6 +1506,8 @@ sub scrn_install_dada_mail {
                 Self_URL                      => $Self_URL,
                 scheduled_jobs_flavor         => $sched_flavor,
                 curl_location                 => $curl_location,
+				
+				security_default_file_permissions => $ip->{-security_default_file_permissions}
 
             }
         }
@@ -4622,8 +4626,17 @@ sub move_installer_dir_ajax {
     my $self = shift;
     my $q    = $self->query();
     my $r;
+	
+	my $file_chmod = $q->param('file_chmod');
+	if(
+		   $file_chmod != 600
+		&& $file_chmod != 644 
+		&& $file_chmod != 666 
+	){ 
+		$file_chmod = 644;
+	}
 
-    my ( $new_dir_name, $eval_errors ) = $self->move_installer_dir();
+    my ( $new_dir_name, $eval_errors ) = $self->move_installer_dir($file_chmod);
 
     $r .= '
 		<fieldset> 
@@ -4718,7 +4731,15 @@ sub screen {
 sub move_installer_dir {
 
     my $self = shift;
-
+	my $file_chmod = shift || 644; 
+	if(
+		   $file_chmod != 600
+		&& $file_chmod != 644 
+		&& $file_chmod != 666 
+	){ 
+		$file_chmod = 644;
+	}
+	
     my $time = time;
     require DADA::Security::Password;
     my $ran_str      = DADA::Security::Password::generate_rand_string();
@@ -4726,7 +4747,7 @@ sub move_installer_dir {
     eval {
         #`mv ../installer $new_dir_name`;
         installer_mv( make_safer('../installer'), $new_dir_name );
-        installer_chmod( $DADA::Config::FILE_CHMOD, make_safer('install.cgi') );
+        installer_chmod( oct("0" . $file_chmod), make_safer('install.cgi') );
     };
     my $errors = undef;
     if ($@) {

@@ -188,10 +188,10 @@ jQuery(document).ready(function($){
 		}
 
 	}
-	if ($("#installer_install_dada_mail").length) {
+	if ($("#installer_install_dada_mail").length) {		
 		$("body").on("click", '#move_installer_dir', function(event) {
 			event.preventDefault();
-			installer_move_installer_dir();
+			installer_move_installer_dir($(this).attr("data-chmod"));
 		});
 	}
 
@@ -422,7 +422,7 @@ function test_CAPTCHA_configuration() {
 		});
 		
 		request.done(function(content) {
-			//alert("done!"); 
+			
 			$("#" + target_div).html(content);
 			
 			var captchaWidgetId = grecaptcha.render( 'google_recaptcha_example', {
@@ -561,8 +561,8 @@ function installer_toggle_template_mode_magic_options() {
 	}	
 }
 
-function installer_move_installer_dir() {
-
+function installer_move_installer_dir(file_chmod) {
+	
 	$("#move_results").hide();
 	var request = $.ajax({
 		url: $("#self_url").val(),
@@ -570,6 +570,7 @@ function installer_move_installer_dir() {
 		cache: false,
 		data: {
 			flavor: 'move_installer_dir_ajax',
+			file_chmod: file_chmod
 		},
 		dataType: "html"
 	});
