@@ -6,6 +6,57 @@
 
 This is mostly a bug-fix release for issues found in the v10.5.0 release of Dada Mail. 
 
+=head2 Changes
+
+=head3 Change in Default File Permissions from: 0666 to 0644
+
+Dada Mail has been tweaked slightly to set permissions of files it creates to, C<0644>, rather than C<0666>. 
+This is to enhance security of the files that Dada Mail creates and modifies. 
+
+=head2 Features
+
+=head3 Set Default File and Directory Permissions Support in Dada Mail Installer
+
+To complement the change in default file permissions, the included installer for Dada Mail
+now supports customizing the default file and directory permissions. 
+Check the option, B<Configure Security Options> and look under, B<File/Directory Permissions>.
+
+B<Great care must be made to make sure the permissions you set will work with your server environment.> 
+
+=head3 Add a Website URL in your List Information 
+
+There's support for adding a website URL as part of your List Information.
+If set, this URL will show up in the footer of the email messages sent by Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 No default in "last_modified_timestamp" col in "dada_message_drafts"
+
+L<https://github.com/justingit/dada-mail/issues/660>
+
+=head3 Bridge: poor handling of poorly created multipart/related messages #657 
+
+L<https://github.com/justingit/dada-mail/issues/657>
+
+=head3 Bridge: List Email ne List Admin test needs to be added to validate_msg() 
+
+L<https://github.com/justingit/dada-mail/issues/656>
+
+=head3 Bridge: Appending List Name/List Shortname to Subject can break encoding of Subject 
+
+L<https://github.com/justingit/dada-mail/issues/652> 
+
+=head3 Adding a file attachment broken when using Core5 Filemanager 
+
+L<https://github.com/justingit/dada-mail/issues/653> 
+
+=head3 Saving to multiple lists does not work in, Appearance: HTML Screen Templates 
+
+L<https://github.com/justingit/dada-mail/issues/650>
+
+=head3 8bit characters in Email Themes are escaped to \x{} representation
+
+L<https://github.com/justingit/dada-mail/issues/649>
 
 
 =head1 10.5.0
