@@ -13,11 +13,11 @@ Dada Mail does already ship with many included CPAN Perl modules, but it can't s
 
 A list of these optional modules to install can be found in the C<Bundle::DadaMail> module: 
 
-L<https://metacpan.org/pod/distribution/Bundle-DadaMail/lib/Bundle/DadaMail.pm>
+L<https://metacpan.org/pod/Bundle::DadaMail
 
 A fairly exhaustive list of all the CPAN Perl Modules Dada Mail ships with can be found in the, C<Bundle::DadaMailXXL> module:
 
-L<https://metacpan.org/pod/distribution/Bundle-DadaMail/lib/Bundle/DadaMailXXL.pm>
+L<https://metacpan.org/pod/Bundle::DadaMailXXL>
 
 In this FAQ, we're going to focus on using the cPanel Perl Module Installer, which may be available to you, if you're running a hosting account powered by cPanel.  
 
