@@ -106,7 +106,9 @@ sub id_exists {
     if ( !defined($id) || $id eq '' ) {
         return 0;
     }
-    my $query = 'SELECT COUNT(*) FROM ' . $self->{sql_params}->{message_drafts_table} . ' WHERE list = ? AND id = ?';
+    my $query = 'SELECT COUNT(*) FROM ' 
+	. $self->{sql_params}->{message_drafts_table} 
+	. ' WHERE list = ? AND id = ?';
 
     warn 'QUERY: ' . $query
       if $t;
@@ -183,29 +185,31 @@ sub save {
         } 
     );
 
+    my $query; 
+    
     if ( !defined($id) ) {
 
         warn 'id undefined.'
           if $t;
 
-          my $query; 
         if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
             $query =
                 'INSERT INTO '
               . $self->{sql_params}->{message_drafts_table}
-              . ' (list, screen, role, draft, last_modified_timestamp) VALUES (?,?,?,?, CURRENT_TIMESTAMP)';
+              . ' (list, screen, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?,?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)';
         }
-        else { 
-
+        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
             $query =
                 'INSERT INTO '
               . $self->{sql_params}->{message_drafts_table}
-              . ' (list, screen, role, draft, last_modified_timestamp) VALUES (?,?,?,?, NOW())';
+              . ' (list, screen, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?,?, NULL, NULL)'; 
+			  # I'm such NOW() NOW() (untested!) would also work
         }
-        
-        # Uh, it's gotta be a little different.
-        if ( $self->{sql_params}->{dbtype} eq 'SQLite' ) {
-            $query =~ s/NOW\(\)/CURRENT_TIMESTAMP/;
+        else {
+            $query =
+                'INSERT INTO '
+              . $self->{sql_params}->{message_drafts_table}
+              . ' (list, screen, role, draft, last_modified_timestamp) VALUES (?,?,?,?, NOW(), NOW())';
         }
 
         warn 'QUERY: ' . $query
@@ -216,8 +220,12 @@ sub save {
             require Data::Dumper; 
             warn 'execute params: ' . Data::Dumper::Dumper([$self->{list}, $args->{-screen}, $args->{-save_role}, $draft]); 
         }
-        $sth->execute( $self->{list}, $args->{-screen}, $args->{-save_role}, $draft )
-          or croak "cannot do statement '$query'! $DBI::errstr\n";
+        $sth->execute( 
+			$self->{list}, 
+			$args->{-screen}, 
+			$args->{-save_role}, 
+			$draft 
+		) or croak "cannot do statement '$query'! $DBI::errstr\n";
 
         $sth->finish;
 
@@ -227,7 +235,12 @@ sub save {
         }
         else {
             my $last_insert_id =
-              $self->{dbh}->last_insert_id( undef, undef, $self->{sql_params}->{message_drafts_table}, undef );
+              $self->{dbh}->last_insert_id( 
+			  	undef, 
+				undef, 
+				$self->{sql_params}->{message_drafts_table}, 
+				undef 
+			);
             warn '$last_insert_id:' . $last_insert_id
               if $t;
 
@@ -264,6 +277,14 @@ sub save {
                     'UPDATE '
                   . $self->{sql_params}->{message_drafts_table}
                   . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = CURRENT_TIMESTAMP WHERE list = ? AND id = ?';
+            }
+            elsif($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql') { 
+                $query =
+                    'UPDATE '
+                  . $self->{sql_params}->{message_drafts_table}
+                  . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = NULL WHERE list = ? AND id = ?';
+				     # NOW() works just fine, too. 
+				  
             }
             else { 
                 $query =
@@ -540,7 +561,9 @@ sub count {
     }
 
     my @row;
-    my $query = 'SELECT COUNT(*) FROM ' . $self->{sql_params}->{message_drafts_table} . ' WHERE list = ? AND role = ?';
+    my $query = 'SELECT COUNT(*) FROM ' 
+	. $self->{sql_params}->{message_drafts_table} 
+	. ' WHERE list = ? AND role = ?';
 
 #    warn 'QUERY: ' . $query
 #      if $t;
@@ -558,7 +581,9 @@ sub remove {
         return -1;
     }
 
-    my $query = 'DELETE FROM ' . $self->{sql_params}->{message_drafts_table} . ' WHERE id = ? AND list = ?';
+    my $query = 'DELETE FROM ' 
+	. $self->{sql_params}->{message_drafts_table} 
+	. ' WHERE id = ? AND list = ?';
 
     warn 'QUERY: ' . $query
       if $t;

@@ -2227,6 +2227,8 @@ sub create_probable_missing_tables {
 
 
 sub upgrade_tables {
+#	warn 'upgrade_tables!';
+	
     my $dbi_obj = undef;
     my $dbh     = undef;
 
@@ -2289,7 +2291,6 @@ sub upgrade_tables {
     # dada_profile_fields_attributes
     my $table_cols = table_cols( $dbh, 'profile_fields_attributes_table' );
     if ( exists( $table_cols->{required} ) ) {
-
         # good to go.
     }
     else {
@@ -2331,6 +2332,50 @@ sub upgrade_tables {
         undef $query;
         undef $sth;
     }
+	
+	
+	# warn '$DADA::Config::SQL_PARAMS{dbtype}' . $DADA::Config::SQL_PARAMS{dbtype}; 
+	
+	try {
+		if($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql') {
+	
+			my $sth = $dbh->column_info( undef, undef, $DADA::Config::SQL_PARAMS{message_drafts_table}, '%' );
+			#use Data::Dumper;
+			my $m_info = $sth->fetchall_hashref('COLUMN_NAME');
+		
+			# created_timestamp = CURRENT_TIMESTAMP
+			# last_modified_timestamp = 0000-00-00 00:00:00
+				
+			if(
+		
+			   $m_info->{created_timestamp}->{COLUMN_DEF} eq 'CURRENT_TIMESTAMP'
+			|| $m_info->{last_modified_timestamp}->{COLUMN_DEF} =~ m/00/	
+			) { 
+		
+				my $query =  'ALTER TABLE '
+				. $DADA::Config::SQL_PARAMS{message_drafts_table}
+				. " MODIFY COLUMN created_timestamp TIMESTAMP default '0000-00-00 00:00:00'";
+				my $sth = $dbh->do($query)
+					or croak $dbh->errstr;
+				undef $query;
+				undef $sth;
+  
+				my $query =  'ALTER TABLE '
+				. $DADA::Config::SQL_PARAMS{message_drafts_table}
+				. " MODIFY COLUMN last_modified_timestamp TIMESTAMP DEFAULT NOW() ON UPDATE NOW()";
+				my $sth = $dbh->do($query)
+					or croak $dbh->errstr;
+				undef $query;
+				undef $sth;	
+			}
+		
+			else { 
+				# warn "ALL SET!";
+			}
+		}
+	} catch { 
+		warn $_; 
+	};
 
     return 1;
 }
