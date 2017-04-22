@@ -185,4 +185,17 @@ Select the theme you would like to use,
 and save your changes. 
 Done!
 
+=head1 Translations
+
+Dada Mail currently does not ship with any translations, but there is a German translation available:
+
+L<https://github.com/holzhannes/dada_mail_email_themes-de-formal>
+
+as well as an outside project to facilitate your own translation: 
+
+L<https://github.com/holzhannes/dada_mail_foundation_email_templates-translator-tool>
+
+
+
+
 =cut
