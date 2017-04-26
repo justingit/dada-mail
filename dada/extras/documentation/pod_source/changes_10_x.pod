@@ -2,6 +2,20 @@
 
 =encoding utf-8
 
+=head1 10.5.3
+
+This is mostly a bug-fix release for issues found in the v10.5.2 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3  Profile settings not written by Dada Mail installer to .dada_config file #663 
+
+L<https://github.com/justingit/dada-mail/issues/663>
+
+=head3 When Archives are only allowed to be viewed by subscribers, search box and rss icon are still available #664
+
+L<https://github.com/justingit/dada-mail/issues/664>
+
 =head1 10.5.2
 
 This is mostly a bug-fix release for issues found in the v10.5.1 release of Dada Mail. 
