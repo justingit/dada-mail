@@ -1082,7 +1082,13 @@ sub grab_former_config_vals {
 
         $opt->{'configure_profiles'} = 1;
 
-        for (qw(enabled profile_email profile_host_list enable_captcha enable_magic_subscription_forms)) {
+        for (qw(
+			enabled
+			profile_email
+			profile_host_list
+			enable_captcha
+			enable_magic_subscription_forms
+		)) {
             if ( exists( $BootstrapConfig::PROFILE_OPTIONS->{$_} ) ) {
                 $opt->{ 'profiles_' . $_ } = $BootstrapConfig::PROFILE_OPTIONS->{$_};
             }
@@ -1584,20 +1590,20 @@ sub query_params_to_install_params {
 	  
 
       configure_profiles
-      profile_enabled
-      profile_profile_email
-      profile_profile_host_list
-      profile_enable_captcha
-      profile_enable_magic_subscription_forms
-      profile_login
-      profile_register
-      profile_password_reset
-      profile_profile_fields
-      profile_mailing_list_subscriptions
-      profile_protected_directories
-      profile_update_email_address
-      profile_change_password
-      profile_delete_profile
+      profiles_enabled
+      profiles_profile_email
+      profiles_profile_host_list
+      profiles_enable_captcha
+      profiles_enable_magic_subscription_forms
+      profiles_login
+      profiles_register
+      profiles_password_reset
+      profiles_profile_fields
+      profiles_mailing_list_subscriptions
+      profiles_protected_directories
+      profiles_update_email_address
+      profiles_change_password
+      profiles_delete_profile
 
       configure_templates
       template_options_enabled
@@ -2167,7 +2173,6 @@ sub create_dada_config_file {
             profile_host_list
             enable_captcha
             enable_magic_subscription_forms
-            help
             login
             register
             password_reset
