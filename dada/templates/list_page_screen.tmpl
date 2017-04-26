@@ -3,7 +3,7 @@
 <!-- tmpl_set name="title" value="<!-- tmpl_var list_settings.list_name -->" -->
 <!-- tmpl_set name="load_colorbox" value="1" -->
 
-<!-- tmpl_include name="list_breadcrumbs_widget.tmpl" -->
+<!-- tmpl_include list_breadcrumbs_widget.tmpl -->
 
 <!-- tmpl_include list_page_info_widget.tmpl -->
 
@@ -13,16 +13,20 @@
 		Archived Messages
 	</h3>
 	
-	<!-- tmpl_if list_settings.archive_search_form -->
-		<!-- tmpl_include list_archive_search_form_widget.tmpl -->
+	<!-- tmpl_if allowed_to_view_archives -->
+		<!-- tmpl_if list_settings.archive_search_form -->
+			<!-- tmpl_include list_archive_search_form_widget.tmpl -->
+		<!-- /tmpl_if -->
 	<!-- /tmpl_if -->
-	
+		
 	<!-- tmpl_var html_archive_list -->
 
-    <!-- tmpl_if list_settings.publish_archives_rss --> 
- 	    <!-- tmpl_include newsfeed_widget.tmpl -->
-    <!-- /tmpl_if --> 
-
+	<!-- tmpl_if allowed_to_view_archives -->
+	    <!-- tmpl_if list_settings.publish_archives_rss --> 
+	 	    <!-- tmpl_include newsfeed_widget.tmpl -->
+	    <!-- /tmpl_if --> 
+	<!-- /tmpl_if -->
+	
 <!-- /tmpl_if -->
 
 <!-- tmpl_if SHOW_ADMIN_LINK -->

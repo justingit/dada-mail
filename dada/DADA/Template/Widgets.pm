@@ -620,8 +620,23 @@ sub list_page {
 	
 	my $ls = DADA::MailingList::Settings->new({-list => $args{-list}}); 
 
-	# allowed_to_view_archives
     my $html_archive_list = html_archive_list($args{-list}); 
+	
+	require DADA::Profile; 
+	my $prof = DADA::Profile->new(
+		{
+			-from_session => 1, 
+		}
+	); 
+	my $allowed_to_view_archives = 1;
+	if($prof) { 
+		$allowed_to_view_archives = $prof->allowed_to_view_archives(
+			{
+				-list         => $args{-list},
+			}
+		);
+	}
+	
 	
 	# So, how does, "wrap_screen" embed variables? 
 	# In other words, how do I show the list name in the title? That's important. 
@@ -642,7 +657,7 @@ sub list_page {
             subscription_form         => subscription_form({-list => $args{-list}, -email => $args{-email}}), 
             error_no_email            => $args{-error_no_email}, 
             html_archive_list         => $html_archive_list, 
-			#allowed_to_view_archives  => $allowed_to_view_archives,  
+			allowed_to_view_archives  => $allowed_to_view_archives,  
         },
         
         -webify_and_santize_these => [qw(list_settings.discussion_pop_email list_settings.list_owner_email list_settings.info list_settings.privacy_policy )], 
