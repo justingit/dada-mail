@@ -388,13 +388,13 @@ sub _remove_expired_tokens {
     if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
 		$query = 'SELECT email, list FROM ' . $self->{sql_params}->{subscriber_table} 
         . ' WHERE timestamp <= DATE_SUB(NOW(), INTERVAL ' . $DADA::Config::CONFIRMATION_TOKEN_OPTIONS->{expires} . ' DAY)'
-		. " AND list_type = 'sub_confirm_list'";		
+		. " AND list_type = 'sub_confirm_list' LIMIT 5000";		
 
     }
     elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
 		$query = 'SELECT email, list FROM ' . $self->{sql_params}->{subscriber_table} 
 		. " WHERE timestamp <= NOW() - INTERVAL '" . $DADA::Config::CONFIRMATION_TOKEN_OPTIONS->{expires} . " DAY'"
-		. " AND list_type = 'sub_confirm_list'";		
+		. " AND list_type = 'sub_confirm_list' LIMIT 5000";		
 	}
 	
     warn 'QUERY: ' . $query
