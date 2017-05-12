@@ -10,6 +10,14 @@ BEGIN {
       $b__dir . '5/lib/perl5/x86_64-linux-thread-multi', $b__dir . 'lib',
       map { $b__dir . $_ } @INC;
 }
+# <!-- tmpl_if additional_perllibs -->
+# Additional Perl Libraries: 
+#<!-- tmpl_loop additional_perllibs --> 
+use lib "<!-- tmpl_var name default='' -->"; 
+# <!-- /tmpl_loop -->
+#/ Additional Perl Libraries: 
+#<!-- /tmpl_if --> 
+
 
 use CGI;
     $CGI::LIST_CONTEXT_WARN = 0;

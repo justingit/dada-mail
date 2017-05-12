@@ -1152,6 +1152,41 @@
 			</div>
 		<!-- /tmpl_if -->
 
+
+		<label for="configure_perl_env">
+			<input 
+				type="checkbox" 
+				name="configure_perl_env" 
+				id="configure_perl_env" 
+				value="1"
+			>			
+			Configure Perl Environment
+		</label>
+		<div id="perl_env_options">
+			<div class="panel"> 
+				<label for="additional_perllibs">
+					Additional Perl Library Paths (one per line):
+				</label>
+				<textarea name="additional_perllibs" id="additional_perllibs" rows="5"></textarea>
+			</div> 
+			
+			
+			<div class="alert-box info radius">
+				<div style="width:100%; overflow: auto; height: 250px"> 
+					<strong>Current Perl Library Paths (@INC):</strong>	
+						<ul> 
+							<!-- tmpl_loop AT_INC -->
+								<li><!-- tmpl_var name --></li>
+							<!-- /tmpl_loop -->
+						</ul>
+				</strong>
+			</div>
+		</div>
+		
+
+
+
+
 		<!-- tmpl_if show_profiles --> 
 			<label for="configure_profiles">
 				<input 

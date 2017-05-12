@@ -758,6 +758,11 @@ sub scrn_configure_dada_mail {
 
         }
     );
+	
+	my $AT_INC = []; 
+	for(sort @INC){ 
+		push(@$AT_INC, {name => $_})
+	};
 
     #die '$install_dada_files_dir_at ' . $install_dada_files_dir_at;
 
@@ -820,8 +825,13 @@ sub scrn_configure_dada_mail {
                 amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu =>
                   $amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu,
 				Server_TMP_dir => $Server_TMP_dir, 
-                Big_Pile_Of_Errors => $Big_Pile_Of_Errors,
+                
+				AT_INC => $AT_INC, 
+				
+				Big_Pile_Of_Errors => $Big_Pile_Of_Errors,
                 Trace              => $Trace,
+				
+				
             },
         }
     );
@@ -1076,6 +1086,20 @@ sub grab_former_config_vals {
         $opt->{'configure_deployment'}                 = 1;
         $opt->{'deployment_running_under'}             = $BootstrapConfig::RUNNING_UNDER;
     }
+
+		
+	
+	if(
+		scalar(
+			@$BootstrapConfig::ADDITIONAL_PERLLIBS
+		) > 0){ 
+        $opt->{'configure_perl_env'} = 1;
+		$opt->{'additional_perllibs'} = join("\n", @$BootstrapConfig::ADDITIONAL_PERLLIBS);
+	}
+	
+	
+	
+	
 
     # Profiles
     if ( exists( $BootstrapConfig::PROFILE_OPTIONS->{enabled} ) ) {
@@ -1581,6 +1605,9 @@ sub query_params_to_install_params {
 
       configure_deployment
       deployment_running_under
+
+	  configure_perl_env
+	  additional_perllibs
 
       scheduled_jobs_flavor
       configure_scheduled_jobs
@@ -2162,7 +2189,29 @@ sub create_dada_config_file {
     if ( $ip->{-configure_deployment} == 1 ) {
             $deployment_params->{deployment_running_under} = $ip->{-deployment_running_under} || 'CGI'; 
     }
-    
+
+
+    my $deployment_params = {};
+    if ( $ip->{-configure_deployment} == 1 ) {
+            $deployment_params->{deployment_running_under} = $ip->{-deployment_running_under} || 'CGI'; 
+    }
+	my $perl_env_params = {}; 
+    if ( $ip->{-configure_perl_env} == 1 ) {
+		$perl_env_params->{configure_perl_env} = 1; 
+		$perl_env_params->{additional_perllibs} = [];
+		my @perllibs = split(/\n|\r/, $ip->{-additional_perllibs});
+		for(@perllibs){ 
+			next unless length($_) > 0; 
+			push(
+				@{$perl_env_params->{additional_perllibs}}, 
+				{
+					name => clean_up_var($_)
+				}
+			);
+		}
+	}
+  
+  
     my $profiles_params = {};
     if ( $ip->{-configure_profiles} == 1 ) {
         $profiles_params->{configure_profiles} = 1;
@@ -2434,6 +2483,7 @@ sub create_dada_config_file {
                 %{$template_options_params},
                 %{$scheduled_jobs_params},
                 %{$deployment_params},
+				%{$perl_env_params},
                 %{$plugins_params},
                 %{$extensions_params}, 
                 %{$profiles_params},
@@ -2447,6 +2497,7 @@ sub create_dada_config_file {
                 %{$amazon_ses_params},
                 %{$bounce_handler_params},
                 %{$bridge_params},
+				
             }
         }
     );
@@ -3084,10 +3135,40 @@ sub setup_deployment {
         return 1;        
     }
     else {
-        installer_cp( make_safer($run->{cgi}->{tmpl}), make_safer($run->{cgi}->{enabled}) );
-        installer_chmod( 0755, make_safer($run->{cgi}->{enabled}) );      
-        return 1;   
-    }
+				
+		my $additional_perllibs = [];
+		my @perllibs = split(/\n|\r/, $ip->{-additional_perllibs});
+		
+		for(@perllibs) { 
+			
+			next unless length($_) > 0; 
+			
+			push(
+				@$additional_perllibs, 
+				{
+					name => clean_up_var($_)
+				}
+			);
+		}
+
+        my $cgi_app  = DADA::Template::Widgets::screen(
+            {
+                -screen => 'mail.cgi.tmpl',
+                -vars   => {
+					additional_perllibs => $additional_perllibs, 
+                }
+            }
+        );
+    
+        open my $cgi_script, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($run->{cgi}->{enabled})
+            or croak $!;
+        print $cgi_script $cgi_app or croak $!;
+        close $cgi_script or croak $!;
+        installer_chmod( 0755, make_safer($run->{cgi}->{enabled}) );
+    
+        return 1;        
+		
+   	 }
 }
 
 sub install_wysiwyg_editors {

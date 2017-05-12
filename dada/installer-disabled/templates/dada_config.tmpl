@@ -18,6 +18,14 @@ $S_PROGRAM_URL = '<!-- tmpl_var PROGRAM_URL -->';
 
 $RUNNING_UNDER = '<!-- tmpl_var deployment_RUNNING_UNDER default="CGI" -->';
 
+<!-- tmpl_if configure_perl_env -->
+$ADDITIONAL_PERLLIBS = [	
+<!-- tmpL_loop additional_perllibs -->
+'<!-- tmpl_var name -->',
+<!-- /tmpl_loop>
+]; 
+<!-- /tmpl_if -->
+
 #---------------------------------------------------------------------#
 # The location (server path + URL) of static, support files
 #
