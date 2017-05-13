@@ -2198,17 +2198,7 @@ sub create_dada_config_file {
 	my $perl_env_params = {}; 
     if ( $ip->{-configure_perl_env} == 1 ) {
 		$perl_env_params->{configure_perl_env} = 1; 
-		$perl_env_params->{additional_perllibs} = [];
-		my @perllibs = split(/\n|\r/, $ip->{-additional_perllibs});
-		for(@perllibs){ 
-			next unless length($_) > 0; 
-			push(
-				@{$perl_env_params->{additional_perllibs}}, 
-				{
-					name => clean_up_var($_)
-				}
-			);
-		}
+		$perl_env_params->{additional_perllibs} = $self->ht_vars_perllibs;
 	}
   
   
@@ -3136,21 +3126,7 @@ sub setup_deployment {
     }
     else {
 				
-		my $additional_perllibs = [];
-		my @perllibs = split(/\n|\r/, $ip->{-additional_perllibs});
-		
-		for(@perllibs) { 
-			
-			next unless length($_) > 0; 
-			
-			push(
-				@$additional_perllibs, 
-				{
-					name => clean_up_var($_)
-				}
-			);
-		}
-
+		my $additional_perllibs = $self->ht_vars_perllibs;
         my $cgi_app  = DADA::Template::Widgets::screen(
             {
                 -screen => 'mail.cgi.tmpl',
@@ -3829,6 +3805,8 @@ sub install_and_configure_core5_filemanager {
     close $config_fh or croak $!;
     installer_chmod( $DADA::Config::FILE_CHMOD, $core5_filemanager_config_loc );
     undef $config_fh;
+	
+	
 
     # js config:
     my $core5_filemanager_config_js = DADA::Template::Widgets::screen(
@@ -3851,21 +3829,37 @@ sub install_and_configure_core5_filemanager {
 
     if ( $ip->{-core5_filemanager_connector} eq 'pl' ) {
 
-        # We actually have the change the permissions of those two files:
-
         my $core5_filemanager_connector_loc =
           make_safer( $install_path . '/core5_filemanager/connectors/pl/filemanager.pl' );
+
+		my $additional_perllibs = $self->ht_vars_perllibs;
+
+		if(scalar(@$additional_perllibs) > 0){ 
+		
+		
+		    my $core5_filemanager_pl = DADA::Template::Widgets::screen(
+		        {
+		            -screen => 'core5_filemanager-filemanager_pl.tmpl',
+		            -vars   => {
+						additional_perllibs => $additional_perllibs, 
+		            }
+		        }
+		    );
+
+		    installer_chmod( 0777, $core5_filemanager_connector_loc );
+		    open my $core5_filemanager_connector_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $core5_filemanager_connector_loc or croak $!;
+		    print $core5_filemanager_connector_fh $core5_filemanager_pl or croak $!;
+		    close $core5_filemanager_connector_fh or croak $!;
+		    # installer_chmod( $DADA::Config::FILE_CHMOD, $core5_filemanager_connector_loc );
+		    undef $config_fh;
+			
+		}
 
         installer_chmod( $DADA::Config::DIR_CHMOD, $core5_filemanager_connector_loc );
         installer_chmod( $DADA::Config::DIR_CHMOD, $core5_filemanager_config_loc );
 
-        #		$self->installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/php'));
-
     }
 
-    #	elsif($q->param('core5_filemanager_connector') eq 'php') {
-    #		$self->installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/pl'));
-    #	}
 
 }
 
@@ -3906,6 +3900,29 @@ sub support_files_dir_url_guess {
     my $self = shift;
     my $q    = $self->query();
     return $q->url( -base => 1 );
+}
+
+
+sub ht_vars_perllibs { 
+	
+	    my $self = shift;
+	    my $ip   = $self->param('install_params');
+		
+		my $additional_perllibs = []; 
+		
+		my @perllibs = split(/\n|\r/, $ip->{-additional_perllibs});
+		for(@perllibs){ 
+			next unless length($_) > 0; 
+			push(
+				@{$additional_perllibs}, 
+				{
+					name => clean_up_var($_)
+				}
+			);
+		}
+		
+		return $additional_perllibs;
+		
 }
 
 sub hack_in_js {
