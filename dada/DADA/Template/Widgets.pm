@@ -345,8 +345,9 @@ sub list_popup_menu {
 		-selected_list       => undef, 
 	    @_
 	); 
-	my $labels = {}; 
-	
+	my $labels     = {}; 
+	my $attributes = {};
+	 
 	require DADA::MailingList::Settings; 
 	
 	my @lists = available_lists(-Dont_Die => 1); 
@@ -359,13 +360,29 @@ sub list_popup_menu {
 	# This needs its own method...
 		foreach my $list( @lists ){
 			my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-			next if $args{-show_hidden} == 0 && ($ls->param('hide_list') == 1 && $ls->param('private_list') == 1); 
+			next if 
+				$args{-show_hidden} == 0 
+				&& ($ls->param('hide_list') == 1 
+				&& $ls->param('private_list') == 1); 
+				
 			if($args{-show_list_shortname} == 1){ 
 				$labels->{$list} = $ls->param('list_name') . ' (' . $list . ')';
 			}
 			else { 
 				$labels->{$list} = $ls->param('list_name');
 			}
+			
+			if($ls->param('invite_only_list') == 0){ 
+				$labels->{$list} .= ' - by Invitation Only';
+				$attributes->{$list}->{disabled} = "disabled";
+			}
+			
+			if(	$args{-selected_list} eq $list 
+				&& $ls->param('invite_only_list') != 0
+			){ 
+				$attributes->{$list}->{selected} = "selected";	
+			}
+			
 			$l_count++;
 		}
 		my @opt_labels = sort { uc($labels->{$a}) cmp uc($labels->{$b}) } keys %$labels;
@@ -394,11 +411,12 @@ sub list_popup_menu {
 		}
         $r = HTML::Menu::Select::popup_menu(
 			 {
-				name     => $args{-name}, 
-				id       => 'ddm_' . $args{-name}, 
-				values   => [@opt_labels],
-				labels   => $labels,
-				default  => [$args{-selected_list}],
+				name       => $args{-name}, 
+				id         => 'ddm_' . $args{-name}, 
+				values     => [@opt_labels],
+				labels     => $labels,
+#				default    => [],
+				attributes => $attributes,
 			}
 		 ); 
     }
