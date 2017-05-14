@@ -332,7 +332,7 @@ sub priority_popup_menu {
 
 sub list_popup_menu { 
 
-
+	
 	require HTML::Menu::Select; 
 	my $r = undef; 
 	
@@ -343,6 +343,7 @@ sub list_popup_menu {
 		-as_checkboxes       => 0, 
 		-show_list_shortname => 0, 
 		-selected_list       => undef, 
+		-disable_invite_only => 0, 
 	    @_
 	); 
 	my $labels     = {}; 
@@ -371,18 +372,27 @@ sub list_popup_menu {
 			else { 
 				$labels->{$list} = $ls->param('list_name');
 			}
+
+			if($args{-disable_invite_only} == 1){
+
+				if($ls->param('invite_only_list') == 0){ 
+										
+					$labels->{$list} .= ' - by Invitation Only';
+					$attributes->{$list}->{disabled} = "disabled";
+				}
 			
-			if($ls->param('invite_only_list') == 0){ 
-				$labels->{$list} .= ' - by Invitation Only';
-				$attributes->{$list}->{disabled} = "disabled";
+				if(	$args{-selected_list} eq $list 
+					&& $ls->param('invite_only_list') != 0
+				){ 
+					$attributes->{$list}->{selected} = "selected";	
+				}
 			}
-			
-			if(	$args{-selected_list} eq $list 
-				&& $ls->param('invite_only_list') != 0
-			){ 
-				$attributes->{$list}->{selected} = "selected";	
+			else { 
+				if(	$args{-selected_list} eq $list 
+				){ 
+					$attributes->{$list}->{selected} = "selected";	
+				}
 			}
-			
 			$l_count++;
 		}
 		my @opt_labels = sort { uc($labels->{$a}) cmp uc($labels->{$b}) } keys %$labels;
@@ -420,6 +430,7 @@ sub list_popup_menu {
 			}
 		 ); 
     }
+	
 	
 	return $r; 
 	
@@ -604,8 +615,9 @@ sub default_screen {
     }
 
     my $list_popup_menu = list_popup_menu(
-        -email      => $args->{email},
-        -list       => $args->{list},
+        -email               => $args->{email},
+        -list                => $args->{list},
+		-disable_invite_only => 1, 
     );
 
 	return wrap_screen(
@@ -2732,7 +2744,7 @@ sub subscription_form {
                             subscriber_fields        => $named_subscriber_fields,
                             list                     => $list, 
                             email                    => $args->{-email},
-                            list_popup_menu          => list_popup_menu(),
+                            list_popup_menu          => list_popup_menu(-disable_invite_only => 1),
                             list_checkbox_menu       => list_popup_menu(-as_checkboxes => 1), 
                             multiple_lists           => $args->{-multiple_lists}, 
                             script_url               => $args->{-script_url}, 
