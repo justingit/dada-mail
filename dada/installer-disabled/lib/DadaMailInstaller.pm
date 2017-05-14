@@ -3486,7 +3486,7 @@ sub install_and_configure_rich_filemanager {
 
     my $rich_filemanager_connector_config = DADA::Template::Widgets::screen(
         {
-            -screen => 'rich_filemanager_connector_config.tmpl',
+            -screen => 'rich_filemanager_connector_config_local.tmpl',
             -vars   => {
                 uploads_directory => $uploads_directory,
                 url_path          => $url_path,
@@ -3494,7 +3494,7 @@ sub install_and_configure_rich_filemanager {
         }
     );
     my $rich_filemanager_config_loc =
-      make_safer( $install_path . '/RichFilemanager/connectors/php/config.php' );
+      make_safer( $install_path . '/RichFileManager/connectors/php/vendor/servocoder/richfilemanager-php/src/config/config.local.php' );
     installer_chmod( 0777, $rich_filemanager_config_loc );
     open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $rich_filemanager_config_loc or croak $!;
     print $config_fh $rich_filemanager_connector_config or croak $!;

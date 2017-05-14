@@ -15,6 +15,7 @@
         "folderPosition": "bottom",
         "quickSelect": false,
         "logger": false,
+        "allowFolderDownload": true,
         "allowChangeExtensions": false,
         "capabilities": [
             "select",
@@ -23,7 +24,6 @@
             "rename",
             "copy",
             "move",
-            "replace",
             "delete",
             "extract"
         ]
@@ -52,9 +52,6 @@
         "lang": "php",
         "connectorUrl": false,
         "requestParams": []
-    },
-    "security": {
-        "allowNoExtension": false
     },
     "upload": {
         "multiple": true,
@@ -96,6 +93,15 @@
                 "wav"
             ]
         },
+        "iframe": {
+            "enabled": true,
+            "extensions": [
+                "htm",
+                "html"
+            ],
+            "readerWidth": "95%",
+            "readerHeight": "600"
+        },
         "opendoc": {
             "enabled": true,
             "extensions": [
@@ -132,20 +138,21 @@
             "extensions": [
                 "md"
             ]
-        },
-        "editable": {
-            "enabled": true,
-            "theme": "default",
-            "lineNumbers": true,
-            "lineWrapping": true,
-            "codeHighlight": true,
-            "matchBrackets": true,
-            "extensions": [
-                "txt",
-                "csv",
-                "md"
-            ]
         }
+    },
+    "editor": {
+        "enabled": true,
+        "theme": "default",
+        "lineNumbers": true,
+        "lineWrapping": true,
+        "codeHighlight": true,
+        "matchBrackets": true,
+        "extensions": [
+            "html",
+            "txt",
+            "csv",
+            "md"
+        ]
     },
     "customScrollbar": {
     	"enabled": true,
@@ -157,5 +164,5 @@
         "extra_js_async": true
     },
     "url": "https://github.com/servocoder/RichFilemanager",
-    "version": "2.3.2"
+    "version": "2.4.0"
 }
