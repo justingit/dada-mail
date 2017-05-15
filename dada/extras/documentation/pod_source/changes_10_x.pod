@@ -2,6 +2,40 @@
 
 =encoding utf-8
 
+=head1 10.5.4
+
+This is mostly a bug-fix release for issues found in the v10.5.3 release of Dada Mail. 
+
+=head2 Features
+
+=head3 Enable/Disable Unsubscription Notifications After Bouncing
+
+By default, Bounce Handler would send an email notification out, whenever an address met the Bounce Threshold. This would cause problems when using a service like Amazon SES, since the total number of bounces can count against you. Since most of the time I<this> email message will bounce back, I<removing> a bounced message will count against you, by default. 
+
+In v10.5.4, this feature may be disabled - and is disabled by default. You may re-enable it in, B<Plugins: Bounce Handler> by checking the option, B<Send Unsubscription Notification to Bouncing Email Address> and saving. 
+
+=head3 Add New Perl Library Paths During Install
+
+Some of Dada Mail's more advanced features require the installation of outside CPAN Perl Modules. Sometimes, these modules are installed in a path that Dada Mail does not check by default. In the past, you would have to modify the app directly to add in these library paths. Now, Dada Mail will allow you to add/edit these paths from within the installer. When you upgrade, the library paths from before are remembered, and will carry over. 
+
+If you are using the Core5 Filemanager, which uses the Perl backend connector, these paths will be added to this outside app as well. 
+
+=head2 Changes
+
+=head3 Rich Filemanager Upgraded to v2.4.0
+
+Details of this release of Rich Filemanager can be found here: L<https://github.com/servocoder/RichFilemanager/releases/tag/v2.4.0>
+
+=head3 Mailing Lists Labeled, "Invitation Only" on default screen; disabled
+
+Rather than having a user try to subscribe to an invitation-only mailing list, the mailing list is now labeled, "Invitation Only" in the popup menu, and is disabled. 
+
+=head2 Bugfixes 
+
+=head3  old entries with list_type of, "sub_confirm_list" are removed without checking on amount #666 
+
+L<https://github.com/justingit/dada-mail/issues/666>
+
 =head1 10.5.3
 
 This is mostly a bug-fix release for issues found in the v10.5.2 release of Dada Mail. 
@@ -34,7 +68,7 @@ L<https://github.com/servocoder/RichFilemanager/releases/tag/v2.3.2>
 
 L<https://github.com/justingit/dada-mail/issues/662>
 
-Unfortunetely, the schema change we made for the, C<dada_message_drafts> is incompatible with 
+Unfortunately, the schema change we made for the, C<dada_message_drafts> is incompatible with 
 v5.5 of MySQL, so anyone trying to install Dada Mail and using v5.5 of MySQL will fail. This new schema: 
 
 	CREATE TABLE IF NOT EXISTS dada_message_drafts (
