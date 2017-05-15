@@ -375,14 +375,14 @@ sub list_popup_menu {
 
 			if($args{-disable_invite_only} == 1){
 
-				if($ls->param('invite_only_list') == 0){ 
+				if($ls->param('invite_only_list') == 1){ 
 										
 					$labels->{$list} .= ' - by Invitation Only';
 					$attributes->{$list}->{disabled} = "disabled";
 				}
 			
 				if(	$args{-selected_list} eq $list 
-					&& $ls->param('invite_only_list') != 0
+					&& $ls->param('invite_only_list') != 1
 				){ 
 					$attributes->{$list}->{selected} = "selected";	
 				}
