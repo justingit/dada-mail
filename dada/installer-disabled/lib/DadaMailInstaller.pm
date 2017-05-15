@@ -1089,10 +1089,7 @@ sub grab_former_config_vals {
 
 		
 	
-	if(
-		scalar(
-			@$BootstrapConfig::ADDITIONAL_PERLLIBS
-		) > 0){ 
+	if($BootstrapConfig::ADDITIONAL_PERLLIBS->[0]){ 
         $opt->{'configure_perl_env'} = 1;
 		$opt->{'additional_perllibs'} = join("\n", @$BootstrapConfig::ADDITIONAL_PERLLIBS);
 	}
@@ -3436,7 +3433,7 @@ sub install_and_configure_rich_filemanager {
         );
         my $ckeditor_config_loc = make_safer( $install_path . '/ckeditor/dada_mail_config.js' );
         installer_chmod( 0777, $ckeditor_config_loc );
-        open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $ckeditor_config_loc or croak $!;
+        open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $ckeditor_config_loc or croak "$ckeditor_config_loc :" . $!;
         print $config_fh $ckeditor_config_js or croak $!;
         close $config_fh or croak $!;
         installer_chmod( $DADA::Config::FILE_CHMOD, $ckeditor_config_loc );
@@ -3494,9 +3491,10 @@ sub install_and_configure_rich_filemanager {
         }
     );
     my $rich_filemanager_config_loc =
-      make_safer( $install_path . '/RichFileManager/connectors/php/vendor/servocoder/richfilemanager-php/src/config/config.local.php' );
+      make_safer( $install_path . '/RichFilemanager/connectors/php/vendor/servocoder/richfilemanager-php/src/config/config.local.php' );
     installer_chmod( 0777, $rich_filemanager_config_loc );
-    open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $rich_filemanager_config_loc or croak $!;
+    
+	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $rich_filemanager_config_loc or croak "$rich_filemanager_config_loc :" . $!;
     print $config_fh $rich_filemanager_connector_config or croak $!;
     close $config_fh or croak $!;
     installer_chmod( $DADA::Config::FILE_CHMOD, $rich_filemanager_config_loc );
@@ -3515,7 +3513,7 @@ sub install_and_configure_rich_filemanager {
     my $rich_filemanager_config_js_loc =
       make_safer( $install_path . '/RichFilemanager/config/filemanager.config.json' );
     installer_chmod( 0777, $rich_filemanager_config_js_loc );
-    open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $rich_filemanager_config_js_loc or croak $!;
+    open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $rich_filemanager_config_js_loc or croak "$rich_filemanager_config_js_loc : " . $!;
     print $config_fh $rich_filemanager_config_js or croak $!;
     close $config_fh or croak $!;
     installer_chmod( $DADA::Config::FILE_CHMOD, $rich_filemanager_config_js_loc );

@@ -88,7 +88,7 @@ $PROGRAM_URL   //= 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi';
 $S_PROGRAM_URL //= $PROGRAM_URL;
 
 $RUNNING_UNDER //= 'CGI'; 
-$ADDITIONAL_PERLLIBS //= qw([]);
+$ADDITIONAL_PERLLIBS //= [qw()];
 
 
 $SUPPORT_FILES //= {
