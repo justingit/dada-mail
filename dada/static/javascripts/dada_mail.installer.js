@@ -128,6 +128,7 @@ jQuery(document).ready(function($){
 			"mandrill",
 			"scheduled_jobs", 
 			"deployment",
+			"perl_env",
 			"profiles",
 			"templates", 
 			"cache",
