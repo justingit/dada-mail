@@ -341,6 +341,7 @@ sub edit_prefs {
                 bounce_handler_decay_score                => undef,
                 bounce_handler_threshold_score            => undef,
                 bounce_handler_forward_msgs_to_list_owner => 0,
+				bounce_handler_send_unsub_notification    => 0, 
                 bounce_handler_when_threshold_reached     => undef,
             },
 			-also_save_for => $also_save_for_list,

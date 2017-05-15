@@ -1593,6 +1593,7 @@ $MIME_TOOLS_PARAMS //= {
     bounce_handler_softbounce_score           => 1,
     bounce_handler_decay_score                => 1,
     bounce_handler_forward_msgs_to_list_owner => 0,
+	bounce_handler_send_unsub_notification    => 0, 
     bounce_handler_when_threshold_reached     => 'move_to_bounced_sublist',
         
     public_api_key   =>  undef, 

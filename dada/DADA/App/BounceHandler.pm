@@ -848,8 +848,14 @@ sub remove_bounces {
 
     # Remove the Subscriber:
     for (@remove_list) {
-        $lh->remove_subscriber( { -email => $_, -type => 'list' } );
-        $m .= "Removing: $_\n";
+        $lh->remove_subscriber(
+			{
+				-email       => $_, 
+				-type        => 'list',
+			}
+		);
+        
+		$m .= "Removing: $_\n";
     }
 
     if (   ( $ls->param('black_list') == 1 )
@@ -887,18 +893,22 @@ sub remove_bounces {
                 }
             );
 			
-			$dap->send_out_message( 
-				{ 
-					-message => 'unsubscribed_because_of_bouncing',
-					-email => $d_email,
-					-tmpl_params => {
-			            -subscriber_vars          => { 'subscriber.email' => $d_email, },
-			            -vars                     => { 
-							Plugin_Name        => $self->config->{Plugin_Name}, 
+			
+			if($ls->param('bounce_handler_send_unsub_notification') == 1) {
+				$dap->send_out_message( 
+					{ 
+						-message => 'unsubscribed_because_of_bouncing',
+						-email => $d_email,
+						-tmpl_params => {
+				            -subscriber_vars          => { 'subscriber.email' => $d_email, },
+				            -vars                     => { 
+								Plugin_Name        => $self->config->{Plugin_Name}, 
+							}
 						}
 					}
-				}
-			); 
+				); 
+			}
+			
 
         }
     }

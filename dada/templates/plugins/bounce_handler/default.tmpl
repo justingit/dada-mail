@@ -159,7 +159,27 @@
 			Forward bounces to the List Owner after success
 		</label>
 	</div>
-</div> 
+</div>
+
+
+
+
+<div class="row">
+	<div class="small-12 columns">
+		<label for="bounce_handler_send_unsub_notification">
+			<input type="checkbox" 
+				name="bounce_handler_send_unsub_notification" 
+				id="bounce_handler_send_unsub_notification" 
+				value="1"
+				<!-- tmpl_if list_settings.bounce_handler_send_unsub_notification -->checked="checked"<!-- /tmpl_if -->
+			>
+			Send Unsubscription Notification to Bouncing Email Address
+		</label>
+	</div>
+</div>
+
+
+
 
 <div class="row">
 	<div class="small-12 columns">
