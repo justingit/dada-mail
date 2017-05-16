@@ -227,6 +227,24 @@ sub add {
         }
         ##########################################################################
 
+        ##################
+        # Bridge Delivery Default #
+        ##########################################################################
+        require DADA::MailingList::Settings;
+        my $ls = DADA::MailingList::Settings->new( { -list => $args->{-list} } );
+        if ( $ls->param( 'digest_enable' ) == 1 && $ls->param( 'digest_bydefault' ) == 1 ) {
+            use DADA::Profile::Settings;
+            my $dps = DADA::Profile::Settings->new;
+            my $r   = $dps->save(
+                { 
+                   -email   => $args->{-email},
+                   -list    => $args->{-list},
+                   -setting => 'delivery_prefs',
+                   -value   => 'digest',
+                }
+            );
+        }
+        ##########################################################################
     }
 
     my $added_args = {
