@@ -986,7 +986,7 @@ sub _add_opener_image {
     my $img_opener_code =
         '<!--open_img--><img src="'
       . $url
-      . '" width="1" height="1" /><!--/open_img-->';
+      . '" width="1" height="1" alt="" /><!--/open_img-->';
 
     if ( $content =~ m/\<\/body(.*?)\>/i ) {
         $content =~ s/(\<\/body(.*?)\>)/$img_opener_code\n$1/i;
