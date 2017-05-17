@@ -209,7 +209,7 @@ sub save {
             $query =
                 'INSERT INTO '
               . $self->{sql_params}->{message_drafts_table}
-              . ' (list, screen, role, draft, last_modified_timestamp) VALUES (?,?,?,?, NOW(), NOW())';
+              . ' (list, screen, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?,?, NOW(), NOW())';
         }
 
         warn 'QUERY: ' . $query
