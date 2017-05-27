@@ -3384,6 +3384,8 @@ sub install_and_configure_ckeditor {
                 -screen => 'ckeditor_config_js.tmpl',
                 -vars   => {
                     configure_file_browser => 0, 
+					PROGRAM_URL            => $ip->{-program_url}, 
+					S_PROGRAM_URL          => $ip->{-program_url}, 
                 }
             }
         );
@@ -3428,6 +3430,11 @@ sub install_and_configure_rich_filemanager {
                       . '/RichFilemanager/index.html',
                     support_files_dir_url  => $support_files_dir_url,
                     Support_Files_Dir_Name => $Support_Files_Dir_Name,
+					
+					PROGRAM_URL            => $ip->{-program_url}, 
+					S_PROGRAM_URL          => $ip->{-program_url}, 
+					
+					
                 }
             }
         );
@@ -3629,6 +3636,10 @@ sub install_and_configure_kcfinder {
                       . '/kcfinder/upload.php',
                     support_files_dir_url  => $support_files_dir_url,
                     Support_Files_Dir_Name => $Support_Files_Dir_Name,
+					
+					PROGRAM_URL            => $ip->{-program_url}, 
+					S_PROGRAM_URL          => $ip->{-program_url}, 
+					
                 }
             }
         );
