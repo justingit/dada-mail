@@ -47,7 +47,7 @@ Dada Mail also has support for variosu File Browser/Uploaders, allowing you to a
 
 Select this option to use B<Rich Filemanager> (L<https://github.com/servocoder/RichFilemanager>). Rich Filemanager uses PHP Sessions for security, which Dada Mail will provide. If you're having problems utilizing Rich Filemanager, try simply logging out, then back into your list. If you're still having problems, try the B<Core Five FileManager>.
 
-We suggest running Rich Filemanager only if you have version 5.6 or higher of <php> available. Otherswise, Rich Filemanager may not work correctly.  
+We suggest running Rich Filemanager only if you have version 5.4 or higher of B<php> available. Otherswise, Rich Filemanager may not work correctly.  
 
 =head4 Install KCFinder
 
