@@ -42,9 +42,17 @@ Dada Mail has support for two different rich text ediors - B<CKeditor> and B<Tin
 
 Dada Mail also has support for variosu File Browser/Uploaders, allowing you to add images you'll host directly to your email messages, as well as add files to your message as attachments. Unlike the rich text editors, only one file browser/uploader can be installed at one time. Both options mostly have feature parity, although their security and sessioining systems differ. We'll explain those, below: 
 
+
+=head4 Install Rich FileManager (default)
+
+Select this option to use B<Rich Filemanager> (L<https://github.com/servocoder/RichFilemanager>). Rich Filemanager uses PHP Sessions for security, which Dada Mail will provide. If you're having problems utilizing Rich Filemanager, try simply logging out, then back into your list. If you're still having problems, try the B<Core Five FileManager>.
+
+We suggest running Rich Filemanager only if you have version 5.6 or higher of <php> available. Otherswise, Rich Filemanager may not work correctly.  
+
 =head4 Install KCFinder
 
-Select this option to use B<KCFinder> (L<https://kcfinder.sunhater.com>). KCFinder uses PHP Sessions for security, which Dada Mail will provide. If you're having problems utilizing KCFinder, try simply logging out, than back into your list. If you're still having problems, try the B<Core Five FileManager>.
+
+Select this option to use B<KCFinder> (L<https://kcfinder.sunhater.com>). KCFinder uses PHP Sessions for security, which Dada Mail will provide. If you're having problems utilizing KCFinder, try simply logging out, then back into your list. If you're still having problems, try the B<Core Five FileManager>.
 
 Install Core Five FileManager 	
 
