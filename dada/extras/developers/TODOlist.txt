@@ -12,6 +12,9 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+"You Are Already Subscribed" email needs HTML equiv. 
+
 MUCH larger notification about new versions available 
 
 New CKeditor 4.6.smeting 
