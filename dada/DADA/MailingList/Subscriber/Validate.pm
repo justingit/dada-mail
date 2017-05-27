@@ -183,13 +183,7 @@ sub subscription_check {
           ) == 1;
     }
 
-    if (   $args->{-type} ne 'black_list'
-        || $args->{-type} ne 'authorized_senders'
-        || $args->{-type} ne 'moderators' )
-
-      # uh... white listed?!
-    {
-
+    if($args->{-type} eq 'list') {
         if ( !$skip{invite_only_list} ) {
             $errors->{invite_only_list} = 1 if $ls->param('invite_only_list') == 1;
         }
@@ -197,6 +191,23 @@ sub subscription_check {
         if ( !$skip{closed_list} ) {
             $errors->{closed_list} = 1 if $ls->param('closed_list') == 1;
         }
+		
+        if ( !$skip{over_subscription_quota} ) {
+            my $num_subscribers = $self->{lh}->num_subscribers;
+            if ( $ls->param('use_subscription_quota') == 1 ) {
+                if ( ( $num_subscribers + 1 ) >= $ls->param('subscription_quota') ) {
+                    $errors->{over_subscription_quota} = 1;
+                }
+            }
+            elsif (defined($DADA::Config::SUBSCRIPTION_QUOTA)
+                && $DADA::Config::SUBSCRIPTION_QUOTA > 0
+                && $num_subscribers + 1 >= $DADA::Config::SUBSCRIPTION_QUOTA )
+            {
+                $errors->{over_subscription_quota} = 1;
+            }
+        }
+		
+		
     }
 
     if ( $args->{-type} ne 'black_list' ) {
@@ -247,26 +258,6 @@ sub subscription_check {
                     -Email => $email,
                     -Type  => 'white_list'
                   ) != 1;
-            }
-        }
-    }
-
-    if (   $args->{-type} ne 'black_list'
-        || $args->{-type} ne 'authorized_senders'
-        || $args->{-type} ne 'moderators' )
-    {
-        if ( !$skip{over_subscription_quota} ) {
-            my $num_subscribers = $self->{lh}->num_subscribers;
-            if ( $ls->param('use_subscription_quota') == 1 ) {
-                if ( ( $num_subscribers + 1 ) >= $ls->param('subscription_quota') ) {
-                    $errors->{over_subscription_quota} = 1;
-                }
-            }
-            elsif (defined($DADA::Config::SUBSCRIPTION_QUOTA)
-                && $DADA::Config::SUBSCRIPTION_QUOTA > 0
-                && $num_subscribers + 1 >= $DADA::Config::SUBSCRIPTION_QUOTA )
-            {
-                $errors->{over_subscription_quota} = 1;
             }
         }
     }
