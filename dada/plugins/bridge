@@ -666,8 +666,11 @@ sub edit {
         rewrite_anounce_from_header                => 0,
         discussion_pop_use_ssl                     => 0,
         discussion_template_defang                 => 0,
-        digest_enable   => 0,
-        digest_schedule => 86400,
+        digest_enable                              => 0,
+        digest_schedule                            => 86400,
+		delivery_prefs_set_default                 => undef, 
+		delivery_prefs_default                     => undef, 
+		
         bridge_announce_reply_to => 'none', 
         
     );
@@ -763,11 +766,30 @@ sub edit {
         { 
 			values => [ sort { $a <=> $b } keys %$digest_labels ],
 	        labels   => $digest_labels,
-	        default  => $ls->param('digest_schedule'),
+	        default  => scalar $ls->param('digest_schedule'),
 	        name     => 'digest_schedule',
 	        id       => 'digest_schedule',
 		}
     );
+	
+	my $delivery_prefs_labels = { 
+		digest     => 'Digest',
+		individual => 'Individual',
+		hold       => 'Hold Mailings (vacation, etc)',
+	};
+	
+    my $delivery_prefs_default_popup_menu = HTML::Menu::Select::popup_menu(
+        { 
+			values => [ qw(individual digest hold) ],
+	        labels   => $delivery_prefs_labels,
+	        default  => scalar $ls->param('delivery_prefs_default'),
+	        name     => 'delivery_prefs_default',
+	        id       => 'delivery_prefs_default',
+		}
+    );
+	
+	
+	
 
     my $msg_sizes = { 
         1048576  => '1 Megabyte',
@@ -865,7 +887,10 @@ sub edit {
                   ( $ls->param('find_spam_assassin_score_by') eq 'looking_for_embedded_headers' ) ? 1 : 0,
                 list_email_status                        => $list_email_status,
                # mailing_list_message_from                => $mailing_list_message_from,
-                digest_schedule_popup_menu               => $digest_schedule_popup_menu,
+                
+				digest_schedule_popup_menu               => $digest_schedule_popup_menu,
+				delivery_prefs_default_popup_menu        => $delivery_prefs_default_popup_menu, 
+				
                 error_list_email_set_to_list_owner_email => $list_email_errors->{list_email_set_to_list_owner_email},
                 error_list_email_set_to_list_admin_email => $list_email_errors->{list_email_set_to_list_admin_email},
                 error_list_email_subscribed_to_list      => $list_email_errors->{list_email_subscribed_to_list},

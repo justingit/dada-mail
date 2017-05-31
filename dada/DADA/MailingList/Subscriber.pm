@@ -113,11 +113,9 @@ sub _init {
 
     $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
 
-    if ( $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/sql/i ) {
-        require DADA::App::DBIHandle;
-        my $dbi_obj = DADA::App::DBIHandle->new;
-        $self->{dbh} = $dbi_obj->dbh_obj;
-    }
+    require DADA::App::DBIHandle;
+    my $dbi_obj = DADA::App::DBIHandle->new;
+    $self->{dbh} = $dbi_obj->dbh_obj;
 
     my $lh = undef; 
 
@@ -135,6 +133,13 @@ sub _init {
 	
 	$self->{lh} = $lh;
 
+
+    require DADA::Profile::Settings;
+    $self->{dps_obj} = DADA::Profile::Settings->new(
+		{
+			-list => $args->{ -list }
+		}
+	);
 
 	if(exists($args->{-type})){ 
 		if($self->{lh}->allowed_list_types($args->{-type}) != 1){ 

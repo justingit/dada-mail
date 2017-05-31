@@ -223,10 +223,21 @@ sub add {
                         $prof->insert($insert_profile_args);
                     }
                 }
-            }
-        }
-        ##########################################################################
-
+            }				
+		}
+   	 
+		if($self->{ls_obj}->param('delivery_prefs_set_default') == 1){
+			if($self->{ls_obj}->param('delivery_prefs_default') ne 'individual'){ 
+                my $r   = $self->{dps_obj}->save(
+                    { 
+                       -email   => $args->{-email},
+                       -setting => 'delivery_prefs',
+                       -value   => scalar $self->{ls_obj}->param('delivery_prefs_default'),
+                    }
+                );
+			}  
+		}	
+   
     }
 
     my $added_args = {
