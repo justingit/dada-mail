@@ -1565,6 +1565,7 @@ $MIME_TOOLS_PARAMS //= {
     digest_enable               => 0, 
     digest_schedule             => 86400, 
     digest_last_archive_id_sent => undef, 
+    digest_bydefault            => 0,
 
     # Tracker
     tracker_record_view_count                       => 10,

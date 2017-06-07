@@ -668,6 +668,7 @@ sub edit {
         discussion_template_defang                 => 0,
         digest_enable   => 0,
         digest_schedule => 86400,
+        digest_bydefault => 0,
         bridge_announce_reply_to => 'none', 
         
     );
