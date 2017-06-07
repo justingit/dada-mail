@@ -1,24 +1,32 @@
 package DADA::MailingList::Subscriber::baseSQL;
 
+warn 'in: package DADA::MailingList::Subscriber::baseSQL;';
 use strict;
 use lib qw(../../../ ../../../perllib);
 use Carp qw(carp croak);
+$Carp::Verbose = 1; 
+
 use DADA::Config;
 use DADA::App::Guts;
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList};
 
 
-
+use Data::Dumper; 
 
 sub add {
 
-    my $class = shift;
+    my $self = shift;
+	
+	warn Dumper({'self' => $self}); 
     my ($args) = @_;
+	
+	warn Dumper({'args' => $args}); 
+		
 
     if ($t) {
 
-        warn "Method: add()";
+        carp "Method: add()";
         require Data::Dumper;
         warn "args: " . Data::Dumper::Dumper($args);
     }
@@ -227,27 +235,34 @@ sub add {
 		}
 		
 		
-		require DADA::MailingList::Settings;
-		$args->{ls_obj} = DADA::MailingList::Settings->new( { -list =>  $args->{-list} }); 
 		
-		require DADA::Profile::Settings;
-	    $args->{dps_obj} = DADA::Profile::Settings->new(
-			{
-				-list => $args->{ -list }
-			}
-		);
+		# Not a fan of this at all:
+		if(!exists($args->{-ls_obj})){ 
+			require DADA::MailingList::Settings;
+			$args->{-ls_obj} = DADA::MailingList::Settings->new( { -list =>  $args->{-list} }); 
+		}
 		
-		if($args->{ls_obj}->param('delivery_prefs_set_default') == 1){
-			if($args->{ls_obj}->param('delivery_prefs_default') ne 'individual'){ 
-                my $r   = $args->{dps_obj}->save(
+		if(!exists($args->{-dps_obj})) {
+			require DADA::Profile::Settings;
+		    $args->{-dps_obj} = DADA::Profile::Settings->new(
+				{
+					-list => $args->{ -list }
+				}
+			);
+		}
+		if($args->{-ls_obj}->param('delivery_prefs_set_default') == 1){
+			if($args->{-ls_obj}->param('delivery_prefs_default') ne 'individual'){ 
+                my $r   = $args->{-dps_obj}->save(
                     { 
                        -email   => $args->{-email},
                        -setting => 'delivery_prefs',
-                       -value   => scalar $args->{ls_obj}->param('delivery_prefs_default'),
+                       -value   => scalar $args->{-ls_obj}->param('delivery_prefs_default'),
                     }
                 );
 			}  
 		}	
+		
+		
    
     }
 

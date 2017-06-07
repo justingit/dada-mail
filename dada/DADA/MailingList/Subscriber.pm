@@ -3,16 +3,9 @@ use lib qw(./ ../ ../../ ../../DADA ../../perllib);
 
 use DADA::Config qw(!:DEFAULT);
 
-BEGIN {
-    $type = $DADA::Config::SUBSCRIBER_DB_TYPE;
-    if ( $type =~ m/sql/i ) {
-        $type = 'baseSQL';
-    }
-    else {
-        $type = 'PlainText';
-    }
-}
-use base "DADA::MailingList::Subscriber::$type";
+
+use base DADA::MailingList::Subscriber::baseSQL;
+
 use Carp qw(carp croak);
 # $Carp::Verbose = 1; 
 use strict;
@@ -99,13 +92,13 @@ sub _init {
 #/This is the new stuff, I guess: 
 ##############################################################################
 
-	#if ( !exists( $args->{ -ls_obj } ) ) {
-    #    require DADA::MailingList::Settings;
-    #    $self->{ls} = DADA::MailingList::Settings->new( { -list => $args->{ -list } } );
-   # }
-   # else {
-    #    $self->{ls} = $args->{ -ls_obj };
-    #}
+	if ( !exists( $args->{ -ls_obj } ) ) {
+        require DADA::MailingList::Settings;
+        $self->{ls} = DADA::MailingList::Settings->new( { -list => $args->{ -list } } );
+    }
+    else {
+        $self->{ls} = $args->{ -ls_obj };
+    }
 
     $self->{'log'} = new DADA::Logging::Usage;
     $self->{list} = $args->{ -list };
@@ -274,6 +267,9 @@ sub copy {
 			-list   => $self->{list},
             -email  => $self->email, 
             -type   => $args->{-to}, 
+			
+			-ls_obj => $self->{ls},
+			
         }
     ); 
 
