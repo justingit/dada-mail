@@ -99,14 +99,13 @@ sub _init {
 #/This is the new stuff, I guess: 
 ##############################################################################
 
-    if ( !exists( $args->{ -ls_obj } ) ) {
-        require DADA::MailingList::Settings;
-        $self->{ls} =
-          DADA::MailingList::Settings->new( { -list => $args->{ -list } } );
-    }
-    else {
-        $self->{ls} = $args->{ -ls_obj };
-    }
+	#if ( !exists( $args->{ -ls_obj } ) ) {
+    #    require DADA::MailingList::Settings;
+    #    $self->{ls} = DADA::MailingList::Settings->new( { -list => $args->{ -list } } );
+   # }
+   # else {
+    #    $self->{ls} = $args->{ -ls_obj };
+    #}
 
     $self->{'log'} = new DADA::Logging::Usage;
     $self->{list} = $args->{ -list };
@@ -134,12 +133,12 @@ sub _init {
 	$self->{lh} = $lh;
 
 
-    require DADA::Profile::Settings;
-    $self->{dps_obj} = DADA::Profile::Settings->new(
-		{
-			-list => $args->{ -list }
-		}
-	);
+#    require DADA::Profile::Settings;
+#    $self->{dps_obj} = DADA::Profile::Settings->new(
+#		{
+#			-list => $args->{ -list }
+#		}
+#	);
 
 	if(exists($args->{-type})){ 
 		if($self->{lh}->allowed_list_types($args->{-type}) != 1){ 

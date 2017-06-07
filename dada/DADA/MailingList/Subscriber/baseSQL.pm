@@ -225,14 +225,25 @@ sub add {
                 }
             }				
 		}
-   	 
-		if($self->{ls_obj}->param('delivery_prefs_set_default') == 1){
-			if($self->{ls_obj}->param('delivery_prefs_default') ne 'individual'){ 
-                my $r   = $self->{dps_obj}->save(
+		
+		
+		require DADA::MailingList::Settings;
+		$args->{ls_obj} = DADA::MailingList::Settings->new( { -list =>  $args->{-list} }); 
+		
+		require DADA::Profile::Settings;
+	    $args->{dps_obj} = DADA::Profile::Settings->new(
+			{
+				-list => $args->{ -list }
+			}
+		);
+		
+		if($args->{ls_obj}->param('delivery_prefs_set_default') == 1){
+			if($args->{ls_obj}->param('delivery_prefs_default') ne 'individual'){ 
+                my $r   = $args->{dps_obj}->save(
                     { 
                        -email   => $args->{-email},
                        -setting => 'delivery_prefs',
-                       -value   => scalar $self->{ls_obj}->param('delivery_prefs_default'),
+                       -value   => scalar $args->{ls_obj}->param('delivery_prefs_default'),
                     }
                 );
 			}  

@@ -20,9 +20,9 @@ sub new {
     my ($args) = @_;
 
 
-    if ( !exists( $args->{ -list } )) {
-        croak("You must supply a list name in the '-list' parameter.");
-    }
+#    if ( !exists( $args->{ -list } )) {
+#        croak("You must supply a list name in the '-list' parameter.");
+#    }
 
     my $self = {};
     bless $self, $class;

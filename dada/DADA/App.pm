@@ -14104,7 +14104,11 @@ sub profile {
                   formatted_runtime( $ls->param('digest_schedule') );
 
                 require DADA::Profile::Settings;
-                my $dps = DADA::Profile::Settings->new({-list => $i->{list});
+                my $dps = DADA::Profile::Settings->new(	
+					{
+						-list => $i->{list}
+					}
+				);
                 my $s   = $dps->fetch(
                     {
                         -email => $email,
