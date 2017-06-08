@@ -29,7 +29,6 @@ L<https://github.com/justingit/dada-mail/issues/676>
 L<https://github.com/justingit/dada-mail/issues/677>
 
 
-
 =head1 10.5.4
 
 This is mostly a bug-fix release for issues found in the v10.5.3 release of Dada Mail. 
