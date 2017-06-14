@@ -886,13 +886,7 @@ jQuery(document).ready(function($){
 	}
 	
 	if ($("#web_services").length) {
- 	   $("body")
-        .on("copy", ".zclip", function(/* ClipboardEvent */ e) {
-		  var target_id = $(this).data("zclip-target-id"); 
-          e.clipboardData.clearData();
-          e.clipboardData.setData("text/plain", $("#" + target_id).val());
-          e.preventDefault();
-        });
+ 	   new Clipboard('.copy_button');		
 	}
 
 	function toggle_sub_notice_to(){
@@ -1029,13 +1023,7 @@ jQuery(document).ready(function($){
 	}
 
 	if ($("#html_code").length) {
- 	   $("body")
-        .on("copy", ".zclip", function(/* ClipboardEvent */ e) {
-		  var target_id = $(this).data("zclip-target-id"); 
-          e.clipboardData.clearData();
-          e.clipboardData.setData("text/plain", $("#" + target_id).val());
-          e.preventDefault();
-        });
+ 	   new Clipboard('.copy_button');		
 	}
 
 
@@ -1241,14 +1229,7 @@ jQuery(document).ready(function($){
 
 
 	if($("#scheduled_jobs").length) {
- 	   $("body")
-        .on("copy", ".zclip", function(/* ClipboardEvent */ e) {
-		  var target_id = $(this).data("zclip-target-id"); 
-          e.clipboardData.clearData();
-          e.clipboardData.setData("text/plain", $("#" + target_id).val());
-          e.preventDefault();
-        });
-		
+		new Clipboard('.copy_button');		
 	$("body").on("click", ".manually_run_scheduled_jobs", function(event) {
 			
 			var responsive_options = {
@@ -1329,20 +1310,9 @@ jQuery(document).ready(function($){
 
 
  	   $("body")
-        .on("copy", ".zclip", function(/* ClipboardEvent */ e) {
-		  var target_id = $(this).data("zclip-target-id"); 
-          e.clipboardData.clearData();
-          e.clipboardData.setData("text/plain", $("#" + target_id).val());
-          e.preventDefault();
-        });
-
-
-
-
-
-
-
-
+		
+		new Clipboard('.copy_button');		
+		
 		$("body").on("click", '.plugins_bridge_manually_check_messages', function(event) {
 			event.preventDefault();
 			plugins_bridge_manually_check_messages();
