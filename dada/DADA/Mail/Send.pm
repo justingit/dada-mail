@@ -891,40 +891,49 @@ sub _mail_merge_vars_from_entity {
     );
 	
 	my $vars = {}; 
+	
 	try { 
 
+		my $from_tmp = undef;
 		if ( $entity->head->count('X-Original-From') ) {
- 			my $from_tmp = (Email::Address->parse($entity->head->get('X-Original-From', 0)))[0]; 
- 		    my $e = $from_tmp->address(); 
-			my ($en, $ed) = split('@', $e);
-           
-		    $vars->{'sender.email'}         = $e; 
-		    $vars->{'sender.email_name'}    = $en; 
-		    $vars->{'sender.email_domain'}  = $ed; 
-			
-			# ? maybe not... 
-			# 		    $vars->{'original_sender.email_phrase'} = $fm->_decode_header($from_tmp->phrase()); 
-			
-			
-		    if ( $DADA::Config::PROFILE_OPTIONS->{enabled} == 1 ) {
-		        require DADA::Profile;
-		        my $dp = DADA::Profile->new( { -email => $e } );
-		        if ( $dp->exists() ) {
-		            require DADA::Profile::Fields;
-		            my $dpf = DADA::Profile::Fields->new( { -email => $e } );
-		            my $f = $dpf->get(
-						{
-							-dotted      => 1, 
-							-dotted_with => 'sender_profile',
-						}
-		            ); 
-					
-					# why not just, %{$vars} = (%{$vars} %{$f}); # ? 
-					for(keys %$f){ 
-						$vars->{$_} = $f->{$_}; 
+ 			$from_tmp = (Email::Address->parse($entity->head->get('X-Original-From', 0)))[0]; 
+		}
+		else { 
+ 			$from_tmp = (Email::Address->parse($entity->head->get('From', 0)))[0]; 
+		}	
+		 
+		return {} 
+				if ! defined $from_tmp; 
+				
+	    my $e = $from_tmp->address(); 
+		my ($en, $ed) = split('@', $e);
+       
+	    $vars->{'sender.email'}         = $e; 
+	    $vars->{'sender.email_name'}    = $en; 
+	    $vars->{'sender.email_domain'}  = $ed; 
+		
+		# ? maybe not... 
+		# 		    $vars->{'original_sender.email_phrase'} = $fm->_decode_header($from_tmp->phrase()); 
+		
+		
+	    if ( $DADA::Config::PROFILE_OPTIONS->{enabled} == 1 ) {
+	        require DADA::Profile;
+	        my $dp = DADA::Profile->new( { -email => $e } );
+	        if ( $dp->exists() ) {
+	            require DADA::Profile::Fields;
+	            my $dpf = DADA::Profile::Fields->new( { -email => $e } );
+	            my $f = $dpf->get(
+					{
+						-dotted      => 1, 
+						-dotted_with => 'sender_profile',
 					}
-		        }
-		    }
+	            ); 
+				
+				# why not just, %{$vars} = (%{$vars} %{$f}); # ? 
+				for(keys %$f){ 
+					$vars->{$_} = $f->{$_}; 
+				}
+	        }  
 		}
 	} catch { 
 		warn $_; 
@@ -3493,10 +3502,6 @@ sub _mail_merge {
 #    use Data::Dumper;
 #    carp Dumper({%labeled_data});
 #    carp '-' x 72 . "\n";
-
-
-	use Data::Dumper; 
-	warn Dumper($args->{-vars});
 
     my $entity_cp = $args->{-fm_obj}->email_template(
         {

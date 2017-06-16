@@ -723,15 +723,18 @@ sub admin_menu_notifications {
 	
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security( -cgi_obj => $q, );
     if ($checksout) {
-		$r->{drafts}               = $self->admin_menu_drafts_notification(); 
-		$r->{sending_monitor}      = $self->admin_menu_mailing_monitor_notification(); 
-		$r->{view_list}            = $self->admin_menu_subscriber_count_notification(); 
-		$r->{view_archive}         = $self->admin_menu_archive_count_notification(); 
-		$r->{mail_sending_options} = $self->admin_menu_mail_sending_options_notification(); 
+		$r->{drafts}                               = $self->admin_menu_drafts_notification(); 
+		$r->{sending_monitor}                      = $self->admin_menu_mailing_monitor_notification(); 
+		$r->{view_list}                            = $self->admin_menu_subscriber_count_notification(); 
+		
+		$r->{change_info}                         = $self->admin_menu_change_info_notification();
+		
+		$r->{view_archive}                         = $self->admin_menu_archive_count_notification(); 
+		$r->{mail_sending_options}                 = $self->admin_menu_mail_sending_options_notification(); 
 		$r->{mailing_sending_mass_mailing_options} = $self->admin_menu_mailing_sending_mass_mailing_options_notification();
-		$r->{bounce_handler}       = $self->admin_menu_bounce_handler_notification();
-		$r->{tracker}              = $self->admin_menu_tracker_notification();
-		$r->{bridge}               = $self->admin_menu_bridge_notification();
+		$r->{bounce_handler}                       = $self->admin_menu_bounce_handler_notification();
+		$r->{tracker}                              = $self->admin_menu_tracker_notification();
+		$r->{bridge}                               = $self->admin_menu_bridge_notification();
 
 	    require JSON;
 	    my $json = JSON->new->allow_nonref;
@@ -849,6 +852,25 @@ sub admin_menu_subscriber_count_notification {
         return '';
     };
 }
+
+
+sub admin_menu_change_info_notification { 
+    my $self = shift;
+    my $q    = $self->query();
+
+    try {
+        my ( $admin_list, $root_login, $checksout, $error_msg ) =
+          check_list_security( -cgi_obj => $q, );
+        if ($checksout) {
+            my $list = $admin_list;
+            require DADA::MailingList::Settings;
+            my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+            return $ls->param('list_owner_email') . ' / ' . $ls->param('admin_email');
+        }
+	} catch { 
+	
+	};
+} 
 
 sub admin_menu_archive_count_notification {
 
@@ -1345,6 +1367,9 @@ sub email_message_preview {
     if ( !$checksout ) { return $error_msg; }
     my $list = $admin_list;
 
+	require DADA::MailingList::Settings;
+	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+
     require DADA::ProfileFieldsManager;
     my $pfm               = DADA::ProfileFieldsManager->new;
     my $fields_attr       = $pfm->get_all_field_attributes;
@@ -1361,7 +1386,8 @@ sub email_message_preview {
 
 	my $fake_vars = {};
     $fake_vars->{'list_unsubscribe_link'} = $DADA::Config::PROGRAM_URL . '/t/'  . 'CONFIRMATION_TOKEN' . '/';
-	  
+	$fake_vars->{'sender.email'} = $ls->param('list_owner_email');
+	
 	# warn q{$fake_vars->{'list_unsubscribe_link'}} . $fake_vars->{'list_unsubscribe_link'}; 
 	
 	my $r  = {}; 
