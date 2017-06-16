@@ -13,6 +13,15 @@ Key:
 [?] Someday
 
 
+
+
+* Embed Subscription Form. Options for various frontend frameworks + tabled-based HTML (shutter), flexbox?
+(advanced) show required form fields, so that people can make their own forms
+
+
+
+
+
 "You Are Already Subscribed" email needs HTML equiv. 
 
 MUCH larger notification about new versions available 
