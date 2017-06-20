@@ -2,6 +2,67 @@
 
 =encoding utf-8
 
+=head1 10.6.0
+
+=head2 Features
+
+=head3 Four new Email Themes have been added, just in time for summer! 
+
+=over
+
+=item * Bird Of Paradise
+
+Exotic 
+
+=item * Digging in the Dirt
+
+For all you green thumbs out there
+
+=item * Plain White T
+
+Nothin' but simple and white
+
+=item * Summer is Coming
+
+Or is summer already here? 
+
+=back
+
+=head3 New Mass Mailing Layout Choice: Old School
+
+B<Old School> is very similar to the mass mailing layout used in Dada Mail < v10. If you prefered that layout, well, it's back! 
+
+=head3 Original Message Sender data available in email template tags
+
+Since discussion lists rewrite the C<From:> header, it can be slightly difficult to contact the original sender, becauset their address is not as easy to get to. 
+
+Now, the origina sender will be listed a the first line of the discussion list message. You may use the following email template tag to customize this: 
+
+	<!-- tmpl_var sender.email --> 
+	
+Many of the template tags for C<subscriber> are also available for, C<sender>: 
+
+	<!-- tmpl_var subscriber.email_name -->
+
+	<!-- tmpl_var subscriber.email_domain -->
+
+As well as, C<subscriber_profile> which reflects the C<profile> tags, if you are using custom profile fields. 
+
+See how this is done in the email theme files, C<mailing_list_message-discussion.html> and C<mailing_list_message-discussion.html>
+
+=head2 Set a Default Delivery Preference for New Subscribers
+
+Speaking of discusion lists, sometimes you would like to have all subscribers start off getting digests, rather than individual messages. 
+
+Now, you can! 
+
+=head2 Changes
+
+=head3 Copy functions pure JS 
+
+The JS + Flash copy functions you may notice in Dada Mail have been replaced by a pure Javascript version, removing a small dependency (Flash!)
+
+
 =head1 10.5.5
 
 This is mostly a bug-fix release for issues found in the v10.5.4 release of Dada Mail. 
