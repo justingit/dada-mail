@@ -29,16 +29,27 @@ sub _init {
     require DADA::App::DBIHandle;
     $dbi_obj = DADA::App::DBIHandle->new;
     $self->{dbh} = $dbi_obj->dbh_obj;
+	
+	require DADA::MailingList::Settings; 
+	$self->{ls_obj} = DADA::MailingList::Settings->new(
+		{
+			-list => $args->{-list}
+		}
+	); 
+	
+	$self->{list} = $args->{-list};
+	
 }
 
 sub enabled { 
 	my $self = shift; 
 	return 1; 
 }
+
 sub save {
     my $self = shift;
     my ($args) = @_;
-    for ( '-email', '-list', '-setting', '-value' ) {
+    for ( '-email', '-setting', '-value' ) {
         if ( !exists( $args->{$_} ) ) {
             croak "you MUST pass the, '" . $_ . "' parameter!";
         }
@@ -55,8 +66,12 @@ sub save {
 
     my $sth = $self->{dbh}->prepare($query);
 
-    $sth->execute( $args->{-list}, $args->{-email}, $args->{-setting}, $args->{-value}, )
-      or croak "cannot do statement! $DBI::errstr\n";
+    $sth->execute( 
+		$self->{list}, 
+		$args->{-email}, 
+		$args->{-setting}, 
+		$args->{-value}
+	) or croak "cannot do statement! $DBI::errstr\n";
 
     $sth->finish;
 
@@ -67,7 +82,7 @@ sub save {
 sub fetch {
     my $self = shift;
     my ($args) = @_;
-    for ( '-email', '-list' ) {
+    for ( '-email') {
         if ( !exists( $args->{$_} ) ) {
             croak "you MUST pass the, '" . $_ . "' parameter!";
         }
@@ -83,7 +98,7 @@ sub fetch {
 
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute(
-        $args->{-list}, 
+        $self->{list},
         $args->{-email}
     ) or croak "cannot do statement! $DBI::errstr\n";
 
@@ -107,7 +122,7 @@ sub setting_exists {
     my $self = shift;
     my ($args) = @_;
 
-    for ( '-email', '-list', '-setting' ) {
+    for ( '-email', '-setting' ) {
         if ( !exists( $args->{$_} ) ) {
             croak "you MUST pass the, '" . $_ . "' parameter!";
         }
@@ -124,7 +139,7 @@ sub setting_exists {
       if $t;
 
     $sth->execute( 
-        $args->{-list}, 
+        $self->{list},
         $args->{-email}, 
         $args->{-setting}
         )
@@ -144,7 +159,7 @@ sub remove {
     my $self = shift;
     my ($args) = @_;
 
-    for ( '-email', '-list', '-setting' ) {
+    for ( '-email', '-setting' ) {
         if ( !exists( $args->{$_} ) ) {
             croak "you MUST pass the, '" . $_ . "' parameter!";
         }
@@ -153,8 +168,11 @@ sub remove {
     my $query =
       'DELETE FROM ' . $self->{sql_params}->{profile_settings_table} . ' WHERE list = ? AND email = ? and setting = ?';
     my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $args->{-list}, $args->{-email}, $args->{-setting}, )
-      or croak "cannot do statement! $DBI::errstr\n";
+    $sth->execute( 
+		$self->{list}, 
+		$args->{-email}, 
+		$args->{-setting}
+	) or croak "cannot do statement! $DBI::errstr\n";
     $sth->finish;
 
 }
@@ -196,7 +214,7 @@ sub count {
     my $sth = $self->{dbh}->prepare($query);
     
     $sth->execute( 
-        $args->{-list},
+        $self->{list},
         $args->{-setting}, 
         $args->{-value}, 
     ) or croak "cannot do statement $DBI::errstr\n";

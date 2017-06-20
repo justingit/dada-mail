@@ -642,7 +642,7 @@ sub update_email {
     
     # This updates the DADA::Profile::Settings; 
     require DADA::Profile::Settings;
-    my $dps = DADA::Profile::Settings->new; 
+    my $dps = DADA::Profile::Settings->new();
        $dps->update(
            { 
                -from => $self->{email},

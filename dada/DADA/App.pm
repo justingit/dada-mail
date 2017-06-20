@@ -5543,10 +5543,9 @@ m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list|sub_co
         }
 
         require DADA::Profile::Settings;
-        my $dpa = DADA::Profile::Settings->new;
-        my $s   = $dpa->fetch(
+        my $dps = DADA::Profile::Settings->new({-list => $list});
+        my $s   = $dps->fetch(
             {
-                -list  => $list,
                 -email => scalar $q->param('email'),
             }
         );
@@ -6345,13 +6344,12 @@ sub admin_profile_delivery_preferences {
 
     my $params = {
         -email   => $email,
-        -list    => $list,
         -setting => 'delivery_prefs',
         -value   => $delivery_prefs,
     };
 
     require DADA::Profile::Settings;
-    my $dps = DADA::Profile::Settings->new;
+ 	my $dps = DADA::Profile::Settings->new({-list => $list});
     my $r   = $dps->save($params);
 
     if ( $process eq 'ajax' ) {
@@ -14029,11 +14027,10 @@ sub profile {
               xss_filter( scalar $q->param('delivery_prefs') );
 
             require DADA::Profile::Settings;
-            my $dps = DADA::Profile::Settings->new;
+            my $dps = DADA::Profile::Settings->new({-list => $list});
             my $r   = $dps->save(
                 {
                     -email   => $email,
-                    -list    => $list,
                     -setting => 'delivery_prefs',
                     -value   => $delivery_prefs,
                 }
@@ -14107,10 +14104,13 @@ sub profile {
                   formatted_runtime( $ls->param('digest_schedule') );
 
                 require DADA::Profile::Settings;
-                my $dpa = DADA::Profile::Settings->new;
-                my $s   = $dpa->fetch(
+                my $dps = DADA::Profile::Settings->new(	
+					{
+						-list => $i->{list}
+					}
+				);
+                my $s   = $dps->fetch(
                     {
-                        -list  => $i->{list},
                         -email => $email,
                     }
                 );

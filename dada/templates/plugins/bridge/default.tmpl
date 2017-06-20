@@ -1009,13 +1009,47 @@
 			</div> 
 		</div> 
 		<div class="row">
-			<div class="small-12 columns">				
+			<div class="small-1 columns">
+			</div>
+			<div class="small-11 columns">				
 				<label for="digest_schedule"> 
 					Send Digests Every: 
 				</label>
 				<!-- tmpl_var digest_schedule_popup_menu -->
 			</div> 
 		</div> 
+		
+		
+		
+		<div class="row">
+			<div class="small-1 columns">
+			</div>
+			<div class="small-11 columns">				
+				<label for="delivery_prefs_set_default"> 
+					<input 
+						type="checkbox" 
+						name="delivery_prefs_set_default" 
+						id="delivery_prefs_set_default" 
+						value="1" 
+						<!-- tmpl_if list_settings.delivery_prefs_set_default --> checked="checked"<!-- /tmpl_if -->
+					>
+					Set a Default Delivery Preference
+				</label> 
+			</div> 
+		</div> 
+		
+		<div class="row">
+			<div class="small-2 columns">
+			</div>			
+			<div class="small-10 columns">				
+				<label for="delivery_prefs_default"> 
+					Default Delivery Preference
+				</label>
+				<!-- tmpl_var delivery_prefs_default_popup_menu -->
+			</div> 
+		</div>
+		
+	
 		
 	</fieldset> 
 

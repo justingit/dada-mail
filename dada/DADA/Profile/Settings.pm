@@ -12,22 +12,17 @@ my $backend;
 use DADA::Config qw(!:DEFAULT); 	
 use DADA::App::Guts; 
 
-BEGIN {
-    $type = $DADA::Config::SETTINGS_DB_TYPE;
-    if ( $type =~ m/sql/i ) {
-        $type = 'baseSQL';
-    }
-    else {
-        $type = 'Db';
-    }
-}
-use base "DADA::Profile::Settings::$type";
-
+use base "DADA::Profile::Settings::baseSQL";
 
 sub new {
 
     my $class = shift;
     my ($args) = @_;
+
+
+#    if ( !exists( $args->{ -list } )) {
+#        croak("You must supply a list name in the '-list' parameter.");
+#    }
 
     my $self = {};
     bless $self, $class;
