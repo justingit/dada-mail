@@ -2505,6 +2505,10 @@ sub message_email_report_export_csv {
 	
 	if($args->{-type} eq 'email_activity') { 
 		$report = $self->message_email_activity_listing($args);
+		
+		#use Data::Dumper;
+		#warn '$args: '   . Dumper($args);
+		#warn '$report: ' . Dumper($report); 
 	}
 	else { 
 		$report = $self->message_email_report($args);

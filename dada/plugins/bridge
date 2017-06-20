@@ -2657,7 +2657,12 @@ sub deliver {
 
         my $msg_id = $mh->mass_send(
             {            
-                -msg             => {%headers, Body => safely_decode($entity->stringify_body)},
+                -msg => {
+					%headers, 
+					Body => safely_decode(
+						$entity->stringify_body
+					)
+				},
             }
         );
 

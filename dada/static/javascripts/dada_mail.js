@@ -1681,6 +1681,7 @@ function admin_menu_notifications(){
 					"drafts",            
 					"sending_monitor",    
 					"view_list",   
+					"change_info",
 					"view_archive",    
 					"mail_sending_options",
 					"mailing_sending_mass_mailing_options",

@@ -879,6 +879,69 @@ sub send {
 
 }
 
+sub _mail_merge_vars_from_entity { 
+	my $self   = shift; 
+	my $entity = shift; 
+	
+	
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new(
+        -List   => $self->{list},
+        -ls_obj => $self->{ls},
+    );
+	
+	my $vars = {}; 
+	
+	try { 
+
+		my $from_tmp = undef;
+		if ( $entity->head->count('X-Original-From') ) {
+ 			$from_tmp = (Email::Address->parse($entity->head->get('X-Original-From', 0)))[0]; 
+		}
+		else { 
+ 			$from_tmp = (Email::Address->parse($entity->head->get('From', 0)))[0]; 
+		}	
+		 
+		return {} 
+				if ! defined $from_tmp; 
+				
+	    my $e = $from_tmp->address(); 
+		my ($en, $ed) = split('@', $e);
+       
+	    $vars->{'sender.email'}         = $e; 
+	    $vars->{'sender.email_name'}    = $en; 
+	    $vars->{'sender.email_domain'}  = $ed; 
+		
+		# ? maybe not... 
+		# 		    $vars->{'original_sender.email_phrase'} = $fm->_decode_header($from_tmp->phrase()); 
+		
+		
+	    if ( $DADA::Config::PROFILE_OPTIONS->{enabled} == 1 ) {
+	        require DADA::Profile;
+	        my $dp = DADA::Profile->new( { -email => $e } );
+	        if ( $dp->exists() ) {
+	            require DADA::Profile::Fields;
+	            my $dpf = DADA::Profile::Fields->new( { -email => $e } );
+	            my $f = $dpf->get(
+					{
+						-dotted      => 1, 
+						-dotted_with => 'sender_profile',
+					}
+	            ); 
+				
+				# why not just, %{$vars} = (%{$vars} %{$f}); # ? 
+				for(keys %$f){ 
+					$vars->{$_} = $f->{$_}; 
+				}
+	        }  
+		}
+	} catch { 
+		warn $_; 
+	};
+
+	return $vars; 
+
+}
 sub _massage_fields_for_amazon_ses {
 
     my $self        = shift;
@@ -1699,6 +1762,9 @@ sub mass_send {
             else {
                 carp "'$filename' doesn't exist?";
             }
+			
+			my $mail_merge_vars_from_entity = $self->_mail_merge_vars_from_entity($entity); 
+			
 
             # while we have people on the list..
             my $subcriber_line;
@@ -1898,6 +1964,7 @@ sub mass_send {
                         -entity => $entity,
                         -data   => \@ml_info,
                         -fm_obj => $fm,
+						-vars   => $mail_merge_vars_from_entity, 
                     }
                 );
 
@@ -2498,7 +2565,7 @@ sub mass_send {
               . $mailout_id
               . ' cleaning up!'
               if $t;
-            $mailout->clean_up;
+			  $mailout->clean_up;
 
             # Undef'ing net_smtp_obj if needed...
             if ( defined( $self->net_smtp_obj ) ) {
@@ -3324,13 +3391,16 @@ sub _mail_merge {
     }
 
     if ( exists( $args->{-fm_obj} ) ) {
-
         # ...
     }
     else {
         croak "you MUST pass the -fm_obj parameter!";
     }
-
+	
+	if ( !exists( $args->{-vars} ) ) {
+		$args->{-vars} = {}; 
+	}
+		
     my $entity_cp = $self->copy_entity($entity);
 
     #	my $entity_cp = $entity->dup;
@@ -3419,6 +3489,8 @@ sub _mail_merge {
     if ( $self->{ls}->param('enable_email_template_expr') == 1 ) {
         $expr = 1;
     }
+	
+	
 
 #    carp "ORIGINAL ENTITY: \n";
 #    carp '-' x 72 . "\n";
@@ -3441,6 +3513,7 @@ sub _mail_merge {
 
                 # You know, I need at least this:
                 message_id => $labeled_data{message_id},
+				%{$args->{-vars}},
                 %labeled_data,
             },
             -expr => $expr,

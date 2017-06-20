@@ -312,6 +312,17 @@ sub get {
 	if(!$self->exists({-email => $args->{-email}})){ 
 		return undef; 
 	}
+	
+	if(!exists($args->{-dotted})){ 
+		$args->{-dotted} = 0; 
+	}
+	if(!exists($args->{-dotted_with})){ 
+		$args->{-dotted_with} = 'profile'; 
+	} 
+			 
+	
+	
+	
 
     my $query =
       'SELECT * FROM '
@@ -346,7 +357,11 @@ sub get {
     if ( $args->{ -dotted } == 1 ) {
         my $dotted = {};
         for ( keys %$profile_info ) {
-            $dotted->{ 'profile.' . $_ } = $profile_info->{$_};
+            $dotted->{ 
+				$args->{-dotted_with} 
+				. '.' 
+				. $_ 
+			} = $profile_info->{$_};
         }
         return $dotted;
     }
