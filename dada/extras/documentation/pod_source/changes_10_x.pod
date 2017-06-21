@@ -55,11 +55,17 @@ As well as, C<subscriber_profile> which reflects the C<profile> tags, if you are
 
 See how this is done in the email theme files, C<mailing_list_message-discussion.html> and C<mailing_list_message-discussion.html>
 
-=head2 Set a Default Delivery Preference for New Subscribers
+=head3 Set a Default Delivery Preference for New Subscribers
 
 Speaking of discusion lists, sometimes you would like to have all subscribers start off getting digests, rather than individual messages. 
 
 Now, you can! 
+
+=head3 Global Config plugin enabled by default
+
+The Global Config plugin allows you to easily drop back into the install to reconfigure Dada Mail's global configuration. 
+
+It's now enabled, by default. Careful! As it's powers are unmatched in this world. 
 
 =head2 Changes
 

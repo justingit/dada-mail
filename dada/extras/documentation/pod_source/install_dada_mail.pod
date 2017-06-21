@@ -445,11 +445,13 @@ Good Luck!
 
 =head2 Making Additional Global Configuration Changes using the Dada Mail Installer
 
-Along with installing Dada Mail, the Dada Mail installer can also help reconfigure the global configuration of Dada Mail at any time in the future.
+Along with installing Dada Mail, the Dada Mail installer can also help reconfigure 
+the global configuration of Dada Mail at any time in the future.
 
 Dada Mail comes with a plugin called, B<Global Configuration> to make this easy. 
-It itself can be installed using the Dada Mail installer. 
-Once the plugin is enabled, you may access it in the List Control Panel under, B<Plugins>. 
+It itself can be installed using the Dada Mail installer, and should be installed, by default. 
+
+You may access it in the List Control Panel under, B<Plugins>. 
 Make sure you have logged into a mailing list with the Dada Mail Root Password,
 as it's not available if you log in with the List Password. 
 
