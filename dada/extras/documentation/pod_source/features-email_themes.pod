@@ -4,6 +4,19 @@
 
 =head1 Dada Mail Email Themes
 
+A Dada Mail Email Theme is a collection of the email-specific HTML and text templates 
+used when sending out email messages that Dada Mail creates, both for 
+notification emails, like when you subscribe to a mailing list, and for mass mailing messages. 
+
+For mass mailings, each theme also comes with a few different layouts, which you may choose from to 
+give your mailing list message a different look and feel. 
+
+All the themes that currently ship with Dada Mail have the same text copy and general layout, but 
+their color schemes and sometimes font size will be different. Nothing stops you from create your I<own> theme, 
+with a wildly different layout/design, and even content. 
+
+=head1 Email Theme Creation Workflow 
+
 Dada Mail's Email Themes are created using the Foundation for Emails Framework: 
 
 L<http://foundation.zurb.com/emails.html>
@@ -20,12 +33,13 @@ Dada Mail's Email Themes are installed in your C<dada_mail_support_files> direct
 under the path, 
 C<dada_mail_support_files/themes/email>. 
 Each email theme lives in a directory whose name is the same as the theme's name.  
-For example, the included theme is called, C<default>, 
+For example, the included theme in Dada Mail is called, C<default>, 
 and if you navigate into the C<dada_mail_support_files/themes/email> directory, 
 you should see a directory also called, C<default>. 
 
 Inside the, C<dada_mail_support_files/themes/email/default/dist> directory, 
 are all the template files that make up the email theme.
+
 For example, 
 the subscription confirmation message that gets sent out to confirm a new subscription is made up of two templates, 
 
@@ -133,7 +147,7 @@ L<http://foundation.zurb.com/emails/docs/sass-guide.html>
 
 In a B<separate> directory, you'll want to download the existing Dada Mail default theme from github: 
 
-L<https://github.com/justingit/dada_mail_foundation_email_templates/archive/v10_5_5-stable_2017_06_08.tar.gz>
+L<https://github.com/justingit/dada_mail_foundation_email_templates/archive/v10_6_0-stable_2017_06_21.tar.gz>
 
 Each release of Dada Mail also have a release of the default theme, 
 so make sure those two releases correspond to each other. 
@@ -195,7 +209,38 @@ as well as an outside project to facilitate your own translation:
 
 L<https://github.com/holzhannes/dada_mail_foundation_email_templates-translator-tool>
 
+=head1 Theme Collections in Pro Dada
 
+The free distribution of Dada Mail comes with only one theme called, C<default>, but Pro Dada comes with a dozen+ more themes for you to use! 
 
+These themes are mostly color scheme changes of the C<default> theme. Learn more about Pro Dada at, 
+
+L<http://dadamailproject.com/purchase/pro.html>
+
+If you've transformed your Dada Mail install to Pro Dada within the app, these new themes will not be automatically available. 
+
+Rather, you would have to either upgrade to Pro Dada: 
+
+	L<dadamailproject.com/d/upgrade_dada_mail.pod.html>
+
+Or, download the Pro Dada distribution, uncompress it locally, then move the directories you found in, 
+
+	C<dada/extras/packages/themes/email>
+
+into where your email themes currently live, 
+
+	C<dada_mail_support_files/themes/email>
+
+=head1 Learn More
+
+=head3 Introducing Email Theme Layouts in Dada Mail
+
+L<http://blog.dadamailproject.com/2016/10/31/introducing-email-theme-layouts-in-dada-mail/>
+
+=head3 How to create your own email theme in Dada Mail 10
+
+L<http://blog.dadamailproject.com/2016/10/28/how-to-create-your-own-email-theme-in-dada-mail-10/>
+
+=head3 
 
 =cut

@@ -21,26 +21,33 @@
 	</div>
 </div>
 
+   <div class="alert-box info radius">
+	   
+		<p>
+		This plugin will reconfigure the bundled <!-- tmpl_var PROGRAM_NAME --> Installer, 
+		re-enabling it, and allowing you to use it to reconfigure your <!-- tmpl_var PROGRAM_NAME -->.
+		</p> 
+	</div>
 
-<p>
-This plugin will reconfigure the bundled <!-- tmpl_var PROGRAM_NAME --> Installer, 
-re-enabling it, and allowing you to use it to reconfigure your <!-- tmpl_var PROGRAM_NAME -->.
-</p> 
+	  <div class="alert-box warning radius">
+		   
+		<p>
+			<strong>Warning!</strong> 
+				
+				Once you've enabled the <!-- tmpl_var PROGRAM_NAME --> Installer, your <!-- tmpl_var PROGRAM_NAME --> will
+			NOT be functional until you've correctly reconfigured your installation. Changing global variables using the 
+			<!-- tmpl_var PROGRAM_NAME --> Installer may cause your installation of <!-- tmpl_var PROGRAM_NAME --> to 
+			stop functioning correctly! Only proceed, if you are sure of your abilities to reconfigure the application. 
+		</p>
+	</div>
 
-<p>
-	Once re-enabled, you <em>must</em> go through with the reconfiguration of 
-	<!-- tmpl_var PROGRAM_NAME -->. 
-	<strong>
-		Ready? 
-	</strong>
-</p>
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 
 	<input type="hidden" name="flavor" value="plugins" > 
 	<input type="hidden" name="plugin" value="global_config" > 
 	<input type="hidden" name="prm" value="reconfigure" > 
 	<div class="text-center">
-		<input type="submit" value="       &#187; Reconfigure <!-- tmpl_var PROGRAM_NAME -->!  &#171;       " class="success large button" >
+		<input type="submit" value="Reconfigure <!-- tmpl_var PROGRAM_NAME -->..." class="alert large button expand" >
 	</div>
 
 </form> 

@@ -664,7 +664,7 @@ sub scrn_configure_dada_mail {
         $q->param( 'install_bridge',                1 );
         $q->param( 'install_bounce_handler',        0 );
         $q->param( 'install_change_list_shortname', 1 );
-        $q->param( 'install_global_config',         0 );
+        $q->param( 'install_global_config',         1 );
 
         for my $d (
             qw(
