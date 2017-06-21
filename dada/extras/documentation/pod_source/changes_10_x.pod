@@ -28,6 +28,11 @@ Or is summer already here?
 
 =back
 
+These themes - and all other themes (except the, "default" theme) are now ONLY distributed 
+with Pro Dada (L<http://dadamailproject.com/purchase/pro.html>). 
+
+Grab a Pro Dada subscription yourself, and help support the project!3
+
 =head3 New Mass Mailing Layout Choice: Old School
 
 B<Old School> is very similar to the mass mailing layout used in Dada Mail < v10. If you prefered that layout, well, it's back! 
