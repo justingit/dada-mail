@@ -67,6 +67,12 @@ The Global Config plugin allows you to easily drop back into the install to reco
 
 It's now enabled, by default. Careful! As it's powers are unmatched in this world. 
 
+=head3 Mailing List: List Information menu now shows List Owner and List Administrator
+
+To make it easy to see some of the vital information about your mailing list, the menu will 
+show the List Owner and List Administrator right in the, Mailing List: List Information menu. 
+
+
 =head2 Changes
 
 =head3 Copy functions pure JS 
