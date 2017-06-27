@@ -684,6 +684,10 @@ sub rel_to_abs {
     }
 
     foreach my $rel (@links_to_look_at) {
+		
+		next if $rel eq ''; 
+		next if length($rel) <= 0; 
+		
         warn '$rel: "' . $rel . '"'
           if $t;
 
@@ -702,13 +706,15 @@ sub rel_to_abs {
 # Also see that we don't get rid of dupes in @links_to_look_at, and this regex is not global.
 # If you do one do the other,
 
-        #if($tag eq 'a' || $tag eq 'area'){
-        $parsed =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$abs_link/;
+		if($abs_link ne $rel){
+	        #if($tag eq 'a' || $tag eq 'area'){
+	        $parsed =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$abs_link/;
 
-        #}elsif($tag eq 'img'){
-        $parsed =~ s/(src(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$abs_link/;
+	        #}elsif($tag eq 'img'){
+	        $parsed =~ s/(src(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$abs_link/;
 
-        #}
+	        #}
+		}
     }
 
     @links_to_look_at = ();
