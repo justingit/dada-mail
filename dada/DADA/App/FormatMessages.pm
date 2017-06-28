@@ -625,7 +625,10 @@ sub rel_to_abs {
 
     my $self = shift;
     my $str  = shift;
-    my $base = shift;
+    my $base = shift || undef;
+	
+	return $str if ! defined $base; 
+	return $str if length($base <= 0) ;
 
     my $parsed = $str;
 
