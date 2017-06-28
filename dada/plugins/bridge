@@ -200,7 +200,7 @@ sub cgi_test_pop3_ajax {
 
     try {
         require DADA::App::POP3Tools;
-        ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::mail_pop3client_login(
+        ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::net_pop3_login(
             {
                 server   => scalar $q->param('server'),
                 username => scalar $q->param('username'),
@@ -216,7 +216,7 @@ sub cgi_test_pop3_ajax {
     };
 	
     if ( defined($pop3_obj) ) {
-        $pop3_obj->Close();
+        $pop3_obj->quit();
     }
     if ( $pop3_status == 1 ) {
         $r .= '<p>Connection is Successful!</p>';

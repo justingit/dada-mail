@@ -172,7 +172,7 @@ sub test_pop3 {
         $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check( { name => 'bounce_handler.lock', } );
     }
 
-    my ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::mail_pop3client_login(
+    my ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::net_pop3_login(
         {
 
             server    => $self->config->{Server},
@@ -194,7 +194,8 @@ sub test_pop3 {
     }
 
     if ( defined($pop3_obj) ) {
-        $pop3_obj->Close();
+        #$pop3_obj->Close();
+		$pop3_obj->quit();
     }
 
     return ( $pop3_obj, $pop3_status, $pop3_log );
@@ -350,7 +351,7 @@ sub parse_all_bounces {
             $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check( { name => 'bounce_handler.lock' } );
         }
 
-        my ( $pop3_obj, $pop3status, $pop3log ) = DADA::App::POP3Tools::mail_pop3client_login(
+        my ( $pop3_obj, $pop3status, $pop3log ) = DADA::App::POP3Tools::net_pop3_login(
             {
                 server    => $self->config->{Server},
                 username  => $self->config->{Username},
@@ -389,11 +390,12 @@ sub parse_all_bounces {
         }
 
         my @delete_list = ();
+		
+		my $list = $pop3_obj->list; 
+        # my @List = $pop3_obj->List;
 
-        my @List = $pop3_obj->List;
-
-        if ( !$List[0] ) {
-
+        #if ( !$List[0] ) {
+		if(scalar keys $list == 0) {
             $log .= "\tNo bounces to handle.\n";
             $has_bounces = 0;
         }
@@ -401,13 +403,17 @@ sub parse_all_bounces {
             #$log .= scalar(@List) . " total messages to be handled\n";
             my $msg_num = 0;
           MSGCHECK:
-            for my $msg_info (@List) {
+            # for my $msg_info (@List) {
+				for my $msg_info (keys %$list) {
                 my $found_list = undef;
                 $msg_num++;
                 $log .= "\n# $msg_num:\n";
                 my $need_to_delete = undef;
-                my ( $msgnum, $msgsize ) = split( '\s+', $msg_info );
-
+                #my ( $msgnum, $msgsize ) = split( '\s+', $msg_info );
+				
+				my $msgnum  = $msg_info; 
+				my $msgsize = $list->{$msg_info};
+				
                 if ( $msgsize > $self->config->{Max_Size_Of_Any_Message} ) {
                     $log .=
                         "\tWarning! Message size ( "
@@ -424,12 +430,20 @@ sub parse_all_bounces {
                 }
                 else {
 
-                    my $msg      = $pop3_obj->Retrieve($msgnum);
-                    my $full_msg = $msg;
+                   # my $msg      = $pop3_obj->Retrieve($msgnum);
+				   
+				   my $msg_ar = $pop3_obj->get($msgnum);
+				   # lazy, but... 
+				   my $msg = join("", @$msg_ar); 
+				   
+				   # ?
+				    my $full_msg = $msg;
 
                     my $msg_report  = '';
                     my $rule_report = '';
                     my $diag        = {};
+					
+					# Why not, try{}{catch}?
                     eval {
 
                         ( $found_list, $need_to_delete, $msg_report, $rule_report, $diag ) = $self->parse_bounce(
@@ -520,15 +534,18 @@ sub parse_all_bounces {
         if ( !$isa_test ) {
             for (@delete_list) {
                 $log .= "deleting message #: $_\n";
-                $pop3_obj->Delete($_);
+                # $pop3_obj->Delete($_);
+				$pop3_obj->delete($_); 
             }
         }
         else {
             $log .= "Skipping Message Deletion.\n";
         }
 
-        $pop3_obj->Close;
-        if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
+       # $pop3_obj->Close;
+       $pop3_obj->quit();
+	   
+	    if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
             DADA::App::POP3Tools::_unlock_pop3_check(
                 {
                     name => 'bounce_handler.lock',

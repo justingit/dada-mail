@@ -27,106 +27,6 @@ use vars qw(@EXPORT);
 @EXPORT = qw(); 
 
 
-sub net_pop3_login { 
-
-    my ($args) = @_;
-	my $r = ''; 
-	
-    require Net::POP3;
-
-    if(! exists($args->{server})){ 
-        croak "No Server Passed!";
-    }
-    
-   if(! exists($args->{username})){ 
-        croak "No Username Passed!";
-    }
-    
-   if(! exists($args->{password})){ 
-        croak "No Password Passed!";
-    }
-    
-    if(! exists($args->{verbose})){ 
-        $args->{verbose} = 0; 
-    }
-
-	if(!exists($args->{USESSL})){ 
-		$args->{USESSL} = 0;
-	}
-		
-	if(!exists($args->{port})){ 
-		if($args->{USESSL} == 1){
-			$args->{port} = '995'; 
-		}
-		else { 
-			$args->{port} = '110'; 
-		}
-	}
-	
-	
-	if(length($args->{server}) <= 0 ) { 
-	    $r .= 'Server is blank?' . "\n";
-	    return (undef, 0, $r); 
-	}
-	else { 
-	    
-        $r .= "\t* Logging into POP3 server '" . $args->{server} . "'\n"; 
-    
-=cut	
-		use Data::Dumper; 
-		warn 'passing: ' . Dumper(
-		{
-			
-			server => $args->{server},
-			SSL             => $args->{USESSL}, 
-			Port            => $args->{port}, 
-			Timeout         => 60,
-			SSL_verify_mode => 0,
-			Debug           => 1, 	
-		}	
-		);
-
-=cut
-					
-
-        my $pop = Net::POP3->new(
-			$args->{server},
-			SSL             => $args->{USESSL}, 
-			Port            => $args->{port}, 
-			Timeout         => 60,
-			SSL_verify_mode => 0,
-			#Debug           => 1, 		
- 		);
-		
-	    $args->{server},
-
-		
-		
-		
-		
-		
-		my $lr = $pop->login(
-			$args->{username},
-			$args->{password}
-		); 
-		if($lr eq undef){ 
-            $r .= "\t* Connection to '" . $args->{server} . "' wasn't successful\n";
-       	   return ( undef, 0, $r );
-		}
-		else {
-                $r .= "\t* POP3 Login succeeded.\n";
-                $r .= "\t* Message count: " . $lr . "\n";
-           }
-		   
-           return ( $pop, 1, $r );
-      
-	  }
-}
-
-
-
-=cut
-
 sub mail_pop3client_login { 
 
     my ($args) = @_;
@@ -201,7 +101,7 @@ sub mail_pop3client_login {
       }
 }
 
-=cut
+
 
 
 sub _lock_pop3_check { 

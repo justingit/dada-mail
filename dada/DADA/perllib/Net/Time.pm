@@ -1,26 +1,32 @@
 # Net::Time.pm
 #
-# Copyright (c) 1995-2004 Graham Barr <gbarr@pobox.com>. All rights reserved.
-# This program is free software; you can redistribute it and/or
-# modify it under the same terms as Perl itself.
+# Versions up to 2.10 Copyright (c) 1995-2004 Graham Barr <gbarr@pobox.com>.
+# All rights reserved.
+# Changes in Version 2.11 onwards Copyright (C) 2014 Steve Hay.  All rights
+# reserved.
+# This module is free software; you can redistribute it and/or modify it under
+# the same terms as Perl itself, i.e. under the terms of either the GNU General
+# Public License or the Artistic License, as specified in the F<LICENCE> file.
 
 package Net::Time;
 
+use 5.008001;
+
 use strict;
-use vars qw($VERSION @ISA @EXPORT_OK $TIMEOUT);
+use warnings;
+
 use Carp;
-use IO::Socket;
-require Exporter;
-use Net::Config;
+use Exporter;
 use IO::Select;
+use IO::Socket;
+use Net::Config;
 
-@ISA       = qw(Exporter);
-@EXPORT_OK = qw(inet_time inet_daytime);
+our @ISA       = qw(Exporter);
+our @EXPORT_OK = qw(inet_time inet_daytime);
 
-$VERSION = "2.10";
+our $VERSION = "3.10";
 
-$TIMEOUT = 120;
-
+our $TIMEOUT = 120;
 
 sub _socket {
   my ($pname, $pnum, $host, $proto, $timeout) = @_;
@@ -33,9 +39,9 @@ sub _socket {
 
   my $me;
 
-  foreach $host (@$hosts) {
+  foreach my $addr (@$hosts) {
     $me = IO::Socket::INET->new(
-      PeerAddr => $host,
+      PeerAddr => $addr,
       PeerPort => $port,
       Proto    => $proto
       )
@@ -57,11 +63,11 @@ sub _socket {
 
 
 sub inet_time {
-  my $s      = _socket('time', 37, @_) || return undef;
+  my $s      = _socket('time', 37, @_) || return;
   my $buf    = '';
   my $offset = 0 | 0;
 
-  return undef
+  return
     unless defined $s->recv($buf, length(pack("N", 0)));
 
   # unpack, we | 0 to ensure we have an unsigned
@@ -87,7 +93,7 @@ sub inet_time {
 
 
 sub inet_daytime {
-  my $s   = _socket('daytime', 13, @_) || return undef;
+  my $s   = _socket('daytime', 13, @_) || return;
   my $buf = '';
 
   defined($s->recv($buf, 1024))
@@ -107,11 +113,11 @@ Net::Time - time and daytime network client interface
 
     use Net::Time qw(inet_time inet_daytime);
 
-    print inet_time();		# use default host from Net::Config
+    print inet_time();          # use default host from Net::Config
     print inet_time('localhost');
     print inet_time('localhost', 'tcp');
 
-    print inet_daytime();	# use default host from Net::Config
+    print inet_daytime();       # use default host from Net::Config
     print inet_daytime('localhost');
     print inet_daytime('localhost', 'tcp');
 
@@ -140,12 +146,19 @@ C<udp>. The result will be an ASCII string or I<undef> upon failure.
 
 =head1 AUTHOR
 
-Graham Barr <gbarr@pobox.com>
+Graham Barr E<lt>F<gbarr@pobox.com>E<gt>
+
+Steve Hay E<lt>F<shay@cpan.org>E<gt> is now maintaining libnet as of version
+1.22_02
 
 =head1 COPYRIGHT
 
-Copyright (c) 1995-2004 Graham Barr. All rights reserved.
-This program is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+Versions up to 2.11 Copyright (c) 1995-2004 Graham Barr. All rights reserved.
+Changes in Version 2.11 onwards Copyright (C) 2014 Steve Hay.  All rights
+reserved.
+
+This module is free software; you can redistribute it and/or modify it under the
+same terms as Perl itself, i.e. under the terms of either the GNU General Public
+License or the Artistic License, as specified in the F<LICENCE> file.
 
 =cut
