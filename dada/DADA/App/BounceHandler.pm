@@ -194,7 +194,6 @@ sub test_pop3 {
     }
 
     if ( defined($pop3_obj) ) {
-        #$pop3_obj->Close();
 		$pop3_obj->quit();
     }
 
@@ -392,10 +391,12 @@ sub parse_all_bounces {
         my @delete_list = ();
 		
 		my $list = $pop3_obj->list; 
-        # my @List = $pop3_obj->List;
 
-        #if ( !$List[0] ) {
-		if(scalar keys $list == 0) {
+		if(! defined $list) {
+            $log .= "\tNo bounces to handle.\n";
+            $has_bounces = 0;
+        }
+		elsif(scalar keys $list == 0) {
             $log .= "\tNo bounces to handle.\n";
             $has_bounces = 0;
         }
@@ -429,10 +430,9 @@ sub parse_all_bounces {
 
                 }
                 else {
-
-                   # my $msg      = $pop3_obj->Retrieve($msgnum);
 				   
 				   my $msg_ar = $pop3_obj->get($msgnum);
+
 				   # lazy, but... 
 				   my $msg = join("", @$msg_ar); 
 				   
@@ -534,7 +534,6 @@ sub parse_all_bounces {
         if ( !$isa_test ) {
             for (@delete_list) {
                 $log .= "deleting message #: $_\n";
-                # $pop3_obj->Delete($_);
 				$pop3_obj->delete($_); 
             }
         }

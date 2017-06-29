@@ -4569,7 +4569,7 @@ sub test_pop3_connection {
 
     my ($args) = @_;
     require DADA::App::POP3Tools;
-    my ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::mail_pop3client_login(
+    my ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::net_pop3_login(
         {
             server    => $args->{Server},
             username  => $args->{Username},
@@ -4580,7 +4580,7 @@ sub test_pop3_connection {
         }
     );
     if ( defined($pop3_obj) ) {
-        $pop3_obj->Close();
+		$pop3_obj->quit();
     }
 
     return ( $pop3_obj, $pop3_status, $pop3_log );
