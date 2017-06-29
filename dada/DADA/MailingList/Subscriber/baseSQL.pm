@@ -1,15 +1,14 @@
 package DADA::MailingList::Subscriber::baseSQL;
 
-warn 'in: package DADA::MailingList::Subscriber::baseSQL;';
 use strict;
 use lib qw(../../../ ../../../perllib);
 use Carp qw(carp croak);
-$Carp::Verbose = 1; 
+
 
 use DADA::Config;
 use DADA::App::Guts;
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
 
 
 use Data::Dumper; 
@@ -18,10 +17,10 @@ sub add {
 
     my $self = shift;
 	
-	warn Dumper({'self' => $self}); 
+#	warn Dumper({'self' => $self}); 
     my ($args) = @_;
 	
-	warn Dumper({'args' => $args}); 
+	#warn Dumper({'args' => $args}); 
 		
 
     if ($t) {
