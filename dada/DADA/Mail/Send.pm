@@ -357,8 +357,6 @@ sub send {
             );
         }
 
-        $self->_pop_before_smtp;
-
         my $host;
         if ( $self->{ls}->param('set_smtp_sender') == 1 ) {
             $host = $self->{ls}->param('admin_email');
@@ -3157,71 +3155,7 @@ sub _cipher_decrypt {
         $self->{ls}->param('cipher_key'), $str );
 }
 
-sub _pop_before_smtp {
-    my $self   = shift;
-    my $status = 0;
 
-    require DADA::Security::Password;
-
-    my %args = (
-        -pop3_server   => $self->{ls}->param('pop3_server'),
-        -pop3_username => $self->{ls}->param('pop3_username'),
-        -pop3_password =>
-          $self->_cipher_decrypt( $self->{ls}->param('pop3_password') ),
-        -pop3_auth_mode => $self->{ls}->param('pop3_auth_mode'),
-        -pop3_use_ssl   => $self->{ls}->param('pop3_use_ssl'),
-        -verbose        => 0,
-        @_
-    );
-
-    if (   ( $self->{ls}->param('use_pop_before_smtp') == 1 )
-        && ( $args{-pop3_server} )
-        && ( $args{-pop3_username} )
-        && ( $args{-pop3_password} ) )
-    {
-
-        $args{-pop3_server}   = make_safer( $args{-pop3_server} );
-        $args{-pop3_username} = make_safer( $args{-pop3_username} );
-        $args{-pop3_password} = make_safer( $args{-pop3_password} );
-
-        return ( undef, 0, '' ) if !$args{-pop3_server};
-        return ( undef, 0, '' ) if !$args{-pop3_username};
-        return ( undef, 0, '' ) if !$args{-pop3_password};
-
-        require DADA::App::POP3Tools;
-
-        my $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-            {
-                name => 'dada_mail_send.lock',
-            }
-        );
-
-        my ( $pop, $status, $log ) =
-          DADA::App::POP3Tools::mail_pop3client_login(
-
-            {
-                server    => $args{-pop3_server},
-                username  => $args{-pop3_username},
-                password  => $args{-pop3_password},
-                USESSL    => $args{-pop3_use_ssl},
-                AUTH_MODE => $args{-pop3_auth_mode},
-                verbose   => $args{-verbose},
-            }
-          );
-
-        my $count = $pop->Count;
-
-        $pop->Close();
-        DADA::App::POP3Tools::_unlock_pop3_check(
-            {
-                name => 'dada_mail_send.lock',
-                fh   => $lock_file_fh,
-            },
-        );
-        return ($status);
-
-    }
-}
 
 sub _email_batched_finished_notification {
 

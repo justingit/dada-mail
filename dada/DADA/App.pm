@@ -3752,7 +3752,6 @@ sub mail_sending_options {
                 -settings  => {
                     sending_method      => undef,
                     add_sendmail_f_flag => 0,
-                    use_pop_before_smtp => 0,
                     set_smtp_sender     => 0,
                     smtp_server         => undef,
                     pop3_server         => undef,

@@ -666,20 +666,12 @@ jQuery(document).ready(function($){
 
 		sending_prefs_setup();
 		toggle_SASL_options();
-		toggle_pop_before_SMTP_options();
 
 
 
 		$("body").on("click", '#use_sasl_smtp_auth', function(event) {
 			toggle_SASL_options();
 		});
-
-		$("body").on("click", '#use_pop_before_smtp', function(event) {
-			toggle_pop_before_SMTP_options();
-		});
-
-
-
 
 		$("body").on("click", '.sending_prefs_radio', function(event) {
 			sending_prefs_setup();
@@ -2776,17 +2768,7 @@ function toggle_SASL_options() {
 	}
 }
 
-function toggle_pop_before_SMTP_options() {
-	if ($("#use_pop_before_smtp").prop("checked") === true) {
-		if ($('#pop_before_smtp_options').is(':hidden')) {
-			$('#pop_before_smtp_options').show('blind');
-		}
-	} else {
-		if ($('#pop_before_smtp_options').is(':visible')) {
-			$('#pop_before_smtp_options').hide('blind');
-		}
-	}
-}
+
 
 function send_url_options_setup() {
 
@@ -2894,10 +2876,6 @@ function test_mail_sending_options() {
 	if ($('#pop3_use_ssl').prop('checked') === true) {
 		pop3_use_ssl = 1;
 	}
-	var use_pop_before_smtp = 0;
-	if ($('#use_pop_before_smtp').prop('checked') === true) {
-		use_pop_before_smtp = 1;
-	}
 	var use_sasl_smtp_auth = 0;
 	if ($('#use_sasl_smtp_auth').prop('checked') === true) {
 		use_sasl_smtp_auth = 1;
@@ -2938,7 +2916,6 @@ function test_mail_sending_options() {
 			sasl_auth_mechanism: $('#sasl_auth_mechanism').val(),
 			sasl_smtp_username: $('#sasl_smtp_username').val(),
 			sasl_smtp_password: $('#sasl_smtp_password').val(),
-			use_pop_before_smtp: use_pop_before_smtp,
 			pop3_server: $('#pop3_server').val(),
 			pop3_username: $('#pop3_username').val(),
 			pop3_password: $('#pop3_password').val(),

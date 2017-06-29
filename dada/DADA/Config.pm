@@ -1315,7 +1315,6 @@ $MIME_TOOLS_PARAMS //= {
     smtp_port   => 25,
 
     use_smtp_ssl        => 0,
-    use_pop_before_smtp => 0,
 
     pop3_server   => undef,
     pop3_username => undef,

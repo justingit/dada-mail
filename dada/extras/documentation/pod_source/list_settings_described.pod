@@ -134,7 +134,6 @@ L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
     smtp_port   => 25,
 
     use_smtp_ssl        => 0,
-    use_pop_before_smtp => 0,
 
     pop3_server   => undef,
     pop3_username => undef,
