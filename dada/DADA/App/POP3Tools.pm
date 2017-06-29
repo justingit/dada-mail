@@ -49,13 +49,38 @@ sub net_pop3_login {
     if(! exists($args->{verbose})){ 
         $args->{verbose} = 0; 
     }
+	
+    if(! exists($args->{AUTH_MODE})){ 
+        $args->{AUTH_MODE} = 'POP'; 
+    }
 
 	if(!exists($args->{USESSL})){ 
 		$args->{USESSL} = 0;
 	}
-		
+	
+	if(!exists($args->{starttls})){ 
+		$args->{starttls} = 0;
+	}
+	
+	if(!exists($args->{SSL_verify_mode})) { 
+		$args->{SSL_verify_mode} = 0;
+	}
+	
+	my $SSL = 0; 
+	if($args->{USESSL} == 1 && $args->{starttls} == 0){ 
+		$SSL = 1; 
+	}
+	
 	if(!exists($args->{port})){ 
-		if($args->{USESSL} == 1){
+		if($SSL == 1){
+			$args->{port} = '995'; 
+		}
+		else { 
+			$args->{port} = '110'; 
+		}
+	}
+	elsif($args->{port} eq 'AUTO'){ 
+		if($SSL == 1){
 			$args->{port} = '995'; 
 		}
 		else { 
@@ -70,52 +95,114 @@ sub net_pop3_login {
 	}
 	else { 
 	    
-        $r .= "\t* Logging into POP3 server '" . $args->{server} . "'\n"; 
-    
-=cut	
-		use Data::Dumper; 
-		warn 'passing: ' . Dumper(
-		{
-			
-			server => $args->{server},
-			SSL             => $args->{USESSL}, 
+        $r .= "* Logging into POP3 server '" . $args->{server} . "' on port, " . $args->{port} . "\n"; 
+   
+					
+		my $n_p3_args = { 
+			SSL             => $SSL, 
 			Port            => $args->{port}, 
 			Timeout         => 60,
-			SSL_verify_mode => 0,
+			SSL_verify_mode => $args->{SSL_verify_mode},
 			Debug           => 1, 	
-		}	
-		);
-
-=cut
-					
-
+		};
+		
+		if($args->{SSL_verify_mode} == 1){ 
+			$r .= "* Verifying SSL Certificate during connection\n";
+		}
+		
+		#use Data::Dumper; 
+		#$r .= "args: " . Dumper($args);
+		#return (undef, 0, Dumper($args)); 
+		
         my $pop = Net::POP3->new(
 			$args->{server},
-			SSL             => $args->{USESSL}, 
-			Port            => $args->{port}, 
-			Timeout         => 60,
-			SSL_verify_mode => 0,
-			#Debug           => 1, 		
+			%$n_p3_args,
  		);
 		
-	    $args->{server},
+		
+		# require Data::Dumper; 
+		#$r .= 'Arguments Sent:' . 
+		#'Server: ' . $args->{server} . "\n" . 
+		#Data::Dumper::Dumper($n_p3_args); 
+		
+		if(!defined($pop)){ 
+			 $r .= "* Connection to '" . $args->{server} . "' wasn't successful\n";
+			return ( undef, 0, $r );
+		}
+		
+	
+		$r .= '* ' . $pop->banner() . "\n";
+		
+		my $capa = $pop->capa(); 		
+		$r .= "Capabilities: \n";		
+		for(keys %$capa){ 
+			$r .= " * " . $_ . ': ' . $capa->{$_} . "\n";
+		}
+		$r .= "\n";
+		
+		if($capa->{SASL} =~ m/APOP/){ 
+			$r .= "* APOP may be supported.\n";
+		}
+		else { 
+			$r .= "* APOP may NOT be supported.\n";
+		}
+		
+		if($pop->can_ssl()){ 
+			$r .= "* SSL Supported.\n";
+		}else { 
+			$r .= "* SSL is NOT Supported.\n";
+		}
+		
+		my $lr; 
 
+
+		if($args->{starttls} == 1){
+			
+			if($pop->starttls(
+				SSL_verify_mode => $args->{SSL_verify_mode},
+			)) { 
+				$r .= "* STARTTLS Succeeded!\n";
+			} 
+			else { 
+				$r .= "* STARTTLS Failed!\n";
+			}
+		}
 		
+		if($args->{AUTH_MODE} eq 'APOP'){
+			$r .= "* Authentication via APOP.\n";
+			$lr = $pop->apop(
+				$args->{username},
+				$args->{password}
+			); 
+			
+		}
+		else { 
+			$r .= "* Authentication via POP.\n";
+			$lr = $pop->login(
+				$args->{username},
+				$args->{password}
+			); 
+		}
 		
+		$r .= "\n";
 		
-		
-		
-		my $lr = $pop->login(
-			$args->{username},
-			$args->{password}
-		); 
 		if($lr eq undef){ 
-            $r .= "\t* Connection to '" . $args->{server} . "' wasn't successful\n";
+            $r .= "* Connection to '" . $args->{server} . "' wasn't successful\n";
        	   return ( undef, 0, $r );
 		}
 		else {
-                $r .= "\t* POP3 Login succeeded.\n";
-                $r .= "\t* Message count: " . $lr . "\n";
+				my $count = 0; 
+				
+				if($lr eq '0E0'){ 
+					$count = 0; 
+				}
+				else { 
+					$count = $lr; 
+				}
+				
+				$r .= "\n";			
+                $r .= "* POP3 Login succeeded.\n";
+                $r .= "* Message count: " . $count . "\n";
            }
 		   
            return ( $pop, 1, $r );

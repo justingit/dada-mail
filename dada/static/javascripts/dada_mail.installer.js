@@ -239,6 +239,20 @@ function installer_test_pop3_connection() {
 	if($("#bounce_handler_USESSL").prop("checked") === true){ 
 		bounce_handler_USESSL = 1; 
 	}
+		
+	var bounce_handler_starttls = 0; 
+	if($("#bounce_handler_starttls").prop("checked") === true){ 
+		bounce_handler_starttls = 1; 
+	}
+	
+		
+	var bounce_handler_SSL_verify_mode = 0; 
+	if($("#bounce_handler_SSL_verify_mode").prop("checked") === true){ 
+		bounce_handler_SSL_verify_mode = 1; 
+	}
+	
+	
+	
 	var request = $.ajax({
 		url: $("#self_url").val(),
 		type: "POST",
@@ -249,6 +263,8 @@ function installer_test_pop3_connection() {
 			bounce_handler_Username:  $("#bounce_handler_Username").val(),
 			bounce_handler_Password:  $("#bounce_handler_Password").val(),
 			bounce_handler_USESSL:    bounce_handler_USESSL,
+			bounce_handler_SSL_verify_mode: bounce_handler_SSL_verify_mode, 
+			bounce_handler_starttls: bounce_handler_starttls, 
 			bounce_handler_AUTH_MODE: $("#bounce_handler_AUTH_MODE").val(),
 			bounce_handler_Port:      $("#bounce_handler_Port").val()
 

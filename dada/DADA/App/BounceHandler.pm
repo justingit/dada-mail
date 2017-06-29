@@ -175,12 +175,14 @@ sub test_pop3 {
     my ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::net_pop3_login(
         {
 
-            server    => $self->config->{Server},
-            username  => $self->config->{Username},
-            password  => $self->config->{Password},
-            port      => $self->config->{Port},
-            USESSL    => $self->config->{USESSL},
-            AUTH_MODE => $self->config->{AUTH_MODE},
+            server          => $self->config->{Server},
+            username        => $self->config->{Username},
+            password        => $self->config->{Password},
+            port            => $self->config->{Port},
+            USESSL          => $self->config->{USESSL},
+			starttls        => $self->config->{starttls},
+			SSL_verify_mode => $self->config->{SSL_verify_mode},
+            AUTH_MODE       => $self->config->{AUTH_MODE},
         }
     );
 
@@ -352,12 +354,14 @@ sub parse_all_bounces {
 
         my ( $pop3_obj, $pop3status, $pop3log ) = DADA::App::POP3Tools::net_pop3_login(
             {
-                server    => $self->config->{Server},
-                username  => $self->config->{Username},
-                password  => $self->config->{Password},
-                port      => $self->config->{Port},
-                USESSL    => $self->config->{USESSL},
-                AUTH_MODE => $self->config->{AUTH_MODE},
+                server          => $self->config->{Server},
+                username        => $self->config->{Username},
+                password        => $self->config->{Password},
+                port            => $self->config->{Port},
+				starttls        => $self->config->{starttls},
+				SSL_verify_mode => $self->config->{SSL_verify_mode},
+                USESSL          => $self->config->{USESSL},
+                AUTH_MODE       => $self->config->{AUTH_MODE},
             }
         );
         if ( $pop3status != 1 ) {
@@ -541,7 +545,6 @@ sub parse_all_bounces {
             $log .= "Skipping Message Deletion.\n";
         }
 
-       # $pop3_obj->Close;
        $pop3_obj->quit();
 	   
 	    if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {

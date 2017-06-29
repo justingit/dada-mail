@@ -388,6 +388,8 @@ $PLUGIN_CONFIGS = {
 		Password                    => <!-- tmpl_var bounce_handler_Password default="''"-->,
 		Port                        => <!-- tmpl_var bounce_handler_Port default="AUTO"-->,
 		USESSL                      => <!-- tmpl_var bounce_handler_USESSL default="0"-->,
+		starttls                    => <!-- tmpl_var bounce_handler_starttls default="0"-->,
+		SSL_verify_mode             => <!-- tmpl_var bounce_handler_SSL_verify_mode default="0"-->,
 		AUTH_MODE                   => <!-- tmpl_var bounce_handler_AUTH_MODE default="'BEST'"-->,
 		Plugin_Name                 => <!-- tmpl_var bounce_handler_Plugin_Name default="'Bounce Handler'"-->,
         Enable_POP3_File_Locking    => <!-- tmpl_var bounce_handler_Enable_POP3_File_Locking default="undef"-->,
@@ -395,7 +397,6 @@ $PLUGIN_CONFIGS = {
 		MessagesAtOnce              => <!-- tmpl_var bounce_handler_MessagesAtOnce default="100"-->,
 		Max_Size_Of_Any_Message     => undef,
 		Rules                       => undef,
-
 	},
 
 	Bridge => {
