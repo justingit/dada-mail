@@ -232,7 +232,7 @@
 				<div id="bridge_pop3_account_params">
 					<div class="panel"> 
 						<div class="row">
-							<div class="small-12 columns">
+							<div class="small-4 columns">
 								<label for="discussion_pop_server">
 									POP3 Server
 									<input 
@@ -243,9 +243,11 @@
 									>
 								</label>
 							</div>
+							<div class="small-8 columns">
+							</div>
 						</div>
 						<div class="row">
-							<div class="small-12 columns">						
+							<div class="small-4 columns">						
 								<label for="discussion_pop_username">
 									POP3 Username
 									<input 
@@ -255,6 +257,8 @@
 										value="<!-- tmpl_var list_settings.discussion_pop_username -->"
 									>
 								</label>
+							</div>
+							<div class="small-8 columns">
 							</div>
 						</div>
 						<div class="row">
@@ -306,14 +310,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="row">
-							<div class="small-12 columns">
-								<label for="discussion_pop_auth_mode">
-									Type
-									<!-- tmpl_var discussion_pop_auth_mode_popup --> 
-								</label>
-							</div>
-						</div>
+						
 						<div class="row">
 							<div class="small-12 columns">
 								<label for="discussion_pop_use_ssl">
@@ -332,7 +329,83 @@
 									</span>
 								<!--/tmpl_unless--> 
 								
-								<div class="clearfix">
+							</div>
+						</div>
+						
+								
+						
+						<div class="row">
+							<div class="small-1 columns">
+							</div>
+							<div class="small-11 columns">
+								<label for="discussion_pop_starttls">
+									<input 
+										type="checkbox" 
+										name="discussion_pop_starttls" 
+										id="discussion_pop_starttls" 
+										value="1"
+										<!-- tmpl_if list_settings.discussion_pop_starttls -->
+											checked="checked"
+										<!-- /tmpl_if -->
+									>
+									Upgrade from an insecure connection (STARTTLS)
+								</label>
+							</div>
+						</div>
+						
+						
+						<div class="row">
+							<div class="small-1 columns">
+							</div>
+						
+							<div class="small-11 columns">
+						
+								<label for="discussion_pop_ssl_verify_mode">
+									<input 
+										type="checkbox" 
+										name="discussion_pop_ssl_verify_mode" 
+										id="discussion_pop_ssl_verify_mode" 
+										value="1"
+										<!-- tmpl_if list_settings.discussion_pop_SSL_verify_mode -->
+											checked="checked"
+										<!-- /tmpl_if -->
+										>
+									Verify SSL Certificate
+								</label>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="small-4 columns">
+								<label for="discussion_pop_auth_mode">
+									Authentication Type
+									<!-- tmpl_var discussion_pop_auth_mode_popup --> 
+								</label>
+							</div>
+						</div>
+						<div class="row">
+							<div class="small-4 columns">
+								<label for="bounce_handler_port">
+									Port
+								<input 
+									type="text" 
+									name="discussion_pop_port" 
+									id="discussion_pop_port" 
+									value="<!-- tmpl_var list_settings.discussion_pop_port -->"
+								>
+								</label> 
+							</div>
+						</div>
+
+						
+						<div class="clearfix">
+						
+						
+						
+						<div class="row">
+							<div class="small-12 columns">
+								
+								
 									<ul class="button-group right">
 									    <li>
 											<button

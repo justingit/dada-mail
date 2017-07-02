@@ -1546,13 +1546,16 @@ $MIME_TOOLS_PARAMS //= {
     strip_file_attachments    => 0,
     file_attachments_to_strip => '',
     discussion_pop_server     => '',
+	discussion_pop_port       => 'AUTO',
     discussion_pop_username   => '',
     discussion_pop_email      => '',
     bridge_list_email_type    => 'pop3_account',
     discussion_pop_password   => '',
 
-    discussion_pop_auth_mode => 'BEST',
-    discussion_pop_use_ssl   => 0,
+    discussion_pop_auth_mode       => 'POP',
+    discussion_pop_use_ssl         => 0,
+	discussion_pop_starttls        =>  0,
+	discussion_pop_ssl_verify_mode => 0, 
 
     bridge_announce_reply_to     => 'none', 
     send_not_allowed_to_post_msg => 1,

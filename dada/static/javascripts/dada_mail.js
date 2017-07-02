@@ -3236,6 +3236,16 @@ function plugins_bridge_test_pop3() {
 		use_ssl = 1;
 	}
 	
+	var discussion_pop_use_starttls = 0; 
+	if($("#discussion_pop_use_starttls").prop("checked") === true){ 
+		discussion_pop_use_starttls = 1; 
+	}
+	
+	var discussion_pop_ssl_verify_mode = 0; 
+	if($("#discussion_pop_ssl_verify_mode").prop("checked") === true){ 
+		discussion_pop_ssl_verify_mode = 1; 
+	}
+
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
@@ -3251,8 +3261,11 @@ function plugins_bridge_test_pop3() {
 			server: $("#discussion_pop_server").val(),
 			username: $("#discussion_pop_username").val(),
 			password: $("#discussion_pop_password").val(),
+			port: $("#discussion_pop_port").val(),
 			auth_mode: $("#discussion_pop_auth_mode option:selected").val(),
-			use_ssl: use_ssl
+			use_ssl: use_ssl,
+			use_starttls: discussion_pop_use_starttls, 
+			ssl_verify_mode: discussion_pop_ssl_verify_mode
 		},
 		opacity: 0.50,
 		maxWidth: '640px',

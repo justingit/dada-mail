@@ -95,8 +95,7 @@ sub net_pop3_login {
 	}
 	else { 
 	    
-        $r .= "* Logging into POP3 server '" . $args->{server} . "' on port, " . $args->{port} . "\n"; 
-   
+        $r .= "* Connecting to POP3 host:'" . $args->{server} . "' on port:'" . $args->{port} . "'\n"; 
 					
 		my $n_p3_args = { 
 			SSL             => $SSL, 
@@ -201,7 +200,7 @@ sub net_pop3_login {
 				}
 				
 				$r .= "\n";			
-                $r .= "* POP3 Login succeeded.\n";
+                $r .= "* POP3 Login succeeded!\n";
                 $r .= "* Message count: " . $count . "\n";
            }
 		   
