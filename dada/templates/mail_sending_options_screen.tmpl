@@ -148,11 +148,6 @@
 
 			        </label>
     
-				    <!-- tmpl_unless can_use_smtp_ssl -->
-		 				<div class="alert-box alert radius">
-						 	Disabled. The Net::SMTP::SSL module needs to be installed.
-						</div>
-			        <!--/tmpl_unless--> 
 				</div> 
 			</div>
 			<div class="row"> 
@@ -197,7 +192,34 @@
 				    </label>
 				</div>
 			</div>	
+			
+			
+			
 			<div id="SASL_options"> 
+				
+				
+			
+			
+				<div class="row">
+					<div class="small-2 columns">
+					</div>
+					<div class="small-10 columns">
+						<label for="smtp_starttls">
+							<input 
+								type="checkbox" 
+								name="smtp_starttls" 
+								id="smtp_starttls" 
+								value="1"
+								<!-- tmpl_if list_settings.smtp_starttls -->
+									checked="checked"
+								<!-- /tmpl_if -->
+							>
+							Upgrade from an insecure connection (STARTTLS)
+						</label>
+					</div>
+				</div>
+				
+				
 			    <div class="row"> 
 					<div class="small-2  columns">
 					</div>

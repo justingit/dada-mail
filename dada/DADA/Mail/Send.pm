@@ -382,12 +382,21 @@ sub send {
                     hello               => $host,
                     host                => $self->{ls}->param('smtp_server'),
                     port                => $self->{ls}->param('smtp_port'),
-					username            => $self->{ls}->param('sasl_smtp_username'),
-                    password            => $self->_cipher_decrypt($self->{ls}->param('sasl_smtp_password')), 
-					sasl_auth_mechanism => $self->{ls}->param('sasl_auth_mechanism'),
-					ssl                 => $self->{ls}->param('use_smtp_ssl'), 
+					ssl                 => $self->{ls}->param('use_smtp_ssl'),
                 };
                 
+				if($self->{ls}->param('use_sasl_smtp_auth') == 1){ 
+				
+					$smtp_params->{username}            = $self->{ls}->param('sasl_smtp_username');
+					$smtp_params->{password}            = $self->_cipher_decrypt(
+																$self->{ls}->param('sasl_smtp_password')
+														);
+					$smtp_params->{sasl_auth_mechanism} = $self->{ls}->param('sasl_auth_mechanism');
+				}
+				
+				
+				require Data::Dumper; 
+				warn Data::Dumper::Dumper($smtp_params);
 				require DADA::App::SMTPTools; 
 				my $smtp_status = 0;
 				my $smtp_r     = undef; 
@@ -994,6 +1003,9 @@ sub mail_sending_options_test {
 
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP} = $orig_debug_smtp;
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = $orig_debug_pop3;
+
+
+	
     open( RESULTS, "<" . $filename )
       or die "Couldn't open " . $filename . " - $!";
     my $smtp_msg = do { local $/; <RESULTS> };
@@ -1069,7 +1081,7 @@ sub mail_sending_options_test {
 
     }
 
-    #	unlink($filename) or warn $!;
+	unlink($filename) or warn $!;
 
     $smtp_msg = '';
     foreach (@munged_l) {
@@ -1078,6 +1090,7 @@ sub mail_sending_options_test {
         $smtp_msg .= $_ . "\n";
     }
 
+	
     return ( $smtp_msg, \@r_l, $report );
 
 }

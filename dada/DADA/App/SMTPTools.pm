@@ -1,9 +1,15 @@
 package DADA::App::SMTPTools;
+
+
+# use IO::Socket::SSL qw(debug3);
+
 use lib qw(../../ ../../DADA/perllib); 
 
 use DADA::Config qw(!:DEFAULT);  
 
 use Carp qw(carp croak);
+
+use Try::Tiny; 
 
 require Exporter; 
 @ISA = qw(Exporter); 
@@ -74,7 +80,7 @@ sub smtp_obj {
 	} 
 
 	if(!exists($args->{sasl_auth_mechanism})){ 
-		$args->{sasl_auth_mechanism} = 'BEST';
+		$args->{sasl_auth_mechanism} = 'AUTO';
 	}
 
 	if($args->{SSL_verify_mode} == 1){ 
@@ -120,11 +126,16 @@ sub smtp_obj {
 		Debug   => $args->{debug}, 
 		Timeout => $args->{timeout},
 	};
-	
-	$smtp_obj = Net::SMTP->new(
-		$args->{host},
-		%smtp_args,
-	) or $r .= "Connection to '" . $args->{host . "' failed: $@\n";
+		
+	try {
+		$smtp_obj = Net::SMTP->new(
+			$args->{host},
+			%$smtp_args,
+		) or $r .= "Connection to '" . $args->{host} . "' failed: $@\n";
+	} catch { 
+		warn "Connection to '" . $args->{host} . "' failed: $@\n";
+		return (0, $r, undef); 
+	};
 	
 	if(!defined($smtp_obj)){ 
 		return (0, $r, undef); 
@@ -146,36 +157,44 @@ sub smtp_obj {
 		$r .= "no STARTTLS\n";
 	}
 	
-	my $auth_r = 0; 
+	if(
+			defined($args->{username})
+		 && defined($args->{username})
+	 ){
+		my $auth_r = 0; 
+		if($args->{sasl_auth_mechanism} eq 'AUTO'){
+		 	$auth_r = $smtp_obj->auth(
+				$args->{username},	
+				$args->{password},
+			);
+		}
+		else { 
+			require Authen::SASL;
+			my $sasl = Authen::SASL->new(
+			  mechanism => $args->{sasl_auth_mechanism},
+			  callback => {
+	  		    user => $args->{username},
+			    pass => $args->{password},
+			  }
+			);
+		 	$auth_r = $smtp_obj->auth($sasl);
+		}
+		if($auth_r != 1){ 
+			$r .= "Connection to '" . $args->{host} . "' failed: $@\n";
+			$smtp_obj->quit;
+			return (0, $r, undef); 	
+		}
+	}
 	
-	if($args->{sasl_auth_mechanism} eq 'AUTO'){
-	 	$auth_r = $smtp_obj->auth(
-			$args->{username},	
-			$args->{password},
-		);
+	if(defined($smtp_obj)){
+		$r .= "* SMTP Login succeeded!" . $smtp_obj->domain . "\n";
+		return (1, $r, $smtp_obj);
 	}
 	else { 
-		require Authen::SASL;
-		my $sasl = Authen::SASL->new(
-		  mechanism => $args->{sasl_auth_mechanism},
-		  callback => {
-  		    user => $args->{username},
-		    pass => $args->{password},
-		  }
-		);
-	 	$auth_r = $smtp_obj->auth($sasl);
-	}
-	if($auth_r != 1){ 
-		$r .= "Connection to '" . $args->{host . "' failed: $@\n";
-		$smtp_obj->quit;
-		return (0, $r, $smtp_obj); 	
+		$r .= "Connection to '" . $args->{host} . "' failed: $@\n";
+		return (0, $r, undef); 	
 	}
 	
-	
-    $r .= "* SMTP Login succeeded!" . $smtp_obj->domain . "\n";
-	
-	return (1, $r, $smtp_obj);
-
 }
 
 

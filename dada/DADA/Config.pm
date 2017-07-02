@@ -1318,6 +1318,8 @@ $MIME_TOOLS_PARAMS //= {
 
     use_smtp_ssl        => 0,
 
+	smtp_starttls       => 0, 
+
     pop3_server   => undef,
     pop3_username => undef,
     pop3_password => undef,
