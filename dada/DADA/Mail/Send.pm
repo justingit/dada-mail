@@ -394,9 +394,6 @@ sub send {
 					$smtp_params->{sasl_auth_mechanism} = $self->{ls}->param('sasl_auth_mechanism');
 				}
 				
-				
-				require Data::Dumper; 
-				warn Data::Dumper::Dumper($smtp_params);
 				require DADA::App::SMTPTools; 
 				my $smtp_status = 0;
 				my $smtp_r     = undef; 
