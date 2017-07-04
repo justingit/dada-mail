@@ -694,7 +694,7 @@ sub rel_to_abs {
         warn '$rel: "' . $rel . '"'
           if $t;
 
-        my $abs_link = URI::URL->new($rel)->abs( $base, 1 );
+        my $abs_link = URI::URL->new($rel)->abs( $base, 1 )->as_string;
         warn '$abs_link: ' . $abs_link
           if $t;
 

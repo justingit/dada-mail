@@ -1,0 +1,162 @@
+<!-- begin send_email_analytics_widget.tmpl -->
+
+
+<div class="row">
+	<div class="small-12 columns">
+		<label for="mass_mailing_utm_params_add">
+			<input
+				type="checkbox"
+				id="mass_mailing_utm_params_add"
+				name="mass_mailing_utm_params_add"
+				<!--tmpl_if list_settings.mass_mailing_utm_params_add --> 
+					checked="checked"
+				<!-- /tmpl_if -->
+			>
+			Add UTM parameters to links with the following domains:<br>
+		</label>
+		
+		<div class="alert-box info radius">
+			Leave blank to add UTM parameters to ALL domains. Separate multiple domains with spaces.
+		</div>
+	</div>
+</div>
+
+
+	
+<div class="row">
+	<div class="small-12 columns">
+		<textarea 
+			name="mass_mailing_utm_domains"
+			id="mass_mailing_utm_domains"
+			value="<!-- tmpl_var list_settings.mass_mailing_utm_domains -->"
+			placeholder="myfirstdomain.com myseconddomain.com"
+		></textarea>
+	</div>
+</div>
+
+
+	<div class="alert-box info radius">
+		The UTM paramaters set below can be overridden by adding custom UTM paramaters to individual links:
+		<br>
+		<br>
+		<em>
+			http://example.com/page.html?<strong>utm_term=click+here</strong>
+		</em>
+		
+	</div>
+	
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+		    <label 
+				class="medium-text-right"
+				for="mass_mailing_utm_source"
+			>
+            	 Campaign Source<br>(utm_source)
+			</label>
+		</div>
+		<div class="large-9 medium-9 columns">
+        	<input 
+				type="text"
+				name="mass_mailing_utm_source" 
+				id="mass_mailing_utm_source" 
+				value=""
+				placeholder="<!-- tmpl_var PROGRAM_NAME -->"
+			>
+       </div>
+    </div>
+	
+	
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+		    <label 
+				class="medium-text-right"
+				for="mass_mailing_utm_medium"
+			>
+            	 Campaign Medium<br>(utm_medium)
+			</label>
+		</div>
+		<div class="large-9 medium-9 columns">
+        	<input 
+				type="text"
+				name="mass_mailing_utm_medium" 
+				id="mass_mailing_utm_medium" 
+				value=""
+				placeholder="email"
+			>
+       </div>
+    </div>
+	
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+		    <label 
+				class="medium-text-right"
+				for="mass_mailing_utm_term"
+			>
+            	 Campaign Term<br>(utm_term)
+			</label>
+		</div>
+		<div class="large-9 medium-9 columns">
+        	<input 
+				type="text"
+				name="mass_mailing_utm_term" 
+				id="mass_mailing_utm_term" 
+				value=""
+			>
+       </div>
+    </div>
+	
+	
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+		    <label 
+				class="medium-text-right"
+				for="mass_mailing_utm_content"
+			>
+            	 Campaign Content<br>(utm_content)
+			</label>
+		</div>
+		<div class="large-9 medium-9 columns">
+        	<input 
+				type="text"
+				name="mass_mailing_utm_content" 
+				id="mass_mailing_utm_content" 
+				value=""
+			>
+       </div>
+    </div>
+	
+	
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+		    <label 
+				class="medium-text-right"
+				for="mass_mailing_utm_name"
+			>
+            	 Campaign Name<br>(utm_name)
+			</label>
+		</div>
+		<div class="large-9 medium-9 columns">
+        	<input 
+				type="text"
+				name="mass_mailing_utm_name" 
+				id="mass_mailing_utm_name" 
+				value=""
+			>
+       </div>
+    </div>
+	
+
+	
+<!-- tmpl_if comment -->
+
+	 [__________________]
+	 
+
+		source   [__________________]
+		medium   [__________________]
+		campaign [__________________]
+		term     [__________________]
+		content  [__________________]
+<!-- /tmpl_if -->
+<!-- end send_email_analytics_widget.tmpl -->
+

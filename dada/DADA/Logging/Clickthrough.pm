@@ -357,14 +357,13 @@ sub auto_redirect_tag {
 	my $s    = shift; 
 	my $type = shift; 
 	
-	eval { 
+	try { 
 		require URI::Find; 
 		require HTML::LinkExtor;
-	};
-	if($@){ 
-		warn "Cannot auto redirect links. Missing perl module? $@"; 
+	} catch { 
+		warn "Cannot auto redirect links. Missing perl module? $_"; 
 		return $s; 
-	}
+	};
 	
 	my @a;
 	if($type eq 'HTML'){ 

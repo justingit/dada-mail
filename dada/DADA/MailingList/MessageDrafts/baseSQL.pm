@@ -834,8 +834,14 @@ sub params_to_save {
         schedule_recurring_only_mass_mail_if_primary_diff => 1, 
 		
 		layout                         => 1,
-        
-
+		
+		mass_mailing_utm_params_add    => 1, 
+		mass_mailing_utm_domains       => 1, 
+		mass_mailing_utm_source        => 1, 
+		mass_mailing_utm_medium        => 1, 
+        mass_mailing_utm_term          => 1,
+		mass_mailing_utm_content       => 1, 
+		mass_mailing_utm_name          => 1, 
     };
 
     require DADA::ProfileFieldsManager;
@@ -855,11 +861,18 @@ sub params_to_save {
         $params->{ $_ . '.rangeend' }   = 1;
     }
 	
+	
+	
+	
+	
     $params->{attachment1} = 1;
     $params->{attachment2} = 1;
     $params->{attachment3} = 1;
     $params->{attachment4} = 1;
     $params->{attachment5} = 1;
+	
+	
+	
 	
     if ( $args->{-screen} eq 'send_email' ) {
 		#... 
