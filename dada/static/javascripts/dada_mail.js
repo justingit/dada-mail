@@ -2880,10 +2880,19 @@ function test_mail_sending_options() {
 	if ($('#use_sasl_smtp_auth').prop('checked') === true) {
 		use_sasl_smtp_auth = 1;
 	}
+	var smtp_starttls = 0;
+	if ($('#smtp_starttls').prop('checked') === true) {
+		smtp_starttls = 1;
+	}
+
 	var use_smtp_ssl = 0;
 	if ($('#use_smtp_ssl').prop('checked') === true) {
 		use_smtp_ssl = 1;
 	}
+
+
+
+
 	var add_sendmail_f_flag = 0;
 	if ($('#add_sendmail_f_flag').prop('checked') === true) {
 		add_sendmail_f_flag = 1;
@@ -2914,6 +2923,7 @@ function test_mail_sending_options() {
 			use_smtp_ssl: use_smtp_ssl,
 			use_sasl_smtp_auth: use_sasl_smtp_auth,
 			sasl_auth_mechanism: $('#sasl_auth_mechanism').val(),
+			smtp_starttls: smtp_starttls, 
 			sasl_smtp_username: $('#sasl_smtp_username').val(),
 			sasl_smtp_password: $('#sasl_smtp_password').val(),
 			pop3_server: $('#pop3_server').val(),

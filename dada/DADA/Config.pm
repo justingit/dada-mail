@@ -1317,22 +1317,10 @@ $MIME_TOOLS_PARAMS //= {
     smtp_port   => 25,
 
     use_smtp_ssl        => 0,
-
 	smtp_starttls       => 0, 
-
-    pop3_server   => undef,
-    pop3_username => undef,
-    pop3_password => undef,
-    pop3_use_ssl  => undef,
-
-    # Can be set to,
-    # BEST, PASS, APOP, or CRAM-MD5
-    pop3_auth_mode => 'BEST',
-
     set_smtp_sender => 1,
-
     use_sasl_smtp_auth  => 0,
-    sasl_auth_mechanism => 'PLAIN',
+    sasl_auth_mechanism => 'AUTO',
     sasl_smtp_username  => undef,
     sasl_smtp_password  => undef,
 

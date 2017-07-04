@@ -3597,13 +3597,6 @@ sub mail_sending_options {
                 $ls->param('sasl_smtp_password') );
         }
 
-        my $decrypted_pop3_pass = '';
-        if ( $ls->param('pop3_password') ) {
-            $decrypted_pop3_pass =
-              DADA::Security::Password::cipher_decrypt(
-                $ls->param('cipher_key'),
-                $ls->param('pop3_password') );
-        }
 
 # DEV: This is really strange, since if Net::SMTP isn't available, SMTP sending is completely broken.
         my $can_use_net_smtp = 0;
@@ -3659,9 +3652,6 @@ sub mail_sending_options {
                     no_smtp_server_set => $no_smtp_server_set,
                     mechanism_popup    => $mechanism_popup,
                     can_use_ssl        => $can_use_ssl,
-                    'list_settings.pop3_username' =>
-                      $ls->param('pop3_username'),    # DEV ?
-                    decrypted_pop3_pass  => $decrypted_pop3_pass,
                     wrong_uid            => $wrong_uid,
                     can_use_ssl          => $can_use_ssl,
                     f_flag_settings      => $DADA::Config::MAIL_SETTINGS . ' -f'
@@ -3670,9 +3660,7 @@ sub mail_sending_options {
                     use_sasl_smtp_auth => scalar $q->param('use_sasl_smtp_auth')
                     ? scalar $q->param('use_sasl_smtp_auth')
                     : $ls->param('use_sasl_smtp_auth'),
-                    decrypted_pop3_pass => scalar $q->param('pop3_password')
-                    ? scalar $q->param('pop3_password')
-                    : $decrypted_pop3_pass,
+
                     sasl_auth_mechanism =>
                       scalar $q->param('sasl_auth_mechanism')
                     ? scalar $q->param('sasl_auth_mechanism')
@@ -3699,16 +3687,6 @@ sub mail_sending_options {
     }
     else {
 
-        my $pop3_password = strip( scalar $q->param('pop3_password') ) || undef;
-        if ( defined($pop3_password) ) {
-            $q->param(
-                'pop3_password',
-                DADA::Security::Password::cipher_encrypt(
-                    $ls->param('cipher_key'),
-                    $pop3_password
-                )
-            );
-        }
         my $sasl_smtp_password = strip( scalar $q->param('sasl_smtp_password') )
           || undef;
         if ( defined($sasl_smtp_password) ) {
@@ -3736,11 +3714,7 @@ sub mail_sending_options {
                     add_sendmail_f_flag => 0,
                     set_smtp_sender     => 0,
                     smtp_server         => undef,
-                    pop3_server         => undef,
-                    pop3_username       => undef,
-                    pop3_password       => undef,
-                    pop3_use_ssl        => undef,
-                    pop3_auth_mode      => 'BEST',
+
                     use_smtp_ssl        => 0,
                     sasl_auth_mechanism => undef,
                     use_sasl_smtp_auth  => 0,

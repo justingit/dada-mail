@@ -383,6 +383,7 @@ sub send {
                     host                => $self->{ls}->param('smtp_server'),
                     port                => $self->{ls}->param('smtp_port'),
 					ssl                 => $self->{ls}->param('use_smtp_ssl'),
+					starttls            => $self->{ls}->param('smtp_starttls'),
                 };
                 
 				if($self->{ls}->param('use_sasl_smtp_auth') == 1){ 
@@ -1047,7 +1048,7 @@ sub mail_sending_options_test {
                 }
             );
         }
-        elsif ( $l =~ m/Authentication succeeded|OK Authenticated|Authentication successful/i){
+        elsif ( $l =~ m/Authentication succeeded|OK Authenticated|Authentication successful|Authed/i){
             push( @$report,
                 { line => $l, message => 'Looks like we logged in OK!' } );
 		}
