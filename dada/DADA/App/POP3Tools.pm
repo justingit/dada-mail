@@ -89,6 +89,17 @@ sub net_pop3_login {
 	}
 	
 	
+	if(!exists($args->{debug})){ 
+		$args->{debug} = 0;
+	}
+	# Override everything!
+	if($DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} == 1){ 
+		$args->{debug} = 1; 
+	}
+	
+	
+		
+	
 	if(length($args->{server}) <= 0 ) { 
 	    $r .= 'Server is blank?' . "\n";
 	    return (undef, 0, $r); 
@@ -102,7 +113,7 @@ sub net_pop3_login {
 			Port            => $args->{port}, 
 			Timeout         => 60,
 			SSL_verify_mode => $args->{SSL_verify_mode},
-			Debug           => 1, 	
+			Debug           => $args->{debug}, 	
 		};
 		
 		if($args->{SSL_verify_mode} == 1){ 

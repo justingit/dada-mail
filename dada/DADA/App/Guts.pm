@@ -3245,6 +3245,18 @@ sub can_use_Image_Resize {
     return $can_use_Image_Resize;
 }
 
+sub can_use_IO_Socket_SSL { 
+    my $can_use_IO_Socket_SSL = 1; 
+    try { 
+        require IO::Socket::SSL;        
+    } catch { 
+		warn 'IO::Socket::SSL is not supported:' . $_
+			if $t;
+        $can_use_IO_Socket_SSL = 0;
+    };
+    return $can_use_IO_Socket_SSL;
+}
+
 sub formatted_runtime {
 
     my $d = shift || 0;

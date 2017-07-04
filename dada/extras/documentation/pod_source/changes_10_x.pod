@@ -6,6 +6,41 @@
 
 =head2 Features
 
+=head3 Upgraded SMTP Libraries
+
+Dada Mail's outgoing SMTP library have been updated, which should provide
+successful connections to a wider variety of SMTP servers and authentication 
+flavors. Of note: 
+
+=head4 STARTTLS Support
+
+C<STARTTLS> is now an option when connecting to an SMTP server.
+
+=head4 More Verbose Debugging
+
+If something does go wrong, more information will be returned to help you get to the root 
+of the problem. 
+
+=head3 Upgraded POP3 Libraries
+
+Dada Mail's incoming POP3 library have also been updated, which should provide
+successful connections to a wider variety of POP3 servers and authentication 
+flavors. Of note: 
+
+=head4 Better SSL/STARTTLS Support
+
+POP3 is used in Dada Mail in both the Bounce Handler, and Bridge plugins. Both now support SSL connections, 
+being able to specifically choose which port to connect to, 
+and if you would like to explicitly verify the SSL Certificate.
+
+Both SMTP and POP3 B<SSL/TLS> options require the C<IO::Socket::SSL> module to be installed. 
+This can be done separately, or
+by installing the C<Bundle::DadaMail> module. 
+
+=head1 10.6.0
+
+=head2 Features
+
 =head3 Four new Email Themes have been added, just in time for summer! 
 
 =over

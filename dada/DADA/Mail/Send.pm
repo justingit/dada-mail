@@ -377,13 +377,14 @@ sub send {
                 $smtp_obj = $self->net_smtp_obj;
             }
             else {
-
-                my $smtp_params = {
-                    hello               => $host,
-                    host                => $self->{ls}->param('smtp_server'),
-                    port                => $self->{ls}->param('smtp_port'),
-					ssl                 => $self->{ls}->param('use_smtp_ssl'),
-					starttls            => $self->{ls}->param('smtp_starttls'),
+                
+				my $smtp_params = {
+                    hello           => $host,
+                    host            => $self->{ls}->param('smtp_server'),
+                    port            => $self->{ls}->param('smtp_port'),
+					ssl             => $self->{ls}->param('use_smtp_ssl'),
+					starttls        => $self->{ls}->param('smtp_starttls'),
+					ssl_verify_mode => $self->{ls}->param('smtp_ssl_verify_mode'),
                 };
                 
 				if($self->{ls}->param('use_sasl_smtp_auth') == 1){ 
@@ -962,8 +963,6 @@ sub mail_sending_options_test {
 
     my $orig_debug_smtp = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP};
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP} = 1;
-    my $orig_debug_pop3 = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3};
-    $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = 1;
 
 
     require DADA::App::FormatMessages;
@@ -1000,9 +999,6 @@ sub mail_sending_options_test {
     close(SMTPTEST);
 
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP} = $orig_debug_smtp;
-    $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = $orig_debug_pop3;
-
-
 	
     open( RESULTS, "<" . $filename )
       or die "Couldn't open " . $filename . " - $!";

@@ -3605,12 +3605,6 @@ sub mail_sending_options {
             $can_use_net_smtp = 1;
         }
 
-        my $can_use_ssl = 0;
-        eval { require IO::Socket::SSL };
-        if ( !$@ ) {
-            $can_use_ssl = 1;
-        }
-
         my $mechanism_popup;
         require HTML::Menu::Select;
 
@@ -3651,9 +3645,8 @@ sub mail_sending_options {
                     root_login         => $root_login,
                     no_smtp_server_set => $no_smtp_server_set,
                     mechanism_popup    => $mechanism_popup,
-                    can_use_ssl        => $can_use_ssl,
+                    can_use_IO_Socket_SSL => DADA::App::Guts::can_use_IO_Socket_SSL(),
                     wrong_uid            => $wrong_uid,
-                    can_use_ssl          => $can_use_ssl,
                     f_flag_settings      => $DADA::Config::MAIL_SETTINGS . ' -f'
                       . $ls->param('admin_email'),
 
@@ -3706,23 +3699,28 @@ sub mail_sending_options {
 		# WHAT TO DO?!
 		# Handle it in save() I guess... 
 		# 
+		
+		#use Data::Dumper; 
+		#warn Dumper($q);
+		
         $ls->save_w_params(
             {
                 -associate => $q,
                 -settings  => {
-                    sending_method      => undef,
-                    add_sendmail_f_flag => 0,
-                    set_smtp_sender     => 0,
-                    smtp_server         => undef,
+                    sending_method       => undef,
+                    add_sendmail_f_flag  => 0,
+                    set_smtp_sender      => 0,
+                    smtp_server          => undef,
 
-                    use_smtp_ssl        => 0,
-                    sasl_auth_mechanism => undef,
-                    use_sasl_smtp_auth  => 0,
+                    use_smtp_ssl         => 0,
+                    sasl_auth_mechanism  => undef,
+                    use_sasl_smtp_auth   => 0,
 					
-					smtp_starttls       => 0, 
-                    sasl_smtp_username  => undef,
-                    sasl_smtp_password  => undef,
-                    smtp_port           => undef,
+					smtp_starttls        => 0, 
+                    smtp_ssl_verify_mode => 0, 
+					sasl_smtp_username   => undef,
+                    sasl_smtp_password   => undef,
+                    smtp_port            => undef,
                 },
                 -also_save_for => $also_save_for_list,
             }

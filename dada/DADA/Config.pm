@@ -523,10 +523,7 @@ $DEBUG_TRACE //= {
     #  Net::POP3, used for checking awaiting messages on a POP3 Server
     #  More Information:
     #  http://search.cpan.org/~gbarr/libnet/Net/POP3.pm
-    #  NET_POP3 => 0,
-
-    # http://search.cpan.org/~sdowd/Mail-POP3Client/POP3Client.pm
-    MAIL_POP3CLIENT => 0,
+       NET_POP3 => 0,
 
     # Net::SMTP, used for sending messages via SMTP:
     # more information:
@@ -1318,6 +1315,7 @@ $MIME_TOOLS_PARAMS //= {
 
     use_smtp_ssl        => 0,
 	smtp_starttls       => 0, 
+	smtp_ssl_verify_mode => 0, 
     set_smtp_sender => 1,
     use_sasl_smtp_auth  => 0,
     sasl_auth_mechanism => 'AUTO',

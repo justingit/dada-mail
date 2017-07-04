@@ -222,7 +222,7 @@ my @Debug_Option_Names = qw(
   DBI
   HTML_TEMPLATE
   MIME_LITE_HTML
-  MAIL_POP3CLIENT
+  NET_POP3
   NET_SMTP
 );
 

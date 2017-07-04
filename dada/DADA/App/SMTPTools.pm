@@ -82,13 +82,15 @@ sub smtp_obj {
 	if(!exists($args->{sasl_auth_mechanism})){ 
 		$args->{sasl_auth_mechanism} = 'AUTO';
 	}
-
-	if($args->{SSL_verify_mode} == 1){ 
-		$r .= "Verifying SSL Certificate during connection\n";
-	}
 		
 	if(! exists($args->{timeout})){ 
 		$args->{timeout} = 60; 
+	}
+	
+
+	
+	if(!exists($args->{ssl_verify_mode})){
+		$args->{ssl_verify_mode} = 0; 
 	}
 	
 	if(!exists($args->{debug})){ 
@@ -100,22 +102,30 @@ sub smtp_obj {
 	}
 	
 	
-	$r .= "Connecting to SMTP host:" . $args->{host} . ' on port:' . $args->{port}; 
+	$r .= "Connecting to SMTP host:" . $args->{host} . ' on port:' . $args->{port} . "\n"; 
 
 	
 	if($SSL == 1){ 
-		$r .= " SSL: enabled";
+		$r .= "SSL: enabled\n";
 	}
 	else { 
-		$r .= " SSL: disabled";
+		$r .= "SSL: disabled\n";
 	}
 	
 	if($args->{starttls} == 1){ 
-	$r .= " STARTTLS: enabled";
+		$r .= "STARTTLS: enabled\n";
 	}
 	else { 
-	$r .= " STARTTLS: disabled";	
+		$r .= "STARTTLS: disabled\n";	
 	}
+	
+	if($args->{ssl_verify_mode} == 1){ 
+		$r .= "Verifying SSL Certificate during connection\n";
+	}
+	else { 
+		$r .= "NOT Verifying SSL Certificate during connection\n";
+	}
+
 	
 	$r .= "\n";
 	
@@ -126,18 +136,27 @@ sub smtp_obj {
 		Debug   => $args->{debug}, 
 		Timeout => $args->{timeout},
 	};
-		
+	
+	# Docs don't even mention this, so I don't even know if this is a thing, 
+	# But if it is, this is how I think I can do it... 
+	if($args->{ssl_verify_mode} == 0){ 
+		$smtp_args->{SSL_verify_mode} = 0; 
+	}
+	
 	try {
 		$smtp_obj = Net::SMTP->new(
 			$args->{host},
 			%$smtp_args,
 		) or $r .= "Connection to '" . $args->{host} . "' failed: $@\n";
 	} catch { 
-		warn "Connection to '" . $args->{host} . "' failed: $@\n";
+		warn $r 
+			if($args->{debug} == 1); 
 		return (0, $r, undef); 
 	};
 	
 	if(!defined($smtp_obj)){ 
+		warn $r 
+			if($args->{debug} == 1); 
 		return (0, $r, undef); 
 	}
 	
@@ -151,12 +170,19 @@ sub smtp_obj {
 	
 	if($args->{starttls} == 1){
 		$r .= "STARTTLS\n";
-		$smtp_obj->starttls(); 
+		if($args->{ssl_verify_mode} == 0){ 
+			$smtp_obj->starttls(
+				SSL_verify_mode => 0,
+			); 
+		}
+		else {
+			$smtp_obj->starttls(); 
+		}
 	}
 	else{ 
 		$r .= "no STARTTLS\n";
 	}
-	
+
 	if(
 			defined($args->{username})
 		 && defined($args->{username})
@@ -182,16 +208,22 @@ sub smtp_obj {
 		if($auth_r != 1){ 
 			$r .= "Connection to '" . $args->{host} . "' failed: $@\n";
 			$smtp_obj->quit;
+			warn $r 
+				if($args->{debug} == 1); 
 			return (0, $r, undef); 	
 		}
 	}
 	
 	if(defined($smtp_obj)){
 		$r .= "* SMTP Login succeeded!" . $smtp_obj->domain . "\n";
+		warn $r 
+			if($args->{debug} == 1); 
 		return (1, $r, $smtp_obj);
 	}
 	else { 
 		$r .= "Connection to '" . $args->{host} . "' failed: $@\n";
+		warn $r 
+			if($args->{debug} == 1); 
 		return (0, $r, undef); 	
 	}
 	
