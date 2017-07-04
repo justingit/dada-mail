@@ -8,6 +8,7 @@
 				type="checkbox"
 				id="mass_mailing_utm_params_add"
 				name="mass_mailing_utm_params_add"
+				value="1"
 				<!--tmpl_if list_settings.mass_mailing_utm_params_add --> 
 					checked="checked"
 				<!-- /tmpl_if -->
@@ -59,7 +60,7 @@
 				type="text"
 				name="mass_mailing_utm_source" 
 				id="mass_mailing_utm_source" 
-				value=""
+				value="<!-- tmpl_var PROGRAM_NAME -->"
 				placeholder="<!-- tmpl_var PROGRAM_NAME -->"
 			>
        </div>
@@ -80,7 +81,7 @@
 				type="text"
 				name="mass_mailing_utm_medium" 
 				id="mass_mailing_utm_medium" 
-				value=""
+				value="email"
 				placeholder="email"
 			>
        </div>
@@ -96,6 +97,12 @@
 			</label>
 		</div>
 		<div class="large-9 medium-9 columns">
+			
+			<div class="alert-box info radius">
+				<strong>Campaign Term</strong> will be set to the text of the link itelf, if present. 
+				If no link text is present, then the below value will be used:
+			</div>
+			
         	<input 
 				type="text"
 				name="mass_mailing_utm_term" 

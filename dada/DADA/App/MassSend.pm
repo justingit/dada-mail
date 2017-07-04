@@ -952,6 +952,17 @@ sub construct_from_url {
 					base    => $base, 
 				},
 				-layout => scalar $draft_q->param('layout'),
+				-utm_options   => { 
+					-enabled    => scalar $draft_q->param('mass_mailing_utm_params_add'),
+					-domains    => scalar $draft_q->param('mass_mailing_utm_domains'),
+					-utm => {
+						source  => scalar $draft_q->param('mass_mailing_utm_source'),
+						medium  => scalar $draft_q->param('mass_mailing_utm_medium'),
+						term    => scalar $draft_q->param('mass_mailing_utm_term'),
+						content => scalar $draft_q->param('mass_mailing_utm_content'),
+						name    => scalar $draft_q->param('mass_mailing_utm_name'),						
+					}
+				}
 			}
 		);	
 	}
@@ -962,6 +973,17 @@ sub construct_from_url {
 				-content => $text_message, 
 				-type  => 'text/plain',
 				-layout => scalar $draft_q->param('layout'),
+				-utm_options   => { 
+					-enabled    => scalar $draft_q->param('mass_mailing_utm_params_add'),
+					-domains    => scalar $draft_q->param('mass_mailing_utm_domains'),
+					-utm => {
+						source  => scalar $draft_q->param('mass_mailing_utm_source'),
+						medium  => scalar $draft_q->param('mass_mailing_utm_medium'),
+						term    => scalar $draft_q->param('mass_mailing_utm_term'),
+						content => scalar $draft_q->param('mass_mailing_utm_content'),
+						name    => scalar $draft_q->param('mass_mailing_utm_name'),						
+					}
+				}
 			}
 		);
 	}
