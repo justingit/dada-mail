@@ -233,6 +233,7 @@ sub send_email {
 					
 					default_subject => $subject,
 					
+					can_use_HTML_Tree => scalar DADA::App::Guts::can_use_HTML_Tree(), 
 					
 					
                     %wysiwyg_vars,
