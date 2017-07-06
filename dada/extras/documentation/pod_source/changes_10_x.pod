@@ -6,7 +6,7 @@
 
 =head2 Features
 
-=head3 Support for emmbedding Google Analytics-style UTM parameters into your message links
+=head3 Support for embedding Google Analytics-style UTM parameters into your message links
 
 Dada Mail now makes it easy to add UTM parameters to the links in your email messages.
 
