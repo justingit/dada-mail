@@ -382,6 +382,11 @@ sub format_mlm {
         $args->{-crop_html_options} = { enabled => 0, };
     }
 
+
+	
+	
+	
+	
     if ( $type eq 'text/html' ) {
 
         # Relative to Absolute URL links:
@@ -402,6 +407,26 @@ sub format_mlm {
                 }
             );
         }
+		
+		
+       
+		if($args->{-utm_options}->{-enabled} == 1){
+			 try {
+		        require DADA::App::FormatMessages::Filters::UTM;
+		        my $utm = DADA::App::FormatMessages::Filters::UTM->new($args->{-utm_options}); 
+		        $content = $utm->filter(
+					{ 
+						-type => $args->{-type},
+						-data=> $content, 
+				    } 
+				);		
+		    } catch {
+		        carp 'Problems with filter:' . $_ if 
+					$t;
+		    };
+		}
+		
+		
 
 
 		unless ($self->layout_choice($args) eq 'none') {
@@ -563,6 +588,8 @@ sub format_mlm {
             -type => $type,
         );		
     }
+	
+	
 
 		
 	if($type eq 'text/html') { 
@@ -694,7 +721,7 @@ sub rel_to_abs {
         warn '$rel: "' . $rel . '"'
           if $t;
 
-        my $abs_link = URI::URL->new($rel)->abs( $base, 1 );
+        my $abs_link = URI::URL->new($rel)->abs( $base, 1 )->as_string;
         warn '$abs_link: ' . $abs_link
           if $t;
 
