@@ -808,16 +808,42 @@
 									</label>
 								</div>
 							</div>
+							
+							<div class="row">
+								<div class="small-1 columns">
+								</div>
+								<div class="small-11 columns">
+									<label for="bounce_handler_starttls">
+										<input type="checkbox" name="bounce_handler_starttls" id="bounce_handler_starttls" value="1">
+										Upgrade from an insecure connection (STARTTLS)
+									</label>
+								</div>
+							</div>
+							
+							
+							
+							<div class="row">
+								<div class="small-1 columns">
+								</div>
+								
+								<div class="small-11 columns">
+								
+									<label for="bounce_handler_SSL_verify_mode">
+										<input type="checkbox" name="bounce_handler_SSL_verify_mode" id="bounce_handler_SSL_verify_mode" value="1">
+										Verify SSL Certificate
+									</label>
+								</div>
+							</div>
+							
+							
 							<div class="row">
 								<div class="small-12 columns">
 									<label for="bounce_handler_AUTH_MODE">
-										Auth. Type  
+										Authentication Type  
 									</label>
 									<select name="bounce_handler_AUTH_MODE" id="bounce_handler_AUTH_MODE">
-										<option value="BEST">BEST</option> 
-										<option value="PASS">PASS</option> 
+										<option value="POP">POP</option> 
 										<option value="APOP">APOP</option> 
-										<option value="CRAM-MD5">CRAM-MD5</option> 
 									</select> 
 								</div>
 							</div>
@@ -1572,9 +1598,9 @@
 						MIME::LITE::HTML
 					</label>
 
-					<label for="debugging_options_MAIL_POP3CLIENT">
-						<input type="checkbox" name="debugging_options_MAIL_POP3CLIENT" id="debugging_options_MAIL_POP3CLIENT" value="1">			
-						Mail::POP3Client
+					<label for="debugging_options_NET_POP3">
+						<input type="checkbox" name="debugging_options_NET_POP3" id="debugging_options_NET_POP3" value="1">			
+						NET_POP3
 					</label>
 
 					<label for="debugging_options_NET_SMTP">

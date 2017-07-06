@@ -200,15 +200,16 @@ sub cgi_test_pop3_ajax {
 
     try {
         require DADA::App::POP3Tools;
-        ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::mail_pop3client_login(
+        ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::net_pop3_login(
             {
-                server   => scalar $q->param('server'),
-                username => scalar $q->param('username'),
-                password => $password,
-
-                #	            port      => $args->{Port},
-                AUTH_MODE => scalar $q->param('auth_mode'),
-                USESSL    => scalar $q->param('use_ssl'),
+                server          => scalar $q->param('server'),
+                username        => scalar $q->param('username'),
+                password        => $password,
+				port            => scalar $q->param('port'),
+				AUTH_MODE       => scalar $q->param('auth_mode'),
+                USESSL          => scalar $q->param('use_ssl'),
+				starttls        => scalar $q->param('use_starttls'), 
+				SSL_verify_mode => scalar $q->param('ssl_verify_mode'),				
             }
         );
     } catch {
@@ -216,7 +217,7 @@ sub cgi_test_pop3_ajax {
     };
 	
     if ( defined($pop3_obj) ) {
-        $pop3_obj->Close();
+        $pop3_obj->quit();
     }
     if ( $pop3_status == 1 ) {
         $r .= '<p>Connection is Successful!</p>';
@@ -637,8 +638,12 @@ sub edit {
         discussion_pop_email                       => undef,
         bridge_list_email_type                     => 'pop3_account',
         discussion_pop_server                      => undef,
+		discussion_pop_port                        => 'AUTO',
         discussion_pop_username                    => undef,
         discussion_pop_auth_mode                   => undef,
+        discussion_pop_use_ssl                     => 0,
+		discussion_pop_starttls                    =>  0,
+		discussion_pop_ssl_verify_mode             => 0, 
         prefix_discussion_list_subjects_with       => '',
         enable_moderation                          => 0,
         moderate_discussion_lists_with             => 'list_owner_email',
@@ -664,7 +669,6 @@ sub edit {
         find_spam_assassin_score_by                => undef,
         open_discussion_list                       => 0,
         rewrite_anounce_from_header                => 0,
-        discussion_pop_use_ssl                     => 0,
         discussion_template_defang                 => 0,
         digest_enable                              => 0,
         digest_schedule                            => 86400,
@@ -741,8 +745,7 @@ sub edit {
 			id       => 'discussion_pop_auth_mode',
 	        name     => 'discussion_pop_auth_mode',
 	        default  => $ls->param('discussion_pop_auth_mode'),
-	        values   => [qw(BEST PASS APOP CRAM-MD5)],
-	        labels   => { BEST => 'Automatic' },
+	        values   => [qw(POP APOP)],
 		}
     );
     my $spam_level_popup_menu = HTML::Menu::Select::popup_menu(
@@ -1015,33 +1018,50 @@ sub start {
             next LIST_QUEUE;
         }
 
-        my $msg_count = $pop3_obj->Count;
-        my $msgnums   = {};
 
-        # This is weird - do we get everything out of order, here?
-        for ( my $cntr = 1 ; $cntr <= $msg_count ; $cntr++ ) {
-            my ( $msg_num, $msg_size ) =
-              split( '\s+', $pop3_obj->List($cntr) );
-            $msgnums->{$msg_num} = $msg_size;
+		my $pop3_msg_list = $pop3_obj->list; 
+
+
+=cut
+				if(! defined $list) {
+            $log .= "\tNo bounces to handle.\n";
+            $has_bounces = 0;
         }
+		elsif(scalar keys $list == 0) {
+            $log .= "\tNo bounces to handle.\n";
+            $has_bounces = 0;
+        }
+        else {
+=cut
+		
 
+		my $msg_count = 0; 
+           $msg_count = scalar keys $pop3_msg_list;
+		
+		if($msg_count == 0){ 
+			$r .= "\t* No messages awaiting for, $list \n";
+			next LIST_QUEUE; 
+		 }
+		   
         my $local_msg_viewed = 0;
 
-        # Hmm, we do, but then we sort them numerically here:
-      MSG_QUEUE: for my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
+		MSG_QUEUE: for my $msgnum (sort { $a <=> $b } keys  %$pop3_msg_list) {
+
+			my $msgsize = $pop3_msg_list->{$msgnum};
 
             if ( $messages_viewed >= $Plugin_Config->{MessagesAtOnce} ) {
                 last;
             }
+			
             $messages_viewed++;
             $local_msg_viewed++;
 
             $r .= "\n";
-            $r .= "Message Size: " . $msgnums->{$msgnum} . "\n";
+            $r .= "Message Size: " . $msgsize . "\n";
             
             my ($mmt_status, $mmt_r) = max_msg_test( 
                 { 
-                    -size    => $msgnums->{$msgnum},
+                    -size    => $msgsize,
                     -ls_obj => $ls,
                  } 
             );
@@ -1051,9 +1071,10 @@ sub start {
                 # We don't do anything else to this guy
                 next MSG_QUEUE;
             }
-
-            my $full_msg = $pop3_obj->Retrieve($msgnum);
-
+			
+		   my $msg_ar = $pop3_obj->get($msgnum);
+		   # lazy, but... 
+		   my $full_msg = join("", @$msg_ar); 
             
             push( @{ $checksums->{$list} }, create_checksum( \$full_msg ) );
 
@@ -1061,14 +1082,14 @@ sub start {
             
             my ($smmt_status, $smmt_r) = soft_max_msg_test( 
                 { 
-                    -size => $msgnums->{$msgnum},
+                    -size   => $msgsize,
                     -ls_obj => $ls, 
                  } 
             );
             $r .= $smmt_r; 
             
             if ( $smmt_status == 0 ) {
-                send_msg_too_big( $ls, \$full_msg, $msgnums->{$msgnum} );
+                send_msg_too_big( $ls, \$full_msg, $msgsize );
                 next MSG_QUEUE;
             }
 
@@ -1124,10 +1145,12 @@ sub start {
         }    # MSG_QUEUE
 
         my $delete_msg_count = 0;
+		
+		for my $msgnum_d (sort { $a <=> $b } keys  %$pop3_msg_list) {
 
-        for my $msgnum_d ( sort { $a <=> $b } keys %$msgnums ) {
-            $r .= "\t* Removing message from server...\n";
-            $pop3_obj->Delete($msgnum_d);
+            $r .= "\t* Removing message from server:\n";
+			# $r .= "\t* Message # $msgnum_d marked to be deleted\n";
+            $pop3_obj->delete($msgnum_d);
             $delete_msg_count++;
 
             last
@@ -1136,7 +1159,7 @@ sub start {
         }
         $r .= "\t* Disconnecting from POP3 server\n";
 
-        $pop3_obj->Close();
+        $pop3_obj->quit();
 
         if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
             DADA::App::POP3Tools::_unlock_pop3_check(
@@ -1148,7 +1171,7 @@ sub start {
         }
 
         if ($check_deletions) {
-            if ( keys %$msgnums ) {
+            if ( keys  %$pop3_msg_list ) {
                 $r .= message_was_deleted_check($ls);
             }
             else {
@@ -1360,21 +1383,22 @@ sub message_was_deleted_check {
 
     if ( $pop3_status == 1 ) {
 
-        my $msg_count = $pop3_obj->Count;
-
+		my $pop3_msg_list = $pop3_obj->list; 
+		
+		my $msg_count = 0; 
+           $msg_count = scalar keys $pop3_msg_list;
+		   
         if ( $msg_count < 1 ) {
             $r .= "\t\tNo messages to check.\n";
+			return $r;
         }
 
-        my $msgnums = {};
-
-        for ( my $cntr = 1 ; $cntr <= $msg_count ; $cntr++ ) {
-            my ( $msg_num, $msg_size ) = split( '\s+', $pop3_obj->List($cntr) );
-            $msgnums->{$msg_num} = $msg_size;
-        }
-
-        for my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
-            my $msg = $pop3_obj->Retrieve($msgnum);
+		for my $msgnum (sort { $a <=> $b } keys  %$pop3_msg_list) {
+			
+			my $msg_size = $pop3_msg_list->{$msgnum};
+   
+ 		   my $msg_ar = $pop3_obj->get($msgnum);
+ 		   my $msg    = join("", @$msg_ar); 
 
             my $cs = create_checksum( \$msg );
 
@@ -1391,7 +1415,7 @@ sub message_was_deleted_check {
 
                 if ( $cs eq $s_cs ) {
                     $r .= "\t* Message was NOT deleted from POP server! Will attempt to do that now...\n";
-                    $pop3_obj->Delete($msgnum);
+                    $pop3_obj->delete($msgnum);
                 }
                 else {
                     $r .= "\t* Message checksum does not match saved checksum, keeping message for later delivery...\n";
@@ -1399,7 +1423,7 @@ sub message_was_deleted_check {
             }
         }
 
-        $pop3_obj->Close();
+        $pop3_obj->quit();
 
     }
     else {
@@ -1521,7 +1545,7 @@ sub test_pop3 {
         my ( $pop3_obj, $pop3_status, $pop3_log ) = pop3_login($ls);
         $r .= $pop3_log;
         if ( $pop3_status == 1 ) {
-            $pop3_obj->Close();
+            $pop3_obj->quit();
             $r .= "\tLogging off of the POP Server.\n";
         }
 		
@@ -1558,7 +1582,7 @@ sub pop3_login {
         my $log;
 
         try {
-            ( $pop, $status, $log ) = DADA::App::POP3Tools::mail_pop3client_login(
+            ( $pop, $status, $log ) = DADA::App::POP3Tools::net_pop3_login(
                 {
                     server    => $ls->param('discussion_pop_server'),
                     username  => $ls->param('discussion_pop_username'),

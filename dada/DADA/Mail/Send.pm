@@ -357,8 +357,6 @@ sub send {
             );
         }
 
-        $self->_pop_before_smtp;
-
         my $host;
         if ( $self->{ls}->param('set_smtp_sender') == 1 ) {
             $host = $self->{ls}->param('admin_email');
@@ -368,98 +366,52 @@ sub send {
         }
         $host =~ s/(.*?)\@//;
 
-        eval {
+        try  {
 
-            my $mailer;
+            my $smtp_obj;
 
             if ( defined( $self->net_smtp_obj ) && $self->im_mass_sending == 1 )
             {    # If it's defined, let's use it;
-
                 warn 'Reusing Net::SMTP object...'
                   if $t;
-                $mailer = $self->net_smtp_obj;
+                $smtp_obj = $self->net_smtp_obj;
             }
             else {
+                
+				my $smtp_params = {
+                    hello           => $host,
+                    host            => $self->{ls}->param('smtp_server'),
+                    port            => $self->{ls}->param('smtp_port'),
+					ssl             => $self->{ls}->param('use_smtp_ssl'),
+					starttls        => $self->{ls}->param('smtp_starttls'),
+					ssl_verify_mode => $self->{ls}->param('smtp_ssl_verify_mode'),
+                };
+                
+				if($self->{ls}->param('use_sasl_smtp_auth') == 1){ 
+				
+					$smtp_params->{username}            = $self->{ls}->param('sasl_smtp_username');
+					$smtp_params->{password}            = $self->_cipher_decrypt(
+																$self->{ls}->param('sasl_smtp_password')
+														);
+					$smtp_params->{sasl_auth_mechanism} = $self->{ls}->param('sasl_auth_mechanism');
+				}
+				
+				require DADA::App::SMTPTools; 
+				my $smtp_status = 0;
+				my $smtp_r     = undef; 
+				
+				($smtp_status, $smtp_r, $smtp_obj) = DADA::App::SMTPTools::smtp_obj($smtp_params);
+				if($smtp_status == 0){ 					
+		            carp "Problems sending via SMTP:" . $smtp_r;
+		            return -1;
+				}
 
-                my %mailer_params = (
-                    Hello => $host,
-                    Host  => $self->{ls}->param('smtp_server'),
-                    Timeout => 60,    # Keep this at 60 for now
-                    Port => $self->{ls}->param('smtp_port'),
-                    (
-                        ( $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP} == 1 )
-                        ? (
-                            Debug => 1,
-
-                          )
-                        : ()
-                    ),
-
-                );
-
-                if ( $self->{ls}->param('use_smtp_ssl') == 1 ) {
-
-                    # require Net::SMTP_auth_SSL;
-                    # $mailer = new Net::SMTP_auth_SSL(%mailer_params);
-
-                    require Net::SMTP::SSL;
-                    $mailer = Net::SMTP::SSL->new(%mailer_params);
-                    if ( !defined($mailer) ) {
-                        carp "Problems with connecting to the SMTP Server: $!";
-                        my $extra = '';
-                        $extra .= $_ . ' => ' . $mailer_params{$_} . "\n"
-                          for ( keys %mailer_params );
-                        carp $extra;
-                    }
-
-          # authing can fail, although the message may still go through
-          # to the SMTP server, since sometimes SASL AUTH isn't required, but is
-          # attempted anyways.
-                    if ( $self->{ls}->param('use_sasl_smtp_auth') == 1 ) {
-                        $mailer->auth(
-                            $self->{ls}->param('sasl_smtp_username'),
-                            $self->_cipher_decrypt(
-                                $self->{ls}->param('sasl_smtp_password')
-                            )
-                          )
-                          or carp
-'Problems sending SASL authorization to SMTP server, make sure your credentials (username, password) are correct.';
-                    }
-
-                }
-                else {
-                    require Net::SMTP_auth;
-                    $mailer = new Net::SMTP_auth(%mailer_params);
-                    if ( !defined($mailer) ) {
-                        carp "Problems with connecting to the SMTP Server: $!";
-                        my $extra = '';
-                        $extra .= $_ . ' => ' . $mailer_params{$_} . "\n"
-                          for ( keys %mailer_params );
-                        carp $extra;
-                    }
-
-          # authing can fail, although the message may still go through
-          # to the SMTP server, since sometimes SASL AUTH isn't required, but is
-          # attempted anyways.
-                    if ( $self->{ls}->param('use_sasl_smtp_auth') == 1 ) {
-                        $mailer->auth(
-                            $self->{ls}->param('sasl_auth_mechanism'),
-                            $self->{ls}->param('sasl_smtp_username'),
-                            $self->_cipher_decrypt(
-                                $self->{ls}->param('sasl_smtp_password')
-                            )
-                          )
-                          or carp
-'Problems sending SASL authorization to SMTP server, make sure your credentials (username, password) are correct.';
-                    }
-
-                }
             }
             warn 'Saving Net::SMTP Object for re-use'
               if $t;
 
             if ( $self->im_mass_sending == 1 ) {
-                $self->net_smtp_obj($mailer);
+                $self->net_smtp_obj($smtp_obj);
             }
 
             my $to;
@@ -532,13 +484,13 @@ sub send {
             my $FROM_error = "problems sending FROM:<> command to SMTP server.";
             if ( $self->{ls}->param('set_smtp_sender') == 1 ) {
                 if ( $self->{ls}->param('verp_return_path') ) {
-                    if ( !$mailer->mail( $self->_verp($to) ) ) {
+                    if ( !$smtp_obj->mail( $self->_verp($to) ) ) {
                         carp $FROM_error;
                         $FROM_error_flag++;
                     }
                 }
                 else {
-                    if ( !$mailer->mail( $self->{ls}->param('admin_email') ) ) {
+                    if ( !$smtp_obj->mail( $self->{ls}->param('admin_email') ) ) {
                         carp $FROM_error;
                         $FROM_error_flag++;
                     }
@@ -546,14 +498,14 @@ sub send {
             }
             else {
                 if ( $self->{ls}->param('verp_return_path') ) {
-                    if ( !$mailer->mail( $self->_verp($to) ) ) {
+                    if ( !$smtp_obj->mail( $self->_verp($to) ) ) {
                         carp $FROM_error;
                         $FROM_error_flag++;
                     }
                 }
                 else {
                     if (
-                        !$mailer->mail(
+                        !$smtp_obj->mail(
                             $self->{ls}->param('list_owner_email')
                         )
                       )
@@ -565,10 +517,10 @@ sub send {
             }
 
             if ( !$FROM_error_flag ) {
-                if ( $mailer->to($to) ) {
-                    if ( $mailer->data ) {
-                        if ( $mailer->datasend($smtp_msg) ) {
-                            if ( $mailer->dataend ) {
+                if ( $smtp_obj->to($to) ) {
+                    if ( $smtp_obj->data ) {
+                        if ( $smtp_obj->datasend($smtp_msg) ) {
+                            if ( $smtp_obj->dataend ) {
 
                                 # oh hey, everything worked!
                             }
@@ -597,12 +549,12 @@ sub send {
                 carp $FROM_error;
             }
 
-            $mailer->reset()
+            $smtp_obj->reset()
               or carp 'problems sending, "RSET" command to SMTP server.';
 
             if ( $self->{ls}->param('smtp_connection_per_batch') != 1 ) {
 
-                $mailer->quit
+                $smtp_obj->quit
                   or carp "problems 'QUIT'ing SMTP server.";
                 $self->net_smtp_obj(undef);
 
@@ -611,12 +563,10 @@ sub send {
                   if $t;
             }
 
-        };    # end of the eval block.
-
-        if ($@) {    # Something went wrong when trying to send...
-            carp "Problems sending via SMTP: $@";
+        } catch {    # end of the eval block.
+            carp "Problems sending via SMTP: $_";
             return -1;
-        }
+        };
 
     }
     elsif ( $self->{ls}->param('sending_method') eq 'sendmail' ) {
@@ -1013,8 +963,6 @@ sub mail_sending_options_test {
 
     my $orig_debug_smtp = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP};
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP} = 1;
-    my $orig_debug_pop3 = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3};
-    $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = 1;
 
 
     require DADA::App::FormatMessages;
@@ -1051,7 +999,7 @@ sub mail_sending_options_test {
     close(SMTPTEST);
 
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP} = $orig_debug_smtp;
-    $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = $orig_debug_pop3;
+	
     open( RESULTS, "<" . $filename )
       or die "Couldn't open " . $filename . " - $!";
     my $smtp_msg = do { local $/; <RESULTS> };
@@ -1096,7 +1044,7 @@ sub mail_sending_options_test {
                 }
             );
         }
-        elsif ( $l =~ m/Authentication succeeded|OK Authenticated|Authentication successful/i){
+        elsif ( $l =~ m/Authentication succeeded|OK Authenticated|Authentication successful|Authed/i){
             push( @$report,
                 { line => $l, message => 'Looks like we logged in OK!' } );
 		}
@@ -1127,7 +1075,7 @@ sub mail_sending_options_test {
 
     }
 
-    #	unlink($filename) or warn $!;
+	unlink($filename) or warn $!;
 
     $smtp_msg = '';
     foreach (@munged_l) {
@@ -1136,6 +1084,7 @@ sub mail_sending_options_test {
         $smtp_msg .= $_ . "\n";
     }
 
+	
     return ( $smtp_msg, \@r_l, $report );
 
 }
@@ -3157,71 +3106,7 @@ sub _cipher_decrypt {
         $self->{ls}->param('cipher_key'), $str );
 }
 
-sub _pop_before_smtp {
-    my $self   = shift;
-    my $status = 0;
 
-    require DADA::Security::Password;
-
-    my %args = (
-        -pop3_server   => $self->{ls}->param('pop3_server'),
-        -pop3_username => $self->{ls}->param('pop3_username'),
-        -pop3_password =>
-          $self->_cipher_decrypt( $self->{ls}->param('pop3_password') ),
-        -pop3_auth_mode => $self->{ls}->param('pop3_auth_mode'),
-        -pop3_use_ssl   => $self->{ls}->param('pop3_use_ssl'),
-        -verbose        => 0,
-        @_
-    );
-
-    if (   ( $self->{ls}->param('use_pop_before_smtp') == 1 )
-        && ( $args{-pop3_server} )
-        && ( $args{-pop3_username} )
-        && ( $args{-pop3_password} ) )
-    {
-
-        $args{-pop3_server}   = make_safer( $args{-pop3_server} );
-        $args{-pop3_username} = make_safer( $args{-pop3_username} );
-        $args{-pop3_password} = make_safer( $args{-pop3_password} );
-
-        return ( undef, 0, '' ) if !$args{-pop3_server};
-        return ( undef, 0, '' ) if !$args{-pop3_username};
-        return ( undef, 0, '' ) if !$args{-pop3_password};
-
-        require DADA::App::POP3Tools;
-
-        my $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-            {
-                name => 'dada_mail_send.lock',
-            }
-        );
-
-        my ( $pop, $status, $log ) =
-          DADA::App::POP3Tools::mail_pop3client_login(
-
-            {
-                server    => $args{-pop3_server},
-                username  => $args{-pop3_username},
-                password  => $args{-pop3_password},
-                USESSL    => $args{-pop3_use_ssl},
-                AUTH_MODE => $args{-pop3_auth_mode},
-                verbose   => $args{-verbose},
-            }
-          );
-
-        my $count = $pop->Count;
-
-        $pop->Close();
-        DADA::App::POP3Tools::_unlock_pop3_check(
-            {
-                name => 'dada_mail_send.lock',
-                fh   => $lock_file_fh,
-            },
-        );
-        return ($status);
-
-    }
-}
 
 sub _email_batched_finished_notification {
 

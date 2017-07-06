@@ -3597,31 +3597,12 @@ sub mail_sending_options {
                 $ls->param('sasl_smtp_password') );
         }
 
-        my $decrypted_pop3_pass = '';
-        if ( $ls->param('pop3_password') ) {
-            $decrypted_pop3_pass =
-              DADA::Security::Password::cipher_decrypt(
-                $ls->param('cipher_key'),
-                $ls->param('pop3_password') );
-        }
 
 # DEV: This is really strange, since if Net::SMTP isn't available, SMTP sending is completely broken.
         my $can_use_net_smtp = 0;
         eval { require Net::SMTP_auth };
         if ( !$@ ) {
             $can_use_net_smtp = 1;
-        }
-
-        my $can_use_smtp_ssl = 0;
-        eval { require Net::SMTP::SSL };
-        if ( !$@ ) {
-            $can_use_smtp_ssl = 1;
-        }
-
-        my $can_use_ssl = 0;
-        eval { require IO::Socket::SSL };
-        if ( !$@ ) {
-            $can_use_ssl = 1;
         }
 
         my $mechanism_popup;
@@ -3633,20 +3614,10 @@ sub mail_sending_options {
                     name    => 'sasl_auth_mechanism',
                     id      => 'sasl_auth_mechanism',
                     default => $ls->param('sasl_auth_mechanism'),
-                    values  => [qw(PLAIN LOGIN DIGEST-MD5 CRAM-MD5)],
+                    values  => [qw(AUTO PLAIN LOGIN DIGEST-MD5 CRAM-MD5)],
                 }
             );
         }
-
-        my $pop3_auth_mode_popup = HTML::Menu::Select::popup_menu(
-            {
-                name    => 'pop3_auth_mode',
-                id      => 'pop3_auth_mode',
-                default => $ls->param('pop3_auth_mode'),
-                values  => [qw(BEST PASS APOP CRAM-MD5)],
-                labels  => { BEST => 'Automatic' },
-            }
-        );
 
         my $wrong_uid = 0;
         $wrong_uid = 1
@@ -3674,23 +3645,15 @@ sub mail_sending_options {
                     root_login         => $root_login,
                     no_smtp_server_set => $no_smtp_server_set,
                     mechanism_popup    => $mechanism_popup,
-                    can_use_ssl        => $can_use_ssl,
-                    can_use_smtp_ssl   => $can_use_smtp_ssl,
-                    'list_settings.pop3_username' =>
-                      $ls->param('pop3_username'),    # DEV ?
-                    decrypted_pop3_pass  => $decrypted_pop3_pass,
+                    can_use_IO_Socket_SSL => DADA::App::Guts::can_use_IO_Socket_SSL(),
                     wrong_uid            => $wrong_uid,
-                    pop3_auth_mode_popup => $pop3_auth_mode_popup,
-                    can_use_ssl          => $can_use_ssl,
                     f_flag_settings      => $DADA::Config::MAIL_SETTINGS . ' -f'
                       . $ls->param('admin_email'),
 
                     use_sasl_smtp_auth => scalar $q->param('use_sasl_smtp_auth')
                     ? scalar $q->param('use_sasl_smtp_auth')
                     : $ls->param('use_sasl_smtp_auth'),
-                    decrypted_pop3_pass => scalar $q->param('pop3_password')
-                    ? scalar $q->param('pop3_password')
-                    : $decrypted_pop3_pass,
+
                     sasl_auth_mechanism =>
                       scalar $q->param('sasl_auth_mechanism')
                     ? scalar $q->param('sasl_auth_mechanism')
@@ -3717,16 +3680,6 @@ sub mail_sending_options {
     }
     else {
 
-        my $pop3_password = strip( scalar $q->param('pop3_password') ) || undef;
-        if ( defined($pop3_password) ) {
-            $q->param(
-                'pop3_password',
-                DADA::Security::Password::cipher_encrypt(
-                    $ls->param('cipher_key'),
-                    $pop3_password
-                )
-            );
-        }
         my $sasl_smtp_password = strip( scalar $q->param('sasl_smtp_password') )
           || undef;
         if ( defined($sasl_smtp_password) ) {
@@ -3746,26 +3699,28 @@ sub mail_sending_options {
 		# WHAT TO DO?!
 		# Handle it in save() I guess... 
 		# 
+		
+		#use Data::Dumper; 
+		#warn Dumper($q);
+		
         $ls->save_w_params(
             {
                 -associate => $q,
                 -settings  => {
-                    sending_method      => undef,
-                    add_sendmail_f_flag => 0,
-                    use_pop_before_smtp => 0,
-                    set_smtp_sender     => 0,
-                    smtp_server         => undef,
-                    pop3_server         => undef,
-                    pop3_username       => undef,
-                    pop3_password       => undef,
-                    pop3_use_ssl        => undef,
-                    pop3_auth_mode      => 'BEST',
-                    use_smtp_ssl        => 0,
-                    sasl_auth_mechanism => undef,
-                    use_sasl_smtp_auth  => 0,
-                    sasl_smtp_username  => undef,
-                    sasl_smtp_password  => undef,
-                    smtp_port           => undef,
+                    sending_method       => undef,
+                    add_sendmail_f_flag  => 0,
+                    set_smtp_sender      => 0,
+                    smtp_server          => undef,
+
+                    use_smtp_ssl         => 0,
+                    sasl_auth_mechanism  => undef,
+                    use_sasl_smtp_auth   => 0,
+					
+					smtp_starttls        => 0, 
+                    smtp_ssl_verify_mode => 0, 
+					sasl_smtp_username   => undef,
+                    sasl_smtp_password   => undef,
+                    smtp_port            => undef,
                 },
                 -also_save_for => $also_save_for_list,
             }

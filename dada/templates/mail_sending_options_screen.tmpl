@@ -132,6 +132,19 @@
 					>
 				</div> 
 			</div>
+			
+			<!-- tmpl_unless can_use_IO_Socket_SSL --> 
+				<div class="row"> 
+					<div class="small-1  columns"></div>
+		        	<div class="small-11 columns">
+						<div class="alert-box warning radius"> 
+							The IO::Socket::SSL CPAN Perl module needs to be installed for you to be able to 
+							utilize SSL or STARTTLS.
+						</div>
+					</div>
+				</div>
+			<!-- /tmpl_unless -->
+			
 			<div class="row"> 
 				<div class="small-1  columns"></div>
 	        	<div class="small-11 columns">	
@@ -145,16 +158,52 @@
 					> 
 				    <label for="use_smtp_ssl">
 						 Use Secure Sockets Layer (SSL)
-
 			        </label>
     
-				    <!-- tmpl_unless can_use_smtp_ssl -->
-		 				<div class="alert-box alert radius">
-						 	Disabled. The Net::SMTP::SSL module needs to be installed.
-						</div>
-			        <!--/tmpl_unless--> 
 				</div> 
 			</div>
+			<div class="row">
+				<div class="small-2 columns">
+				</div>
+				<div class="small-10 columns">
+					<label for="smtp_starttls">
+						<input 
+							type="checkbox" 
+							name="smtp_starttls" 
+							id="smtp_starttls" 
+							value="1"
+							<!-- tmpl_if list_settings.smtp_starttls -->
+								checked="checked"
+							<!-- /tmpl_if -->
+						>
+						Upgrade from an insecure connection (STARTTLS)
+					</label>
+				</div>
+			</div>
+	
+			<div class="row">
+				<div class="small-2 columns">
+				</div>
+				<div class="small-10 columns">
+					<label for="smtp_ssl_verify_mode">
+						<input 
+							type="checkbox" 
+							name="smtp_ssl_verify_mode" 
+							id="smtp_ssl_verify_mode" 
+							value="1"
+							<!-- tmpl_if list_settings.smtp_ssl_verify_mode -->
+								checked="checked"
+							<!-- /tmpl_if -->
+							>
+						Verify SSL Certificate
+					</label>
+				</div>
+			</div>
+	
+	
+	
+	
+	
 			<div class="row"> 
 				<div class="small-1  columns">
 				</div>
@@ -180,7 +229,11 @@
 				</div>
 			</div>
 		
+		
 		<div id="smtp_authentication"> 
+		
+		
+		
 			<div class="row"> 
 				<div class="small-1  columns"></div>
 		        <div class="small-11 columns">	
@@ -197,7 +250,17 @@
 				    </label>
 				</div>
 			</div>	
+			
+			
+			
 			<div id="SASL_options"> 
+				
+				
+			
+			
+	
+				
+				
 			    <div class="row"> 
 					<div class="small-2  columns">
 					</div>
@@ -228,132 +291,17 @@
 							 >
 						</div>
 					</div> 
-			    <div class="row"> 
-					<div class="small-2  columns">
+				    <div class="row"> 
+						<div class="small-2  columns">
+						</div>
+				        <div class="small-10 columns">	
+					       <label for="sasl_auth_mechanism">
+					        Type
+					       </label>
+					       <!-- tmpl_var mechanism_popup --> 	
+					   </div> 
 					</div>
-			        <div class="small-10 columns">	
-				       <label for="sasl_auth_mechanism">
-				        Type
-				       </label>
-				       <!-- tmpl_var mechanism_popup --> 	
-				   </div> 
-				</div>
-			</div><!-- id="SASL_options" -->
-
-				<div class="row"> 
-					<div class="small-1  columns">
-					</div>
-					<div class="small-11 columns">	
-						<input 
-						type="checkbox" 
-						name="use_pop_before_smtp" 
-						id="use_pop_before_smtp" 
-						value="1" 
-						<!-- tmpl_if list_settings.use_pop_before_smtp -->checked="checked"<!-- /tmpl_if --> 
-						>
-						<label for="use_pop_before_smtp">
-							Use POP-Before-SMTP Authentication
-						</label>
-					</div>
-				</div>
-				
-				<div id="pop_before_smtp_options">			
-						<div class="row"> 
-							<div class="small-2  columns">
-							</div>
-							<div class="small-10 columns">	
-								
-								<!-- tmpl_if comment -->
-									<div class="alert-box info radius">
-										<p>
-											A connection to your POP Server will be created before any mail will be sent. 
-											This can authenticate your outgoing mail requests, if your SMTP server 
-											uses POP-before-SMTP or your SMTP server does not use SASL.
-										</p>
-										<p>
-											POP-before-SMTP Authentication will require your username and password for your 
-											<strong>
-												POP3 
-											</strong>
-											Account:
-										</p>
-									</div> 
-								<!-- /tmpl_if -->
-								<label for="pop3_server">
-									POP3 Server
-								</label>
-								<input 
-									type="text" 
-									name="pop3_server" 
-									id="pop3_server" 
-									value="<!-- tmpl_var list_settings.pop3_server -->"
-									placeholder="pop.example.com"
-								>
-							</div>
-						</div>
-						<div class="row"> 
-							<div class="small-2  columns">
-							</div>
-							<div class="small-10 columns">	
-
-								<label for="pop3_username">
-								POP3 Username
-								</label>
-								<input 
-								type="text" 
-								name="pop3_username" 
-								id="pop3_username" 
-								value="<!-- tmpl_var list_settings.pop3_username -->"
-								>
-							</div>
-						</div>
-						<div class="row"> 
-							<div class="small-2  columns">
-							</div>
-							<div class="small-10 columns">	
-								<label for="pop3_password">
-									POP3 Password
-								</label>
-								<input 
-								type="password" 
-								name="pop3_password" 
-								id="pop3_password" 
-								value ="<!-- tmpl_var decrypted_pop3_pass -->"
-								>
-							</div>
-						</div>
-						<div class="row"> 
-							<div class="small-2  columns">
-							</div>
-							<div class="small-10 columns">	
-
-								<label for="pop3_auth_mode">
-								Type
-								</label>
-								<!-- tmpl_var pop3_auth_mode_popup --> 
-							</div>
-						</div>
-
-						<div class="row"> 
-							<div class="small-2  columns">
-							</div>
-							<div class="small-10 columns">	
-								<input
-									type="checkbox" 
-									name="pop3_use_ssl" 
-									id="pop3_use_ssl" 
-									value="1" 
-									<!-- tmpl_if list_settings.pop3_use_ssl -->checked="checked"<!-- /tmpl_if -->
-								>
-								<label for="pop3_use_ssl">
-									Use Secure Sockets Layer (SSL)
-								</label>
-								<!-- tmpl_unless can_use_ssl -->
-									Disabled. The IO::Socket::SSL module needs to be installed.
-								<!--/tmpl_unless--> 
-							</div>
-						</div>
-				</div><!-- id="pop_before_smtp_options" -->
+				</div><!-- id="SASL_options" -->
 			</div>
 		</div><!-- id="smtp_authentication" -->
 	</div><!--  id="smtp_preferences" -->

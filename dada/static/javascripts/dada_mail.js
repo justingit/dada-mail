@@ -666,20 +666,12 @@ jQuery(document).ready(function($){
 
 		sending_prefs_setup();
 		toggle_SASL_options();
-		toggle_pop_before_SMTP_options();
 
 
 
 		$("body").on("click", '#use_sasl_smtp_auth', function(event) {
 			toggle_SASL_options();
 		});
-
-		$("body").on("click", '#use_pop_before_smtp', function(event) {
-			toggle_pop_before_SMTP_options();
-		});
-
-
-
 
 		$("body").on("click", '.sending_prefs_radio', function(event) {
 			sending_prefs_setup();
@@ -2776,17 +2768,7 @@ function toggle_SASL_options() {
 	}
 }
 
-function toggle_pop_before_SMTP_options() {
-	if ($("#use_pop_before_smtp").prop("checked") === true) {
-		if ($('#pop_before_smtp_options').is(':hidden')) {
-			$('#pop_before_smtp_options').show('blind');
-		}
-	} else {
-		if ($('#pop_before_smtp_options').is(':visible')) {
-			$('#pop_before_smtp_options').hide('blind');
-		}
-	}
-}
+
 
 function send_url_options_setup() {
 
@@ -2894,18 +2876,25 @@ function test_mail_sending_options() {
 	if ($('#pop3_use_ssl').prop('checked') === true) {
 		pop3_use_ssl = 1;
 	}
-	var use_pop_before_smtp = 0;
-	if ($('#use_pop_before_smtp').prop('checked') === true) {
-		use_pop_before_smtp = 1;
-	}
 	var use_sasl_smtp_auth = 0;
 	if ($('#use_sasl_smtp_auth').prop('checked') === true) {
 		use_sasl_smtp_auth = 1;
 	}
+	var smtp_starttls = 0;
+	if ($('#smtp_starttls').prop('checked') === true) {
+		smtp_starttls = 1;
+	}
+	
+	var smtp_ssl_verify_mode = 0;
+	if ($('#smtp_ssl_verify_mode').prop('checked') === true) {
+		smtp_ssl_verify_mode = 1;
+	}
+
 	var use_smtp_ssl = 0;
 	if ($('#use_smtp_ssl').prop('checked') === true) {
 		use_smtp_ssl = 1;
 	}
+
 	var add_sendmail_f_flag = 0;
 	if ($('#add_sendmail_f_flag').prop('checked') === true) {
 		add_sendmail_f_flag = 1;
@@ -2917,6 +2906,7 @@ function test_mail_sending_options() {
 	  maxWidth: '640px',
 	  maxHeight: '480px'
 	};
+	
 	$.colorbox({
 		top: 0,
 		fixed: true,
@@ -2935,14 +2925,11 @@ function test_mail_sending_options() {
 			smtp_port: $('#smtp_port').val(),
 			use_smtp_ssl: use_smtp_ssl,
 			use_sasl_smtp_auth: use_sasl_smtp_auth,
+			smtp_ssl_verify_mode: smtp_ssl_verify_mode, 
 			sasl_auth_mechanism: $('#sasl_auth_mechanism').val(),
+			smtp_starttls: smtp_starttls, 
 			sasl_smtp_username: $('#sasl_smtp_username').val(),
 			sasl_smtp_password: $('#sasl_smtp_password').val(),
-			use_pop_before_smtp: use_pop_before_smtp,
-			pop3_server: $('#pop3_server').val(),
-			pop3_username: $('#pop3_username').val(),
-			pop3_password: $('#pop3_password').val(),
-			pop3_use_ssl: pop3_use_ssl,
 			set_smtp_sender: set_smtp_sender,
 			process: $('#process').val()
 		}
@@ -3259,12 +3246,23 @@ function plugins_bridge_test_pop3() {
 		use_ssl = 1;
 	}
 	
+	var discussion_pop_use_starttls = 0; 
+	if($("#discussion_pop_use_starttls").prop("checked") === true){ 
+		discussion_pop_use_starttls = 1; 
+	}
+	
+	var discussion_pop_ssl_verify_mode = 0; 
+	if($("#discussion_pop_ssl_verify_mode").prop("checked") === true){ 
+		discussion_pop_ssl_verify_mode = 1; 
+	}
+
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
 	  maxWidth: '640px',
 	  maxHeight: '480px'
 	};
+	
 	$.colorbox({
 	    href: $("#s_program_url").val(),
 		data: {
@@ -3274,8 +3272,11 @@ function plugins_bridge_test_pop3() {
 			server: $("#discussion_pop_server").val(),
 			username: $("#discussion_pop_username").val(),
 			password: $("#discussion_pop_password").val(),
+			port: $("#discussion_pop_port").val(),
 			auth_mode: $("#discussion_pop_auth_mode option:selected").val(),
-			use_ssl: use_ssl
+			use_ssl: use_ssl,
+			use_starttls: discussion_pop_use_starttls, 
+			ssl_verify_mode: discussion_pop_ssl_verify_mode
 		},
 		opacity: 0.50,
 		maxWidth: '640px',

@@ -1,5 +1,14 @@
 #!/usr/bin/perl 
 
+
+BEGIN {
+        open( STDERR, ">>./errors.txt" );
+}
+
+
+
+
+
 package DadaMailInstaller;
 use base 'CGI::Application';
 
@@ -181,7 +190,9 @@ my %bounce_handler_plugin_configs = (
     Password                 => { default => '',     if_blank => 'undef' },
     Port                     => { default => 'AUTO', if_blank => 'AUTO' },
     USESSL                   => { default => 0,      if_blank => 0 },
-    AUTH_MODE                => { default => 'BEST', if_blank => 'BEST' },
+	starttls                 => { default => 0,      if_blank => 0 },
+    SSL_verify_mode          => { default => 0,      if_blank => 0 },
+	AUTH_MODE                => { default => 'POP', if_blank => 'POP' },
     MessagesAtOnce           => { default => '100',  if_blank => '100' },
     Enable_POP3_File_Locking => { default => 1,      if_blank => 0 },
 );
@@ -211,7 +222,7 @@ my @Debug_Option_Names = qw(
   DBI
   HTML_TEMPLATE
   MIME_LITE_HTML
-  MAIL_POP3CLIENT
+  NET_POP3
   NET_SMTP
 );
 
@@ -4249,12 +4260,14 @@ sub cgi_test_pop3_connection {
     my $self = shift;
     my $q    = $self->query();
 
-    my $bounce_handler_server    = $q->param('bounce_handler_Server');
-    my $bounce_handler_username  = $q->param('bounce_handler_Username');
-    my $bounce_handler_password  = $q->param('bounce_handler_Password');
-    my $bounce_handler_USESSL    = $q->param('bounce_handler_USESSL') || 0;
-    my $bounce_handler_AUTH_MODE = $q->param('bounce_handler_AUTH_MODE') || 'BEST';
-    my $bounce_handler_Port      = $q->param('bounce_handler_Port') || 'AUTO';
+    my $bounce_handler_server          = $q->param('bounce_handler_Server')                  || undef;
+    my $bounce_handler_username        = $q->param('bounce_handler_Username')                || undef;
+    my $bounce_handler_password        = $q->param('bounce_handler_Password')                || undef;
+    my $bounce_handler_USESSL          = $q->param('bounce_handler_USESSL')                  || 0;
+    my $bounce_handler_starttls        = $q->param('bounce_handler_starttls')                || 0;
+    my $bounce_handler_SSL_verify_mode = $q->param('bounce_handler_SSL_verify_mode')         || 0; 
+	my $bounce_handler_AUTH_MODE       = $q->param('bounce_handler_AUTH_MODE')               || 'POP';
+    my $bounce_handler_Port            = $q->param('bounce_handler_Port')                    || 'AUTO';
 
     #	my $bounce_handler_MessagesAtOnce = $q->param('bounce_handler_MessagesAtOnce') || 100;
 
@@ -4264,12 +4277,14 @@ sub cgi_test_pop3_connection {
 
     my ( $pop3_obj, $pop3_status, $pop3_log ) = test_pop3_connection(
         {
-            Server    => $bounce_handler_server,
-            Username  => $bounce_handler_username,
-            Password  => $bounce_handler_password,
-            USESSL    => $bounce_handler_USESSL,
-            AUTH_MODE => $bounce_handler_AUTH_MODE,
-            Port      => $bounce_handler_Port,
+            Server          => $bounce_handler_server,
+            Username        => $bounce_handler_username,
+            Password        => $bounce_handler_password,
+            USESSL          => $bounce_handler_USESSL,
+			starttls        => $bounce_handler_starttls,
+			SSL_verify_mode => $bounce_handler_SSL_verify_mode,
+            AUTH_MODE       => $bounce_handler_AUTH_MODE,
+            Port            => $bounce_handler_Port,
         }
     );
 
@@ -4568,19 +4583,29 @@ sub test_pop3_connection {
     #    my $q    = $self->query();
 
     my ($args) = @_;
+	
+	if(length($args->{Server}) <= 1){ # do not understand why this is 1, and not 0 
+		return ( undef, 0, 'Mail Server will need to be filled out.');
+	}
+	if(length($args->{Username}) <= 1){ # do not understand why this is 1, and not 0 
+		return ( undef, 0, 'Username will need to be filled out.');
+	}
+	
     require DADA::App::POP3Tools;
-    my ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::mail_pop3client_login(
+    my ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::net_pop3_login(
         {
-            server    => $args->{Server},
-            username  => $args->{Username},
-            password  => $args->{Password},
-            port      => $args->{Port},
-            USESSL    => $args->{USESSL},
-            AUTH_MODE => $args->{AUTH_MODE},
+            server          => $args->{Server},
+            username        => $args->{Username},
+            password        => $args->{Password},
+            port            => $args->{Port},
+            USESSL          => $args->{USESSL},
+			starttls        => $args->{starttls},
+			SSL_verify_mode => $args->{SSL_verify_mode},
+            AUTH_MODE       => $args->{AUTH_MODE},
         }
     );
     if ( defined($pop3_obj) ) {
-        $pop3_obj->Close();
+		$pop3_obj->quit();
     }
 
     return ( $pop3_obj, $pop3_status, $pop3_log );

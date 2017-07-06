@@ -292,6 +292,8 @@ $PLUGIN_CONFIGS //= {
 		Password                    => undef,
 		Port                        => undef,
 		USESSL                      => undef,
+		starttls                    => undef,
+		SSL_verify_mode             => undef,
 		AUTH_MODE                   => undef,
 		Plugin_Name                 => undef,
 		Plugin_URL                  => undef,
@@ -521,10 +523,7 @@ $DEBUG_TRACE //= {
     #  Net::POP3, used for checking awaiting messages on a POP3 Server
     #  More Information:
     #  http://search.cpan.org/~gbarr/libnet/Net/POP3.pm
-    #  NET_POP3 => 0,
-
-    # http://search.cpan.org/~sdowd/Mail-POP3Client/POP3Client.pm
-    MAIL_POP3CLIENT => 0,
+       NET_POP3 => 0,
 
     # Net::SMTP, used for sending messages via SMTP:
     # more information:
@@ -1315,21 +1314,11 @@ $MIME_TOOLS_PARAMS //= {
     smtp_port   => 25,
 
     use_smtp_ssl        => 0,
-    use_pop_before_smtp => 0,
-
-    pop3_server   => undef,
-    pop3_username => undef,
-    pop3_password => undef,
-    pop3_use_ssl  => undef,
-
-    # Can be set to,
-    # BEST, PASS, APOP, or CRAM-MD5
-    pop3_auth_mode => 'BEST',
-
+	smtp_starttls       => 0, 
+	smtp_ssl_verify_mode => 0, 
     set_smtp_sender => 1,
-
     use_sasl_smtp_auth  => 0,
-    sasl_auth_mechanism => 'PLAIN',
+    sasl_auth_mechanism => 'AUTO',
     sasl_smtp_username  => undef,
     sasl_smtp_password  => undef,
 
@@ -1545,13 +1534,16 @@ $MIME_TOOLS_PARAMS //= {
     strip_file_attachments    => 0,
     file_attachments_to_strip => '',
     discussion_pop_server     => '',
+	discussion_pop_port       => 'AUTO',
     discussion_pop_username   => '',
     discussion_pop_email      => '',
     bridge_list_email_type    => 'pop3_account',
     discussion_pop_password   => '',
 
-    discussion_pop_auth_mode => 'BEST',
-    discussion_pop_use_ssl   => 0,
+    discussion_pop_auth_mode       => 'POP',
+    discussion_pop_use_ssl         => 0,
+	discussion_pop_starttls        =>  0,
+	discussion_pop_ssl_verify_mode => 0, 
 
     bridge_announce_reply_to     => 'none', 
     send_not_allowed_to_post_msg => 1,

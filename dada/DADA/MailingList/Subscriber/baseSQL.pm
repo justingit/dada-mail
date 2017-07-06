@@ -3,7 +3,7 @@ package DADA::MailingList::Subscriber::baseSQL;
 use strict;
 use lib qw(../../../ ../../../perllib);
 use Carp qw(carp croak);
-
+#$Carp::Verbose = 1; 
 
 use DADA::Config;
 use DADA::App::Guts;
@@ -17,11 +17,8 @@ sub add {
 
     my $self = shift;
 	
-#	warn Dumper({'self' => $self}); 
-    my ($args) = @_;
-	
 	#warn Dumper({'args' => $args}); 
-		
+	my ($args) = @_;
 
     if ($t) {
 
