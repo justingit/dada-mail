@@ -1036,7 +1036,7 @@ sub start {
 		
 
 		my $msg_count = 0; 
-           $msg_count = scalar keys $pop3_msg_list;
+           $msg_count = scalar keys %$pop3_msg_list;
 		
 		if($msg_count == 0){ 
 			$r .= "\t* No messages awaiting for, $list \n";
@@ -1386,7 +1386,7 @@ sub message_was_deleted_check {
 		my $pop3_msg_list = $pop3_obj->list; 
 		
 		my $msg_count = 0; 
-           $msg_count = scalar keys $pop3_msg_list;
+           $msg_count = scalar keys %$pop3_msg_list;
 		   
         if ( $msg_count < 1 ) {
             $r .= "\t\tNo messages to check.\n";

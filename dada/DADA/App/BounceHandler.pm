@@ -400,7 +400,7 @@ sub parse_all_bounces {
             $log .= "\tNo bounces to handle.\n";
             $has_bounces = 0;
         }
-		elsif(scalar keys $list == 0) {
+		elsif(scalar keys %$list == 0) {
             $log .= "\tNo bounces to handle.\n";
             $has_bounces = 0;
         }
