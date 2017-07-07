@@ -625,6 +625,7 @@ sub profile_update_email_report {
 sub update_email {
 
     my $self       = shift;
+	my ($args)     = @_; 
     my $old_fields = $self->{fields}->get;
     my $info       = $self->get;
 
@@ -656,14 +657,20 @@ sub update_email {
     undef($old_prof_fields);
     
     # This updates the DADA::Profile::Settings; 
-    require DADA::Profile::Settings;
-    my $dps = DADA::Profile::Settings->new();
-       $dps->update(
-           { 
-               -from => $self->{email},
-               -to   => $info->{update_email},
-           }
-    ); 
+	if(exists($args->{-list})){
+	    require DADA::Profile::Settings;
+	    my $dps = DADA::Profile::Settings->new(
+			{
+				-list => $args->{-list}
+			}
+		);
+		$dps->update(
+			{ 
+				-from => $self->{email},
+				-to   => $info->{update_email},
+			}
+		); 
+	}
 	
     $self->{email} = $info->{update_email};
     

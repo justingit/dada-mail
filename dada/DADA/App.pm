@@ -14367,11 +14367,12 @@ sub profile_update_email {
                         -type => 'list'
                     }
                 );
+				$prof->update_email({-list => $in_list});
             }
-            $prof->update_email;
-
+           
+		   
             #/ This should probably go in the update_email method...
-
+			
             $prof->send_update_email_notification(
                 { -prev_email => cased( $profile_info->{'profile.email'} ), } );
 
