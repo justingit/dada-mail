@@ -1,0 +1,98 @@
+			
+					<table  style="width:100%" class="responsive">
+					<tr> 
+					  <th>Form Field</th> 	
+					  <th>Required Value (if any)</th> 
+					</tr> 
+					
+					<tr>
+						<td>
+							<strong> 
+								form tag
+							</strong>
+						</td>
+						<td> 
+							&lt;form action=&quot;<!-- tmpl_var PROGRAM_URL -->&quot; method=&quot;post&quot; accept-charset=&quot;<!-- tmpl_var HTML_CHARSET -->&quot;&gt;
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<strong> 
+								flavor
+							</strong>
+						</td>
+						<td>
+							subscribe
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<strong> 
+								list
+							</strong>
+						</td>
+						<td>
+							<!-- tmpl_var list_settings.list -->
+						</td>
+					</tr>
+					
+					<tr>
+						<td>
+							<strong> 
+								email
+							</strong>
+						</td>
+						<td>
+							
+						</td>
+					</tr>
+
+
+<!-- tmpl_loop subscriber_fields -->
+					
+					<tr>
+						<td>
+							<strong>
+								<!-- tmpl_var name escape=HTML -->
+							</strong> 
+						</td>
+						<td>
+
+						</td>
+					</tr>
+
+<!-- /tmpl_loop -->
+<!-- tmpl_if recaptcha_html --> 
+
+					<tr>
+						<td>
+							<strong>
+								Google ReCAPTCHA Code
+							</strong> 
+						</td>
+						<td>
+
+							<textarea>
+								
+					
+					
+								<!-- tmpl_var recaptcha_html -->
+								<!-- tmpl_if add_recaptcha_js -->
+								<script src='https://www.google.com/recaptcha/api.js'></script>
+								<!-- /tmpl_if -->
+								
+							</textarea>
+						</td>
+					</tr>
+
+
+<!-- /tmpl_if -->
+
+
+
+					
+					
+					
+			</table>
+			
+			

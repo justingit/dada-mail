@@ -2708,6 +2708,9 @@ sub subscription_form {
 		if($args->{-form_type} eq 'minimal'){ 
  			$tmpl_name = 'minimal_subscription_form.tmpl'; 
 		}
+		elsif($args->{-form_type} eq 'form_fields_example'){ 
+ 			$tmpl_name = 'subscription_form_fields_example.tmpl'; 
+		}
 		
 
 		

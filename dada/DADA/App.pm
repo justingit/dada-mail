@@ -8698,6 +8698,16 @@ sub html_code {
 						
                     }
                   ),
+				  form_fields_example =>
+                  DADA::Template::Widgets::subscription_form(
+                    {
+                        -list          => $list,
+                        -form_type     => 'form_fields_example',
+                        -ignore_cgi    => 1,
+                        -show_fieldset => 0,
+						-add_recaptcha_js => 1,
+                    }
+                  ),
             },
             -list_settings_vars_param => {
                 -list   => $list,
