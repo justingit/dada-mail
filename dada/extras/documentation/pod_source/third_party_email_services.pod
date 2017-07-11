@@ -74,6 +74,11 @@ These services may have their own API for mail sending, but will not be supporte
 
 Before setting up an account with any of these services, double-check their docs on SMTP setup. Note the port you need to connect to, and double-check that that same port is open for outgoing connections on your own hosting account. In many shared hosting accounts, the most common SMTP port, port 25 is closed to outgoing connections. 
 
+
+=head3 SparkPost
+
+L<https://www.sparkpost.com/> 
+
 =head3 MailGun
 
 L<http://mailgun.com>
@@ -93,6 +98,5 @@ L<http://www.serversmtp.com/en/smtp-mailing-list-distributors>
 =head3 Unified eMail
 
 L<http://www.unifiedemail.net> 
-
 
 =cut
