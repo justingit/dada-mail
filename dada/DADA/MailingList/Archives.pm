@@ -915,14 +915,33 @@ sub _zap_sig_html {
 	# This stops us from chopping off anything that's also on the same line 
 	# as the opening/sig comments. Tricky. 
 	
-	$message =~ s/($opening_open|$opening_close|$sig_open|$sig_close)/\n$1\n/g;
+	my $tag_check = 1; 
+	if($message =~ m/$opening_open/ && $message =~ m/$opening_close/){ 
+		# ...
+	}
+	else { 		
+		$tag_check = 0; 
+	}
 	
+	if($message =~ m/$sig_open/ && $message =~ m/$sig_close/){ 
+		# ... 
+	}
+	else { 
+		$tag_check = 0; 
+	}
+	
+	return $message
+		if $tag_check == 0; 
+	
+	$message =~ s/($opening_open|$opening_close|$sig_open|$sig_close)/\n$1\n/g;
 	
 	
 	my @msg_lines   = split(/\n/, $message);
 	my $new_message = undef; 
 	
 	my $switch = 1; 
+	
+	# DEV TODO: really, this should take two passe
 	
     for my $line(@msg_lines){ 
 		if($line =~ m/$opening_open/ || $line =~ m/$sig_open/){  
@@ -943,6 +962,7 @@ sub _zap_sig_html {
     
 	}
 	
+	#warn '$new_message' . $new_message; 
 	if(! $new_message){ 
 		return $message;
 	}else{ 
@@ -957,6 +977,8 @@ sub string_between_markers {
 	my $str         = shift; 
 	my $begin       = shift || '<!-- start message content -->'; 
 	my $end         = shift || '<!-- end message content -->';
+	
+
 	
 	my $qm_begin = quotemeta($begin);
 	my $qm_end = quotemeta($end);
@@ -985,6 +1007,8 @@ sub string_between_markers {
     	$n_str .= $line . "\n"; 
     
 	}
+	
+
 	
 	if(! $n_str){ 
 		return $str;
