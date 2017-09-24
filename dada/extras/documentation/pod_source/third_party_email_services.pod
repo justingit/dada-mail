@@ -79,6 +79,12 @@ Before setting up an account with any of these services, double-check their docs
 
 L<https://www.sparkpost.com/> 
 
+We've written up a small intro on SparkPost on our blog: 
+
+B<Getting Started with SparkPost Email Delivery Service and Dada Mail>
+
+L<http://blog.dadamailproject.com/2017/07/11/getting-started-with-sparkpost-email-delivery-service-and-dada-mail/>
+
 =head3 MailGun
 
 L<http://mailgun.com>
