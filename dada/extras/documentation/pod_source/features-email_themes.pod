@@ -221,15 +221,15 @@ If you've transformed your Dada Mail install to Pro Dada within the app, these n
 
 Rather, you would have to either upgrade to Pro Dada: 
 
-	L<dadamailproject.com/d/upgrade_dada_mail.pod.html>
+L<dadamailproject.com/d/upgrade_dada_mail.pod.html>
 
 Or, download the Pro Dada distribution, uncompress it locally, then move the directories you found in, 
 
-	C<dada/extras/packages/themes/email>
+C<dada/extras/packages/themes/email>
 
 into where your email themes currently live, 
 
-	C<dada_mail_support_files/themes/email>
+C<dada_mail_support_files/themes/email>
 
 =head1 Learn More
 
