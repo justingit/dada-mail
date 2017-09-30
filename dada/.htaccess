@@ -3,3 +3,12 @@ DirectoryIndex mail.cgi index.php index.html
 # See: http://dadamailproject.com/d/features-restful_web_services.pod.html
 # The below line may need to be uncommented too allow Web Services to work:
 # SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0
+
+
+# These are set by the app, but you can override what's used, here: 
+#
+# Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+# Header set Pragma "no-cache"
+# Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+
+
