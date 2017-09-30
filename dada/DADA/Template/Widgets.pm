@@ -2668,7 +2668,9 @@ sub subscription_form {
 			
     }
     		
-	my $CAPTCHA_string = undef;
+	my $CAPTCHA_string      = undef;
+	my $recaptcha_v2        = 1; 
+	my $recaptcha_invisible = 0; 
 	
 	if(
 		           $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
@@ -2679,6 +2681,12 @@ sub subscription_form {
 			require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
 			my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
 		    $CAPTCHA_string = $cap->get_html();
+			
+			if($DADA::Config::RECAPTCHA_PARAMS->{type} eq 'invisible') { 
+				$recaptcha_v2        = 0; 
+				$recaptcha_invisible = 1; 
+			}
+			
 	}
 	else { 
 		if($args->{-add_recaptcha_js} == 1){ 
@@ -2727,9 +2735,13 @@ sub subscription_form {
 							profile_logged_in        => $args->{-profile_logged_in}, 
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
-							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
-							recaptcha_html           => $CAPTCHA_string,							
-							
+
+							add_recaptcha_js         => $args->{-add_recaptcha_js}, 							
+							recaptcha_html           => $CAPTCHA_string,				
+							recaptcha_v2             => $recaptcha_v2,
+							recaptcha_invisible      => $recaptcha_invisible,
+							recaptcha_public_key => $DADA::Config::RECAPTCHA_PARAMS->{public_key}, 			
+														
                         },
 						-list_settings_vars_param => {
 							-list    => $list,
@@ -2755,8 +2767,14 @@ sub subscription_form {
 							profile_logged_in        => $args->{-profile_logged_in}, 
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
-							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
-							recaptcha_html           => $CAPTCHA_string,							
+							
+							
+							add_recaptcha_js         => $args->{-add_recaptcha_js}, 							
+							recaptcha_html           => $CAPTCHA_string,				
+							recaptcha_v2             => $recaptcha_v2,
+							recaptcha_invisible      => $recaptcha_invisible,
+							recaptcha_public_key => $DADA::Config::RECAPTCHA_PARAMS->{public_key}, 			
+
                         }
                     });      
     }

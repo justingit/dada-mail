@@ -118,7 +118,7 @@
 		<!-- /tmpl_if -->
 
 
-		<!-- tmpl_if recaptcha_html --> 
+		<!-- tmpl_if recaptcha_v2 --> 
 			<div class="row">
 				<div class="large-4 medium-4 columns">
 					&nbsp;
@@ -134,22 +134,65 @@
 					<!-- tmpl_var recaptcha_html -->
 				</div>
 			</div>
-			<!-- tmpl_if add_recaptcha_js -->
-				    <script src='https://www.google.com/recaptcha/api.js'></script>
-			<!-- /tmpl_if --> 
+
 		<!-- /tmpl_if -->
+		
+		<!-- tmpl_if add_recaptcha_js -->
+			<!-- tmpl_if recaptcha_invisible -->
+			    <script src='https://www.google.com/recaptcha/api.js'></script>
+			<!-- tmpl_else -->
+		  	  <script src='https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit' async defer></script>
+			  <script>
+			  	$(document).ready(function() {
+			  		$(".g-recaptcha").each(function() {
+			  		    var object = $(this);
+			  			var sitekey = object.parents('form').find(".sitekey").val(); 
+			  		    grecaptcha.render(object.attr("id"), {
+			  		        "sitekey" : sitekey,
+			  		        "callback" : function(token) {
+			  		            object.parents('form').find(".g-recaptcha-response").val(token);
+			  		            object.parents('form').submit();
+			  		        }
+			  		    });
+			  		});
+			  	});
+			  </script>
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
+		
+		
+
 		
 		<div class="row">
 			<div class="large-4 medium-4 columns">
 				&nbsp;
 			</div> 
 			<div class="large-8 medium-8 columns">
+				
+			<!-- tmpl_if recaptcha_invisible -->
+				
+				<input 
+					type="hidden" 
+					name="sitekey"  
+					class="sitekey" 
+					value="<!-- tmpl_var recaptcha_public_key -->"
+				>
+				
+				<button class="button success expand" id="ddm_subscribe_button">
+					Subscribe
+				</button>
+			
+			<!-- tmpl_else -->
 						<input 
 							type="submit" 
 							value="Subscribe" 
 							class="button success expand" 
 							id="ddm_subscribe_button"
 						>
+			<!-- /tmpl_if --> 
+		
+		
+		
 			</div>
 		</div>
 
@@ -157,4 +200,7 @@
 	</div>
 </form> 
 
+
+
 <!-- end subscription_form_widget.tmpl --> 
+

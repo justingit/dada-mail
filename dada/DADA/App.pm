@@ -65,6 +65,16 @@ sub cgiapp_init {
 
 sub cgiapp_postrun {
     my ( $self, $output_ref ) = @_;
+	$self->header_props(
+	    -charset         => $DADA::Config::HTML_CHARSET,
+	    -Pragma          => 'no-cache', 
+	    '-Cache-control' => 'max-age=0, no-cache, no-store, must-revalidate',
+		-Expires         => 'Wed, 11 Jan 1984 05:00:00 GMT',		
+	);
+}
+
+sub cgiapp_postrun {
+    my ( $self, $output_ref ) = @_;
     $$output_ref = safely_encode($$output_ref);
 }
 

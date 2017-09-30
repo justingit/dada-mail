@@ -1,13 +1,8 @@
 #!/usr/bin/perl 
 
-
 BEGIN {
         open( STDERR, ">>./errors.txt" );
 }
-
-
-
-
 
 package DadaMailInstaller;
 use base 'CGI::Application';
@@ -1289,6 +1284,12 @@ sub grab_former_config_vals {
             $opt->{'captcha_on_subscribe_form'} = $BootstrapConfig::RECAPTCHA_PARAMS->{on_subscribe_form};
         }
 
+
+        if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{type} ) ) {
+            $opt->{'captcha_reCAPTCHA_type'} = $BootstrapConfig::RECAPTCHA_PARAMS->{type};
+        }
+		
+
         if ( defined( $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key} ) ) {
             $opt->{'captcha_reCAPTCHA_Mailhide_public_key'} = $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key};
         }
@@ -1683,6 +1684,7 @@ sub query_params_to_install_params {
 	  captcha_on_subscribe_form
       captcha_reCAPTCHA_public_key
       captcha_reCAPTCHA_private_key
+	  captcha_reCAPTCHA_type
       captcha_reCAPTCHA_Mailhide_public_key
       captcha_reCAPTCHA_Mailhide_private_key
 
@@ -2364,6 +2366,8 @@ sub create_dada_config_file {
 		$captcha_params->{captcha_reCAPTCHA_remote_addr} = clean_up_var( $ip->{-captcha_reCAPTCHA_remote_addr} );
         $captcha_params->{captcha_reCAPTCHA_public_key}  = clean_up_var( $ip->{-captcha_reCAPTCHA_public_key} );
         $captcha_params->{captcha_reCAPTCHA_private_key} = clean_up_var( $ip->{-captcha_reCAPTCHA_private_key} );
+        $captcha_params->{captcha_reCAPTCHA_type}        = clean_up_var( $ip->{-captcha_reCAPTCHA_type} );
+
         $captcha_params->{captcha_reCAPTCHA_Mailhide_public_key} =
           clean_up_var( $ip->{-captcha_reCAPTCHA_Mailhide_public_key} );
         $captcha_params->{captcha_reCAPTCHA_Mailhide_private_key} =

@@ -367,7 +367,8 @@ sub admin_header_params {
         -type            => 'text/html',  
         -charset         => $DADA::Config::HTML_CHARSET,
         -Pragma          => 'no-cache', 
-        '-Cache-control' => 'no-cache, must-revalidate',
+        '-Cache-control' => 'max-age=0, no-cache, no-store, must-revalidate',
+		-Expires         => 'Wed, 11 Jan 1984 05:00:00 GMT',
     );
             
    return %params;

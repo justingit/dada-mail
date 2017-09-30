@@ -1958,6 +1958,8 @@
 
 			<div id="captcha_options">
 				<div class="panel">
+			
+			
 				<div class="row">
 					<div class="small-12 columns">
 						<label for="captcha_on_subscribe_form">
@@ -1971,6 +1973,37 @@
 							Add CAPTCHA on all subscription forms
 						</label>
 					</div>
+					<div class="row">
+						<div class="small-1 columns">
+						</div>
+						<div class="small-11 columns">
+						
+						
+							<label for="captcha_reCAPTCHA_type_v2">
+								<input 
+									type="radio" 
+									name="captcha_reCAPTCHA_type" 
+									id="captcha_reCAPTCHA_type_v2" 
+									value="v2" 
+									checked="check" 
+								>
+								reCAPTCHA V2
+							</label>
+							
+							<label for="captcha_reCAPTCHA_type_invisible">
+								<input 
+									type="radio" 
+									name="captcha_reCAPTCHA_type" 
+									id="captcha_reCAPTCHA_type_invisible" 
+									value="invisible" 
+								>
+								Invisible
+							</label>
+							
+							
+						</div>
+					</div>
+			
 				</div>
 				
 
@@ -1981,11 +2014,11 @@
 							
 							<!-- tmpl_if can_use_CAPTCHA_Google_reCAPTCHA --> 
 								<li>
-									<strong>reCAPTCHA v2</strong> is supported.
+									<strong>reCAPTCHA V2/Invisible reCAPTCHA</strong> are supported.
 								</li>
 							<!-- tmpl_else --> 
 								<li>
-									The <strong>Google::reCAPTCHA</strong> CPAN module needs to be installed, for reCAPTCHA v2support. 
+									The <strong>Google::reCAPTCHA</strong> CPAN module needs to be installed, for reCAPTCHA V2/Invisible reCAPTCHA support. 
 								</li>
 							<!-- /tmpl_if -->
 							
@@ -2009,7 +2042,7 @@
 							value="Google_reCAPTCHA" 
 
 						>
-						<!-- reCAPTCHA v2 (recommended) --> 
+						<!-- reCAPTCHA V2 (recommended) --> 
 
 						<div class="alert-box info radius">
 						More Information: 
