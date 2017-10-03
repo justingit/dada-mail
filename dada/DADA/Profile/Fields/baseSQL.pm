@@ -149,6 +149,11 @@ sub get {
 	if(!$args->{ -dotted }){ 
 		$args->{ -dotted } = 0; 
 	}
+	if(!exists($args->{-dotted_with})){ 
+		$args->{-dotted_with} = 'subscriber'; 
+	} 
+	
+	
 	#if(!exists($args->{-email})){ 
 	#	return undef; 
 	#}
@@ -193,7 +198,7 @@ sub get {
     if ( $args->{ -dotted } == 1 ) {
         my $dotted = {};
         for ( keys %$n_hashref ) {
-            $dotted->{ 'subscriber.' . $_ } = $n_hashref->{$_};
+            $dotted->{$args->{-dotted_with} . '.' . $_ } = $n_hashref->{$_};
         }
 
 		# require Data::Dumper; 
