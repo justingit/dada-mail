@@ -361,13 +361,11 @@ sub admin_template {
 }
 
 
+# This needs to die. 
 sub admin_header_params { 
 
     my %params = (
         -type            => 'text/html',  
-        -charset         => $DADA::Config::HTML_CHARSET,
-        -Pragma          => 'no-cache', 
-        '-Cache-control' => 'no-cache, must-revalidate',
     );
             
    return %params;
