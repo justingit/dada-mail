@@ -2,6 +2,41 @@
 
 =encoding utf-8
 
+=head1 10.7.1
+
+This is mostly a bug-fix release for issues found in the v10.7.0 release of Dada Mail. 
+
+=head2 Bugfixes 
+
+=head3  Server Headers sent by Dada Mail not good enough to stop caching of dynamic screens #697 
+
+L<https://github.com/justingit/dada-mail/issues/697>
+
+Webpage caching is generally a good thing. Caching dynamic screens in a webapp is not, if you don't know what 
+screens have data that's specific to say, a login cookie. Dada Mail is set up to try to sidestep any caching 
+that's configuring by sending a series of server headers that say, "hey, don't cache this, don't look at a cached version", 
+but the previous server headers just weren't enough. So, we've modified them to be a bit more robust. They'll look a bit like this: 
+
+	Cache-Control: "max-age=0, no-cache, no-store, must-revalidate"
+	Pragma: "no-cache"
+	Expires: "Wed, 11 Jan 1984 05:00:00 GMT"
+
+There's currently no way to adjust these headers within the app, but if you would like to make 
+your own adjustments, the easiest way is to put them in the .htaccess file that lives within the, C<dada> 
+directory. Directives to set these headers already exist within this file, they just need to be uncommented
+be live. 
+
+=head3  Subscriber's Email Address Always Filled in with List Owner's Email Address in Mass Mailing Email Messages #683 
+
+L<https://github.com/justingit/dada-mail/issues/683> 
+
+In other words, any time this email template tag was used: 
+
+	<!-- tmpl_var subscriber.email --> 
+
+It would be replaced with the List Owner's email address, and not your specific Subscriber's. This was because 
+internally, the template variable for, C<subscriber.email> was set to the List Owner's email address. Fixed!
+
 =head1 10.7.0
 
 =head2 Features
