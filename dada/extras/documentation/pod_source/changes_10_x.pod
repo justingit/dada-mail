@@ -693,7 +693,7 @@ reCAPTCHA v2 requires the following CPAN module: C<Google::reCAPTCHA>, which you
 or through our, C<Bundle::DadaMail> module, which will install all the other optional CPAN modules Dada Mail
 takes advantage of. Here's how you install CPAN modules, 
 
-L<http://dadamailproject.com/support/documentation-10_1_0/FAQ-installing_CPAN_Perl_modules.pod.html>
+L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =head1 10.1.0
 
