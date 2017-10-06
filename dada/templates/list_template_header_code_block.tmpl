@@ -7,6 +7,13 @@
 		<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css?v=<!-- tmpl_var VER escape=URL -->" type="text/css" media="screen" >
 	<!-- /tmpl_if -->
 <!-- /tmpl_if -->
+	
+<!-- tmpL_if can_use_Google_reCAPTCHA -->
+  	  <script src='https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit' async defer></script>
+   
+	   <!-- tmpl_if comment --><script src='https://www.google.com/recaptcha/api.js'></script><!-- /tmpl_if -->
+<!-- /tmpl_if -->
+
 
 <!-- tmpl_if include_jquery_lib --> 
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery-2.1.4.min.js"></script>
@@ -28,9 +35,6 @@
 	<script type="text/javascript">
 	   var $dm = $.noConflict(true);
 	</script>
-<!-- /tmpl_if -->
-<!-- tmpL_if can_use_Google_reCAPTCHA -->
-	   <script src='https://www.google.com/recaptcha/api.js'></script>
 <!-- /tmpl_if -->
 
 

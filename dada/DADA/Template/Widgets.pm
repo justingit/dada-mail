@@ -2752,6 +2752,13 @@ sub subscription_form {
     }
     else { 
 
+		use Data::Dumper; 
+		warn Dumper({add_recaptcha_js         => $args->{-add_recaptcha_js}, 							
+							recaptcha_html           => $CAPTCHA_string,				
+							recaptcha_v2             => $recaptcha_v2,
+							recaptcha_invisible      => $recaptcha_invisible,
+							recaptcha_public_key => $DADA::Config::RECAPTCHA_PARAMS->{public_key}, 	});
+
 		return screen({
             -screen => 'subscription_form_widget.tmpl', 
             -vars   => {

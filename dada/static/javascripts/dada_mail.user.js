@@ -2,6 +2,27 @@
   "use strict";
  
   $(function() {
+	  
+    
+	$(".g-recaptcha").each(function() {
+	    
+		alert('g-recaptcha');
+		
+		var object = $(this);
+		var sitekey = object.parents('form').find(".sitekey").val(); 
+		
+		alert('sitekey' + sitekey);
+		
+	    grecaptcha.render(object.attr("id"), {
+	        "sitekey" : sitekey,
+	        "callback" : function(token) {
+	            object.parents('form').find(".g-recaptcha-response").val(token);
+	            object.parents('form').submit();
+	        }
+	    });
+	});
+
+	
 
   	if ($("#list_unsubscribe").length) {
 		if(
@@ -56,7 +77,7 @@
 	}
 
 
-	if ($("#subscription_form").length) {
+	if ($("#subscription_form").length && $("#subscription_form #recaptcha_subscribe_button").length === 0) {
 		$("#subscription_form").validate({
 		   ignore: ".ignore",
 			debug: false,
