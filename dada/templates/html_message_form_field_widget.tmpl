@@ -1,16 +1,16 @@
 <!-- begin html_message_form_field_widget.tmpl --> 
 	<!-- tmpl_if using_ckeditor --> 
 		<div id="using_ckeditor"></div> 
-    	<textarea name="html_message_body" cols="80" rows="40" id="html_message_body" class="html_message_body"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>
+    	<textarea name="html_message_body" cols="80" rows="40" id="html_message_body" class="html_message_body" data-gramm="false"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>
 	<!-- /tmpl_if --> 
 	
 	<!-- tmpl_if using_tiny_mce --> 
 		<div id="using_tinymce"></div> 
-		<textarea name="html_message_body" cols="80" rows="40" id="html_message_body" class="html_message_body"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>					
+		<textarea name="html_message_body" cols="80" rows="40" id="html_message_body" class="html_message_body" data-gramm="false"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>					
 	<!-- /tmpl_if --> 
 
 	<!-- tmpl_if using_no_wysiwyg_editor -->
-		<textarea name="html_message_body" cols="80" rows="40" id="html_message_body"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>
+		<textarea name="html_message_body" cols="80" rows="40" id="html_message_body" data-gramm="false"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>
 	<!-- /tmpl_if --> 
 
 <!-- end html_message_form_field_widget.tmpl --> 
