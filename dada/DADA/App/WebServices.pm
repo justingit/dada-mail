@@ -122,6 +122,9 @@ sub request {
         elsif( $self->{service} eq 'update_settings') { 
             $r = $self->update_settings();            
         }
+		elsif( $self->{service} eq 'update_profile_fields') { 
+            $r = $self->update_profile_fields();            
+        }
         else {
             $r = {
                 status => 0,
@@ -413,6 +416,77 @@ sub update_settings {
     return $r; 
 }
 
+
+
+sub update_profile_fields {
+
+    my $self = shift;
+
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
+
+    my $json = JSON->new->allow_nonref;
+    my $r    = {};
+
+    my $email = $self->{cgi_obj}->param('email');
+	   $email = $json->decode($email);
+       $email = cased( xss_filter($email) );
+	   warn '$email:' . $email; 
+	   
+
+    try {
+
+	    require DADA::Profile;
+	    my $prof = DADA::Profile->new( { -email => $email } );
+
+	    my $profile_fields = $self->{cgi_obj}->param('profile_fields');
+	       $profile_fields = $json->decode($profile_fields);
+
+	    # check to see if profiles exist?
+	    # Actually, it doesnm't matter to me if the profile exists or not,
+
+        my $new_fields = {};
+        for my $nfield ( @{ $lh->subscriber_fields() } ) {
+            if ( exists( $profile_fields->{$nfield} ) ) {
+                $new_fields->{$nfield} = $profile_fields->{$nfield};
+            }
+        }
+
+        my $dpf = DADA::Profile::Fields->new({-email => $email});
+		my $orig = $dpf->get;
+		
+		delete($orig->{email});
+		delete($orig->{email_name});
+		delete($orig->{email_domain});
+		
+		
+           $dpf->insert(
+            {
+                -email  => $email,
+                -fields => $new_fields,
+            }
+        );
+        $r = {
+            status  => 1,
+            results => { 
+					saved => 1,
+					email => $email, 
+					profile_fields => $new_fields,
+					previous_profile_fields => $orig,
+					
+			},
+        };
+    }
+    catch {
+        $r = {
+            status => 0,
+            errors => $_
+        };
+    };
+
+    return $r;
+}
+
+
 sub check_request {
 
     my $self = shift;
@@ -508,11 +582,17 @@ sub check_digest {
     }
     elsif($self->{service} eq 'settings' ){ 
         $n_digest = $self->digest($self->{cgi_obj}->param('nonce'));
-    }else {
+
+	}
+	elsif ( $self->{service} eq 'update_profile_fields' ) {
+        $qq->param( 'email',           $self->{cgi_obj}->param('email') );
+        $qq->param( 'nonce',           $self->{cgi_obj}->param('nonce') );
+        $qq->param( 'profile_fields',  $self->{cgi_obj}->param('profile_fields') );
+        $n_digest = $self->digest( $qq->query_string() );
+	}else {
         $qq->param( 'addresses', $self->{cgi_obj}->param('addresses') );
         $qq->param( 'nonce',     $self->{cgi_obj}->param('nonce') );
-        $n_digest = $self->digest( $qq->query_string() );
-        
+        $n_digest = $self->digest( $qq->query_string() );        
     }
     # debug'n
     
