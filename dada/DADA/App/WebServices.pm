@@ -430,17 +430,27 @@ sub update_profile_fields {
     my $email = $self->{cgi_obj}->param('email');
 	   $email = $json->decode($email);
        $email = cased( xss_filter($email) );
-	   warn '$email:' . $email; 
 	   
 
-    try {
+	if ( check_for_valid_email($email) == 1 ) {
+		return  {
+		   	status => 0,
+		   	errors => 'invalid_email',
+			email  => $email,
+		};
+	}
 
+
+    try {
+		
 	    require DADA::Profile;
 	    my $prof = DADA::Profile->new( { -email => $email } );
 
 	    my $profile_fields = $self->{cgi_obj}->param('profile_fields');
 	       $profile_fields = $json->decode($profile_fields);
 
+		   warn 'pf:' . $profile_fields; 
+		   
 	    # check to see if profiles exist?
 	    # Actually, it doesnm't matter to me if the profile exists or not,
 
@@ -475,8 +485,7 @@ sub update_profile_fields {
 					
 			},
         };
-    }
-    catch {
+    } catch {
         $r = {
             status => 0,
             errors => $_

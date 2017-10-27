@@ -139,6 +139,7 @@ sub the_query_string {
     my $self         = shift;
     my $query_params = shift;
     my $new_q        = CGI->new;
+	   $new_q->delete_all();
     for ( sort { lc $a cmp lc $b } ( keys %$query_params ) ) {
         $new_q->param( $_, $query_params->{$_} );
     }
