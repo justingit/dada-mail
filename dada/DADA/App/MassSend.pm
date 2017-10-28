@@ -1001,7 +1001,8 @@ sub construct_from_url {
         ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) 
 			= $mailHTML->parse(
 				safely_encode($html_message), 
-				safely_encode($text_message)
+				safely_encode($text_message),
+				$base
 			); 
     } catch { 
         my $errors = "Problems sending HTML! \n
@@ -2103,7 +2104,7 @@ sub list_invite {
 	        ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) 
 				= $mailHTML->parse(
 					safely_encode($html_message), 
-					safely_encode($text_message)
+					safely_encode($text_message),
 				); 
 	    } catch { 
 	        my $errors = "Problems sending HTML! \n
