@@ -87,7 +87,7 @@ sub request {
               if $t;
         }
         else {
-            $self->{$param} = $args->{$_};
+            $self->{$param} = strip($args->{$_});
         }
     }
 
@@ -468,7 +468,10 @@ sub check_public_key {
     my $self = shift;
     my $r    = 0;
 
-    if ( $self->{ls}->param('public_api_key') ne $self->{ls}->param('public_api_key') ) {
+    if ( 
+		   $self->{ls}->param('public_api_key') 
+	    ne $self->{public_key} 
+	) {
         $r = 0;
     }
     else {
