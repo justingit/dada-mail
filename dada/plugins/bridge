@@ -1764,14 +1764,13 @@ sub validate_msg {
 
     if ( defined($rough_from) ) {
         try {
-
             # This correct ?
             $from_address = ( Email::Address->parse($rough_from) )[0]->address;
-        }
-    } catch { 
-         $r .= '\t*Warning! Something\'s wrong with the From address - ' . $_;
-    };
-
+	    } catch { 
+	         $r .= '\t*Warning! Something\'s wrong with the From address - ' . $_;
+	    };
+	}
+	
     $from_address = lc_email($from_address);
 
     $r .= "* Checking Recipient: $from_address\n";
