@@ -14641,6 +14641,8 @@ sub transform_to_pro {
 \$GIVE_PROPS_IN_ADMIN          = 0;
 \$GIVE_PROPS_IN_SUBSCRIBE_FORM = 0;
 \$PROGRAM_IMG_FILENAME         = 'pro_dada_mail_logo.png';
+\$LIST_QUOTA                   = undef;
+\$SUBSCRIPTION_QUOTA           = undef;
 
 };
         my $status = 1;
