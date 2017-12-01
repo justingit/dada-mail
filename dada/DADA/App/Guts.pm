@@ -1151,12 +1151,13 @@ sub html_to_plaintext {
 
 	my $formatted = undef; 
 	
-	eval { require HTML::FormatText::WithLinks; };
-	if(!$@){ 
-	    my $f = HTML::FormatText::WithLinks->new( %{$args->{-formatter_params}} );
+	my $hftwl = 1; 
 	
-		require DADA::Security::Password;
+	try { 
 		
+		require HTML::FormatText::WithLinks; 
+	   	my $f = HTML::FormatText::WithLinks->new( %{$args->{-formatter_params}} );
+		require DADA::Security::Password;
 		my $ran_str = DADA::Security::Password::generate_rand_string();
 		
 		# hide comments, so they don't get destroyed: 
@@ -1175,14 +1176,19 @@ sub html_to_plaintext {
 				$f->error; 
 			return convert_to_ascii(_chomp_off_body($args->{-str})); 
 		}
-	}
-	else { 
-	#	carp 'before:' . $args->{-str}; 
+	} catch {
+		$hftwl = 0; 
+		carp $DADA::Config::PROGRAM_NAME . ' ' . $DADA::Config::VER . 
+			' warning: Something went wrong with the HTML to PlainText conversion: ' . $_; 
+		#return convert_to_ascii(_chomp_off_body($args->{-str})); 
+	};
+		 
+	if($hftwl == 0){
 		my $pt = _chomp_off_body($args->{-str}); 
 		   $pt = convert_to_ascii($pt); 
-	#	carp 'after:' . $pt; 
 		return $pt; 
-	}		
+	}	
+		
 }
 
 
