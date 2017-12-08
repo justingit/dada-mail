@@ -1602,7 +1602,7 @@ sub make_search_summary {
 		
 		for $line(@message_lines){ 
 			if($line =~ m/$keyword/io){ 
-				$line =~ s{$keyword}{<em class="highlighted">$keyword</em>}gi;
+				$line =~ s{$keyword}{<em class="dm_highlighted">$keyword</em>}gi;
 				$line = $self->massage($line); 
 				$search_summary{$key} .= "... $line ... <br />";
 			}

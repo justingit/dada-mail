@@ -598,7 +598,7 @@ sub html_highlight_line {
     my @terms = split(' ', $args->{-query}); 
     
     for my $term(@terms){  
-        $args->{-line} =~ s{$term}{<em class="highlighted">$term</em>}mg;
+        $args->{-line} =~ s{$term}{<em class="dm_highlighted">$term</em>}mg;
     }
     
    return $args->{-line}; 

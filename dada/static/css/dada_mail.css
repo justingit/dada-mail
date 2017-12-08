@@ -122,3 +122,10 @@ a.menu_disabled:active {
 }
 
 
+.dm_highlighted {
+	font-style: normal;
+	background-color: #ccff15;
+}
+
+
+

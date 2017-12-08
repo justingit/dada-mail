@@ -53,7 +53,7 @@ my $results   = log_viewer::search_logs(
     1, 
     $list
 );
-my $find_this = quotemeta('<em class="highlighted">found</em>'); 
+my $find_this = quotemeta('<em class="dm_highlighted">found</em>'); 
 like($results, qr/$find_this/, "found the stuff, escaped."); 
 
 #/ [ 2124123 ] 3.0.0 - Log viewer doesn't escape ">" "<" in searches
