@@ -14,9 +14,10 @@ CKEDITOR.editorConfig = function(config) {
    config.filebrowserBrowseUrl      = '<!-- tmpl_var file_manager_browse_url -->?type=files';
    config.filebrowserImageBrowseUrl = '<!-- tmpl_var file_manager_browse_url -->?type=images';
    config.filebrowserFlashBrowseUrl = '<!-- tmpl_var file_manager_browse_url -->?type=flash';
-   config.filebrowserUploadUrl      = '<!-- tmpl_var file_manager_upload_url -->?type=files';
-   config.filebrowserImageUploadUrl = '<!-- tmpl_var file_manager_upload_url -->?type=images';
-   config.filebrowserFlashUploadUrl = '<!-- tmpl_var file_manager_upload_url -->?type=flash';
+   config.filebrowserUploadUrl      = null;
+   config.filebrowserImageUploadUrl = null;
+   config.filebrowserFlashUploadUrl = null;
+   config.removeDialogTabs = 'link:upload;image:Upload';
    <!-- /tmpl_if --> 
    
    config.height                    = '30em';
