@@ -2,6 +2,58 @@
 
 =encoding utf-8
 
+=head1 10.7.2
+
+This is mostly a bug-fix release for issues found in the v10.7.1 release of Dada Mail. 
+
+=head2 Features
+
+=head3 Bounce Handler: Amazon SES Abuse Reports are now always sent to the List Owner by default
+
+When using Amazon SES for mail sending, the Bounce Handler should almost always be installed as well, as 
+taking care of bounce and abuse reports is critical to working with the Amazon SES environment. The Bounce Handler
+takes care of both bounces messages, and any abuse reports sent to it. One issue we've uncovered is that abuse 
+reports can be sent from messages other than mass mailings - say, a nefarious person fills out a subscription form, 
+then sends an abuse report after the confirmation email is sent to them. In previous versions of Dada Mail, 
+there would be no way within Dada Mail to know that that abuse report was made. Dada Mail would not send out 
+an email to the list owner to easily unsubscribe the address, since that address wasn't subscribed! 
+
+Starting with this version, that abuse report would be forwarded to the list owner, so that they then can take 
+action. All abuse reports sent by Amazon SES will be sent to the List Owner by default, and this option can be 
+enabled/disabled from within the Bounce Handler plugin options, independently of the option to forward bounced messages
+to the List Owner. The former hopefully happens rarely, the latter may happen on every mass mailing - easily overwhelming
+the List Owner. 
+
+Look for the options, 
+
+	[ ] Forward bounces to the List Owner after success
+	[x] Forward abuse reports to the List Owner (Amazon SES only)
+
+in the Bounce Handler plugin. It's suggest that anyone using Amazon SES for mail sending upgrade to this version, so that 
+ALL abuse reports originated from email sent from Dada Mail get sent to the appropriate List Owner! 
+
+=head2 Bugfixes 
+
+=head3 No, "highlighted" css class for search results #708
+
+L<https://github.com/justingit/dada-mail/issues/708>
+
+=head3 Ckeditor image upload modal window has useless and confusing, "Upload" tab #707
+
+L<https://github.com/justingit/dada-mail/issues/707>
+
+=head3 Bridge: Useless bare catch() at plugins/bridge line 1773. #703
+
+L<https://github.com/justingit/dada-mail/issues/703>
+
+=head3 Web Services API: public key check broken #700
+
+L<https://github.com/justingit/dada-mail/issues/700>
+
+=head3 Send a Webpage: Images with Relative URLs fail to be added to messages #699
+
+L<https://github.com/justingit/dada-mail/issues/699>
+
 =head1 10.7.1
 
 This is mostly a bug-fix release for issues found in the v10.7.0 release of Dada Mail. 
