@@ -338,13 +338,14 @@ sub edit_prefs {
         {
             -associate => $q,
             -settings  => {
-                bounce_handler_softbounce_score           => undef,
-                bounce_handler_hardbounce_score           => undef,
-                bounce_handler_decay_score                => undef,
-                bounce_handler_threshold_score            => undef,
-                bounce_handler_forward_msgs_to_list_owner => 0,
-				bounce_handler_send_unsub_notification    => 0, 
-                bounce_handler_when_threshold_reached     => undef,
+                bounce_handler_softbounce_score                        => undef,
+                bounce_handler_hardbounce_score                        => undef,
+                bounce_handler_decay_score                             => undef,
+                bounce_handler_threshold_score                         => undef,
+                bounce_handler_forward_msgs_to_list_owner              => 0,
+				bounce_handler_forward_abuse_report_msgs_to_list_owner => 0, 
+				bounce_handler_send_unsub_notification                 => 0, 
+                bounce_handler_when_threshold_reached                  => undef,
             },
 			-also_save_for => $also_save_for_list,
         }
@@ -369,7 +370,7 @@ sub ajax_parse_bounces_results {
 
     my $r = '';
     $r .= '<pre>';
-    $r .= cl_main();
+	$r .= encode_html_entities(scalar cl_main());
     $r .= '</pre>';
 
     return ( {}, $r );

@@ -470,13 +470,26 @@ sub parse_all_bounces {
 
                     $log .= $msg_report;
                     $log .= $rule_report;
-
+					
                     if ( $need_to_delete == 1 ) {
-                        if ( $ls->param('bounce_handler_forward_msgs_to_list_owner') ) {
+						
+                        if ( 
+						
+								(
+									$ls->param('bounce_handler_forward_msgs_to_list_owner') == 1
+									&& $diag->{matched_rule} ne 'amazon_ses_abuse_report'
+								)
+							|| 
+								(
+									$ls->param('bounce_handler_forward_abuse_report_msgs_to_list_owner') == 1
+									&& $diag->{matched_rule} eq 'amazon_ses_abuse_report'
+								) 
+
+							) {
                             
 							if($diag->{matched_rule} eq 'exceeded_the_max_emails_per_hour') { 
 								warn 'Bounce is because of exceeding an hourly sending limit - 
-									  NOT forwarding bounced message, so to stop an infite loop!';
+									  NOT forwarding bounced message, so to stop an infinite loop!';
 							}
 							else {
 								my $r = $self->forward_to_list_owner(
@@ -486,8 +499,8 @@ sub parse_all_bounces {
 	                                }
 	                            );
 	                            if ( $r == 1 ) {
-	                                $log .= "Forwarding bounces message to the List Owner ("
-	                                  . $ls->param('list_owner_email') . ")\n";
+	                                $log .= "Forwarding bounce message/abuse report to the List Owner ("
+	                                  . $ls->param('list_owner_email') . ") - matched_rule: " . $diag->{matched_rule} . "\n";
 	                            }
 	                            else {
 	                                $log .= "Problems forwarding message to the List Owner!\n";
@@ -694,11 +707,12 @@ sub parse_bounce {
     }
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $found_list } );
-    if ( $lh->check_for_double_email( -Email => $email ) != 1 ) {
+    
+	if ( $lh->check_for_double_email( -Email => $email ) != 1 ) {
         $msg_report .= "Bounced Message is from an email address that isn't subscribed to: $found_list. Ignorning.\n";
         return ( $found_list, 1, $msg_report, '', $diagnostics );
     }
-
+		
     if ( $args->{-test} != 1 ) {
 
         $rule_report = $self->carry_out_rule( $rule, $found_list, $email, $diagnostics, $message );
@@ -737,6 +751,14 @@ sub forward_to_list_owner {
         $entity->head->delete('To');
     }
     $entity->head->add( 'To', $args->{-ls_obj}->param('list_owner_email') );
+
+
+    if ( $entity->head->get( 'From', 0 ) ) {
+        $entity->head->delete('From');
+    }
+    $entity->head->add( 'From', $args->{-ls_obj}->param('list_owner_email') );
+
+
 
     require Email::Address;
     $entity->head->add( 'X-BeenThere',
@@ -1272,8 +1294,8 @@ sub generate_nerd_report {
     my ( $list, $email, $diagnostics ) = @_;
     my $report;
     $report = "List: $list\nEmail: $email\n\n";
-    for ( keys %$diagnostics ) {
-        $report .= "$_: " . $diagnostics->{$_} . "\n";
+    for my $diag_key ( keys %$diagnostics ) {
+	    $report .= $diag_key . ": " . $diagnostics->{$diag_key} . "\n";
     }
 
     return $report;
