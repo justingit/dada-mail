@@ -1480,7 +1480,15 @@ sub email_message_preview {
 	            -list_settings_vars_param => {
 	                -list   => $list,
 	                -dot_it => 1,
-	            },
+	            },	
+				(($returning_plaintext == 0) ? (
+                -webify_these => [
+                    qw(
+                      list_settings.info
+                      list_settings.privacy_policy
+                      list_settings.physical_address
+                      )
+                ],) : () )
 	        }
 	    );
 	} catch { 
