@@ -339,6 +339,11 @@ sub write_htaccess {
 	
 	my $entry = $self->get({-id => $args->{-id}}); 
 	
+	if(! -d make_safer($entry->{path})){ 
+		carp "Directory, '" . $entry->{path} . "' does not exist, skipping creation of .htaccess file.";
+		return 0; 
+	}
+	
 	my $custom_error_page = undef; 
 	if($entry->{use_custom_error_page} == 1 && defined($entry->{custom_error_page})){ 
 		$custom_error_page = $entry->{custom_error_page}
@@ -411,6 +416,12 @@ sub write_htpasswd {
 	my ($args) = @_; 
 	
 	my $entry = $self->get({-id => $args->{-id}}); 
+	
+	if(! -d make_safer($entry->{path})){ 
+		carp "Directory, '" . $entry->{path} . "' does not exist, skipping creation of .htpasswd file.";
+		return 0;
+	}
+	
 	open my $htpasswd, '>', $entry->{path} . '/' . '.htpasswd' or die $! ;
 	my $pt = $DADA::Config::SQL_PARAMS{profile_table}; 
 	my $st = $DADA::Config::SQL_PARAMS{subscriber_table};
