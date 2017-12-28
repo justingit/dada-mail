@@ -97,8 +97,7 @@ sub net_pop3_login {
 		$args->{debug} = 1; 
 	}
 	
-	
-		
+	$r .= "* Connecting with Net::POP3 v" . $Net::POP3::VERSION . "\n"; 
 	
 	if(length($args->{server}) <= 0 ) { 
 	    $r .= 'Server is blank?' . "\n";
@@ -157,10 +156,17 @@ sub net_pop3_login {
 			$r .= "* APOP may NOT be supported.\n";
 		}
 		
-		if($pop->can_ssl()){ 
-			$r .= "* SSL Supported.\n";
+		if(
+				$pop->can_ssl() 
+			&&  $Net::POP3::VERSION >= 3.03
+		){ 
+			$r .= "* SSL Supported\n";
 		}else { 
 			$r .= "* SSL is NOT Supported.\n";
+			if($Net::POP3::VERSION < 3.03){ 
+				$r .= "* Net::POP3 v3.03 or greater is required for SSL connections.\n";
+			}
+		
 		}
 		
 		my $lr; 
