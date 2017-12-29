@@ -32,7 +32,59 @@ Look for the options,
 in the Bounce Handler plugin. It's suggest that anyone using Amazon SES for mail sending upgrade to this version, so that 
 ALL abuse reports originated from email sent from Dada Mail get sent to the appropriate List Owner! 
 
-=head2 Bugfixes 
+=head2 Changes
+
+=head3 User-facing Profile Features
+
+Dada Mail has the ability to enable/disable many of the user-facing Profile features, from disabling them entirely, 
+to just turning on/off most every feature separately. We've changed a bit some of the defaults. The following features 
+are now disabled by default: 
+
+=over
+
+=item * Registering for a new profile
+
+=item * Delering a profile
+
+=back
+
+and the following feature has been completely removed: 
+
+=over
+
+=item  * Logging into a Profile
+
+=back
+
+Perhaps, "completely removed" is a little rough. 
+What's really happening, is that we're simplifying the options. 
+There's already an option to enable user-facing Profiles and all the features allowed with them. 
+If that's enabled, so is a user being able to log into their profile, or what's the point? 
+Two options are saying basically the same thing, so we're getting rid of the explicit, "log into a profile" option. 
+
+See issues #712 and #710 for more information. 
+
+=head2 Bugfixes
+
+=head3 Password Protect Directories: no check to see if directory exists when making .htaccess and .htpasswd files #713
+
+L<https://github.com/justingit/dada-mail/issues/713>
+
+=head3 "Profile Register/Log In" link in HTML screens will still show, "Register", even if registering a profile is not enabled #712
+
+L<https://github.com/justingit/dada-mail/issues/712>
+
+=head3 Minimum version of Net::POP3/IO::Socket::SSL needed for SSL POP3 connections to be successful #711
+
+L<https://github.com/justingit/dada-mail/issues/711>
+
+=head3 Template var, "PROFILE_ENABLED" not expressive enough to be used in all circumstances in email template #710
+
+L<https://github.com/justingit/dada-mail/issues/710>
+
+=head3  Mass Mailing Preview do not render "Physical Address", "Privacy Policy", etc with multiple lines #709
+
+L<https://github.com/justingit/dada-mail/issues/709>
 
 =head3 No, "highlighted" css class for search results #708
 
