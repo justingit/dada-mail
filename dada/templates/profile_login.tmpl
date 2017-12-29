@@ -157,9 +157,16 @@
   <div class="small-12 columns">
     <ul class="tabs show-for-medium-up" data-tab>
       <li class="tab-title active"><a href="#profile_login">Login</a></li>
-      <li class="tab-title"><a href="#profile_password_reset">Reset Password</a></li>
-      <li class="tab-title"><a href="#profile_register">Register</a></li>
-    </ul>
+		 
+		  <!-- tmpl_if profile_settings.password_reset -->
+		 	 <li class="tab-title"><a href="#profile_password_reset">Reset Password</a></li>
+		  <!-- /tmpl_if -->
+	   
+		  <!-- tmpl_if profile_settings.register -->
+	      		<li class="tab-title"><a href="#profile_register">Register</a></li>
+		  <!-- /tmpl_if -->	
+	
+	</ul>
 
 	<dl class="accordion" data-accordion>
 	
@@ -210,125 +217,130 @@
 							</div>
 						</div>
 					</form>
-					
-
-
-
-
     			</div>
 			</div>
-			<a href="#profile_password_reset" class="show-for-small-only">Reset Password</a>
-			<div id="profile_password_reset" class="content">
-				<div class="content-box section-box">
+		
+		 <!-- tmpl_if profile_settings.password_reset -->
+		
+				<a href="#profile_password_reset" class="show-for-small-only">Reset Password</a>
+				<div id="profile_password_reset" class="content">
+					<div class="content-box section-box">
 
 
 
 
 
-					<form 
-						action="<!-- tmpl_var PROGRAM_URL -->" 
-						method="post" 
-						accept-charset="<!-- tmpl_var HTML_CHARSET -->" 
-						id="profile_reset_password"
-					> 
-						<input type="hidden" name="flavor" value='profile_reset_password' > 
+						<form 
+							action="<!-- tmpl_var PROGRAM_URL -->" 
+							method="post" 
+							accept-charset="<!-- tmpl_var HTML_CHARSET -->" 
+							id="profile_reset_password"
+						> 
+							<input type="hidden" name="flavor" value='profile_reset_password' > 
 						
-						<div class="row">
-							<div class="small-12 columns">
-								<label for="reset_email">
-									Email Address
-								</label>
-								<input 
-									type="text" 
-									id="reset_email" 
-									name="reset_email" 
-									value="<!-- tmpl_var reset_email escape=HTML -->"
-								>
-							</div>
-						</div>
-						<div class="row">
-							<div class="small-12 columns">
-								<input type="submit" class="button expand" value="Reset Your Profile Password">
-							</div>
-						</div> 
-					</form>
-					
-					
-					
-    			</div>
-			</div>
-			<a href="#profile_register" class="show-for-small-only">Register</a>
-			<div id="profile_register" class="content">
-				<div class="content-box section-box">
-
-
-					<div class="alert-box info radius">
-						Register a Profile to easily manage all your <!-- PROGRAM_NAME --> Subscriptions.
-					</div> 
-
-					<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_register"> 
-						<input type="hidden" name="flavor" value="profile_register" > 
-						
-						<div class="row">
-							<div class="small-12 columns">
-								<label for="register_email">
-									Email Address
-								</label>
-								<input 
-									type="email" 
-									name="register_email" 
-									id="register_email" 
-									value="<!-- tmpl_var register_email escape=HTML -->"
-								> 
-							</div>
-						</div>
-						<div class="row">
-							<div class="small-12 columns">
-								<label for="register_email_again" >
-									Email Address (again)
-								</label>
-								<input 
-									type="email" 
-									name="register_email_again" 
-									id="register_email_again" 
-									value="<!-- tmpl_var register_email_again -->"
-								> 
-							</div>
-						</div>
-						<div class="row">
-							<div class="small-12 columns">
-								<label for="register_password" >
-									Password
-								</label>
-								<input 
-									type="password" 
-									name="register_password" 
-									id="register_password" 
-								 > 
-							</div>
-						</div>
-						<!-- tmpl_if can_use_captcha --> 
 							<div class="row">
 								<div class="small-12 columns">
-									<div class="alert-box info radius">
-										Please type in the string of letters that you see in 
-										the below image into the text box:
-									</div>
-									<!-- tmpl_var CAPTCHA_string --> 
-								<!-- /tmpl_if --> 
-							</div> 
-						</div> 
-						<div class="row">
-							<div class="small-12 columns">
-								<input type="submit" class="button expand" value="Register a New Profile" > 
+									<label for="reset_email">
+										Email Address
+									</label>
+									<input 
+										type="text" 
+										id="reset_email" 
+										name="reset_email" 
+										value="<!-- tmpl_var reset_email escape=HTML -->"
+									>
+								</div>
 							</div>
-						</div>
-					</form> 
+							<div class="row">
+								<div class="small-12 columns">
+									<input type="submit" class="button expand" value="Reset Your Profile Password">
+								</div>
+							</div> 
+						</form>
+					
+					
+					
+	    			</div>
+				</div>
+				
+			<!-- /tmpl_if -->
+			
+			 <!-- tmpl_if profile_settings.register -->
+			
+					<a href="#profile_register" class="show-for-small-only">Register</a>
+					<div id="profile_register" class="content">
+						<div class="content-box section-box">
+
+
+							<div class="alert-box info radius">
+								Register a Profile to easily manage all your <!-- PROGRAM_NAME --> Subscriptions.
+							</div> 
+
+							<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_register"> 
+								<input type="hidden" name="flavor" value="profile_register" > 
+						
+								<div class="row">
+									<div class="small-12 columns">
+										<label for="register_email">
+											Email Address
+										</label>
+										<input 
+											type="email" 
+											name="register_email" 
+											id="register_email" 
+											value="<!-- tmpl_var register_email escape=HTML -->"
+										> 
+									</div>
+								</div>
+								<div class="row">
+									<div class="small-12 columns">
+										<label for="register_email_again" >
+											Email Address (again)
+										</label>
+										<input 
+											type="email" 
+											name="register_email_again" 
+											id="register_email_again" 
+											value="<!-- tmpl_var register_email_again -->"
+										> 
+									</div>
+								</div>
+								<div class="row">
+									<div class="small-12 columns">
+										<label for="register_password" >
+											Password
+										</label>
+										<input 
+											type="password" 
+											name="register_password" 
+											id="register_password" 
+										 > 
+									</div>
+								</div>
+								<!-- tmpl_if can_use_captcha --> 
+									<div class="row">
+										<div class="small-12 columns">
+											<div class="alert-box info radius">
+												Please type in the string of letters that you see in 
+												the below image into the text box:
+											</div>
+											<!-- tmpl_var CAPTCHA_string --> 
+										<!-- /tmpl_if --> 
+									</div> 
+								</div> 
+								<div class="row">
+									<div class="small-12 columns">
+										<input type="submit" class="button expand" value="Register a New Profile" > 
+									</div>
+								</div>
+							</form> 
 
 
 
-        </div>
-			</div>
+		        </div>
+					</div>
+			
+			<!-- /tmpl_if -->
 
 		</dd>
 	</dl>

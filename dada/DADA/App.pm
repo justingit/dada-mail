@@ -13615,6 +13615,9 @@ sub profile_login {
                         welcome         => scalar $q->param('welcome') || '',
                         removal         => scalar $q->param('removal') || '',
                         WHOLE_URL       => $whole_url,
+						
+						# This should probably be deprecated, as I'm handling this in 
+						# DADA::Template::Widgets, now
                         %{ DADA::Profile::feature_enabled() }
                     },
 

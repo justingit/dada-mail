@@ -1,7 +1,7 @@
 package DADA::Template::Widgets;
 use lib qw(
-	../../ 
-	../../DADA/perllib
+	../../../ 
+	../../../DADA/perllib
 ); 
 
 use Encode; 
@@ -1883,8 +1883,10 @@ sub screen {
 
 
 	my %date_params = date_params(); 
+	my %profile_settings_vars = profile_settings_vars();
 	my %final_params = (
-		%Global_Template_Variables,					
+		%Global_Template_Variables,		
+		%profile_settings_vars,			
 		%date_params,
 		%$template_vars,
 		%_ht_tmpl_set_params,
@@ -2194,6 +2196,39 @@ sub date_params {
 	
 	return %params;
 	
+}
+
+
+sub profile_settings_vars { 
+	
+	my %vars = (
+		'profile_settings.enabled' => $DADA::Config::PROFILE_OPTIONS->{enabled},
+		
+		# backwards compat.: 
+		PROFILE_ENABLED            => $DADA::Config::PROFILE_OPTIONS->{enabled},
+		# are we really going to use these?
+		#'profile.email'                            => $DADA::Config::PROFILE_OPTIONS->{profile_email},
+		#'profile.enable_captcha'                   => $DADA::Config::PROFILE_OPTIONS->{enable_captcha},
+		#'profile.enable_magic_subscription_forms'  => $DADA::Config::PROFILE_OPTIONS->{enable_magic_subscription_forms},
+		
+		
+	); 
+	for(qw(
+		 register                  
+		 password_reset            
+		 profile_fields            
+		 mailing_list_subscriptions
+		 protected_directories     
+		 update_email_address      
+		 change_password           
+		 delete_profile            
+	)){ 
+		if(exists($DADA::Config::PROFILE_OPTIONS->{features}->{$_})){ 
+			$vars{'profile_settings.' . $_} = $DADA::Config::PROFILE_OPTIONS->{features}->{$_}; 
+		}
+	}
+	
+	return %vars;
 }
 
 

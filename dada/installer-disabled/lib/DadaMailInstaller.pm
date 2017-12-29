@@ -1130,7 +1130,6 @@ sub grab_former_config_vals {
 
         for (
             qw(
-            login
             register
             password_reset
             profile_fields
@@ -1630,7 +1629,6 @@ sub query_params_to_install_params {
       profiles_profile_host_list
       profiles_enable_captcha
       profiles_enable_magic_subscription_forms
-      profiles_login
       profiles_register
       profiles_password_reset
       profiles_profile_fields

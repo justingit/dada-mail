@@ -234,8 +234,7 @@ $PROFILE_OPTIONS //= {
     },
 
     features => {
-        login                      => 1,
-        register                   => 1,
+        register                   => 0,
         password_reset             => 1,
         profile_fields             => 1,
         mailing_list_subscriptions => 1,

@@ -23,19 +23,24 @@
  </li>
 </ul> 
 
-<!-- tmpl_if PROFILE_ENABLED -->
-
+<!-- tmpl_if profile_settings.enabled --> 
     <form action="<!-- tmpl_var PROGRAM_URL -->" method="get">
-        <input type="hidden" name="flavor" value="profile" >
+        <input 
+			type="hidden" 
+			name="flavor" 
+			value="profile"
+		>
         <p class="text-center">
-         <input type="submit" value="Visit Your Profle" class="success large button" > 
+			<input 
+				type="submit" 
+				value="Visit Your Profle" 
+				class="success large button"
+			> 
 		</p>
-
-<p>		
-And view all your mailing list subscriptions and change your delivery preferences.
-
-</p>
-    </form>
+		<p>		
+			And view all your mailing list subscriptions and change your delivery preferences.
+		</p>
+	</form>
 <!-- /tmpl_if -->
     
 <!-- end list/subscribed.tmpl -->

@@ -1,7 +1,6 @@
 <!-- begin profile_widget.tmpl --> 
 
-<!-- tmpl_if profiles_enabled --> 
-
+<!-- tmpl_if profile_settings.enabled --> 
 	<ul class="right">			
 		<!-- tmpl_if is_logged_in --> 
 			<!-- tmpl_if gravators_enabled --> 
@@ -22,7 +21,11 @@
 			</li>
 		<!-- tmpl_else --> 
 			<li>
-				<a href="<!-- tmpl_var PROGRAM_URL -->/profile_login/">Profile Register/Log In</a>
+				<!-- tmpl_if profile_settings.register -->
+					<a href="<!-- tmpl_var PROGRAM_URL -->/profile_login/">Profile Register/Log In</a>
+				<!-- tmpl_else -->
+					<a href="<!-- tmpl_var PROGRAM_URL -->/profile_login/">Profile Log In</a>					
+				<!-- /tmpl_if -->
 			<li>
 		<!-- /tmpl_if --> 
 	</ul>

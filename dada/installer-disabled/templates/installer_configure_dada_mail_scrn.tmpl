@@ -1261,28 +1261,10 @@
 					Enabled Features
 					</h4>
 					<div class="panel">
-						<label for="profiles_enable_captcha">
-							<input 
-								type="checkbox" 
-								name="profiles_enable_captcha" 
-								id="profiles_enable_captcha" 
-								value="1" 
-								checked="checked"
-							>			
-							CAPTCHA
-						</label>
+				
 
-						<label for="profiles_enable_magic_subscription_forms">
-							<input 
-								type="checkbox" 
-								name="profiles_enable_magic_subscription_forms" 
-								id="profiles_enable_magic_subscription_forms" 
-								value="1" 
-								checked="checked"
-							>				
-							Magic Subscription Forms
-						</label>
-
+						
+						<!-- tmpl_if comment --> 
 						<label for="profiles_login">
 							<input 
 								type="checkbox" 
@@ -1293,95 +1275,143 @@
 							>			
 							Profile Login
 						</label>
-
-						<label for="profiles_register">
-							<input 
-								type="checkbox" 
-								name="profiles_register" 
-								id="profiles_register" 
-								value="1" 
-								checked="checked"
-							>			
-							Profile Registration
-						</label>
-
-						<label for="profiles_password_reset">
-							<input 
-								type="checkbox" 
-								name="profiles_password_reset" 
-								id="profiles_password_reset" 
-								value="1" 
-								checked="checked"
-							>			
-							Password Reset
-						</label>
-
-						<label for="profiles_profile_fields">
-							<input
-								type="checkbox"
-								name="profiles_profile_fields"
-								id="profiles_profile_fields"
-								value="1"
-								checked="checked"
-							>			
-							Profile Fields
-						</label>
-
-						<label for="profiles_mailing_list_subscriptions">
-							<input 
-								type="checkbox" 
-								name="profiles_mailing_list_subscriptions" 
-								id="profiles_mailing_list_subscriptions" 
-								value="1" 
-								checked="checked"
-							>			
-							Mailing List Subscriptions
-						</label>
-
-						<label for="profiles_protected_directories">
-							<input 
-								type="checkbox" 
-								name="profiles_protected_directories" 
-								id="profiles_protected_directories" 
-								value="1" 
-								checked="checked"
-							>			
-							Password Protected Directory Information
-						</label>
-
-						<label for="profiles_update_email_address">
-							<input 
-								type="checkbox" 
-								name="profiles_update_email_address" 
-								id="profiles_update_email_address" 
-								value="1" 
-								checked="checked"
-							>			
-							Update Email Address
-						</label>
-
-						<label for="profiles_change_password">
-							<input 
-								type="checkbox" 
-								name="profiles_change_password"
-								id="profiles_change_password"
-								value="1" 
-								checked="checked"
-							>			
-							Change Password
-						</label>
+						
+						
+						<div class="row">
+							<div class="small-1 columns">
+								&nbsp;
+							</div>
+							<div class="small-11 columns">
+								
+								<div class="alert-box info radius"> 
+									<strong>
+										Profile Login
+									</strong>
+									will need to be enabled for the below options 
+									to be available:
+								</div>
+							<!-- /tmpl_if --> 
+							
+								<!-- 
+									
+									I don't want Profile Registration to be enabled by default
+									Why would you register a profile, without having a subscription? 
+									It makes sense that a profile is made during a subscription.
+								-->
+								<label for="profiles_register">
+									<input 
+										type="checkbox" 
+										name="profiles_register" 
+										id="profiles_register" 
+										value="1" 
+									>			
+									Profile Registration
+								</label>
 
 
-						<label for="profiles_delete_profile">
-							<input 
-								type="checkbox" 
-								name="profiles_delete_profile" 
-								id="profiles_delete_profile" 
-								value="1" 
-								checked="checked"
-							>			
-							Profile Deletion
-						</label>
+								<label for="profiles_enable_captcha">
+									<input 
+										type="checkbox" 
+										name="profiles_enable_captcha" 
+										id="profiles_enable_captcha" 
+										value="1" 
+										checked="checked"
+									>			
+									CAPTCHA
+								</label>
+
+								<label for="profiles_enable_magic_subscription_forms">
+									<input 
+										type="checkbox" 
+										name="profiles_enable_magic_subscription_forms" 
+										id="profiles_enable_magic_subscription_forms" 
+										value="1" 
+										checked="checked"
+									>				
+									Magic Subscription Forms
+								</label>
+								
+								
+								<label for="profiles_password_reset">
+									<input 
+										type="checkbox" 
+										name="profiles_password_reset" 
+										id="profiles_password_reset" 
+										value="1" 
+										checked="checked"
+									>			
+									Password Reset
+								</label>
+
+								<label for="profiles_profile_fields">
+									<input
+										type="checkbox"
+										name="profiles_profile_fields"
+										id="profiles_profile_fields"
+										value="1"
+										checked="checked"
+									>			
+									Profile Fields
+								</label>
+
+								<label for="profiles_mailing_list_subscriptions">
+									<input 
+										type="checkbox" 
+										name="profiles_mailing_list_subscriptions" 
+										id="profiles_mailing_list_subscriptions" 
+										value="1" 
+										checked="checked"
+									>			
+									Mailing List Subscriptions
+								</label>
+
+								<label for="profiles_protected_directories">
+									<input 
+										type="checkbox" 
+										name="profiles_protected_directories" 
+										id="profiles_protected_directories" 
+										value="1" 
+										checked="checked"
+									>			
+									Password Protected Directory Information
+								</label>
+
+								<label for="profiles_update_email_address">
+									<input 
+										type="checkbox" 
+										name="profiles_update_email_address" 
+										id="profiles_update_email_address" 
+										value="1" 
+										checked="checked"
+									>			
+									Update Email Address
+								</label>
+
+								<label for="profiles_change_password">
+									<input 
+										type="checkbox" 
+										name="profiles_change_password"
+										id="profiles_change_password"
+										value="1" 
+										checked="checked"
+									>			
+									Change Password
+								</label>
+
+
+								<label for="profiles_delete_profile">
+									<input 
+										type="checkbox" 
+										name="profiles_delete_profile" 
+										id="profiles_delete_profile" 
+										value="1" 
+									>			
+									Profile Deletion
+								</label>
+								<!-- tmpl_if comment --> 
+									</div>
+								</div>
+								<!-- /tmpl_if -->
 					</div>
 				</div>
 			</div> 
