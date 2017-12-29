@@ -44,7 +44,7 @@ are now disabled by default:
 
 =item * Registering for a new profile
 
-=item * Delering a profile
+=item * Deleting a profile
 
 =back
 
