@@ -123,7 +123,8 @@ B<Additional Perl Library Paths>.
 
 =head2 Configure Profiles
 
-Profiles allow your users to manage their own subscriptions, in one centralized location. For an overview of Dada Mail Profiles, see: 
+Profiles allow your users to manage their own subscriptions in one centralized location. 
+For an overview of Dada Mail Profiles, see: 
 
 L<http://dadamailproject.com/support/documentation/features-profiles.pod.html>
 
@@ -162,10 +163,6 @@ Magic Subscription Forms are pre-filled out with the user's email address, if th
 =head4 Help Screen
 
 Allows you to show/hide the, B<What are Dada Mail Profiles?> link and screen. You'll see this link in the top-right corner of the user-facing UI, by default. 
-
-=head4 Profile Login
-
-Allows your users to log into their Profile. Disabling this feature will basically disable much of Profiles, so be careful when disabling. 
 
 =head4 Profile Registration
 
