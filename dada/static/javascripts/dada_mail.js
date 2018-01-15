@@ -470,7 +470,7 @@ jQuery(document).ready(function($){
 	}
 	// Mail Sending >> Mailing Monitor Index
 	if ($("#sending_monitor_index").length) {
-		refreshpage(60, $("#s_program_url").val() + "?flavor=sending_monitor");
+		setTimeout(function() { window.location.reload() },60000);
 	}
 
 	if ($("#sending_monitor_container").length || $("#sending_monitor_index").length) {
@@ -4371,24 +4371,7 @@ function pauseMonitoredSending() {
 
 }
 
-var refreshTimerId = 0;
-var refreshLoc = '';
-var refreshTime = '';
 
-function refreshpage(sec, url) {
-	var refreshAfter = sec / 1 * 1000;
-	refreshTime = refreshAfter / 1000;
-	if (url) {
-		refreshLocation = url;
-		refreshLoc = refreshLocation;
-		refreshTimerId = setInterval("doRefresh(refreshLocation);", refreshAfter);
-	}
-
-}
-
-function doRefresh(loc) {
-	window.location.replace(loc);
-}
 
 function removeSubscriberField(form_name) {
 

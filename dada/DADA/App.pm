@@ -2412,14 +2412,15 @@ sub sending_monitor {
                  <script type=\"text/javascript\">
 
                  function refreshpage(sec){
-
-                    var refreshafter = sec/1 * 1000;
-                    setTimeout(\"self.location.href='$refresh_url';\",refreshafter);
+					var refreshafter = sec/1 * 1000;
+					setTimeout(function() {				
+						window.location.replace($refresh_url)
+					},
+					refreshafter);
                 }
 
-
 		        refreshpage(5);
-
+				
                 </script>
 
 
