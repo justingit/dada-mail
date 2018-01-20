@@ -42,6 +42,7 @@ use Fcntl qw(
   O_RDWR
   LOCK_EX
   LOCK_NB
+  LOCK_SH
 );
 use Encode qw(encode decode);
 use Try::Tiny;
@@ -1208,7 +1209,7 @@ sub start {
 
 
 
-
+	bridge_log($list, $r);
     return ( {}, $r );
 }
 
@@ -1353,6 +1354,9 @@ sub inject_msg {
             $r .= $msg;
         }
     } 
+	
+	bridge_log($list, $r); 
+	
     return $r;
 }
 
@@ -3262,6 +3266,9 @@ sub inject {
         try {
 			# warn 'validate_msg';
             ( $status, $errors, $report ) = validate_msg( $ls, \$msg );
+			
+			$r .= $report; 
+			
         } catch { 
             warn 'couldn\'t validate_msg?!'; 
             return (0, {}, 'couldn\'t validate_msg?!'); 
@@ -3327,6 +3334,29 @@ sub inject {
     }
 
 }
+
+sub bridge_log {
+	
+    my $list           = shift;  
+    my $r              = shift;  
+	
+	my $bridge_log = make_safer($DADA::Config::LOGS . '/bridge.txt'); 
+	
+    if(open(BRIDGE_LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $bridge_log)){ 
+		flock(BRIDGE_LOG, LOCK_SH);
+		
+		print BRIDGE_LOG "\n" . (scalar localtime) . "\n" . '_' x 72 . "\n";
+		print BRIDGE_LOG "List: " . $list . "\n";
+		print BRIDGE_LOG "\n" . $r . "\n";
+		close(BRIDGE_LOG) or warn $!; 
+	    return 1; 
+	}else{ 
+		warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER - I can't open the bridge log at '$bridge_log': $!";
+	    return 0; 
+	}
+}
+
+
 
 
 END {
