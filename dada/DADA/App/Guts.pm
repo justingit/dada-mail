@@ -1168,7 +1168,7 @@ sub html_to_plaintext {
 		   $tmp_str =~ s/\<\!\-\-/$mask_begining_comment/g; 
 		   $tmp_str =~ s/\-\-\>/$mask_ending_comment/g; 
 		if($formatted = $f->parse($tmp_str)){ 
-			return $formatted; 
+			#....
 		}
 		else { 
 			carp $DADA::Config::PROGRAM_NAME . ' ' . $DADA::Config::VER . 
@@ -1188,6 +1188,9 @@ sub html_to_plaintext {
 		   $pt = convert_to_ascii($pt); 
 		return $pt; 
 	}	
+	else{ 
+		return $formatted; 
+	}
 		
 }
 
