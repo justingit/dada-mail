@@ -2771,7 +2771,7 @@ sub just_subscribed_mass_mailing {
 			-list      => $self->{list},
 		}
 	);
-	my $etp = $em->fetch('subscribed_by_list_owner_message');
+	my $etp = $em->fetch('subscribed_message');
 	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
