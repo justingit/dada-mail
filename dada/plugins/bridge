@@ -2312,10 +2312,25 @@ sub process {
         die "You must pass a -msg parameter!";
     }
 
-    my $test_mail = 0;
+    my $test_mail           = 0;
+	my $mass_test           = 0; 
+	my $mass_test_recipient = undef;  
+	
     if ( exists( $args->{-test_mail} ) ) {
         $test_mail = $args->{-test_mail};
     }
+
+	my $mass_test = 0;
+	my ($mass_test_r, $is_test_msg, $test_recipient) = is_test_msg(
+		{ 
+			-msg => $args->{-msg},
+		}
+	); 
+	$r .= $mass_test_r; 
+	if($is_test_msg){ 
+		$mass_test           = 1; 
+		$mass_test_recipient = $test_recipient;	
+	}
 
     my $ls = $args->{-ls};
 
@@ -2337,21 +2352,25 @@ sub process {
 
         my ( $msg_id, $saved_message, $d_r ) = deliver(
             {
-                -ls        => $ls,
-                -msg       => $n_msg,
-                -test_mail => $test_mail,
+                -ls                  => $ls,
+                -msg                 => $n_msg,
+                -test_mail           => $test_mail,
+				-mass_test           => $mass_test,
+				-mass_test_recipient => $mass_test_recipient,
             }
         );
         $r .= $d_r;
-        archive(
-            {
-                -ls        => $ls,
-                -msg       => $n_msg,
-                -msg_id    => $msg_id,
-                -saved_msg => $saved_message
-            }
-        );
-    }
+		if($mass_test != 1) {
+	        archive(
+	            {
+	                -ls        => $ls,
+	                -msg       => $n_msg,
+	                -msg_id    => $msg_id,
+	                -saved_msg => $saved_message
+	            }
+	        );
+    	}
+	}
 
     if (   $ls->param('send_msg_copy_to')
         && $ls->param('send_msg_copy_address') )
@@ -2370,6 +2389,55 @@ sub process {
 
     return $r;
 
+}
+
+sub is_test_msg { 
+    my ($args) = @_;
+    my $entity = undef;
+	my $r      = undef; 
+	my $is_test        = 0; 
+	my $test_recipient = undef; 
+	
+	my $msg = $args->{-msg}; 
+    try { 
+		$entity = $parser->parse_data( ${$msg} ) 
+	} catch { 
+		# $r .= $_;
+		warn $_; 
+	};
+	
+	# this would be strange, at this point in the game... 
+    if ( !$entity ) {
+        warn "no entity found!";
+		return ($r, 0, undef);
+    }
+	
+	my $Subject = $entity->head->get( 'Subject', 0 );
+	   $Subject = DADA::App::Guts::strip($Subject); 
+	   
+	   if($Subject =~ m/^TEST/){ 
+	   		$is_test = 1; 
+		    my $rough_from = $entity->head->get( 'From', 0 );
+		    if ( defined($rough_from) ) {
+		        try {
+		            $test_recipient = ( Email::Address->parse($rough_from) )[0]->address;
+					$test_recipient = lc_email($test_recipient);
+			    } catch { 
+					$r .= $_ . "\n";
+					warn $_; 
+			    };
+			}
+			
+		#	$r .= "\t* Test message, sending to: " . $test_recipient; 
+			
+			#$r .= '$is_test ' . $is_test . "\n";
+			#$r .= '$test_recipient ' . $test_recipient . "\n"; 
+			
+			return($r, $is_test, $test_recipient); 
+	   }
+	   else { 
+		   return($r, 0, undef);
+	   }
 }
 
 sub dm_format {
@@ -2622,6 +2690,14 @@ sub deliver {
     if ( !exists( $args->{-msg} ) ) {
         die "You must pass a -msg parameter!";
     }
+	
+    if ( !exists( $args->{-mass_test} ) ) {
+		$args->{-mass_test} = 0; 
+	}
+	
+    if ( !exists( $args->{-mass_test_recipient} ) ) {
+		$args->{-mass_test_recipient} = undef; 
+	}
 
     my $ls  = $args->{-ls};
     my $msg = $args->{-msg};
@@ -2639,6 +2715,17 @@ sub deliver {
     );
 
     $mh->test($test_mail);
+	
+	if($args->{-mass_test} == 1){ 
+		
+		$r .= "\t* Mass Mailing Test, message will only go to one recipient"; 
+		$mh->mass_test(1);
+		if(defined( $args->{-mass_test_recipient} ) ) {
+			$r .= ": " . $args->{-mass_test_recipient} . "\n"; 
+			$mh->mass_test_recipient($args->{-mass_test_recipient});
+		}
+	}
+	
     $msg = safely_encode($msg);
 
     my $entity = undef;
