@@ -1,0 +1,342 @@
+<!-- begin edit_type_screen.tmpl -->
+
+
+<!-- tmpl_set name="title" value="Appearance &#187; Email Message Templates" -->
+<div id="screen_meta" data-menu_highlight="edit_type"></div>
+
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
+	<div class="medium-10 large-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Appearance
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Email Message Templates
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 large-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+</div>
+
+
+
+<!-- tmpl_if done -->
+    <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+<!--/tmpl_if-->
+
+<form 
+	action="<!-- tmpl_var S_PROGRAM_URL -->" 
+	method="post" 
+	name="default_form" 
+	id="default_form" 
+	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+>
+    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
+	<input type="hidden" name="process" value="1" >
+	<input type="hidden" name="flavor" value="edit_type" >
+
+	<fieldset>
+		<legend>
+			Mailing List Message
+		</legend>
+		
+		<div class="alert-box info radius"> 
+			<ul> 
+				<li>
+					<strong>Required:</strong> Use the Message Body Tag: <code>&lt;!-- tmpl_var message_body --&gt;</code> 
+					in the template where you would like the mailing list message content to be placed.
+				</li>
+				<li>			
+					<!-- tmpl_unless list_settings.private_list -->		
+						    <strong>Required:</strong> This template should contain simple instructions on 
+							unsubscribing from the mailing list. Use the List Unsubscribe Tag: <code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>
+					<!-- /tmpl_unless --> 
+				</li>
+			</ul>
+		</div>
+	
+	
+
+		<!-- tmpl_unless list_settings.private_list -->	
+			<!-- tmpl_unless unsub_link_found_in_html_mlm --> 
+	    		<div class="alert-box alert radius"> 
+	   				    The List Unsubscribe Tag is missing from your HTML Version!
+	            </div> 
+			<!-- /tmpl_unless -->
+	    <!-- /tmpl_unless --> 
+
+		<!-- tmpl_unless message_body_tag_found_in_html_mlm --> 
+			<div class="alert-box alert radius"> 
+				The Message Body tag is missing from your HTML Version!
+			</div> 
+		<!-- /tmpl_unless --> 
+	
+
+		<!-- tmpl_unless list_settings.private_list -->
+			<!-- tmpl_unless unsub_link_found_in_pt_mlm --> 
+	    		<div class="alert-box alert radius"> 
+	   				The List Unsubscribe Tag is missing from your PlainText Version!
+	    		</div> 
+			<!-- /tmpl_unless --> 
+		<!-- /tmpl_unless --> 
+
+		<!-- tmpl_unless message_body_tag_found_in_pt_mlm --> 
+			<div class="alert-box alert radius"> 
+				The Message Body tag is missing from your PlainText Version!
+			</div> 
+		<!-- /tmpl_unless -->
+		
+		<fieldset>
+			<legend>
+				Headers
+			</legend>
+			<div class="row">
+				<div class="large-1 columns">
+					<label for="mailing_list_message_from_phrase" class="large-text-right">
+				 	   From
+		 			</label>
+				</div>
+				<div class="large-5 columns">				  
+					<input 
+						type="text" 
+						name="mailing_list_message_from_phrase" 
+						id="mailing_list_message_from_phrase" 
+						value="<!-- tmpl_var list_settings.mailing_list_message_from_phrase escape=HTML -->" 
+					>
+				</div>
+				<div class="large-6 columns">				  
+					&lt;<!-- tmpl_var list_settings.list_owner_email -->&gt;
+				</div>
+			</div>
+		
+			<div class="row">
+				<div class="large-1 columns">
+					<label for="mailing_list_message_to_phrase" class="large-text-right">
+						 To
+					</label> 
+				</div>
+				<div class="large-5 columns">				  
+					<input
+						type="text"
+						name="mailing_list_message_to_phrase"
+						id="mailing_list_message_to_phrase"
+						value="<!-- tmpl_var list_settings.mailing_list_message_to_phrase escape=HTML -->"
+					>
+				</div>
+				<div class="large-6 columns">				  
+					&lt;<code>&lt;!-- tmpl_var subscriber.email --&gt;</code>&gt;
+		    	</div>
+			</div>
+			<div class="row">
+				<div class="large-1 columns">
+					<label for="mailing_list_message_subject" class="large-text-right">
+						Subject
+					</label>
+				</div>
+				<div class="large-11 columns">				  			
+					<input 
+						type="text"
+						name="mailing_list_message_subject"
+						id="mailing_list_message_subject"
+						value="<!-- tmpl_var list_settings.mailing_list_message_subject escape=HTML -->"
+					>
+				</div>
+			</div>
+		</fieldset> 
+
+
+	
+	<ul class="tabs" data-tab>
+		<li class="tab-title active">
+			<a href="#mailing_list_message_html_version">
+				HTML Version
+			</a>
+		</li>
+		<li class="tab-title">
+			<a href="#mailing_list_message_plaintext_version">
+				PlainText Version
+			</a>
+		</li>
+	</ul>
+	<div class="tabs-content">
+		<div  class="content tab-title active" id="mailing_list_message_html_version"> 
+			<textarea 
+				name="mailing_list_message_html"
+				id="mailing_list_message_html"
+				rows="10" cols="50" ><!-- tmpl_var list_settings.mailing_list_message_html escape=HTML --></textarea> 
+		</div>
+		<div  class="content tab-title" id="mailing_list_message_plaintext_version"> 
+			<textarea 
+				name="mailing_list_message"
+				id="mailing_list_message" 
+				rows="10" 
+				cols="50" ><!-- tmpl_var list_settings.mailing_list_message escape=HTML --></textarea> 
+			
+		</div> 
+	</div>
+
+
+
+
+
+
+
+
+
+
+</fieldset>
+
+
+
+	<ul class="button-group right">
+
+		<li>
+			<input type="reset" class="warning button" value="Clear Changes" >
+		</li>
+
+	    <li>
+			<input type="submit" class="success button" value="Save Changes" >
+		</li>
+		<!-- tmpl_if root_login -->
+			<li>
+				 <!-- tmpl_include save_for_multiple_mailing_lists_button_widget.tmpl -->
+			</li>
+		<!-- /tmpl_if -->
+		
+
+		<li>	
+			<input type="submit" class="alert button" name="revert" value="Revert to Defaults" onclick="return revertEditType(this.form);" >
+		</li>
+	</ul>
+
+</form>
+
+
+
+<fieldset>
+	<legend>
+		Available Template Tags
+   </legend>    	
+
+	<table class="responsive" width="100%">
+		<tr>
+			<th>
+				<strong>
+					This Tag 
+				</strong>
+			</th>
+			<th>
+				<strong>
+					Is Replaced With 
+				</strong>
+			</th>
+		</tr>
+		<tr>
+			<td>
+				<code>&lt;!-- tmpl_var message_body --&gt;</code>
+			</td>
+			<td>
+				<strong>
+					Only used (and also required!) in the, &quot;Mailing List Message&quot; templates</strong>. This tag will be replaced by your actual email message. 
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<code>&lt;!-- tmpl_var list_settings.list_name --&gt;</code> 
+			</td>
+			<td>
+				The name of your mailing list. 
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<code>&lt;!-- tmpl_var list_settings.info --&gt;</code> 
+			</td>
+			<td>
+				The description of your mailing list. 
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<code>&lt;!-- tmpl_var list_subscribe_link --&gt;</code> 
+			</td>
+			<td>
+				The subscription link. 
+			</td>
+		</tr>
+	
+		<tr>
+			<td>
+				<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code> 
+			</td>
+			<td>
+				The unsubscription link. 
+			</td>
+		</tr>
+	
+		<tr>
+			<td>
+				<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code> 
+			</td>
+			<td>
+				The subscription confirmation link. Only used (and also required!) in the, "Subscription Confirmation Email" template.
+			</td>
+		</tr>
+		<t
+		<tr>
+			<td>
+				<code>&lt;!-- tmpl_var list_settings.physical_address --&gt;</code> 
+			</td>
+			<td>
+				The physical address of your mailing list. 
+			</td>
+		</tr>
+
+	
+		<tr>
+			<td>
+				<code>&lt;!-- tmpl_var list_settings.privacy_policy --&gt;</code> 
+			</td>
+			<td>
+				The privacy policy of your mailing list. 
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<code>&lt;!-- tmpl_var list_settings.list_owner_email --&gt;</code> 
+			</td>
+			<td>
+				The list owner's email address. 
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<code>&lt;!-- tmpl_var list_settings.admin_email --&gt;</code>
+			</td>
+			<td>
+				The list administrator's email address. 
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<code>&lt;!-- tmpl_var PROGRAM_URL --&gt;</code>
+			</td>
+			<td>
+				The URL of the program (<a href="<!-- tmpl_var PROGRAM_URL -->" target="_blank">
+	<!-- tmpl_var PROGRAM_URL -->
+				</a>
+				). 
+			</td>
+		</tr>
+	</table>
+</fieldset>
+
+ 
+
+
+<!-- end edit_type_screen.tmpl -->

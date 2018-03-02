@@ -182,6 +182,7 @@ sub setup {
         'archive_options'                 => \&archive_options,
         'adv_archive_options'             => \&adv_archive_options,
         'back_link'                       => \&back_link,
+		'edit_type'                       => \&edit_type,
         'email_themes'                    => \&email_themes, 
 		'edit_html_type'                  => \&edit_html_type,
         'list_options'                    => \&list_options,
@@ -9015,6 +9016,107 @@ sub edit_template {
         }
     }
 }
+
+
+sub edit_type {
+
+    my $self    = shift;
+    my $q       = $self->query();
+    my $process = $q->param('process') || undef;
+    my $done    = $q->param('done') || undef;
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'edit_type'
+    );
+    if ( !$checksout ) { return $error_msg; }
+
+    my $list = $admin_list;
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+    require DADA::App::FormatMessages;
+    my $dfm = DADA::App::FormatMessages->new( -List => $list );
+
+    if ( !$process ) {
+
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'edit_type_screen.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -list => $list,
+                -vars => {
+                    screen => 'edit_type',
+                    title  => 'Email Templates',
+					root_login => $root_login, 
+                    done   => $done,
+
+                    unsub_link_found_in_pt_mlm =>
+                      $dfm->can_find_unsub_link( { -str => $ls->param('mailing_list_message') } ),
+                    unsub_link_found_in_html_mlm =>
+                      $dfm->can_find_unsub_link( { -str => $ls->param('mailing_list_message_html') } ),
+                    message_body_tag_found_in_pt_mlm =>
+                      $dfm->can_find_message_body_tag( { -str => $ls->param('mailing_list_message') } ),
+                    message_body_tag_found_in_html_mlm =>
+                      $dfm->can_find_message_body_tag( { -str => $ls->param('mailing_list_message_html') } ),
+                },
+                -list_settings_vars       => $ls->get( -all_settings => 1 ),
+                -list_settings_vars_param => { -dot_it               => 1, },
+            }
+        );
+        return $scrn;
+
+    }
+    else {
+
+        for (
+            qw(
+            mailing_list_message_from_phrase
+            mailing_list_message_to_phrase
+            mailing_list_message_subject
+            mailing_list_message
+            mailing_list_message_html
+            )
+          )
+        {
+
+            # a very odd place to put this, but, hey,  easy enough.
+            if ( $q->param('revert') ) {
+                $q->delete($_);
+            }
+            else {
+                my $tmp_setting = $q->param($_);
+                   $tmp_setting =~ s/\r\n/\n/g;
+                   $q->param( $_, $tmp_setting );
+            }
+        }
+
+		my $also_save_for_list = $ls->also_save_for_list($q);
+        $ls->save_w_params(
+            {
+                -associate => $q,
+                -settings  => {
+                    mailing_list_message_from_phrase            => undef,
+                    mailing_list_message_to_phrase              => undef,
+                    mailing_list_message_subject                => undef,
+                    mailing_list_message                        => undef,
+                    mailing_list_message_html                   => undef,
+                }, 
+				-also_save_for => $also_save_for_list,
+            }
+        );
+
+        $self->header_type('redirect');
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=edit_type&done=1' );
+    }
+}
+
+
 
 sub back_link {
 

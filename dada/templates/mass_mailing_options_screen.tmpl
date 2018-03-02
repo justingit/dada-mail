@@ -174,9 +174,7 @@
 						For Discussion List Messages
 					</label>
 		
-		
-		
-		<label for="mass_mailing_default_layout_old_school">
+				<label for="mass_mailing_default_layout_old_school">
 				<input 
 					type="radio"
 					name="mass_mailing_default_layout"
@@ -187,6 +185,19 @@
 					<!-- /tmpl_if -->
 					>
 					Old School
+				</label>
+		
+				<label for="mass_mailing_default_layout_custom">
+				<input 
+					type="radio"
+					name="mass_mailing_default_layout"
+					id="mass_mailing_default_layout_custom"
+					value="custom"
+					<!-- tmpl_if expr="(currently_selected_layout eq 'custom')" -->
+						checked="checked"
+					<!-- /tmpl_if -->
+					>
+					Custom
 				</label>
 		
 				<label for="mass_mailing_default_layout_none">
