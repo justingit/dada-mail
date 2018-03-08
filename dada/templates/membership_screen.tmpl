@@ -366,37 +366,37 @@
 		<!-- tmpl_if root_login -->
 		
 			<form id="toggle_membership_history"> 
-		
-			<input type="hidden" name="flavor" value="mailing_list_history" > 
-			<input type="hidden" name="mode"   value="export_csv" > 				
-			<input type="hidden" name="email"  value="<!-- tmpl_var email escape="HTML" -->" > 
+				<input type="hidden" name="flavor" value="mailing_list_history" > 
+				<input type="hidden" name="mode"   value="export_csv" > 				
+				<input type="hidden" name="email"  value="<!-- tmpl_var email escape="HTML" -->" > 
 
 	
-			<div class="rows">
-				<div class="small-12 columns">
-					<input 
-						type="radio" 
-						id="membership_history_this_list" 
-						name="membership_history" 
-						value="this_list" 
-						class="radio_toggle_membership_history" 
-						checked="checked"
-					>
-					<label for="membership_history_this_list"> 
-						For <!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)
-					</label> 
-					<input 
-						type="radio" 
-						id="membership_history_all_lists" 
-						name="membership_history" 
-						class="radio_toggle_membership_history" 
-						value="all_lists"
-					>
-					<label for="membership_history_all_lists">
-						For All Mailing Lists
-					</label>
+				<div class="rows">
+					<div class="small-12 columns">
+						<input 
+							type="radio" 
+							id="membership_history_this_list" 
+							name="membership_history" 
+							value="this_list" 
+							class="radio_toggle_membership_history" 
+							checked="checked"
+						>
+						<label for="membership_history_this_list"> 
+							For <!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)
+						</label> 
+						<input 
+							type="radio" 
+							id="membership_history_all_lists" 
+							name="membership_history" 
+							class="radio_toggle_membership_history" 
+							value="all_lists"
+						>
+						<label for="membership_history_all_lists">
+							For All Mailing Lists
+						</label>
+					</div>
 				</div>
-			</div>
+			</form>
 		<!-- /tmpl_if --> 
 
 		<div id="mailing_list_history_loading"></div>
