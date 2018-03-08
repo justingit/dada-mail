@@ -798,7 +798,7 @@ $ADMIN_MENU //= [
 				},
 
 				{
-				-Title      => 'Custom Mailing Mailing Layout',
+				-Title      => 'Custom Mass Mailing Layout',
 				-Title_URL  => "$S_PROGRAM_URL?flavor=edit_type",
 				-Function   => 'edit_type',
 				-Activated  => 1,
