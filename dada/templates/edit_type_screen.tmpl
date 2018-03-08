@@ -51,12 +51,13 @@
 					<strong>Required:</strong> Use the Message Body Tag: <code>&lt;!-- tmpl_var message_body --&gt;</code> 
 					in the template where you would like the mailing list message content to be placed.
 				</li>
-				<li>			
-					<!-- tmpl_unless list_settings.private_list -->		
-						    <strong>Required:</strong> This template should contain simple instructions on 
-							unsubscribing from the mailing list. Use the List Unsubscribe Tag: <code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>
-					<!-- /tmpl_unless --> 
-				</li>
+				
+				<!-- tmpl_unless list_settings.private_list -->		
+					<li>			
+					    <strong>Required:</strong> This template should contain simple instructions on 
+						unsubscribing from the mailing list. Use the List Unsubscribe Tag: <code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>
+					</li>
+				<!-- /tmpl_unless --> 
 			</ul>
 		</div>
 	
