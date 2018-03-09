@@ -435,10 +435,9 @@ sub get_logs {
         'Usage Log'              => $DADA::Config::PROGRAM_USAGE_LOG,
         'Error Log'              => $DADA::Config::PROGRAM_ERROR_LOG,
         'Clickthrough Log (raw)' => $DADA::Config::LOGS . '/' . $l_list . '-clickthrough.log',
+		'Bridge Log'             => $DADA::Config::LOGS . '/' . $l_list . '-bridge.log',
         'Bounce Handler Log'     => $DADA::Config::LOGS . '/' . 'bounces.txt',
         'Cronjob Output'         => $DADA::Config::LOGS . '/' . 'cronjob_output.txt',
-        
-        
     );
 
     my $mass_mailing_logs    = mass_mailing_logs($l_list);

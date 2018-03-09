@@ -1559,6 +1559,8 @@ $MIME_TOOLS_PARAMS //= {
 	
 	delivery_prefs_set_default => 0, 
 	delivery_prefs_default     => 'individual',
+	
+	bridge_save_logs           => 0, 
 
     # Tracker
     tracker_record_view_count                       => 10,

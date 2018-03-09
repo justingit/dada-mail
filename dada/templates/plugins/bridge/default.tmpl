@@ -1268,6 +1268,45 @@
 			</div>
 		</div> 
 	</fieldset> 
+	
+	<fieldset> 
+		<legend>
+			Logging
+		</legend>
+		
+		<div class="alert-box info radius"> 
+				Logs will be saved at: <br><br>
+				
+				<em><!-- tmpl_var bridge_list_logs_loc --></em>
+				
+				<br>
+				<br>
+				
+				and can be view using the Log Viewer plugin. 
+		
+		</div>
+		
+		<div class="row">
+			<div class="small-12 columns">									
+				<input
+					type="checkbox" 
+					name="bridge_save_logs" 
+					id="bridge_save_logs" 
+					value="1" 					
+					<!-- tmpl_if expr="(list_settings.bridge_save_logs eq '1')" -->
+						checked="checked"
+					<!--/tmpl_if-->
+				>
+				<label for="bridge_save_logs">
+					Save Bridge Execution Logs
+				</label>
+				
+				
+			</div>
+		</div>
+	</fieldset>
+	
+	
 
 	<div class="clearfix">
 		<ul class="button-group right">

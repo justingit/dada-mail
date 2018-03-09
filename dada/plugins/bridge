@@ -678,6 +678,8 @@ sub edit {
 		
         bridge_announce_reply_to => 'none', 
         
+		
+		bridge_save_logs                           => 0, 
     );
 
     # Validation, basically.
@@ -913,6 +915,8 @@ sub edit {
                   $list_email_errors->{list_email_subscribed_to_another_moderators},
                 %$ses_params,
                 program_abs_path               => $program_abs_path,
+				
+				bridge_list_logs_loc           => $DADA::Config::LOGS . '/' . $list . '-bridge.log'
                 
             },
             -list_settings_vars_param => {
@@ -944,7 +948,8 @@ sub start {
     my $list_to_run = shift;
     reset_globals();
     
-    my $r;
+    my $log = {};
+	
     my @lists = ();
     if ( ! defined($list_to_run) ) {
         @lists = available_lists( -In_Random_Order => 1 );
@@ -955,24 +960,30 @@ sub start {
 
   my $messages_viewed = 0;
     
+	
+  my $ls_s = {}; 
+
   LIST_QUEUE: for my $list (@lists) {
         
         if ( $messages_viewed >= $Plugin_Config->{MessagesAtOnce} ) {
-            $r .= "\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n";
+            $log->{$list} .= "\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n";
             last;
         }
 
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-
-        $r .= "Mailing List: " . $ls->param('list_name') . ' (' . $list . ")\n";
+		
+		# we'll use this later. 	
+		$ls_s->{$list} = $ls; 
+		
+        $log->{$list} .= "Mailing List: " . $ls->param('list_name') . ' (' . $list . ")\n";
 
         if ( $ls->param('disable_discussion_sending') == 1 ) {
-            $r .= "\t* Bridge is not enabled for, $list \n";
+            $log->{$list} .= "\t* Bridge is not enabled for, $list \n";
 			undef($ls);
             next LIST_QUEUE;
         }
         if ( $ls->param('bridge_list_email_type') eq "mail_forward_pipe" ) {
-            $r .= "\t* List Email is set up as a Email Forward to Pipe to Bridge \n";
+            $log->{$list} .= "\t* List Email is set up as a Email Forward to Pipe to Bridge \n";
 			undef($ls);
             next LIST_QUEUE;
         }
@@ -980,15 +991,14 @@ sub start {
 			cased($ls->param('discussion_pop_email')) eq 
 			cased($ls->param('list_owner_email'))
 		) {
-            $r .=
+            $log->{$list} .=
 "\t\t***Warning!*** Misconfiguration of plugin! The List Owner email cannot be the same address as the list email address!\n\t\tSkipping $list...\n";
 			undef($ls);
             next LIST_QUEUE;
         }
 
         if ( !valid_login_information($ls) ) {
-            $r .=
-"\t\tLogin information doesn't seem to be valid. Make sure you've supplied everything needed: List Email, POP3 Server, POP3 Username, POP3 Password";
+            $log->{$list} .= "\t\tLogin information doesn't seem to be valid. Make sure you've supplied everything needed: List Email, POP3 Server, POP3 Username, POP3 Password";
             undef($ls);
 			next LIST_QUEUE;
         }
@@ -997,15 +1007,15 @@ sub start {
         if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
             $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check( { name => 'bridge-' . $list . '.lock' } );
 			if(!defined($lock_file_fh)){ 
-				$r .= "couldn't get a lock for $list, skipping.";
+				$log->{$list} .= "couldn't get a lock for $list, skipping.";
 	            next LIST_QUEUE;
 			}
         }
         my ( $pop3_obj, $pop3_status, $pop3_log ) = pop3_login($ls);
 
-        $r .= $pop3_log;
+        $log->{$list} .= $pop3_log;
         if ( $pop3_status == 0 ) {
-            $r .= "\t* POP3 connection failed!\n";
+            $log->{$list} .= "\t* POP3 connection failed!\n";
 			
 	        if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
 	            DADA::App::POP3Tools::_unlock_pop3_check(
@@ -1022,25 +1032,11 @@ sub start {
 
 		my $pop3_msg_list = $pop3_obj->list; 
 
-
-=cut
-				if(! defined $list) {
-            $log .= "\tNo bounces to handle.\n";
-            $has_bounces = 0;
-        }
-		elsif(scalar keys $list == 0) {
-            $log .= "\tNo bounces to handle.\n";
-            $has_bounces = 0;
-        }
-        else {
-=cut
-		
-
 		my $msg_count = 0; 
            $msg_count = scalar keys %$pop3_msg_list;
 		
 		if($msg_count == 0){ 
-			$r .= "\t* No messages awaiting for, $list \n";
+			$log->{$list} .= "\t* No messages awaiting for, $list \n";
 			next LIST_QUEUE; 
 		 }
 		   
@@ -1057,8 +1053,8 @@ sub start {
             $messages_viewed++;
             $local_msg_viewed++;
 
-            $r .= "\n";
-            $r .= "Message Size: " . $msgsize . "\n";
+            $log->{$list} .= "\n";
+            $log->{$list} .= "Message Size: " . $msgsize . "\n";
             
             my ($mmt_status, $mmt_r) = max_msg_test( 
                 { 
@@ -1066,7 +1062,7 @@ sub start {
                     -ls_obj => $ls,
                  } 
             );
-            $r .= $mmt_r; 
+            $log->{$list} .= $mmt_r; 
             
             if ($mmt_status  == 0 ) {
                 # We don't do anything else to this guy
@@ -1087,14 +1083,14 @@ sub start {
                     -ls_obj => $ls, 
                  } 
             );
-            $r .= $smmt_r; 
+            $log->{$list} .= $smmt_r; 
             
             if ( $smmt_status == 0 ) {
                 send_msg_too_big( $ls, \$full_msg, $msgsize );
                 next MSG_QUEUE;
             }
 
-            $r .= "\t* Message Size is below both Soft and Hard Max Sizes.\n\n";
+            $log->{$list} .= "\t* Message Size is below both Soft and Hard Max Sizes.\n\n";
 
 
             try { 
@@ -1113,7 +1109,7 @@ sub start {
             try {
 
                 my ( $status, $errors, $validate_r ) = validate_msg( $ls, \$full_msg );
-                $r .= $validate_r; 
+                $log->{$list} .= $validate_r; 
                 
                 if ($status) {
                     if ( $ls->param('send_received_msg') == 1 ) {
@@ -1124,7 +1120,7 @@ sub start {
                             }
                         );
                     }
-                    $r .= process(
+                    $log->{$list} .= process(
                         {
                             -ls  => $ls,
                             -msg => \$full_msg,
@@ -1132,15 +1128,15 @@ sub start {
                     );
                 }
                 else {
-                    $r .= "\tMessage did not pass verification.\n";
-                    $r .= handle_errors( $ls, $errors, $full_msg );
+                    $log->{$list} .= "\tMessage did not pass verification.\n";
+                    $log->{$list} .= handle_errors( $ls, $errors, $full_msg );
                 }
                 append_message_to_file( $ls, $full_msg );
 
             } catch { 
                 cluck "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
                 # Then, we have to tell the og sender, something went wrong: 
-                $r .= "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
+                $log->{$list} .= "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
             };
 
         }    # MSG_QUEUE
@@ -1149,8 +1145,8 @@ sub start {
 		
 		for my $msgnum_d (sort { $a <=> $b } keys  %$pop3_msg_list) {
 
-            $r .= "\t* Removing message from server:\n";
-			# $r .= "\t* Message # $msgnum_d marked to be deleted\n";
+            $log->{$list} .= "\t* Removing message from server:\n";
+			# $log->{$list} .= "\t* Message # $msgnum_d marked to be deleted\n";
             $pop3_obj->delete($msgnum_d);
             $delete_msg_count++;
 
@@ -1158,7 +1154,7 @@ sub start {
               if $delete_msg_count >= $local_msg_viewed;
 
         }
-        $r .= "\t* Disconnecting from POP3 server\n";
+        $log->{$list} .= "\t* Disconnecting from POP3 server\n";
 
         $pop3_obj->quit();
 
@@ -1173,43 +1169,51 @@ sub start {
 
         if ($check_deletions) {
             if ( keys  %$pop3_msg_list ) {
-                $r .= message_was_deleted_check($ls);
+                $log->{$list} .= message_was_deleted_check($ls);
             }
             else {
-                $r .= "\t* No messages received, skipping deletion check.\n";
+                $log->{$list} .= "\t* No messages received, skipping deletion check.\n";
             }
         }
-		
 		
     }    # LIST_QUEUE?
 
-    $r .= "\nProcessing Digests:\n" . '-' x 72 . "\n";
+    
 
   DIGEST_QUEUE: for my $list (@lists) {
             
+		$log->{$list} .= "\nProcessing Digests:\n" . '-' x 72 . "\n";
+		
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-        $r .= "Mailing List: " . $ls->param('list_name') . ' (' . $list . ")\n";
+        $log->{$list} .= "Mailing List: " . $ls->param('list_name') . ' (' . $list . ")\n";
         
         
         if ( $ls->param('disable_discussion_sending') == 1 ) {
-            $r .= "\t* Bridge is not enabled for, $list \n";
+            $log->{$list} .= "\t* Bridge is not enabled for, $list \n";
             next DIGEST_QUEUE;
         }
         if ( $ls->param('digest_enable') != 1 ) {
-            $r .= "\t* Digests are not enabled for, $list \n";
+            $log->{$list} .= "\t* Digests are not enabled for, $list \n";
             next DIGEST_QUEUE;
         }
 
         require DADA::App::Digests;
         my    $digest = DADA::App::Digests->new( { -list => $list } );
-        $r .= $digest->send_digest();
+        $log->{$list} .= $digest->send_digest();
 
     }    # DIGEST_QUEUE
 
-
-
-	bridge_log($list, $r);
+	my $r; 
+	
+	for(keys %$log){ 
+		
+		if($ls_s->{$_}->param('bridge_save_logs') == 1){
+			bridge_log($_, $log->{$_});
+		}
+		$r .= $log->{$_};
+	}
+	
     return ( {}, $r );
 }
 
@@ -1355,7 +1359,9 @@ sub inject_msg {
         }
     } 
 	
-	bridge_log($list, $r); 
+	if($ls->param('bridge_save_logs') == 1){
+		bridge_log($list, $r); 
+	}
 	
     return $r;
 }
@@ -3425,9 +3431,10 @@ sub inject {
 sub bridge_log {
 	
     my $list           = shift;  
+	
     my $r              = shift;  
 	
-	my $bridge_log = make_safer($DADA::Config::LOGS . '/bridge.txt'); 
+	my $bridge_log = make_safer($DADA::Config::LOGS . '/' . $list . '-bridge.log'); 
 	
     if(open(BRIDGE_LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $bridge_log)){ 
 		flock(BRIDGE_LOG, LOCK_SH);
