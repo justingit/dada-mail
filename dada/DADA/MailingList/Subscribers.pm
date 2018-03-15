@@ -788,6 +788,7 @@ sub get_list_types {
     my $self = shift;
     return {
         list               => 1,
+        test_list          => 1,
         black_list         => 1,
         authorized_senders => 1,
         moderators         => 1,

@@ -396,6 +396,7 @@ $MASS_MAIL_SETTINGS //= "|$MAILPROG -t";
 $LIST_TYPES //= {
 	sub_confirm_list   => 'Unconfirmed Subscribers',
     list               => 'Subscribers',
+	test_list          => 'Testers',
     black_list         => 'Black Listed',
     white_list         => 'White Listed',     
     authorized_senders => 'Authorized Senders',

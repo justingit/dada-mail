@@ -4589,6 +4589,12 @@ sub view_list {
                     list_subscribers_num =>
                       scalar commify(
                         $lh->num_subscribers( { -type => 'list' } ) ),
+						
+                    test_list_subscribers_num =>
+                      scalar commify(
+                        $lh->num_subscribers( { -type => 'test_list' } ) ),
+							
+							
                     black_list_subscribers_num => scalar commify(
                         $lh->num_subscribers( { -type => 'black_list' } )
                     ),
