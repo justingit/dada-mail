@@ -108,6 +108,8 @@
          </div> 
      </div>
 	 
+    
+	 
     <div class="row"> 
 		<div class="small-1  columns"></div>
         <div class="small-11 columns">
@@ -117,7 +119,7 @@
 			id="hide_list" 
 			value="1" <!-- tmpl_if list_settings.hide_list -->checked="checked"<!--/tmpl_if--> >
           <label for="hide_list">
-           Hidden
+           Make your mailing list hidden
           </label>
 		 
 		  <div class="alert-box info radius">     
@@ -146,7 +148,20 @@
      </div>
 
 
-
+     <div class="row"> 
+ 		<div class="small-1  columns"></div>
+         <div class="small-11 columns">
+           <input 
+ 		  	type="checkbox" 
+ 			name="show_request_removal_links" 
+ 			id="show_request_removal_links" 
+ 			value="1" <!-- tmpl_if list_settings.show_request_removal_links -->checked="checked"<!--/tmpl_if--> >
+           <label for="show_request_removal_links">
+           		Show, &quot;Request Removal&quot; links and buttons in email messages
+           </label>
+		</div>
+	</div>
+		  
 
 
 </fieldset> <!-- Mailing List Mode --> 

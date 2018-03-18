@@ -3360,6 +3360,7 @@ sub list_options {
                 -settings  => {
                     private_list                                            => 0,
                     hide_list                                               => 0,
+					show_request_removal_links                              => 0, 
                     closed_list                                             => 0,
                     invite_only_list                                        => 0,
                     get_sub_notice                                          => 0,

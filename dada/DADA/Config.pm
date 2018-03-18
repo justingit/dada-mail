@@ -1222,12 +1222,12 @@ $MIME_TOOLS_PARAMS //= {
     private_list     => 0,
     
     #mailing list options
-    mx_check         => 0,
-    closed_list      => 0,
-    invite_only_list => 0,
-    show_hidden      => 0,
-    hide_list        => 0,
-    
+    mx_check                   => 0,
+    closed_list                => 0,
+    invite_only_list           => 0,
+    show_hidden                => 0,
+    hide_list                  => 0,
+    show_request_removal_links => 1, 
     
 
     # Mass Mailing Options
