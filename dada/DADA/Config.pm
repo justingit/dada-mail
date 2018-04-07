@@ -798,6 +798,13 @@ $ADMIN_MENU //= [
 				},
 
 				{
+				-Title      => 'Custom Mass Mailing Layout',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=edit_type",
+				-Function   => 'edit_type',
+				-Activated  => 1,
+				},
+				
+				{
 				-Title      => 'HTML Screen Templates',
 				-Title_URL  => "$S_PROGRAM_URL?flavor=edit_html_type",
 				-Function   => 'edit_html_type',
@@ -1445,8 +1452,14 @@ $MIME_TOOLS_PARAMS //= {
     get_template_data => 'from_default_template',
     url_template      => '',
 
+    mailing_list_message_from_phrase => '<!-- tmpl_var list_settings.list_name -->', 
+    mailing_list_message_to_phrase   => '<!-- tmpl_var list_settings.list_name --> Subscriber',
+    mailing_list_message_subject     => '<!-- tmpl_var list_settings.list_name --> Message',
+    mailing_list_message_html        => qq{<!-- tmpl_var message_body -->\n\n<p><strong><a href="<!-- tmpl_var list_unsubscribe_link -->">Unsubscribe Automatically &#187;</a></strong></p>},
+    mailing_list_message             => qq{<!-- tmpl_var message_body -->\n\nUnsubscribe Automatically:\n<!-- tmpl_var list_unsubscribe_link -->},
+	
+	
     # Create a Back Link prefs
-
     website_name => '',
     website_url  => '',
 

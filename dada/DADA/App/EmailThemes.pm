@@ -113,6 +113,21 @@ sub fetch {
         return {};
     }
 
+	# Special! For Custom MLM Templates: 
+	if($fn eq 'mailing_list_message-custom'){ 
+        return { 
+			html      => $self->ls->param('mailing_list_message_html'),
+        	plaintext => $self->ls->param('mailing_list_message'),
+        	vars      => { 				
+				to_phrase   =>  $self->ls->param('mailing_list_message_to_phrase'),
+				from_phrase =>  $self->ls->param('mailing_list_message_from_phrase'),
+				subject     => $self->ls->param('mailing_list_message_subject'),
+			},
+		}
+	}
+
+
+
     if ( $self->cache() == 1 && exists( $self->{tmp_store}->{$fn} ) ) {
         return $self->{tmp_store}->{$fn};
     }
