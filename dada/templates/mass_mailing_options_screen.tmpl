@@ -70,7 +70,6 @@
         </div> 
     </div> 
 	
-	
     <div class="row">
         <div class="small-12 columns">
 			<label for="email_embed_images_as_attachments">  
@@ -119,6 +118,24 @@
 			</div>
 		</div>
 	</div>
+	
+	
+    <div class="row">
+        <div class="small-12 columns">
+            <label for="mass_mailing_remove_javascript">
+				<input 
+					type="checkbox" 
+					name="mass_mailing_remove_javascript" 
+					id="mass_mailing_remove_javascript" 
+					value="1" 
+					<!-- tmpl_if list_settings.mass_mailing_remove_javascript -->
+						checked="checked"
+					<!-- /tmpl_if -->
+				>
+                Remove Javascript (linked and inline)
+            </label>
+        </div> 
+    </div>
 			
 
 	    

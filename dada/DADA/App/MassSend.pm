@@ -735,7 +735,6 @@ sub construct_from_url {
     }
 
     my $url               = strip( scalar $draft_q->param('url') );
-    my $remove_javascript = scalar $draft_q->param('remove_javascript') || 0;
 
     my @attachments       = $self->has_attachments( { -cgi_obj => $draft_q } );
     my $num_attachments   = scalar(@attachments);
@@ -774,7 +773,7 @@ sub construct_from_url {
     }
     
     my $mailHTML = new DADA::App::MyMIMELiteHTML(
-        remove_jscript                   => $remove_javascript,  
+        remove_jscript                   => scalar $self->{ls_obj}->param('mass_mailing_remove_javascript'),
 	    'IncludeType'                    => $url_options,
    	    'TextCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
         'HTMLCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
