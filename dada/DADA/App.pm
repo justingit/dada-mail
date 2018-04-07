@@ -2859,6 +2859,7 @@ sub mass_mailing_options {
                     mass_mailing_block_css_to_inline_css   => 0,
 					email_embed_images_as_attachments      => 0,
 					resize_drag_and_drop_images            => 0, 
+					mass_mailing_remove_javascript         => 0, 
                 	mass_mailing_default_layout            => undef, 
 				},
                 -also_save_for => $also_save_for_list,

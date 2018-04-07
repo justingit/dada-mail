@@ -1242,7 +1242,11 @@ $MIME_TOOLS_PARAMS //= {
     mass_mailing_block_css_to_inline_css   => 1,
 	email_embed_images_as_attachments      => 1, 
 	resize_drag_and_drop_images            => 1, 
+	mass_mailing_remove_javascript         => 1, 
+	
+	
 	mass_mailing_default_layout            => undef, 
+	
 	
     #quotas
     use_subscription_quota => 0,

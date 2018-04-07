@@ -882,7 +882,6 @@ sub params_to_save {
         $params->{content_from}          = 1;
         $params->{url}                   = 1;
         $params->{url_options}           = 1;
-        $params->{remove_javascript}     = 1;
         
         $params->{plaintext_content_from} = 1;
         $params->{plaintext_url}          = 1;

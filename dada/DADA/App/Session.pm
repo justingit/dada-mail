@@ -649,7 +649,27 @@ sub enforce_admin_cgi_security {
 				# rather than a specific screen for each eerror message
 				# which would really cut down on how many error screens I have!
 				
+				
+				
 				$add_vars->{selected_list}   = $args{-Admin_List};
+				
+				# These are here, so if we're logged out, but want to visit a certain screen, 
+				# logging in will do that for us. 
+				# Although, I'm not sure how the correct list will be sent through... 
+				# as "-Admin_List" is taken from the cookie but... progress? 
+				# I guess maybe set it as a param in the query string is an option 
+				# and only look at the query string if and only if the -Admin_List 
+				# arg is not present. 
+				# We can also check to see if -Admin_List and list are the same, 
+				# and if not, log out, and ask for the login for list (or do the switch login if needed...)
+				
+				
+				$add_vars->{referer}         = $ENV{HTTP_REFERER};
+				$add_vars->{url}             = $ENV{SCRIPT_URI} || $args{-cgi_obj}->url(); 
+				$add_vars->{query_string}    = $ENV{QUERY_STRING}; 
+				$add_vars->{path_info}       = $ENV{PATH_INFO}; 
+				
+				
 				
 				if($_ eq 'invalid_password'){ 
 			        my $can_use_captcha = 0;

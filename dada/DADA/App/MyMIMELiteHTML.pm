@@ -114,7 +114,7 @@ sub parse {
 
 
 	
-
+	# This is no good, as HTML::Scrubber mucks up embedded DM tags in links. (d'oh!)
     #if ( $self->{_remove_jscript} == 1 ) {
     #    $html_ver = scrub_js($html_ver); 
     #}
@@ -128,11 +128,8 @@ sub parse {
 
     # Include external CSS files
     $html_ver = $self->include_css( $html_ver, $rootPage );
-
-    #if ( $self->{_remove_jscript} != 1 ) {
-        # Include external Javascript files
-        $html_ver = $self->include_javascript( $html_ver, $rootPage );
-    #}
+	
+    $html_ver = $self->include_javascript( $html_ver, $rootPage );
     
     # Include form images
     ( $html_ver, @mail ) = $self->input_image( $html_ver, $rootPage );
@@ -381,12 +378,12 @@ sub pattern_js {
     my ( $self, $url, $milieu, $fin, $root ) = @_;
 
     my $ur = URI::URL->new( $url, $root )->abs;
-
+	warn '$self->{_remove_jscript}' . $self->{_remove_jscript}; 
     if ( $self->{_remove_jscript} == 1 ) {
 
         # Why should I even try to get the files, if I'm just going to remove them?
         print "Removed Javascript file $ur\n" if $self->{_DEBUG};
-        return '<!-- Removed Javascript: ' . $ur . ' -->';
+        return '<!-- removed js: ' . $ur . ' -->';
     }
     else {
         print "Include Javascript file $ur\n"
@@ -418,10 +415,8 @@ sub pattern_js {
 }
 
 sub include_javascript(\%$$) {
-    my ( $self, $tmpl, $root ) = @_;
 
-    # Ouch. My brain. Ouch.
-    $tmpl =~ s/<script([^>]*)src\s*=\s*"?([^\" ]*js)"?([^>]*)>[^<]*<\/script>/$self->pattern_js($2,$1,$3,$root)/iegmx;
+    my ( $self, $tmpl, $root ) = @_;
     if ( $self->{_remove_jscript} == 1 ) {
 
         # Old!

@@ -161,7 +161,7 @@
 	             <!-- tmpl_loop field_names --> 
 		             <th>
 		                <!-- tmpl_if label --> 
-		                    <!-- tmpl_var label escape="HTML" -->
+		                    <!-- tmpl_var label escape="html" -->
 		                <!-- tmpl_else --> 
 		                    <!-- tmpl_var name --> 
 		               <!-- /tmpl_if --> 
@@ -176,21 +176,21 @@
                <!-- tmpl_loop not_members -->
                  <tr>     
                      <td width="25">
-                   <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" >
+                   <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="html" -->" id="<!-- tmpl_var email escape="html" -->" checked="checked" >
                   </td>
                   <td>
-             <label for="<!-- tmpl_var email  escape="HTML" -->">
-                    <!-- tmpl_var email  escape="HTML" -->
+             <label for="<!-- tmpl_var email  escape="html" -->">
+                    <!-- tmpl_var email  escape="html" -->
              </label>
                   </td>
                   <!-- tmpl_if expr="(type eq 'list')" -->
                       <!-- tmpl_loop fields -->         
                          <td>
-                           <!-- tmpl_var value escape="HTML"  -->
+                           <!-- tmpl_var value escape="html"  -->
                          </td>
                      <!-- /tmpl_loop -->                
                      <td>
-                         <!-- tmpl_var profile_password escape="HTML" -->
+                         <!-- tmpl_var profile_password escape="html" -->
                      </td>                
                  <!-- /tmpl_if --> 
                </tr>
@@ -264,7 +264,7 @@
           <!-- tmpl_loop field_names --> 
               <th>
                      <!-- tmpl_if label --> 
-                         <!-- tmpl_var label escape="HTML" -->
+                         <!-- tmpl_var label escape="html" -->
                      <!-- tmpl_else --> 
                          <!-- tmpl_var name --> 
                     <!-- /tmpl_if --> 
@@ -283,23 +283,23 @@
 
               <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" --> 
                   <!-- tmpl_if expr="(type eq 'list')" --> 
-                     <input type="checkbox" name="update_fields_address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" >
+                     <input type="checkbox" name="update_fields_address" value="<!-- tmpl_var csv_str escape="html" -->" id="<!-- tmpl_var email escape="html" -->" >
                  <!-- /tmpl_if -->
               <!-- /tmpl_if --> 
           </td>
           <td>
-     <label for="<!-- tmpl_var email escape="HTML" -->">
-            <!-- tmpl_var email escape="HTML" -->
+     <label for="<!-- tmpl_var email escape="html" -->">
+            <!-- tmpl_var email escape="html" -->
      </label>
           </td>
           <!-- tmpl_if expr="(type eq 'list')" -->
               <!-- tmpl_loop fields --> 
                  <td>
-                   <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
+                   <!-- tmpl_var value default="&nbsp;" escape="html"  -->
                  </td>
              <!-- /tmpl_loop --> 
              <td>
-                    <!-- tmpl_var profile_password escape="HTML" -->
+                    <!-- tmpl_var profile_password escape="html" -->
               </td>
           <!-- /tmpl_if --> 
 
@@ -371,7 +371,7 @@
                   <!-- tmpl_loop field_names --> 
                       <th>
                          <!-- tmpl_if label --> 
-                             <!-- tmpl_var label escape="HTML" -->
+                             <!-- tmpl_var label escape="html" -->
                          <!-- tmpl_else --> 
                              <!-- tmpl_var name --> 
                         <!-- /tmpl_if -->           
@@ -387,25 +387,25 @@
                  <tr>
                   <td width="25">
                    <!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted --> 
-                     <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" >
+                     <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="html" -->" id="<!-- tmpl_var email escape="html" -->" >
                      <!-- tmpl_else --> 
                      &nbsp;
                      <!-- /tmpl_if --> 
                   </td>
                   <td>
-                 <label for="<!-- tmpl_var email escape="HTML" -->">
-                        <!-- tmpl_var email escape="HTML" -->
+                 <label for="<!-- tmpl_var email escape="html" -->">
+                        <!-- tmpl_var email escape="html" -->
                  </label>
                   </td>
                   <!-- tmpl_if expr="(type eq 'list')" -->
                       <!-- tmpl_loop fields -->         
                          <td>
-                           <!-- tmpl_var value default="&nbsp;" escape="HTML" -->
+                           <!-- tmpl_var value default="&nbsp;" escape="html" -->
                          </td>
                      <!-- /tmpl_loop --> 
 
                      <td>
-                         <!-- tmpl_var profile_password escape="HTML" -->
+                         <!-- tmpl_var profile_password escape="html" -->
                      </td>
                  <!-- /tmpl_if -->
 
@@ -475,7 +475,7 @@
       <!-- tmpl_loop field_names --> 
           <th>
                  <!-- tmpl_if label --> 
-                     <!-- tmpl_var label escape="HTML" -->
+                     <!-- tmpl_var label escape="html" -->
                  <!-- tmpl_else --> 
                      <!-- tmpl_var name --> 
                 <!-- /tmpl_if --> 
@@ -494,23 +494,23 @@
        <input 
 	   	type="checkbox" 
 		name="address" 
-		value="<!-- tmpl_var csv_str escape="HTML" -->" 
-		id="<!-- tmpl_var email escape="HTML" -->" 
+		value="<!-- tmpl_var csv_str escape="html" -->" 
+		id="<!-- tmpl_var email escape="html" -->" 
 	  >
       </td>
       <td>
-		 <label for="<!-- tmpl_var email escape="HTML" -->">
-		        <!-- tmpl_var email escape="HTML" -->
+		 <label for="<!-- tmpl_var email escape="html" -->">
+		        <!-- tmpl_var email escape="html" -->
 		 </label>
       </td>
       <!-- tmpl_if expr="(type eq 'list')" -->
           <!-- tmpl_loop fields --> 
              <td>
-               <!-- tmpl_var value escape="HTML" default="&nbsp;"  -->
+               <!-- tmpl_var value escape="html" default="&nbsp;"  -->
              </td>
          <!-- /tmpl_loop --> 
          <td>
-             <!-- tmpl_var profile_password escape="HTML" -->
+             <!-- tmpl_var profile_password escape="html" -->
          </td>
      <!-- /tmpl_if --> 
    </tr>
@@ -578,7 +578,7 @@
           <!-- tmpl_loop field_names --> 
               <th>
                  <!-- tmpl_if label --> 
-                     <!-- tmpl_var label escape="HTML" -->
+                     <!-- tmpl_var label escape="html" -->
                  <!-- tmpl_else --> 
                      <!-- tmpl_var name --> 
                 <!-- /tmpl_if -->      
@@ -598,25 +598,25 @@
                 <input 
 					type="checkbox" 
 					name="address" 
-					value="<!-- tmpl_var csv_str escape="HTML" -->" 
-					id="<!-- tmpl_var email escape="HTML" -->" 
+					value="<!-- tmpl_var csv_str escape="html" -->" 
+					id="<!-- tmpl_var email escape="html" -->" 
 				>
               <!-- /tmpl_if --> 
                 
           </td>
           <td>
-		     <label for="<!-- tmpl_var email escape="HTML" -->">
-		            <!-- tmpl_var email escape="HTML" -->
+		     <label for="<!-- tmpl_var email escape="html" -->">
+		            <!-- tmpl_var email escape="html" -->
 		     </label>
           </td>
           <!-- tmpl_loop fields --> 
      
              <td <!-- tmpl_if invalid_profile_field -->style="background-color:#ffe1af;"<!-- /tmpl_if -->>
-               <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
+               <!-- tmpl_var value default="&nbsp;" escape="html"  -->
              </td>
          <!-- /tmpl_loop --> 
          <td>
-             <!-- tmpl_var profile_password escape="HTML" -->
+             <!-- tmpl_var profile_password escape="html" -->
          </td>
        </tr>
        <!-- tmpl_if __last__ --> 
@@ -688,7 +688,7 @@
            <p>
             <strong>
                  <!-- tmpl_if label --> 
-                     <!-- tmpl_var label escape="HTML" -->
+                     <!-- tmpl_var label escape="html" -->
                  <!-- tmpl_else --> 
                      <!-- tmpl_var name --> 
                 <!-- /tmpl_if --> 
@@ -716,8 +716,8 @@
  &nbsp;     </td>
       <td>
        <p>
- <label for="<!-- tmpl_var email escape="HTML" -->">
-        <!-- tmpl_var email escape="HTML" -->
+ <label for="<!-- tmpl_var email escape="html" -->">
+        <!-- tmpl_var email escape="html" -->
  </label>
        </p>
       </td>
@@ -727,13 +727,13 @@
 
              <td>
               <p>
-               <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
+               <!-- tmpl_var value default="&nbsp;" escape="html"  -->
               </p>
              </td>
          <!-- /tmpl_loop --> 
 
          <td>
-             <!-- tmpl_var profile_password escape="HTML" -->
+             <!-- tmpl_var profile_password escape="html" -->
          </td>
      <!-- /tmpl_if --> 
 
