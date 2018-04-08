@@ -10,7 +10,7 @@
 
 Along with the mass mailing layouts shipped with Dada Mail (Full, Minimal, For Discussion List Messages, Old School) 
 you now have the ability to set your own custom mass mailing layout. Look for this feature in the list control panel under, 
-B<Appearance: Custom Mass Mailing Layout>
+B<Appearance: Custom Mass Mailing Layout>. 
 
 =head3 "Request to Remove" button optional for private lists
 
@@ -26,8 +26,9 @@ under, B<Run This Mailing List As A:  Private Mailing List: Show, "Request Remov
 
 =head3 Login changes
 
-If a user tries to access a specific screen when logged out of Dada Mail, they're redirected to that screen after a successful login. 
-Before, they user would be redirected to the default list control panel screen (Send a Message).
+If a user tries to access a specific list control panel screen when logged out of Dada Mail, 
+they're redirected to that screen after a successful login. 
+Before, the user would be redirected to the default list control panel screen (Send a Message).
 
 =head3 Subscribed via the list control panel email template changes
 
@@ -38,9 +39,11 @@ regular welcome email.
 
 =head3 Javascript (linked and inline) removed from mass email messages
 
-Javascript found in C<script> tags will be, by default, removed from the source of mass email messages. Many times, 
-the inclusion of Javascript in an email message will be grounds for a email filter to flag a message. There's no really great reason 
-to have Javascript present in an email message, but sometimes it sneaks in, if you fetch the content of a message via  URL. 
+Javascript found in C<script> tags will be, by default, removed from the source of mass email messages. 
+Many times, the inclusion of Javascript in an email message will be grounds for a email filter to flag a message. 
+There's no real great reason  to have Javascript present in an email message, 
+but sometimes it sneaks in, 
+if you fetch the content of a message via  URL. 
 
 =head2 Bugfixes
 
