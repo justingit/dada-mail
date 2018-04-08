@@ -2,6 +2,52 @@
 
 =encoding utf-8
 
+=head1 10.8.0
+
+=head2 Features
+
+=head3 Custom Mass Mailing Layout
+
+Along with the mass mailing layouts shipped with Dada Mail (Full, Minimal, For Discussion List Messages, Old School) 
+you now have the ability to set your own custom mass mailing layout. Look for this feature in the list control panel under, 
+B<Appearance: Custom Mass Mailing Layout>
+
+=head3 "Request to Remove" button optional for private lists
+
+First, understand the difference between a public, and private mailing list: 
+
+L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
+
+For private lists, a new option allows you to set if the B<Request Removal> buttons/links will show in
+email messages sent with Dada Mail. This option can be found in the list control panel under, B<Mailing List: Options>,  
+under, B<Run This Mailing List As A:  Private Mailing List: Show, "Request Removal" links and buttons in email messages> 
+
+=head2 Changes 
+
+=head3 Login changes
+
+If a user tries to access a specific screen when logged out of Dada Mail, they're redirected to that screen after a successful login. 
+Before, they user would be redirected to the default list control panel screen (Send a Message).
+
+=head3 Subscribed via the list control panel email template changes
+
+If the option is enabled (disabled by default) to send a user who is subscribed via the list control panel a welcome email, 
+they'll be sent the same email message as they would if they signed up themselves, rather than a different message, 
+using a different email template. The previous email template was a bit out of date, and really only duplicated what was in the 
+regular welcome email. 
+
+=head3 Javascript (linked and inline) removed from mass email messages
+
+Javascript found in C<script> tags will be, by default, removed from the source of mass email messages. Many times, 
+the inclusion of Javascript in an email message will be grounds for a email filter to flag a message. There's no really great reason 
+to have Javascript present in an email message, but sometimes it sneaks in, if you fetch the content of a message via  URL. 
+
+=head2 Bugfixes
+
+=head3  Archive Message Blurb is not shown in listing of archived messages in list page, archive page, or archive search #716 
+
+L<https://github.com/justingit/dada-mail/issues/716>
+
 =head1 10.7.2
 
 This is mostly a bug-fix release for issues found in the v10.7.1 release of Dada Mail. 
