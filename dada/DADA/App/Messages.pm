@@ -222,7 +222,7 @@ sub send_multipart_email {
     require DADA::App::MyMIMELiteHTML;
     my $mailHTML = new DADA::App::MyMIMELiteHTML(
 
-        remove_jscript => scalar $self->{ls_obj}->param('mass_mailing_remove_javascript'),
+        remove_jscript => scalar $self->ls->param('mass_mailing_remove_javascript'),
         'IncludeType'  => $url_options,
         'TextCharset'  => scalar $self->ls->param('charset_value'),
         'HTMLCharset'  => scalar $self->ls->param('charset_value'),
