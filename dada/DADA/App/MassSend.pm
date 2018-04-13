@@ -93,17 +93,13 @@ sub send_email {
     my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
 
-
-
 	require DADA::App::EmailThemes; 
 	my $em = DADA::App::EmailThemes->new(
 		{ 
 			-list      => $self->{list},
 		}
 	);
-	my $etp          = $em->fetch('mailing_list_message');
-	my $subject      = $etp->{vars}->{subject};
-
+	
     my $process            = xss_filter( strip( scalar $q->param('process') ) );
     my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
     my $restore_from_draft = xss_filter( strip( scalar $q->param('restore_from_draft') ) ) || 'true';
@@ -153,7 +149,12 @@ sub send_email {
 			$default_layout = 'default'; 
 		}
 	}
-
+	my $layout_fn = 'mailing_list_message';
+	if($default_layout ne 'default'){ 
+		$layout_fn = 'mailing_list_message-' . $default_layout;
+	}
+	my $etp          = $em->fetch($layout_fn);
+	my $subject      = $etp->{vars}->{subject};
 
     if ( !$process ) {
 
@@ -1342,9 +1343,6 @@ sub send_url_email {
 			-list      => $self->{list},
 		}
 	);
-	my $etp          = $em->fetch('mailing_list_message');
-	my $subject      = $etp->{vars}->{subject};
-	
 
     my $process            = xss_filter( strip( scalar $q->param('process') ) );
     my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
@@ -1412,6 +1410,13 @@ sub send_url_email {
 			$default_layout = 'default'; 
 		}
 	}
+	my $layout_fn = 'mailing_list_message';
+	if($default_layout ne 'default'){ 
+		$layout_fn = 'mailing_list_message-' . $default_layout;
+	}
+	my $etp          = $em->fetch($layout_fn);
+	my $subject      = $etp->{vars}->{subject};
+	
 	
     require HTML::Menu::Select;
 	my $feed_url_max_entries_widget; 
@@ -2251,7 +2256,8 @@ sub q_obj_from_draft {
         return $q_draft;
     }
     else {
-        warn 'doesn\'t have a draft!';
+        warn 'doesn\'t have a draft!'
+			if $t; 
         return undef;
     }
 }
