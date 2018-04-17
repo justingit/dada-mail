@@ -10,15 +10,15 @@ This FAQ attempts to answer questions specifically to sending out email from Dad
 
 =item * Mass Mailing Sending FAQ
 
-http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.html
+L<http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.html>
 
 =item * General FAQ
 
-http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html
+L<http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html>
 
 =item * Error FAQ
 
-http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html
+L<http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html>
 
 =back
 
