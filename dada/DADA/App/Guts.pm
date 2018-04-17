@@ -1178,9 +1178,10 @@ sub html_to_plaintext {
 		}
 	} catch {
 		$hftwl = 0; 
-		carp $DADA::Config::PROGRAM_NAME . ' ' . $DADA::Config::VER . 
-			' warning: Something went wrong with the HTML to PlainText conversion: ' . $_; 
+		#carp $DADA::Config::PROGRAM_NAME . ' ' . $DADA::Config::VER . 
+		#	' warning: Something went wrong with the HTML to PlainText conversion: ' . $_; 
 		#return convert_to_ascii(_chomp_off_body($args->{-str})); 
+		carp 'HTML to Plaintext conversion with HTML::FormatText::WithLinks not successful - falling back to convert_to_ascii()';
 	};
 		 
 	if($hftwl == 0){
