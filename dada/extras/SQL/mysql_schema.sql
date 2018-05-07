@@ -155,6 +155,41 @@ plaintext mediumtext,
 html mediumtext
 );
 
+
+
+CREATE TABLE IF NOT EXISTS dada_consent_foo  (
+    consent_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    rando_col text
+);
+
+	
+CREATE TABLE IF NOT EXISTS dada_consent_activity  (	
+	consent_activity_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	remote_addr varchar(255), 
+	timestamp   TIMESTAMP DEFAULT NOW(),
+	email       varchar(80),
+	list        varchar(16),
+	action      varchar(80),
+	list_type   varchar(64),
+	consent_session_token varchar(255),
+	consent_id int,
+	FOREIGN KEY(consent_id) REFERENCES dada_consent_foo(consent_id)
+); 
+
+dada_consent_history
+#UID
+#Date
+#Email
+#IP
+#List 
+#Action
+#sublist (even though I guess I only care about list atm)
+consent_id
+
+
+
+
+
 CREATE INDEX dada_settings_list_index ON dada_settings (list);
 
 CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(80), list, list_type, list_status, timestamp);

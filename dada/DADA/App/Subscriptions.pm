@@ -7,12 +7,16 @@ use lib qw(
 
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
+use DADA::MailingList::ConsentHistory; 
 
 use Carp qw(carp croak);
 use Try::Tiny;
 
+
+
 use vars qw($AUTOLOAD);
 use strict;
+
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
 
 my %allowed = ( test => 0, );
@@ -56,7 +60,14 @@ sub AUTOLOAD {
     }
 }
 
-sub _init { }
+sub _init {
+	
+	my $self = shift; 
+	$self->{ch} = DADA::MailingList::ConsentHistory->new; 
+	#$self->{ch} = undef; 
+	
+	
+}
 
 sub token {
 
@@ -121,11 +132,21 @@ sub token {
             $q->param( 'email', $data->{email} );
             $q->param( 'list',  $data->{data}->{list} );
             $q->param( 'token', $token );
-
+            $q->param( 'consent_token', $data->{data}->{consent_token} );
+			
             warn 'confirming'
               if $t;
 
-            return $self->confirm(
+			# we've confirmed that they've clicked on the cloic link,
+			$self->{ch}->ch_record(
+				{ 
+					-email  => $data->{email}, 
+					-list   => $data->{data}->{list},
+					-action => 'confirmed cloic',
+					-token  => $data->{data}->{consent_token},
+				}
+			);
+			return $self->confirm(
                 {
                     -html_output => $args->{-html_output},
                     -cgi_obj     => $q,
@@ -341,9 +362,6 @@ sub subscribe {
         }
     );
 
-    # This is kind of strange...
-    my $skip_sub_confirm_if_logged_in = 0;
-
     if ( $status == 1 ) {
         if (   $ls->param('enable_closed_loop_opt_in') == 0
             && $ls->param('captcha_sub') == 1
@@ -384,22 +402,7 @@ sub subscribe {
         }
 
 
-        my $skip_sub_confirm_if_logged_in = 0;
-        if ( $ls->param('skip_sub_confirm_if_logged_in') ) {
-            require DADA::Profile::Session;
-            my $sess = DADA::Profile::Session->new;
-            if ( $sess->is_logged_in ) {
-                my $sess_email = $sess->get;
-                if ( $sess_email eq $email ) {
-                    # something...
-                    $skip_sub_confirm_if_logged_in = 1;
-                }
-            }
-        }
-        	        
-        if (   $ls->param('enable_closed_loop_opt_in') == 0
-            || $skip_sub_confirm_if_logged_in == 1 )
-        {
+        if (   $ls->param('enable_closed_loop_opt_in') == 0 ) {
 
             # I still have to make a confirmation token, the CAPTCHA step before
             # confirmation step #1 still requires it.
@@ -556,7 +559,42 @@ sub subscribe {
         }
     }
     elsif ( $status == 1 ) {
+		
+		
+		my $c_token = $self->{ch}->start_consent({ 
+			-email  => $email, 
+			-list   => $list,
+		}); 
+		
+		# This merely looks if captcha on the sub form is 
+		# required. If we get this far, it checked out, 
+		# This is a double-check the the pass was actually recorded
+		# if captcha failed, this would be, 
+		# $errors->{captcha_challenge_failed} would equal 1
+		if(exists($errors->{captcha_challenge_failed})){ 
+			if($errors->{captcha_challenge_failed} == 0){ 
+				$self->{ch}->ch_record(
+					{ 
+						-email  => $email, 
+						-list   => $list,
+						-token  => $c_token,
+						-action => 'solved captcha',
+					}
+				);
+			}
+		}
+	
 
+		
+		$self->{ch}->ch_record(
+			{ 
+				-email  => $email, 
+				-list   => $list,
+				-token  => $c_token,
+				-action => 'requested sub',
+			}
+		);
+		
 # The idea is, we'll save the information for the subscriber in the confirm list, and then
 # move the info to the actual subscription list,
 # And then remove the information from the confirm list, when we're all done.
@@ -579,6 +617,16 @@ sub subscribe {
 
             }
         );
+		
+		$self->{ch}->ch_record(
+			{ 
+				-email  => $email, 
+				-list   => $list,
+				-action => 'sent cloic',
+				-token  => $c_token, 
+			}
+		);
+		
         if ( $mail_your_subscribed_msg == 0 ) {
             require DADA::App::Subscriptions::ConfirmationTokens;
             my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
@@ -586,10 +634,11 @@ sub subscribe {
                 {
                     -email => $email,
                     -data  => {
-                        list        => $list,
-                        type        => 'list',
-                        flavor      => 'sub_confirm',
-                        remote_addr => $ENV{REMOTE_ADDR},
+                        list          => $list,
+                        type          => 'list',
+                        flavor        => 'sub_confirm',
+                        remote_addr   => $ENV{REMOTE_ADDR},
+						consent_token => $c_token, 
                     },
                     -remove_previous => 1,
                 }
@@ -617,6 +666,8 @@ sub subscribe {
                 }
             );
         }
+		
+		
         my $r = {
             flavor   => 'subscription_confirmation',
             status   => 1,
@@ -635,8 +686,8 @@ sub subscribe {
         $r->{redirect}->{query} = $qs;
 
 
-		use Data::Dumper; 
-		warn Dumper($r);
+		#use Data::Dumper; 
+		#warn Dumper($r);
 
         if ( $args->{-html_output} == 0 ) {
             if ( $args->{-return_json} == 1 ) {
@@ -769,6 +820,16 @@ sub confirm {
                 if ( $result->{is_valid} == 1 ) {
                     $captcha_auth   = 1;
                     $captcha_worked = 1;
+					
+					$self->{ch}->ch_record(
+						{ 
+							-email  => $email, 
+							-list   => $list,
+							-token  => $q->param('consent_token'),
+							-action => 'solved captcha',
+						}
+					);
+					
                 }
                 else {
                     $captcha_worked = 0;
@@ -887,7 +948,8 @@ sub confirm {
         }
     }
     
-    warn '$mail_your_subscribed_msg: ' . $mail_your_subscribed_msg if $t; 
+    warn '$mail_your_subscribed_msg: ' . $mail_your_subscribed_msg 
+		if $t; 
     
 
     # DEV it would be *VERY* strange to fall into this, since we've already checked this...
@@ -986,7 +1048,8 @@ sub confirm {
         }
     }
     elsif ( $status == 1 ) {
-        warn q{$ls->param('enable_subscription_approval_step')} . $ls->param('enable_subscription_approval_step') if $t;  
+        warn q{$ls->param('enable_subscription_approval_step')} . $ls->param('enable_subscription_approval_step') 
+			if $t;  
         
         if ( $ls->param('enable_subscription_approval_step') == 1 ) {
             
@@ -1019,6 +1082,15 @@ sub confirm {
 
                 warn '>>>> >>>> Moving subscriber from "sub_confirm_list" to "list" '
                   if $t;
+
+		  		$self->{ch}->ch_record(
+		  			{ 
+		  				-email  => $email, 
+		  				-list   => $list,
+						-token  => $q->param('consent_token'),
+		  				-action => 'subscribed',
+		  			}
+		  		);
 
                 $lh->move_subscriber(
                     {
