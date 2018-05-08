@@ -65,6 +65,13 @@ sub unsub_link {
             croak "You MUST pass the, " . $_ . " parameter!";
         }
     }
+	
+	if(! exists($args->{-source})){ 
+		$args->{-source} = 'unknown';
+	}
+	elsif(! defined($args->{-source})){ 
+		$args->{-source} = 'unknown';
+	}
 
 	my $token = $self->{ct}->save(
 		{
@@ -76,6 +83,7 @@ sub unsub_link {
 				 mid        => $args->{-mid},
 #				remote_addr => $ENV{REMOTE_ADDR}, 
 				email_hint  => DADA::App::Guts::anonystar_address_encode($args->{-email}),
+				source      => $args->{-source}, 
 			},
 #			-reset_previous_timestamp => 1, 
 		}

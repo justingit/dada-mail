@@ -165,14 +165,16 @@ CREATE TABLE IF NOT EXISTS dada_consent_foo  (
 	
 CREATE TABLE IF NOT EXISTS dada_consent_activity  (	
 	consent_activity_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	remote_addr varchar(255), 
-	timestamp   TIMESTAMP DEFAULT NOW(),
-	email       varchar(80),
-	list        varchar(16),
-	action      varchar(80),
-	list_type   varchar(64),
+	remote_addr           varchar(255), 
+	timestamp             TIMESTAMP DEFAULT NOW(),
+	email                 varchar(80),
+	list                  varchar(16),
+	action                varchar(80),
+	source                varchar(225),
+	source_location       varchar(225),
+	list_type             varchar(64),
 	consent_session_token varchar(255),
-	consent_id int,
+	consent_id            int,
 	FOREIGN KEY(consent_id) REFERENCES dada_consent_foo(consent_id)
 ); 
 

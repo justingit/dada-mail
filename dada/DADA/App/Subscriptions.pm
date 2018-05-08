@@ -17,7 +17,7 @@ use Try::Tiny;
 use vars qw($AUTOLOAD);
 use strict;
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
 
 my %allowed = ( test => 0, );
 
@@ -199,6 +199,7 @@ sub token {
                         -list        => $data->{data}->{list},
                         -email       => $data->{email},
                         -mid         => $data->{data}->{mid},
+						-source      => $data->{data}->{source},
                     }                
                 );
             }
@@ -560,10 +561,11 @@ sub subscribe {
     }
     elsif ( $status == 1 ) {
 		
-		
 		my $c_token = $self->{ch}->start_consent({ 
-			-email  => $email, 
-			-list   => $list,
+			-email           => $email, 
+			-list            => $list,
+			-source          => 'explicit request from opt-in form',
+			-source_location =>  $args->{-cgi_obj}->referer(), 
 		}); 
 		
 		# This merely looks if captcha on the sub form is 
@@ -1657,6 +1659,7 @@ sub unsubscribe {
             $args->{-list}     = $data->{data}->{list};             
             $args->{-mid}      = $data->{data}->{mid};
             $args->{-email}    = $data->{email};
+			$args->{-source}   = $data->{data}->{source};
             
             require DADA::MailingList::Settings;
             my $ls = DADA::MailingList::Settings->new( { -list => $data->{data}->{list} } );
@@ -1689,6 +1692,7 @@ sub unsubscribe {
                 is_valid           => $is_valid,
                 list_exists        => $list_exists,
                 email_hint         => $data->{data}->{email_hint},
+				source             => $data->{data}->{source},
                 report_abuse_token => $report_abuse_token, 
 				auto_attempted     => $auto_attempted, 
             },
@@ -1904,6 +1908,17 @@ sub complete_unsubscription {
                 );
             }
         }
+		
+		for('remove consent', 'unsubscribe'){ 
+			$self->{ch}->ch_record(
+				{ 
+					-email   => $email,
+					-list    => $list,
+					-action  => $_, 
+					-source  => $args->{-source},
+				}
+			);
+		}
 
         warn 'removing, ' . $email . ' from, "list"'
           if $t;

@@ -472,6 +472,7 @@ sub send_subscribed_message {
         warn 'you MUST pass the -email param to use this method!';
         return undef;
     }
+	
     my $email = $args->{-email};
 
     require DADA::App::Subscriptions::Unsub;
@@ -479,8 +480,9 @@ sub send_subscribed_message {
 
     my $unsub_link = $dasu->unsub_link(
         {
-            -email => $email,
-            -mid   => '00000000000000'
+            -email  => $email,
+            -mid    => '00000000000000', 
+			-source => 'subscription welcome email message'
         }
     );
     $args->{-vars}->{list_unsubscribe_link} = $unsub_link;

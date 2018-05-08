@@ -44,6 +44,15 @@ sub _init {
 sub start_consent { 
 	my $self = shift; 
 	my ($args) = @_; 
+	
+	if(!exists($args->{-source})){ 
+		$args->{-source} = 'unknown';
+	}
+	
+	if(!exists($args->{-source_location})){ 
+		$args->{-source_location} = 'unknown';
+	}
+	
 	$args->{-token}  = $self->token; 
 	$args->{-action} = 'start consent';
 	
@@ -104,18 +113,30 @@ sub ch_record {
 		$args->{-consent_id} = undef;
 	}
 	
+	if(!exists($args->{-source})){
+		#croak '-token is required!'; 
+		$args->{-source} = undef; 
+	}
+	
+	if(!exists($args->{-source_location})){
+		#croak '-token is required!'; 
+		$args->{-source_location} = undef; 
+	}
+	
 	my @payload = (
 		$args->{-remote_addr},
 		$args->{-email},      
 		$args->{-list},       
 		$args->{-list_type}, 
+		$args->{-source}, 
+		$args->{-source_location}, 
 		$args->{-action},     
 		$args->{-token},  
 	);
     my $query =
         'INSERT INTO '
       . $DADA::Config::SQL_PARAMS{consent_activity_table}
-      . '(remote_addr, email, list, list_type, action, consent_session_token) VALUES (?, ?, ?, ?, ?, ?)';
+      . '(remote_addr, email, list, list_type, source, source_location, action, consent_session_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
 		
 	if(defined($args->{-consent_id})){
 		push(@payload, $args->{-consent_id}); 
@@ -123,7 +144,7 @@ sub ch_record {
 	  	my $query =
 	        'INSERT INTO '
 	      . $DADA::Config::SQL_PARAMS{consent_activity_table}
-	      . '(remote_addr, email, list, list_type, action, consent_session_token, consent_id) VALUES (?, ?, ?, ?, ?, ?, ?)';	
+	      . '(remote_addr, email, list, list_type, source, source_location, action, consent_session_token, consent_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';	
 	}
 
     carp 'QUERY: ' . $query

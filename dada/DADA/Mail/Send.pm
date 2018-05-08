@@ -3313,6 +3313,7 @@ sub _mail_merge {
             -list   => $labeled_data{'list_settings.list'},
             -email  => $subscriber_vars->{'subscriber.email'},
             -msg_id => $labeled_data{message_id},
+			-source => 'mailing list message',
         }
     );
 
