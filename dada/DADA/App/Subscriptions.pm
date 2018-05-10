@@ -17,7 +17,7 @@ use Try::Tiny;
 use vars qw($AUTOLOAD);
 use strict;
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
 
 my %allowed = ( test => 0, );
 
@@ -350,12 +350,30 @@ sub subscribe {
 		push(@$skip_tests, 'black_listed');
 	}
 	
+	# Consent stuff
+	require DADA::MailingList::Consents; 
+	my $con           = DADA::MailingList::Consents->new; 
+	my $list_consents = $con->give_me_all_consents($ls); 
+	my $consent_ids   = []; 
+	for(@$list_consents){ 
+		#warn '$_->{id}' . $_->{id}; 
+		my $consent_id = $_->{id}; 
+		if(
+			defined(
+				$q->param('consent_' . $consent_id)
+			)
+		){ 
+			push(@$consent_ids, $consent_id);
+		}
+	}
+	
     my ( $status, $errors ) = $lh->subscription_check(
         {
-            -email  => $email,
-            -type   => 'list',
-            -fields => $fields, 
-			-captcha_params => {
+            -email           => $email,
+            -type            => 'list',
+            -fields          => $fields, 
+			-consent_ids     => $consent_ids, 
+			-captcha_params  => {
 				-remote_addr =>  $ENV{'REMOTE_ADDR'},
 				-response    => scalar $q->param('g-recaptcha-response'),
 			},
@@ -532,6 +550,7 @@ sub subscribe {
                   already_sent_sub_confirmation
                   invalid_profile_fields
 				  captcha_challenge_failed
+				  list_consent_check_failed
                   undefined
                 );
 
@@ -568,6 +587,45 @@ sub subscribe {
 			-source_location =>  $args->{-cgi_obj}->referer(), 
 		}); 
 		
+		
+		# Consent stuff
+		require DADA::MailingList::Consents; 
+		my $con           = DADA::MailingList::Consents->new; 
+		my $list_consents = $con->give_me_all_consents($ls); 
+		my $consent_ids   = []; 
+		for(@$list_consents){ 
+			my $consent_id = $_->{id}; 
+			if(
+				defined(
+					$q->param('consent_' . $consent_id)
+				)
+			){ 
+				my $explicit_consent_id = $q->param('consent_' . $consent_id); 
+				$self->{ch}->ch_record(
+					{ 
+						-email      => $email, 
+						-list       => $list,
+						-token      => $c_token,
+						-source          => 'explicit request from opt-in form',
+						-source_location =>  $args->{-cgi_obj}->referer(), 
+						-action     => 'consent granted',
+						-consent_id => $explicit_consent_id,
+					}
+				);
+			}
+		}
+		
+		$self->{ch}->ch_record(
+			{ 
+				-email  => $email, 
+				-list   => $list,
+				-token  => $c_token,
+				-action => 'requested sub',
+				-source          => 'explicit request from opt-in form',
+				-source_location =>  $args->{-cgi_obj}->referer(), 
+			}
+		);
+		
 		# This merely looks if captcha on the sub form is 
 		# required. If we get this far, it checked out, 
 		# This is a double-check the the pass was actually recorded
@@ -585,17 +643,6 @@ sub subscribe {
 				);
 			}
 		}
-	
-
-		
-		$self->{ch}->ch_record(
-			{ 
-				-email  => $email, 
-				-list   => $list,
-				-token  => $c_token,
-				-action => 'requested sub',
-			}
-		);
 		
 # The idea is, we'll save the information for the subscriber in the confirm list, and then
 # move the info to the actual subscription list,
@@ -899,6 +946,7 @@ sub confirm {
 						suspicious_activity_by_ip_check_failed
 						stop_forum_spam_check_failed
 						captcha_challenge_failed
+						list_consent_check
 					)
 					], )
             : ( -skip => [ 
@@ -910,6 +958,7 @@ sub confirm {
 							suspicious_activity_by_ip_check_failed
 							stop_forum_spam_check_failed
 							captcha_challenge_failed
+							list_consent_check
 							)], 
 						),
         }
@@ -1909,16 +1958,34 @@ sub complete_unsubscription {
             }
         }
 		
-		for('remove consent', 'unsubscribe'){ 
+		
+		# Might as well tie these both together: 
+		my $consent_token = $self->{ch}->token(); 
+		
+		my $current_consent_ids = $self->{ch}->subscriber_consented_to($list, $email); 
+		
+		for my $con_id(@$current_consent_ids){ 
 			$self->{ch}->ch_record(
 				{ 
-					-email   => $email,
-					-list    => $list,
-					-action  => $_, 
-					-source  => $args->{-source},
+					-email      => $email,
+					-list       => $list,
+					-action     => 'revoke consent', 
+					-source     => $args->{-source},
+					-token      => $consent_token, 
+					-consent_id => $con_id, 
 				}
 			);
 		}
+		
+		$self->{ch}->ch_record(
+			{ 
+				-email   => $email,
+				-list    => $list,
+				-action  => 'unsubscribe', 
+				-source  => $args->{-source},
+				-token   => $consent_token, 
+			}
+		);
 
         warn 'removing, ' . $email . ' from, "list"'
           if $t;

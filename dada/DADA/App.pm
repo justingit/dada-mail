@@ -115,6 +115,7 @@ sub setup {
         'change_login'             => \&change_login,
         'new_list'                 => \&new_list,
         'change_info'              => \&change_info,
+		'manage_list_consent'      => \&manage_list_consent,
         'html_code'                => \&html_code,
         'preview_jquery_plugin_subscription_form' =>
           \&preview_jquery_plugin_subscription_form,
@@ -207,6 +208,7 @@ sub setup {
         'mail_sending_options_test'     => \&mail_sending_options_test,
         'author'                        => \&author,
         'list'                          => \&list_page,
+		'privacy_policy'                => \&list_privacy_policy, 
         'setup_info'                    => \&setup_info,
         'reset_cipher_keys'             => \&reset_cipher_keys,
         'restore_lists'                 => \&restore_lists,
@@ -604,6 +606,45 @@ sub list_page {
     return $scrn;
 
 }
+
+
+sub list_privacy_policy {
+
+    my $self = shift;
+    my $q    = $self->query();
+
+    my $list = $q->param('list');
+	
+	
+    if ( check_if_list_exists( -List => scalar $q->param('list') ) == 0 ) {
+        $q->delete('list');
+        return $self->default();
+    }
+	
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen         => 'list_privacy_policy.tmpl',
+            -expr           => 1,
+            -with           => 'list',
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+            -webify_these => [
+                qw(
+                  list_settings.info
+                  list_settings.privacy_policy
+                  list_settings.physical_address
+                  )
+            ]
+        }
+    );
+    return $scrn;
+}
+
 
 sub admin {
 
@@ -3042,6 +3083,100 @@ sub change_info {
         $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
               . '?flavor=change_info&done=1' );
     }
+}
+
+sub manage_list_consent { 
+
+    my $self = shift;
+    my $q    = $self->query();
+
+    my $process = $q->param('process') || undef;
+    my $done    = $q->param('done') || undef;
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'manage_list_consent',
+      );
+    if ( !$checksout ) { return $error_msg; }
+
+    my $list = $admin_list;
+	
+	
+    require DADA::MailingList::Settings;
+	my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+	
+	
+	if($process eq 'add_consent'){ 
+		require DADA::MailingList::Consents; 
+		my $new_consent = $q->param('new_consent') || undef; 
+		require DADA::MailingList::Consents; 
+		my $con = DADA::MailingList::Consents->new; 
+		my $new_id = $con->add(
+			{ 
+				-list => $list, 
+				-consent => $new_consent,
+			}
+		); 
+		carp 'new consent id: ' . $new_id;
+		
+		# And once that's done, we grab any consents already saved 
+		# (that's just ina  particular setting)
+		# Add this new one to the lsit, 
+		# THen save it back? 
+		# Which format? 
+		
+		my $consent_ids = $ls->param('list_consent_ids'); 
+		my $cids = $con->thawish_for_reading($consent_ids);
+		
+		
+		push(@$cids, $new_id); 
+		
+		my $freeze = $con->freezish_for_saving($cids);
+		
+		
+		$ls->save(
+			{
+				-settings => {
+					list_consent_ids => $freeze, 
+				}
+			}	
+		);
+		
+		
+        $self->header_type('redirect');
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=manage_list_consent;done=1;new_id=' . $new_id);
+			  
+	    return; 
+
+	}
+	
+	my $con = DADA::MailingList::Consents->new; 
+	
+	use DADA::MailingList::Consents; 
+	my $consents = $con->give_me_all_consents($ls); 
+	
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen         => 'manage_list_consent.tmpl',
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -expr => 1,
+            -vars => {
+				consents => $consents, 
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    return $scrn;
+	
 }
 
 sub change_password {

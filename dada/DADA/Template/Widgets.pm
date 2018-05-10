@@ -2751,7 +2751,9 @@ sub subscription_form {
  			$tmpl_name = 'subscription_form_fields_example.tmpl'; 
 		}
 		
-
+		require DADA::MailingList::Consents; 
+		my $con           = DADA::MailingList::Consents->new; 
+		my $list_consents = $con->give_me_all_consents($ls); 
 		
         return screen({
             -screen => $tmpl_name, 
@@ -2767,7 +2769,8 @@ sub subscription_form {
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
 							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
-							recaptcha_html           => $CAPTCHA_string,							
+							recaptcha_html           => $CAPTCHA_string,		
+							list_consents            => $list_consents, 					
 							
                         },
 						-list_settings_vars_param => {

@@ -155,11 +155,10 @@ plaintext mediumtext,
 html mediumtext
 );
 
-
-
-CREATE TABLE IF NOT EXISTS dada_consent_foo  (
+CREATE TABLE IF NOT EXISTS dada_consents  (
     consent_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    rando_col text
+	list                  varchar(16),
+	consent               mediumtext
 );
 
 	
@@ -175,7 +174,7 @@ CREATE TABLE IF NOT EXISTS dada_consent_activity  (
 	list_type             varchar(64),
 	consent_session_token varchar(255),
 	consent_id            int,
-	FOREIGN KEY(consent_id) REFERENCES dada_consent_foo(consent_id)
+	FOREIGN KEY(consent_id) REFERENCES dada_consents(consent_id)
 ); 
 
 dada_consent_history

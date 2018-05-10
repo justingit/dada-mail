@@ -1,6 +1,17 @@
 <!-- begin subscription_form_widget.tmpl --> 
 
+
+<form 
+	action="<!-- tmpl_var script_url -->" 
+	method="post" 
+	accept-charset="<!-- tmpl_var HTML_CHARSET -->" 
+	id="something something something">
+
+
+<!-- tmpl_if comment -->
 <form action="<!-- tmpl_var script_url -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="<!-- tmpl_var subscription_form_id default="subscription_form" -->">
+<!-- /tmpl_if -->
+
 	<input type="hidden" name="flavor" id="ddm_flavor" value="subscribe" >
 
 	    <div class="row">
@@ -116,7 +127,33 @@
 			<!-- /tmpl_if --> 
 			</div> 
 		<!-- /tmpl_if -->
-
+		
+		<!-- tmpl_if list_consents -->
+		    <!-- tmpl_loop list_consents -->
+				<div class="row">
+					<div class="large-4 medium-4 columns">
+				        <label 
+							class="medium-text-right"
+							for="ddm_<!-- tmpl_var name escape=HTML -->" 
+						>
+					        <input 
+								type="checkbox" 
+								class="list_consents"
+								name="consent_<!-- tmpl_var id -->" 
+								value="1"
+								id="consent_<!-- tmpl_var id -->"
+								required="required"
+								>
+						</label>
+					</div> 
+					<div class="large-8 medium-8 columns">
+				       <label for="consent_<!-- tmpl_var id -->"> 
+						   <!-- tmpl_var consent --> 
+						</label>
+					</div>
+				</div>
+		    <!-- /tmpl_loop -->
+		<!-- /tmpl_if -->
 
 		<!-- tmpl_if recaptcha_html --> 
 			<div class="row">
@@ -152,7 +189,24 @@
 						>
 			</div>
 		</div>
+		
+		<div class="row">
+			<div class="large-12 medium-12 columns ">
+				
+				<p class="text-center"> 
+					
+					  			  Unsubscribe at Anytime
+						    | 
+							 <a href="<!-- tmpl_var S_PROGRAM_URL -->/privacy_policy/<!-- tmpl_var list_settings.list -->/" target="_blank"> 
+							Privacy Policy
+						</a>
+				</p>
+					
+	
 
+			
+			</div>
+		</div>
 	</div>
 	</div>
 </form> 

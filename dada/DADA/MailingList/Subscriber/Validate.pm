@@ -59,6 +59,10 @@ sub subscription_check {
     if ( !exists( $args->{-fields} ) ) {
         $args->{-fields} = {};
     }
+	
+    if ( !exists( $args->{-consent_ids} ) ) {
+        $args->{-consent_ids} = [];
+    }
     
     if(! exists($args->{-skip})) { 
         $args->{-skip} = [];
@@ -280,6 +284,33 @@ sub subscription_check {
 		$args->{-type}    eq 'list'
 		&& $args->{-mode} eq 'user'
 	){ 
+		if ( !$skip{list_consent_check} ) {		
+			$errors->{list_consent_check_failed} = 0;
+			require DADA::MailingList::Consents; 
+			my $con           = DADA::MailingList::Consents->new; 
+			my $list_consents = $con->give_me_all_consents($ls); 
+			my $list_consent_ids = [];
+			for(@$list_consents){ 
+				push(@$list_consent_ids, $_->{id})
+			}
+			my $passed_consent = {}; 
+			for(@{$args->{-consent_ids}}){ 
+				$passed_consent->{$_} = 1; 
+			}
+			for(@$list_consent_ids){ 
+				if(!exists($passed_consent->{$_})){ 
+					$errors->{list_consent_check_failed} = 1; 
+	                $status = 0;
+	                last;
+				}
+			}
+		}
+	}
+	
+	if (
+		$args->{-type}    eq 'list'
+		&& $args->{-mode} eq 'user'
+	){ 
 
 
 		
@@ -404,10 +435,10 @@ sub subscription_check {
         }
     }
     
-	if($t){ 
+	#if($t){ 
 		require Data::Dumper; 
 		warn 'subscription_check returning: ' . Data::Dumper::Dumper({status => $status, errors => $errors});
-	}
+		#}
     return ( $status, $errors );
 
 }

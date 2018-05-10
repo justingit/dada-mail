@@ -1,0 +1,105 @@
+<!-- begin manage_list_consent.tmpl -->
+
+
+<!-- tmpl_set name="title" value="Mailing List &#187; Manage List Consent" -->
+<div id="screen_meta" data-menu_highlight="change_info"></div>
+
+
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Mailing List
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Manage List Consent
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+</div>
+
+
+<!-- tmpl_if done -->
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+<!--/tmpl_if-->
+
+
+		<fieldset> 
+			<legend>List Consents</legend>
+			
+		
+			<!-- tmpl_if consents --> 
+				<table style="width:100%" class="responsive">
+					<tr> 
+				    	<!-- tmpl_if root_login --> 
+							<th> 
+					         	&nbsp;
+					        </th>
+					    <!-- /tmpl_if --> 
+						<th> 
+				        	Internal ID
+				        </th> 
+						<th> 
+				        	Consent
+				        </th>
+
+				      </tr> 
+
+						<!-- tmpl_loop consents --> 
+						<tr> 
+				      
+				         <td> 
+				           <!-- tmpl_var id --> 
+				         </td> 
+				         <td> 
+				           <!-- tmpl_var consent --> 
+				         </td>
+
+				        </tr> 
+				        <!-- /tmpl_loop --> 
+				        </table> 
+				
+				
+			
+<!-- tmpl_else --> 
+	<div class="alert-box info radius">
+		There are current no consents set up. 
+	</div>
+<!-- /tmpl_if -->
+	
+	
+	
+	
+
+
+
+	
+
+	</fieldset>
+	
+
+<fieldset> 
+	<legend>Setup New Consent</legend>
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="POST" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+
+     <input type="hidden" name="flavor" value="manage_list_consent"> 
+     <input type="hidden" name="process" value="add_consent" > 
+	
+<textarea cols="60" rows="2" name="new_consent"></textarea>
+
+<div class="clearfix">
+	<ul class="button-group right">
+	    <li><input type="reset"  class="warning button" value="Clear Changes" ></li>
+	    <li><input type="submit" class="success button" value="Save New Consent" ></li>
+	</ul>
+</div>
+<form> 
+</fieldset> 	
+<!-- begin manage_list_consent.tmpl -->
+

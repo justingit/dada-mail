@@ -37,6 +37,9 @@ sub _init {
     require DADA::App::DBIHandle;
     $dbi_obj = DADA::App::DBIHandle->new;
     $self->{dbh} = $dbi_obj->dbh_obj;
+	
+	$DADA::Config::SQL_PARAMS{consent_activity_table} = 'dada_consent_activity';
+	
 }
 
 
@@ -79,7 +82,7 @@ sub ch_record {
 
 	# insert into dada_consent_activity (email) values('user@example.com'); 
 
-	$DADA::Config::SQL_PARAMS{consent_activity_table} = 'dada_consent_activity';
+	
 		
     my $self = shift;
     my ($args) = @_;
@@ -139,18 +142,24 @@ sub ch_record {
       . '(remote_addr, email, list, list_type, source, source_location, action, consent_session_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
 		
 	if(defined($args->{-consent_id})){
-		push(@payload, $args->{-consent_id}); 
 		
-	  	my $query =
+		warn "we've got a -consent_id";
+		push(@payload, $args->{-consent_id}); 
+	  	$query =
 	        'INSERT INTO '
 	      . $DADA::Config::SQL_PARAMS{consent_activity_table}
 	      . '(remote_addr, email, list, list_type, source, source_location, action, consent_session_token, consent_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';	
 	}
 
-    carp 'QUERY: ' . $query
-      if $t;
+    carp 'QUERY: ' . $query;
+#      if $t;
 
     my $sth = $self->{dbh}->prepare($query);
+
+	
+#	use Data::Dumper; 
+#	warn 'payload!' . Dumper([@payload]);
+
 
     $sth->execute(@payload)
       or croak "cannot do statement (at insert)! $DBI::errstr\n";
@@ -170,5 +179,62 @@ sub remote_addr {
     }
 }
 
+
+sub subscriber_consented_to { 
+	
+	use Data::Dumper; 
+	
+	my $self  = shift; 
+	my $list  = shift; 
+	my $email = shift; 
+	
+	my $consent_scorecard = {}; 
+		
+    my $query = 'SELECT timestamp, action, consent_id FROM ' 
+	.  $DADA::Config::SQL_PARAMS{consent_activity_table} 
+	. ' WHERE list = ? AND email = ? AND'
+	. ' (action = "consent granted" OR action = "consent revoked")'
+	. ' ORDER BY timestamp ASC';
+	
+	warn 'QUERY: ' . $query;
+    my $sth = $self->{dbh}->prepare($query);
+	
+	$sth->execute($list, $email);
+	
+ 	while ( my $fields = $sth->fetchrow_hashref ) {
+		
+		my $consent_id = $fields->{consent_id}; 
+		
+		if(!exists($consent_scorecard->{$consent_id})) { 
+			$consent_scorecard->{$consent_id} = 0; 
+		}
+		if($fields->{action} eq 'consent granted') {
+			
+			warn 'granted!' . Dumper($fields);  
+			
+			$consent_scorecard->{$consent_id} = int($consent_scorecard->{$consent_id}) + 1;
+		}
+		elsif($fields->{action} eq 'consent revoked') {  
+			
+			warn 'revoked!' . Dumper($fields);  
+				
+			$consent_scorecard->{$consent_id} = int($consent_scorecard->{$consent_id}) - 1;
+		}
+    }
+	
+	my $consents = []; 
+	for(keys %$consent_scorecard){ 
+		if($consent_scorecard->{$_} >= 1){ 
+			push(@$consents, $_)
+		}
+		else { 
+			warn 'consent, ' . $_ . 'was revoked!';
+		}
+	}
+	
+    return $consents;
+	
+
+}
 
 1;

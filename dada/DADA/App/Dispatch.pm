@@ -235,6 +235,17 @@ sub translate {
             $q->param( 'extran', $extran );
 
         }
+        elsif ( $info =~ m/^privacy_policy/ ) {
+
+            my ( $pi_flavor, $pi_list, $extran ) = split( '/', $info );
+
+            $q->param( 'flavor', $pi_flavor )
+              if $pi_flavor;
+            $q->param( 'list', $pi_list )
+              if $pi_list;
+            $q->param( 'extran', $extran );
+
+        }
         elsif ( $info =~ /^spacer_image/ ) {
 
             # spacer_image/list/mid/spacer.png';
