@@ -177,16 +177,12 @@ CREATE TABLE IF NOT EXISTS dada_consent_activity  (
 	FOREIGN KEY(consent_id) REFERENCES dada_consents(consent_id)
 ); 
 
-dada_consent_history
-#UID
-#Date
-#Email
-#IP
-#List 
-#Action
-#sublist (even though I guess I only care about list atm)
-consent_id
-
+CREATE TABLE IF NOT EXISTS dada_privacy_policies  (
+    privacy_policy_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	timestamp         TIMESTAMP DEFAULT NOW(),
+	list              varchar(16),
+	privacy_policy    mediumtext
+);
 
 
 

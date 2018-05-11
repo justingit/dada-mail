@@ -65,7 +65,9 @@
 		$("body").on("submit", "#" + copythis._targetForm, function(event) {
 			
 			
+			
 			event.preventDefault();
+			
 			
 			var responsive_options = {
 				width: '95%',
@@ -93,6 +95,8 @@
 			var using_data; 
 						
 			if(copythis._mode == 'jsonp') { 
+			
+				
 				using_datatype = 'jsonp'; 
 				using_content_type = 'GET';
 				
@@ -104,26 +108,37 @@
 				
 				$("#" + copythis._targetForm + " :input").each(function() {
 					if(this.name != 'list' && this.name != 'email' && this.name != 'flavor') { 
-						using_data[this.name] = this.value;
+						if($(this).hasClass('list_consents')){ 
+							if($(this).prop("checked") === true){
+								using_data[this.name] = this.value;
+							}
+						}
+						else { 
+							using_data[this.name] = this.value;
+						}
 					}
-				}); 
+				}); 				
 			}
 			else if(copythis._mode == 'json') { 
-
+				
 				var fields = {};
-				$("#" + copythis._targetForm + " :input").each(function() {
-					if(this.name != 'list' && this.name != 'email' && this.name != 'flavor') { 
+				if(this.name != 'list' && this.name != 'email' && this.name != 'flavor') { 
+					if($(this).hasClass('list_consents')){ 
+						if($(this).prop("checked") === true){
+							fields[this.name] = this.value;
+						}
+					}
+					else { 
 						fields[this.name] = this.value;
 					}
-				}); 
-								
-				using_data = JSON.stringify(
-					using_data = {
-						list:  $("#" + copythis._targetForm + " :input[name='list']").val(),
-						email: $("#" + copythis._targetForm + " :input[name='email']").val(),
-						fields: fields
-					}
-				);
+				}
+				
+				using_data = {
+					list:  $("#" + copythis._targetForm + " :input[name='list']").val(),
+					email: $("#" + copythis._targetForm + " :input[name='email']").val(),
+					fields: fields
+				}
+				using_data = JSON.stringify(using_data);
 				
 			} 
 			else { 

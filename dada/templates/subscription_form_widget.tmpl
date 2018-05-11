@@ -1,16 +1,12 @@
 <!-- begin subscription_form_widget.tmpl --> 
 
 
-<form 
-	action="<!-- tmpl_var script_url -->" 
-	method="post" 
-	accept-charset="<!-- tmpl_var HTML_CHARSET -->" 
-	id="something something something">
-
-
-<!-- tmpl_if comment -->
-<form action="<!-- tmpl_var script_url -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="<!-- tmpl_var subscription_form_id default="subscription_form" -->">
-<!-- /tmpl_if -->
+	<form 
+		action="<!-- tmpl_var script_url -->" 
+		method="post" 
+		accept-charset="<!-- tmpl_var HTML_CHARSET -->" 
+		id="<!-- tmpl_var subscription_form_id default="subscription_form" -->"
+	>
 
 	<input type="hidden" name="flavor" id="ddm_flavor" value="subscribe" >
 
@@ -140,7 +136,7 @@
 								type="checkbox" 
 								class="list_consents"
 								name="consent_<!-- tmpl_var id -->" 
-								value="1"
+								value="<!-- tmpl_var id -->"
 								id="consent_<!-- tmpl_var id -->"
 								required="required"
 								>
