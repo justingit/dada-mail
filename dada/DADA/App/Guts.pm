@@ -1911,8 +1911,7 @@ sub check_list_setup {
 		
 
 	
-
-		
+if($args{-new_list} eq "yes") {	
 	if(length($fields->{privacy_policy}) == 0){ 	
 		$list_errors++;
 	
@@ -1920,6 +1919,7 @@ sub check_list_setup {
 	}else{ 
 		$new_list_errors{privacy_policy} = 0;
 	}
+}
 	
 	if($fields->{physical_address} eq ""){ 
 		$list_errors++;

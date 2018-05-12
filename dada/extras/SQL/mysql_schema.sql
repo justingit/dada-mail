@@ -174,8 +174,10 @@ CREATE TABLE IF NOT EXISTS dada_consent_activity  (
 	list_type             varchar(64),
 	consent_session_token varchar(255),
 	consent_id            int,
-	FOREIGN KEY(consent_id) REFERENCES dada_consents(consent_id)
-); 
+	privacy_policy_id     int,
+	FOREIGN KEY(consent_id)        REFERENCES dada_consents(consent_id), 
+	FOREIGN KEY(privacy_policy_id) REFERENCES dada_privacy_policies(privacy_policy_id)	
+);
 
 CREATE TABLE IF NOT EXISTS dada_privacy_policies  (
     privacy_policy_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,

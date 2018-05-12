@@ -1,0 +1,90 @@
+<!-- begin manage_privacy_policy.tmpl -->
+
+
+
+
+<!-- tmpl_set name="title" value="Mailing List &#187; Manage Privacy Policy" -->
+<div id="screen_meta" data-menu_highlight="change_info"></div>
+
+
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Mailing List
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Manage Privacy Policy
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+</div>
+
+
+<!-- tmpl_if done -->
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+<!--/tmpl_if-->
+
+<!-- tmpl_if errors -->
+
+    <div class="alert-box alert radius">
+	 The <!-- tmpl_var errors --> field<!-- tmpl_var errors_ending --> on this form
+	 <!-- tmpl_var err_word --> filled out incorrectly and
+	 must be fixed for all new information to be saved.
+	</div>
+
+<!--/tmpl_if-->
+
+<p><em>(Very important information on way privacy policy information is important)</em></p>
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+
+
+<input type="hidden" name="flavor"       value="manage_privacy_policy" >
+<input type="hidden" name="process" value="1" >
+
+
+<!-- tmpl_if flags_privacy_policy -->
+    <div class="alert-box alert radius">
+	  You need to give your list a privacy policy.
+    </div>
+
+
+<!--/tmpl_if-->
+
+<div class="row">
+	<div class="large-3 medium-3 columns">
+	    <label 
+			class="medium-text-right"
+			for="privacy_policy"
+		>
+        	Privacy Policy
+    	</label>
+	</div> 
+	<div class="large-9 medium-9 columns">
+        <textarea name="privacy_policy" id="privacy_policy"  rows="5"><!-- tmpl_var privacy_policy --></textarea>
+   </div>
+</div>
+
+
+<div class="clearfix">
+	<ul class="button-group right">
+	    <li><input type="reset"  class="warning button" value="Clear Changes" ></li>
+	    <li><input type="submit" class="success button" value="Save Changes" ></li>
+	</ul>
+</div>
+
+
+
+</form>
+
+
+
+
+<!-- end manage_privacy_policy.tmpl -->

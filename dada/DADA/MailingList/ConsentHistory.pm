@@ -59,6 +59,24 @@ sub start_consent {
 	$args->{-token}  = $self->token; 
 	$args->{-action} = 'start consent';
 	
+	# auto data migration! 
+	require DADA::MailingList::PrivacyPolicyManager;
+	my $ppm = DADA::MailingList::PrivacyPolicyManager->new; 
+	my $pp_data = $ppm->latest_privacy_policy({-list => $args->{-list}});
+	if(!exists($pp_data->{privacy_policy})){ 
+		require DADA::MailingList::Settings; 
+		my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
+		my $new_pp_id = $ppm->add(
+			{ 
+				-list           => -list => $args->{-list}, 
+				-privacy_policy => $ls->param('privacy_policy'), 
+			}
+		); 
+		$pp_data = $ppm->latest_privacy_policy({-list => -list => $args->{-list}});
+	}
+	
+	$args->{-privacy_policy_id}	= $pp_data->{privacy_policy_id};
+	
 	$self->ch_record($args);
 
 	return $args->{-token};
@@ -126,6 +144,10 @@ sub ch_record {
 		$args->{-source_location} = undef; 
 	}
 	
+	if(!exists($args->{-privacy_policy_id})){
+		$args->{-privacy_policy_id} = undef; 
+	}
+	
 	my @payload = (
 		$args->{-remote_addr},
 		$args->{-email},      
@@ -135,11 +157,12 @@ sub ch_record {
 		$args->{-source_location}, 
 		$args->{-action},     
 		$args->{-token},  
+		$args->{-privacy_policy_id},
 	);
     my $query =
         'INSERT INTO '
       . $DADA::Config::SQL_PARAMS{consent_activity_table}
-      . '(remote_addr, email, list, list_type, source, source_location, action, consent_session_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+      . '(remote_addr, email, list, list_type, source, source_location, action, consent_session_token, privacy_policy_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
 		
 	if(defined($args->{-consent_id})){
 		
@@ -148,7 +171,7 @@ sub ch_record {
 	  	$query =
 	        'INSERT INTO '
 	      . $DADA::Config::SQL_PARAMS{consent_activity_table}
-	      . '(remote_addr, email, list, list_type, source, source_location, action, consent_session_token, consent_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';	
+	      . '(remote_addr, email, list, list_type, source, source_location, action, consent_session_token, privacy_policy_id, consent_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';	
 	}
 
     carp 'QUERY: ' . $query;
@@ -159,7 +182,6 @@ sub ch_record {
 	
 #	use Data::Dumper; 
 #	warn 'payload!' . Dumper([@payload]);
-
 
     $sth->execute(@payload)
       or croak "cannot do statement (at insert)! $DBI::errstr\n";

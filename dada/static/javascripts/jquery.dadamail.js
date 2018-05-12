@@ -155,7 +155,7 @@
 			    contentType: "application/json; charset=UTF-8",
 				success:     function(data) {
 					
-					console.log('data:' + JSON.stringify(data)); 
+					// console.log('data:' + JSON.stringify(data)); 
 	
 					var html = ''; 
 					if(data.status === 0){
@@ -237,6 +237,24 @@
 							    });		
 							});
 						}
+						
+						// wipe out data on the form: 
+						$("#" + copythis._targetForm + " :input").each(function() {
+							if(
+								this.name != 'list' 
+							&& this.name != 'flavor' 
+							&& this.name != 'submit_button'
+							&& $(this).hasClass('button') !== true) { 
+								if($(this).hasClass('list_consents')){ 
+									if($(this).prop("checked") === true){	
+										$(this).prop('checked', false);
+									}
+								}
+								else { 
+									$(this).val(''); 
+								}
+							}
+						}); 				
 					}
 					else { 
 						// Success, or Error: it may not be something we can work with:

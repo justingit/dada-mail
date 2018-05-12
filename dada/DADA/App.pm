@@ -115,6 +115,7 @@ sub setup {
         'change_login'             => \&change_login,
         'new_list'                 => \&new_list,
         'change_info'              => \&change_info,
+		'manage_privacy_policy'    => \&manage_privacy_policy, 
 		'manage_list_consent'      => \&manage_list_consent,
         'html_code'                => \&html_code,
         'preview_jquery_plugin_subscription_form' =>
@@ -624,22 +625,34 @@ sub list_privacy_policy {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
+	require DADA::MailingList::PrivacyPolicyManager;
+	my $ppm = DADA::MailingList::PrivacyPolicyManager->new; 
+	my $pp_data = $ppm->latest_privacy_policy({-list => $list});
+	if(!exists($pp_data->{privacy_policy})){ 
+		my $new_pp_id = $ppm->add(
+			{ 
+				-list           => $list, 
+				-privacy_policy => $ls->param('privacy_policy'), 
+			}
+		); 
+		$pp_data = $ppm->latest_privacy_policy({-list => $list});
+	}
+	my $saved_privacy_policy = $pp_data->{privacy_policy};
+	$saved_privacy_policy = plaintext_to_html({-str => $saved_privacy_policy});
+
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen         => 'list_privacy_policy.tmpl',
             -expr           => 1,
             -with           => 'list',
+			-vars           => {
+				privacy_policy_date  => $pp_data->{timestamp},
+				saved_privacy_policy => $saved_privacy_policy, 
+			},
             -list_settings_vars_param => {
                 -list   => $list,
                 -dot_it => 1,
             },
-            -webify_these => [
-                qw(
-                  list_settings.info
-                  list_settings.privacy_policy
-                  list_settings.physical_address
-                  )
-            ]
         }
     );
     return $scrn;
@@ -2931,7 +2944,6 @@ sub change_info {
     my $list_name        = $q->param('list_name')        || undef;
     my $list_owner_email = $q->param('list_owner_email') || undef;
     my $admin_email      = $q->param('admin_email')      || undef;
-    my $privacy_policy   = $q->param('privacy_policy')   || undef;
     my $info             = $q->param('info')             || undef;
     my $physical_address = $q->param('physical_address') || undef;
     my $done             = $q->param('done')             || undef;
@@ -2977,7 +2989,6 @@ sub change_info {
                 list_name        => $list_name,
                 list_owner_email => $list_owner_email,
                 admin_email      => $admin_email,
-                privacy_policy   => $privacy_policy,
                 info             => $info,
                 physical_address => $physical_address,
             },
@@ -3006,9 +3017,8 @@ sub change_info {
         my $flags_invalid_list_owner_email = $flags->{invalid_list_owner_email}
           || 0;
         my $flags_list_info        = $flags->{list_info}        || 0;
-        my $flags_privacy_policy   = $flags->{privacy_policy}   || 0;
         my $flags_physical_address = $flags->{physical_address} || 0;
-
+		
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'change_info_screen.tmpl',
@@ -3032,15 +3042,12 @@ sub change_info {
                     admin_email => $admin_email ? $admin_email
                     : $ls->param('admin_email'),
                     info => $info ? $info : $ls->param('info'),
-                    privacy_policy => $privacy_policy ? $privacy_policy
-                    : $ls->param('privacy_policy'),
                     physical_address => $physical_address ? $physical_address
                     : $ls->param('physical_address'),
                     flags_list_name => $flags_list_name,
                     flags_invalid_list_owner_email =>
                       $flags_invalid_list_owner_email,
                     flags_list_info        => $flags_list_info,
-                    flags_privacy_policy   => $flags_privacy_policy,
                     flags_physical_address => $flags_physical_address,
                     flags_list_name_bad_characters =>
                       $flags_list_name_bad_characters,
@@ -3066,7 +3073,6 @@ sub change_info {
                     admin_email          => strip($admin_email),
                     list_name            => $list_name,
                     info                 => $info,
-                    privacy_policy       => $privacy_policy,
                     physical_address     => $physical_address,
 					list_phone_number    => xss_filter( strip( scalar $q->param('list_phone_number') ) ),
                     logo_image_url       => xss_filter( strip( scalar $q->param('logo_image_url') ) ),
@@ -3078,11 +3084,105 @@ sub change_info {
                 }
             }
         );
-
+		
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
               . '?flavor=change_info&done=1' );
     }
+}
+
+sub manage_privacy_policy { 
+
+    my $self    = shift;
+    my $q       = $self->query();
+    my $process = $q->param('process') || undef;
+    my $done             = $q->param('done')             || undef;
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'manage_privacy_policy'
+      );
+    if ( !$checksout ) { return $error_msg; }
+
+    my $list = $admin_list;
+
+    my $privacy_policy   = $q->param('privacy_policy')   || undef;
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+    if ( !$process ) {
+		
+		# grab the most recent privacy policy from the db. 
+		# if it's not set, set it, then try to grab it again. 
+		require DADA::MailingList::PrivacyPolicyManager;
+		my $ppm = DADA::MailingList::PrivacyPolicyManager->new; 
+		my $pp_data = $ppm->latest_privacy_policy({-list => $list});
+		if(!exists($pp_data->{privacy_policy})){ 
+			my $new_pp_id = $ppm->add(
+				{ 
+					-list           => $list, 
+					-privacy_policy => $ls->param('privacy_policy'), 
+				}
+			); 
+			$pp_data = $ppm->latest_privacy_policy({-list => $list});
+		}
+		my $saved_privacy_policy = $pp_data->{privacy_policy};
+		
+		
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'manage_privacy_policy.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -expr => 1,
+                -vars => {
+                    screen        => 'manage_privacy_policy',
+                    done          => $done,
+                    privacy_policy => $saved_privacy_policy,
+                 },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+            }
+        );
+        return $scrn;
+    }
+    else {
+		
+		require DADA::MailingList::PrivacyPolicyManager;
+		my $ppm = DADA::MailingList::PrivacyPolicyManager->new; 
+		my $new_pp_id = $ppm->add(
+			{ 
+				-list           => $list, 
+				-privacy_policy => $privacy_policy, 
+			}
+		); 		
+		my $pp_data = $ppm->latest_privacy_policy(
+			{
+				-list => $list,
+			}
+		);
+		
+		# Yeah, we save the privacy policy twice. 
+        $ls->save(
+            {
+                -settings => {
+                    privacy_policy       => $pp_data->{privacy_policy},
+                }
+            }
+        );
+		
+        $self->header_type('redirect');
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=manage_privacy_policy&done=1' );
+    }
+
 }
 
 sub manage_list_consent { 

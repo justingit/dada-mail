@@ -1,4 +1,4 @@
-package DADA::MailingList::Consents;
+package DADA::MailingList::PrivacyPolicyManager;
 
 use lib qw(./ ../DADA ../ ../../ ../../DADA ../perllib); 
 
@@ -14,7 +14,7 @@ require Exporter;
 use strict;
 use vars qw(@EXPORT);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_Consents};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_PrivacyPolicyManager};
 
 sub new {
 
@@ -37,7 +37,7 @@ sub _init {
     $dbi_obj = DADA::App::DBIHandle->new;
     $self->{dbh} = $dbi_obj->dbh_obj;
 	
-    $DADA::Config::SQL_PARAMS{privacy_policies_table} = 'privacy_policies';
+    $DADA::Config::SQL_PARAMS{privacy_policies_table} = 'dada_privacy_policies';
 	
 }
 
@@ -92,6 +92,8 @@ sub add {
 
 sub latest_privacy_policy { 
 	my $self = shift; 
+	my ($args) = @_; 
+	
 	my $list = shift; 
 	
     my $query = 'SELECT privacy_policy_id, timestamp, privacy_policy FROM ' 
