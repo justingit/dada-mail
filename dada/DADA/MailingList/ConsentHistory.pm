@@ -218,7 +218,7 @@ sub subscriber_consented_to {
 	. ' (action = "consent granted" OR action = "consent revoked")'
 	. ' ORDER BY timestamp ASC';
 	
-	warn 'QUERY: ' . $query;
+	#warn 'QUERY: ' . $query;
     my $sth = $self->{dbh}->prepare($query);
 	
 	$sth->execute($list, $email);
@@ -231,15 +231,9 @@ sub subscriber_consented_to {
 			$consent_scorecard->{$consent_id} = 0; 
 		}
 		if($fields->{action} eq 'consent granted') {
-			
-			warn 'granted!' . Dumper($fields);  
-			
 			$consent_scorecard->{$consent_id} = int($consent_scorecard->{$consent_id}) + 1;
 		}
 		elsif($fields->{action} eq 'consent revoked') {  
-			
-			warn 'revoked!' . Dumper($fields);  
-				
 			$consent_scorecard->{$consent_id} = int($consent_scorecard->{$consent_id}) - 1;
 		}
     }
@@ -255,8 +249,55 @@ sub subscriber_consented_to {
 	}
 	
     return $consents;
-	
+}
 
+sub consent_history_report { 
+
+	my $self   = shift; 
+	my ($args) = @_; 
+
+	my $dada_consent_activity = 'dada_consent_activity';
+	my $dada_privacy_policies = 'dada_privacy_policies';
+	my $dada_consents         = 'dada_consents';
+	
+	my $query = qq{ 
+		SELECT 
+			$dada_consent_activity.consent_activity_id AS consent_activity_id, 
+		    $dada_consent_activity.remote_addr         AS remote_addr,
+		    $dada_consent_activity.timestamp           AS timestamp,
+		    $dada_consent_activity.email               AS email,
+		    $dada_consent_activity.list                AS list,
+		    $dada_consent_activity.action              AS action,
+		    $dada_consent_activity.source              AS source,
+		    $dada_consent_activity.source_location     AS source_location,
+		    $dada_consent_activity.consent_id          AS consent_id,
+		    $dada_consent_activity.privacy_policy_id   AS privacy_policy_id,
+		    $dada_privacy_policies.privacy_policy      AS privacy_policy,
+		    $dada_consents.consent                     AS consent
+		 FROM $dada_consent_activity
+		    LEFT JOIN $dada_privacy_policies ON $dada_consent_activity.privacy_policy_id = $dada_privacy_policies.privacy_policy_id
+		    LEFT JOIN $dada_consents         ON $dada_consent_activity.consent_id        = $dada_consents.consent_id
+		 WHERE $dada_consent_activity.email = ? AND $dada_consent_activity.list = ?
+		 ORDER BY $dada_consent_activity.timestamp ASC
+	};
+	
+	warn 'QUERY:' . $query; 
+	
+    my $sth = $self->{dbh}->prepare($query);
+	
+	$sth->execute($args->{-email}, $args->{-list});
+	
+	
+	my $results = []; 
+	
+ 	while ( my $fields = $sth->fetchrow_hashref ) {
+		push(@$results, $fields);
+	}
+	
+	#my $r = $sth->fetchall_hashref('consent_activity_id');
+	
+	return $results; 
+	
 }
 
 1;

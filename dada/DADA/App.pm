@@ -5551,6 +5551,7 @@ sub membership {
 
     my $list = $admin_list;
 
+
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
@@ -5790,7 +5791,19 @@ m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list|sub_co
         my $delivery_prefs = $s->{delivery_prefs} || 'individual';
         my $digest_timeframe =
           formatted_runtime( $ls->param('digest_schedule') );
-
+		
+		# consent
+	  	require DADA::MailingList::ConsentHistory; 
+	  	my $dmlch = DADA::MailingList::ConsentHistory->new; 
+	  	my $consent_history = $dmlch->consent_history_report({
+	  		-list  => $list, 
+	  		-email => scalar $q->param('email'), 
+	  	});
+		# /consent
+		require Data::Dumper; 
+		my $consent_history_str = Data::Dumper::Dumper($consent_history);
+		
+		
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'membership_screen.tmpl',
@@ -5844,6 +5857,7 @@ m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list|sub_co
                     digest_timeframe => $digest_timeframe,
 
                     update_email_count => $update_email_count,
+					consent_history_str => $consent_history_str, 
 
                 },
                 -list_settings_vars_param => {
