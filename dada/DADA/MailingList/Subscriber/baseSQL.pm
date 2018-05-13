@@ -519,7 +519,7 @@ sub remove {
 	
 	if(!exists($args->{-consent_vars})){ 
 		$args->{-consent_vars} = {}; 
-	}
+	};
 	
     my $query = "DELETE FROM " . $self->{sql_params}->{subscriber_table} . " 
 				 WHERE email   = ?
@@ -574,12 +574,12 @@ sub remove {
 		require DADA::MailingList::ConsentActivity; 
 		my $dmlc = DADA::MailingList::ConsentActivity->new; 
 		my $consent_token = $dmlc->token(); 		
-		my $current_consent_ids = $dmlc->subscriber_consented_to($list, $_); 
+		my $current_consent_ids = $dmlc->subscriber_consented_to($self->{list}, $_); 
 		for my $con_id(@$current_consent_ids){ 
 			$dmlc->ch_record(
 				{ 
-					-email      => $_,
-					-list       => $list,
+					-email      => $self->email,
+					-list       => $self->{list},
 					-action     => 'consent revoked', 
 					-token      => $consent_token, 
 					-consent_id => $con_id, 
@@ -589,10 +589,10 @@ sub remove {
 		}
 		$dmlc->ch_record(
 			{ 
-				-email      => $_,
-				-list       => $list,
-				-action  => 'unsubscribe', 
-				-token   => $consent_token, 
+				-email      => $self->email,
+				-list       => $self->{list},
+				-action     => 'unsubscribe', 
+				-token      => $consent_token, 
 				%{$args->{-consent_vars}},
 			}
 		);	

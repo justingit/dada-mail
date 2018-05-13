@@ -250,7 +250,7 @@ sub consent_history_report {
 	
 	my $dada_consent_activity = $DADA::Config::SQL_PARAMS{consent_activity_table};
 	my $dada_privacy_policies = $DADA::Config::SQL_PARAMS{privacy_policies_table};
-	my $dada_consents         = $DADA::Config::SQL_PARAMS{consents_taable};
+	my $dada_consents         = $DADA::Config::SQL_PARAMS{consents_table};
 	
 	my $query = qq{ 
 		SELECT 

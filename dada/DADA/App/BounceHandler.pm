@@ -894,7 +894,8 @@ sub remove_bounces {
 	$args->{-consent_vars} = { 
 		-source          => 'bounce handler',
 		-source_location => $DADA::Config::S_PROGRAM_URL, 
-	}
+	};
+	
     # Remove the Subscriber:
     for (@remove_list) {
         $lh->remove_subscriber(

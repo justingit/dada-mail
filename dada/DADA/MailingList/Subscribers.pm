@@ -373,7 +373,7 @@ sub admin_remove_subscribers {
 	        $args->{-consent_vars} = { 
 				-source          => 'admin control panel', 
 				-source_location => $DADA::Config::S_PROGRAM_URL, 
-			}
+			};
 	    }
 	}
 	

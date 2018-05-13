@@ -241,6 +241,11 @@ my @statements = split(';', $sql);
 		my $message_drafts_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{message_drafts_table};
 		my $rate_limit_hits_table               = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{rate_limit_hits_table}; 
 		my $email_message_previews_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{email_message_previews_table}; 
+		
+		my $privacy_policies_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{email_message_previews_table};
+		my $consents_table                      = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{consents_table};
+		my $consent_activity_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{consent_activity_table};
+		
 						
 						
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE IF NOT EXISTS $settings_table}; 
@@ -259,9 +264,11 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_rate_limit_hits}{CREATE TABLE IF NOT EXISTS $rate_limit_hits_table};	
-
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_email_message_previews}{CREATE TABLE IF NOT EXISTS $email_message_previews_table};	
 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_privacy_policies}{CREATE TABLE IF NOT EXISTS $privacy_policies_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_consents}{CREATE TABLE IF NOT EXISTS $consents_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_consent_activity}{CREATE TABLE IF NOT EXISTS $consent_activity_table};	
 
 
         my $sth = $dbh->prepare($_) or croak $DBI::errstr . 'query:' . $_; 
@@ -345,6 +352,9 @@ my @statements = split(';', $sql);
 		my $message_drafts_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{message_drafts_table};
 		my $rate_limit_hits_table               = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{rate_limit_hits_table}; 
 		my $email_message_previews_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{email_message_previews_table}; 
+		my $privacy_policies_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{email_message_previews_table};
+		my $consents_table                      = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{consents_table};
+		my $consent_activity_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{consent_activity_table};
 		
 		
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE $settings_table}; 
@@ -372,6 +382,9 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_rate_limit_hits}{CREATE TABLE IF NOT EXISTS $rate_limit_hits_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_email_message_previews}{CREATE TABLE IF NOT EXISTS $email_message_previews_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_privacy_policies}{CREATE TABLE IF NOT EXISTS $privacy_policies_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_consents}{CREATE TABLE IF NOT EXISTS $consents_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_consent_activity}{CREATE TABLE IF NOT EXISTS $consent_activity_table};	
 
 
 		#print 'query: ' . $_; 
@@ -488,6 +501,9 @@ my @statements = split(';', $sql);
 		my $message_drafts_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{message_drafts_table};
 		my $rate_limit_hits_table               = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{rate_limit_hits_table}; 
 		my $email_message_previews_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{email_message_previews_table}; 
+		my $privacy_policies_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{email_message_previews_table};
+		my $consents_table                      = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{consents_table};
+		my $consent_activity_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{consent_activity_table};
 	
 		
 		
@@ -509,6 +525,9 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 		$_ =~ s{CREATE TABLE dada_rate_limit_hits}{CREATE TABLE IF NOT EXISTS $rate_limit_hits_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_email_message_previews}{CREATE TABLE IF NOT EXISTS $email_message_previews_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_privacy_policies}{CREATE TABLE IF NOT EXISTS $privacy_policies_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_consents}{CREATE TABLE IF NOT EXISTS $consents_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_consent_activity}{CREATE TABLE IF NOT EXISTS $consent_activity_table};	
 
 
 		print "query: $_"; 

@@ -1914,7 +1914,7 @@ sub _config_import {
 		email_message_previews_table       => 'dada_email_message_previews',
 		
 		privacy_policies_table             => 'dada_privacy_policies',
-		consents_taable                    => 'dada_consents',
+		consents_table                    => 'dada_consents',
 		consent_activity_table             => 'dada_consent_activity',
 		
 		dbtype => 'SQLite',

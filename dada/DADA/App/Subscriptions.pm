@@ -1890,7 +1890,7 @@ sub complete_unsubscription {
 	
     if ( !exists( $args->{-consent_vars} ) ) {
         $args->{-consent_vars} = {},
-    }
+    };
 		
     my $fh = $args->{-fh};
     my $q  = $args->{-cgi_obj};
