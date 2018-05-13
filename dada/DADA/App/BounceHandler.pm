@@ -885,19 +885,27 @@ sub remove_bounces {
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
+	require DADA::MailingList::ConsentHistory; 
+	my $dmlc = DADA::MailingList::ConsentHistory->new; 
+
     my @remove_list = keys %{ $self->{tmp_remove_list}->{$list} };
 
+
+	$args->{-consent_vars} = { 
+		-source          => 'bounce handler',
+		-source_location => $DADA::Config::S_PROGRAM_URL, 
+	}
     # Remove the Subscriber:
     for (@remove_list) {
         $lh->remove_subscriber(
 			{
-				-email       => $_, 
-				-type        => 'list',
+				-email        => $_, 
+				-type         => 'list',
+				-consent_vars => $args->{-consent_vars},
 			}
 		);
         
 		$m .= "Removing: $_\n";
-    }
 
     if (   ( $ls->param('black_list') == 1 )
         && ( $ls->param('add_unsubs_to_black_list') == 1 ) )

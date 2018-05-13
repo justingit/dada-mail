@@ -517,6 +517,10 @@ sub remove {
 		$args->{-log_it} = 1; 
 	}
 	
+	if(!exists($args->{-consent_vars})){ 
+		$args->{-consent_vars} = {}; 
+	}
+	
     my $query = "DELETE FROM " . $self->{sql_params}->{subscriber_table} . " 
 				 WHERE email   = ?
 				 AND list_type = ?";
@@ -563,6 +567,38 @@ sub remove {
    	$rv = $sth->execute( $self->email, $self->type )
 		or croak "cannot do statement (at: remove from list)! $DBI::errstr\n";
     $sth->finish;
+	
+	
+	# Consent!
+	if($self->type eq 'list') {
+		require DADA::MailingList::ConsentHistory; 
+		my $dmlc = DADA::MailingList::ConsentHistory->new; 
+		my $consent_token = $dmlc->token(); 		
+		my $current_consent_ids = $dmlc->subscriber_consented_to($list, $_); 
+		for my $con_id(@$current_consent_ids){ 
+			$dmlc->ch_record(
+				{ 
+					-email      => $_,
+					-list       => $list,
+					-action     => 'consent revoked', 
+					-token      => $consent_token, 
+					-consent_id => $con_id, 
+					%{$args->{-consent_vars}},
+				}
+			);
+		}
+		$dmlc->ch_record(
+			{ 
+				-email      => $_,
+				-list       => $list,
+				-action  => 'unsubscribe', 
+				-token   => $consent_token, 
+				%{$args->{-consent_vars}},
+			}
+		);	
+	}
+	#/ Consent!
+
 
     # TODO: I'm just bummed that when GLOBAL UNSUB is enabled, this only logs the unsub for this list. 
 	if($args->{-log_it} == 1) { 

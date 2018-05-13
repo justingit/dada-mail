@@ -199,7 +199,9 @@ sub token {
                         -list        => $data->{data}->{list},
                         -email       => $data->{email},
                         -mid         => $data->{data}->{mid},
-						-source      => $data->{data}->{source},
+						-consent_vars => { 
+							-source => $data->{data}->{source},
+						}
                     }                
                 );
             }
@@ -1885,6 +1887,11 @@ sub complete_unsubscription {
     if ( !exists( $args->{-fh} ) ) {
         $args->{-fh} = \*STDOUT;
     }
+	
+    if ( !exists( $args->{-consent_vars} ) ) {
+        $args->{-consent_vars} = {},
+    }
+		
     my $fh = $args->{-fh};
     my $q  = $args->{-cgi_obj};
 
@@ -1957,41 +1964,15 @@ sub complete_unsubscription {
                 );
             }
         }
-		
-		
-		# Might as well tie these both together: 
-		my $consent_token = $self->{ch}->token(); 
-		my $current_consent_ids = $self->{ch}->subscriber_consented_to($list, $email); 
-		for my $con_id(@$current_consent_ids){ 
-			$self->{ch}->ch_record(
-				{ 
-					-email      => $email,
-					-list       => $list,
-					-action     => 'consent revoked', 
-					-source     => $args->{-source},
-					-token      => $consent_token, 
-					-consent_id => $con_id, 
-				}
-			);
-		}
-		
-		$self->{ch}->ch_record(
-			{ 
-				-email   => $email,
-				-list    => $list,
-				-action  => 'unsubscribe', 
-				-source  => $args->{-source},
-				-token   => $consent_token, 
-			}
-		);
 
         warn 'removing, ' . $email . ' from, "list"'
           if $t;
 
         $lh->remove_subscriber(
             {
-                -email => $email,
-                -type  => 'list'
+                -email        => $email,
+                -type         => 'list'
+				-consent_vars => $args-{-consent_vars},
             }
         );
 
