@@ -367,6 +367,16 @@ sub admin_remove_subscribers {
     }
     my $type = $args->{-type};
 
+
+	if($type eq 'list') {
+	    if ( !exists( $args->{-consent_vars} ) ) {
+	        $args->{-consent_vars} = { 
+				-source          => 'admin control panel', 
+				-source_location => $DADA::Config::S_PROGRAM_URL, 
+			}
+	    }
+	}
+	
     my $d_count = 0;
     for my $address (@$addresses) {
         my $c = $self->remove_subscriber(
@@ -374,13 +384,45 @@ sub admin_remove_subscribers {
                 -email            => $address,
                 -type             => $type,
                 -validation_check => 0,
-            }
+			}
         );
         $d_count = $d_count + $c;
         if ( $c >= 1 ) {
             push( @$unsubscribed, $address );
         }
     }
+	
+	if($type eq 'list'){ 
+			
+		require DADA::MailingList::ConsentHistory; 
+		my $dmlc = DADA::MailingList::ConsentHistory->new; 
+        for (@$addresses) {	
+			my $consent_token = $dmlc->token(); 		
+			my $current_consent_ids = $dmlc->subscriber_consented_to($self->{list}, $_); 
+			for my $con_id(@$current_consent_ids){ 
+				$dmlc->ch_record(
+					{ 
+						-email      => $_,
+						-list       => $self->{list},
+						-action     => 'consent revoked', 
+						-token      => $consent_token, 
+						-consent_id => $con_id, 
+						%{$args->{-consent_vars}},
+					}
+				);
+			}
+			$dmlc->ch_record(
+				{ 
+					-email      => $_,
+					-list       => $self->{list},
+					-action  => 'unsubscribe', 
+					-token   => $consent_token, 
+					%{$args->{-consent_vars}},
+				}
+			);
+		}
+		
+	}
 
     my $bl_count = 0;
     if ( $type eq 'list' || $type eq 'bounced_list' ) {

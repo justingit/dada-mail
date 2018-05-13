@@ -142,7 +142,7 @@ sub token {
 				{ 
 					-email  => $data->{email}, 
 					-list   => $data->{data}->{list},
-					-action => 'confirmed cloic',
+					-action => 'cloic confirmed',
 					-token  => $data->{data}->{consent_token},
 				}
 			);
@@ -620,7 +620,7 @@ sub subscribe {
 				-email  => $email, 
 				-list   => $list,
 				-token  => $c_token,
-				-action => 'requested sub',
+				-action => 'subscription requested',
 				-source          => 'explicit request from opt-in form',
 				-source_location =>  $args->{-cgi_obj}->referer(), 
 			}
@@ -671,7 +671,7 @@ sub subscribe {
 			{ 
 				-email  => $email, 
 				-list   => $list,
-				-action => 'sent cloic',
+				-action => 'cloic sent',
 				-token  => $c_token, 
 			}
 		);
@@ -1139,7 +1139,7 @@ sub confirm {
 		  				-email  => $email, 
 		  				-list   => $list,
 						-token  => $q->param('consent_token'),
-		  				-action => 'subscribed',
+		  				-action => 'subscription',
 		  			}
 		  		);
 
@@ -1961,15 +1961,13 @@ sub complete_unsubscription {
 		
 		# Might as well tie these both together: 
 		my $consent_token = $self->{ch}->token(); 
-		
 		my $current_consent_ids = $self->{ch}->subscriber_consented_to($list, $email); 
-		
 		for my $con_id(@$current_consent_ids){ 
 			$self->{ch}->ch_record(
 				{ 
 					-email      => $email,
 					-list       => $list,
-					-action     => 'revoke consent', 
+					-action     => 'consent revoked', 
 					-source     => $args->{-source},
 					-token      => $consent_token, 
 					-consent_id => $con_id, 
