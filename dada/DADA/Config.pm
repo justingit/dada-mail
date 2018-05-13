@@ -644,6 +644,60 @@ $ADMIN_MENU //= [
 		]
 },
 
+{-Title      => 'Mailing List',
+ -Activated  => 1,
+ -Submenu    => [
+				{
+				-Title      => 'List Information',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=change_info",
+				-Function   => 'change_info',
+				-Activated  => 1,
+				},
+				
+				{
+				-Title      => 'Privacy Policy',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=manage_privacy_policy",
+				-Function   => 'manage_list_consent',
+				-Activated  => 0,
+				},
+				
+				{
+				-Title      => 'List Consents',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=manage_list_consent",
+				-Function   => 'manage_list_consent',
+				-Activated  => 0,
+				},
+
+				{
+				-Title      => 'List Password',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=change_password",
+				-Function   => 'change_password',
+				-Activated  => 1,
+				},
+
+				{
+				-Title      => 'Options',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=list_options",
+				-Function   => 'list_options',
+				-Activated  => 1,
+				},
+				
+			    {
+                       -Title     => 'Web Services API',
+                       -Title_URL => "$S_PROGRAM_URL?flavor=web_services",
+                       -Function  => 'web_services',
+                       -Activated => 1,
+                   },
+            
+				{
+				-Title      => 'Delete This Mailing List',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=delete_list",
+				-Function   => 'delete_list',
+				-Activated  => 0,
+				},
+		]
+},
+
 {-Title      => 'Membership',
  -Activated  => 1,
  -Submenu    => [
@@ -679,48 +733,6 @@ $ADMIN_MENU //= [
 				-Title      => 'Options', 
 				-Title_URL  =>  "$S_PROGRAM_URL?flavor=subscription_options",
 				-Function   => 'subscription_options',
-				-Activated  => 0,
-				},
-		]
-},
-
-
-
-{-Title      => 'Mailing List',
- -Activated  => 1,
- -Submenu    => [
-				{
-				-Title      => 'List Information',
-				-Title_URL  => "$S_PROGRAM_URL?flavor=change_info",
-				-Function   => 'change_info',
-				-Activated  => 1,
-				},
-
-				{
-				-Title      => 'List Password',
-				-Title_URL  => "$S_PROGRAM_URL?flavor=change_password",
-				-Function   => 'change_password',
-				-Activated  => 1,
-				},
-
-				{
-				-Title      => 'Options',
-				-Title_URL  => "$S_PROGRAM_URL?flavor=list_options",
-				-Function   => 'list_options',
-				-Activated  => 1,
-				},
-				
-			    {
-                       -Title     => 'Web Services API',
-                       -Title_URL => "$S_PROGRAM_URL?flavor=web_services",
-                       -Function  => 'web_services',
-                       -Activated => 1,
-                   },
-            
-				{
-				-Title      => 'Delete This Mailing List',
-				-Title_URL  => "$S_PROGRAM_URL?flavor=delete_list",
-				-Function   => 'delete_list',
 				-Activated  => 0,
 				},
 		]

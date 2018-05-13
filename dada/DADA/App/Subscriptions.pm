@@ -7,7 +7,7 @@ use lib qw(
 
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
-use DADA::MailingList::ConsentHistory; 
+use DADA::MailingList::ConsentActivity; 
 
 use Carp qw(carp croak);
 use Try::Tiny;
@@ -63,7 +63,7 @@ sub AUTOLOAD {
 sub _init {
 	
 	my $self = shift; 
-	$self->{ch} = DADA::MailingList::ConsentHistory->new; 
+	$self->{ch} = DADA::MailingList::ConsentActivity->new; 
 	#$self->{ch} = undef; 
 	
 	

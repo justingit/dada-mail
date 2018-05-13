@@ -41,14 +41,27 @@
 
 <!--/tmpl_if-->
 
-<p><em>(Very important information on way privacy policy information is important)</em></p>
+    <div class="alert-box info radius">
+	  <p>
+		  <strong>
+			  What makes a good privacy policy? 
+		  </strong>
+		</p>
+		<p>
+			See the OCI's page, 
+			<a href="https://ico.org.uk/for-organisations/guide-to-data-protection/privacy-notices-transparency-and-control/privacy-notices-under-the-eu-general-data-protection-regulation/" target="_blank">
+				Privacy notices under the EU General Data Protection Regulation
+			</a>
+			for ideas and guidelines. 
+		</p>
+		
+    </div>
+	
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
-
-<input type="hidden" name="flavor"       value="manage_privacy_policy" >
+<input type="hidden" name="flavor" value="manage_privacy_policy" >
 <input type="hidden" name="process" value="1" >
-
 
 <!-- tmpl_if flags_privacy_policy -->
     <div class="alert-box alert radius">
@@ -58,20 +71,13 @@
 
 <!--/tmpl_if-->
 
+<h1>Privacy Policy</h1>
+
 <div class="row">
-	<div class="large-3 medium-3 columns">
-	    <label 
-			class="medium-text-right"
-			for="privacy_policy"
-		>
-        	Privacy Policy
-    	</label>
-	</div> 
-	<div class="large-9 medium-9 columns">
-        <textarea name="privacy_policy" id="privacy_policy"  rows="5"><!-- tmpl_var privacy_policy --></textarea>
+	<div class="large-12 medium-12 small-12 columns">
+        <textarea name="privacy_policy" id="privacy_policy"  rows="20"><!-- tmpl_var privacy_policy --></textarea>
    </div>
 </div>
-
 
 <div class="clearfix">
 	<ul class="button-group right">
@@ -79,11 +85,18 @@
 	    <li><input type="submit" class="success button" value="Save Changes" ></li>
 	</ul>
 </div>
-
-
-
 </form>
 
+    <div class="alert-box info radius">
+		<p>
+			Your mailing list's privacy policy will always be available at the following URL:
+		</p>
+		<p>
+		<a href="<!-- tmpl_var S_PROGRAM_URL -->/privacy_policy/<!-- tmpl_var list_settings.list -->/" target="_blank"> 
+			<!-- tmpl_var S_PROGRAM_URL -->/privacy_policy/<!-- tmpl_var list_settings.list -->/
+		</a>
+		</p>
+	</div>
 
 
 

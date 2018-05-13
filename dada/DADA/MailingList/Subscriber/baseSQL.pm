@@ -571,8 +571,8 @@ sub remove {
 	
 	# Consent!
 	if($self->type eq 'list') {
-		require DADA::MailingList::ConsentHistory; 
-		my $dmlc = DADA::MailingList::ConsentHistory->new; 
+		require DADA::MailingList::ConsentActivity; 
+		my $dmlc = DADA::MailingList::ConsentActivity->new; 
 		my $consent_token = $dmlc->token(); 		
 		my $current_consent_ids = $dmlc->subscriber_consented_to($list, $_); 
 		for my $con_id(@$current_consent_ids){ 

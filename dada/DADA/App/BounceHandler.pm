@@ -885,8 +885,8 @@ sub remove_bounces {
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-	require DADA::MailingList::ConsentHistory; 
-	my $dmlc = DADA::MailingList::ConsentHistory->new; 
+	require DADA::MailingList::ConsentActivity; 
+	my $dmlc = DADA::MailingList::ConsentActivity->new; 
 
     my @remove_list = keys %{ $self->{tmp_remove_list}->{$list} };
 

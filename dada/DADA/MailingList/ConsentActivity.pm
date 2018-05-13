@@ -1,4 +1,4 @@
-package DADA::MailingList::ConsentHistory;
+package DADA::MailingList::ConsentActivity;
 
 use lib qw(./ ../DADA ../ ../../ ../../DADA ../perllib); 
 
@@ -14,7 +14,7 @@ require Exporter;
 use strict;
 use vars qw(@EXPORT);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_ConsentHistory};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_ConsentActivity};
 
 sub new {
 

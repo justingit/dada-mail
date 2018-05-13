@@ -5793,8 +5793,8 @@ m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list|sub_co
           formatted_runtime( $ls->param('digest_schedule') );
 		
 		# consent
-	  	require DADA::MailingList::ConsentHistory; 
-	  	my $dmlch = DADA::MailingList::ConsentHistory->new; 
+	  	require DADA::MailingList::ConsentActivity; 
+	  	my $dmlch = DADA::MailingList::ConsentActivity->new; 
 	  	my $consent_history = $dmlch->consent_history_report({
 	  		-list  => $list, 
 	  		-email => scalar $q->param('email'), 

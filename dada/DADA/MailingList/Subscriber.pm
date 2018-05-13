@@ -15,7 +15,7 @@ use Carp qw(croak carp confess);
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
 use DADA::Logging::Usage;
-use DADA::MailingList::ConsentHistory; 
+use DADA::MailingList::ConsentActivity; 
 
 # Gah...
 use DADA::MailingList::Subscribers;
@@ -101,7 +101,7 @@ sub _init {
         $self->{ls} = $args->{ -ls_obj };
     }
 
-	$self->{'cs'}  = new DADA::MailingList::ConsentHistory;
+	$self->{'cs'}  = new DADA::MailingList::ConsentActivity;
     $self->{'log'} = new DADA::Logging::Usage;
     $self->{list} = $args->{ -list };
 
