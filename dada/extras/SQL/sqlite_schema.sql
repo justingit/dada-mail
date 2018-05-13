@@ -140,3 +140,34 @@ vars text,
 plaintext mediumtext,
 html mediumtext
 );
+
+CREATE TABLE IF NOT EXISTS dada_privacy_policies (
+privacy_policy_id INTEGER PRIMARY KEY AUTOINCREMENT,
+timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+list varchar(16),
+privacy_policy mediumtext
+);
+
+CREATE TABLE IF NOT EXISTS dada_consents  (
+consent_id INTEGER PRIMARY KEY AUTOINCREMENT,
+list varchar(16),
+consent mediumtext
+);
+
+CREATE TABLE IF NOT EXISTS dada_consent_activity  (	
+	consent_activity_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	remote_addr           varchar(255), 
+	timestamp             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	email                 varchar(80),
+	list                  varchar(16),
+	action                varchar(80),
+	source                varchar(225),
+	source_location       varchar(225),
+	list_type             varchar(64),
+	consent_session_token varchar(255),
+	consent_id            int,
+	privacy_policy_id     int,
+	FOREIGN KEY(consent_id)        REFERENCES dada_consents(consent_id), 
+	FOREIGN KEY(privacy_policy_id) REFERENCES dada_privacy_policies(privacy_policy_id)	
+);
+

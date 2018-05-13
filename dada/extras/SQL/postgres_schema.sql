@@ -157,3 +157,32 @@ plaintext text,
 html text
 );
 
+CREATE TABLE IF NOT EXISTS dada_privacy_policies  (
+    privacy_policy_id serial not null UNIQUE PRIMARY KEY,
+	timestamp TIMESTAMP DEFAULT NOW(),
+	list varchar(16),
+	privacy_policy text
+);
+
+CREATE TABLE IF NOT EXISTS dada_consents  (
+    consent_id serial not null UNIQUE PRIMARY KEY,
+	list                  varchar(16),
+	consent               text
+);
+
+CREATE TABLE IF NOT EXISTS dada_consent_activity  (	
+	consent_activity_id   serial not null UNIQUE PRIMARY KEY,
+	remote_addr           varchar(255), 
+	timestamp             TIMESTAMP DEFAULT NOW(),
+	email                 varchar(80),
+	list                  varchar(16),
+	action                varchar(80),
+	source                varchar(225),
+	source_location       varchar(225),
+	list_type             varchar(64),
+	consent_session_token varchar(255),
+	consent_id            int,
+	privacy_policy_id     int,
+	FOREIGN KEY(consent_id)        REFERENCES dada_consents(consent_id), 
+	FOREIGN KEY(privacy_policy_id) REFERENCES dada_privacy_policies(privacy_policy_id)	
+);

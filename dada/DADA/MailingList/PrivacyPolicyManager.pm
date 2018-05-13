@@ -35,10 +35,7 @@ sub _init {
 	my $dbi_obj = undef;
     require DADA::App::DBIHandle;
     $dbi_obj = DADA::App::DBIHandle->new;
-    $self->{dbh} = $dbi_obj->dbh_obj;
-	
-    $DADA::Config::SQL_PARAMS{privacy_policies_table} = 'dada_privacy_policies';
-	
+    $self->{dbh} = $dbi_obj->dbh_obj;	
 }
 
 

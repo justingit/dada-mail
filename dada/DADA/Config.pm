@@ -1911,9 +1911,11 @@ sub _config_import {
         confirmation_tokens_table          => 'dada_confirmation_tokens',
 		message_drafts_table               => 'dada_message_drafts', 
 		rate_limit_hits_table              => 'dada_rate_limit_hits',
+		email_message_previews_table       => 'dada_email_message_previews',
 		
-		email_message_previews_table       => 'dada_email_message_previews', 
-		
+		privacy_policies_table             => 'dada_privacy_policies',
+		consents_taable                    => 'dada_consents',
+		consent_activity_table             => 'dada_consent_activity',
 		
 		dbtype => 'SQLite',
 		database => 'dadamail',

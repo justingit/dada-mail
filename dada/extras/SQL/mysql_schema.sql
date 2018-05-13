@@ -155,13 +155,19 @@ plaintext mediumtext,
 html mediumtext
 );
 
+CREATE TABLE IF NOT EXISTS dada_privacy_policies  (
+    privacy_policy_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	timestamp         TIMESTAMP DEFAULT NOW(),
+	list              varchar(16),
+	privacy_policy    mediumtext
+);
+
 CREATE TABLE IF NOT EXISTS dada_consents  (
     consent_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	list                  varchar(16),
 	consent               mediumtext
 );
 
-	
 CREATE TABLE IF NOT EXISTS dada_consent_activity  (	
 	consent_activity_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	remote_addr           varchar(255), 
@@ -179,12 +185,6 @@ CREATE TABLE IF NOT EXISTS dada_consent_activity  (
 	FOREIGN KEY(privacy_policy_id) REFERENCES dada_privacy_policies(privacy_policy_id)	
 );
 
-CREATE TABLE IF NOT EXISTS dada_privacy_policies  (
-    privacy_policy_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	timestamp         TIMESTAMP DEFAULT NOW(),
-	list              varchar(16),
-	privacy_policy    mediumtext
-);
 
 
 

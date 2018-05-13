@@ -36,10 +36,7 @@ sub _init {
 	my $dbi_obj = undef;
     require DADA::App::DBIHandle;
     $dbi_obj = DADA::App::DBIHandle->new;
-    $self->{dbh} = $dbi_obj->dbh_obj;
-	
-	$DADA::Config::SQL_PARAMS{consent_activity_table} = 'dada_consent_activity';
-	
+    $self->{dbh} = $dbi_obj->dbh_obj;	
 }
 
 
@@ -180,9 +177,6 @@ sub ch_record {
     my $sth = $self->{dbh}->prepare($query);
 
 	
-#	use Data::Dumper; 
-#	warn 'payload!' . Dumper([@payload]);
-
     $sth->execute(@payload)
       or croak "cannot do statement (at insert)! $DBI::errstr\n";
     	$sth->finish;
@@ -203,8 +197,6 @@ sub remote_addr {
 
 
 sub subscriber_consented_to { 
-	
-	use Data::Dumper; 
 	
 	my $self  = shift; 
 	my $list  = shift; 
@@ -255,10 +247,10 @@ sub consent_history_report {
 
 	my $self   = shift; 
 	my ($args) = @_; 
-
-	my $dada_consent_activity = 'dada_consent_activity';
-	my $dada_privacy_policies = 'dada_privacy_policies';
-	my $dada_consents         = 'dada_consents';
+	
+	my $dada_consent_activity = $DADA::Config::SQL_PARAMS{consent_activity_table};
+	my $dada_privacy_policies = $DADA::Config::SQL_PARAMS{privacy_policies_table};
+	my $dada_consents         = $DADA::Config::SQL_PARAMS{consents_taable};
 	
 	my $query = qq{ 
 		SELECT 
@@ -281,20 +273,18 @@ sub consent_history_report {
 		 ORDER BY $dada_consent_activity.timestamp ASC
 	};
 	
-	warn 'QUERY:' . $query; 
+	warn 'QUERY:' . $query
+		if $t; 
 	
     my $sth = $self->{dbh}->prepare($query);
 	
 	$sth->execute($args->{-email}, $args->{-list});
-	
 	
 	my $results = []; 
 	
  	while ( my $fields = $sth->fetchrow_hashref ) {
 		push(@$results, $fields);
 	}
-	
-	#my $r = $sth->fetchall_hashref('consent_activity_id');
 	
 	return $results; 
 	
