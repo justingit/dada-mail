@@ -107,10 +107,10 @@ sub thawish_for_reading {
 
 sub freezish_for_saving { 
 	my $self = shift; 
-	my $string = shift; 
+	my $arrayref = shift; 
 	
 	my $config = {
-	  consent_ids => $string
+	  consent_ids => $arrayref
 	};
 	
 	

@@ -823,6 +823,8 @@ sub available_lists {
 	        $dbi_handle = DADA::App::DBIHandle->new;
 	        my $dbh     = $dbi_handle->dbh_obj;
 	        ######################################################################
+			use Data::Dumper; 
+			warn Dumper({%DADA::Config::SQL_PARAMS});
 
 	        my $query = 'SELECT DISTINCT list from '
 	          . $DADA::Config::SQL_PARAMS{settings_table} . ' WHERE list != ?';

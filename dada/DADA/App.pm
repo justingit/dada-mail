@@ -3251,12 +3251,46 @@ sub manage_list_consent {
 	    return; 
 
 	}
+	elsif($process eq 'remove_list_consent'){ 
+		
+		my $id = $q->param('id');
+
+		require DADA::MailingList::Consents; 
+		my $con = DADA::MailingList::Consents->new; 		
+		my $consent_ids = $ls->param('list_consent_ids'); 
+		my $cids = $con->thawish_for_reading($consent_ids);
+			
+		my $new_cids = []; 
+		for(@$cids){ 
+			if($_ == $id){ 
+				# ... 
+			}
+			else { 
+				push(@$new_cids, $_);
+			}
+		}
+		my $freeze = $con->freezish_for_saving($new_cids);
+		
+		$ls->save(
+			{
+				-settings => {
+					list_consent_ids => $freeze, 
+				}
+			}	
+		);
+		
+        $self->header_type('redirect');
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=manage_list_consent;done=1;removed_id=' . $id);
+			  
+	    return; 
+		
+	}
 	
 	my $con = DADA::MailingList::Consents->new; 
 	
 	use DADA::MailingList::Consents; 
 	my $consents = $con->give_me_all_consents($ls); 
-	
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen         => 'manage_list_consent.tmpl',
@@ -10945,6 +10979,7 @@ sub new_list {
     my $list_owner_email = $q->param('list_owner_email') || undef;
     my $admin_email      = $q->param('admin_email') || undef;
     my $privacy_policy   = $q->param('privacy_policy') || undef;
+    my $consent          = $q->param('consent') || undef;
     my $info             = $q->param('info') || undef;
     my $physical_address = $q->param('physical_address') || undef;
     my $password         = $q->param('password') || undef;
@@ -11072,6 +11107,8 @@ sub new_list {
                         info                   => $info,
                         flags_privacy_policy   => $flags->{privacy_policy},
                         privacy_policy         => $privacy_policy,
+						consent                => $consent,
+				
                         flags_physical_address => $flags->{physical_address},
                         physical_address       => $physical_address,
                         flags_list_name_bad_characters =>
@@ -11150,8 +11187,10 @@ sub new_list {
                 list_name        => $list_name,
                 password         => $password,
                 info             => $info,
-                privacy_policy   => $privacy_policy,
-                physical_address => $physical_address,
+				physical_address => $physical_address,
+				privacy_policy   => $privacy_policy,
+                consent          => $consent, 
+				
             };
 
             require DADA::MailingList;

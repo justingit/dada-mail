@@ -25,9 +25,9 @@ my $shared_params = {
 	message_drafts_table               => 'test_dada_message_drafts',
 	rate_limit_hits_table              => 'test_dada_rate_limit_hits',
 	email_message_previews_table       => 'test_dada_email_message_previews', 
-	privacy_policies_table             => 'dada_privacy_policies',
-	consents_table                    => 'dada_consents',
-	consent_activity_table             => 'dada_consent_activity',
+	privacy_policies_table             => 'test_dada_privacy_policies',
+	consents_table                     => 'test_dada_consents',
+	consent_activity_table             => 'test_dada_consent_activity',
 };
 
 $TEST_SQL_PARAMS = { 
@@ -62,7 +62,6 @@ $TEST_SQL_PARAMS = {
 		database         		=> 'test_dada',
 		%{$shared_params},
 	},
-	
 
 };
 

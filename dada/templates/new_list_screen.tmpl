@@ -304,35 +304,7 @@
 </fieldset>
 
 
-<fieldset>
-	<legend>
-		Privacy Policy
-	</legend>
-	
-	<!-- tmpl_if flags_privacy_policy -->
-		<div class="alert-box alert radius">
-			Please type a Mailing List Privacy Policy.
-		</div>
-	<!-- /tmpl_if -->
 
-	<div class="alert-box info radius">
-		A Privacy Policy allows a subscriber to know exactly how the 
-		information they submit (their email address, etc.) will be used.
-	</div>
-
-	<div class="row">
-		<div class="small-12 columns">
-			<label for="privacy_policy">
-				Privacy Policy
-			</label>
-			<textarea 
-				id="privacy_policy" 
-				name="privacy_policy" 
-				cols="50" 
-				rows="5"><!-- tmpl_var privacy_policy escape="HTML"--></textarea>
-			</div> 
-		</div>
-</fieldset>
 
 <fieldset>
 	<legend>
@@ -363,7 +335,105 @@
 				rows="5"><!-- tmpl_var physical_address escape="HTML"--></textarea>
 		</div> 
 	</div>
-</fieldset> 
+</fieldset>
+
+
+<fieldset>
+	<legend>
+		Privacy Policy
+	</legend>
+	
+	<!-- tmpl_if flags_privacy_policy -->
+		<div class="alert-box alert radius">
+			Please type a Mailing List Privacy Policy.
+		</div>
+	<!-- /tmpl_if -->
+
+    <div class="alert-box info radius">
+	  <p>
+		  <strong>
+			  What makes a good privacy policy? 
+		  </strong>
+		</p>
+		<p>
+			See the OCI's page, 
+			<a href="https://ico.org.uk/for-organisations/guide-to-data-protection/privacy-notices-transparency-and-control/privacy-notices-under-the-eu-general-data-protection-regulation/" target="_blank">
+				Privacy notices under the EU General Data Protection Regulation
+			</a>
+			for ideas and guidelines. 
+		</p>	
+    </div>
+	
+
+	<div class="row">
+		<div class="small-12 columns">
+			<label for="privacy_policy">
+				Privacy Policy
+			</label>
+			<textarea 
+				id="privacy_policy" 
+				name="privacy_policy" 
+				cols="50" 
+				rows="10"><!-- tmpl_var privacy_policy escape="HTML"--></textarea>
+			</div> 
+		</div>
+</fieldset>
+
+
+
+
+<fieldset>
+	<legend>
+		List Consent
+	</legend>
+	
+    <div class="alert-box info radius">
+	  <p>
+		  <strong>
+			  How should I ask for consent on my mailing list? 
+		  </strong>
+		</p>
+		<p>
+			See the OCI's page, 
+			<a href="https://ico.org.uk/for-organisations/guide-to-the-general-data-protection-regulation-gdpr/lawful-basis-for-processing/consent/" target="_blank">
+				Guide to the General Data Protection Regulation (GDPR) Lawful basis for processing: Consent
+			</a>
+			for ideas and guidelines. 
+		</p>	
+		<p>
+			Additional consents can be added once your mailing list is created in the list control panel, 
+			under,
+			<strong> 
+				<em>
+					Mailing List: Manage List Consent
+				</em>
+			</strong>
+		</p>
+		
+    </div>
+	
+
+	<div class="row">
+		<div class="small-12 columns">
+			<label for="consent">
+				List Consent
+			</label>
+			<textarea 
+				id="consent" 
+				name="consent" 
+				cols="50" 
+				rows="5"><!-- tmpl_var consent escape="HTML"--></textarea>
+			</div> 
+		</div>
+</fieldset>
+
+
+
+
+
+
+
+
 
 <!-- tmpl_if lists_exist --> 
 

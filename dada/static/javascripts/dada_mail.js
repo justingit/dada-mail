@@ -517,7 +517,22 @@ jQuery(document).ready(function($){
 
 
 	}
-
+	
+	if ($("#manage_list_consent").length) {
+		$("body").on("click", ".remove_list_consent", function(event) {
+			event.preventDefault();
+			var confirm_msg = "Are you sure you want to remove this list consent?";
+			if (!confirm(confirm_msg)) {
+				return false;
+			} else {
+				window.location.href = $("#s_program_url").val() 
+				+ '?flavor=manage_list_consent&process=remove_list_consent&id=' 
+				+ $(this).attr("data-id");
+				return true;
+			}
+		}); 		
+	}
+	
 
 	// Membership >> View List
 	if ($("#view_list_viewport").length) {

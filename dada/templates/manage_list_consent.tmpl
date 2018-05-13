@@ -2,7 +2,7 @@
 
 
 <!-- tmpl_set name="title" value="Mailing List &#187; Manage List Consent" -->
-<div id="screen_meta" data-menu_highlight="change_info"></div>
+<div id="screen_meta" data-menu_highlight="manage_list_consent"></div>
 
 
 <div class="row hide-for-small-only" id="control_panel_breadcrumbs">
@@ -24,6 +24,10 @@
 	</div>
 </div>
 
+<div id="manage_list_consent"></div> 
+<form>
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->">
+</form>
 
 <!-- tmpl_if done -->
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
@@ -41,8 +45,7 @@
 				Guide to the General Data Protection Regulation (GDPR) Lawful basis for processing: Consent
 			</a>
 			for ideas and guidelines. 
-		</p>
-		
+		</p>	
     </div>
 	
 	
@@ -55,31 +58,42 @@
 			<!-- tmpl_if consents --> 
 				<table style="width:100%" class="responsive">
 					<tr> 
-				    	<!-- tmpl_if root_login --> 
-							<th> 
-					         	&nbsp;
-					        </th>
-					    <!-- /tmpl_if --> 
-						<th> 
-				        	Internal ID
-				        </th> 
 						<th> 
 				        	Consent
 				        </th>
+						<th>
+							&nbsp;
+						</th>
 
 				      </tr> 
 
 						<!-- tmpl_loop consents --> 
-						<tr> 
-				      
-				         <td> 
-				           <!-- tmpl_var id --> 
-				         </td> 
+						<tr>  
 				         <td> 
 				           <!-- tmpl_var consent --> 
 				         </td>
-
-				        </tr> 
+						 <td>
+				        
+						   	<ul class="button-group">
+						   		<li>
+						            <form 
+										action="<!-- tmpl_var S_PROGRAM_URL -->" 
+										method="post" 
+										accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+									>
+						             <input type="hidden" name="flavor" value="manage_list_consent"> 
+						             <input type="hidden" name="process" value="remove"> 
+						            <button type="button" class="button small alert remove_list_consent" data-id="<!-- tmpl_var id -->">
+											<i class="fi-x"></i>
+										</button>
+						           </form> 
+								</li>
+							</ul>
+						</td>
+						</tr>
+						
+						
+						
 				        <!-- /tmpl_loop --> 
 				        </table> 
 				

@@ -905,7 +905,7 @@ sub remove_bounces {
 				-consent_vars => $args->{-consent_vars},
 			}
 		);
-        
+	}
 		$m .= "Removing: $_\n";
 
     if (   ( $ls->param('black_list') == 1 )

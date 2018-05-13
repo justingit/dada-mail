@@ -1224,7 +1224,9 @@ $MIME_TOOLS_PARAMS //= {
         # (Dummy)
         list_info => undef,
 		
-	list_phone_number => undef, 
+	list_phone_number    => undef, 
+	
+	list_consent_ids     => '',
 
 	logo_image_url       => undef,
 	website_url          => undef,
@@ -1645,6 +1647,8 @@ $MIME_TOOLS_PARAMS //= {
   privacy_policy
   physical_address
   password
+  
+  list_consent_ids
 
   bridge_list_email_type
 

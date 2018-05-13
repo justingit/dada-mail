@@ -75,6 +75,8 @@ sub Create {
 'DADA::MailingList::Settings did not give back the right kind of object!';
     }
 
+	my $consent = $args->{ -settings }->{consent};
+	delete( $args->{ -settings }->{consent} );
 
     $args->{ -settings }->{list} = $args->{ -list };
 
@@ -98,14 +100,26 @@ sub Create {
 
     $ls->save({ -settings => $args->{ -settings } });
 
-   # This is sort of a hack, so that the available_lists() thingy is up to date:
-   #
+	# Consent!
+	require DADA::MailingList::Consents; 
+	my $dmlc = DADA::MailingList::Consents->new; 
+	my $consent_id = $dmlc->add({ 
+		-list    => $args->{ -list }, 
+		-consent => $consent, 
+	});
+	my $frozen_consent = $dmlc->freezish_for_saving([$consent_id]); 
+    $ls->save({ 
+		-settings => {
+			list_consent_ids => $frozen_consent,
+		}
+	});
+	#/Consent!
+	
     DADA::App::Guts::available_lists( -clear_cache => 1 );
 
     return $ls;
 
 }
-
 
 
 

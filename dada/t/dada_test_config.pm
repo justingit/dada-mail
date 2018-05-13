@@ -394,7 +394,7 @@ my @statements = split(';', $sql);
 			#warn 'QUERY: ' . $_; 
 			
 			my $sth = $dbh->prepare($_); 
-	       	$sth->execute; 
+	       	$sth->execute;#or die $DBI::errstr; 
 	    }
     
     }
@@ -403,7 +403,7 @@ my @statements = split(';', $sql);
 }
 
 sub destroy_MySQL_db { 
-
+	
  #	carp 'destroy_MySQL_db1'; 
 #	warn 'destroy_MySQL_db2';
 	 
