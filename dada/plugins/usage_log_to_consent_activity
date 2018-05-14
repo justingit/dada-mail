@@ -1,0 +1,268 @@
+#!/usr/bin/perl
+package usage_log_to_consent_activity;
+
+use strict;
+use FindBin;
+use lib "$FindBin::Bin/../";
+use lib "$FindBin::Bin/../DADA/perllib";
+
+BEGIN {
+    my $b__dir = ( getpwuid($>) )[7] . '/perl';
+    push @INC, $b__dir . '5/lib/perl5', $b__dir . '5/lib/perl5/x86_64-linux-thread-multi', $b__dir . 'lib',
+      map { $b__dir . $_ } @INC;
+}
+
+
+# use some of those Modules
+use DADA::Config 10.0.0;
+use DADA::Template::HTML;
+use DADA::Template::Widgets;
+use DADA::App::Guts;
+use DADA::MailingList::Settings;
+
+my $list;
+my $admin_list;
+my $root_login;
+
+sub reset_globals { }
+
+sub run {
+    my $q = shift;
+    reset_globals();
+    return cgi_main($q);
+}
+
+sub test_sub {
+    return "Hello, World!";
+}
+
+sub cgi_main {
+    my $q = shift;
+
+    my $prm = $q->param('prm') || 'cgi_default';
+	my $function = 'usage_log_to_consent_activity'; 
+	
+	( $admin_list, $root_login ) = check_list_security(
+	    -cgi_obj  => $q,
+	    -Function => $function,
+	);
+	
+    $list = $admin_list;
+    
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get();
+
+    my %Mode = (
+        'cgi_default'                => \&cgi_default,
+		'process'                    => \&process, 
+    );
+
+    if ( exists( $Mode{$prm} ) ) {
+        return $Mode{$prm}->($q);    #call the correct subroutine
+    }
+    else {
+        return cgi_default($q);
+    }
+}
+
+
+sub cgi_default {
+	
+    my $q = shift;
+
+	require DADA::MailingList::Settings; 
+	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+	
+	require DADA::MailingList::Consents; 
+	my $con = DADA::MailingList::Consents->new; 
+	my $consents = $con->give_me_all_consents($ls); 
+
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -expr           => 1,
+            -screen         => 'plugins/usage_log_to_consent_activity/default.tmpl',
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -vars => {
+            	consents => $consents, 
+            },
+            -list_settings_vars_param => {
+                -list                 => $list,
+                -dot_it               => 1,
+                -i_know_what_im_doing => 1,
+            },
+        }
+
+    );
+    return ( {}, $scrn );
+}
+
+sub process { 
+	
+    my $q = shift;
+	
+	my $add_privacy_policy = $q->param('add_privacy_policy') || 0; 
+	my @consents           = $q->multi_param('consents');
+	my $r = '<pre>'; 
+	
+	require DADA::MailingList::Settings; 
+	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+	
+	require DADA::MailingList::Consents; 
+	my $con = DADA::MailingList::Consents->new; 
+	my $consents = $con->give_me_all_consents($ls);
+	
+	require DADA::MailingList::PrivacyPolicyManager; 
+	my $dmppm = DADA::MailingList::PrivacyPolicyManager->new; 
+	
+	my $pp_data = $dmppm->latest_privacy_policy({-list => $list});
+	
+	my $latest_privacy_policy_id = $pp_data->{privacy_policy_id};
+		
+	require DADA::App::LogSearch;
+	my $dals = DADA::App::LogSearch->new;
+	my $file = $DADA::Config::PROGRAM_USAGE_LOG;
+
+	open my $LOG_FILE, '<', $file
+	  or die "Cannot read log at: '" . $file . "' because: " . $!;
+		my $lines = 0; 
+	  	require DADA::MailingList::ConsentActivity; 
+	  	my $dmlch = DADA::MailingList::ConsentActivity->new;
+	
+	LOGFILE: while ( my $l = <$LOG_FILE> ) {
+	    chomp($l);
+		$lines++; 
+	    my $llr = $dals->log_line_report(
+	        {
+	            -line  => $l,
+	        }
+	    );
+	
+		if($llr->{action} =~ m/subscribed|unsubscribed|confirmation_sent|subscription_updated/){
+			# 2018-05-12 18:46:19
+			next if $llr->{type} ne 'list';
+		
+			# DATE
+			use Date::Parse; 
+			my $date_wo_br = $llr->{date}; 
+			$date_wo_br    =~ s/\]|\[//gi; 
+			#print '$date_wo_br' . $date_wo_br . "\n";
+			my $unix_time = str2time($date_wo_br); 
+			# 1426342445 will be stored in $unix_time
+			#print $unix_time . "\n"; 
+			require Time::Piece::MySQL; 
+			my $t = Time::Piece::localtime($unix_time);
+			#print localtime->mysql_datetime."\n";  
+			$llr->{mysql_datetime} =  $t->mysql_datetime;
+			#print '$llr->{mysql_datetime} ' . $llr->{mysql_datetime} . "\n"; 
+			#/DATE
+
+			my @actions = (); 
+			if($llr->{action} eq 'confirmation_sent'){ 
+				$llr->{action} = 'cloic sent';
+				# This is where we put the privacy policy stuff, as well as 
+				# consents
+				# 
+				
+				if($add_privacy_policy == 1){ 
+					push(
+						@actions,
+						{ 
+							-action            => 'start consent', 
+							-privacy_policy_id => $latest_privacy_policy_id, 
+						}, 
+					); 			
+				}
+				else { 
+					push(
+					@actions, 
+						{ 
+							-action => 'start consent',
+						}, 
+					)
+				}
+				
+				push(
+					@actions,
+					{ 
+						-action => 'subscription requested',	
+					}
+				); 
+				
+				for my $in_consent(@consents){
+					push(@actions,{ 
+						-action     => 'consent granted', 
+						-consent_id => $in_consent,
+					});
+				}
+				
+				push(@actions,{ 
+						-action => 'cloic sent',
+					}); 
+				
+			}
+			elsif($llr->{action} eq 'subscribed'){ 
+				push(
+					@actions,
+					{ 
+						-action => 'subscription',
+					}, 
+				); 
+			} 
+			elsif($llr->{action} eq 'unsubscribed'){ 
+				
+				for my $in_consent(@consents){
+					push(@actions,{ 
+						-action     => 'consent revoked', 
+						-consent_id => $in_consent,
+					});
+				}
+				
+				push(
+					@actions,
+					{ 
+						-action => 'consent revoked', # consent ids, of course, for each one... 
+					}, 
+					{ 
+						-action => 'unsubscribe',
+					}, 
+				); 
+			}
+			else { 
+			
+				next; 
+				#push(
+				#	@actions,
+				#	{ 
+				#		-action => $llr->{action}, 
+				#	}
+				#); 
+			}
+		
+			for my $ind_action(@actions){
+				$dmlch->ch_record({ 
+					-list         => $llr->{list}, 
+					-timestamp    => $llr->{mysql_datetime},
+					-email        => $llr->{email},
+					#-action      => $llr->{action}, 
+					-remote_addr  => $llr->{ip}, 
+					-source       => 'import script',
+					%$ind_action, 
+				});
+			}
+		}
+	}
+	$r .= "Complete.";
+	
+    return ( {}, $r );
+
+	
+	
+}
+
+
+
+1;

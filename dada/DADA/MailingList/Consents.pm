@@ -59,8 +59,8 @@ sub add {
       . $DADA::Config::SQL_PARAMS{consents_table}
       . '(list, consent) VALUES (?, ?)';
 
-    carp 'QUERY: ' . $query
-      if $t;
+    carp 'QUERY: ' . $query;
+#      if $t;
 
     my $sth = $self->{dbh}->prepare($query);
 

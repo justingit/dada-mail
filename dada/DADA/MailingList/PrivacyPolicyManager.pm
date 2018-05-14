@@ -91,8 +91,6 @@ sub latest_privacy_policy {
 	my $self = shift; 
 	my ($args) = @_; 
 	
-	my $list = shift; 
-	
     my $query = 'SELECT privacy_policy_id, timestamp, privacy_policy FROM ' 
 	. $DADA::Config::SQL_PARAMS{privacy_policies_table} 
 	. ' WHERE list = ? ORDER BY privacy_policy_id DESC LIMIT 1';

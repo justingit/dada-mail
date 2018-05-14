@@ -94,11 +94,8 @@ sub token {
 
 sub ch_record {
 	
-
 	# insert into dada_consent_activity (email) values('user@example.com'); 
-
 	
-		
     my $self = shift;
     my ($args) = @_;
 	
@@ -121,6 +118,9 @@ sub ch_record {
 
 	if(!exists($args->{-action},)){ 
 		$args->{-action} = 'unknown';
+	}
+	if($self->allowed_action($args->{-action}) != 1){ 
+		croak 'unknown action!: ' . $args->{-action};
 	}
 
 	if(!exists($args->{-list_type},)){ 
@@ -156,30 +156,78 @@ sub ch_record {
 		$args->{-token},  
 		$args->{-privacy_policy_id},
 	);
+	my @order = qw(
+		remote_addr
+		email  
+		list       
+		list_type 
+		source
+		source_location 
+		action
+		consent_session_token  
+		privacy_policy_id
+	);
+			
+	if(defined($args->{-consent_id})){
+		push(@payload, $args->{-consent_id}); 
+		push(@order, 'consent_id');
+	}
+	
+	if(defined($args->{-timestamp})){
+#		warn 'yes, timestamp: ' . $args->{-timestamp}; 
+		push(@payload, $args->{-timestamp}); 
+		push(@order, 'timestamp');
+	}
+	
+	my $qm_str = '';
+	my @qma = ();
+	for(@order){
+		push(@qma, '?'); 
+	}
+	
     my $query =
         'INSERT INTO '
       . $DADA::Config::SQL_PARAMS{consent_activity_table}
-      . '(remote_addr, email, list, list_type, source, source_location, action, consent_session_token, privacy_policy_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-		
-	if(defined($args->{-consent_id})){
-		
-		warn "we've got a -consent_id";
-		push(@payload, $args->{-consent_id}); 
-	  	$query =
-	        'INSERT INTO '
-	      . $DADA::Config::SQL_PARAMS{consent_activity_table}
-	      . '(remote_addr, email, list, list_type, source, source_location, action, consent_session_token, privacy_policy_id, consent_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';	
-	}
+      . '(' 
+	  .	join(', ', @order) 
+	  .') VALUES (' 
+	  . join(',', @qma)
+	  . ')';
 
-    carp 'QUERY: ' . $query;
+#    carp 'QUERY: ' . $query;
 #      if $t;
 
     my $sth = $self->{dbh}->prepare($query);
-
 	
     $sth->execute(@payload)
       or croak "cannot do statement (at insert)! $DBI::errstr\n";
     	$sth->finish;
+
+}
+
+sub allowed_action { 
+	my $self = shift;
+	my $action = shift; 
+	 
+	my $actions = { 
+		'unknown'         => 1, 
+		'start consent'   => 1, 
+		'cloic confirmed' => 1, 
+		'consent granted' => 1,
+		'subscription requested' => 1,
+		'solved captcha' => 1,
+		'cloic sent' => 1,
+		'subscription' => 1,
+		'consent revoked' => 1,
+		'unsubscribe' => 1,
+	};
+	
+	if(exists($actions->{$action})){ 
+		return 1; 
+	}
+	else { 
+		return 0; 
+	}
 
 }
 

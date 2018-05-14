@@ -301,6 +301,7 @@ sub log_line_report {
 
     # Subscribed to announce.sub_confirm_list	nillajess@yahoo.com
 
+	
     if ( $action =~ m/Subscribed to/ ) {
         $action =~ m/^Subscribed to $list\.(.*?)$/;
         $base_action = 'subscribed';
@@ -328,18 +329,17 @@ sub log_line_report {
 
     $date =~ s/(\[|\])//g;
 
-    return {
-        date           => $date,
-        list           => $list,
-		list_name      => $self->{List_Names}->{$list}, 
-        ip             => $ip,
-        email          => $email,
-        type           => $sublist,
-        type_title     => $list_types{$sublist},
-        action         => $base_action,
-		updated_email  => $new_email, # used for subscription updates
-    };
-
+	    return {
+	        date           => $date,
+	        list           => $list,
+			list_name      => $self->{List_Names}->{$list}, 
+	        ip             => $ip,
+	        email          => $email,
+	        type           => $sublist,
+	        type_title     => $list_types{$sublist},
+	        action         => $base_action,
+			updated_email  => $new_email, # used for subscription updates
+	    };
 }
 
 sub sub_unsub_trends { 

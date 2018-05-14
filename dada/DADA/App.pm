@@ -3243,6 +3243,7 @@ sub manage_list_consent {
 			}	
 		);
 		
+		$c->flush;
 		
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
@@ -3278,6 +3279,8 @@ sub manage_list_consent {
 				}
 			}	
 		);
+		$c->flush;
+		
 		
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::S_PROGRAM_URL

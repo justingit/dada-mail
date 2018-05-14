@@ -267,6 +267,8 @@ $PLUGIN_RUNMODES //= {
     screen_cache                 => {run => \&screen_cache::run},
     global_config                => {run => \&global_config::run}, 
     view_list_settings           => {run => \&view_list_settings::run},
+	usage_log_to_consent_activity =>  {run => \&usage_log_to_consent_activity::run},
+	
 };
 
 $PLUGINS_ENABLED //= {
@@ -1918,7 +1920,7 @@ sub _config_import {
 		email_message_previews_table       => 'dada_email_message_previews',
 		
 		privacy_policies_table             => 'dada_privacy_policies',
-		consents_table                    => 'dada_consents',
+		consents_table                     => 'dada_consents',
 		consent_activity_table             => 'dada_consent_activity',
 		
 		dbtype => 'SQLite',
