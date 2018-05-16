@@ -189,19 +189,18 @@
 		
 		<div class="row">
 			<div class="large-12 medium-12 columns ">
-				
-				<p class="text-center"> 
-					
-					  			  Unsubscribe at Anytime
-						    | 
-							 <a href="<!-- tmpl_var S_PROGRAM_URL -->/privacy_policy/<!-- tmpl_var list_settings.list -->/" target="_blank"> 
+				<!-- tmpl_unless list_settings.private_list -->
+					<p class="text-center"> 
+						Unsubscribe at Anytime
+						| 
+						<a 
+							href="<!-- tmpl_var S_PROGRAM_URL -->/privacy_policy/<!-- tmpl_var list_settings.list -->/" 
+							target="_blank"
+						> 
 							Privacy Policy
 						</a>
-				</p>
-					
-	
-
-			
+					</p>
+				<!-- /tmpl_unless -->
 			</div>
 		</div>
 	</div>

@@ -1,0 +1,151 @@
+=pod
+
+=head1 GDPR Guide
+
+This doc. explains tools built into Dada Mail that can help you and your organization comply with the rules
+and regulations put forth by the EU's General Data Protection Regulation (GDPR). 
+
+If you/your organization complies with the GDPR in different way than what Dada Mail provides (or you don't think your usage 
+reauired GDPR - like a internal private list), Dada Mail still can function just fine, without much to worry about. Don't put off upgrading 
+if you fall into the bucket. 
+
+If you're running a I<public> mailing list, 
+odds are that you should seriously consider complying with the EU's GDPR in full. 
+We're not lawyers ourself (and this isn't legal advice), 
+but if you do have any questions, 
+consult a legal professional.  
+ 
+=head1 Consent under GDPR
+
+Points made in this section are taken from the following document: 
+
+L<https://ico.org.uk/media/about-the-ico/consultations/2013551/draft-gdpr-consent-guidance-for-consultation-201703.pdf>
+
+It's a B<great> read, and if you want to get into the nuances of consent under, GDPR, it's a must-read. 
+
+Dada Mail allows you to set up individual points of consent you would like your subscribers to agree to if they would like to 
+subscribe to your mailing list. 
+Each separate item you would like your subscribers to grant consent to will show up as separate items 
+listed as checkboxes on your subscription maiing list's form. 
+
+=over
+
+=item * I<Consent requires a positive opt-in.  Don’t use pre-ticked boxes or any other method of consent by default.>
+
+=back
+
+In Dada Mail, these points of consent are I<never> prechecked, and are always I<required>. 
+If you have set up these consents, users cannot request a subscription to your mailing list, 
+without agreeing to all the points of consent. 
+
+You can add/remove these individual consents in the list control panel under, 
+
+B<Mailing List: List Consents>
+
+Take your time in crafting these consents, 
+since once you create them, 
+you'll have to abide by them yourself, 
+and only use the information you've collected in a way that your subscribers have given their consent to. 
+
+Remember: if you add or remove a new consent, 
+current subscribers of your mailing list may not have actually given their I<explicit> 
+consent to these new terms. 
+Dada Mail does not have a mechanism to function if only some of the consents are agreed to, 
+but others are not - at the moment, 
+it's all or nothing. 
+Dada Mail also currently does not have a way to ask current subscribers
+to update their consent if you decide to add a new item to consent to.
+When someone unsubscribes, 
+it's analogous of them revoking all 
+consents that have to do with the mailing list subscription. 
+
+You can also think of a successful subscription to your mailing list as the final say to if the subscriber has given you consent: 
+if they're subscribed to your mailing list, 
+they've agree in granted to you every point of consent you've asked for. 
+If they I<haven't>, 
+they shouldn't be on your mailing list, 
+and they should be removed. 
+
+Consent should I<not> be a new concept to anyone that's collecting data from a user. 
+What the GDPR is really doing is formalizing the process of asking for this explicit consent.
+
+Some points from the above doc that are helpful to remember when crafting your individual consents: 
+
+=over
+
+=item * I<Explicit consent requires a very clear and specific statement of consent.>
+
+=item * I<Keep your consent requests separate from other terms and conditions.> 
+
+(See Privacy Policy for a place to put those other terms and conditions)
+
+=item * I<Be specific and granular. Vague or blanket consent is not enough.>
+
+=item * I<Be clear and concise.>
+
+=item * I<Name any third parties who will rely on the consent.>
+
+=back
+
+=head1 Revoking Consent 
+
+A user wanting to revoke consent is analogues of wanting to be unsubscribed from your mailing list. 
+Once a user unsubscribes to your mailin glist, 
+all consent they've granted to you will then be revoked, 
+and thos eactions will be recorded.  
+
+=over
+
+=item * Make it easy for people to withdraw consent and tell them how.
+
+=back
+
+The easiest way for a subscriber to widthdraw consent is by clicking an unsubscribe link in the mass mailing messages you send. 
+Make sure to I<always> have this link available in your mailing list messages 
+(Dada Mail will always place an unsubscribe link into your messages, if one is missing). 
+Have additional contact methods available to your subscribers, 
+so it's as easy as possible for them to ask to be unsubscribed. 
+Dada Mail allows you to enter in a physical mailing address,
+and phone number to facilitate this. 
+I<Never> make it difficult for them to be removed from your mailing list 
+and field requests as soon as you are able to. 
+"I<The right to withdraw is 'at any time'>"
+
+=head1 Record of Consent
+
+=over
+
+=item * Keep evidence of consent – who, when, how, and what you told people.
+
+=back
+
+Dada Mail keeps the record of consent in its database, 
+and will report the history of granting/revoking these consents within the list control panel. 
+
+=head1 Privacy Policy 
+
+Again, the ICO has a great guide on what should be placed in your Privacy Policy: 
+
+L<https://ico.org.uk/for-organisations/guide-to-data-protection/privacy-notices-transparency-and-control/your-privacy-notice-checklist/>
+
+A link to the privacy policy set for your mailing list will be shown at the bottom of the mailing list subscription form that Dada Mail creates. 
+It  may also be available on the mailing list's individual screen, 
+and in the subscription confirmation and mailing list welcome email messages. 
+
+The URL to the privacy policy will always be publicly available. 
+
+Never attempt to hide this privacy policy. 
+Always make it easy for your users to view the privacy policy. 
+
+Just like consents, 
+the privacy policy for your mailing list will be saved in Dada Mail's database, 
+and tied to each request to subscribe to your mailing list. 
+Privacy policies are also versioned, 
+so if you change your privacy policy, 
+you'll know exactly which version of your privacy policy each subscriber has agreed to. 
+
+And just like consents, 
+there's currently no mechanism to have subscribers to agree to a new privacy policy if you have changed it, 
+so be thoughtful when you author your privacy policy. 
+
+=cut
