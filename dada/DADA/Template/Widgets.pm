@@ -632,7 +632,7 @@ sub default_screen {
                 visible_lists      => $visible_lists,
                 error_invalid_list => $args->{ -error_invalid_list },
                 fields             => $named_subscriber_fields,
-                subscription_form  => scalar subscription_form(),
+                #subscription_form  => scalar subscription_form(),
             },
         }
     );
@@ -2209,7 +2209,6 @@ sub profile_settings_vars {
 		# are we really going to use these?
 		#'profile.email'                            => $DADA::Config::PROFILE_OPTIONS->{profile_email},
 		#'profile.enable_captcha'                   => $DADA::Config::PROFILE_OPTIONS->{enable_captcha},
-		#'profile.enable_magic_subscription_forms'  => $DADA::Config::PROFILE_OPTIONS->{enable_magic_subscription_forms},
 		
 		
 	); 
@@ -2590,6 +2589,11 @@ sub subscription_form {
    
     my ($args) = @_; 
     
+	
+	use Data::Dumper; 
+	warn Dumper($args);
+	
+	
     my $list = undef; 
 	if(exists($args->{-list})){ 
 		$list = $args->{-list};
@@ -2629,6 +2633,7 @@ sub subscription_form {
 		$args->{-add_recaptcha_js} = 0;
 	}
 
+	
 	
 	
 	
@@ -2684,27 +2689,7 @@ sub subscription_form {
 		if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1)
 	    {
 			# ... 
-		}
-		
-		else {
-			if(
-				$DADA::Config::PROFILE_OPTIONS->{enable_magic_subscription_forms} == 1
-			&&  $args->{-magic_form} == 1
-		) { 
-				require DADA::Profile::Session; 
-				my $sess = DADA::Profile::Session->new; 
-				if($sess->is_logged_in){ 
-					my $email                   = $sess->get; 
-					$args->{-email}             = $email;
-					$args->{-show_fields}       = 0; 
-					$args->{-profile_logged_in} = 1; 
-				}
-				else { 
-					# ...
-				}
-			}
-		}
-			
+		}		
     }
     		
 	my $CAPTCHA_string = undef;

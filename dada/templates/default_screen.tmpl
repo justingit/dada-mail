@@ -1,6 +1,6 @@
 <!-- begin default_screen.tmpl -->
 
-<!-- tmpl_set name="title" value="Subscribe to a Mailing List" -->
+<!-- tmpl_set name="title" value="Available Mailing Lists" -->
 <!-- tmpl_set name="load_colorbox" value="1" -->
 
 <!-- tmpl_if error_invalid_list --> 
@@ -12,15 +12,7 @@
 <!--/tmpl_if-->
 
 <!-- tmpl_if visible_lists --> 
-	<div class="panel">
-		<!-- tmpl_if can_use_JSON -->
-			<div id="modal_subscribe_form">
-		<!-- tmpl_else -->
-			<div id="modal_subscribe_form_disabled">
-		<!-- /tmpl_if -->
-			<!-- tmpl_var subscription_form --> 
-		</div> 
-	</div>
+
 
 	<!-- tmpl_loop list_information -->
 

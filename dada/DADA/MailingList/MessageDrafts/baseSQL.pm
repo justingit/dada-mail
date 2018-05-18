@@ -804,8 +804,11 @@ sub params_to_save {
     }
 
     my $params = {
-        'Reply-To'   => 1,
-        'X-Priority' => 1,
+		
+		#'from_phrase' => 1, 
+		#'to_phrase'   => 1, 
+        'Reply-To'    => 1,
+        'X-Priority'  => 1,
 
         html_message_body => 1,
         text_message_body => 1,

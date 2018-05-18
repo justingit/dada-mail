@@ -221,8 +221,6 @@ $PROFILE_OPTIONS //= {
     enabled                         => 1,
     profile_email                   => '',
     enable_captcha                  => 1,
-    enable_magic_subscription_forms => 1,
-
     update_email_options => {
         send_notification_to_profile_email => 0,
         subscription_check_skip            => 'auto',
@@ -1286,7 +1284,6 @@ $MIME_TOOLS_PARAMS //= {
     alt_send_unsubscription_notice_to => '', 
 
     enable_closed_loop_opt_in     => 1,    # Closed-Loop Opt-In
-    skip_sub_confirm_if_logged_in => 0,
 
     limit_sub_confirm             => 1,
     limit_sub_confirm_use_captcha => 1,
@@ -1598,7 +1595,7 @@ $MIME_TOOLS_PARAMS //= {
     tracker_auto_parse_links                        => 1,
     tracker_auto_parse_mailto_links                 => 0,
     tracker_track_opens_method                      => 'directly',
-    tracker_track_email                             => 1,
+    tracker_track_email                             => 0,
 
     tracker_clean_up_reports                        => 1,
     tracker_show_message_reports_in_mailing_monitor => 0,

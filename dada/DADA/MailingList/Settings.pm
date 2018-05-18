@@ -253,7 +253,6 @@ sub post_process_get {
         $li->{enable_mass_subscribe}                   = 0;
         $li->{enable_mass_subscribe_only_w_root_login} = 0; 
 		$li->{allow_admin_to_subscribe_blacklisted}    = 0; 
-		$li->{skip_sub_confirm_if_logged_in}           = 0;	
 	}
     return $li;
 

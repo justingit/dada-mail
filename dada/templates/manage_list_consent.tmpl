@@ -48,8 +48,15 @@
 		</p>	
     </div>
 	
+	<!-- tmpl_if expr="list_settings.tracker_track_email == 1" -->
+		<div class="alert-box warning radius">
+			<p>
+				This mailing list current tracks mass mailing clickthrough and mass mailing message open tracking data, 
+				and saves this data with the email address of the subscribers associated with this data. 
+			</p>
+		</div>
+	<!-- /tmpl_if -->
 	
-
 
 		<fieldset> 
 			<legend>List Consents</legend>
@@ -91,9 +98,6 @@
 							</ul>
 						</td>
 						</tr>
-						
-						
-						
 				        <!-- /tmpl_loop --> 
 				        </table> 
 				

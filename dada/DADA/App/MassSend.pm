@@ -1906,9 +1906,10 @@ sub list_invite {
     my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
 
-    my $process = xss_filter( strip( scalar $q->param('process') ) );
-    my $flavor  = xss_filter( strip( scalar $q->param('flavor') ) );
-
+    my $process               = xss_filter( strip( scalar $q->param('process') ) );
+    my $flavor                = xss_filter( strip( scalar $q->param('flavor') ) );
+	my $custom_invite_message = xss_filter( strip( scalar $q->param('custom_invite_message') ) );
+	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     my $li = $ls->get;
@@ -1947,18 +1948,20 @@ sub list_invite {
             # DEV: Here I got again:
             $info->{email} = $pre_info->{email};
 
-            my $new_fields = [];
-            my $i          = 0;
-            for (@$subscriber_fields) {
-                push( @$new_fields, { name => $_, value => $pre_info->{fields}->{$_} } );
-                $i++;    # and then, $i is never used, again?
-            }
+            #my $new_fields = [];
+            #my $i          = 0;
+            #for (@$subscriber_fields) {
+            #    push( @$new_fields, { name => $_, value => $pre_info->{fields}->{$_} } );
+            #    $i++;    # and then, $i is never used, again?
+            #}
 
-            $info->{fields} = $new_fields;
+            #$info->{fields} = $new_fields;
 
             #And... Then this!
-            $info->{csv_info} = $a;
-            $info->{'list_settings.invites_prohibit_reinvites'} = $ls->param('invites_prohibit_reinvites');
+            #$info->{csv_info} = $a;
+            
+			# ? 
+			$info->{'list_settings.invites_prohibit_reinvites'} = $ls->param('invites_prohibit_reinvites');
             if ( $ls->param('invites_check_for_already_invited') == 1 ) {
 
                 # invited, already?
@@ -2202,10 +2205,15 @@ sub list_invite {
             $mh->mass_test_recipient( strip( scalar $q->param('test_recipient') ) );
             $test_recipient = $mh->mass_test_recipient;
         }
-        my $message_id = $mh->mass_send(
-			$mh->return_headers($final_header), 
-			Body => $final_body
-		);
+		
+		my %f_headers = $mh->return_headers($final_header); 
+		$f_headers{Body} = $final_body;
+        my $message_id = $mh->mass_send({ 
+            -msg             => {%f_headers},
+			-vars            => { 
+				custom_invite_message => $custom_invite_message, 
+			}
+		});
         my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=invitelist&id=' . $message_id;
         return ( { -redirect_uri => $uri }, undef );
 

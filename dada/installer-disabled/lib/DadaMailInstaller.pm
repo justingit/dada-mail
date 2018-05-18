@@ -1119,7 +1119,6 @@ sub grab_former_config_vals {
 			profile_email
 			profile_host_list
 			enable_captcha
-			enable_magic_subscription_forms
 		)) {
             if ( exists( $BootstrapConfig::PROFILE_OPTIONS->{$_} ) ) {
                 $opt->{ 'profiles_' . $_ } = $BootstrapConfig::PROFILE_OPTIONS->{$_};
@@ -1628,7 +1627,6 @@ sub query_params_to_install_params {
       profiles_profile_email
       profiles_profile_host_list
       profiles_enable_captcha
-      profiles_enable_magic_subscription_forms
       profiles_register
       profiles_password_reset
       profiles_profile_fields
@@ -2217,7 +2215,6 @@ sub create_dada_config_file {
             profile_email
             profile_host_list
             enable_captcha
-            enable_magic_subscription_forms
             login
             register
             password_reset

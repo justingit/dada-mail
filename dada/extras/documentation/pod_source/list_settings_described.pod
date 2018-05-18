@@ -91,7 +91,6 @@ L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
     send_unsubscription_notice_to => 'list_owner',
 
     enable_closed_loop_opt_in     => 1,    # Closed-Loop Opt-In
-    skip_sub_confirm_if_logged_in => 0,
 
     limit_sub_confirm             => 1,
     limit_sub_confirm_use_captcha => 1,

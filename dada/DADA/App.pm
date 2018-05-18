@@ -103,6 +103,7 @@ sub setup {
         'default'                  => \&default,
         'subscribe'                => \&subscribe,
         'restful_subscribe'        => \&restful_subscribe,
+		'subscribe_landing'        => \&subscribe_landing, 
         'api'                      => \&api,
         'token'                    => \&token,
         'unsubscribe'              => \&unsubscribe,
@@ -118,8 +119,7 @@ sub setup {
 		'manage_privacy_policy'    => \&manage_privacy_policy, 
 		'manage_list_consent'      => \&manage_list_consent,
         'html_code'                => \&html_code,
-        'preview_jquery_plugin_subscription_form' =>
-          \&preview_jquery_plugin_subscription_form,
+        'preview_jquery_plugin_subscription_form' => \&preview_jquery_plugin_subscription_form,
         'admin_help'                    => \&admin_help,
         'delete_list'                   => \&delete_list,
         'view_list'                     => \&view_list,
@@ -3640,7 +3640,6 @@ sub list_options {
                     get_sub_notice                                          => 0,
                     get_unsub_notice                                        => 0,
                     enable_closed_loop_opt_in                               => 0,
-                    skip_sub_confirm_if_logged_in                           => 0,
                     send_unsub_success_email                                => 0,
                     send_sub_success_email                                  => 0,
                     send_newest_archive                                     => 0,
@@ -3695,6 +3694,55 @@ sub list_options {
               . '?flavor=list_options&done=1' );
     }
 }
+
+
+
+
+sub subscribe_landing { 
+
+    my $self = shift;
+    my $q    = $self->query();
+	
+    if ( DADA::App::Guts::check_setup() == 0 ) {
+        return user_error( { -error => 'bad_setup' } );
+    }
+
+    if ( check_if_list_exists( -List => scalar $q->param('list') ) == 0 ) {
+        $q->delete('list');
+        return $self->default();
+    }
+	my $list  = $q->param('list')  || undef; 
+	my $email = $q->param('email') || undef; 
+	
+    my $subscription_form = DADA::Template::Widgets::subscription_form(
+        {
+            -list                 => $list,
+			
+        }
+    );
+	
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen         => 'subscribe_landing.tmpl',
+            -expr           => 1,
+            -with           => 'list',
+			-vars           => {
+				#can_use_JSON      => scalar DADA::App::Guts::can_use_JSON(),
+				subscription_form => $subscription_form,
+			},
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    return $scrn;
+	
+
+}
+
+
+
 
 sub api {
 

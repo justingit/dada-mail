@@ -184,9 +184,7 @@ They'll look something like this:
 		
 		enabled                         => 1, 
 		profile_email                   => '', 
-		enable_captcha                  => 1, 
-		enable_magic_subscription_forms => 1, 
-	
+		enable_captcha                  => 1, 	
 		cookie_params =>
 		{ 
 			-name    => 'dada_profile',  

@@ -1210,6 +1210,10 @@ sub mass_send {
         if ( exists( $args->{-mass_test_recipient} ) ) {
             $self->mass_test_recipient( $args->{-mass_test_recipient} );
         }
+		
+		if(!exists($args->{-vars})){ 
+			$args->{-vars} = {}; 
+		}
     }
     else {
         %param_headers = @_;
@@ -1913,8 +1917,11 @@ sub mass_send {
                         -entity => $entity,
                         -data   => \@ml_info,
                         -fm_obj => $fm,
-						-vars   => $mail_merge_vars_from_entity, 
-                    }
+						-vars   => {
+							%{$args->{-vars}},
+							%{$mail_merge_vars_from_entity}, 
+						}
+					}
                 );
 
                 warn '['

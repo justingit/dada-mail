@@ -127,23 +127,19 @@
 		<!-- tmpl_if list_consents -->
 		    <!-- tmpl_loop list_consents -->
 				<div class="row">
-					<div class="large-4 medium-4 columns">
-				        <label 
-							class="medium-text-right"
-							for="ddm_<!-- tmpl_var name escape=HTML -->" 
+					<div class="large-4 medium-4 columns medium-text-right large-text-right">
+			            <input 
+							type="checkbox" 
+							class="list_consents"
+							name="consent_<!-- tmpl_var id -->" 
+							value="<!-- tmpl_var id -->"
+							id="consent_<!-- tmpl_var id -->"
+							required="required"
 						>
-					        <input 
-								type="checkbox" 
-								class="list_consents"
-								name="consent_<!-- tmpl_var id -->" 
-								value="<!-- tmpl_var id -->"
-								id="consent_<!-- tmpl_var id -->"
-								required="required"
-								>
-						</label>
 					</div> 
 					<div class="large-8 medium-8 columns">
 				       <label for="consent_<!-- tmpl_var id -->"> 
+				            
 						   <!-- tmpl_var consent --> 
 						</label>
 					</div>
@@ -188,7 +184,7 @@
 		</div>
 		
 		<div class="row">
-			<div class="large-12 medium-12 columns ">
+			<div class="large-12 medium-12 columns large-centered medium-centered">
 				<!-- tmpl_unless list_settings.private_list -->
 					<p class="text-center"> 
 						Unsubscribe at Anytime

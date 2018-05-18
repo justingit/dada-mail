@@ -80,9 +80,7 @@ $PROFILE_OPTIONS = {
 		
 	enabled                         => 1, 
 	profile_email                   => '', 
-	enable_captcha                  => 1, 
-	enable_magic_subscription_forms => 1, 
-	
+	enable_captcha                  => 1, 	
 	update_email_options            => 
 	{ 
 		send_notification_to_profile_email => 0, 
@@ -149,18 +147,6 @@ If Profiles are enabled and this variable is left blank, the list owner email ad
 =head3 enable_captcha
 
 Registration for Dada Mail Profiles can be verified along with a CAPTCHA. We recommend this feature, if it's available. Set this variable to, C<1> to enable CAPTCHA in the registration form. 
-
-=head3 enable_magic_subscription_forms
-
-B<Magic> subscription forms are pre-filled out with the subscriber's email address, if they're logged into Dada Mail. To enable this feature, set this variable to, C<1> 
-
-=head3 update_email_options
-
-These options come into play if users use the option to update their Dada Mail Profile email address. This will also update the email address used for their mailing list subscriptions. 
-
-=head4 send_notification_to_profile_email
-
-If set to, C<1>, a notification email address about the Profile email address change will be set to whomever is set in the, C<profile_email> variable. If more than one address is set in this variable, it will be addressed to all the email addresses. 
 
 =head4 subscription_check_skip
 

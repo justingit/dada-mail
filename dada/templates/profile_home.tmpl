@@ -162,55 +162,70 @@
 
 			                <!-- tmpl_loop subscriptions --> 
 			                    <!-- tmpl_if subscribed --> 
-			                        <h3>
+			                        <h2>
 			                            <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->">
 			                                <!-- tmpl_var list_settings.list_name --> 
 			                            </a>
-			                        </h3>
+			                        </h2>
+									
+									
+									
+										<div class="alert-box info radius">
+											<ul> 
+											<!-- tmpl_if list_settings.private_list --> 
+										        <li>
+														This mailing list is a private mailing list. There may be additional steps in order to join, 
+														and the List Owner controls who may leave the mailing list. 
+												</li>
+											<!-- tmpl_else --> 
+										        <li>
+										    			This mailing list is a public mailing list - anyone may join or leave, at any time.
+										    	</li>		
+										    <!-- /tmpl_if -->
+
+											<!-- tmpl_if list_settings.enable_subscription_approval_step --> 
+													<p>
+														This mailing list requires approval from the List Owner, before subscriptions are finalized.
+												</li>
+											<!-- /tmpl_if --> 
+
+										    <!-- tmpl_if list_settings.group_list --> 
+										        <li>
+													This mailing list is a group discussion list
+     
+										            <!-- tmpl_if list_settings.enable_moderation --> 
+										                (moderated)
+										            <!-- tmpl_else -->
+										                (unmoderated)
+										            <!-- /tmpl_if --> 
+										        </li>
+												<li>
+													<!-- this is strange, as the bare link will be wrapped with a HTML link --> 
+													<p>Start a new thread, email: <!-- tmpl_var list_settings.discussion_pop_email --></p>
+												</li>
+		
+										    <!-- tmpl_else --> 
+    
+										        <li>
+										         <p>
+													This mailing list is announce-only.
+										         </p>
+												</li>
+
+
+										     <!-- /tmpl_if --> 
+										</ul>
+									</div>
+									
+									
+									
                                                         
 			                        <div class="panel"> 
 			                            <p>
 			                                <!-- tmpl_var list_settings.info -->
 			                            </p>
 									</div> 
-			                        <ul> 
-			                        <!-- tmpl_if list_settings.private_list --> 
-			                            <li> 
-			                                <p>
-			                                    Private Mailing List
-			                                </p>
-			                            </li>
-			                        <!-- tmpl_else --> 
-			                        <li> 
-			                            <p>
-			                                Public Mailing List
-			                            </p>
-			                        </li>
-			                        <!-- /tmpl_if --> 
-
-			                        <!-- tmpl_if list_settings.group_list --> 
-			                            <li>
-			                                <p>Discussion List</p> 
-			                                <ul> 
-			                                    <li> 
-			                                        Start a new thread, email: 
-			                                        <a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email -->">    
-			                                            <!-- tmpl_var list_settings.discussion_pop_email -->
-			                                        </a>
-			                                    </li> 
-			                                <!-- tmpl_if list_settings.enable_moderation --> 
-			                                   <li>Moderated List</li> 
-			                                <!-- tmpl_else -->
-			                                       <li>Unmoderated List</li> 
-			                                <!-- /tmpl_if --> 
-			                            </ul> 
-			                            </li>
-			                        <!-- tmpl_else --> 
-			                            <li>
-			                             Announce-only list.
-			                            </li>
-			                         <!-- /tmpl_if --> 
-			                        </ul>
+			                      
 
 			                        <ul>
 				                        <li>
@@ -220,9 +235,9 @@
 				                                </a>
 				                            </p>
 				                        </li>
-				                        <li>
+				                        </ul>
 				                            <p>
-				                                <a href="<!-- tmpl_var list_unsubscribe_link -->">
+				                                <a href="<!-- tmpl_var list_unsubscribe_link -->" class="button">
 				                                    <!-- tmpl_if list_settings.private_list -->
 				                                          Request to be removed from <!-- tmpl_var list_settings.list_name -->                  
 				                                    <!-- tmpl_else --> 
@@ -230,8 +245,8 @@
 				                                    <!-- /tmpl_if -->
 				                                </a>
 				                            </p>
-				                        </li>    
-				                    </ul>
+				                  
+				                    
     
     
 <!-- tmpl_if list_settings.digest_enable -->

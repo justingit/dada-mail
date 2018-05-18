@@ -400,6 +400,17 @@ sub translate {
             $q->param( 'token',  $pi_token );
 
         }
+
+        elsif ( $info =~ /^subscribe_form/ ) {
+
+            my ( $pi_flavor, $pi_list ) = split( '/', $info );
+
+            $q->param( 'flavor', $pi_flavor )
+              if $pi_flavor;
+            $q->param( 'list', $pi_list )
+              if $pi_list;
+        }
+
         elsif ( $info =~ /^subscriber_help|^list/ ) {
 
             my ( $pi_flavor, $pi_list ) = split( '/', $info );
