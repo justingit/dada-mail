@@ -1,6 +1,5 @@
 <!-- begin filtered_list_consent_activity_widget.tmpl -->
 
-<div style="max-height: 480px; overflow: auto; border:1px solid black;background:#fff">
   
   <table style="width:100%" class="responsive">
    <tr>
@@ -66,17 +65,26 @@
 		</td>
 	
 		<td>
+			<span data-tooltip aria-haspopup="true" 
+			class="has-tip" 
+			title="<!-- tmpl_var consent escape="HTML" -->">
 			<!-- tmpl_var consent_id escape="HTML" -->
+			</span>
 		</td>
 	
 		<td>
-			<!-- tmpl_var privacy_policy_id escape="HTML" -->
+			<span data-tooltip aria-haspopup="true" 
+			class="has-tip" 
+			title="<!-- tmpl_var privacy_policy escape="HTML" -->">
+				<!-- tmpl_var privacy_policy_id escape="HTML" -->
+			</span>
+			</a>
 		</td>
 	</tr>
 
 <!-- /tmpl_loop -->
 
 </table>
-</div>
+
 
 <!-- end filtered_list_consent_activity_widget.tmpl -->

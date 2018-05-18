@@ -2211,7 +2211,8 @@ sub list_invite {
         my $message_id = $mh->mass_send({ 
             -msg             => {%f_headers},
 			-vars            => { 
-				custom_invite_message => $custom_invite_message, 
+				custom_invite_message      => $custom_invite_message, 
+				custom_invite_message_html => scalar plaintext_to_html( { -str => $custom_invite_message } ), 
 			}
 		});
         my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=invitelist&id=' . $message_id;

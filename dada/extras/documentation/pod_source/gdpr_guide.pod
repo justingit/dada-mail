@@ -1,14 +1,15 @@
 =pod
 
-=head1 GDPR Guide
+=head1 GDPR Guide for Dada Mail
 
-This document explains features and tools built into Dada Mail that may help you and your organization comply with the rules
+This document explains features and tools built into Dada Mail that may help you 
+and your organization comply with the rules 
 and regulations put forth by the EU's General Data Protection Regulation (GDPR). 
 
 If you're running a I<public> mailing list, 
 odds are that you should seriously consider complying with the EU's GDPR in full. 
-We're not lawyers ourself (and this isn't legal advice), 
-but if you do have any questions, 
+We're not lawyers ourself (and this isn't legal advice). 
+If you do have any questions, 
 consult a legal professional. 
 If you would like a referal to someone we know, 
 please contact us directly. 
@@ -56,19 +57,19 @@ B<Remember:> if you add or remove a new consent,
 current subscribers of your mailing list may not have actually given their I<explicit> 
 consent to these new terms. 
 Dada Mail does not have a mechanism to function if only some of the consents are agreed to, 
-but others are not - at the moment:
-it's all or nothing. 
+but others are not. 
+At the moment it's all or nothing. 
 Dada Mail also currently does not have a way to ask current subscribers
 to update their consent if you decide to add a new item to consent to.
 When someone unsubscribes (removes themselves from the mailing list), 
-it's analogous of them revoking all 
-consents that have to do with the mailing list subscription. 
+it's analogous of them revoking all their
+consent that has to do with the mailing list subscription. 
 
 You can also think of a successful subscription to your mailing list as the final say to if the subscriber has given you consent: 
 if they're subscribed to your mailing list, 
-they've agreed in granted to you every point of consent you've asked them for. 
+they've agreed in granted to you every point of consent you've asked from them. 
 
-If they I<haven't>, 
+If a user I<hasn't>, 
 B<they shouldn't be on your mailing list>, 
 and they should be removed immediately. 
  

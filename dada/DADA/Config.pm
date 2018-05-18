@@ -459,7 +459,7 @@ $RECAPTHCA_MAILHIDE_PARAMS //= {
 
 
 $SHOW_HELP_LINKS //= 1;
-$HELP_LINKS_URL  //= 'http://dadamailproject.com/pro_dada/10.0.0';
+$HELP_LINKS_URL  //= 'http://dadamailproject.com/pro_dada/11.0.0';
 $NPH //= 0;
 
 
@@ -467,7 +467,7 @@ $NPH //= 0;
 
 
 %LOG = (
-    subscriptions        => 1,
+    subscriptions        => 0,
     mailings             => 0,
     mass_mailings        => 1,
     mass_mailing_batches => 1,
