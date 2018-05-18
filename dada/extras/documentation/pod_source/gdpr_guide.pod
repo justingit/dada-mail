@@ -2,31 +2,35 @@
 
 =head1 GDPR Guide
 
-This doc. explains tools built into Dada Mail that can help you and your organization comply with the rules
+This document explains features and tools built into Dada Mail that may help you and your organization comply with the rules
 and regulations put forth by the EU's General Data Protection Regulation (GDPR). 
-
-If you/your organization complies with the GDPR in different way than what Dada Mail provides (or you don't think your usage 
-reauired GDPR - like a internal private list), Dada Mail still can function just fine, without much to worry about. Don't put off upgrading 
-if you fall into the bucket. 
 
 If you're running a I<public> mailing list, 
 odds are that you should seriously consider complying with the EU's GDPR in full. 
 We're not lawyers ourself (and this isn't legal advice), 
 but if you do have any questions, 
-consult a legal professional.  
+consult a legal professional. 
+If you would like a referal to someone we know, 
+please contact us directly. 
  
+B<Don't put off upgrading if you are required to comply with the GDPR!> 
+
 =head1 Consent under GDPR
 
 Points made in this section are taken from the following document: 
 
 L<https://ico.org.uk/media/about-the-ico/consultations/2013551/draft-gdpr-consent-guidance-for-consultation-201703.pdf>
 
-It's a B<great> read, and if you want to get into the nuances of consent under, GDPR, it's a must-read. 
+It's a B<great> read, and if you want to get into the nuances of consent under, GDPR, it's a I<must-read>. 
+There's many opinions on the Internet on what exactly constitutes GDPR compliance - we even have our own. 
+Our advice though, is to only take the advice of a knowledgable lawyer if you have questions.   
 
-Dada Mail allows you to set up individual points of consent you would like your subscribers to agree to if they would like to 
-subscribe to your mailing list. 
+=head2 Managing Consent in Dada Mail
+
+Dada Mail allows you to set up individual points of consent per mailing list that you would like your users
+ to agree to if they would like to subscribe to your mailing list. 
 Each separate item you would like your subscribers to grant consent to will show up as separate items 
-listed as checkboxes on your subscription maiing list's form. 
+listed as checkboxes the subscription forms users use to add themselves to your mailing list. 
 
 =over
 
@@ -34,38 +38,40 @@ listed as checkboxes on your subscription maiing list's form.
 
 =back
 
-In Dada Mail, these points of consent are I<never> prechecked, and are always I<required>. 
-If you have set up these consents, users cannot request a subscription to your mailing list, 
-without agreeing to all the points of consent. 
+In Dada Mail, 
+these points of consent are I<never> prechecked, and are I<always> required. 
 
-You can add/remove these individual consents in the list control panel under, 
+=head2 Adding/Removing Consent
+
+You may add/remove these individual consents in the list control panel under, 
 
 B<Mailing List: List Consents>
 
 Take your time in crafting these consents, 
 since once you create them, 
-you'll have to abide by them yourself, 
-and only use the information you've collected in a way that your subscribers have given their consent to. 
+you'll have to abide by them I<yourself>
+  by only use the information you've collected in a way that your subscribers have given their consent to. 
 
-Remember: if you add or remove a new consent, 
+B<Remember:> if you add or remove a new consent, 
 current subscribers of your mailing list may not have actually given their I<explicit> 
 consent to these new terms. 
 Dada Mail does not have a mechanism to function if only some of the consents are agreed to, 
-but others are not - at the moment, 
+but others are not - at the moment:
 it's all or nothing. 
 Dada Mail also currently does not have a way to ask current subscribers
 to update their consent if you decide to add a new item to consent to.
-When someone unsubscribes, 
+When someone unsubscribes (removes themselves from the mailing list), 
 it's analogous of them revoking all 
 consents that have to do with the mailing list subscription. 
 
 You can also think of a successful subscription to your mailing list as the final say to if the subscriber has given you consent: 
 if they're subscribed to your mailing list, 
-they've agree in granted to you every point of consent you've asked for. 
-If they I<haven't>, 
-they shouldn't be on your mailing list, 
-and they should be removed. 
+they've agreed in granted to you every point of consent you've asked them for. 
 
+If they I<haven't>, 
+B<they shouldn't be on your mailing list>, 
+and they should be removed immediately. 
+ 
 Consent should I<not> be a new concept to anyone that's collecting data from a user. 
 What the GDPR is really doing is formalizing the process of asking for this explicit consent.
 
@@ -87,12 +93,12 @@ Some points from the above doc that are helpful to remember when crafting your i
 
 =back
 
-=head1 Revoking Consent 
+=head1 Users Revoking Consent 
 
 A user wanting to revoke consent is analogues of wanting to be unsubscribed from your mailing list. 
-Once a user unsubscribes to your mailin glist, 
+Once a user unsubscribes to your mailing list, 
 all consent they've granted to you will then be revoked, 
-and thos eactions will be recorded.  
+and those actions will be recorded.
 
 =over
 
@@ -102,7 +108,7 @@ and thos eactions will be recorded.
 
 The easiest way for a subscriber to widthdraw consent is by clicking an unsubscribe link in the mass mailing messages you send. 
 Make sure to I<always> have this link available in your mailing list messages 
-(Dada Mail will always place an unsubscribe link into your messages, if one is missing). 
+(Dada Mail will always place an unsubscribe link into your messages). 
 Have additional contact methods available to your subscribers, 
 so it's as easy as possible for them to ask to be unsubscribed. 
 Dada Mail allows you to enter in a physical mailing address,
@@ -129,7 +135,7 @@ Again, the ICO has a great guide on what should be placed in your Privacy Policy
 L<https://ico.org.uk/for-organisations/guide-to-data-protection/privacy-notices-transparency-and-control/your-privacy-notice-checklist/>
 
 A link to the privacy policy set for your mailing list will be shown at the bottom of the mailing list subscription form that Dada Mail creates. 
-It  may also be available on the mailing list's individual screen, 
+It may also be available on the mailing list's individual screen, 
 and in the subscription confirmation and mailing list welcome email messages. 
 
 The URL to the privacy policy will always be publicly available. 
@@ -145,32 +151,79 @@ so if you change your privacy policy,
 you'll know exactly which version of your privacy policy each subscriber has agreed to. 
 
 And just like consents, 
-there's currently no mechanism to have subscribers to agree to a new privacy policy if you have changed it, 
-so be thoughtful when you author your privacy policy. 
+there's currently no mechanism to have subscribers to agree to a new privacy policy if you have updated it, 
+so be thoughtful when you author your mailing list's privacy policy. 
 
 =head1 Changes to the Application
 
-Even though GDPR has the potential to impact things like mailing list managers, we've attempting to make 
-it's weight as light as possible in Dada Mail. But, here a few differences you'll find in the applications, 
-if you're moving from a recent version to version 11: 
+=head2 Migrating Current Users of a Mailing List 
 
+If you are strictly following the GDPR, you should consider very seriously if your current mailing list complies with the GDPR 
+and/or if it requires to do so. 
+Our suggestion is that every public mailing list should comply with the GDPR, 
+without exception. 
 
-=head2 "Mailing List" menu moved to the left betwee, "Mass Mailing", and "Membership"
+=head2 Upgrading Existing Consent Activity Information 
 
-Basically, "Membership" and, "Mailing List" have switched
+Older versions of Dada Mail did keep a plaintext log of subscription and unsubscription activities of the mailing lists it managed, 
+including when subscription requests were made for closed-loop opt-in confirmed subscriptions. 
+
+We've created a tool to import some of that information into Dada Mail's new, 
+explicit consent activity database, 
+to help flesh out history of consent you have had with your subscribers.
+
+B<This import tool can't retroactivity allow you to somehow have your subscribers give you I<consent> that they haven't given before> 
+and using this tool alone won't make your mailing list magically GDPR compliant. 
+It only moves the history of who was added to your mailing list, 
+and when. 
+
+The import tool also isn't perfect. 
+If your current mailing list had some sort of history where "confirmed-by-the-user" (via Dada Mail's closed-loop opt-in system) subscriptions was not required, 
+think long and hard about using this tool on your mailing list at all.  
+
+But, 
+if you feel you've covered your bases on what the GDPR requires to have a user be a part of your mailing list, 
+it can be a valuable 
+tool at your disposal. 
+The tool exists as a list control panel plugin, 
+and may need to be enable at the time of an install/upgrade. 
+In the included Dada Mail Installer, 
+look for the plugin named, 
+B<usage_log_to_consent_activity> and check the option next to its name to have it installed along with the rest of Dada Mail. 
+
+Once your install/upgrade is finished, 
+you may visit the plugin by logging into a mailing list, 
+and going to, 
+B<Plugins/Extensions: usage_log_to_consent_activity>.  
+This plugin does allow you to tag records it finds in the previous database with any current consents 
+you've set for your mailing list, 
+as well as the current privacy policy. 
+If any of these items were used when all your subscriptions were made, 
+you then have the option to do this. 
+
+B<Don't mis-tag your mailing list subscribers with this information, if they did not give you 
+this consent!>. The purpose of this plugin is only to import already-existing data,
+not to retroactively "fix" missing data!
+
+=head2 "Mailing List" menu moved to the left between, "Mass Mailing", and "Membership"
+
+Basically, "Membership" and, "Mailing List" have switched places
 
 =head2 New screen in the List Control Panel, "Privacy Policy"
 
-We've done this, to highlight just how important setting up the Privacy Policy is, and also to allow administrators 
-to disable this screen, when a user logs into the list control panel with the, List Password. 
+We've done this to highlight just how important setting up the Privacy Policy is, 
+and also to allow administrators to disable this screen when a user logs into the list control panel with the List Password. 
 That will allow the main administrator of the Dada Mail install (whoever can log in with the Dada Mail Root Password) 
 to set up the Privacy Policy for each list and make sure it does not get changed, if they so desire
 
 =head3 Privacy Policy always available in its own screen. 
 
-We've set up Dada Mail now to always have the Privacy Policy for your mailing list available, alone, in its own screen. 
+We've set up Dada Mail now to always have the Privacy Policy for your mailing list available, 
+alone, 
+in its own screen. 
+Again, this is to make it easier to enable/disable when logged in with the List Password. 
 
-A link to this privacy policy is placed on the button of your subscription form. 
+A link to this privacy policy is placed on the bottom of your subscription form. 
 
 =head2 New screen in the List Control Panel, "List Consents"
 
@@ -178,49 +231,72 @@ This screen will allow you to set up the various List Consents for your mailing 
 Every mailing list has their own set of List Consents. List Consents can NOT be edited,
 as the history of what a consent was a particular date and time is important. 
 
-They may be deleted, but it's highly advised to NOT do this (unless you're setting things up, and moving things around),
-as there's not yet a mechanism in Dada Mail to ask for a change of consent from your subscribers. 
+They may be deleted, 
+but it's highly advised to NOT do this (unless you're setting things up, and moving things around),
+as there's not (yet) a mechanism in Dada Mail to ask for a change of consent from your subscribers. 
 
 =head2 Options to Track message analytics with data of subscriber (their email address) has been disabled. 
 
 Tracking mass mailing analytics tied to the email address of your subscriber is what we feel something that you would need
-to get explicit consent from your subscribers to do, if you are strictly following the GDPR. 
-And if so, that would be something you would need to create a list consent for. For new mailing lists, we've disabled that feature.
-But, it may be enabled for previous mailing lists. 
+to get explicit consent from your subscribers to do, 
+if you are strictly following the GDPR. 
+And if so, 
+that would be something you would need to create a list consent for. 
+For new mailing lists,
+we've disabled that feature.
+But, 
+it may need to be toggled for previous mailing lists. 
 
-If this feature is enabled, a warning will be displayed in the, B<Mailing List: List Consents> screen to remind you about this issue. 
+If this feature is enabled, 
+a warning will be displayed in the, 
+B<Mailing List: List Consents> screen to remind you about this issue. 
 
-You may enable/disable this feature from within: B<Plugins/Extensions: Tracker> 
+You may enable/disable this feature from within: B<Plugins/Extensions: Tracker>:
 
-Change the option labeled, B<Track with email addresses>, under, B<Preferences>.
+Check the option labeled, B<Track with email addresses>, under, B<Preferences> to enable. 
+Uncheck to disable. 
 
 =head2 "Skip subscription confirmation if the subscriber already has a Dada Mail Profile" option removed
 
 =head2 List Invitations
 
-List invitations are a pretty weird grey area when it comes to GPPR and mailing lists. If you're confused yourself, don't use them if you
-have a mailing list that closely follows the GDPR. We've made quite a number of changes to list invitations in Dada Mail, to make 
-it easier to navigate these waters. 
+List invitations are a pretty weird grey area when it comes to GPPR and mailing lists. 
+If you're confused yourself, 
+don't use them if you have a mailing list that closely follows the GDPR. 
+We've made quite a number of changes to list invitations in Dada Mail, 
+to make it easier to navigate these waters. 
 
-Before the GDPR takes affect though, it could be a useful tool to utilizse to re-confirm subscribers from an old mailing list to a new mailing list
+Before the GDPR takes affect though, 
+it could be a useful tool to utilizse to re-confirm subscribers from an old mailing list to a new mailing list
 that has consent and privacy policy set up correctly. 
 
 =head3 Profile Fields not saved when list invitation sent
 
-In previous versions of Dada Mail, Dada Mail would save any profile fields you submitted within Dada Mail's list control panel. 
-We're disabling this functionality, since it again goes against the GDPR's requirement to ask for consent before collecting and saving
-personal information. 
+In previous versions of Dada Mail, 
+Dada Mail would save any profile fields you submitted within Dada Mail's list control panel during a list invitation. 
+We're disabling this functionality, 
+since it again goes against the GDPR's requirement to ask for consent before collecting
+and saving personal information. 
 
 =head3 Custom Invite Message
 
-List Invitations can now be sent with a custom message, to help give context of where this invitation is coming from. For example, "hey, we met at that conference", 
-or, "we're re-confirming our subscribers to closely follow the GDPR", etc
+List Invitations can now be sent with a custom message, 
+to help give context of where this invitation is coming from. 
+For example, 
+"hey, we met at that conference", 
+or, 
+"we're re-confirming our subscribers to closely follow the GDPR",
+etc
 
 =head2 Subscription confirmation button replaced with button to subscription form 
 
-Dada Mail's invitation message had a link that, when clicked, would automatically subscribe an address to a mailing list. 
-This is not allowed under GDPR, so unfortunetely we replaced this button with a button that takes you to a subscription form 
-where the user can fill out the form, and explicitly consent to any of the requirements to your mailing list. 
+Dada Mail's invitation message had a button that, 
+when clicked, 
+would automatically subscribe an address to a mailing list. 
+This is not allowed under GDPR (no explicit consent), 
+so unfortunetely we replaced this button with a button that takes you to a subscription form 
+where the user can fill out the form, 
+and explicitly agree to the consent you are asking for. 
 
 =head2 Dada Mail Profiles
 
@@ -228,5 +304,77 @@ where the user can fill out the form, and explicitly consent to any of the requi
 
 "Magic Subscription Forms" would fill in a logged in user (using their Dada Mail Profile) with their email address. We've removed this feature to 
 simplify things, and to closely follow the "no pre-filled in" points of consent of the GDPR. 
+
+=head1 Complying to the GDPR by reconfirming your mailing list. 
+
+Reconfirming your mailing list may be the most secure and straightforward way to be in the clear with GDPR compliance, 
+but you only have until May 27th, 2018 to do so! 
+
+Here are the steps you'll need to reconfirm your mailing list using Dada Mail. 
+
+=head2 Upgrade to Dada Mail 11
+
+Previous versions of Dada Mail will lack the tools to help you be GDPR compliant
+
+=head2 Export your current mailing list 
+
+Log into your list control panel into the mailing list you want to work with. Go to: B<Membership: View> 
+
+At the bottom of the screen click the button labeled, B<Export Subscribers (.csv)>. The only option you will need checked is, B<Email Address>.
+
+=head2 Delete your current mailing list 
+
+Parting is such sweet sorrow, but it's time to say goodbye. 
+In your list control panel, go to: B<Mailing List: Delete This Mailing List>,
+to delete your mailing list. 
+Remember: this deletion will be B<permanent>. 
+
+=head2 Create a new mailing list
+
+Once you've deleted your mailing list, 
+revist the administration screen and click the tab labeled, 
+B<Create>. 
+Fill in your Dada Mail Root Pass, 
+and fill out the form to create a new mailing list. 
+For completeness, make sure to use a different B<list short name> than before, 
+so you make sure any lingering subscription forms out there won't somehow work with your new mailing list. 
+
+B<Remember> to set up a B<Privacy Policy> 
+and the B<Consents> that you would like your users to agree in giving you. 
+Only one consent can be set up during list creation, 
+so if you need more, 
+do so afterwards. 
+
+=head2 Confirm your Privacy Policy and List Consent setup
+
+Get this right part right! 
+
+=head2 Invite Your Previous Subscribers
+
+In the list control panel,
+go to, 
+B<Membership: Invite/Subscribe/Add> 
+
+Under B<Upload Your Addresses>, 
+select the .csv file you just exported, 
+and click, B<Verify Addresses... >
+
+Once the screen refreshes, 
+and shows all the addresses that past the verification process, 
+click the button labeled, 
+B<Send Invitation...>
+
+Once the screen refreshes, 
+you have the option to add a note to your mailing list invitation. 
+Here's your chance to explain to your subscribers what you're doing asking for them to reconfirm. 
+Make the message a good one! (and perhaps apologize for the hassle)
+
+Click, B<Send: Invitations>, and you're done! 
+
+Recipients of your mailing list invitation will get your message,
+along with a button that, 
+when clicked, 
+will bring them to a URL that they can fill out the subscription form that has the necessary 
+checkboxes for you to ask for consent needed to be a member of your mailing list!
 
 =cut

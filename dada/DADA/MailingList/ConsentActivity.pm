@@ -296,6 +296,10 @@ sub consent_history_report {
 	my $self   = shift; 
 	my ($args) = @_; 
 	
+	if(! exists($args->{-as_csv})){ 
+		$args->{-as_csv} = 0; 
+	}
+
 	my $dada_consent_activity = $DADA::Config::SQL_PARAMS{consent_activity_table};
 	my $dada_privacy_policies = $DADA::Config::SQL_PARAMS{privacy_policies_table};
 	my $dada_consents         = $DADA::Config::SQL_PARAMS{consents_table};
@@ -311,9 +315,9 @@ sub consent_history_report {
 		    $dada_consent_activity.source              AS source,
 		    $dada_consent_activity.source_location     AS source_location,
 		    $dada_consent_activity.consent_id          AS consent_id,
+		    $dada_consents.consent                     AS consent,
 		    $dada_consent_activity.privacy_policy_id   AS privacy_policy_id,
-		    $dada_privacy_policies.privacy_policy      AS privacy_policy,
-		    $dada_consents.consent                     AS consent
+		    $dada_privacy_policies.privacy_policy      AS privacy_policy
 		 FROM $dada_consent_activity
 		    LEFT JOIN $dada_privacy_policies ON $dada_consent_activity.privacy_policy_id = $dada_privacy_policies.privacy_policy_id
 		    LEFT JOIN $dada_consents         ON $dada_consent_activity.consent_id        = $dada_consents.consent_id
@@ -334,7 +338,58 @@ sub consent_history_report {
 		push(@$results, $fields);
 	}
 	
-	return $results; 
+	if($args->{-as_csv} == 1){ 
+        
+		my $status; 
+		require Text::CSV;
+        my $csv = Text::CSV->new(
+			$DADA::Config::TEXT_CSV_PARAMS
+		);
+
+        my $csv_str = undef; 
+		
+        my @cols = qw(
+			  
+			  consent_activity_id
+	          remote_addr
+			  
+			  timestamp
+	          email
+			  
+			  ip
+	          
+			  list
+	          action
+			  
+
+			  source
+	          source_location
+
+	          consent_id
+	  		  consent
+
+			  privacy_policy_id
+	          privacy_policy
+		 ); 
+
+		$status   = $csv->combine(@cols);
+        $csv_str .= $csv->string() . "\n";
+		
+		foreach my $fr(@$results) {
+				my @lines = (); 
+				foreach (@cols) {
+					$fr->{$_} =~ s/\r|\n/ /gi; 
+                	push(@lines, $fr->{$_});
+            	}
+			
+            $status = $csv->combine(@lines);
+            $csv_str .= $csv->string() . "\n";
+        }
+        return $csv_str;
+	}
+	else {
+		return $results; 
+	}
 	
 }
 

@@ -5875,19 +5875,7 @@ m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list|sub_co
         );
         my $delivery_prefs = $s->{delivery_prefs} || 'individual';
         my $digest_timeframe =
-          formatted_runtime( $ls->param('digest_schedule') );
-		
-		# consent
-	  	require DADA::MailingList::ConsentActivity; 
-	  	my $dmlch = DADA::MailingList::ConsentActivity->new; 
-	  	my $consent_history = $dmlch->consent_history_report({
-	  		-list  => $list, 
-	  		-email => scalar $q->param('email'), 
-	  	});
-		# /consent
-		require Data::Dumper; 
-		my $consent_history_str = Data::Dumper::Dumper($consent_history);
-		
+          formatted_runtime( $ls->param('digest_schedule') );	
 		
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -5942,7 +5930,6 @@ m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list|sub_co
                     digest_timeframe => $digest_timeframe,
 
                     update_email_count => $update_email_count,
-					consent_history_str => $consent_history_str, 
 
                 },
                 -list_settings_vars_param => {
@@ -6358,49 +6345,25 @@ sub mailing_list_history {
 
     my $list  = $admin_list;
     my $email = xss_filter( scalar $q->param('email') );
-    my $membership_history =
-      xss_filter( scalar $q->param('membership_history') )
-      || 'this_list';
-    my $mode = xss_filter( scalar $q->param('mode') ) || 'html';
+    my $mode  = xss_filter( scalar $q->param('mode') ) || 'html';
 
-    require DADA::App::LogSearch;
-    my $searcher = DADA::App::LogSearch->new;
-    my $r;
-
-    if ( $membership_history eq 'this_list' ) {
-        $r = $searcher->subscription_search(
-            {
-                -email => $email,
-                -list  => $list,
-            }
-        );
-    }
-    else {
-        $r = $searcher->subscription_search( { -email => $email, } );
-
-    }
-
-    @$r = reverse(@$r);
+	# consent
+  	require DADA::MailingList::ConsentActivity; 
+  	my $dmlch = DADA::MailingList::ConsentActivity->new; 
 
     if ( $mode eq 'html' ) {
 
-        my $i;
-        for ( $i = 0 ; $i <= ( scalar(@$r) - 1 ) ; $i++ ) {
-            $r->[$i]->{show_email} = 0;
-            unless ( $membership_history eq 'this_list' ) {
-                $r->[$i]->{show_list_name} = 1;
-            }
-        }
-
+	  	my $consent_history = $dmlch->consent_history_report({
+	  		-list  => $list, 
+	  		-email  => scalar $q->param('email'), 
+	  	});
+		
         my $scrn = DADA::Template::Widgets::screen(
             {
-                -screen => 'filtered_list_activity_widget.tmpl',
+                -screen => 'filtered_list_consent_activity_widget.tmpl',
                 -expr   => 1,
                 -vars   => {
-
-                    history => $r,
-
-                    #raw_history            => Dumper($r),
+                    consent_history => $consent_history,
                 },
             }
         );
@@ -6408,6 +6371,28 @@ sub mailing_list_history {
     }
     elsif ( $mode eq 'export_csv' ) {
 
+
+	  	my $consent_history_csv = $dmlch->consent_history_report({
+	  		-list  => $list, 
+	  		-email  => scalar $q->param('email'), 
+			-as_csv => 1, 
+	  	});
+		
+		# /consent
+		#require Data::Dumper; 
+		#my $consent_history_str = Data::Dumper::Dumper($consent_history);
+		
+        my $headers = {
+            -attachment => 'membership_history-' . $list . '-' . time . '.csv',
+            -type       => 'text/csv',
+        };
+        $self->header_props(%$headers);
+        return $consent_history_csv;
+		
+=pod
+		
+		
+		
         require Text::CSV;
         my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
         my $fh  = \*STDOUT;
@@ -6444,6 +6429,9 @@ sub mailing_list_history {
 
         $self->header_props(%$headers);
         return $body;
+		
+=cut
+		
     }
 }
 

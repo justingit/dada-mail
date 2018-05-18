@@ -1,0 +1,82 @@
+<!-- begin filtered_list_consent_activity_widget.tmpl -->
+
+<div style="max-height: 480px; overflow: auto; border:1px solid black;background:#fff">
+  
+  <table style="width:100%" class="responsive">
+   <tr>
+	
+	<th>
+		Timestamp
+	</th>
+	
+	<th>
+		Remote Address
+	</th>
+	
+	<th>
+		IP Address
+	</th>
+	
+	<th>
+		Action
+	</th>
+
+	<th>
+		Source
+	</th>
+	
+	<th>
+		Source Location
+	</th>
+	
+	<th>
+		Consent ID
+	</th>
+	
+	<th>
+		Privacy Policy ID
+	</th>
+</tr>
+    
+<!-- tmpl_loop consent_history -->
+
+	<tr>
+
+		<td>
+			<!-- tmpl_var timestamp escape="HTML" -->
+		</td>
+
+		<td>
+			<!-- tmpl_var remote_addr escape="HTML" -->
+		</td>
+		<td>
+			<!-- tmpl_var ip escape="HTML" -->
+		</td>
+	
+		<td>
+			<!-- tmpl_var action escape="HTML" -->
+		</td>
+
+		<td>
+			<!-- tmpl_var source escape="HTML" -->
+		</td>
+	
+		<td>
+			<!-- tmpl_var source_location escape="HTML" -->
+		</td>
+	
+		<td>
+			<!-- tmpl_var consent_id escape="HTML" -->
+		</td>
+	
+		<td>
+			<!-- tmpl_var privacy_policy_id escape="HTML" -->
+		</td>
+	</tr>
+
+<!-- /tmpl_loop -->
+
+</table>
+</div>
+
+<!-- end filtered_list_consent_activity_widget.tmpl -->

@@ -76,17 +76,18 @@ my $admin_menu_end_cut = quotemeta(
 );
 
 my $plugins_extensions = {
-    change_root_password         => { installed => 0, loc => '../plugins/change_root_password' },
-    screen_cache                 => { installed => 0, loc => '../plugins/screen_cache' },
-    log_viewer                   => { installed => 0, loc => '../plugins/log_viewer' },
-    tracker                      => { installed => 0, loc => '../plugins/tracker' },
-    bridge                       => { installed => 0, loc => '../plugins/bridge' },
-    bounce_handler               => { installed => 0, loc => '../plugins/bounce_handler' },
-    password_protect_directories => { installed => 0, loc => '../plugins/password_protect_directories' },
-    change_list_shortname        => { installed => 0, loc => '../plugins/change_list_shortname' },
-    global_config                => { installed => 0, loc => '../plugins/global_config' },
-    multiple_subscribe           => { installed => 0, loc => '../extensions/multiple_subscribe.cgi' },
-    blog_index                   => { installed => 0, loc => '../extensions/blog_index.cgi' },
+    change_root_password          => { installed => 0, loc => '../plugins/change_root_password' },
+    screen_cache                  => { installed => 0, loc => '../plugins/screen_cache' },
+    log_viewer                    => { installed => 0, loc => '../plugins/log_viewer' },
+    tracker                       => { installed => 0, loc => '../plugins/tracker' },
+    bridge                        => { installed => 0, loc => '../plugins/bridge' },
+    bounce_handler                => { installed => 0, loc => '../plugins/bounce_handler' },
+    password_protect_directories  => { installed => 0, loc => '../plugins/password_protect_directories' },
+    change_list_shortname         => { installed => 0, loc => '../plugins/change_list_shortname' },
+    global_config                 => { installed => 0, loc => '../plugins/global_config' },
+    multiple_subscribe            => { installed => 0, loc => '../extensions/multiple_subscribe.cgi' },
+    blog_index                    => { installed => 0, loc => '../extensions/blog_index.cgi' },
+	usage_log_to_consent_activity => { installed => 0, loc => '../plugins/usage_log_to_consent_activity' },
 };
 $plugins_extensions->{change_root_password}->{code} = q{#					{
 #					-Title      => 'Change the Program Root Password',
@@ -165,6 +166,14 @@ $plugins_extensions->{blog_index}->{code} = q{#					{
 #					-Activated  => 1,
 #					},};
 
+$plugins_extensions->{usage_log_to_consent_activity}->{code} = q{#					{
+#					-Title      => 'usage_log_to_consent_activity',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/usage_log_to_consent_activity",
+#					-Function   => 'usage_log_to_consent_activity',
+#					-Activated  => 0,
+#					},};
+
+
 my $advanced_config_params = {
 show_scheduled_jobs_options         => 1,
 show_deployment_options             => 1,
@@ -238,6 +247,7 @@ my @Plugin_Names = qw(
   screen_cache
   global_config
   view_list_settings
+  usage_log_to_consent_activity
 );
 my @Extension_Names = qw(
     blog_index
