@@ -1,5 +1,7 @@
 =pod
 
+=encoding utf-8
+
 =head1 GDPR Guide for Dada Mail
 
 This document explains features and tools built into Dada Mail that may help you 
@@ -69,7 +71,7 @@ You can also think of a successful subscription to your mailing list as the fina
 if they're subscribed to your mailing list, 
 they've agreed in granted to you every point of consent you've asked from them. 
 
-If a user I<hasn't>, 
+If a user I<hasn't$cl_consent>, 
 B<they shouldn't be on your mailing list>, 
 and they should be removed immediately. 
  
@@ -164,9 +166,9 @@ and/or if it requires to do so.
 Our suggestion is that every public mailing list should comply with the GDPR, 
 without exception. 
 
-=head2 Upgrading Existing Consent Activity Information 
+=head2 Migrating Existing Subscription Information 
 
-Older versions of Dada Mail did keep a plaintext log of subscription and unsubscription activities of the mailing lists it managed, 
+Older versions of Dada Mail I<did> keep a plaintext log of subscription and unsubscription activities of the mailing lists it managed, 
 including when subscription requests were made for closed-loop opt-in confirmed subscriptions. 
 
 We've created a tool to import some of that information into Dada Mail's new, 
@@ -179,7 +181,8 @@ It only moves the history of who was added to your mailing list,
 and when. 
 
 The import tool also isn't perfect. 
-If your current mailing list had some sort of history where "confirmed-by-the-user" (via Dada Mail's closed-loop opt-in system) subscriptions was not required, 
+If your current mailing list had some sort of history where "confirmed-by-the-user" 
+(via Dada Mail's closed-loop opt-in system) subscriptions was not required, 
 think long and hard about using this tool on your mailing list at all.  
 
 But, 
@@ -205,6 +208,50 @@ you then have the option to do this.
 B<Don't mis-tag your mailing list subscribers with this information, if they did not give you 
 this consent!>. The purpose of this plugin is only to import already-existing data,
 not to retroactively "fix" missing data!
+
+=head3 Command Line Interface
+
+If you're mailing list was very active and/or has been active for a very long time, 
+the plugin also has a command line interface: 
+
+Connect to the server you have Dada Mail installed, 
+and change into the "plugins" directory, where you'll find this plugin (usage_log_to_consent_activity)
+You may have to change it's permissions to run: 
+
+    chmod 755 usage_log_to_consent_activity
+
+The command takes three arguments: 
+
+=over
+
+=item * --list
+
+The list short name of the mailing list you want to work on. 
+
+=item * --consent
+
+Pass the id's of consents you would like to tag the information with. 
+If you want to tag > 1 consents to your info, 
+just add another C<--consent> argument ala: 
+
+	./usage_log_to_consent_activity --list yourlist --consent 1 --consent 2
+
+etc. 
+These consents are stored in the, 
+C<dada_consents> table in the database you're using  for Dada Mail. 
+Find out which id belongs to which consent by running the following query: 
+
+	select list, consent_id, consent from dada_consents where list = 'yourlist'; 
+
+=item * --privacy_policy
+
+If you pass this flag, info you import will be tagged with your mailing list's current privacy policy. 
+
+=back
+
+Here's how you use all those arguments at once, with two consents: 
+
+	./usage_log_to_consent_activity --list yourlist --consent 1 --consent 2 --privacy_policy
 
 =head2 "Mailing List" menu moved to the left between, "Mass Mailing", and "Membership"
 

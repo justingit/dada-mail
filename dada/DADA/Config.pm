@@ -270,17 +270,19 @@ $PLUGIN_RUNMODES //= {
 };
 
 $PLUGINS_ENABLED //= {
-    boilerplate_plugin           => <!-- tmpl_var install_boilerplate_plugin           default="0" -->,
-    tracker                      => <!-- tmpl_var install_tracker                      default="1" -->,
-    bounce_handler               => <!-- tmpl_var install_bounce_handler               default="0" -->,
-    bridge                       => <!-- tmpl_var install_bridge                       default="0" -->,
-    change_root_password         => <!-- tmpl_var install_change_root_password         default="0" -->,
-    change_list_shortname        => <!-- tmpl_var install_change_list_shortname        default="0" -->,
-    password_protect_directories => <!-- tmpl_var install_password_protect_directories default="0" -->,
-    log_viewer                   => <!-- tmpl_var install_log_viewer                   default="1" -->,
-    screen_cache                 => <!-- tmpl_var install_screen_cache                 default="1" -->,
-    global_config                => <!-- tmpl_var install_global_config                default="0" -->,
-    view_list_settings           => <!-- tmpl_var install_view_list_settings           default="0" -->,
+    boilerplate_plugin            => 0,
+    tracker                       => 0,
+    bounce_handler                => 0,
+    bridge                        => 0,
+    change_root_password          => 0,
+    change_list_shortname         => 0,
+    password_protect_directories  => 0,
+    log_viewer                    => 0,
+    screen_cache                  => 0,
+    global_config                 => 0,
+    view_list_settings            => 0,
+    usage_log_to_consent_activity => 0,
+	
 };
 
 $PLUGIN_CONFIGS //= { 
