@@ -9,7 +9,7 @@ and your organization comply with the rules
 and regulations put forth by the EU's General Data Protection Regulation (GDPR). 
 
 If you're running a I<public> mailing list, 
-odds are that you should seriously consider complying with the EU's GDPR in full. 
+odds are that you should seriously consider complying with the EU's GDPR. 
 We're not lawyers ourself (and this isn't legal advice). 
 If you do have any questions, 
 consult a legal professional. 
@@ -17,6 +17,8 @@ If you would like a referal to someone we know,
 please contact us directly. 
  
 B<Don't put off upgrading if you are required to comply with the GDPR!> 
+
+Features we talk about in this doc. made their first appearance in version 11 of Dada Mail (released May, 2018).
 
 =head1 Consent under GDPR
 
@@ -42,7 +44,10 @@ listed as checkboxes the subscription forms users use to add themselves to your 
 =back
 
 In Dada Mail, 
-these points of consent are I<never> prechecked, and are I<always> required. 
+these points of consent are I<never> prechecked, 
+and are I<always> required. 
+You are B<not> required to have any 
+(but it's probably a really good idea).
 
 =head2 Adding/Removing Consent
 
@@ -131,6 +136,26 @@ and field requests as soon as you are able to.
 Dada Mail keeps the record of consent in its database, 
 and will report the history of granting/revoking these consents within the list control panel. 
 
+=over
+
+=item * Once you've logged into your list control panel, go to: "Membership: View"
+
+=item * Select an email address. 
+
+=item * Click the, "Subscribe History" tab. 
+
+=back
+
+Data about the subscriber will be shown. A button to export this information is also available. 
+Data will be in .csv format, 
+which you can then open up in a spreadsheet application. 
+
+If you have enabled B<Closed-Loop Opt-In Confirmation> (which we highly suggest!), 
+you'll see entries with the B<Action>, B<cloic sent> and, B<cloic confirmed>. 
+"B<cloic>" stands for, 
+you guessed it, 
+B<Closed-Loop Opt-In Confirmation>.
+
 =head1 Privacy Policy 
 
 Again, the ICO has a great guide on what should be placed in your Privacy Policy: 
@@ -157,7 +182,7 @@ And just like consents,
 there's currently no mechanism to have subscribers to agree to a new privacy policy if you have updated it, 
 so be thoughtful when you author your mailing list's privacy policy. 
 
-=head1 Changes to the Application
+=head1 Changes to the Dada Mail Application
 
 =head2 Migrating Current Users of a Mailing List 
 
@@ -168,32 +193,31 @@ without exception.
 
 =head2 Migrating Existing Subscription Information 
 
-Older versions of Dada Mail I<did> keep a plaintext log of subscription and unsubscription activities of the mailing lists it managed, 
-including when subscription requests were made for closed-loop opt-in confirmed subscriptions. 
+Older versions of Dada Mail I<did> keep a plaintext log of subscription 
+and unsubscription activities of the mailing lists it managed, 
+including when subscription requests were made for B<Closed-Loop Opt-In> confirmed subscriptions. 
 
 We've created a tool to import some of that information into Dada Mail's new, 
 explicit consent activity database, 
-to help flesh out history of consent you have had with your subscribers.
+to help flesh out history of consent you have made with your subscribers.
 
-B<This import tool can't retroactivity allow you to somehow have your subscribers give you I<consent> that they haven't given before> 
-and using this tool alone won't make your mailing list magically GDPR compliant. 
-It only moves the history of who was added to your mailing list, 
-and when. 
-
-The import tool also isn't perfect. 
+The import tool isn't perfect. 
 If your current mailing list had some sort of history where "confirmed-by-the-user" 
-(via Dada Mail's closed-loop opt-in system) subscriptions was not required, 
-think long and hard about using this tool on your mailing list at all.  
+(via Dada Mail's closed-loop opt-in system) subscriptions was I<not> required, 
+think long
+and hard about using this tool on your mailing list B<at all>.
+If there's absolutely no history of consent,
+there's really no reason to import that non-history.   
 
 But, 
 if you feel you've covered your bases on what the GDPR requires to have a user be a part of your mailing list, 
-it can be a valuable 
-tool at your disposal. 
+it can be a valuable tool at your disposal. 
 The tool exists as a list control panel plugin, 
 and may need to be enable at the time of an install/upgrade. 
 In the included Dada Mail Installer, 
 look for the plugin named, 
-B<usage_log_to_consent_activity> and check the option next to its name to have it installed along with the rest of Dada Mail. 
+B<usage_log_to_consent_activity> 
+and check the option next to its name to have it installed along with the rest of Dada Mail. 
 
 Once your install/upgrade is finished, 
 you may visit the plugin by logging into a mailing list, 
@@ -212,7 +236,10 @@ not to retroactively "fix" missing data!
 =head3 Command Line Interface
 
 If you're mailing list was very active and/or has been active for a very long time, 
-the plugin also has a command line interface: 
+this plugin may very time out on you. 
+To help with this problem, 
+this plugin also has a command line interface,
+and it is the prefered interface to use it: 
 
 Connect to the server you have Dada Mail installed, 
 and change into the "plugins" directory, where you'll find this plugin (usage_log_to_consent_activity)
@@ -282,6 +309,16 @@ as the history of what a consent was a particular date and time is important.
 They may be deleted, 
 but it's highly advised to NOT do this (unless you're setting things up, and moving things around),
 as there's not (yet) a mechanism in Dada Mail to ask for a change of consent from your subscribers. 
+
+=head2 New screen, "subscribe_landing"
+
+This screen is public, 
+and is what a recipient of an invitation message will be directed to, 
+after they click the button in the 
+invitation message itself. 
+This screen simply has a subscription form for your mailing list, 
+for a user to fill out.
+You may also simply link to this screen for any other user to subscribe to your mailing list. 
 
 =head2 Options to Track message analytics with data of subscriber (their email address) has been disabled. 
 
