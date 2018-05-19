@@ -81,7 +81,7 @@ use Email::Address;
 use Digest::MD5 qw(md5_hex);
 use MIME::Parser;
 use MIME::Entity;
-use Getopt::Long;
+use Getopt::Long; # well, that doesn't seem to be doing anything... 
 
 my $parser;
 my $test;
