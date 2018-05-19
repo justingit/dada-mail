@@ -150,6 +150,7 @@ privacy_policy mediumtext
 
 CREATE TABLE IF NOT EXISTS dada_consents  (
 consent_id INTEGER PRIMARY KEY AUTOINCREMENT,
+timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 list varchar(16),
 consent mediumtext
 );
