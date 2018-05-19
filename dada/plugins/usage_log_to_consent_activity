@@ -26,10 +26,66 @@ my $root_login;
 
 sub reset_globals { }
 
+run()
+  unless caller();
+
+
 sub run {
     my $q = shift;
     reset_globals();
-    return cgi_main($q);
+	
+	require CGI; 
+	
+	my $q = CGI->new; 
+	   $q->charset($DADA::Config::HTML_CHARSET);
+	
+    if ( !$ENV{GATEWAY_INTERFACE} ) {
+
+        my $inject;
+        my $run_list;
+        require Getopt::Long;
+		
+		my $cl_list; 
+		my $cl_consent; 
+		my $cl_privacy_policy; 
+		my $cl_verbose; 
+       
+	    Getopt::Long::GetOptions(
+            "list=s"           => \$cl_list,
+			"consent=s@"       => \$cl_consent, 
+			"privacy_policy"   => \$cl_privacy_policy,
+			"verbose"          => \$cl_verbose,
+        );
+		
+		$list = $cl_list; 
+		
+		if($cl_consent->[0]){
+			$q->param(
+			    -name  => 'consents',
+			    -value => $cl_consent,
+			);
+		}
+		if($cl_privacy_policy){ 
+			$q->param(
+			    -name  => 'add_privacy_policy',
+			    -value => 1,
+			);
+		}
+		if($cl_verbose){ 
+			$q->param(
+			    -name  => 'verbose',
+			    -value => 1,
+			);
+		}
+
+		my $r = process($q); 
+		print $r; 
+		exit; 
+		
+	}
+	else {
+		return cgi_main($q);
+	}
 }
 
 sub test_sub {
@@ -39,6 +95,7 @@ sub test_sub {
 sub cgi_main {
     my $q = shift;
 
+	
     my $prm = $q->param('prm') || 'cgi_default';
 	my $function = 'usage_log_to_consent_activity'; 
 	
@@ -53,8 +110,8 @@ sub cgi_main {
     my $li = $ls->get();
 
     my %Mode = (
-        'cgi_default'                => \&cgi_default,
-		'process'                    => \&process, 
+        'cgi_default' => \&cgi_default,
+		'process'     => \&process, 
     );
 
     if ( exists( $Mode{$prm} ) ) {
@@ -138,6 +195,7 @@ sub process {
 	    my $llr = $dals->log_line_report(
 	        {
 	            -line  => $l,
+				-list  => $list,
 	        }
 	    );
 	
@@ -255,7 +313,7 @@ sub process {
 			}
 		}
 	}
-	$r .= "Complete.";
+	$r .= "\n\nComplete.\n\n";
 	
     return ( {}, $r );
 
