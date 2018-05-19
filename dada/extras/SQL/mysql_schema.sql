@@ -164,7 +164,8 @@ CREATE TABLE IF NOT EXISTS dada_privacy_policies  (
 
 CREATE TABLE IF NOT EXISTS dada_consents  (
     consent_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	list                  varchar(16),
+	timestamp         TIMESTAMP DEFAULT NOW(),
+	list              varchar(16),
 	consent               mediumtext
 );
 
