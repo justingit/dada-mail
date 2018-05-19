@@ -3700,6 +3700,8 @@ sub list_options {
 
 sub subscribe_landing { 
 
+	 #how does this work for private and/or hidding lists? 
+	
     my $self = shift;
     my $q    = $self->query();
 	
