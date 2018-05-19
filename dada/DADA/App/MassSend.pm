@@ -1948,17 +1948,17 @@ sub list_invite {
             # DEV: Here I got again:
             $info->{email} = $pre_info->{email};
 
-            #my $new_fields = [];
-            #my $i          = 0;
-            #for (@$subscriber_fields) {
-            #    push( @$new_fields, { name => $_, value => $pre_info->{fields}->{$_} } );
-            #    $i++;    # and then, $i is never used, again?
-            #}
+            my $new_fields = [];
+            my $i          = 0;
+            for (@$subscriber_fields) {
+                push( @$new_fields, { name => $_, value => $pre_info->{fields}->{$_} } );
+                $i++;    # and then, $i is never used, again?
+            }
 
-            #$info->{fields} = $new_fields;
+            $info->{fields} = $new_fields;
 
             #And... Then this!
-            #$info->{csv_info} = $a;
+            $info->{csv_info} = $a;
             
 			# ? 
 			$info->{'list_settings.invites_prohibit_reinvites'} = $ls->param('invites_prohibit_reinvites');
@@ -2029,29 +2029,29 @@ sub list_invite {
         }
 
         for my $a (@address) {
-            my $info = $self->{lh_obj}->csv_to_cds($a);
+			my $info = $self->{lh_obj}->csv_to_cds($a);			
             $self->{lh_obj}->add_subscriber(
                 {
                     -email => $info->{email},
-
                     # -fields => $info->{fields},
                     -type => 'invitelist',
                 }
             );
 
-            # There's a good reason we're not passing anything in -fields... right?
-            $self->{lh_obj}->add_subscriber(
-                {
-                    -email => $info->{email},
-
-                    # -fields     => $info->{fields},
-                    -type       => 'sub_confirm_list',
-                    -dupe_check => {
-                        -enable  => 1,
-                        -on_dupe => 'ignore_add',
-                    },
-                }
-            );
+			# We don't do this, anymore: 
+            ## There's a good reason we're not passing anything in -fields... right?
+            #$self->{lh_obj}->add_subscriber(
+            #    {
+            #        -email => $info->{email},
+            #
+            #        # -fields     => $info->{fields},
+            #        -type       => 'sub_confirm_list',
+            #        -dupe_check => {
+            #            -enable  => 1,
+            #            -on_dupe => 'ignore_add',
+            #        },
+            #    }
+            #);
 
             # Should this happen for TESTS as well?!
             $self->{lh_obj}->add_subscriber(
