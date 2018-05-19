@@ -365,13 +365,20 @@
 	<div  class="content tab-title" id="subscriber_history_tab"> 
 		
 		
-		<div class="clearfix">
-			<ul class="button-group right">
-				<li>
-					<input type="submit" value="Export Subscriber Activity (.csv)" class="success button" >
-				</li>
-			</ul>
-		</div>
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+	
+			<input type="hidden" name="flavor" value="mailing_list_history" > 
+			<input type="hidden" name="mode"   value="export_csv" > 				
+			<input type="hidden" name="email"  value="<!-- tmpl_var email escape="HTML" -->" >
+		
+			<div class="clearfix">
+				<ul class="button-group right">
+					<li>
+						<input type="submit" value="Export Subscriber Activity (.csv)" class="success button" >
+					</li>
+				</ul>
+			</div>
+		</form>
 		
 		<div id="mailing_list_history_loading"></div>
 		<div id="mailing_list_history"></div>

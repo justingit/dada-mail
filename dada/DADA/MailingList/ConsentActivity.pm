@@ -355,13 +355,10 @@ sub consent_history_report {
 			  
 			  timestamp
 	          email
-			  
-			  ip
 	          
 			  list
 	          action
 			  
-
 			  source
 	          source_location
 
