@@ -2590,8 +2590,8 @@ sub subscription_form {
     my ($args) = @_; 
     
 	
-	use Data::Dumper; 
-	warn Dumper($args);
+	#use Data::Dumper; 
+	#warn Dumper($args);
 	
 	
     my $list = undef; 
