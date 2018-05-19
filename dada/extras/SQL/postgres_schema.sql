@@ -148,7 +148,7 @@ action VARCHAR(225) NOT NULL,
 timestamp INT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS dada_email_message_previews (
+CREATE TABLE dada_email_message_previews (
 id serial not null UNIQUE,
 list varchar(16),
 created_timestamp TIMESTAMP DEFAULT NOW(),
@@ -157,20 +157,21 @@ plaintext text,
 html text
 );
 
-CREATE TABLE IF NOT EXISTS dada_privacy_policies  (
+CREATE TABLE dada_privacy_policies  (
     privacy_policy_id serial not null UNIQUE PRIMARY KEY,
 	timestamp TIMESTAMP DEFAULT NOW(),
 	list varchar(16),
 	privacy_policy text
 );
 
-CREATE TABLE IF NOT EXISTS dada_consents  (
+CREATE TABLE dada_consents  (
     consent_id serial not null UNIQUE PRIMARY KEY,
+	timestamp             TIMESTAMP DEFAULT NOW(),
 	list                  varchar(16),
 	consent               text
 );
 
-CREATE TABLE IF NOT EXISTS dada_consent_activity  (	
+CREATE TABLE dada_consent_activity  (	
 	consent_activity_id   serial not null UNIQUE PRIMARY KEY,
 	remote_addr           varchar(255), 
 	timestamp             TIMESTAMP DEFAULT NOW(),
