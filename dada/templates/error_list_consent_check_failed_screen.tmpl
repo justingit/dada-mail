@@ -1,1 +1,14 @@
-this is what the error_list_consent_check_failed_screen.tmpl looks like. 
+<!-- begin error_list_consent_check_failed_screen.tmpl --> 
+
+<!-- tmpl_set name="title" value="Missing Fields" -->
+<!-- tmpl_set name="show_profile_widget" value="0" -->
+
+<!-- tmpl_unless chrome --> 
+	<h3><!-- tmpl_var title --></h3>
+<!-- /tmpl_unless --> 
+
+Please double-check the information you've submitted - you may not have filled out all the required fields.
+
+
+<!-- end error_list_consent_check_failed_screen.tmpl --> 
+
