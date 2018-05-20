@@ -1971,8 +1971,8 @@ sub complete_unsubscription {
         $lh->remove_subscriber(
             {
                 -email        => $email,
-                -type         => 'list'
-				-consent_vars => $args-{-consent_vars},
+                -type         => 'list',
+				-consent_vars => $args->{-consent_vars},
             }
         );
 
@@ -2008,7 +2008,9 @@ sub complete_unsubscription {
 		   $r->unsubscribe_log(
                 {
                     -mid   => $mid,
-                    -email => $email,
+                    ($ls->param('tracker_track_email') == 1)
+					 ? (-email => $email) 
+					 : ()
                 }
             );
 
