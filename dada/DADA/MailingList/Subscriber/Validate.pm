@@ -289,20 +289,32 @@ sub subscription_check {
 			require DADA::MailingList::Consents; 
 			my $con           = DADA::MailingList::Consents->new; 
 			my $list_consents = $con->give_me_all_consents($ls); 
+			
 			my $list_consent_ids = [];
+			my $any = 0; 
 			for(@$list_consents){ 
-				push(@$list_consent_ids, $_->{id})
+				next if ! exists($_->{id});
+				push(@$list_consent_ids, $_->{id}); 
+				$any++; 
 			}
-			my $passed_consent = {}; 
-			for(@{$args->{-consent_ids}}){ 
-				$passed_consent->{$_} = 1; 
-			}
-			for(@$list_consent_ids){ 
-				if(!exists($passed_consent->{$_})){ 
-					$errors->{list_consent_check_failed} = 1; 
-	                $status = 0;
-	                last;
+			if($any >= 1){ 		
+				my $passed_consent = {}; 
+				for(@{$args->{-consent_ids}}){ 
+					$passed_consent->{$_} = 1; 
+				}				
+				for(@$list_consent_ids){ 
+					if(!exists($passed_consent->{$_})){ 
+						$errors->{list_consent_check_failed} = 1; 
+		                $status = 0;
+		                last;
+					}
 				}
+				if($status == 1){ 
+					delete($errors->{list_consent_check_failed}); 
+				}
+			}
+			else { 
+				delete($errors->{list_consent_check_failed}); 
 			}
 		}
 	}
@@ -427,6 +439,9 @@ sub subscription_check {
                 $status = 0;
                 last;
             }
+#			else { 
+#				delete($errors->{$error_name}); # don't return it, if it's not an error?
+#			}
         }
         elsif(keys %{$errors->{$error_name}} ) { # invalid_profile_fields
             $status = 0;             
@@ -540,11 +555,11 @@ sub sfs_check {
 		); 
 	}
 	if($r_ip == 1){ 
-		warn 'sfs_check FAIL ip lookup: ' . $ENV{'REMOTE_ADDR'}
+		warn 'sfs_check FAIL ip lookup: ' . anonymize_ip($ENV{'REMOTE_ADDR'})
 			if $t; 
 	}
 	else { 
-		warn 'sfs_check PASS ip lookup: ' . $ENV{'REMOTE_ADDR'}
+		warn 'sfs_check PASS ip lookup: ' . anonymize_ip($ENV{'REMOTE_ADDR'})
 			if $t; 
 	}
 	

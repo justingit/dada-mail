@@ -3460,7 +3460,7 @@ sub _make_token {
                     list        => $args->{-list},
                     flavor      => 'sub_confirm',
                     type        => 'list',
-                    remote_addr => $ENV{REMOTE_ADDR},
+                    remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
                     invite      => 1,
                 }
             }

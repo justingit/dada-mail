@@ -362,7 +362,7 @@ sub send_abuse_report {
                 type        => 'list',
                 mid         => $args->{-mid},
                 flavor      => 'unsub_request_approve',
-                remote_addr => $ENV{REMOTE_ADDR},
+                remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
             },
             -remove_previous => 0,
         }
@@ -904,7 +904,7 @@ sub send_owner_happenings {
                     num_subscribers => $num_subscribers,
                     status          => $status,
                     note            => $args->{-note},
-                    REMOTE_ADDR     => $ENV{REMOTE_ADDR},
+                    REMOTE_ADDR     => anonymize_ip($ENV{REMOTE_ADDR}),
 
                 },
                 -list_settings_vars_param => { -list => $self->list },

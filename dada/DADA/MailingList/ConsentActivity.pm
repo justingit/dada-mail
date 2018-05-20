@@ -60,9 +60,10 @@ sub start_consent {
 	require DADA::MailingList::PrivacyPolicyManager;
 	my $ppm = DADA::MailingList::PrivacyPolicyManager->new; 
 	my $pp_data = $ppm->latest_privacy_policy({-list => $args->{-list}});
+	
 	if(!exists($pp_data->{privacy_policy})){ 
 		require DADA::MailingList::Settings; 
-		my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
+		my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 		
 		my $new_pp_id = $ppm->add(
 			{ 
 				-list           => -list => $args->{-list}, 
@@ -114,6 +115,8 @@ sub ch_record {
 	
 	if(!exists($args->{-remote_addr},)){ 
 		$args->{-remote_addr} = $self->remote_addr;
+		$args->{-remote_addr} = anonymize_ip($args->{-remote_addr}); 
+		
 	}
 
 	if(!exists($args->{-action},)){ 
@@ -236,10 +239,10 @@ sub remote_addr {
     if(exists($ENV{HTTP_X_FORWARDED_FOR})){ 
         # http://en.wikipedia.org/wiki/X-Forwarded-For
         my ($client, $proxies) = split(',', $ENV{HTTP_X_FORWARDED_FOR}, 2); 
-        return $client; 
+        return anonymize_ip($client); 
     }
     else { 
-        return $ENV{'REMOTE_ADDR'} || '127.0.0.1';
+        return anonymize_ip($ENV{'REMOTE_ADDR'}) || '127.0.0.1';
     }
 }
 

@@ -99,21 +99,36 @@ sub Create {
     }
 
     $ls->save({ -settings => $args->{ -settings } });
-
-	# Consent!
-	require DADA::MailingList::Consents; 
-	my $dmlc = DADA::MailingList::Consents->new; 
-	my $consent_id = $dmlc->add({ 
-		-list    => $args->{ -list }, 
-		-consent => $consent, 
-	});
-	my $frozen_consent = $dmlc->freezish_for_saving([$consent_id]); 
-    $ls->save({ 
-		-settings => {
-			list_consent_ids => $frozen_consent,
-		}
-	});
-	#/Consent!
+		
+	if(
+		  defined($consent) 
+		&& length($consent) > 0
+	) {
+		# Consent!
+		require DADA::MailingList::Consents; 
+		my $dmlc = DADA::MailingList::Consents->new; 
+		my $consent_id = $dmlc->add({ 
+			-list    => $args->{ -list }, 
+			-consent => $consent, 
+		});
+		my $frozen_consent = $dmlc->freezish_for_saving([$consent_id]); 
+	    $ls->save({ 
+			-settings => {
+				list_consent_ids => $frozen_consent,
+			}
+		});
+		#/Consent!
+	}
+	
+	# Privacy Policy! 
+	require DADA::MailingList::PrivacyPolicyManager; 
+	my $ppm = DADA::MailingList::PrivacyPolicyManager->new; 
+	$ppm->add(
+				{ 
+					-list           => $args->{-list}, 
+					-privacy_policy => $args->{ -settings }->{privacy_policy},
+				}
+			); 
 	
     DADA::App::Guts::available_lists( -clear_cache => 1 );
 

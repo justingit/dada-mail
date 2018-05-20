@@ -108,6 +108,8 @@ require Exporter;
   
   naive_csv_split
   
+  anonymize_ip
+  
   
 );
 
@@ -3397,6 +3399,35 @@ sub naive_csv_split {
     return @cells;
     
 }
+
+sub anonymize_ip {
+
+	my $ip = shift; 
+	
+	
+		if ($ip =~ m/([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/) {
+			$ip = $1  . '.' . $2 . '.' . '0' . '.' . '0';
+		}
+		elsif($ip =~ m/\:/){ 
+			try {		
+				require Net::IP;
+				my $ipv6 = new Net::IP ($ip);
+				$ip = $ipv6->ip($ip);
+		
+				my @parts = split(':', $ip);
+				$parts[-1] = '0000'; 
+				$parts[-2] = '0000';
+				$parts[-3] = '0000';
+				$ip = join(':', @parts);  
+			} catch { 
+				warn $_;
+				return $ip; 
+			}
+		}
+	return $ip; 
+}
+
+
 
 sub commify {
     my $input = shift;

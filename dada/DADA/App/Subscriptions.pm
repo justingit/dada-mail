@@ -98,15 +98,15 @@ sub token {
             $data->{data}->{invite} = 0;
         }
         if ( exists( $data->{data}->{remote_addr} ) ) {
-            if (   $data->{data}->{remote_addr} ne $ENV{REMOTE_ADDR}
+            if (   anonymize_ip($data->{data}->{remote_addr}) ne anonymize_ip($ENV{REMOTE_ADDR})
                 && $data->{data}->{invite} != 1 )
             {
                 require Data::Dumper;
                 carp 'Token\'s env REMOTE_ADDR ('
-                  . $data->{data}->{remote_addr}
+                  . anonymize_ip($data->{data}->{remote_addr})
                   . ') is different than current referer ('
-                  . $ENV{REMOTE_ADDR} . ')';
-                carp "Additional Information: " . Data::Dumper::Dumper($data);
+                  . anonymize_ip($ENV{REMOTE_ADDR}) . ')';
+                #carp "Additional Information: " . Data::Dumper::Dumper($data);
                 if ( $q->param('simple_test') ne 'pass' ) {
                     return({},  user_error(
                         {
@@ -440,7 +440,7 @@ sub subscribe {
                         list        => $list,
                         type        => 'list',
                         flavor      => 'sub_confirm',
-                        remote_addr => $ENV{REMOTE_ADDR},
+                        remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
                     },
                     -remove_previous => 1,
                 }
@@ -688,7 +688,7 @@ sub subscribe {
                         list          => $list,
                         type          => 'list',
                         flavor        => 'sub_confirm',
-                        remote_addr   => $ENV{REMOTE_ADDR},
+                        remote_addr   => anonymize_ip($ENV{REMOTE_ADDR}),
 						consent_token => $c_token, 
                     },
                     -remove_previous => 1,
@@ -1360,7 +1360,7 @@ sub subscription_approval_step {
                 list        =>  $ls->param('list'),
                 type        => 'list',
                 flavor      => 'sub_request_approve',
-                remote_addr => $ENV{REMOTE_ADDR},
+                remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
             },
             -remove_previous => 1,
         }
@@ -1373,7 +1373,7 @@ sub subscription_approval_step {
                 list        => $ls->param('list'),
                 type        => 'list',
                 flavor      => 'sub_request_deny',
-                remote_addr => $ENV{REMOTE_ADDR},
+                remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
             },
             -remove_previous => 1,
         }
@@ -1850,7 +1850,7 @@ sub _create_report_abuse_token {
                     type        => 'list',
                     flavor      => 'report_abuse',
                     mid         => $mid, 
-                    remote_addr => $ENV{REMOTE_ADDR},
+                    remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
                 },
                 -remove_previous => 1,
             }
@@ -2155,7 +2155,7 @@ sub pl_unsubscription_request {
                     type        => 'list',
                     mid         => $mid, 
                     flavor      => 'unsub_request_approve',
-                    remote_addr => $ENV{REMOTE_ADDR},
+                    remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
                 },
                 -remove_previous => 1,
             }
@@ -2169,7 +2169,7 @@ sub pl_unsubscription_request {
                     type        => 'list',
                     mid         => $mid, 
                     flavor      => 'unsub_request_deny',
-                    remote_addr => $ENV{REMOTE_ADDR},
+                    remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
                 },
                 -remove_previous => 1,
             }

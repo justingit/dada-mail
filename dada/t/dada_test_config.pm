@@ -89,7 +89,7 @@ use strict;
 sub test_list_vars { 
 
 
-    my $foo = { 
+    my $test_list_vars = { 
     
             list             => 'dadatest', 
             list_name        => 'Dada Test List' . $UTF8_STR, 
@@ -102,7 +102,7 @@ sub test_list_vars {
     
     };
 
-    return $foo; 
+    return $test_list_vars; 
 
 }
 
@@ -352,7 +352,7 @@ my @statements = split(';', $sql);
 		my $message_drafts_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{message_drafts_table};
 		my $rate_limit_hits_table               = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{rate_limit_hits_table}; 
 		my $email_message_previews_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{email_message_previews_table}; 
-		my $privacy_policies_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{email_message_previews_table};
+		my $privacy_policies_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{privacy_policies_table};
 		my $consents_table                      = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{consents_table};
 		my $consent_activity_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{consent_activity_table};
 		
@@ -430,6 +430,9 @@ sub destroy_MySQL_db {
 		message_drafts_table
 		rate_limit_hits_table
 		email_message_previews_table
+		privacy_policies_table 
+		consents_table         
+		consent_activity_table 
 		)){ 
 			
 #			carp "removing: " . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{$_}; 
@@ -501,7 +504,7 @@ my @statements = split(';', $sql);
 		my $message_drafts_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{message_drafts_table};
 		my $rate_limit_hits_table               = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{rate_limit_hits_table}; 
 		my $email_message_previews_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{email_message_previews_table}; 
-		my $privacy_policies_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{email_message_previews_table};
+		my $privacy_policies_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{privacy_policies_table};
 		my $consents_table                      = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{consents_table};
 		my $consent_activity_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{consent_activity_table};
 	
@@ -565,6 +568,11 @@ sub destroy_PostgreSQL_db {
 		confirmation_tokens_table
 		message_drafts_table
 		rate_limit_hits_table
+		email_message_previews_table
+		privacy_policies_table 
+		consents_table         
+		consent_activity_table 
+		
 		)){ 
 	        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{$_})
 	            or carp "cannot do statement! $DBI::errstr\n";  

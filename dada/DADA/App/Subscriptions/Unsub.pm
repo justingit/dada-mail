@@ -81,7 +81,7 @@ sub unsub_link {
 				type        => 'list', 
 				flavor      => 'unsub_confirm', 
 				 mid        => $args->{-mid},
-#				remote_addr => $ENV{REMOTE_ADDR}, 
+#				remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
 				email_hint  => DADA::App::Guts::anonystar_address_encode($args->{-email}),
 				source      => $args->{-source}, 
 			},

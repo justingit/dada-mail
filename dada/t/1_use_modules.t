@@ -189,6 +189,11 @@ SKIP: {
 }
 
 
+BEGIN{ use_ok('DADA::MailingList::ConsentActivity'); }
+BEGIN{ use_ok('DADA::MailingList::Consents'); }
+BEGIN{ use_ok('DADA::MailingList::PrivacyPolicyManager'); }
+
+
 BEGIN{ use_ok('DADA::MailingList::Subscribers'); }
 BEGIN{ use_ok('DADA::MailingList::Subscriber'); }
 

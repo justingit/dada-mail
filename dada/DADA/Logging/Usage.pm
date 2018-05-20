@@ -60,7 +60,7 @@ sub mj_log {
 	my $action         = shift || 'undefined'; 
 	my $details        = shift || ""; # this isn't mandatory i guess 
 	my $time           = scalar(localtime());
-	my $remote_address = $ENV{'REMOTE_ADDR'} || "";
+	my $remote_address = anonymize_ip($ENV{REMOTE_ADDR}) || "";
 	
     # HACK: This is the default path, and it leads to much confusion. 
 	return if $DADA::Config::PROGRAM_USAGE_LOG eq '/home/youraccount/dada_files/dada_usage.txt';

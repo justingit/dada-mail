@@ -297,7 +297,9 @@ sub setup {
 
         # call this in your setup routine to set
         my $rate_limit = $self->rate_limit();
-        $rate_limit->identity_callback( sub { return $ENV{REMOTE_ADDR} } );
+		my $remote_addr = anonymize_ip($ENV{REMOTE_ADDR}); 
+		
+        $rate_limit->identity_callback( sub { return $remote_addr } );
 
         # set the database handle to use
         $rate_limit->dbh($dbh);
@@ -12436,7 +12438,7 @@ sub email_password {
         $log->mj_log(
             $list,
             'List Password Reset',
-            "remote_host:$ENV{REMOTE_HOST}, ip_address:$ENV{REMOTE_ADDR}"
+            "remote_host:$ENV{REMOTE_HOST}, ip_address:" . anonymize_ip($ENV{REMOTE_ADDR})
         ) if $DADA::Config::LOG{list_lives};
 
         $self->header_type('redirect');
@@ -12529,7 +12531,7 @@ sub email_password {
         $log->mj_log(
             $list,
             'Sent Password Change Confirmation',
-            "remote_host:$ENV{REMOTE_HOST}, ip_address:$ENV{REMOTE_ADDR}"
+            "remote_host:$ENV{REMOTE_HOST}, ip_address:" . anonymize_ip($ENV{REMOTE_ADDR})
         ) if $DADA::Config::LOG{list_lives};
 
         my $scrn = DADA::Template::Widgets::wrap_screen(

@@ -259,7 +259,7 @@ sub r_log {
         $args->{-remote_addr} = $remote_address;
     }
     else {
-        $remote_address = $args->{-remote_addr};
+        $remote_address = anonymize_ip($args->{-remote_addr});
     }
 
     if ( !exists( $args->{-email} ) ) {
@@ -360,7 +360,11 @@ sub r_log {
             $self->_update_profile_fields(
                 {
                     -email      => $args->{-email},
-                    -ip_address => $remote_address, 
+                   # -ip_address => $remote_address, 
+				   -ip_address => anonymize_ip($remote_address),
+				   
+				   
+				   
                 }
             ); 
         } catch { 
@@ -641,6 +645,7 @@ sub mass_mailing_event_log {
         $remote_address = $self->remote_addr;
     }
     else {
+		$args->{-remote_addr} = anonymize_ip($args->{-remote_addr}); 
         $remote_address = $args->{-remote_addr};
     }
     
@@ -712,7 +717,8 @@ sub mass_mailing_event_log {
 	            $self->_update_profile_fields(
 	                {
 	                    -email      => $args->{-email},
-	                    -ip_address => $remote_address, 
+	                    #-ip_address => $remote_address, 
+						-ip_address => anonymize_ip($remote_address), 
 	                }
 	            ); 
 	        } catch { 
@@ -3064,10 +3070,10 @@ sub remote_addr {
     if(exists($ENV{HTTP_X_FORWARDED_FOR})){ 
         # http://en.wikipedia.org/wiki/X-Forwarded-For
         my ($client, $proxies) = split(',', $ENV{HTTP_X_FORWARDED_FOR}, 2); 
-        return $client; 
+        return anonymize_ip($client); 
     }
     else { 
-        return $ENV{'REMOTE_ADDR'} || '127.0.0.1';
+        return anonymize_ip($ENV{'REMOTE_ADDR'}) || '127.0.0.1';
     }
 }
 
