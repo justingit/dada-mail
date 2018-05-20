@@ -18,6 +18,25 @@ please contact us directly.
  
 B<Don't put off upgrading if you are required to comply with the GDPR!> 
 
+=head2 GDPR Checklist 
+
+If you're upgrading your installation of Dada Mail, here are B<two> things you will definetely want to make sure you: 
+
+=head3 Set up Consents 
+
+=head3 Double Check Your Privacy Policy
+
+Optionaly, 
+
+=head3 Migrate Subscription History
+
+You may also want to migrate any current subscription history data into Dada Mail's new system. 
+
+=head3 Do a Reconfirmation Campaign
+
+If you feel your current subscribers haven't been subscribed in a way that meets the guidelines of the GDPR, 
+you will need to re-subscribe them to a brand new mailing list. 
+
 Features we talk about in this doc. made their first appearance in version 11 of Dada Mail (released May, 2018).
 
 =head1 Consent under GDPR
@@ -340,6 +359,19 @@ You may enable/disable this feature from within: B<Plugins/Extensions: Tracker>:
 
 Check the option labeled, B<Track with email addresses>, under, B<Preferences> to enable. 
 Uncheck to disable. 
+
+=head2 IP Addresses logged are now anonymized
+
+Most IP Addresses logged by Dada Mail also include a timestamp, 
+which can be enough information to be "personal". 
+Because of that, 
+IP Addresses are anonymized. 
+This may make things like geo ip mapped data by less exact as before. 
+There's no way to enable/disable this anonymizing, 
+but you may see the code that does the anonymizing in, 
+C<DADA::App::Guts>, 
+look for the subroutine named, 
+C<anonymize_ip>
 
 =head2 "Skip subscription confirmation if the subscriber already has a Dada Mail Profile" option removed
 
