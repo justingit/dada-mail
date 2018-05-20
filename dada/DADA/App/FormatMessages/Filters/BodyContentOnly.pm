@@ -91,7 +91,7 @@ sub filter {
         }
         else {
 
-            warn 'HTML doc passed with no body tag?!';
+           # warn 'HTML doc passed with no body tag?!';
             return $tmp;
         }
     }
