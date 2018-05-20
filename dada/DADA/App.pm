@@ -3731,7 +3731,7 @@ sub subscribe_landing {
             -expr           => 1,
             -with           => 'list',
 			-vars           => {
-				#can_use_JSON      => scalar DADA::App::Guts::can_use_JSON(),
+				can_use_JSON      => scalar DADA::App::Guts::can_use_JSON(),
 				subscription_form => $subscription_form,
 			},
             -list_settings_vars_param => {

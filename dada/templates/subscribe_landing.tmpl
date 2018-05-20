@@ -1,10 +1,17 @@
 <!-- begin subscription_form.tmpl -->
 <!-- tmpl_set name="title" value="Subscribe to, <!-- tmpl_var list_settings.list_name -->" -->
+<!-- tmpl_set name="load_colorbox" value="1" -->
 
 <div class="row">
 	<div class="large-8 medium-8 large-centered medium-centered columns">
-		<div class="panel">
-			<!-- tmpl_var subscription_form -->
+		<div class="panel">			
+			<!-- tmpl_if can_use_JSON -->
+				<div id="modal_subscribe_form">
+			<!-- tmpl_else -->
+				<div id="modal_subscribe_form_disabled">
+			<!-- /tmpl_if -->
+				<!-- tmpl_var subscription_form -->
+			</div>
 		</div>
 	</div>
 </div> 

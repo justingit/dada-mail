@@ -242,7 +242,7 @@ my @statements = split(';', $sql);
 		my $rate_limit_hits_table               = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{rate_limit_hits_table}; 
 		my $email_message_previews_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{email_message_previews_table}; 
 		
-		my $privacy_policies_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{email_message_previews_table};
+		my $privacy_policies_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{privacy_policies_table};
 		my $consents_table                      = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{consents_table};
 		my $consent_activity_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{consent_activity_table};
 		
