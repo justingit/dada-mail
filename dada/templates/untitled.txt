@@ -1,7 +1,0 @@
-<!-- begin list_privacy_policy.tmpl -->
-
-<h1>Privacy Policy for, <!-- tmpl_var list_settings.list_name --></h1>
-<p>
-		<!-- tmpl_var list_settings.privacy_policy -->
-</p>
-<!-- end list_privacy_policy.tmpl -->
