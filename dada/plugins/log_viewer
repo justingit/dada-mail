@@ -29,7 +29,7 @@ $Plugin_Config->{Plugin_Name} = 'Log Viewer';
 $Plugin_Config->{tail_command} = 'tail';
 
 # use some of those Modules
-use DADA::Config 10.0.0;
+use DADA::Config 11.0.0;
 use DADA::Template::HTML;
 use DADA::App::Guts;
 use DADA::MailingList::Settings;

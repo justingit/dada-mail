@@ -234,10 +234,10 @@ $PROFILE_OPTIONS //= {
     features => {
         register                   => 0,
         password_reset             => 1,
-        profile_fields             => 1,
+        profile_fields             => 0,
         mailing_list_subscriptions => 1,
-        protected_directories      => 1,
-        update_email_address       => 1,
+        protected_directories      => 0,
+        update_email_address       => 0,
         change_password            => 1,
         delete_profile             => 0,
     },
@@ -1709,7 +1709,7 @@ $MAIL_VERP_SEPARATOR //= '-';
 
 
 $VERSION = 11.0.0;
-$VER     = '11.0.0 Alpha 05/17/18';
+$VER     = '11.0.0 Stable 05/21/18';
 
 #
 #

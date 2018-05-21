@@ -35,7 +35,7 @@ use Carp qw(cluck);
 # that are set here are *optional*
 #---------------------------------------------------------------------#
 
-use DADA::Config 10.0.0;
+use DADA::Config 11.0.0;
 
 use Fcntl qw(
   O_CREAT
