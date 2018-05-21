@@ -2214,6 +2214,7 @@ sub create_probable_missing_tables {
             $table_name = $create_table;
             $table_name =~ m/CREATE TABLE IF NOT EXISTS (.*?) \(/;
             $table_name = $1;
+			$table_name = strip($table_name);
         }
 
         if ( $tables_to_create->{$table_name} == 1 ) {
