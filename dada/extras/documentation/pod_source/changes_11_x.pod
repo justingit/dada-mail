@@ -1,0 +1,13 @@
+=pod
+
+=encoding utf-8
+
+=head1 11.0.0
+
+=head2 Major Changes: GDPR Compliance
+
+This version has been released almost exclusively to help users/administrators of Dada Mail to more 
+easily comply with the GDPR. 
+More information about what has changed can be found in the included L<GDRP Guide for Dada Mail|http://dadamailproject.com/d/gdpr_guide.pod.html>
+
+=cut
