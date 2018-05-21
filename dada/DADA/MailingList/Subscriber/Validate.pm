@@ -450,10 +450,10 @@ sub subscription_check {
         }
     }
     
-	#if($t){ 
+	if($t){ 
 		require Data::Dumper; 
 		warn 'subscription_check returning: ' . Data::Dumper::Dumper({status => $status, errors => $errors});
-		#}
+	}
     return ( $status, $errors );
 
 }
