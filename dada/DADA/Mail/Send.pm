@@ -3324,12 +3324,10 @@ sub _mail_merge {
         }
     );
 
-    $labeled_data{'list.confirmation_token'} =
-      $confirmation_token;    # list invites? Messed up.
+    $labeled_data{'list.confirmation_token'} =  $confirmation_token;    # list invites? Messed up.
 	  
 	  
-    $labeled_data{'list_unsubscribe_link'} = $DADA::Config::PROGRAM_URL . '/t/'
-      . $labeled_data{'list.confirmation_token'} . '/';
+    $labeled_data{'list_unsubscribe_link'} = $DADA::Config::PROGRAM_URL . '/t/' . $labeled_data{'list.confirmation_token'} . '/';
 
     my $merge_fields = $self->{merge_fields};
 
@@ -3451,20 +3449,20 @@ sub _make_token {
     my $token;
 
     if ( $self->list_type eq 'invitelist' ) {
-
-        # this is to confirm a subscription
-        $token = $self->child_ct_obj->save(
-            {
-                -email => $args->{-email},
-                -data  => {
-                    list        => $args->{-list},
-                    flavor      => 'sub_confirm',
-                    type        => 'list',
-                    remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
-                    invite      => 1,
-                }
-            }
-        );
+		return undef; 
+        ## this is to confirm a subscription
+        #$token = $self->child_ct_obj->save(
+         #   {
+          #      -email => $args->{-email},
+           #     -data  => {
+            #        list        => $args->{-list},
+             #       flavor      => 'sub_confirm',
+              #      type        => 'list',
+               #     remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
+                #    invite      => 1,
+                #}
+           # }
+        #);
     }
     else {
         my $token_type = 'unsub_confirm';
