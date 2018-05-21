@@ -51,7 +51,8 @@ sub add {
     }
 
     if ( !exists( $args->{-privacy_policy} ) ) {
-        croak '-privacy_policy is required!';
+        carp 'privacy_policy is required!';
+		return undef; 
     }
 
     my $query =
