@@ -3,8 +3,15 @@
  <input type="hidden" name="list"   id="ddm_list"   value="<!-- tmpl_var list_settings.list -->"> 
  <label for="email" >
 	 Email
-	 <input type="text" name="email" id="email" value="" placeholder="user@example.com (required)">
+	 <input 
+	 	type="text" 
+		name="email" 
+		id="email" 
+		value="" 
+		placeholder="user@example.com (required)"
+	>
  </label>
+ <br>
 <!-- tmpl_if show_fields --> 
 <!-- tmpl_if subscriber_fields --> 
 <!-- tmpl_loop subscriber_fields -->
@@ -14,11 +21,35 @@
 <!-- tmpl_else --> 
 <!-- tmpl_var name escape=HTML --> 
 <!-- /tmpl_if --> 
-<input type="text" name="<!-- tmpl_var name escape=HTML -->" id="ddm_<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var given_value escape=HTML -->" <!-- tmpl_if comment -->placeholder="(required)"<!-- /tmpl_if -->>
+<input 
+	type="text" 
+	name="<!-- tmpl_var name escape=HTML -->"
+	id="ddm_<!-- tmpl_var name escape=HTML -->"
+	value="<!-- tmpl_var given_value escape=HTML -->"
+>
 </label>
+<br>
 <!-- /tmpl_loop -->
 <!-- /tmpl_if -->
 <!-- /tmpl_if --> 
+
+<!-- tmpl_if list_consents -->
+<!-- tmpl_loop list_consents -->
+<label for="consent_<!-- tmpl_var id -->"> 
+	<input 
+		type="checkbox" 
+		class="list_consents"
+		name="consent_<!-- tmpl_var id -->" 
+		value="<!-- tmpl_var id -->"
+		id="consent_<!-- tmpl_var id -->"
+		required="required"
+	>
+   <!-- tmpl_var consent escape="HTML" --> 
+</label>
+<br>
+<!-- /tmpl_loop -->
+<!-- /tmpl_if -->
+
 <!-- tmpl_if recaptcha_html --> 
 <!-- tmpl_var recaptcha_html -->
 <!-- tmpl_if add_recaptcha_js -->
@@ -26,4 +57,16 @@
 <!-- /tmpl_if -->
 <!-- /tmpl_if -->
 <input type="submit" class="button" value="Subscribe">
+
+<!-- tmpl_unless list_settings.private_list -->
+<br>
+Unsubscribe at Anytime
+| 
+<a 
+href="<!-- tmpl_var S_PROGRAM_URL -->/privacy_policy/<!-- tmpl_var list_settings.list -->/" 
+target="_blank"
+> 
+Privacy Policy
+</a>
+<!-- /tmpl_unless -->
 </form>
