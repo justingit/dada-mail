@@ -9087,12 +9087,11 @@ sub preview_jquery_plugin_subscription_form {
             -vars   => {
                 subscription_form => DADA::Template::Widgets::subscription_form(
                     {
-                        -list          => $list,
-                        -ignore_cgi    => 1,
-                        -show_fieldset => 0,
-                        -subscription_form_id =>
-                          'dada_mail_modal_subscription_form', 
-  						-add_recaptcha_js => 1,
+                        -list                 => $list,
+                        -ignore_cgi           => 1,
+                        -show_fieldset        => 0,
+                        -subscription_form_id => 'dada_mail_modal_subscription_form', 
+  						-add_recaptcha_js     => 1,
                     }
                 )
             }
