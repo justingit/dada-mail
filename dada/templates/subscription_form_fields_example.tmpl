@@ -62,6 +62,44 @@
 					</tr>
 
 <!-- /tmpl_loop -->
+	
+		<!-- tmpl_if list_consents -->
+		    <!-- tmpl_loop list_consents -->
+
+			<tr>
+				<td>
+					<strong>
+						consent_<!-- tmpl_var id -->
+				
+					</strong> 
+					<br>
+					<br>
+					(checkbox)
+				</td>
+				<td>
+					<!-- tmpl_var id -->
+					<br>
+					<br>
+					<strong>Label:</strong>
+			
+			
+			
+
+				
+				            
+						   <em>
+							   <!-- tmpl_var consent --> 
+						   </em>
+						</td>
+					</tr>
+
+		    <!-- /tmpl_loop -->
+		<!-- /tmpl_if -->				
+					
+					
+					
+					
+					
 <!-- tmpl_if recaptcha_html --> 
 
 					<tr>
