@@ -7048,14 +7048,14 @@ sub _upload_that_file {
 
     # warn ' $outfile ' . $outfile;
 
-    open( OUTFILE, '>', $outfile )
+    open( OUTFILE, '>:encoding(UTF-8)', $outfile )
       or die( "can't write to " . $outfile . ": $!" );
 
     while ( my $bytesread = read( $fh, my $buffer, 1024 ) ) {
 
-        # warn $buffer;
-
-        print OUTFILE $buffer;
+		# This safely_decode call makes sense, as it wouldn't have been touched 
+		# by the normal thing that decodes stuff...
+        print OUTFILE safely_decode($buffer);
     }
 
     close(OUTFILE);

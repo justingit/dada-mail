@@ -123,7 +123,7 @@ sub prepare_cgi_obj
     $q = $self->translate({
         -cgi_obj      => $q ,
     }); 
-#    $q = DADA::App::Guts::decode_cgi_obj($q);
+   $q = DADA::App::Guts::decode_cgi_obj($q);
     return $q;
     
     
