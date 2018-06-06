@@ -1486,8 +1486,8 @@ $MIME_TOOLS_PARAMS //= {
 	
 	
     # Create a Back Link prefs
-    website_name => '',
-    website_url  => '',
+    back_link_website_name => '',
+    back_link_website_url  => '',
 
     #SQL stuff
 

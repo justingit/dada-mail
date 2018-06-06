@@ -9493,8 +9493,8 @@ sub back_link {
             {
                 -associate => $q,
                 -settings  => {
-                    website_name => '',
-                    website_url  => '',
+                    back_link_website_name => '',
+                    back_link_website_url  => '',
                 }
             }
         );
