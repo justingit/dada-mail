@@ -47,7 +47,7 @@ if you fetch the content of a message via  URL.
 
 =head2 Bugfixes
 
-=head3  Archive Message Blurb is not shown in listing of archived messages in list page, archive page, or archive search #716 
+=head3 Archive Message Blurb is not shown in listing of archived messages in list page, archive page, or archive search #716 
 
 L<https://github.com/justingit/dada-mail/issues/716>
 

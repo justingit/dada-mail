@@ -2,6 +2,35 @@
 
 =encoding utf-8
 
+=head1 11.0.1
+
+=head2 Bugfixes
+
+=head3 Digests not working in v11.0.0 #732
+
+L<https://github.com/justingit/dada-mail/issues/732>
+
+=head3  "Website URL" and, "Backlink URL" use same list setting key name #731 
+
+L<https://github.com/justingit/dada-mail/issues/731>
+
+Unfortunately, I had to choose one setting to work with one feature, and make the other setting use a different key. 
+
+I've chosen to have the "backlink" URL and Nmae to use different keys. 
+
+=head3  Imported Addresses w/Profile Fields show incorrectly decoded UTF-8 characters #730 
+
+L<https://github.com/justingit/dada-mail/issues/730>
+
+=head3 "Form Fields" listing lacks List Consents #727 
+
+L<https://github.com/justingit/dada-mail/issues/727>
+
+=head3 "Minimal Subscription Form" HTML code lacks List Consents #726 
+
+L<https://github.com/justingit/dada-mail/issues/726>
+
+
 =head1 11.0.0
 
 =head2 Major Changes: GDPR Compliance
