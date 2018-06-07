@@ -1214,11 +1214,17 @@ sub mass_send {
 		if(!exists($args->{-vars})){ 
 			$args->{-vars} = {}; 
 		}
+		
     }
     else {
         %param_headers = @_;
     }
 
+	if(!defined($args->{-vars})){ 
+		$args->{-vars} = {}; 
+	}
+
+	
     # This will just be generally, well, chatty.
     no strict;
 
@@ -1911,7 +1917,6 @@ sub mass_send {
                 ##############################################################
 
                 $stop_email = $current_email;
-
                 my %nfields = $self->_mail_merge(
                     {
                         -entity => $entity,
