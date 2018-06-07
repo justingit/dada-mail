@@ -67,7 +67,7 @@ Let's go!
 
 =end html 
 
-I<When installing Pro Dada, use B<I<pro_dada-11_0_1.tar.gz> as the name of the distribution in these directions.>
+I<When installing Pro Dada, use B<I<pro_dada-11_0_1.tar.gz>> as the name of the distribution in these directions.>
 
 =head3 Upload the Dada Mail distribution
 
