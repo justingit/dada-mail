@@ -42,7 +42,7 @@ Let's go!
 			class="button success expand" 
 			target="_blank"
 			href="https://sourceforge.net/projects/dadamail/files/dada-11_0_1.tar.gz/download">
-	        Download Dada Mail, v11.0.0
+	        Download Dada Mail, v11.0.1
 		</a> 
 
 		<p>
@@ -106,7 +106,7 @@ Download using the link below - it's a small CGI Perl script - so you will want 
 	target="_blank"
 	href="https://raw.github.com/justingit/dada-mail/v11_0_1-stable_2018_06_07/uncompress_dada.cgi"
 >
-	uncompress_dada.cgi for v10.0.0 Alpha (Save Page/Link As...)
+	uncompress_dada.cgi for v11.0.1 (Save Page/Link As...)
 </a>
 
 =end html
