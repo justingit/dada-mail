@@ -1022,8 +1022,7 @@ sub start {
 		my $pop3_msg_list = $pop3_obj->list; 
 
 
-=cut
-				if(! defined $list) {
+		if(! defined $list) {
             $log .= "\tNo bounces to handle.\n";
             $has_bounces = 0;
         }
@@ -1032,9 +1031,6 @@ sub start {
             $has_bounces = 0;
         }
         else {
-=cut
-		
-
 		my $msg_count = 0; 
            $msg_count = scalar keys %$pop3_msg_list;
 		
