@@ -194,6 +194,8 @@ sub send_generic_email {
 
 }
 
+# split into, create_multipart_email
+# and send_multipart_email
 sub send_multipart_email {
 
 #	warn 'at send_multipart_email' ;
