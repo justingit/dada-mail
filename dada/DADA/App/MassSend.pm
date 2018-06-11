@@ -2088,8 +2088,8 @@ sub list_invite {
 			);
         }
 
-        ( $text_message, $html_message ) =
-          $fm->pre_process_msg_strings( $text_message, $html_message );
+        ( $text_message, $html_message ) = 
+			$fm->pre_process_msg_strings( $text_message, $html_message );
 
 		my $mailHTML = undef; 
 		my ($mlo_status, $mlo_errors, $MIMELiteObj, $md5);
@@ -2777,36 +2777,63 @@ sub just_subscribed_mass_mailing {
     $fm->mass_mailing(1);
     $fm->list_type('just_subscribed');
     $fm->use_email_templates(0);
-	
-	
-	require DADA::App::EmailThemes; 
-	my $em = DADA::App::EmailThemes->new(
-		{ 
-			-list      => $self->{list},
-		}
-	);
-	my $etp = $em->fetch('subscribed_message');
-	
-    require DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
-    my ( $header_glob, $message_string ) = $fm->format_headers_and_body(
-		{
-	        -msg => $fm->string_from_dada_style_args(
-	            {
-	                -fields => {
-	                    Subject => $etp->{vars}->{subject},
-	                    Body    => $etp->{plaintext},
-	                },
-	            }
-	        )
-		}
+    require DADA::App::EmailThemes;
+    my $em = DADA::App::EmailThemes->new(
+        {
+            -list => $self->{list},
+        }
     );
+    my $etp = $em->fetch('subscribed_message');
 
+    require DADA::App::Messages;
+    my $dap = DADA::App::Messages->new(
+        {
+            -list => $self->{list},
+        }
+    );
+    my $entity = $dap->create_multipart_email(
+        {
+			-template_out => 0, 
+            -headers => {
+                Subject => $etp->{vars}->{subject},
+            },
+            -html_body      => $etp->{html},
+            -plaintext_body => $etp->{plaintext},
+
+        }
+    );
+	
+	# this needed?!
+    $entity = $fm->format_headers_and_body(
+        {
+            -entity => $entity
+        }
+    );
+	#/this needed?!
+	
+    my $header_glob = $entity->head->as_string;
+    my $message_string = $entity->body_as_string;
+    $entity->purge;
+    undef($entity);
+    safely_decode($header_glob);
+	safely_decode($message_string);
+	
     require DADA::Mail::Send;
-    my $mh = DADA::Mail::Send->new( { -list => $self->{list} } );
+    my $mh = DADA::Mail::Send->new(
+        {
+            -list => $self->{list}
+        }
+    );
     $mh->list_type($type);
-    my $message_id = $mh->mass_send( { -msg => { $mh->return_headers($header_glob), Body => $message_string, }, } );
+    my $message_id = $mh->mass_send(
+        {
+            -msg => {
+                $mh->return_headers($header_glob), 
+				Body => $message_string,
+            },
+        }
+    );
     return 1;
 
 }

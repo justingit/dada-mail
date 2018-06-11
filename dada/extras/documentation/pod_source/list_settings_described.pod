@@ -362,7 +362,7 @@ L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
     admin_unsubscription_notice_message_subject => undef,
     admin_unsubscription_notice_message         => undef,
 
-    enable_email_template_expr                  => 0,
+#    enable_email_template_expr                  => 0,
 
     # HTML Screen Templates
 

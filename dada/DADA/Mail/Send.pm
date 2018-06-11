@@ -972,8 +972,7 @@ sub mail_sending_options_test {
 
     require DADA::App::Messages;
     my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
-
-
+	
     $dap->send_multipart_email(
         {
             -headers => {
@@ -3381,10 +3380,10 @@ sub _mail_merge {
     }
     $entity_cp->head->add( 'To', $To_header );
 
-    my $expr = 0;
-    if ( $self->{ls}->param('enable_email_template_expr') == 1 ) {
+#    my $expr = 0;
+#    if ( $self->{ls}->param('enable_email_template_expr') == 1 ) {
         $expr = 1;
-    }
+#    }
 	
 	
 

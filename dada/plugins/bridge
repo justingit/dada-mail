@@ -2381,9 +2381,9 @@ sub dm_format {
     $fm->mass_mailing(1);
 
     if (   $ls->param('group_list') == 0
-        && $ls->param('rewrite_anounce_from_header') == 0 )
+        && $ls->param('rewrite_anounce_from_header') == 1 )
     {
-        $fm->reset_from_header(0);
+        $fm->reset_from_header(1);
     }
 
 #	warn '${$msg} ' .  ${$msg}; 

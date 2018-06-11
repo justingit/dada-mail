@@ -1503,9 +1503,8 @@ $MIME_TOOLS_PARAMS //= {
 
     fallback_field_values => '',
 
-
-
-    enable_email_template_expr                  => 1,
+# from what I can tell, this is now always available. 	
+#    enable_email_template_expr                  => 1,
 
     # HTML Screen Templates
 

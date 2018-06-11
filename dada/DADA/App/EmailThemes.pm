@@ -258,13 +258,24 @@ sub strip_and_return_vars {
     return ( {}, $str )
       if $str !~ m/$\-\-\-/;
 
+	my @r; 
     try {
         my $tfm = Text::FrontMatter::YAML->new( document_string => $str, );
-        my @r = ( $tfm->frontmatter_hashref, $tfm->data_text, );
+		my $hr = $tfm->frontmatter_hashref; 
+		for($hr){ 
+			$hr->{$_} = safely_decode($hr->{$_}); 
+		}
+        @r = (
+			$hr, 
+			safely_decode($tfm->data_text)
+		);
+		
     } catch {
         warn substr($_, 0, 100) . '...';
         return ( undef, $str );
     };
+	
+	return @r; 
 }
 
 sub munge_logo_img {
@@ -361,6 +372,9 @@ sub slurp {
 	}
 	
 	 @r = <F>;
+	 
+	 # That doesn't work...
+	 #my @r = map { safely_decode($_) } @r;
 
     close(F) || croak "close $file: $!";
 

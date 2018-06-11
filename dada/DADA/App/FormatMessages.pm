@@ -74,7 +74,7 @@ my %allowed = (
 
     originating_message_url => undef,
 
-    reset_from_header   => 1,
+    reset_from_header   => 0,
     mass_mailing        => 0,
     list_type           => 'list',
     no_list             => 0,
@@ -615,16 +615,18 @@ sub format_mlm {
     require DADA::Template::Widgets;
     my ( $valid, $errors );
 
-    my $expr = 0;
-    if ( $self->no_list == 1 ) {
-        $expr = 1;
-    }
-    elsif ( $self->override_validation_type eq 'expr' ) {
-        $expr = 1;
-    }
-    else {
-        $expr = $self->{ls}->param('enable_email_template_expr');
-    }
+    my $expr = 1;
+
+#  it's always 1
+#    if ( $self->no_list == 1 ) {
+#        $expr = 1;
+#    }
+#    elsif ( $self->override_validation_type eq 'expr' ) {
+#        $expr = 1;
+#    }
+#    else {
+#        $expr = $self->{ls}->param('enable_email_template_expr');
+#    }
 
     ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
         {
@@ -1304,14 +1306,6 @@ sub _format_headers {
 
     }
 
-# This is weird, right? remove the original original from header, and put our own:
-    if ( $entity->head->count('X-Original-From') ) {
-        $entity->head->delete('X-Original-From');
-    }
-    $entity->head->add( 'X-Original-From', $entity->head->get( 'From', 0 ) );
-
-    #  && $self->{ls}->param('group_list_pp_mode') == 1
-	
     if (   $self->mass_mailing == 1
         && $self->{ls}->param('group_list') == 1
         && defined( $self->{ls}->param('discussion_pop_email') )
@@ -1320,6 +1314,12 @@ sub _format_headers {
         if ( $entity->head->count('From') ) {
             my $og_from = $entity->head->get( 'From', 0 );
             chomp($og_from);
+
+		    if ( $entity->head->count('X-Original-From') ) {
+		        $entity->head->delete('X-Original-From');
+		    }
+		    $entity->head->add( 'X-Original-From', $entity->head->get( 'From', 0 ) );
+
 
             $entity->head->delete('From');
 			
@@ -1553,30 +1553,29 @@ sub _encode_header {
 	else { 
 		$charset = $self->{ls}->param('charset_value');
 	}
-
-
+	
     if (   $label eq 'Subject'
         || $label eq 'List'
         || $label eq 'List-URL'
         || $label eq 'List-Owner'
         || $label eq 'List-Subscribe'
         || $label eq 'List-Unsubscribe'
-        || $label eq 'just_phrase' )
-    {
-
+		|| $label eq 'X-Preheader'
+        || $label eq 'just_phrase' 
+	) {
+		
         # Bug: https://rt.cpan.org/Ticket/Display.html?id=84295
         my $MaxLineLen = -1;
-
-
+		
         $new_value = MIME::EncWords::encode_mimewords(
             $value,
             Encoding   => 'Q',
             MaxLineLen => $MaxLineLen,
             Charset    => $charset
         );
-
+		
     }
-    else {
+	else {
         require Email::Address;
         my @addresses = Email::Address->parse($value);
         for my $address (@addresses) {
@@ -1595,10 +1594,8 @@ sub _encode_header {
         for (@addresses) {
             push( @new_addresses, $_->format() );
         }
-
         $new_value = join( ', ', @new_addresses );
     }
-
     return $new_value;
 
 }

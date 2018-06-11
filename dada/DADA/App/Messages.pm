@@ -194,42 +194,41 @@ sub send_generic_email {
 
 }
 
-# split into, create_multipart_email
-# and send_multipart_email
-sub send_multipart_email {
+sub create_multipart_email {
 
-#	warn 'at send_multipart_email' ;
-	
+    #	warn 'at send_multipart_email' ;
 
     my $self = shift;
     my ($args) = @_;
 
-    my $expr = 1;
-    if ( $self->ls->param('enable_email_template_expr') == 1 ) {
-        $expr = 1;
+    my $expr        = 1;
+    my $url_options = 'cid';
+
+    if ( $self->ls->param('email_embed_images_as_attachments') != 1 ) {
+        $url_options = 'extern';
     }
-    else {
-        $expr = 0;
+
+    if ( !exists( $args->{-headers} ) ) {
+        $args->{-headers} = {};
     }
-	
-	my $url_options            = 'cid';
-	if($self->ls->param('email_embed_images_as_attachments') != 1){ 
-		$url_options = 'extern'; 
+	# encode those headers, before they hit MyMIMELiteHTML
+	for(keys %{$args->{-headers}}){
+		$args->{-headers}->{$_} = $self->fm->_encode_header( 
+			$_, $args->{-headers}->{$_}
+		);
 	}
 
-    $args->{-headers} = {}
-      if !exists( $args->{-headers} );
 
-    #  try {
     require DADA::App::MyMIMELiteHTML;
     my $mailHTML = new DADA::App::MyMIMELiteHTML(
 
-        remove_jscript => scalar $self->ls->param('mass_mailing_remove_javascript'),
-        'IncludeType'  => $url_options,
-        'TextCharset'  => scalar $self->ls->param('charset_value'),
-        'HTMLCharset'  => scalar $self->ls->param('charset_value'),
-        HTMLEncoding   => scalar $self->ls->param('html_encoding'),
-        TextEncoding   => scalar $self->ls->param('plaintext_encoding'),
+        remove_jscript =>
+          scalar $self->ls->param('mass_mailing_remove_javascript'),
+        'IncludeType' => $url_options,
+        'TextCharset' => scalar $self->ls->param('charset_value'),
+        'HTMLCharset' => scalar $self->ls->param('charset_value'),
+        HTMLEncoding  => scalar $self->ls->param('html_encoding'),
+        TextEncoding  => scalar $self->ls->param('plaintext_encoding'),
         (
               ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
             ? ( Debug => 1, )
@@ -237,11 +236,8 @@ sub send_multipart_email {
         ),
         %{ $args->{-headers} },
     );
-    my ( $status, $errors, $MIMELiteObj, $md5 );
 
-#    warn '(length( $args->{-html_body} )' . length( $args->{-html_body} );
-#    warn '(length( $args->{-plaintext_body} )'
-#      . length( $args->{-plaintext_body} );
+    my ( $status, $errors, $MIMELiteObj, $md5 );
 
     if (   length( $args->{-html_body} ) > 0
         && length( $args->{-plaintext_body} ) > 0 )
@@ -267,6 +263,8 @@ sub send_multipart_email {
     my $parser = new MIME::Parser;
     $parser = optimize_mime_parser($parser);
 
+	warn '$MIMELiteObj->as_string ' . $MIMELiteObj->as_string ; 
+	
     my $entity = $parser->parse_data( $MIMELiteObj->as_string );
 
     my %lh = $self->mh->list_headers;
@@ -277,29 +275,53 @@ sub send_multipart_email {
     $self->fm->use_header_info(1);
     $self->fm->use_email_templates(0);
 
-    if ( $args->{-tmpl_params}->{-expr} == 1 ) {
-        $self->fm->override_validation_type('expr');
-    }
+	if(!exists($args->{-tmpl_params})){ 
+		$args->{-tmpl_params} = {};
+	}
+	if(!exists($args->{-template_out})){ 
+		$args->{-template_out} = 1; 
+	}
 
-#	warn 'calling format_message';
     $entity = $self->fm->format_message(
         {
             -entity => $entity
         }
     );
+	
 
-#	warn 'calling email_template';
-    $entity = $self->fm->email_template(
-        {
-            -entity => $entity,
-            -expr   => $expr,
-            %{ $args->{-tmpl_params} },    # note: this may have -expr param.
-        }
-    );
+	if($args->{-template_out} == 1){
+	    $entity = $self->fm->email_template(
+	        {
+	            -entity => $entity,
+	            -expr   => $expr,
+	            %{ $args->{-tmpl_params} },
+	        }
+	    );
+	}
+	
+	return $entity; 
+}
+
+
+ 
+# This is a terrible method - most of the interesting work is being done 
+# by create_multipart_email, but this below was split from that, so we 
+# could *just* create the stupid email... 
+# Below is just translating an entity to the internal format so we can send it 
+# with DADA::Mail::Send
+# DADA::Mail::Send should just take the entity at this point 
+# Clean up a lot of code! 
+
+sub send_multipart_email { 
+	
+    my $self   = shift;
+    my ($args) = @_;
+	
+	my $entity = $self->create_multipart_email($args);
 
     my $msg = $entity->as_string;
     my ( $header_str, $body_str ) = split( "\n\n", $msg, 2 );
-
+	
     # Time for DADA::Mail::Send to just have a, "Here's th entity!" argument,
     # rather than always passing this crap back and forth.
     my $header_str = safely_decode( $entity->head->as_string );
@@ -309,12 +331,12 @@ sub send_multipart_email {
         $self->mh->test(1);
     }
     
-#	warn 'calling send';
-	$self->mh->send( $self->mh->return_headers($header_str),
-        Body => $body_str, );
-
-#		warn 'done in send_multipart_email';
-		return 1; 
+	$self->mh->send( 
+		$self->mh->return_headers($header_str),
+        Body => $body_str,
+	);
+	return 1; 
+		
 }
 
 sub send_abuse_report {
@@ -426,6 +448,9 @@ sub send_confirmation_message {
         $etp->{html} =
           $self->fm->subscription_confirmationation( { -str => $etp->{html} } );
     }
+	#warn '$etp->{vars}->{from_phrase}' . $etp->{vars}->{from_phrase}; 
+	warn '$etp->{vars}->{preheader}'   . $etp->{vars}->{preheader}; 
+	
     $self->send_multipart_email(
         {
             -headers => {
@@ -459,10 +484,8 @@ sub send_confirmation_message {
         }
     );
 
-    $self->logging->mj_log( $self->list,
-        'Subscription Confirmation Sent for ' . $self->list . '.list', $email );
-
     return 1;
+
 }
 
 sub send_subscribed_message {
@@ -1249,6 +1272,11 @@ sub send_out_message {
 					$email,
                 ),
                 Subject => $etp->{vars}->{subject},
+				(defined($etp->{vars}->{preheader})
+					? 
+					('X-Preheader' => $etp->{vars}->{preheader},)
+					: ()
+				)
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
