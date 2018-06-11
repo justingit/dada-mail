@@ -3382,7 +3382,7 @@ sub _mail_merge {
 
 #    my $expr = 0;
 #    if ( $self->{ls}->param('enable_email_template_expr') == 1 ) {
-        $expr = 1;
+        my $expr = 1;
 #    }
 	
 	
