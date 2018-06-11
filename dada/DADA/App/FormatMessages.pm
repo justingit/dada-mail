@@ -1542,6 +1542,12 @@ sub _encode_header {
     my $label = shift;
     my $value = shift;
 
+	# are you asking me to double-encode?
+	if($value =~ m/\=\?UTF\-8/){ 
+		warn 'header already encoded?!:' . $value; 
+		#return $value; 
+	}
+
     my $new_value = undef;
 
     require MIME::EncWords;
