@@ -958,13 +958,10 @@ sub send_owner_happenings {
     }
 
     my $from_address   = $self->ls->param('list_owner_email');
-    my $formatted_from = $self->fm->_encode_header(
-        'From',
-        $self->fm->format_phrase_address(
+    my $formatted_from = $self->fm->format_phrase_address(
             $msg_template->{from_phrase},
             $from_address,
-        )
-    );
+        );
 
     if ( $send_to eq 'list' ) {
         $self->fm->mass_mailing(1);
