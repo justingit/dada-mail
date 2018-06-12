@@ -5114,14 +5114,16 @@ sub list_activity {
     if ( !$checksout ) { return $error_msg; }
 
     my $list = $admin_list;
-    require DADA::App::LogSearch;
-    my $dals = DADA::App::LogSearch->new;
-    my $r = $dals->list_activity( { -list => $list, } );
-    my $i;
+
+	require DADA::MailingList::ConsentActivity; 
+	my $dmlch = DADA::MailingList::ConsentActivity->new; 
+	my $r = $dmlch->list_activity( { -list => $list, } );
+	
+	my $i;
     for ( $i = 0 ; $i <= ( scalar(@$r) - 1 ) ; $i++ ) {
         $r->[$i]->{show_email} = 1;
     }
-
+	
     my $body = DADA::Template::Widgets::wrap_screen(
         {
             -list           => $list,
@@ -5153,17 +5155,23 @@ sub sub_unsub_trends_json {
 
     my $list = $admin_list;
 
-    my $days = xss_filter( strip( scalar $q->param('days') ) );
+    my $days = xss_filter(
+		strip(
+			scalar $q->param('days')
+		)
+	);
 
-    require DADA::App::LogSearch;
-    my $dals = DADA::App::LogSearch->new;
+   # require DADA::App::LogSearch;
+   # my $dals = DADA::App::LogSearch->new;
 
     my $headers = {
         '-Cache-Control' => 'no-cache, must-revalidate',
         -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
         -type            => 'application/json',
     };
-    my $r = $dals->sub_unsub_trends_json(
+	
+	my $dmlch = DADA::MailingList::ConsentActivity->new; 
+	my $r = $dmlch->sub_unsub_trends_json(
         {
             -list     => $list,
             -printout => 0,

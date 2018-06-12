@@ -294,6 +294,234 @@ sub subscriber_consented_to {
     return $consents;
 }
 
+
+sub list_activity { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	my $query = 'SELECT email, action, timestamp FROM ' 
+	. $DADA::Config::SQL_PARAMS{consent_activity_table}
+	. ' WHERE list = ? AND (action = "subscription" OR action = "unsubscribe")'
+	. ' ORDER BY timestamp DESC LIMIT 100'; 
+	
+    my $sth = $self->{dbh}->prepare($query);
+	
+	$sth->execute($args->{-list});
+	my $r = []; 
+	
+ 	while ( my $f = $sth->fetchrow_hashref ) {
+		push(
+			
+			@$r, { 
+		        date           => $f->{timestamp},
+		        list           => $args->{-list},
+				#list_name      => 'Subscriber', 
+		        ip             => $f->{timestamp},
+		        email          => $f->{email},
+		        type           => 'list',
+		        type_title     => 'Subscribers',
+		        action         => $f->{action},
+				#updated_email  => $new_email, # used for subscription updates
+			}
+		)
+	}
+	
+return $r; 
+	
+}
+
+
+
+sub sub_unsub_trends { 
+	my $self = shift;
+	my ($args) = @_; 
+	
+	my $type = 'list'; 
+	my $time = time; 
+	my $r = []; 
+	
+	my @dates; 
+
+	my $days = 180;
+	if(exists($args->{-days})){ 
+		$days = $args->{-days};
+	}
+	
+	for(0 .. ($days)){ 
+		my $s_date = simplified_date_str(past_date($time, $_));
+		push(@dates, $s_date);
+	}
+
+	my $query = 'SELECT email, action, timestamp FROM ' 
+	. $DADA::Config::SQL_PARAMS{consent_activity_table}
+	. ' WHERE list = ? AND (action = "subscription" OR action = "unsubscribe")'; 
+	
+	if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
+		$query .= ' AND DATE_SUB(CURDATE(),INTERVAL ' 
+		   . $days  
+		   . ' DAY) <= timestamp '
+	}
+	elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
+		$query .= ' AND NOW() - INTERVAL ' 
+			   . $days 
+			   . ' DAY <= timestamp ';
+	}
+	 	
+	$query .= ' ORDER BY timestamp DESC'; 
+	
+    my $sth = $self->{dbh}->prepare($query);
+	
+	$sth->execute($args->{-list});
+	my $r = []; 
+	
+	my $count = 0; 
+	my %trends = ();
+
+	
+	
+ 	while ( my $f = $sth->fetchrow_hashref ) {
+		
+		my ($date_string, $time_string) = split(" ", $f->{timestamp}, 2); 
+		# Init if we need to. 
+		if(!exists($trends{$date_string})){ 
+			$trends{$date_string} = {subscription => 0, unsubscribe => 0};
+		}
+		$trends{$date_string}->{$f->{action}}++;
+	}
+	
+	# Fill in missing dates. 
+	for(@dates){ 		
+		if(!exists($trends{$_})){ 
+			$trends{$_} = {subscription => 0, unsubscribe => 0};
+		}
+	}
+
+	my @r_trends = (); 
+	my $cum_sub = 0; 
+	my $cum_unsub = 0; 
+	
+	for my $d(reverse @dates){ 
+		$cum_sub   += $trends{$d}->{subscription};
+		$cum_unsub += $trends{$d}->{unsubscribe};
+		push(@r_trends, { 
+			date                    => $d, 
+			subscribed              => $trends{$d}->{subscription},
+			unsubscribed            => $trends{$d}->{unsubscribe},
+			cumulative_subscribed   => $cum_sub,
+			cumulative_unsubscribed => $cum_unsub,
+		}); 
+		
+		
+	}
+
+	return [@r_trends];
+}
+
+
+sub simplified_date_str { 
+	my $date = shift; 
+	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($date);
+	$year += 1900; 
+	$mon  += 1; 
+	$mday = sprintf("%02d", $mday);
+	$mon  = sprintf("%02d", $mon );
+	return join('-', $year, $mon, $mday);
+	
+}
+
+sub past_date {
+    my $time = shift;
+    my $days = shift || 0;
+	return $time if $days == 0; 
+    my $now  = defined $time ? $time : time;
+    my $then = $now - 60 * 60 * 24 * ($days); # why, -1? 
+    my $ndst = ( localtime $now )[8] > 0;
+    my $tdst = ( localtime $then )[8] > 0;
+
+    # Added '=' to avoid warning (and return)
+    $then -= ( $tdst - $ndst ) * 60 * 60;
+    return $then;
+}
+
+
+sub sub_unsub_trends_json { 
+	my $self = shift; 
+	my ($args) = @_; 
+	if(! exists($args->{-days})){ 
+		$args->{-days} = 30;
+	}
+	
+	
+	my $json; 
+	
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
+
+	$json = $dc->retrieve(
+		{
+			-list    => $args->{-list}, 
+			-name    => 'sub_unsub_trends_json' . '.' . $args->{-days},
+		}
+	);
+	
+	if(!defined($json)){ 
+	
+		my $trends = $self->sub_unsub_trends($args);
+		require Data::Google::Visualization::DataTable; 
+		my $datatable = Data::Google::Visualization::DataTable->new();
+
+		$datatable->add_columns(
+			   { id => 'date',                    label => 'Date',                      type => 'string'}, 
+			   { id => 'cumulative_subscribed',   label => 'Cumulative Subscriptions',  type => 'number',},
+			   { id => 'cumulative_unsubscribed', label => 'Cumulative Unubscriptions', type => 'number',},
+			   { id => 'subscribed',              label => 'Subscriptions',             type => 'number',},
+			   { id => 'unsubscribed',            label => 'Unubscriptions',            type => 'number',},
+		);
+
+		for(@$trends){ 
+			$datatable->add_rows(
+		        [
+		               { v => $_->{date}},
+		               { v => $_->{cumulative_subscribed} },
+		               { v => $_->{cumulative_unsubscribed} },
+		               { v => $_->{subscribed} },
+		               { v => $_->{unsubscribed} },
+		       ],
+			);
+		}
+
+
+		$json = $datatable->output_javascript(
+			pretty  => 1,
+		);
+		$dc->cache(
+			{ 
+				-list    => $args->{-list}, 
+				-name    => 'sub_unsub_trends_json' . '.' . $args->{-days},
+				-data    => \$json, 
+			}
+		);
+		
+	}
+	
+	if($args->{-printout} == 1){ 
+		require CGI; 
+		my $q = CGI->new; 
+		print $q->header(
+			'-Cache-Control' => 'no-cache, must-revalidate',
+			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+			-type            =>  'application/json',
+		);
+		print $json; 
+	}
+	else { 
+		return $json; 
+	}
+}
+
+
+
+
 sub consent_history_report { 
 
 	my $self   = shift; 
