@@ -248,6 +248,22 @@ sub add_subscribers {
                 warn 'Problems w/send_last_archived_msg_mass_mailing:' . $_;
             };
         }
+		
+		# Record as un-consented? 
+		require DADA::MailingList::ConsentActivity; 
+		my $dmlc = DADA::MailingList::ConsentActivity->new; 
+		for(@$added_addresses){
+			$dmlc->ch_record(
+				{ 
+					-email  => $_->{email},
+					-list   => $self->{list},
+					-action => 'subscription',
+					-source => 'admin',
+				}
+			);
+		}
+		# /Record as un-consented? 
+	 
     }
 
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1
