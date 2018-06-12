@@ -301,7 +301,7 @@ sub list_activity {
 	
 	my $query = 'SELECT email, action, timestamp FROM ' 
 	. $DADA::Config::SQL_PARAMS{consent_activity_table}
-	. ' WHERE list = ? AND (action = "subscription" OR action = "unsubscribe")'
+	. ' WHERE list = ? AND (action = \'subscription\' OR action = \'unsubscribe\')'
 	. ' ORDER BY timestamp DESC LIMIT 100'; 
 	
     my $sth = $self->{dbh}->prepare($query);
@@ -354,7 +354,7 @@ sub sub_unsub_trends {
 
 	my $query = 'SELECT email, action, timestamp FROM ' 
 	. $DADA::Config::SQL_PARAMS{consent_activity_table}
-	. ' WHERE list = ? AND (action = "subscription" OR action = "unsubscribe")'; 
+	. ' WHERE list = ? AND (action = \'subscription\' OR action = \'unsubscribe\')'; 
 	
 	if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
 		$query .= ' AND DATE_SUB(CURDATE(),INTERVAL ' 
@@ -362,13 +362,13 @@ sub sub_unsub_trends {
 		   . ' DAY) <= timestamp '
 	}
 	elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
-		$query .= ' AND NOW() - INTERVAL ' 
+		$query .= ' AND (NOW() - INTERVAL \'' 
 			   . $days 
-			   . ' DAY <= timestamp ';
+			   . '\' DAY) <= timestamp ';
 	}
 	 	
 	$query .= ' ORDER BY timestamp DESC'; 
-	
+		
     my $sth = $self->{dbh}->prepare($query);
 	
 	$sth->execute($args->{-list});
