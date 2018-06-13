@@ -1306,7 +1306,8 @@ sub _format_headers {
 
     }
 
-    if (   $self->mass_mailing == 1
+    if (   
+		   $self->mass_mailing == 1
         && $self->{ls}->param('group_list') == 1
         && defined( $self->{ls}->param('discussion_pop_email') )
 		)
@@ -1314,7 +1315,7 @@ sub _format_headers {
         if ( $entity->head->count('From') ) {
             my $og_from = $entity->head->get( 'From', 0 );
             chomp($og_from);
-
+			
 		    if ( $entity->head->count('X-Original-From') ) {
 		        $entity->head->delete('X-Original-From');
 		    }
@@ -1322,10 +1323,14 @@ sub _format_headers {
 
 
             $entity->head->delete('From');
+            $entity->head->add(
+				'From', 
+				safely_encode( $self->_pp($og_from) )
+			);
+			warn 'weve set the From header specifically for group lists:' . 
+				$entity->head->get( 'From', 0 )
+				if $t; 
 			
-			# This shouldn't needed to be, safely_encode()ed, 
-			# as it's shuld be MimeEncoded, thus in bit... 
-            $entity->head->add( 'From', safely_encode( $self->_pp($og_from) ) );
 
             if ( $self->{ls}->param('set_to_header_to_list_address') == 1 ) {
                 if ( $entity->head->count('Reply-To') ) {
@@ -1373,15 +1378,13 @@ q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
                 $entity->head->delete('Reply-To');
             }
             if ( $entity->head->count('Sender') ) {
-                warn
-q{ $entity->head->add( 'Reply-To',  $entity->head->get('Sender', 0) );}
+                warn q{ $entity->head->add( 'Reply-To',  $entity->head->get('Sender', 0) );}
                   if $t;
                 $entity->head->add( 'Reply-To',
                     $entity->head->get( 'Sender', 0 ) );
             }
             else {
-                warn
-q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}
+                warn q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}
                   if $t;
                 $entity->head->add( 'Reply-To',
                     $entity->head->get( 'From', 0 ) );
@@ -1397,6 +1400,7 @@ q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}
     }
     else {
         if ( $self->reset_from_header ) {
+			warn 'were reseting the from header?:' . $self->reset_from_header;
             $entity->head->delete('From');
         }
     }
@@ -1457,10 +1461,14 @@ q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}
             }
             elsif ( !$to_addy->phrase ) {
                 $entity->head->delete('To');
-                $entity->head->add(
+                
+				warn 'Message set with no To: header - make sure to ONLY pass messages with correctly set To: headers!';
+				
+				$entity->head->add(
                     'To',
                     $self->format_phrase_address(
-                        $self->{ls}->param('list_name'), $to_addy
+                        $self->_encode_header('phrase_only', $self->{ls}->param('list_name')),
+						$to_addy
                     )
                 );
 
@@ -1499,8 +1507,7 @@ sub _pp {
     #else {
     # $a =~ s/\@/ _at_ /;
 
-    my $p = ( Email::Address->parse($from) )[0]->phrase
-      || ( Email::Address->parse($from) )[0]->address;
+    my $p = ( Email::Address->parse($from) )[0]->phrase || ( Email::Address->parse($from) )[0]->address;
     $p = $self->_decode_header($p);
     my $d          = $self->{ls}->param('group_list_pp_mode_from_phrase');
     my $new_phrase = DADA::Template::Widgets::screen(
@@ -1519,7 +1526,6 @@ sub _pp {
             },
         }
     );
-
     my $new_from = Email::Address->new();
     $new_from->address( $self->{ls}->param('discussion_pop_email') );
     $new_from->phrase(
@@ -1529,11 +1535,8 @@ sub _pp {
             Charset  => $self->{ls}->param('charset_value'),
         )
     );
-
-    #  $new_from->comment( '(' . $a . ')' );
     return $new_from->format;
 
-    # }
 }
 
 sub _encode_header {
@@ -2254,6 +2257,8 @@ sub _apply_template {
 
 }
 
+# honestly, I sort of want this in EmailThemes, so I can call a new method just for the mailing list message, 
+# and it just gives me the right parts right then and there. 
 sub layout_choice { 
 	my $self   = shift; 
 	my ($args) = @_; 

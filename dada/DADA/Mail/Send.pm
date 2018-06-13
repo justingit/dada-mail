@@ -269,8 +269,10 @@ sub send {
     }
     else {
         %fields = (
-            %defaults, $self->_make_general_headers,
-            $self->list_headers, %param_headers,
+            %defaults, 
+			$self->_make_general_headers,
+            $self->list_headers, 
+			%param_headers,
         );
     }
     undef(%param_headers);
@@ -1574,7 +1576,7 @@ sub mass_send {
               . $self->{list}
               . '] Mass Mailing:'
               . $mailout_id
-              . ' Fork successful. (From Parent)'
+              . ' Fork successful. (from Parent)'
               if $t;
             carp 'returning message id' . $fields{'Message-ID'}
 			if $t; 
@@ -1590,7 +1592,7 @@ sub mass_send {
               . $self->{list}
               . '] Mass Mailing:'
               . $mailout_id
-              . ' Fork successful. (From Child)'
+              . ' Fork successful. (from Child)'
               if $t;
 
             if ( $DADA::Config::RUNNING_UNDER ne 'FastCGI' ) {
@@ -2931,8 +2933,8 @@ sub _make_general_headers {
 
         }
         else {
-		    my $etp = $self->email_themes_obj->fetch('mailing_list_message');
-            $from_phrase = $etp->{vars}->{from_phrase}; 
+		    my $etp       = $self->email_themes_obj->fetch('mailing_list_message');
+            $from_phrase  = $etp->{vars}->{from_phrase}; 
             $from_address = $self->{ls}->param('list_owner_email');
 			undef $etp; 
 			
@@ -2951,6 +2953,7 @@ sub _make_general_headers {
 
     if ( defined( $self->{list} ) ) {
 
+		# this is fine, as the default. 
         $gh{From} = $fm->format_phrase_address( $from_phrase, $from_address );
 
         # time  + random number + sender, woot!
@@ -3275,6 +3278,8 @@ sub _mail_merge {
 
     my ($args) = @_;
 
+
+	
     if ( !exists( $args->{-entity} ) ) {
         croak 'you need to pass the -entity parameter';
     }
@@ -3355,10 +3360,15 @@ sub _mail_merge {
     }
 
     # Add the, "To:" header (very important!)
+	# This is all ridiculous, as the To: header will always be set to the same 
+	# value
+	# an optimizartion would be to do ALL this ONCE: 
+	# right now, there is no way to post process the headers
+	# recevied by mass_send. 
+	# 
     my $To_header = '';
-
     if ( $self->list_type eq 'invitelist' ) {
-	    
+			    
 		my $etp = $self->email_themes_obj->fetch('invite_message');
         $To_header = $args->{-fm_obj}->format_phrase_address(
             $etp->{vars}->{to_phrase}, 
@@ -3366,26 +3376,57 @@ sub _mail_merge {
         );
 		undef $etp; 
     }
-    else {
-		
-		my $etp = $self->email_themes_obj->fetch('mailing_list_message');
-		
-        $To_header =
-          $args->{-fm_obj}->format_phrase_address(
-			$etp->{vars}->{to_phrase},
-            $subscriber_vars->{'subscriber.email'} );
-    }
-    if ( $entity_cp->head->get( 'To', 0 ) ) {
-        $entity_cp->head->delete('To');
-    }
-    $entity_cp->head->add( 'To', $To_header );
+    else {			
+		my $To_header      = undef; 		
+	    if ( $entity_cp->head->get( 'To', 0 ) ) {
+			my $orig_to        = $entity_cp->head->get( 'To', 0 );
 
-#    my $expr = 0;
-#    if ( $self->{ls}->param('enable_email_template_expr') == 1 ) {
-        my $expr = 1;
-#    }
-	
-	
+			my $orig_to_phrase = undef;  	
+
+			require Email::Address; 
+			eval { 
+				$orig_to_phrase = ( Email::Address->parse($orig_to))[0]->phrase; 
+				$orig_to_phrase = $args->{-fm_obj}->_decode_header($orig_to_phrase); 
+			};
+			if($@){
+				warn $@
+			}
+			if(defined($orig_to_phrase) && length($orig_to_phrase) > 0){ 
+		        $To_header = $args->{-fm_obj}->_encode_header(
+					'To',
+					$args->{-fm_obj}->format_phrase_address(
+						$orig_to_phrase,
+			            $subscriber_vars->{'subscriber.email'} 
+					)
+				); 
+			}
+		}
+		# Did nothing above, work? 
+		if(!defined($To_header)){	
+				
+			# This is good for a default (as in, no To: header is passed,) 
+			# but if a different mass mailing layout is selected, the 
+			# phrase from that layout should be used. 
+			# (big example being "discussion")
+			#
+			
+			my $etp = $self->email_themes_obj->fetch('mailing_list_message');
+
+	        $To_header = $args->{-fm_obj}->format_phrase_address(
+				$args->{-fm_obj}->_encode_header(
+					'just_phrase', 
+					$etp->{vars}->{to_phrase}
+				),
+	            $subscriber_vars->{'subscriber.email'} 
+			);
+		}
+		
+		$entity_cp->head->delete('To');
+		$entity_cp->head->add( 'To', $To_header );	
+
+}
+ 
+	my $expr = 1;	
 
 #    carp "ORIGINAL ENTITY: \n";
 #    carp '-' x 72 . "\n";

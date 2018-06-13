@@ -126,9 +126,11 @@ sub fetch {
 			},
 		}
 	}
+	# A little roshambo - there's no, "mailing_list_message-default"
+	elsif($fn eq 'mailing_list_message-default'){
+		$fn eq 'mailing_list_message';
+	}
 
-	# else: 
-	
     if ( $self->cache() == 1 && exists( $self->{tmp_store}->{$fn} ) ) {
         return $self->{tmp_store}->{$fn};
     }

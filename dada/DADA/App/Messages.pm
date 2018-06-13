@@ -263,7 +263,7 @@ sub create_multipart_email {
     my $parser = new MIME::Parser;
     $parser = optimize_mime_parser($parser);
 
-	warn '$MIMELiteObj->as_string ' . $MIMELiteObj->as_string ; 
+#	warn '$MIMELiteObj->as_string ' . $MIMELiteObj->as_string ; 
 	
     my $entity = $parser->parse_data( $MIMELiteObj->as_string );
 

@@ -142,7 +142,10 @@ sub send_email {
 	
 	my $default_layout = $self->{ls_obj}->param('mass_mailing_default_layout') || undef; 
 	if(!defined($default_layout)) { 
-		if($self->{ls_obj}->param('group_list') == 1 && $self->{ls_obj}->param('disable_discussion_sending') != 1){ 
+		if(
+			$self->{ls_obj}->param('group_list') == 1 
+			&& $self->{ls_obj}->param('disable_discussion_sending') != 1
+		){ 
 			$default_layout = 'discussion'; 
 		}
 		else { 
@@ -153,9 +156,9 @@ sub send_email {
 	if($default_layout ne 'default'){ 
 		$layout_fn = 'mailing_list_message-' . $default_layout;
 	}
-	my $etp          = $em->fetch($layout_fn);
+	my $etp          = $em->fetch($layout_fn);	
 	my $subject      = $etp->{vars}->{subject};
-
+	
     if ( !$process ) {
 
         warn '!$process'
@@ -752,15 +755,44 @@ sub construct_from_url {
       )
     {
         if ( defined( scalar $draft_q->param($h) ) ) {
+			# why only these two?!
             if ( $h eq 'Subject' || $h eq 'X-Preheader') {
-                $headers{$h} = $fm->_encode_header( 'Subject', scalar $draft_q->param($h) );
+                $headers{$h} = $fm->_encode_header($h, scalar $draft_q->param($h) );
             }
             else {
                 $headers{$h} = strip( scalar $draft_q->param($h) );
             }
         }
     }
-    
+	
+	# Let's add any custom From and To headers, if needed. 
+	my $layout_choice = scalar $draft_q->param('layout') || undef; 
+	if($layout_choice =~ m/^(default|minimal|discussion|old_school|none|custom)$/){ 
+		
+		my $layout_name = 'mailing_list_message-' . $layout_choice;
+
+		require Email::Address;
+		require DADA::App::EmailThemes; 
+		my $em = DADA::App::EmailThemes->new(
+			{ 
+				-list      => $self->{list},
+			}
+		);
+		my $etp = $em->fetch($layout_name);
+	    $headers{From} = 
+			Email::Address->new(
+				$fm->_encode_header('just_phrase', $etp->{vars}->{from_phrase}),
+				$ls->param('list_owner_email'))->format;
+				
+		#warn '$headers{From}' . $headers{From}; 
+	    $headers{To} = 
+			Email::Address->new(
+				$fm->_encode_header('just_phrase', $etp->{vars}->{to_phrase}),
+				$ls->param('list_owner_email'))->format; 
+	}
+	warn 'didnt make it thru that!';
+	
+	
     if($subject_from eq 'title_tag') { 
 		if($content_from eq 'feed_url') { 
 			# We handle this below
@@ -774,6 +806,7 @@ sub construct_from_url {
     }
     
     my $mailHTML = new DADA::App::MyMIMELiteHTML(
+	#	%headers, # I'd rather not send the headers to this module, but I'm honestly confused on how headers are set! MYSTERY! 
         remove_jscript                   => scalar $self->{ls_obj}->param('mass_mailing_remove_javascript'),
 	    'IncludeType'                    => $url_options,
    	    'TextCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
@@ -1403,7 +1436,10 @@ sub send_url_email {
 	
 	my $default_layout = $self->{ls_obj}->param('mass_mailing_default_layout') || undef; 
 	if(!defined($default_layout)) { 
-		if($self->{ls_obj}->param('group_list') == 1 && $self->{ls_obj}->param('disable_discussion_sending') != 1){ 
+		if(
+				$self->{ls_obj}->param('group_list') == 1 
+			 && $self->{ls_obj}->param('disable_discussion_sending') != 1
+		 ){ 
 			$default_layout = 'discussion'; 
 		}
 		else { 
