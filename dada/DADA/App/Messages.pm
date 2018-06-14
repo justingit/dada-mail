@@ -448,8 +448,8 @@ sub send_confirmation_message {
         $etp->{html} =
           $self->fm->subscription_confirmationation( { -str => $etp->{html} } );
     }
-	#warn '$etp->{vars}->{from_phrase}' . $etp->{vars}->{from_phrase}; 
-#	warn '$etp->{vars}->{preheader}'   . $etp->{vars}->{preheader}; 
+	# warn '$etp->{vars}->{from_phrase}' . $etp->{vars}->{from_phrase}; 
+    # warn '$etp->{vars}->{preheader}'   . $etp->{vars}->{preheader}; 
 	
     $self->send_multipart_email(
         {
