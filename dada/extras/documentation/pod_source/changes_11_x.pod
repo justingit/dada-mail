@@ -2,6 +2,26 @@
 
 =encoding utf-8
 
+=head1 11.0.2
+
+=head2 Bugfixes
+
+=head3 Custom Preheader is not set for Subscription Confirmation Message (and probably others) #736
+
+L<https://github.com/justingit/dada-mail/issues/736>
+
+=head3 UTF-8 characters in email headers of email templates cause server errors #735
+
+L<https://github.com/justingit/dada-mail/issues/735>
+
+=head3 Custom "to_phrase" and, "from_phrase" set in email theme templates aren't always actively used in email messages sent out #734
+
+L<https://github.com/justingit/dada-mail/issues/734>
+
+=head3 "Recent Activity" screen still uses dada.txt log file, rather than, "dada_consent_activity" table #733
+
+L<https://github.com/justingit/dada-mail/issues/733>
+
 =head1 11.0.1
 
 =head2 Bugfixes
