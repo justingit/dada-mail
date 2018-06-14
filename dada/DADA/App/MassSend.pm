@@ -153,12 +153,11 @@ sub send_email {
 		}
 	}
 	my $layout_fn = 'mailing_list_message';
-	if($default_layout ne 'default'){ 
-		$layout_fn = 'mailing_list_message-' . $default_layout;
-	}
-	my $etp          = $em->fetch($layout_fn);	
+	   $layout_fn = 'mailing_list_message-' . $default_layout;
+
+		my $etp          = $em->fetch($layout_fn);	
 	my $subject      = $etp->{vars}->{subject};
-	
+
     if ( !$process ) {
 
         warn '!$process'
@@ -790,8 +789,6 @@ sub construct_from_url {
 				$fm->_encode_header('just_phrase', $etp->{vars}->{to_phrase}),
 				$ls->param('list_owner_email'))->format; 
 	}
-	warn 'didnt make it thru that!';
-	
 	
     if($subject_from eq 'title_tag') { 
 		if($content_from eq 'feed_url') { 
