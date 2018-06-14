@@ -786,8 +786,7 @@ sub bounce_from_me {
     my $self   = shift;
     my $entity = shift;
     if ( $entity->head->count( 'X-BeenThere' > 0 ) ) {    # Uh oh..
-        require Email::Address;
-        my @addr = Email::Address->parse( $entity->head->get( 'X-BeenThere', 0 ) );
+        my @addr = Email_Address_parse( $entity->head->get( 'X-BeenThere', 0 ) );
         my $pn = $self->config->{Plugin_Name};
         for my $a (@addr) {
             if ( $a->phrase =~ m/$pn/ ) {
@@ -1237,7 +1236,6 @@ sub save_bounce {
     my $entity;
     eval {
         $entity = $self->parser->parse_data($message);
-        require Email::Address;
         require POSIX;
 
         # This is wrong in a few ways:
@@ -1245,7 +1243,7 @@ sub save_bounce {
         # the date should probably be the datein the email message.
         # We'll try this out...
         my $rough_from = $entity->head->get( 'From', 0 );
-        my $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+        my $from_address = ( Email_Address_parse($rough_from) )[0]->address;
         print APPENDLOG 'From ' . $from_address . ' ' . POSIX::ctime(time);
     };
     if ($@) {
@@ -1276,7 +1274,6 @@ sub append_message_to_file {
     my $entity;
     eval {
         $entity = $self->parser->parse_data($message);
-        require Email::Address;
         require POSIX;
 
         # This is wrong in a few ways:
@@ -1284,7 +1281,7 @@ sub append_message_to_file {
         # the date should probably be the datein the email message.
         # We'll try this out...
         my $rough_from = $entity->head->get( 'From', 0 );
-        my $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+        my $from_address = ( Email_Address_parse($rough_from) )[0]->address;
         print APPENDLOG 'From ' . $from_address . ' ' . POSIX::ctime(time);
     };
     if ($@) {

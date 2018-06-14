@@ -339,7 +339,7 @@ sub sender_address {
     my $a; 
     
     if(defined($e) && length($e) > 0){ 
-        $a = ( Email::Address->parse($e) )[0]->address;
+        $a = ( Email_Address_parse($e) )[0]->address;
     }
     else { 
         warn 'no sender address found.'; 

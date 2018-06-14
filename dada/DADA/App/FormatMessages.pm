@@ -1441,7 +1441,7 @@ q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
     }
     else {
 
-        my @addrs = Email::Address->parse( $entity->head->get( 'To', 0 ) );
+        my @addrs = Email_Address_parse( $entity->head->get( 'To', 0 ) );
 
         if ( $addrs[1] ) {
 
@@ -1497,7 +1497,7 @@ sub _pp {
     require MIME::EncWords;
     require DADA::Template::Widgets;
 
-    my $a = ( Email::Address->parse($from) )[0]->address;
+    my $a = ( Email_Address_parse($from) )[0]->address;
     my ( $e_name, $e_domain ) = split( '@', $a, 2 );
 
     #if ( $a eq $self->{ls}->param('list_owner_email') ) {
@@ -1507,7 +1507,7 @@ sub _pp {
     #else {
     # $a =~ s/\@/ _at_ /;
 
-    my $p = ( Email::Address->parse($from) )[0]->phrase || ( Email::Address->parse($from) )[0]->address;
+    my $p = ( Email_Address_parse($from) )[0]->phrase || ( Email_Address_parse($from) )[0]->address;
     $p = $self->_decode_header($p);
     my $d          = $self->{ls}->param('group_list_pp_mode_from_phrase');
     my $new_phrase = DADA::Template::Widgets::screen(
@@ -1586,7 +1586,7 @@ sub _encode_header {
     }
 	else {
         require Email::Address;
-        my @addresses = Email::Address->parse($value);
+        my @addresses = Email_Address_parse($value);
         for my $address (@addresses) {
 
             my $phrase = $address->phrase;
@@ -2972,7 +2972,7 @@ sub email_template {
                 require Email::Address;
 
                 # Uh.... get each individual.. thingy.
-                my @addresses = Email::Address->parse($header_value);
+                my @addresses = Email_Address_parse($header_value);
 
                 # But then, just work with the first?
                 if ( $addresses[0] ) {

@@ -110,6 +110,9 @@ require Exporter;
   
   anonymize_ip
   
+  Email_Address_parse
+ 
+  
   
 );
 
@@ -125,6 +128,9 @@ my $can_use_cache = {};
 # evaluate these once at compile time
 use constant HAS_URI_ESCAPE_XS => eval { require URI::Escape::XS; 1; }; # Much faster, but requires C compiler.
 use constant HAS_URI_ESCAPE    => eval { require URI::Escape; 1; };
+
+use constant HAS_EMAIL_ADDRESS_XS => eval { require Email::Address::XS; 1; };
+use constant HAS_EMAIL_ADDRESS    => eval { require Email::Address; 1; };
 
 =pod
 
@@ -2584,7 +2590,7 @@ sub break_encode {
     my $addy = undef;
 	
 	try {
-		my @addresses = Email::Address->parse($address);
+		my @addresses = Email_Address_parse($address);
 		my @n_addresses; 
 		for my $addr(@addresses) { 
 			my ($name, $domain) = split('@', $addr->address, 2);
@@ -2662,7 +2668,7 @@ sub mailhide_encode {
 
     if ( defined($str) ) {
         eval {
-            $addy = ( Email::Address->parse($str) )[0]->address;
+            $addy = ( Email_Address_parse($str) )[0]->address;
 
         };
     }
@@ -3470,6 +3476,19 @@ sub list_types {
     	
 	};
 }
+
+
+sub Email_Address_parse { 
+	if(HAS_EMAIL_ADDRESS_XS){
+		require Email::Address::XS; 
+		return (Email::Address::XS->parse($_[0]));
+	}
+	if(HAS_EMAIL_ADDRESS){ 
+		require Email::Address; 
+		return (Email::Address->parse($_[0]));	
+	}
+}
+
 
 
 

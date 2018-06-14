@@ -262,7 +262,7 @@ sub find_from_whom {
         if ( $orig_header_from = $entity->head->get( 'From', 0 ) ) {
             require Email::Address;
             $from_address =
-              ( Email::Address->parse($orig_header_from) )[0]->address;
+              ( Email_Address_parse($orig_header_from) )[0]->address;
         }
 
     }

@@ -1699,7 +1699,7 @@ sub validate_msg {
                 $errors->{multiple_from_addresses} = 1;
             }
             else {
-                my @count = Email::Address->parse( $entity->head->get( 'From', 0 ) );
+                my @count = Email_Address_parse( $entity->head->get( 'From', 0 ) );
                 if ( scalar(@count) > 1 ) {
                     $r .= "\t\tMessage has more than one 'From' header? Unsupported email message - will reject!\n";
                     $errors->{multiple_from_addresses} = 1;
@@ -1751,7 +1751,7 @@ sub validate_msg {
     if ( defined($rough_from) ) {
         try {
             # This correct ?
-            $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+            $from_address = ( Email_Address_parse($rough_from) )[0]->address;
 	    } catch { 
 	         $r .= '\t*Warning! Something\'s wrong with the From address - ' . $_;
 	    };
@@ -2086,7 +2086,7 @@ sub test_Check_List_Owner_Return_Path_Header {
 
     if ( defined($rough_from) ) {
 
-        try { $from_address = ( Email::Address->parse($rough_from) )[0]->address; };
+        try { $from_address = ( Email_Address_parse($rough_from) )[0]->address; };
     } catch { 
         $notice .= '\t\tWarning! Something\'s wrong with the From address - ' . $_
     };
@@ -2118,7 +2118,7 @@ sub test_Check_List_Owner_Return_Path_Header {
     if ( defined($rough_return_path) ) {
 
         try { 
-            $return_path_address = ( Email::Address->parse($rough_return_path) )[0]->address; 
+            $return_path_address = ( Email_Address_parse($rough_return_path) )[0]->address; 
         }
         catch { 
             warn $_; 
@@ -2174,7 +2174,7 @@ sub send_msg_too_big {
             warn "couldn't create a new entity in send_msg_too_big, passing.";
         }
 
-        my $from_address = ( Email::Address->parse( $entity->head->get( 'From', 0 ) ) )[0]->address;
+        my $from_address = ( Email_Address_parse( $entity->head->get( 'From', 0 ) ) )[0]->address;
 
         require DADA::App::FormatMessages;
         my $dfm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
@@ -2237,7 +2237,7 @@ sub notify_of_delivery {
     my $from_address = undef;
     if ( defined($rough_from) ) {
         try { 
-			$from_address = ( Email::Address->parse($rough_from) )[0]->address; 
+			$from_address = ( Email_Address_parse($rough_from) )[0]->address; 
 		} catch { 
 			warn $_; 
 		};
@@ -2653,7 +2653,7 @@ sub deliver {
             if ( exists( $headers{From} ) ) {
 
                 try { 
-					$f_a = ( Email::Address->parse( $headers{From} ) )[0]->address; 
+					$f_a = ( Email_Address_parse( $headers{From} ) )[0]->address; 
 					
 	                $r .= "\t* Going to skip sending original poster ($f_a) a copy of their own  message...\n";
 	                $mh->do_not_send_to( [$f_a] );
@@ -2760,7 +2760,7 @@ sub send_msg_not_from_subscriber {
     if ( defined($rough_from) ) {
         ;
         try { 
-			$from_address = ( Email::Address->parse($rough_from) )[0]->address; 
+			$from_address = ( Email_Address_parse($rough_from) )[0]->address; 
 		} catch { 
 			warn $_; 
 		};
@@ -2815,7 +2815,7 @@ sub send_spam_rejection_message {
     if ( defined($rough_from) ) {
         ;
         try { 
-			$from_address = ( Email::Address->parse($rough_from) )[0]->address; 
+			$from_address = ( Email_Address_parse($rough_from) )[0]->address; 
 		} catch { 
 			warn $_; 
 		}; 
@@ -2867,7 +2867,7 @@ sub send_invalid_msgs_to_owner {
     my $from_address;
     if ( defined($rough_from) ) {
         try { 
-			$from_address = ( Email::Address->parse($rough_from) )[0]->address; 
+			$from_address = ( Email_Address_parse($rough_from) )[0]->address; 
 		} catch { 
 			warn $_; 
 		};
@@ -2946,7 +2946,7 @@ sub handle_errors {
         # $from should probably be simply the email address, not the entire header...
         #
         try { 
-			$from = ( Email::Address->parse($from) )[0]->address; 
+			$from = ( Email_Address_parse($from) )[0]->address; 
 		} catch {
             warn "this was a problem parsing the email address from the header? '$_'";
         };

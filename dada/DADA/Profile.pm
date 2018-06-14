@@ -1353,8 +1353,7 @@ sub _config_profile_email {
  
     if ( length($DADA::Config::PROFILE_OPTIONS->{profile_email}) > 0) {
 		my @good_addresses = (); 
-		require Email::Address;
-		my @addrs = Email::Address->parse( $DADA::Config::PROFILE_OPTIONS->{profile_email} );
+		my @addrs = Email_Address_parse( $DADA::Config::PROFILE_OPTIONS->{profile_email} );
 
 		for my $a(@addrs) { 
 			if(DADA::App::Guts::check_for_valid_email($a->address) == 0){ 

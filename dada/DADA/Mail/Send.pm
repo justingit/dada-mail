@@ -470,7 +470,7 @@ sub send {
             # why wouldn't it be defined?
             if ( defined($to) ) {
                 ;
-                eval { $to = ( Email::Address->parse($to) )[0]->address; };
+                eval { $to = ( Email_Address_parse($to) )[0]->address; };
             }
 
             my $smtp_msg = '';
@@ -581,7 +581,7 @@ sub send {
         if ( defined($plain_to_address) ) {
             eval {
                 $plain_to_address =
-                  ( Email::Address->parse($plain_to_address) )[0]->address;
+                  ( Email_Address_parse($plain_to_address) )[0]->address;
             };
         }
         else {
@@ -848,10 +848,10 @@ sub _mail_merge_vars_from_entity {
 
 		my $from_tmp = undef;
 		if ( $entity->head->count('X-Original-From') ) {
- 			$from_tmp = (Email::Address->parse($entity->head->get('X-Original-From', 0)))[0]; 
+ 			$from_tmp = (Email_Address_parse($entity->head->get('X-Original-From', 0)))[0]; 
 		}
 		else { 
- 			$from_tmp = (Email::Address->parse($entity->head->get('From', 0)))[0]; 
+ 			$from_tmp = (Email_Address_parse($entity->head->get('From', 0)))[0]; 
 		}	
 		 
 		return {} 
@@ -3255,7 +3255,7 @@ sub _verp {
     require Email::Address;
     require Mail::Verp;
 
-    if ( my $to_temp = ( Email::Address->parse($to) )[0] ) {
+    if ( my $to_temp = ( Email_Address_parse($to) )[0] ) {
         $to = $to_temp->address();
     }
 
@@ -3385,7 +3385,7 @@ sub _mail_merge {
 
 			require Email::Address; 
 			eval { 
-				$orig_to_phrase = ( Email::Address->parse($orig_to))[0]->phrase; 
+				$orig_to_phrase = ( Email_Address_parse($orig_to))[0]->phrase; 
 				$orig_to_phrase = $args->{-fm_obj}->_decode_header($orig_to_phrase); 
 			};
 			if($@){
