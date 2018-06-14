@@ -1462,7 +1462,7 @@ q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
             elsif ( !$to_addy->phrase ) {
                 $entity->head->delete('To');
                 
-				warn 'Message set with no To: header - make sure to ONLY pass messages with correctly set To: headers!';
+				# warn 'Message set with no To: header - make sure to ONLY pass messages with correctly set To: headers!';
 				
 				$entity->head->add(
                     'To',
