@@ -845,18 +845,19 @@ sub _mail_merge_vars_from_entity {
 	my $vars = {}; 
 	
 	try { 
-
+		
 		my $from_tmp = undef;
 		if ( $entity->head->count('X-Original-From') ) {
  			$from_tmp = (Email_Address_parse($entity->head->get('X-Original-From', 0)))[0]; 
 		}
-		else { 
+		# There's a reason this wouldn't be here, at all? 
+		# not checking this when an invite message is sent seems to produce an error (that's caught by the try{})
+		elsif ( $entity->head->count('From') ) { 
  			$from_tmp = (Email_Address_parse($entity->head->get('From', 0)))[0]; 
 		}	
 		 
 		return {} 
 				if ! defined $from_tmp; 
-				
 	    my $e = $from_tmp->address(); 
 		my ($en, $ed) = split('@', $e);
        
@@ -866,8 +867,7 @@ sub _mail_merge_vars_from_entity {
 		
 		# ? maybe not... 
 		# 		    $vars->{'original_sender.email_phrase'} = $fm->_decode_header($from_tmp->phrase()); 
-		
-		
+
 	    if ( $DADA::Config::PROFILE_OPTIONS->{enabled} == 1 ) {
 	        require DADA::Profile;
 	        my $dp = DADA::Profile->new( { -email => $e } );
@@ -887,8 +887,11 @@ sub _mail_merge_vars_from_entity {
 				}
 	        }  
 		}
+		else { 
+			# ... 
+		}
 	} catch { 
-		warn $_; 
+		warn 'problems with _mail_merge_vars_from_entity: ' . $_; 
 	};
 
 	return $vars; 
@@ -3375,6 +3378,7 @@ sub _mail_merge {
             $subscriber_vars->{'subscriber.email'}
         );
 		undef $etp; 
+				
     }
     else {			
 		my $To_header      = undef; 		
@@ -3420,11 +3424,11 @@ sub _mail_merge {
 	            $subscriber_vars->{'subscriber.email'} 
 			);
 		}
-		
-		$entity_cp->head->delete('To');
-		$entity_cp->head->add( 'To', $To_header );	
+	}
 
-}
+	$entity_cp->head->delete('To');
+	$entity_cp->head->add( 'To', $To_header );	
+
  
 	my $expr = 1;	
 
