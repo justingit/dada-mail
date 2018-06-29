@@ -22,6 +22,10 @@ L<https://github.com/justingit/dada-mail/issues/734>
 
 L<https://github.com/justingit/dada-mail/issues/733>
 
+=head3 Custom To/From phrases as well as Custom Subject do not get applied correctly #721
+
+<https://github.com/justingit/dada-mail/issues/721>
+
 =head1 11.0.1
 
 =head2 Bugfixes
