@@ -10724,7 +10724,10 @@ sub resend_conf_captcha {
             );
             $q->param( 'flavor', 's' );
 			
-			my $skip_tests = ['captcha_challenge_failed'];
+			my $skip_tests = [
+				'captcha_challenge_failed', 
+				'list_consent_check', 
+			];
 			
 			
             $self->subscribe(-skip_tests => $skip_tests);
@@ -10872,7 +10875,12 @@ sub resend_conf_no_captcha {
             $q->param( 'list',   $list );
             $q->param( 'email',  $email );
             $q->param( 'flavor', 's' );
-            $self->subscribe();
+          	
+			my $skip_tests = [
+				'list_consent_check', 
+			];
+            $self->subscribe(-skip_tests => $skip_tests);
+			
         }
         elsif ( $q->param('rm') eq 'u' ) {
 
