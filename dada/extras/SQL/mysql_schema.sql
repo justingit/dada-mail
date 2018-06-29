@@ -202,3 +202,4 @@ CREATE INDEX dada_mass_mailing_event_log_index ON dada_mass_mailing_event_log (l
 
 CREATE INDEX dada_rate_limit_hits_all_index ON dada_rate_limit_hits (user_id, action(80), timestamp);
 
+CREATE INDEX dada_consent_activity_index ON dada_consent_activity (email, list, action);

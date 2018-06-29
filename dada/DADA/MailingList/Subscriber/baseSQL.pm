@@ -574,19 +574,31 @@ sub remove {
 		require DADA::MailingList::ConsentActivity; 
 		my $dmlc = DADA::MailingList::ConsentActivity->new; 
 		my $consent_token = $dmlc->token(); 		
-		my $current_consent_ids = $dmlc->subscriber_consented_to($self->{list}, $_); 
-		for my $con_id(@$current_consent_ids){ 
-			$dmlc->ch_record(
-				{ 
-					-email      => $self->email,
-					-list       => $self->{list},
-					-action     => 'consent revoked', 
-					-token      => $consent_token, 
-					-consent_id => $con_id, 
-					%{$args->{-consent_vars}},
-				}
-			);
-		}
+
+#	this doesn't scale all that well. 
+#		my $current_consent_ids = $dmlc->subscriber_consented_to($self->{list}, $_); 
+#		for my $con_id(@$current_consent_ids){ 
+#			$dmlc->ch_record(
+#				{ 
+#					-email      => $self->email,
+#					-list       => $self->{list},
+#					-action     => 'consent revoked', 
+#					-token      => $consent_token, 
+#					-consent_id => $con_id, 
+#					%{$args->{-consent_vars}},
+#				}
+#			);
+#		}
+
+		$dmlc->ch_record(
+			{ 
+				-email      => $self->email,
+				-list       => $self->{list},
+				-action     => 'all consent revoked', 
+				-token      => $consent_token, 
+				%{$args->{-consent_vars}},
+			}
+		);
 		$dmlc->ch_record(
 			{ 
 				-email      => $self->email,

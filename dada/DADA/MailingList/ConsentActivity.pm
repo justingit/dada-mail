@@ -222,7 +222,9 @@ sub allowed_action {
 		'cloic sent' => 1,
 		'subscription' => 1,
 		'consent revoked' => 1,
+		'all consent revoked' => 1,
 		'unsubscribe' => 1,
+		
 	};
 	
 	if(exists($actions->{$action})){ 
