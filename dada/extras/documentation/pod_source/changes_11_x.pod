@@ -2,6 +2,20 @@
 
 =encoding utf-8
 
+=head1 11.0.3
+
+=head2 Bugfixes
+
+=head3 List Invitations do not work #740
+
+L<https://github.com/justingit/dada-mail/issues/740>
+
+This most likely affect v11.0.2 users, as changes in that ver. touched on the code where this bug was introduced. 
+
+=head3  Resending subscription confirmation requests will fail if there are list consents #741 
+
+L<https://github.com/justingit/dada-mail/issues/741>
+
 =head1 11.0.2
 
 =head2 Bugfixes
