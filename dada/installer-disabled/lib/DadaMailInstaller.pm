@@ -390,35 +390,13 @@ sub cl_run {
         $dash_opts->{-scheduled_jobs_flavor} = '_sched' . uc( substr( DADA::App::Guts::generate_rand_string_md5(), 0, 16 ) );   
     }
 
-    # WYSIWYG Editors: 
-    if ( exists( $cl_params->{install_wysiwyg_editors} ) ) {
-     #   $r .= "we got WYSIWYG!\n"; 
-        my @wysiwyg_editors = split( /,/, join( ',', @{ $cl_params->{install_wysiwyg_editors} } ) );
-        for(@wysiwyg_editors){ 
-            if($_ eq 'ckeditor'){ 
-                $dash_opts->{-install_wysiwyg_editors}         = 1; 
-                $dash_opts->{-wysiwyg_editor_install_ckeditor} = 1; 
-            }
-            elsif($_ eq 'tiny_mce') { 
-                $dash_opts->{-install_wysiwyg_editors} = 1; 
-                $dash_opts->{-wysiwyg_editor_install_tiny_mce} = 1; 
-            }
-            else { 
-                $r .= 'Unknown WYSIWYG Editor: ' . $_ . "\n";
-            }
-        }
-    }
-    else { 
-        #$r .= "No WYSIWYG wah\n";
-        $dash_opts->{-install_wysiwyg_editors} = 0;
-    }
-    
     # PLUGINS!
     if ( exists( $cl_params->{install_plugins} ) ) {
         my @install_plugins = split( /,/, join( ',', @{ $cl_params->{install_plugins} } ) );
         for (@install_plugins) {
             $dash_opts->{ '-install_' . $_ } = 1;
         }
+		# why is this then deleted? 
         delete $dash_opts->{-install_plugins};
     }
 
@@ -438,8 +416,6 @@ sub cl_run {
     ){ 
         $dash_opts->{-configure_amazon_ses} = 1; 
     }
-
-
 
     # Dada Root Pass - no need to retype it on the CL
     if ( exists( $dash_opts->{-dada_root_pass} ) ) {
