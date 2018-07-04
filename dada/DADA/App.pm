@@ -7665,12 +7665,15 @@ sub subscription_options {
       600000 700000 800000 900000 1000000
     );
 
-    $DADA::Config::SUBSCRIPTION_QUOTA = undef
-      if strip($DADA::Config::SUBSCRIPTION_QUOTA) eq '';
+	if (strip($DADA::Config::SUBSCRIPTION_QUOTA) eq '') {
+ 	   $DADA::Config::SUBSCRIPTION_QUOTA = undef
+	}
+    
     my @quota_values;
 
-    if ( defined($DADA::Config::SUBSCRIPTION_QUOTA) ) {
-
+	# no idea. 
+    if ( defined($DADA::Config::SUBSCRIPTION_QUOTA) 
+		&&       $DADA::Config::SUBSCRIPTION_QUOTA > 0 ) {
         for (@d_quota_values) {
             if ( $_ < $DADA::Config::SUBSCRIPTION_QUOTA ) {
                 push( @quota_values, $_ );
@@ -11092,9 +11095,14 @@ sub new_list {
                     -url => $DADA::Config::S_PROGRAM_URL . '?agree=no' );
             }
 
-            $DADA::Config::LIST_QUOTA = undef
-              if strip($DADA::Config::LIST_QUOTA) eq '';
-            if (   ($DADA::Config::LIST_QUOTA)
+			if(strip($DADA::Config::LIST_QUOTA) eq '');
+				$DADA::Config::LIST_QUOTA = undef;
+            } 
+			# Special: 
+			if($DADA::Config::LIST_QUOTA == 0){ 
+				$DADA::Config::LIST_QUOTA = undef;
+			}
+            if (   defined($DADA::Config::LIST_QUOTA)
                 && ( ( $#t_lists + 1 ) >= $DADA::Config::LIST_QUOTA ) )
             {
                 return user_error(
@@ -15103,8 +15111,8 @@ sub transform_to_pro {
 \$GIVE_PROPS_IN_ADMIN          = 0;
 \$GIVE_PROPS_IN_SUBSCRIBE_FORM = 0;
 \$PROGRAM_IMG_FILENAME         = 'pro_dada_mail_logo.png';
-\$LIST_QUOTA                   = undef;
-\$SUBSCRIPTION_QUOTA           = undef;
+\$LIST_QUOTA                   = 0;
+\$SUBSCRIPTION_QUOTA           = 0;
 
 };
         my $status = 1;

@@ -728,9 +728,16 @@ sub admin {
     my @available_lists = available_lists();
 	
     my $list_max_reached = 0;
-    if (   ($DADA::Config::LIST_QUOTA)
+	
+	if(strip($DADA::Config::LIST_QUOTA) eq '');
+		$DADA::Config::LIST_QUOTA = undef;
+    } 
+	# Special: 
+	if($DADA::Config::LIST_QUOTA == 0){ 
+		$DADA::Config::LIST_QUOTA = undef;
+	}
+    if (   defined($DADA::Config::LIST_QUOTA)
         && ( ( $#available_lists + 1 ) >= $DADA::Config::LIST_QUOTA ) )
-    {
         $list_max_reached = 1;
     }
 
