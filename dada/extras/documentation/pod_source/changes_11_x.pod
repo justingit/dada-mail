@@ -2,6 +2,14 @@
 
 =encoding utf-8
 
+=head1 11.0.4
+
+=head2 Bugfixes
+
+=head3 Upgrading via CLI does not set up WYSIWYG editors/file manager correctly #743
+
+L<https://github.com/justingit/dada-mail/issues/743>
+
 =head1 11.0.3
 
 =head2 Bugfixes
