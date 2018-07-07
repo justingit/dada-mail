@@ -729,7 +729,7 @@ sub admin {
 	
     my $list_max_reached = 0;
 	
-	if(strip($DADA::Config::LIST_QUOTA) eq '');
+	if(strip($DADA::Config::LIST_QUOTA) eq '') {
 		$DADA::Config::LIST_QUOTA = undef;
     } 
 	# Special: 
@@ -737,7 +737,11 @@ sub admin {
 		$DADA::Config::LIST_QUOTA = undef;
 	}
     if (   defined($DADA::Config::LIST_QUOTA)
-        && ( ( $#available_lists + 1 ) >= $DADA::Config::LIST_QUOTA ) )
+        && ( 
+			( $#available_lists + 1 ) >= $DADA::Config::LIST_QUOTA 
+		) 
+		
+		) {
         $list_max_reached = 1;
     }
 
