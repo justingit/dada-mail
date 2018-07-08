@@ -11095,7 +11095,7 @@ sub new_list {
                     -url => $DADA::Config::S_PROGRAM_URL . '?agree=no' );
             }
 
-			if(strip($DADA::Config::LIST_QUOTA) eq '');
+			if(strip($DADA::Config::LIST_QUOTA) eq '') {
 				$DADA::Config::LIST_QUOTA = undef;
             } 
 			# Special: 
