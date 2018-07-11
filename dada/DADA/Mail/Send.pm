@@ -3380,8 +3380,7 @@ sub _mail_merge {
 		undef $etp; 
 				
     }
-    else {			
-		my $To_header      = undef; 		
+    else {
 	    if ( $entity_cp->head->get( 'To', 0 ) ) {
 			my $orig_to        = $entity_cp->head->get( 'To', 0 );
 
