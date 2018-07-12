@@ -9,11 +9,13 @@
 L<https://github.com/justingit/dada-mail/issues/744>
 
 This bug, unfortunately, will affect ALL users of at least version 11.0.5 of Dada Mail. If you are using that version, it's 
-recommended to either upgrade, or to apply the one-line fix seen in this diff: 
+recommended to upgrade. 
 
-L<https://github.com/justingit/dada-mail/commit/95f64f865e4c2c27975f57a265adc9073d15f78c>
+=head3  Bridge: Mass Mailings do not work: "Argument contains empty host portion of address at" error #745 
 
-This one-line is the only true change between v11.0.4 and v11.0.5. 
+L<https://github.com/justingit/dada-mail/issues/745>
+
+Similar story on this bug. 
 
 =head1 11.0.4
 
