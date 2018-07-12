@@ -2,6 +2,19 @@
 
 =encoding utf-8
 
+=head1 11.0.5
+
+=head3  Mass Mailing Broken - errors about missing, "To" header #744 
+
+L<https://github.com/justingit/dada-mail/issues/744>
+
+This bug, unfortunately, will affect ALL users of at least version 11.0.5 of Dada Mail. If you are using that version, it's 
+recommended to either upgrade, or to apply the one-line fix seen in this diff: 
+
+L<https://github.com/justingit/dada-mail/commit/95f64f865e4c2c27975f57a265adc9073d15f78c>
+
+This one-line is the only true change between v11.0.4 and v11.0.5. 
+
 =head1 11.0.4
 
 =head2 Bugfixes
