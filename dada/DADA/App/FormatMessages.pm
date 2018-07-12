@@ -14,8 +14,8 @@ use MIME::Entity;
 use DADA::App::Guts;
 use Try::Tiny;
 use Carp qw(croak carp);
-
 # $Carp::Verbose = 1;
+
 use vars qw($AUTOLOAD);
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
@@ -1467,7 +1467,9 @@ q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
 				$entity->head->add(
                     'To',
                     $self->format_phrase_address(
-                        $self->_encode_header('phrase_only', $self->{ls}->param('list_name')),
+                        $self->_encode_header(
+							'just_phrase', 
+							$self->{ls}->param('list_name')),
 						$to_addy
                     )
                 );
@@ -1543,8 +1545,7 @@ sub _encode_header {
 
     my $self  = shift;
     my $label = shift;
-    my $value = shift;
-
+    my $value = shift;	
 	# are you asking me to double-encode?
 	if($value =~ m/\=\?UTF\-8/){ 
 		warn 'header already encoded?!:' . $value; 
@@ -1562,7 +1563,6 @@ sub _encode_header {
 	else { 
 		$charset = $self->{ls}->param('charset_value');
 	}
-	
     if (   $label eq 'Subject'
         || $label eq 'List'
         || $label eq 'List-URL'
@@ -1582,11 +1582,11 @@ sub _encode_header {
             MaxLineLen => $MaxLineLen,
             Charset    => $charset
         );
-		
     }
 	else {
         require Email::Address;
         my @addresses = Email_Address_parse($value);
+		
         for my $address (@addresses) {
 
             my $phrase = $address->phrase;
@@ -1599,12 +1599,36 @@ sub _encode_header {
                 )
             );
         }
+		
         my @new_addresses = ();
+				
         for (@addresses) {
-            push( @new_addresses, $_->format() );
-        }
-        $new_value = join( ', ', @new_addresses );
+			push( 
+				@new_addresses, 
+				scalar $_->format() 
+			);			
+		}
+
+# this is unneeded optimization, I think:       
+#		if(length(@new_addresses) == 1){ 
+#			$new_value = $new_addresses[0];
+#		}
+#		elsif (length(@new_addresses) > 1) {
+			$new_value = join(
+				', ', 
+				@new_addresses
+			);
+#		}
+#		elsif(length(@new_addresses) <= 0){ 
+#			warn 'There is a big problem here.'; 
+#			return $value;
+#		}
+		
+#		warn '$new_value 1 ' . $new_value; 
+		
     }
+	
+	
     return $new_value;
 
 }

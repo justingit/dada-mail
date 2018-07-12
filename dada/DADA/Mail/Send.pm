@@ -727,30 +727,28 @@ sub send {
             && defined(
                 $self->{ls}->param('discussion_pop_email') )    # safegaurd?
           )
-        {
-
-            require Email::Address;
-            require DADA::App::FormatMessages;
-            my $fm = DADA::App::FormatMessages->new(
-                -List   => $self->{list},
-                -ls_obj => $self->{ls},
-            );
-            my $formatted_disc_email = $fm->_encode_header(
-                'To',
-                $fm->format_phrase_address(
-                    $self->{ls}->param('list_name'),
-                    $self->{ls}->param('discussion_pop_email')
-                )
-            );
-
-            #			   $fields{To} =  $formatted_disc_email;
-
+        {           
             # rewriting  Reply-To:
             if ( $self->{ls}->param('set_to_header_to_list_address') == 1 ) {
 
                 # ... Nothin' more needed
             }
             else {
+				
+	            require Email::Address;
+	            require DADA::App::FormatMessages;
+	            my $fm = DADA::App::FormatMessages->new(
+	                -List   => $self->{list},
+	                -ls_obj => $self->{ls},
+	            );
+	            my $formatted_disc_email = $fm->_encode_header(
+	                'To',
+	                $fm->format_phrase_address(
+	                    $self->{ls}->param('list_name'),
+	                    $self->{ls}->param('discussion_pop_email')
+	                )
+	            );
+			
                 # This is against RFC
                 $fields{'Reply-To'} = $formatted_disc_email;
             }
@@ -3369,7 +3367,7 @@ sub _mail_merge {
 	# right now, there is no way to post process the headers
 	# recevied by mass_send. 
 	# 
-    my $To_header = '';
+    my $To_header = undef;
     if ( $self->list_type eq 'invitelist' ) {
 			    
 		my $etp = $self->email_themes_obj->fetch('invite_message');
@@ -3384,24 +3382,29 @@ sub _mail_merge {
 	    if ( $entity_cp->head->get( 'To', 0 ) ) {
 			my $orig_to        = $entity_cp->head->get( 'To', 0 );
 
+			#warn '$orig_to' . $orig_to; 
+			
 			my $orig_to_phrase = undef;  	
 
 			require Email::Address; 
-			eval { 
+			try { 
 				$orig_to_phrase = ( Email_Address_parse($orig_to))[0]->phrase; 
 				$orig_to_phrase = $args->{-fm_obj}->_decode_header($orig_to_phrase); 
+			} catch {
+				warn 'problem grabbing orig To: phrase: ' . $_; 
 			};
-			if($@){
-				warn $@
-			}
+			
+			#warn '$orig_to_phrase' . $orig_to_phrase; 
+			
 			if(defined($orig_to_phrase) && length($orig_to_phrase) > 0){ 
-		        $To_header = $args->{-fm_obj}->_encode_header(
+				$To_header = $args->{-fm_obj}->_encode_header(
 					'To',
 					$args->{-fm_obj}->format_phrase_address(
 						$orig_to_phrase,
 			            $subscriber_vars->{'subscriber.email'} 
 					)
 				); 
+				# warn '$To_header ' . $To_header; 
 			}
 		}
 		# Did nothing above, work? 
@@ -3422,9 +3425,12 @@ sub _mail_merge {
 				),
 	            $subscriber_vars->{'subscriber.email'} 
 			);
+			#warn '$To_header' . $To_header; 
 		}
 	}
 
+	# warn 'final $To_header' . $To_header; 
+	
 	$entity_cp->head->delete('To');
 	$entity_cp->head->add( 'To', $To_header );	
 
