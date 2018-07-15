@@ -88,7 +88,7 @@ foreach (@available_lists) {
         # $l_count++;
 
         my $html_info = $li->{info};
-        $html_info = plaintext_to_html( { -str => $html_info } );
+        $html_info = markdown_to_html { -str => $html_info } );
 
         # Just trying this out...
 

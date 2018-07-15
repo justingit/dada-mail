@@ -69,6 +69,9 @@ BEGIN{ use_ok('DADA::App::Guts'); }
 BEGIN{ use_ok('DADA::App::Licenses'); }
 BEGIN{ use_ok('DADA::App::LogSearch'); }
 
+BEGIN{ use_ok('DADA::App::Markdown'); }
+
+
 BEGIN{ use_ok('DADA::App::MassSend'); }
 
 BEGIN{ use_ok('DADA::App::Messages'); }

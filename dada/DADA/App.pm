@@ -640,7 +640,7 @@ sub list_privacy_policy {
 		$pp_data = $ppm->latest_privacy_policy({-list => $list});
 	}
 	my $saved_privacy_policy = $pp_data->{privacy_policy};
-	$saved_privacy_policy = plaintext_to_html({-str => $saved_privacy_policy});
+	$saved_privacy_policy = markdown_to_html({-str => $saved_privacy_policy});
 
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {

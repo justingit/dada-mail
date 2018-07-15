@@ -1515,7 +1515,7 @@ sub scrn_install_dada_mail {
                 # These are tricky....
                 SUPPORT_FILES_URL => $Self_URL . '?flavor=screen&screen=',
 
-                install_log            => plaintext_to_html( { -str => $log } ),
+                install_log            => markdown_to_html { -str => $log } ),
                 status                 => $status,
                 install_dada_files_loc => $install_dada_files_loc,
                 Dada_Files_Dir_Name    => $Dada_Files_Dir_Name,
