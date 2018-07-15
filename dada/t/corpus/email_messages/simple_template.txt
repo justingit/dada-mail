@@ -1,7 +1,7 @@
-From: "[from_phrase]" <from@example.com>
-To: "[to_phrase]" <to@example.com>
-Subject: [subject]
+From: "<!-- tmpl_var from_phrase -->" <from@example.com>
+To: "<!-- tmpl_var to_phrase -->" <to@example.com>
+Subject: <!-- tmpl_var subject -->
 
 Var1: <!-- tmpl_var var1 -->
-Var2: [var2]
-Var3: [var3]
+Var2: <!-- tmpl_var var2 -->
+Var3: <!-- tmpl_var var3 -->
