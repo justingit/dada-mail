@@ -148,14 +148,14 @@ list varchar(16),
 privacy_policy mediumtext
 );
 
-CREATE TABLE IF NOT EXISTS dada_consents  (
+CREATE TABLE IF NOT EXISTS dada_consents (
 consent_id INTEGER PRIMARY KEY AUTOINCREMENT,
 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 list varchar(16),
 consent mediumtext
 );
 
-CREATE TABLE IF NOT EXISTS dada_consent_activity  (	
+CREATE TABLE IF NOT EXISTS dada_consent_activity (	
 	consent_activity_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	remote_addr           varchar(255), 
 	timestamp             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
