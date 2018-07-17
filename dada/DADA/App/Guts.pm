@@ -2213,12 +2213,12 @@ sub create_probable_missing_tables {
         my $table_name = undef;
         if ( $db_type eq 'Pg' ) {
             $table_name = $create_table;
-            $table_name =~ m/CREATE TABLE (.*?) \(/;
+            $table_name =~ m/CREATE TABLE (\S+) +\(/;
             $table_name = $1;
         }
         else {
             $table_name = $create_table;
-            $table_name =~ m/CREATE TABLE IF NOT EXISTS (.*?) \(/;
+            $table_name =~ m/CREATE TABLE IF NOT EXISTS (\S+) +\(/;
             $table_name = $1;
 			$table_name = strip($table_name);
         }
