@@ -8,7 +8,12 @@ sub markdown_to_html {
 	my $text = shift; 
 	
 	my $m = Text::Markdown->new;
-	my $html = $m->markdown($text);
+	my $html = $m->markdown(
+		$text
+		{ 
+			empty_element_suffix => '>',
+		}
+	);
  
  	return $html; 
 	
