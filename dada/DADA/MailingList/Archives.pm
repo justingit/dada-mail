@@ -1966,7 +1966,7 @@ sub massaged_msg_for_display {
             # ...
         }
         else {
-			$body = plaintext_to_html({-str => $body});
+			$body = markdown_to_html({-str => $body});
         }
 
         if ( $self->{ls}->param('style_quoted_archive_text') == 1 ) {

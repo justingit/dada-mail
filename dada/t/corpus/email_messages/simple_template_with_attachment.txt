@@ -3,9 +3,9 @@ Content-Type: multipart/mixed; boundary="_----------=_1198434985218600"
 MIME-Version: 1.0
 X-Mailer: MIME::Lite 3.01 (F2.74; T1.18; A1.74; B3.07; Q3.07)
 Date: Sun, 23 Dec 2007 18:36:25 UT
-From: "[from_phrase]" <from@example.com>
-To: "[to_phrase]" <to@example.com>
-Subject: [subject]
+From: "<!-- tmpl_var from_phrase -->" <from@example.com>
+To: "<!-- tmpl_var to_phrase -->" <to@example.com>
+Subject: <!-- tmpl_var subject -->
 
 This is a multi-part message in MIME format.
 
@@ -18,8 +18,8 @@ Content-Type: text/plain
  
 
 Var1: <!-- tmpl_var var1 -->
-Var2: [var2]
-Var3: [var3]
+Var2: <!-- tmpl_var var2 -->
+Var3: <!-- tmpl_var var3 -->
 
 --_----------=_1198434985218600
 Content-Disposition: inline

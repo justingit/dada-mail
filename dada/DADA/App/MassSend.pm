@@ -965,7 +965,7 @@ sub construct_from_url {
 		&& length($text_message) >= 0
 		&& $ls->param('mass_mailing_convert_plaintext_to_html') == 1){ 
 			
-			$html_message = plaintext_to_html( { -str => $text_message } );	
+			$html_message = markdown_to_html( { -str => $text_message } );	
 	}
 	
 	if(length($html_message) > 0) {
@@ -2245,7 +2245,7 @@ sub list_invite {
             -msg             => {%f_headers},
 			-vars            => { 
 				custom_invite_message      => $custom_invite_message, 
-				custom_invite_message_html => scalar plaintext_to_html( { -str => $custom_invite_message } ), 
+				custom_invite_message_html => scalar markdown_to_html( { -str => $custom_invite_message } ), 
 			}
 		});
         my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=invitelist&id=' . $message_id;

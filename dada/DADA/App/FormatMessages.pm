@@ -1161,7 +1161,7 @@ sub _make_multipart {
 
     if ( $orig_type eq 'text/plain' ) {
         $new_type = 'text/html';
-        $new_data = plaintext_to_html( { -str => $orig_content } );
+        $new_data = markdown_to_html( { -str => $orig_content } );
 
    # I kind of agree this is a strange place to put this, but H::T template tags
    # are getting clobbered:

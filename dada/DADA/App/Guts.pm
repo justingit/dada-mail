@@ -58,6 +58,8 @@ require Exporter;
   make_safer
   encode_html_entities
   plaintext_to_html
+  markdown_to_html
+  
   check_list_setup
   
   message_id
@@ -1682,6 +1684,20 @@ sub plaintext_to_html {
 		}		
 	}
 	return $r; 
+}
+
+sub markdown_to_html { 
+
+	my ($args) = @_; 
+	
+	if(!exists($args->{-str})){ 
+		croak "you MUST pass a string to markdown_to_html in the, '-str' parameter!"; 
+	}
+	
+	require DADA::App::Markdown; 
+	my     $dam = DADA::App::Markdown->new; 
+	return $dam->markdown_to_html($args->{-str}); 
+
 }
 
 
