@@ -2,7 +2,33 @@
 
 =encoding utf-8
 
+=head1 11.1.0
+
+=head2 Features
+
+=head3 Markdown Support
+
+Many pieces of plain text copy in Dada Mail are now treated as Markdown markup, and will be treated as such if/when the copy
+is used as HTML. 
+
+List Settings that will get this treatment include: 
+
+=over
+
+=item * Mailing List Description
+
+=item * Mailing List Physical Address
+
+=item * Mailing List Privacy Policy
+
+=back
+
+Along with these list settings, mass mailing messages that are authored in plaintext will be treated as Markdown markup if they 
+are converted to HTML. 
+
 =head1 11.0.5
+
+=head2 Bugfixes
 
 =head3  Mass Mailing Broken - errors about missing, "To" header #744 
 
