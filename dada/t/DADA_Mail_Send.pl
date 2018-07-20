@@ -94,10 +94,12 @@ $mh = DADA::Mail::Send->new(
 # Off it goes: 
 $mh->test(1); 
 
-my $msg_id =  $mh->mass_send(
-	Subject => 'Test', 
-	Body    => 'This is the body!', 	
-); 	
+my $msg_id =  $mh->mass_send({
+	-msg 			  => {
+		Subject => 'Test', 
+		Body    => 'This is the body!',
+	} 	
+}); 	
 
 #
 # This is actually, really whacky - I don't know why there's a DADA::Mail::Send

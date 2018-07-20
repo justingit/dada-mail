@@ -98,12 +98,14 @@ diag $entity->dump_skeleton;
 
 my $pt_body    = safely_decode($entity->parts(0)->bodyhandle->as_string); 
 
-my $html_body = safely_decode($entity->parts(1)->bodyhandle->as_string);
+my $html_body = safely_decode($entity->parts(1)->parts(0)->bodyhandle->as_string);
+
+diag q{$entity->head->get('From', 0)} . decode_header($entity->head->get('From', 0)); 
 
 ok(
 	decode_header($entity->head->get('From', 0))
 	eq
-	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . " Owner\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 	); 
 
@@ -259,7 +261,7 @@ ok(
 	"Subject: Set Correctly2"
 );
 
-like($msg_str, qr/There are now a total of: 1 subscribers./, "Misc. Body stuff found (2)"); 
+like($msg_str, qr/There are now a total of\: 1 subscriber\(s\)./, "Misc. Body stuff found (2)"); 
 
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
@@ -280,9 +282,15 @@ $dap->send_you_are_already_subscribed_message(
         -email        => $email, 
 	}
 );
+
+
 $msg = slurp($mh->test_send_file); 
+
 $entity = $parser->parse_data(safely_encode($msg)); 
-$msg_str = safely_decode($entity->bodyhandle->as_string);
+
+$entity->dump_skeleton; 
+
+$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('From', 0))

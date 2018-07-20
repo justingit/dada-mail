@@ -1005,10 +1005,16 @@ Given an MIME::Entity (may be multipart) will attempt to:
 
 sub _add_opener_image {
 
+
     my $self    = shift;
     my $content = shift;
+	
 	return $content 
 		if $self->no_list == 1; 
+
+	#warn q{$self->{ls}->param('tracker_track_email')} . $self->{ls}->param('tracker_track_email'); 
+#	die; 
+	
 		
     my $url =
 '<!-- tmpl_var PROGRAM_URL -->/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/spacer.png';

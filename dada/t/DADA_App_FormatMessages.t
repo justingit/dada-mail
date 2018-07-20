@@ -21,13 +21,23 @@ use DADA::MailingList::Settings;
 
 my $list = dada_test_config::create_test_list;
 my $ls   = DADA::MailingList::Settings->new({-list => $list}); 
-my $fm = DADA::App::FormatMessages->new(-yeah_no_list => 1); 
 
 
 # _add_opener_image
+$ls->save(
+	{
+		-settings => {
+			tracker_track_email => 1
+		}
+	}
+);
+	
+my $fm = DADA::App::FormatMessages->new(-List => $list); 
+
+
 my $c = 'blah blah blah'; 
 $c = $fm->_add_opener_image($c); 
-#diag $c; 
+diag $c; 
 like($c, qr/open_img/); 
 undef $c; 
 

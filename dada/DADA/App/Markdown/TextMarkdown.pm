@@ -9,7 +9,7 @@ sub markdown_to_html {
 	
 	my $m = Text::Markdown->new;
 	my $html = $m->markdown(
-		$text
+		$text,
 		{ 
 			empty_element_suffix => '>',
 		}

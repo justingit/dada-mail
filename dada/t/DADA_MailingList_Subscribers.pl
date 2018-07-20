@@ -976,7 +976,7 @@ SKIP: {
     my $mh = DADA::Mail::Send->new( { -list => $list } );
     $mh->test_send_file( $DADA::Config::TMP . '/mail.txt' );
     $mh->test(1);
-    my $msg_id = $mh->mass_send( %$test_msg_fields, );
+    my $msg_id = $mh->mass_send({ -msg => {%$test_msg_fields }});
 
     my $mailout = DADA::Mail::MailOut->new( { -list => $list } );
     my $associate_worked = $mailout->associate( $msg_id, 'list' );
@@ -1119,7 +1119,14 @@ SKIP: {
       . DADA::App::Guts::message_id() . '.'
       . DADA::Security::Password::generate_rand_string('1234567890') . '@'
       . 'some-example-with-dashes.com' . '>';
-    my $msg_id = $mh->mass_send( %$test_msg_fields, 'Message-ID' => $mess_id, );
+    my $msg_id = $mh->mass_send(
+		{ 
+			-msg => { 
+				%$test_msg_fields, 
+				'Message-ID' => $mess_id
+			}
+		}
+	);
 
     my $mailout = DADA::Mail::MailOut->new( { -list => $list } );
     my $associate_worked = $mailout->associate( $msg_id, 'list' );
