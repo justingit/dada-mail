@@ -267,12 +267,12 @@ sub create_multipart_email {
 	
 	my $moas = $MIMELiteObj->as_string; 
 	if(! defined($moas)){ 
-		warn 'problems with creating multipart email:'; 
+		carp 'problems with creating multipart email:'; 
 		require Data::Dumper; 
-		warn '$MIMELiteObj: '             . Data::Dumper::Dumper($MIMELiteObj); 
-		warn '$args->{-html_body}: '      . $args->{-html_body} ; 
-		warn '$args->{-plaintext_body}: ' . $args->{-plaintext_body}; 
+		carp '$MIMELiteObj: ' . Data::Dumper::Dumper($MIMELiteObj); 
+		carp '$args:'         . Data::Dumper::Dumper($args);
 	}
+
     my $entity = $parser->parse_data( $moas );
 	undef($moas); 
 	
