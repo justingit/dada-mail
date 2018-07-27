@@ -2,6 +2,18 @@
 
 =encoding utf-8
 
+=head1 11.1.1
+
+=head2 Bugfixes
+
+=head3 Multiple Subscribe option inside Plugins menu throws syntax error.
+
+L<https://github.com/justingit/dada-mail/issues/750>
+
+=head3 Custom "from_phrase" and "subject" set in email theme templates not used with Full Layout 
+
+L<https://github.com/justingit/dada-mail/issues/749>
+
 =head1 11.1.0
 
 =head2 Features
