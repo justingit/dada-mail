@@ -265,8 +265,17 @@ sub create_multipart_email {
 
 #	warn '$MIMELiteObj->as_string ' . $MIMELiteObj->as_string ; 
 	
-    my $entity = $parser->parse_data( $MIMELiteObj->as_string );
-
+	my $moas = $MIMELiteObj->as_string; 
+	if(! defined($moas)){ 
+		warn 'problems with creating multipart email:'; 
+		require Data::Dumper; 
+		warn '$MIMELiteObj: '             . Data::Dumper::Dumper($MIMELiteObj); 
+		warn '$args->{-html_body}: '      . $args->{-html_body} ; 
+		warn '$args->{-plaintext_body}: ' . $args->{-plaintext_body}; 
+	}
+    my $entity = $parser->parse_data( $moas );
+	undef($moas); 
+	
     my %lh = $self->mh->list_headers;
     for my $h ( keys %lh ) {
         $entity->head->add( $h, safely_encode( $lh{$h} ) );
