@@ -3721,7 +3721,7 @@ sub subscribe_landing {
     my $subscription_form = DADA::Template::Widgets::subscription_form(
         {
             -list                 => $list,
-			
+			-email                => $email, 
         }
     );
 	

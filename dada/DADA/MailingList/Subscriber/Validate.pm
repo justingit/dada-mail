@@ -189,7 +189,22 @@ sub subscription_check {
 
     if($args->{-type} eq 'list') {
         if ( !$skip{invite_only_list} ) {
-            $errors->{invite_only_list} = 1 if $ls->param('invite_only_list') == 1;
+		   	if($ls->param('invite_only_list') == 1){ 
+                if(
+					$self->{lh}->check_for_double_email(
+                    	-Email => $email,
+                   	 -Type  => 'invited_list'
+                	 ) == 1
+				){ 
+					# $errors->{invite_only_list} = 0; 
+				}
+				else { 
+					$errors->{invite_only_list} = 1; 
+				}
+        	}
+		}
+		else { 
+			# $errors->{invite_only_list} = 0; 
         }
 
         if ( !$skip{closed_list} ) {

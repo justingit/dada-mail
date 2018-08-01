@@ -411,6 +411,21 @@ sub translate {
               if $pi_list;
         }
 
+        elsif ( $info =~ /^subscribe_landing/ ) {
+
+            my ( $pi_flavor, $pi_list, $pi_email_name, $pi_email_domain, ) = split( '/', $info, 4 );
+			
+            $q->param( 'flavor', $pi_flavor )
+              if $pi_flavor;
+            $q->param( 'list', $pi_list )
+              if $pi_list;
+
+              my $pi_email = $pi_email_name . '@' . $pi_email_domain
+                if $pi_email_name && $pi_email_domain;
+              $q->param( 'email', $pi_email )
+                if $pi_email;
+        }
+
         elsif ( $info =~ /^subscriber_help|^list/ ) {
 
             my ( $pi_flavor, $pi_list ) = split( '/', $info );
