@@ -49,8 +49,11 @@
 			            <!-- /tmpl_if --> 
 			        </li>
 					<li>
-						<!-- this is strange, as the bare link will be wrapped with a HTML link --> 
-						<p>Start a new thread, email: <!-- tmpl_var list_settings.discussion_pop_email --></p>
+						<p>Start a new thread, email: 
+							<a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email -->">
+								<!-- tmpl_var list_settings.discussion_pop_email -->
+							</a>
+						</p>
 					</li>
 		
 			    <!-- tmpl_else --> 
