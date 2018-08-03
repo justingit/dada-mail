@@ -2,6 +2,14 @@
 
 =encoding utf-8
 
+=head1 11.1.2
+
+=head2 Bugfixes
+
+=head3 Invitation Only Lists cannot have invited users subscribe 
+
+L<https://github.com/justingit/dada-mail/issues/751>
+
 =head1 11.1.1
 
 =head2 Bugfixes
