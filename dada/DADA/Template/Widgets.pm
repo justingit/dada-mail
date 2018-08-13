@@ -2396,12 +2396,23 @@ sub wrap_screen {
 
 sub validate_screen { 
 	my ($args) = @_; 
+	
+	# use Data::Dumper; 
+	# carp '$args' . Dumper($args); 
+	
+	my $r      = 1; 
+	my $errors = undef; 
+	my $scrn   = undef; 
 	try { 
-		my $scrn = screen({%$args}); 
+		$scrn = screen({%$args}); 
 	} catch {
-		return (0, $_);
+		# warn 'validate_screen FAILED!';
+		# warn $_; 
+		$r      = 0; 
+		$errors = $_; 
 	};
-	return (1, undef); 
+	# warn 'validate_screen PASSED!';
+	return ($r, $errors); 
 }
 
 sub decode_str { 
