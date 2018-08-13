@@ -430,15 +430,12 @@ sub format_mlm {
 
 
 		unless ($self->layout_choice($args) eq 'none') {
-	        # Body Content Only:
-			
+	        # Should custom need this, too? 
 			$content = $self->body_content_only($content); 
-			
 		}
 			
-		
-		unless ($self->layout_choice($args) eq 'none') {
-	        try {
+		unless ($self->layout_choice($args) =~ m/^(none|mailing_list_message\-custom)$/) {
+			try {
 	            require DADA::App::FormatMessages::Filters::InjectThemeStylesheet;
 	            my $its =
 	              DADA::App::FormatMessages::Filters::InjectThemeStylesheet->new;
@@ -2228,6 +2225,7 @@ sub _apply_template {
             
 			unless ($self->layout_choice($args) eq 'none') {
 		        # Body Content Only:
+				# Should custom do this, too?
 		        $content = $self->body_content_only($content);
 			}
 
@@ -2293,7 +2291,6 @@ sub layout_choice {
 	my $self   = shift; 
 	my ($args) = @_; 
 	my $layout = undef; 
-	
 	if(exists($args->{-layout})){ 
 		if(!defined($args->{-layout})){ 
 			delete($args->{-layout}); 
