@@ -2468,10 +2468,10 @@ sub sending_monitor {
 
                  <script type=\"text/javascript\">
 
-                 function refreshpage(sec){
+                 function refreshpage(sec) {
 					var refreshafter = sec/1 * 1000;
 					setTimeout(function() {				
-						window.location.replace($refresh_url)
+						window.location.replace('$refresh_url')
 					},
 					refreshafter);
                 }
