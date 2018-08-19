@@ -19,8 +19,62 @@
 	<div class="row panel">
 		<div class="small-12 columns">
 			<input type="url" name="url" id="url"  placeholder="http://" >
+			
+			
+			
+			<div id="HTML_content_advanced_options">
+				<fieldset>
+				<legend>
+					Advanced Options
+				</legend>
+
+				<div class="row">
+					<div class="small-12 columns">
+						<!-- tmpl_unless can_use_HTML_Tree --> 
+							<div class="alert-box alert radius">
+								Disabled. The following CPAN Perl module will need to be installed: HTML::Tree. 
+							</div>
+						<!-- /tmpl_unless --> 
+						<input 
+							type="checkbox" 
+							name="crop_html_content" 
+							id="crop_html_content" value="1"
+						>
+						<label for="crop_html_content">
+							Crop webpage, sending only content found in the tag with: 
+						</label>
+					</div>
+				</div>
+				<div class="row collapse">
+					<div class="small-1 large-1 columns">&nbsp;
+					</div>
+					<div class="small-4 large-2 columns">
+						<select 
+							name="crop_html_content_selector_type" 
+							id="crop_html_content_selector_type"
+						> 
+							<option value="id">id:</option>
+							<option value="class">class:</option>
+						</select> 
+					</div>
+					<div class="small-6 large-4 columns">
+						<input 
+							type="text" 
+							name="crop_html_content_selector_label" 
+							id="crop_html_content_selector_label"
+						>
+					</div> 
+					<div class="small-1 large-1 columns">
+					</div>
+				</div>
+				</fieldset>
+			</div>
+			
+			
 		</div>
 	</div>
+	
+	
 </div>
 
 
@@ -201,55 +255,7 @@
 	</div>
 </div>
 
-<div id="HTML_content_advanced_options" class="panel">
-	<fieldset>
-	<legend>
-		Advanced Options
-	</legend>
 
-	<div class="row">
-		<div class="small-12 columns">
-			<!-- tmpl_unless can_use_HTML_Tree --> 
-				<div class="alert-box alert radius">
-					Disabled. The following CPAN Perl module will need to be installed: HTML::Tree. 
-				</div>
-			<!-- /tmpl_unless --> 
-			<input 
-				type="checkbox" 
-				name="crop_html_content" 
-				id="crop_html_content" value="1"
-			>
-			<label for="crop_html_content">
-				Crop webpage, sending only content found in the tag with: 
-			</label>
-		</div>
-	</div>
-	<div class="row collapse">
-		<div class="small-1 large-1 columns">&nbsp;
-		</div>
-		<div class="small-4 large-2 columns">
-			<select 
-				name="crop_html_content_selector_type" 
-				id="crop_html_content_selector_type"
-			> 
-				<option value="id">id:</option>
-				<option value="class">class:</option>
-			</select> 
-		</div>
-		<div class="small-6 large-4 columns">
-			<input 
-				type="text" 
-				name="crop_html_content_selector_label" 
-				id="crop_html_content_selector_label"
-			>
-		</div> 
-		<div class="small-1 large-1 columns">
-		</div>
-	</div>
-
-
-	</fieldset>
-</div>
 
 
 
