@@ -163,8 +163,12 @@ sub send_email {
         warn '!$process'
           if $t;
 
-        my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
-          $self->mass_mailout_info;
+        my ( 
+			$num_list_mailouts, 
+			$num_total_mailouts, 
+			$active_mailouts, 
+			$mailout_will_be_queued
+		) = $self->mass_mailout_info;
 
         my $draft_id = $self->find_draft_id(
             {
@@ -181,7 +185,9 @@ sub send_email {
 
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
-        my $scrn         = 'send_email';
+        
+		# $scrn is initializsed twice? 
+		my $scrn         = 'send_email';
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -247,7 +253,6 @@ sub send_email {
             }
         );
         if ( $restore_from_draft eq 'true' ) {
-
 			
             $scrn = $self->fill_in_draft_msg(
                 {
@@ -292,11 +297,7 @@ sub send_email {
 				-dry_run  => 1, 
 				-preview  => 1, 
             }
-        );
-		
-		#use Data::Dumper; 
-		#warn Dumper($construct_r);
-		
+        );		
         if($t) { 
             carp '$construct_r->{mid} ' . $construct_r->{mid};
             carp 'done with construct_and_send!';
@@ -308,7 +309,6 @@ sub send_email {
 			#	$root_login
 			#);
 	        require JSON;
-			
 	        my $json    = JSON->new->allow_nonref;
 	        my $return  = { status => 0, errors => $construct_r->{errors} };
 	        my $headers = {
@@ -337,9 +337,7 @@ sub send_email {
 	            -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
 	            -type            => 'application/json',
 	        };
-	        my $body = $json->pretty->encode($return);
-#			warn $body; 
-			
+	        my $body = $json->pretty->encode($return);			
 	        #if($t == 1){ 
 	        #    require Data::Dumper; 
 	        #}
@@ -1360,7 +1358,9 @@ sub content_from_feed_url {
 }
 
 sub send_url_email {
-
+	warn 'send_url_email'
+		if $t; 
+	
     my $self = shift;
     my ($args) = @_;
 
@@ -1376,17 +1376,21 @@ sub send_url_email {
 
     my $process            = xss_filter( strip( scalar $q->param('process') ) );
     my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
-    my $test_sent          = xss_filter( strip( scalar $q->param('test_sent') ) ) || 0;
-    my $done               = xss_filter( strip( scalar $q->param('done') ) ) || 0;
-    my $test_recipient     = $q->param('test_recipient');
     my $restore_from_draft = $q->param('restore_from_draft') || 'true';
-    my $ses_params         = $self->ses_params;
+    my $test_sent          = xss_filter( strip( scalar $q->param('test_sent') ) ) || 0;
+    my $test_recipient     = $q->param('test_recipient');
+	my $done               = xss_filter( strip( scalar $q->param('done') ) ) || 0;
     my $draft_role         = $q->param('draft_role') || 'draft';
+    my $ses_params         = $self->ses_params;
+
+	# new in send_url_email
+    if ( !exists( $args->{-html_output} ) ) {
+        $args->{-html_output} = 1;
+    }
 
     my $li = $self->{ls_obj}->get( -all_settings => 1 );
 	
-	
-    
+	# not in send_email but probably should have been... 
     my $can_use_mime_lite_html = 1;
     my $mime_lite_html_error   = undef;
     try {
@@ -1406,8 +1410,10 @@ sub send_url_email {
         $lwp_simple_error = $@;
     }
 
-    my $fields = [];
+	# end lwp simple stuff
+
     my $naked_fields = $self->{lh_obj}->subscriber_fields( { -dotted => 0 } );
+    my $fields = [];
 
     # Extra, special one...
     push( @$fields, { name => 'subscriber.email' } );
@@ -1450,7 +1456,7 @@ sub send_url_email {
 	my $etp          = $em->fetch($layout_fn);
 	my $subject      = $etp->{vars}->{subject};
 	
-	
+	# Specific to send_url_email
     require HTML::Menu::Select;
 	my $feed_url_max_entries_widget; 
     my $feed_url_max_entries_widget = HTML::Menu::Select::popup_menu(
@@ -1461,12 +1467,23 @@ sub send_url_email {
             values => [(1..100)],
         }
       );
-	
+	  #/ Specific to send_url_email
 	
 
     if ( !$process ) {
-        my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
-          $self->mass_mailout_info;
+		
+        warn '!$process'
+          if $t;
+		  
+        my ( 
+			$num_list_mailouts, 
+			$num_total_mailouts, 
+			$active_mailouts, 
+			$mailout_will_be_queued 
+		) = $self->mass_mailout_info;
+		
+		# find_draft_id will need to be changed - we aren't going
+		# to differentiate between send_email and send_url_email
         my $draft_id = $self->find_draft_id(
             {
                 -screen  => 'send_url_email',
@@ -1475,6 +1492,7 @@ sub send_url_email {
             }
         );
 		
+		# hmm, wonder what no_draft_available is? 
 		if($draft_id == -1){ 
 			my $uri = $DADA::Config::S_PROGRAM_URL . '?f=no_draft_available';
 			return ( { -redirect_uri => $uri }, undef );
@@ -1496,13 +1514,26 @@ sub send_url_email {
                 -vars => {
 
                     screen => 'send_url_email',
-
+                    flavor                     => $flavor,
                     draft_id           => $draft_id,
                     draft_role         => $draft_role,
                     restore_from_draft => $restore_from_draft,
                     done               => $done,
-
-
+                    
+                    test_sent      => $test_sent,
+                    test_recipient => $test_recipient,
+					
+                    priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu( $self->{ls_obj}->get ),
+                    type                       => 'list',
+					
+					# Can you NOT have subscriber fields?
+                    fields                     => $fields,
+                    undotted_fields            => $undotted_fields,
+					can_have_subscriber_fields => $self->{lh_obj}->can_have_subscriber_fields,
+					
+					
+                    MAILOUT_AT_ONCE_LIMIT  => $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
+     
                     kcfinder_url          => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{url},
                     kcfinder_upload_dir   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir},
                     kcfinder_upload_url   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url},
@@ -1514,31 +1545,22 @@ sub send_url_email {
 					rich_filemanager_url        => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{url},
                     rich_filemanager_upload_dir => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{upload_dir},
                     rich_filemanager_upload_url => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{upload_url},
-
-
-                    test_sent      => $test_sent,
-                    test_recipient => $test_recipient,
-
+					
                     can_use_mime_lite_html     => $can_use_mime_lite_html,
                     mime_lite_html_error       => $mime_lite_html_error,
                     can_use_lwp_simple         => $can_use_lwp_simple,
 					can_use_XML_FeedPP         => scalar can_use_XML_FeedPP(),
                     lwp_simple_error           => $lwp_simple_error,
-                    can_display_attachments    => $self->{ah_obj}->can_display_attachments,
-                    fields                     => $fields,
-                    undotted_fields            => $undotted_fields,
-                    can_have_subscriber_fields => $self->{lh_obj}->can_have_subscriber_fields,
+                    
+					can_display_attachments    => $self->{ah_obj}->can_display_attachments,
                     SERVER_ADMIN               => $ENV{SERVER_ADMIN},
-                    priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu( $self->{ls_obj}->get ),
 
-                    MAILOUT_AT_ONCE_LIMIT  => $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
                     mailout_will_be_queued => $mailout_will_be_queued,
                     num_list_mailouts      => $num_list_mailouts,
                     num_total_mailouts     => $num_total_mailouts,
                     active_mailouts        => $active_mailouts,
                     
-                    schedule_last_checked_frt =>
-                    formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
+                    schedule_last_checked_frt => scalar formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
                     can_use_datetime  => scalar DADA::App::Guts::can_use_datetime(), 
                     can_use_HTML_Tree => scalar DADA::App::Guts::can_use_HTML_Tree(), 
                     sched_flavor      => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor},
@@ -1547,7 +1569,7 @@ sub send_url_email {
 					default_subject => $subject,
 					
 					feed_url_max_entries_widget => $feed_url_max_entries_widget, 
-
+						
                     %wysiwyg_vars,
                     %$ses_params,
 
@@ -1559,7 +1581,8 @@ sub send_url_email {
         if ( $restore_from_draft eq 'true' ) {
             $scrn = $self->fill_in_draft_msg(
                 {
-                    -screen   => 'send_url_email',
+                    -list     => $self->{list},
+                    -screen   => 'send_url_email', # this will be removed
                     -str      => $scrn,
                     -draft_id => $draft_id,
                     -role     => $draft_role,
@@ -1605,25 +1628,26 @@ sub send_url_email {
         }
         if ( $construct_r->{status} == 0 ) {
 			
+			# This has been commented out and replaced in send_a_message... 
+			#
+			#my ($h, $b) = $self->report_mass_mail_errors(
+			#	{ 
+			#		-errors => $construct_r->{errors}, 
+			#		-root_login => $root_login, 
+			#		-wrap => 0, 
+			#	}
+			#);
 			
-			my ($h, $b) = $self->report_mass_mail_errors(
-				{ 
-					-errors => $construct_r->{errors}, 
-					-root_login => $root_login, 
-					-wrap => 0, 
-				}
-			);
-			
-			require JSON;
+	        require JSON;
 	        my $json    = JSON->new->allow_nonref;
-	        my $return  = { status => 0, id => undef, body => $b};
+	        my $return  = { status => 0, errors => $construct_r->{errors} };
 	        my $headers = {
 	            '-Cache-Control' => 'no-cache, must-revalidate',
 	            -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
 	            -type            => 'application/json',
 	        };
 	        my $body = $json->pretty->encode($return);
-			return ( $headers, $body );
+	        return ( $headers, $body );
         }
 		else { 
 			require DADA::App::EmailMessagePreview; 
@@ -1671,6 +1695,11 @@ sub send_url_email {
             }
         );
 
+        if($t) { 
+            carp '$construct_r->{mid} ' . $construct_r->{mid};
+            carp 'done with construct_and_send!';
+        }
+		
         if ( $construct_r->{status} == 0 ) {
             return $self->report_mass_mail_errors({
 				-errors     => $construct_r->{errors}, 
@@ -1678,7 +1707,13 @@ sub send_url_email {
 			});
         }
         if ( $process =~ m/test/i ) {
-            $self->wait_for_it($construct_r->{mid});
+			
+            warn 'test sending'
+              if $t;
+			
+            $self->wait_for_it(
+				$construct_r->{mid}
+			);
             return (
                 {
                         -redirect_uri => $DADA::Config::S_PROGRAM_URL

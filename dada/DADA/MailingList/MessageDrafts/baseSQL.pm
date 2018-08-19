@@ -62,20 +62,22 @@ sub draft_exists {
     
 	my $id     = shift;
 	my $role   = shift; 
-	my $screen = shift; 
+	
+	# my $screen = shift; 
 	
     if ( !defined($id) || $id eq '' ) {
         return 0;
     }
     my $query = 'SELECT COUNT(*) FROM ' 
 	. $self->{sql_params}->{message_drafts_table} 
-	. ' WHERE list = ? AND id = ? AND role = ? AND screen = ?';
+	. ' WHERE list = ? AND id = ? AND role = ?'; # AND screen = ?
 
     warn 'QUERY: ' . $query
       if $t;
 
     my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $self->{list}, $id, $role, $screen )
+	# $screen
+    $sth->execute( $self->{list}, $id, $role, )
       or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     warn 'QUERY: ' . $query
@@ -150,9 +152,9 @@ sub save {
         croak "You MUST pass a, '-cgi_obj' parameter!";
     }
 
-    if ( !exists( $args->{-screen} ) ) {
-        croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
-    }
+#    if ( !exists( $args->{-screen} ) ) {
+#        croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+#    }
     
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'draft';
@@ -181,7 +183,7 @@ sub save {
     my $draft = $self->stringify_cgi_params( 
         { 
             -cgi_obj => $q, 
-            -screen  => $args->{-screen} 
+            # -screen  => $args->{-screen} 
         } 
     );
 
@@ -193,23 +195,26 @@ sub save {
           if $t;
 
         if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
-            $query =
+            # screen, 
+			$query =
                 'INSERT INTO '
               . $self->{sql_params}->{message_drafts_table}
-              . ' (list, screen, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?,?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)';
+              . ' (list, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?,?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)';
         }
         elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
-            $query =
+            # screen, 
+		    $query =
                 'INSERT INTO '
               . $self->{sql_params}->{message_drafts_table}
-              . ' (list, screen, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?,?, NULL, NULL)'; 
+              . ' (list, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?,?, NULL, NULL)'; 
 			  # I'm such NOW() NOW() (untested!) would also work
         }
         else {
+			# screen, 
             $query =
                 'INSERT INTO '
               . $self->{sql_params}->{message_drafts_table}
-              . ' (list, screen, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?,?, NOW(), NOW())';
+              . ' (list, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?,?, NOW(), NOW())';
         }
 
         warn 'QUERY: ' . $query
@@ -218,11 +223,12 @@ sub save {
         my $sth = $self->{dbh}->prepare($query);
         if($t == 1) { 
             require Data::Dumper; 
-            warn 'execute params: ' . Data::Dumper::Dumper([$self->{list}, $args->{-screen}, $args->{-save_role}, $draft]); 
+			# $args->{-screen},
+            warn 'execute params: ' . Data::Dumper::Dumper([$self->{list}, $args->{-save_role}, $draft]); 
         }
+		# $args->{-screen}, 
         $sth->execute( 
 			$self->{list}, 
-			$args->{-screen}, 
 			$args->{-save_role}, 
 			$draft 
 		) or croak "cannot do statement '$query'! $DBI::errstr\n";
@@ -273,24 +279,27 @@ sub save {
             
             my $query; 
             if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
-                $query =
+                # screen = ?, 
+				$query =
                     'UPDATE '
                   . $self->{sql_params}->{message_drafts_table}
-                  . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = CURRENT_TIMESTAMP WHERE list = ? AND id = ?';
+                  . ' SET role = ?, draft = ?, last_modified_timestamp = CURRENT_TIMESTAMP WHERE list = ? AND id = ?';
             }
             elsif($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql') { 
-                $query =
+                # screen = ?, 
+				$query =
                     'UPDATE '
                   . $self->{sql_params}->{message_drafts_table}
-                  . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = NULL WHERE list = ? AND id = ?';
+                  . ' SET role = ?, draft = ?, last_modified_timestamp = NULL WHERE list = ? AND id = ?';
 				     # NOW() works just fine, too. 
 				  
             }
             else { 
+				# screen = ?, 
                 $query =
                     'UPDATE '
                   . $self->{sql_params}->{message_drafts_table}
-                  . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = NOW() WHERE list = ? AND id = ?';
+                  . ' SET role = ?, draft = ?, last_modified_timestamp = NOW() WHERE list = ? AND id = ?';
 
             }
         
@@ -300,8 +309,8 @@ sub save {
              if $t; 
             
             my $sth = $self->{dbh}->prepare($query);
+				# $args->{-screen}, 
                $sth->execute( 
-                   $args->{-screen}, 
                    $args->{-save_role}, 
                    $draft, 
                    $self->{list}, 
@@ -325,10 +334,10 @@ sub save {
                 if $t;
             warn '# Then this makes the copy.'
                 if $t; 
+			#  -screen => $args->{-screen},
             my $saved_id = $self->create_from_stationery(
                     {
                         -id     => $args->{-id},
-                        -screen => $args->{-screen},
                     }
                 ); 
             # warn 'created from stationery!'; 
@@ -385,24 +394,27 @@ sub has_draft {
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'draft';
     }
-    if ( !exists( $args->{-screen} ) ) {
-        croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
-    }
+#    if ( !exists( $args->{-screen} ) ) {
+#        croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+#    }
 
+	# AND screen = ?
     my $query =
         'SELECT COUNT(*) FROM '
       . $self->{sql_params}->{message_drafts_table}
-      . ' WHERE list = ? AND screen = ? AND role = ?';
+      . ' WHERE list = ? AND role = ?';
+	
 
     warn 'QUERY: ' . $query
       if $t;
 
 	  #use Data::Dumper;
-      #warn 'params' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]);
+	  # $args->{-screen},
+      #warn 'params' . Dumper([$self->{list}, $args->{-role}]);
 
     my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
-      or croak "cannot do statement '$query'! $DBI::errstr\n";
+    $sth->execute( $self->{list},  $args->{-role} ) 
+      or croak "cannot do statement '$query'! $DBI::errstr\n"; #$args->{-screen},
 
     my $count = $sth->fetchrow_array;
 
@@ -423,21 +435,24 @@ sub latest_draft_id {
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'draft';
     }
-    if ( !exists( $args->{-screen} ) ) {
-        croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
-    }
+    
+	# if ( !exists( $args->{-screen} ) ) {
+    #    croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+    # }
 
+	# AND screen = ? 
     my $query =
         'SELECT id FROM '
       . $self->{sql_params}->{message_drafts_table}
-      . ' WHERE list = ? AND screen = ? AND role = ? ORDER BY last_modified_timestamp DESC';
+      . ' WHERE list = ? AND role = ? ORDER BY last_modified_timestamp DESC';
 
     warn 'QUERY: ' . $query
       if $t;
 
     my $sth = $self->{dbh}->prepare($query);
 
-    $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
+	# $args->{-screen},
+    $sth->execute( $self->{list}, $args->{-role} )
       or croak "cannot do statement '$query'! $DBI::errstr\n";
     my $hashref;
 
@@ -454,9 +469,10 @@ sub fetch {
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'draft';
     }
-    if ( !exists( $args->{-screen} ) ) {
-        die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
-    }
+    
+	# if ( !exists( $args->{-screen} ) ) {
+    #    die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+    # }
     my $id = undef;
     if ( exists( $args->{-id} ) ) {
         $id = $args->{-id};
@@ -464,10 +480,12 @@ sub fetch {
 
     my $query;
     if ( !$id ) {
+		
+		#AND screen = ? 
         $query =
-            'SELECT id, list, screen, role, draft FROM '
+            'SELECT id, list, role, draft FROM '
           . $self->{sql_params}->{message_drafts_table}
-          . ' WHERE list = ? AND screen = ? AND role = ? ORDER BY id DESC';
+          . ' WHERE list = ? AND role = ? ORDER BY id DESC';
     }
     else {
 
@@ -475,10 +493,12 @@ sub fetch {
             croak "id, '$id' doesn't exist!";
         }
 
+		# screen, 
+		# AND screen = ? 
         $query =
-            'SELECT id, list, screen, role, draft FROM '
+            'SELECT id, list, role, draft FROM '
           . $self->{sql_params}->{message_drafts_table}
-          . ' WHERE list = ? AND screen = ? AND role = ? AND id = ? ORDER BY id DESC';
+          . ' WHERE list = ? AND role = ? AND id = ? ORDER BY id DESC';
 
     }
 
@@ -491,18 +511,22 @@ sub fetch {
 
     if ( !$id ) {
 
+		# $args->{-screen}, 
         #use Data::Dumper;
-        #warn 'params (no id)' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]);
+        #warn 'params (no id)' . Dumper([$self->{list}, $args->{-role}]);
 
-        $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
+		# $args->{-screen},
+        $sth->execute( $self->{list}, $args->{-role} )
           or croak "cannot do statement '$query'! $DBI::errstr\n";
     }
     else {
 
         #use Data::Dumper;
-        #warn 'params (id!)' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]);
+		#  $args->{-screen},
+        #warn 'params (id!)' . Dumper([$self->{list}, $args->{-role}]);
 
-        $sth->execute( $self->{list}, $args->{-screen}, $args->{-role}, $id )
+		# $args->{-screen},
+        $sth->execute( $self->{list}, $args->{-role}, $id )
           or croak "cannot do statement '$query'! $DBI::errstr\n";
     }
     my $hashref;
@@ -530,20 +554,21 @@ sub fetch {
 sub create_from_stationery {
     my $self    = shift;
     my ($args)  = @_;
+	
+	# -screen => $args->{-screen},
     my $q_draft = $self->fetch(
         {
             -id     => $args->{-id},
-            -screen => $args->{-screen},
             -role   => 'stationery',
         }
     );
 
+	#  -screen    => $args->{-screen},
     my $saved_draft_id = $self->save(
         {
             -cgi_obj   => $q_draft,
             -role      => 'draft',
             -save_role => 'draft', 
-            -screen    => $args->{-screen},
         }
     );
     warn '$saved_draft_id' . $saved_draft_id
@@ -644,12 +669,15 @@ sub draft_index {
        # warn q{$q->param('schedule_single_ctime')} . $q->param('schedule_single_ctime'); 
         
 #        warn q{$q->param('schedule_html_body_checksum') } . $q->param('schedule_html_body_checksum');
-        my $params = {
+        
+		# screen                        => $hashref->{screen},
+
+		my $params = {
             id                            => $hashref->{id},
             list                          => $hashref->{list},
             created_timestamp             => $hashref->{created_timestamp},
             last_modified_timestamp       => $hashref->{last_modified_timestamp},
-            screen                        => $hashref->{screen},
+            
             role                          => $hashref->{role},
 			# so curious I have to do this here, but not in the ind. draft screen... 
             Subject                       => safely_decode(scalar $q->param('Subject')),
@@ -748,15 +776,15 @@ sub stringify_cgi_params {
     if ( !exists( $args->{-cgi_obj} ) ) {
         croak "You MUST pass a, '-cgi_obj' parameter!";
     }
-    if ( !exists( $args->{-screen} ) ) {
-        die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
-    }
+   # if ( !exists( $args->{-screen} ) ) {
+   #     die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+   # }
 
     my $q = $args->{-cgi_obj};
     $q = $self->remove_unwanted_params(
         {
             -cgi_obj => $args->{-cgi_obj},
-            -screen  => $args->{-screen}
+           # -screen  => $args->{-screen}
         }
     );
 
@@ -773,15 +801,15 @@ sub remove_unwanted_params {
     if ( !exists( $args->{-cgi_obj} ) ) {
         croak "You MUST pass a, '-cgi_obj' parameter!";
     }
-    if ( !exists( $args->{-screen} ) ) {
-        die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
-    }
+   # if ( !exists( $args->{-screen} ) ) {
+   #     die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+   # }
 
     require CGI;
     my $q     = $args->{-cgi_obj};
     my $new_q = CGI->new($q);
     my $params_to_save =
-      $self->params_to_save( { -screen => $args->{-screen} } );
+      $self->params_to_save(); # { -screen => $args->{-screen} };
 
     for ( $new_q->param ) {
         
@@ -799,9 +827,9 @@ sub params_to_save {
     my $self = shift;
     my ($args) = @_;
 
-    if ( !exists( $args->{-screen} ) ) {
-        die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
-    }
+    # if ( !exists( $args->{-screen} ) ) {
+    #    die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+    # }
 
     my $params = {
 		
@@ -864,49 +892,37 @@ sub params_to_save {
         $params->{ $_ . '.rangeend' }   = 1;
     }
 	
-	
-	
-	
-	
     $params->{attachment1} = 1;
     $params->{attachment2} = 1;
     $params->{attachment3} = 1;
     $params->{attachment4} = 1;
     $params->{attachment5} = 1;
-	
-	
-	
-	
-    if ( $args->{-screen} eq 'send_email' ) {
-		#... 
-    }
-    elsif ( $args->{-screen} eq 'send_url_email' ) {
 
-        $params->{content_from}          = 1;
-        $params->{url}                   = 1;
-        $params->{url_options}           = 1;
-        
-        $params->{plaintext_content_from} = 1;
-        $params->{plaintext_url}          = 1;
-		
-		$params->{feed_url}               = 1; 
-		$params->{feed_url_max_entries}   = 1;
-		$params->{feed_url_content_type}  = 1;
+    $params->{content_from}          = 1;
+    $params->{url}                   = 1;
+    $params->{url_options}           = 1;
+    
+    $params->{plaintext_content_from} = 1;
+    $params->{plaintext_url}          = 1;
+	
+	$params->{feed_url}               = 1; 
+	$params->{feed_url_max_entries}   = 1;
+	$params->{feed_url_content_type}  = 1;
 
-		$params->{feed_url_pre_html}      = 1; 
-		$params->{feed_url_post_html}     = 1; 
-		
-		$params->{feed_url_most_recent_entry} = 1; 
-		
-        # These aren't used atm. 
-        #$params->{url_username}          = 1;
-        #$params->{url_password}          = 1;
-        #$params->{proxy}                 = 1;
-        
-        $params->{crop_html_content}                = 1;
-        $params->{crop_html_content_selector_type}  = 1;
-        $params->{crop_html_content_selector_label} = 1;
-    }
+	$params->{feed_url_pre_html}      = 1; 
+	$params->{feed_url_post_html}     = 1; 
+	
+	$params->{feed_url_most_recent_entry} = 1; 
+	
+    # These aren't used atm. 
+    #$params->{url_username}          = 1;
+    #$params->{url_password}          = 1;
+    #$params->{proxy}                 = 1;
+    
+    $params->{crop_html_content}                = 1;
+    $params->{crop_html_content_selector_type}  = 1;
+    $params->{crop_html_content_selector_label} = 1;
+
 
     # use Data::Dumper;
     # warn 'params_to_save:' . Dumper($params);

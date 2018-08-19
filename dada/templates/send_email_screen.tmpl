@@ -1,5 +1,7 @@
 <!-- begin send_email_screen.tmpl -->
-				 
+
+<div id="screen_meta" data-menu_highlight="send_email"></div>
+
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Send a Message" -->
 <!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
 <!-- tmpl_set name="load_datetimepicker" value="1" -->
@@ -39,14 +41,15 @@
 
 
 <div id="send_email_screen"></div> 
-<div id="screen_meta" data-menu_highlight="send_email"></div>
 
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"  accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-	<input type="hidden" name="s_program_url"     id="s_program_url"     value="<!-- tmpl_var S_PROGRAM_URL -->" >
-	<input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" >
 	<input type="hidden" id="list"               name="list"             value="<!-- tmpl_var list_settings.list -->" >
 	<input type="hidden" id="sched_flavor"       name="sched_flavor"     value="<!-- tmpl_var sched_flavor -->" >
+
+	<input type="hidden" name="s_program_url"     id="s_program_url"     value="<!-- tmpl_var S_PROGRAM_URL -->" >
 	<input type="hidden" id="flavor"             name="flavor"                value="send_email" >
+	<input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" >
+	
 	<input type="hidden" id="draft_alert"        name="draft_alert"           value="<!-- tmpl_var draft_alert default="0" -->" >
 	<input type="hidden" id="draft_id"           name="draft_id"              value="<!-- tmpl_var draft_id -->"                > 
 	<input type="hidden" id="save_draft_role"    name="save_draft_role"       value=""                                          >

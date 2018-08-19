@@ -86,13 +86,6 @@
         				</p> 
         			</th>
         			<th>
-        				<p>
-        					<strong>
-        						Screen
-        					</strong>
-        				</p> 
-        			</th>
-        			<th>
         				&nbsp;
         			</th>
         		</tr> 
@@ -111,33 +104,20 @@
 
         			<td>
         				<p>
-    						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->">
+    						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->">
     							<!-- tmpl_var Subject escape="HTML" -->
     						</a>
         				</p> 
         			</td>
         			<td>
         				<p>
-        					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->">
+        					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->">
         						<!-- tmpl_var last_modified_timestamp --> 
         					</a>
         				</p> 
-        				<td>
-        					<p>
-        						<!-- tmpl_if expr="(screen eq 'send_email')" --> 
-        							Send a Message
-        						<!-- /tmpl_if --> 
-        						<!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
-        							Send a Webpage
-        						<!-- /tmpl_if --> 
-
-        					</p> 
-
-        			</td>
-        			
         			<td>
 						<a 
-							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->" class="small button success"
+							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->" class="small button success"
 							class="small button success"
 						> 
 							<i class="fi-page-edit"></i> Edit
@@ -251,13 +231,6 @@
         				</p> 
         			</th>
         			<th>
-        				<p>
-        					<strong>
-        						Screen
-        					</strong>
-        				</p> 
-        			</th>
-        			<th>
         				<p>&nbsp;</p>
         				</p> 
         			</th>
@@ -284,37 +257,26 @@
                             name=""
                             value="New Draft From Stationery" 
                             class="success button" 
-                            onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=create_from_stationery&screen=<!-- tmpl_var screen escape="HTML" -->&draft_id=<!-- tmpl_var id -->'"
+                            onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=create_from_stationery&screen=send_email&draft_id=<!-- tmpl_var id -->'"
                          >  
                     </td>
         			<td>
         				<p>
-    						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->" >
+    						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->" >
     							<!-- tmpl_var Subject escape="HTML" -->
     						</a>
         				</p> 
         			</td>
         			<td>
         				<p>
-        					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->">
+        					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->">
         						<!-- tmpl_var last_modified_timestamp --> 
         					</a>
         				</p> 
-        				<td>
-        					<p>
-        						<!-- tmpl_if expr="(screen eq 'send_email')" --> 
-        							Send a Message
-        						<!-- /tmpl_if --> 
-        						<!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
-        							Send a Webpage
-        						<!-- /tmpl_if --> 
-
-        					</p> 
-
         			</td>
                     <td>
                     	<a 
-							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->"
+							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->"
 							class="small button success"
 						>
 							<i class="fi-page-edit"></i> Edit
@@ -396,13 +358,6 @@
             				</p> 
             			</th>
             			<th>
-            				<p>
-            					<strong>
-            						Screen
-            					</strong>
-            				</p> 
-            			</th>
-            			<th>
             				<p>&nbsp;</p>
             				</p> 
             			</th>
@@ -427,31 +382,21 @@
                 			</td>
                 			<td>
                 				<p>
-            						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
+            						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
             							<!-- tmpl_var Subject escape="HTML" -->
             						</a>
                 				</p> 
                 			</td>
                 			<td>
                 				<p>
-                					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
+                					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
                 						<!-- tmpl_var last_modified_timestamp --> 
                 					</a>
                 				</p> 
                 			</td>
-                			<td>
-                					<p>
-                						<!-- tmpl_if expr="(screen eq 'send_email')" --> 
-                							Send a Message
-                						<!-- /tmpl_if --> 
-                						<!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
-                							Send a Webpage
-                						<!-- /tmpl_if --> 
-                					</p> 
-                			</td>
                             <td>
 								<a 
-								href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule" 
+								href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule" 
 								class="small button success" 
 								>
 									<i class="fi-page-edit"></i> Edit
@@ -517,13 +462,6 @@
                 				</p> 
                 			</th>
                 			<th>
-                				<p>
-                					<strong>
-                						Screen
-                					</strong>
-                				</p> 
-                			</th>
-                			<th>
                 				<p>&nbsp;</p>
                 				</p> 
                 			</th>
@@ -550,31 +488,21 @@
                     			</td>
                     			<td>
                     				<p>
-                						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
+                						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
                 							<!-- tmpl_var Subject escape="HTML" -->
                 						</a>
                     				</p> 
                     			</td>
                     			<td>
                     				<p>
-                    					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
+                    					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
                     						<!-- tmpl_var last_modified_timestamp --> 
                     					</a>
                     				</p> 
                     			</td>
-                    			<td>
-                    					<p>
-                    						<!-- tmpl_if expr="(screen eq 'send_email')" --> 
-                    							Send a Message
-                    						<!-- /tmpl_if --> 
-                    						<!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
-                    							Send a Webpage
-                    						<!-- /tmpl_if --> 
-                    					</p> 
-                    			</td>
                                 <td>
 									<a
-										href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule"
+										href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule"
 										class="small button success"
 									>
 										<i class="fi-page-edit"></i> Edit
