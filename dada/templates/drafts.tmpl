@@ -21,7 +21,8 @@
 <div id="drafts_screen"></div> 
 <div id="screen_meta" data-menu_highlight="drafts"></div>
 
-
+<form>
+	<input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var s_program_url -->">
 <!-- tmpl_if delete_draft --> 
 	<div data-alert class="alert-box success radius">
 			Message Deleted. 
@@ -72,6 +73,9 @@
         				<p>&nbsp;</p>
         			</th>
         			<th>
+        				&nbsp;
+        			</th>
+        			<th>
         				<p>
         					<strong>
         						Subject
@@ -100,6 +104,11 @@
         			<td>
             		    <input type="checkbox" class="draft_ids" name="draft_ids" value="<!-- tmpl_var id escape="HTML" -->" >
         			</td>
+					
+					<td>
+						<input type="button" class="button show_preview" data-draft_id="<!-- tmpl_var id -->" data-draft_role="draft" value="Preview">
+			
+					</td>
 
 
         			<td>
@@ -146,9 +155,17 @@
             
         <!-- tmpl_else -->
         	<div class="alert-box info radius">
-        		<p>
-        			There are currently no saved message drafts. 
-        		</p>
+				
+				<em>No Saved Drafts.</em>
+				<br>
+				<br>	
+					<a 
+						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=false"
+						class="large button expand"
+					>
+						<i class="fi-plus"></i> New Draft
+					</a>
+
         	</div> 
         <!-- /tmpl_if --> 
         
@@ -160,15 +177,7 @@
 							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=false"
 							class="button"
 						>
-							<i class="fi-plus"></i> Send a Message Draft
-						</a>
-					</li>
-				    <li>
-						<a 
-							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_url_email&restore_from_draft=false"
-							class="button"
-						>
-							<i class="fi-plus"></i> Send a URL Draft
+							<i class="fi-plus"></i> New Draft
 						</a>
 					</li>
 				</ul>

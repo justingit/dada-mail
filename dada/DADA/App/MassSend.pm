@@ -1379,6 +1379,82 @@ sub send_email {
     }
 }
 
+sub preview_draft { 
+
+    my $self = shift;
+    my ($args) = @_;
+
+    my $q = $args->{-cgi_obj};
+   
+	my $draft_id   = $q->param('draft_id');
+	my $draft_role = $q->param('draft_role');
+
+	my $construct_r = $self->construct_and_send(
+	    {
+	        -draft_id => $draft_id,
+	        -role     => $draft_role,
+	        -process  => 0, # I'm guessing on this one... 
+			-dry_run  => 1, 
+			-preview  => 1, 
+	    }
+	);
+
+	#use Data::Dumper; 
+	#die Dumper($construct_r);
+	
+	if($t) { 
+	    carp '$construct_r->{mid} ' . $construct_r->{mid};
+	    carp 'done with construct_and_send!';
+	}
+	if ( $construct_r->{status} == 0 ) {
+	
+		# This has been commented out and replaced in send_a_message... 
+		#
+		#my ($h, $b) = $self->report_mass_mail_errors(
+		#	{ 
+		#		-errors => $construct_r->{errors}, 
+		#		-root_login => $root_login, 
+		#		-wrap => 0, 
+		#	}
+		#);
+	
+	    require JSON;
+	    my $json    = JSON->new->allow_nonref;
+	    my $return  = { status => 0, errors => $construct_r->{errors} };
+	    my $headers = {
+	        '-Cache-Control' => 'no-cache, must-revalidate',
+	        -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
+	        -type            => 'application/json',
+	    };
+	    my $body = $json->pretty->encode($return);
+	    return ( $headers, $body );
+	}
+	else { 
+		require DADA::App::EmailMessagePreview; 
+		my $daemp = DADA::App::EmailMessagePreview->new; 			
+		my $daemp_id = $daemp->save({
+			-list      => $self->{list},				
+			-vars      => $construct_r->{vars},
+			-plaintext => $construct_r->{text_message},
+			-html      => $construct_r->{html_message},
+		});
+		require JSON;
+	    my $json    = JSON->new->allow_nonref;
+	    my $return  = { id => $daemp_id };
+	    my $headers = {
+	        '-Cache-Control' => 'no-cache, must-revalidate',
+	        -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
+	        -type            => 'application/json',
+	    };
+	    my $body = $json->pretty->encode($return);
+	    if($t == 1){ 
+	        require Data::Dumper; 
+	    }			
+	    return ( $headers, $body );
+	}
+
+}
+
 sub find_draft_id {
 
     my $self = shift;

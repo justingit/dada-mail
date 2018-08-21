@@ -159,6 +159,7 @@ sub setup {
         'ckeditor_template_tag_list'      => \&ckeditor_template_tag_list,
         'draft_saved_notification'        => \&draft_saved_notification,
         'drafts'                          => \&drafts,
+		'preview_draft'                   => \&preview_draft, 
         'delete_drafts'                   => \&delete_drafts,
         'create_from_stationery'          => \&create_from_stationery,
        # 'message_body_help'               => \&message_body_help,
@@ -1996,6 +1997,41 @@ sub drafts {
     );
     return $scrn;
 }
+
+sub preview_draft { 
+
+    my $self = shift;
+    my $q    = $self->query();
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'drafts'
+      );
+    if ( !$checksout ) { return $error_msg; }
+    my $list = $admin_list;
+	
+	
+	# So this is a JSON doc with the id set to where to find the 
+	# preview thing: 
+    require DADA::App::MassSend;
+    my $ms = DADA::App::MassSend->new( { -list => $list } );
+    my ( $headers, $body ) = $ms->preview_draft(
+        {
+            -cgi_obj     => $q,
+        }
+    );
+	
+	require JSON;
+	my $json = JSON->new->allow_nonref;
+	my $data = $json->decode($body);
+	$q->param('id', $data->{id});
+	$q->param('flavor', 'email_message_preview');
+	return $self->email_message_preview(); 
+	
+}
+
+
 
 sub delete_drafts {
 

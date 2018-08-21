@@ -421,7 +421,7 @@ $SHOW_ADMIN_LINK        //= 1;
 $ADMIN_FLAVOR_NAME      //= 'admin';
 $SIGN_IN_FLAVOR_NAME    //= 'sign_in';
 $DEFAULT_SCREEN         //= '';
-$DEFAULT_ADMIN_SCREEN   //= $S_PROGRAM_URL . '?flavor=send_email';
+$DEFAULT_ADMIN_SCREEN   //= $S_PROGRAM_URL . '?flavor=drafts';
 $DEFAULT_LOGOUT_SCREEN  //= $S_PROGRAM_URL . '?flavor=' . $ADMIN_FLAVOR_NAME . '&logged_out=1';
 $DISABLE_OUTSIDE_LOGINS //= 0;
 $LOGIN_WIDGET           //= 'popup_menu';
