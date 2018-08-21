@@ -161,8 +161,8 @@ sub setup {
         'drafts'                          => \&drafts,
         'delete_drafts'                   => \&delete_drafts,
         'create_from_stationery'          => \&create_from_stationery,
-        'message_body_help'               => \&message_body_help,
-        'url_message_body_help'           => \&url_message_body_help,
+       # 'message_body_help'               => \&message_body_help,
+        #'url_message_body_help'           => \&url_message_body_help,
         'preview_message_receivers'       => \&preview_message_receivers,
         'sending_monitor'                 => \&sending_monitor,
         'print_mass_mailing_log'          => \&print_mass_mailing_log,
@@ -202,7 +202,6 @@ sub setup {
         'list_invite'                   => \&list_invite,
         'mass_mailing_options'          => \&mass_mailing_options,
         'pass_gen'                      => \&pass_gen,
-        'send_url_email'                => \&send_url_email,
         'feature_set'                   => \&feature_set,
         'list_cp_options'               => \&list_cp_options,
         'profile_fields'                => \&profile_fields,
@@ -415,7 +414,9 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 <p><a href="mailto:$ENV{SERVER_ADMIN}">Contact the Server Admin</a></p>
 <p>Time of error: <strong>$TIME</strong></p> 	
 </div>
-
+<pre>
+$error
+</pre>
 </body> 
 </html> 
 };
@@ -1110,49 +1111,6 @@ sub admin_menu_bridge_notification {
 }
 
 
-
-
-sub send_email {
-
-    my $self = shift;
-    my $q    = $self->query();
-
-    my ( $admin_list, $root_login, $checksout, $error_msg ) =
-      check_list_security(
-        -cgi_obj  => $q,
-        -Function => 'send_email'
-      );
-    if ( !$checksout ) { return $error_msg; }
-
-    my $list = $admin_list;
-    require DADA::App::MassSend;
-    my $ms = DADA::App::MassSend->new( { -list => $list } );
-
-    my $Ext_Request = undef;
-    if ( defined( $self->param('Ext_Request') ) ) {
-        $Ext_Request = $self->param('Ext_Request');
-    }
-    my ( $headers, $body ) = $ms->send_email(
-        {
-            -cgi_obj     => $q,
-            -Ext_Request => $Ext_Request,
-            -root_login  => $root_login,
-        }
-    );
-
-    if ( exists( $headers->{-redirect_uri} ) ) {
-        $self->header_type('redirect');
-        $self->header_props( -url => $headers->{-redirect_uri} );
-    }
-    else {
-        if ( keys %$headers ) {
-            $self->header_props(%$headers);
-        }
-        return $body;
-    }
-}
-
-
 sub image_drag_and_drop {
 
     my $self = shift;
@@ -1166,7 +1124,7 @@ sub image_drag_and_drop {
     my ( $admin_list, $root_login, $checksout, $error_msg ) =
       check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email send_url_email'
+        -Function => 'send_email'
       );
     if ( !$checksout ) {
         $r = {
@@ -1391,7 +1349,7 @@ sub no_draft_available {
     my ( $admin_list, $root_login, $checksout, $error_msg ) =
       check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email send_url_email'
+        -Function => 'send_email'
       );
     if ( !$checksout ) { return $error_msg; }
     my $list = $admin_list;
@@ -1429,7 +1387,7 @@ sub email_message_preview {
     my ( $admin_list, $root_login, $checksout, $error_msg ) =
       check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email send_url_email'
+        -Function => 'send_email'
       );
     if ( !$checksout ) { return $error_msg; }
     my $list = $admin_list;
@@ -1571,7 +1529,7 @@ sub send_email_button_widget {
     my ( $admin_list, $root_login, $checksout, $error_msg ) =
       check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email send_url_email'
+        -Function => 'send_email'
       );
 
     if ( !$checksout ) { return $error_msg; }
@@ -2092,35 +2050,34 @@ sub create_from_stationery {
 
 }
 
-sub message_body_help {
-
-    my $self = shift;
-    my $q    = $self->query();
-
-    my ( $admin_list, $root_login, $checksout, $error_msg ) =
-      check_list_security( -cgi_obj => $q, );
-    if ( !$checksout ) { return $error_msg; }
-
-    my $body = DADA::Template::Widgets::screen(
-        { -screen => 'send_email_message_body_help_widget.tmpl', } );
-    return $body;
-}
-
-sub url_message_body_help {
-
-    my $self = shift;
-    my $q    = $self->query();
-
-    my ( $admin_list, $root_login, $checksout, $error_msg ) =
-      check_list_security( -cgi_obj => $q );
-    if ( !$checksout ) { return $error_msg; }
-    return (
-        {},
-        DADA::Template::Widgets::screen(
-            { -screen => 'send_url_email_message_body_help_widget.tmpl', }
-        )
-    );
-}
+#sub message_body_help {
+#
+#    my $self = shift;
+#    my $q    = $self->query();
+#
+#    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+#      check_list_security( -cgi_obj => $q, );
+#    if ( !$checksout ) { return $error_msg; }
+#
+#    my $body = DADA::Template::Widgets::screen(
+#        { -screen => 'send_email_message_body_help_widget.tmpl', } );
+#    return $body;
+# }
+#sub url_message_body_help {
+#
+#    my $self = shift;
+#    my $q    = $self->query();
+#
+#    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+#      check_list_security( -cgi_obj => $q );
+#    if ( !$checksout ) { return $error_msg; }
+#    return (
+#        {},
+#        DADA::Template::Widgets::screen(
+#            { -screen => 'send_url_email_message_body_help_widget.tmpl', }
+#        )
+#    );
+#}
 
 sub preview_message_receivers {
 
@@ -2762,7 +2719,7 @@ sub print_mass_mailing_log {
     return $mailout->return_log;
 }
 
-sub send_url_email {
+sub send_email {
 
     my $self = shift;
     my $q    = $self->query();
@@ -2770,7 +2727,7 @@ sub send_url_email {
     my ( $admin_list, $root_login, $checksout, $error_msg ) =
       check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_url_email'
+        -Function => 'send_email'
       );
     if ( !$checksout ) { return $error_msg; }
 
@@ -2783,7 +2740,7 @@ sub send_url_email {
 
     require DADA::App::MassSend;
     my $ms = DADA::App::MassSend->new( { -list => $list } );
-    my ( $headers, $body ) = $ms->send_url_email(
+    my ( $headers, $body ) = $ms->send_email(
         {
             -cgi_obj     => $q,
             -Ext_Request => $Ext_Request,

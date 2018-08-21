@@ -105,7 +105,7 @@ jQuery(document).ready(function($){
 
 	
 	//Mail Sending >> Send a Message
-		if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {		
+		if ($("#send_email").length || $("#list_invite").length) {		
         
 		var stickyHeader = $('#buttons').offset().top;
         $(window).scroll(function(){
@@ -206,7 +206,7 @@ jQuery(document).ready(function($){
 			event.preventDefault();
 		});
 
-		if ($("#send_email_screen").length || $("#send_url_email").length) {
+		if ($("#send_email").length) {
 			auto_save_as_draft();
 
 			$("body").on("click", ".save_msg", function(event) {
@@ -4270,7 +4270,7 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 		return true;
 	}
 	
-	if ($("#f").val() == 'send_url_email') {
+	if ($("#f").val() == 'send_email') {
 		if($("#content_from_url").prop("checked") === true) {
 			if (
 			$("#url").val() == 'http://' || $("#url").val().length <= 0) {
@@ -4280,6 +4280,7 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 		}
 	}
 
+	/*
 	if ($("#send_email_screen").length) {
 		var has_html = 1;
 		var has_text = 1;
@@ -4290,6 +4291,8 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 			return false;
 		}
 	}
+	*/
+	
 
 	if ($("#Subject").val().length <= 0) {
 		if ($("#subject_from_title_tag").prop("checked") !== true) {

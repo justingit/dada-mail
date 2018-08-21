@@ -1,4 +1,29 @@
-<!-- begin send_url_email_html_message_form_field_widget.tmpl --> 
+<!-- begin send_email_html_message_form_field_widget.tmpl --> 
+
+
+<div class="row">
+	<div class="small-12 columns">
+		<input 
+			type="radio" 
+			name="content_from" 
+			id="content_from_textarea" 
+			value="content_from_textarea"
+			class="toggle_send_url_options"
+			checked="checked"
+		>
+		<label for="content_from_textarea">
+			Write/Paste HTML
+		</label>
+	</div>
+</div>
+<div id="HTML_content_from_textarea_widget">
+	<div class="row panel">
+		<div class="small-12 columns">
+			<!-- tmpl_include html_message_form_field_widget.tmpl --> 
+		</div>
+	</div>
+</div>
+
 
 <div class="row">
 	<div class="small-12 columns">
@@ -7,7 +32,6 @@
 			name="content_from"
 			id="content_from_url"
 			value="url" 
-			checked="checked"
 			class="toggle_send_url_options"
 		>
 		<label for="content_from_url">
@@ -28,6 +52,19 @@
 					Advanced Options
 				</legend>
 
+				<div class="row">
+					<div class="small-12 columns">
+						<input 
+							type="checkbox" 
+							name="subject_from" 
+							id="subject_from_title_tag" 
+							value="title_tag"
+						>
+						<label for="subject_from_title_tag">
+							Use the Webpage's &lt;title&gt; as the message's Subject 
+						</label>   
+					</div>
+				</div>
 				<div class="row">
 					<div class="small-12 columns">
 						<!-- tmpl_unless can_use_HTML_Tree --> 
@@ -216,30 +253,6 @@
 	</div>
 </div>
 
-
-
-
-<div class="row">
-	<div class="small-12 columns">
-		<input 
-			type="radio" 
-			name="content_from" 
-			id="content_from_textarea" 
-			value="content_from_textarea"
-			class="toggle_send_url_options"
-		>
-		<label for="content_from_textarea">
-			Write/Paste HTML
-		</label>
-	</div>
-</div>
-<div id="HTML_content_from_textarea_widget">
-	<div class="row panel">
-		<div class="small-12 columns">
-			<!-- tmpl_include html_message_form_field_widget.tmpl --> 
-		</div>
-	</div>
-</div>
 <div class="row">
 	<div class="small-12 columns">
 		<input 
@@ -250,7 +263,7 @@
 			class="toggle_send_url_options"
 		>
 		<label for="content_from_none">
-			Do not Send an HTML version (only PlainText version)
+			Do not send an HTML version (only PlainText version)
 		</label>
 	</div>
 </div>
@@ -259,4 +272,4 @@
 
 
 
-<!-- end send_url_email_html_message_form_field_widget.tmpl --> 
+<!-- end send_email_html_message_form_field_widget.tmpl --> 

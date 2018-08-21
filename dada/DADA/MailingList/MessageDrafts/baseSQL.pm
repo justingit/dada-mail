@@ -199,14 +199,14 @@ sub save {
 			$query =
                 'INSERT INTO '
               . $self->{sql_params}->{message_drafts_table}
-              . ' (list, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?,?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)';
+              . ' (list, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)';
         }
         elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
             # screen, 
 		    $query =
                 'INSERT INTO '
               . $self->{sql_params}->{message_drafts_table}
-              . ' (list, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?,?, NULL, NULL)'; 
+              . ' (list, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?, NULL, NULL)'; 
 			  # I'm such NOW() NOW() (untested!) would also work
         }
         else {
@@ -214,7 +214,7 @@ sub save {
             $query =
                 'INSERT INTO '
               . $self->{sql_params}->{message_drafts_table}
-              . ' (list, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?,?, NOW(), NOW())';
+              . ' (list, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?, NOW(), NOW())';
         }
 
         warn 'QUERY: ' . $query

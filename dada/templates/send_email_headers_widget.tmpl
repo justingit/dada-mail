@@ -3,10 +3,7 @@
 
 <div id="additional_email_headers">
 	
-	<!-- tmpl_if comment -->
-		<input type="hidden" name="from_phrase" id="from_phrase" value="">
-		<input type="hidden" name="to_phrase"   id="to_phrase"   value="">
-	<!-- /tmpl_if -->
+
 	
 	<div class="row">
 		<div class="large-1 columns">
@@ -33,66 +30,16 @@
 	<!-- /tmpl_if --> 
 	
 </div>
-  
-  
-  
-	
 
-
-<div class="row">
-
-	<div class="large-1 columns">
-		<label for="Subject" class="large-text-right">
-			Subject
-		</label>
-	</div>
-	
-	
-					  				
-		<!-- tmpl_if Subject --> 
-			<div class="large-11 columns">	
-				<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var Subject escape="HTML"  -->"  >
-			</div>
-
-  		<!-- tmpl_else --> 
-
-				 <!-- tmpl_if expr="(screen eq 'send_url_email')" --> 	 
-		    		
-					<div class="large-11 columns">	
-						
-						 <div class="row collapse">
-					    	 <div class="small-1 columns">
-					     		<input type="radio" name="subject_from" id="subject_from_input" value="input" checked="checked">
-					    	</div>
-			   	  			<div class="small-11 columns">
-								<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var default_subject escape="HTML" -->"  >
-							</div>
-				    	</div>	  
-					
-						 
-						<div class="row collapse">
-							<div class="small-1 columns">
-								<input type="radio" name="subject_from" id="subject_from_title_tag" value="title_tag"><label for="subject_from_title_tag" >
-							</div>   	  		
-							<div class="small-11 columns">
-								<label for="subject_from_title_tag">
-									Use the Webpage's &lt;title&gt; as the message's Subject 
-								</label>   
-							</div>
-						</div> 
-					</div>
-					
-					
-		     	<!-- tmpl_else --> 
-				
-					<div class="large-11 columns">	
-						<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var default_subject escape="HTML" -->"  >
-					</div>
-				
-				<!-- /tmpl_if -->	
-				
-		<!-- /tmpl_if -->
-		
+	<div class="row">
+		<div class="large-1 columns">
+			<label for="Subject" class="large-text-right">
+				Subject
+			</label>
+		</div>				  				
+		<div class="large-11 columns">	
+			<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var Subject escape="HTML"  -->"  >
+		</div>
 	</div>
 
 	<div class="row">
