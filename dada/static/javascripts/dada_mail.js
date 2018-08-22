@@ -172,6 +172,34 @@ jQuery(document).ready(function($){
 				$("#backdate_datetime").val(year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds);
 			}
 		}
+		
+
+
+	    $('#entire_form').on('change keyup keydown', 'input, textarea, select', function (e) {
+	        $(this).addClass('changed-input');
+	    });
+		
+		var save_changes = 'You haven\'t saved your changes.'; 
+	    $(window).on('beforeunload', function () {
+	        if ($('.changed-input').length) {
+	            return save_changes;
+	        }
+			if ($("#using_ckeditor").length) {
+				if(CKEDITOR.instances['html_message_body'].checkDirty() === true){ 
+					return save_changes;
+				}				
+			}
+			else if($("#using_tinymce").length) {
+				if(tinymce.activeEditor.isDirty() === true){ 
+					return save_changes;
+				}
+			}
+	    });
+
+		
+
+		
+		
 
 
 		$("body").on("click", ".scheduled_type", function(event) {
@@ -207,6 +235,7 @@ jQuery(document).ready(function($){
 		});
 
 		if ($("#send_email").length) {
+			
 			auto_save_as_draft();
 
 			$("body").on("click", ".save_msg", function(event) {
@@ -227,7 +256,16 @@ jQuery(document).ready(function($){
 
 
 		$("body").on("click", ".sendmassmailing", function(event) {
-
+			
+			// remove warning about unsaved changes
+			$('.changed-input').removeClass('changed-input');
+			if ($("#using_ckeditor").length) {
+				CKEDITOR.instances['html_message_body'].resetDirty();
+			}
+			else if($("#using_tinymce").length) {
+				tinymce.isNotDirty = 1;
+			}
+			
 			$("#button_action_notice").html('Working...');
 
 			var fid = 'mass_mailing';
@@ -307,9 +345,6 @@ jQuery(document).ready(function($){
 								height: '95%'					
 							});
 						}
-						
-						
-						
 						
 						$(window).resize(function(){
 						    $.colorbox.resize({
@@ -424,6 +459,9 @@ jQuery(document).ready(function($){
 		}
 
 		$("body").on("click", ".cancel_message", function(event) {
+			
+			
+			
 			$("#button_action_notice").html('Working...');
 			save_msg(false)
 
@@ -446,15 +484,22 @@ jQuery(document).ready(function($){
 			}
 		});
 
-		$("body").on("click", "#keep_working_on_draft", function(event) {
-			$.colorbox.close();
-		});
-		$("body").on("click", "#create_a_new_mass_mailing", function(event) {
-		 	window.location.replace($("#s_program_url").val() + '?flavor=' + $("#f").val() + '&restore_from_draft=false');
-		});
-		$("body").on("click", "#show_all_drafts", function(event) {
-		 	window.location.replace($("#s_program_url").val() + '?flavor=drafts');
-		});
+		/*
+		
+			 I can't find any of the above implemented: 
+		
+		*/
+		
+		
+//		$("body").on("click", "#keep_working_on_draft", function(event) {
+//			$.colorbox.close();
+//		});
+//		$("body").on("click", "#create_a_new_mass_mailing", function(event) {
+//		 	window.location.replace($("#s_program_url").val() + '?flavor=' + $("#f").val() + '&restore_from_draft=false');
+//		});
+//		$("body").on("click", "#show_all_drafts", function(event) {
+//		 	window.location.replace($("#s_program_url").val() + '?flavor=drafts');
+//		});
 	}
 
 	if ($("#drafts_screen").length) {
@@ -467,6 +512,10 @@ jQuery(document).ready(function($){
 				return false;
 			}
 		});
+		
+		// $("#sortable_table_drafts").tablesorter();
+		
+		
 		
 		$("body").on("click", ".show_preview", function(event) {	
 			
@@ -1931,7 +1980,7 @@ function update_scheduled_mass_mailings_options() {
 
 
 function save_msg(async) {
-
+	
 	//alert('save draft called!');
 
 	var r = false;
@@ -1951,9 +2000,20 @@ function save_msg(async) {
 			tinyMCE.triggerSave();
 		}
 	}
+	
+	
 
 		$('#draft_notice .alert').text('auto-saving...');
 
+
+		// remove warning about unsaved changes
+		$('.changed-input').removeClass('changed-input');
+		if ($("#using_ckeditor").length) {
+			CKEDITOR.instances['html_message_body'].resetDirty();
+		}else if($("#using_tinymce").length) {
+				tinymce.isNotDirty = 1;
+		}
+		
 		var request = $.ajax({
 			url:       $("#s_program_url").val(),
 			type:      "POST",
@@ -1990,12 +2050,22 @@ function auto_save_as_draft() {
 		}
 	}
 
-
 	$("#save_draft_role").val($("#draft_role").val());
 
 	var r = 60 * 1000; // Every 1 minute.
 	//var r = 10 * 1000; // Every 10 seconds
 	var refresh_loop = function(no_loop) {
+		
+		// if we're saving, no need to harass anyone. 
+		$('.changed-input').removeClass('changed-input');
+		if ($("#using_ckeditor").length) {
+			CKEDITOR.instances['html_message_body'].resetDirty();
+		}
+		else if($("#using_tinymce").length) {
+			tinymce.isNotDirty = 1;
+		}
+		
+		
 		$('#draft_notice .alert').text('auto-saving...');
 		var request = $.ajax({
 			url: $("#s_program_url").val(),
@@ -4339,6 +4409,7 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 	}
 	else if(itsatest === false) {
 		
+		/*
 		if (has_html === 1 && $("#html_message_body").val().length > 1000000) {
 			var large_html_msg = "Your HTML Message is over 1 megabyte in size! This could cause problems with mail sending, viewing, and/or archiving. Submit anyways?";
 			if (!confirm(large_html_msg)) {
@@ -4346,6 +4417,7 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 				return false;
 			}
 		}
+		*/
 		
 		if ($("#archive_no_send").prop("checked") === true) {
 			if (!confirm('Archive Message?')) {

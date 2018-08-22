@@ -65,16 +65,30 @@
 
         <!-- tmpl_if draft_index --> 
 
+		<div class="clearfix">
+			<div class="clearfix">
+				<ul class="button-group right">
+				    <li>
+						<a 
+							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=false"
+							class="small button"
+						>
+							<i class="fi-plus"></i> New Draft
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		
         <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
             <input type="hidden" name="flavor" value="delete_drafts" > 
         
-        	<table style="width:100%" class="responsive">
-        			<th>
+        	<table style="width:100%" class="responsive tablesorter" id="sortable_table_drafts">
+        			<thead> 
+					<th>
         				<p>&nbsp;</p>
         			</th>
-        			<th>
-        				&nbsp;
-        			</th>
+        			
         			<th>
         				<p>
         					<strong>
@@ -82,6 +96,15 @@
         					</strong>
         				</p> 
         			</th>
+					
+        			<th>
+        				<p>
+        					<strong>
+        						Created
+        					</strong>
+        				</p> 
+        			</th>
+					
         			<th>
         				<p>
         					<strong>
@@ -89,9 +112,16 @@
         					</strong>
         				</p> 
         			</th>
+					
         			<th>
         				&nbsp;
         			</th>
+					
+        			<th>
+        				&nbsp;
+        			</th>
+				</thead> 
+				<tbody> 
         		</tr> 
          	<!-- tmpl_loop draft_index --> 
         		<tr>
@@ -105,10 +135,6 @@
             		    <input type="checkbox" class="draft_ids" name="draft_ids" value="<!-- tmpl_var id escape="HTML" -->" >
         			</td>
 					
-					<td>
-						<input type="button" class="button show_preview" data-draft_id="<!-- tmpl_var id -->" data-draft_role="draft" value="Preview">
-			
-					</td>
 
 
         			<td>
@@ -118,12 +144,28 @@
     						</a>
         				</p> 
         			</td>
+					
+					<td>
+						<p>
+							<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->">
+								<!-- tmpl_var created_timestamp --> 
+							</a>
+						</p> 
+					</td>
+					
         			<td>
         				<p>
         					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->">
         						<!-- tmpl_var last_modified_timestamp --> 
         					</a>
         				</p> 
+					</td>
+					
+					<td>
+						<input type="button" class="small button show_preview" data-draft_id="<!-- tmpl_var id -->" data-draft_role="draft" value="Preview">
+			
+					</td>
+					
         			<td>
 						<a 
 							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->" class="small button success"
@@ -150,6 +192,7 @@
 				  </button>
             	 </td>
             	</tr>
+			</tbody> 
             </table>
             </form>
             
@@ -175,7 +218,7 @@
 				    <li>
 						<a 
 							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=false"
-							class="button"
+							class="small button"
 						>
 							<i class="fi-plus"></i> New Draft
 						</a>
@@ -218,20 +261,22 @@
 					<th>
         				<p>&nbsp;</p>
         			</th>
-
-        			<!-- 
-        				<th>
-        					<p>ID</p>
-        				</th>
-        			--> 
-
         			<th>
         				<p>
         					<strong>
         						Subject
         					</strong>
-        				</h> 
+        				</th> 
         			</td>
+
+        			<th>
+        				<p>
+        					<strong>
+        						Created
+        					</strong>
+        				</p> 
+        			</th>
+
         			<th>
         				<p>
         					<strong>
@@ -239,6 +284,12 @@
         					</strong>
         				</p> 
         			</th>
+
+        			<th>
+        				<p>&nbsp;</p>
+        				</p> 
+        			</th>
+
         			<th>
         				<p>&nbsp;</p>
         				</p> 
@@ -249,14 +300,6 @@
 
          	<!-- tmpl_loop stationery_index --> 
         		<tr>
-
-
-        			<!-- 
-        				<td>
-        					<p><!-- tmpl_var id --></p>
-        				</td>
-        			-->
-        			
                     <td>
             		    <input type="checkbox" class="stationery_ids" name="draft_ids"  value="<!-- tmpl_var id escape="HTML" -->" >
         			</td>
@@ -276,6 +319,16 @@
     						</a>
         				</p> 
         			</td>
+					
+					<td>
+						<p>
+							<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->">
+								<!-- tmpl_var created_timestamp --> 
+							</a>
+						</p> 
+					</td>
+					
+					
         			<td>
         				<p>
         					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->">
@@ -283,6 +336,13 @@
         					</a>
         				</p> 
         			</td>
+					
+					<td>
+						<input type="button" class="small button show_preview" data-draft_id="<!-- tmpl_var id -->" data-draft_role="stationery" value="Preview">
+			
+					</td>
+					
+					
                     <td>
                     	<a 
 							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->"
@@ -329,7 +389,7 @@
 	
         	<!-- tmpl_if active_schedule_index -->
 
-                <h2>Active Schedules</h2> 
+                <h3>Active Schedules</h3> 
             
             <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
                 <input type="hidden" name="flavor" value="delete_drafts" > 
@@ -340,32 +400,45 @@
             			<th>
             				<p>&nbsp;</p>
             			</th>
-            			<!-- 
-            				<th>
-            					<p>ID</p>
-            				</th>
-            			--> 
-                        <th> 
-                            <p>
-                                <strong>
-                                    Sending On/Between
-                                </strong>
-                            </p>
-                        </td>
+						
             			<th>
             				<p>
             					<strong>
             						Subject
             					</strong>
             				</p> 
-            			</td>
+            			</th>
+						
+                        <th> 
+                            <p>
+                                <strong>
+                                    Sending On/Between
+                                </strong>
+                            </p>
+                        </th>
+            			
             			<th>
+            				<p>
+            					<strong>
+            						Created
+            					</strong>
+            				</p> 
+            			</th>
+						
+						
+						<th>
             				<p>
             					<strong>
             						Last Modified
             					</strong>
             				</p> 
             			</th>
+						
+            			<th>
+            				<p>&nbsp;</p>
+            			</th>
+						
+						
             			<th>
             				<p>&nbsp;</p>
             				</p> 
@@ -377,18 +450,8 @@
                 			<td>
                     		    <input type="checkbox" class="asched_ids" name="draft_ids" value="<!-- tmpl_var id escape="HTML" -->" >
                 			</td>
-                			<!-- 
-                				<td>
-                					<p><!-- tmpl_var id --></p>
-                				</td>
-                			--> 
-                			<td>
-                                <!-- tmpl_if expr="(schedule_type eq 'single')" --> 
-        						    <!-- tmpl_var schedule_single_displaydatetime -->
-        						<!-- tmpl_else --> 
-        						    <!-- tmpl_var schedule_recurring_displaydatetime_start --> - <!-- tmpl_var schedule_recurring_displaydatetime_end -->
-        						<!-- /tmpl_if -->
-                			</td>
+
+
                 			<td>
                 				<p>
             						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
@@ -396,6 +459,30 @@
             						</a>
                 				</p> 
                 			</td>
+							
+                			<td>
+								<p>
+            						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">									
+		                                <!-- tmpl_if expr="(schedule_type eq 'single')" --> 
+		        						    <!-- tmpl_var schedule_single_displaydatetime -->
+		        						<!-- tmpl_else --> 
+		        						    <!-- tmpl_var schedule_recurring_displaydatetime_start --> - <!-- tmpl_var schedule_recurring_displaydatetime_end -->
+		        						<!-- /tmpl_if -->
+									</a>
+								</p>
+                			</td>
+                			
+							
+							<td>
+								<p>
+									<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_role=schedule&draft_id=<!-- tmpl_var id -->">
+										<!-- tmpl_var created_timestamp --> 
+									</a>
+								</p> 
+							</td>
+							
+							
+							
                 			<td>
                 				<p>
                 					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
@@ -403,6 +490,20 @@
                 					</a>
                 				</p> 
                 			</td>
+							
+							<td>
+								<input 
+									type="button" 
+									class="small button show_preview" 
+									data-draft_id="<!-- tmpl_var id -->" 
+									data-draft_role="schedule" 
+									value="Preview"
+								>
+			
+							</td>
+							
+							
+						
                             <td>
 								<a 
 								href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule" 
@@ -433,7 +534,7 @@
             <!-- /tmpl_if --> 
             
         	<!-- tmpl_if inactive_schedule_index -->
-                    <h2>Inactive Schedules</h2> 
+                    <h3>Inactive Schedules</h3> 
 
                 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
                     <input type="hidden" name="flavor" value="delete_drafts" > 
@@ -444,25 +545,32 @@
                 			<th>
                 				<p>&nbsp;</p>
                 			</th>
-                			<!-- 
-                				<th>
-                					<p>ID</p>
-                				</th>
-                			--> 
-                            <th> 
-                                <p>
-                                    <strong>
-                                        Sending On/Between
-                                    </strong>
-                                </p>
-                            </td>
+							
                 			<th>
                 				<p>
                 					<strong>
                 						Subject
                 					</strong>
                 				</p> 
-                			</td>
+                			</th>
+							
+                			
+                            <th> 
+                                <p>
+                                    <strong>
+                                        Sending On/Between
+                                    </strong>
+                                </p>
+                            </th>
+
+                			<th>
+                				<p>
+                					<strong>
+                						Created
+                					</strong>
+                				</p> 
+                			</th>
+							
                 			<th>
                 				<p>
                 					<strong>
@@ -470,6 +578,12 @@
                 					</strong>
                 				</p> 
                 			</th>
+
+                			<th>
+                				<p>&nbsp;</p>
+                				</p> 
+                			</th>
+							
                 			<th>
                 				<p>&nbsp;</p>
                 				</p> 
@@ -481,20 +595,7 @@
                     			<td>
                         		    <input type="checkbox" class="iasched_ids" name="draft_ids" value="<!-- tmpl_var id escape="HTML" -->" >
                     			</td>
-                    			<!-- 
-                    				<td>
-                    					<p><!-- tmpl_var id --></p>
-                    				</td>
-                    			--> 
-                    			<td>
-
-                                        <!-- tmpl_if expr="(schedule_type eq 'single')" --> 
-                						    <!-- tmpl_var schedule_single_displaydatetime -->
-                						<!-- tmpl_else --> 
-                						    <!-- tmpl_var schedule_recurring_displaydatetime_start --> - <!-- tmpl_var schedule_recurring_displaydatetime_end -->
-                						<!-- /tmpl_if -->
-
-                    			</td>
+                    			
                     			<td>
                     				<p>
                 						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
@@ -502,6 +603,27 @@
                 						</a>
                     				</p> 
                     			</td>
+								
+                    			<td>
+            						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">									
+                                        <!-- tmpl_if expr="(schedule_type eq 'single')" --> 
+                						    <!-- tmpl_var schedule_single_displaydatetime -->
+                						<!-- tmpl_else --> 
+                						    <!-- tmpl_var schedule_recurring_displaydatetime_start --> - <!-- tmpl_var schedule_recurring_displaydatetime_end -->
+                						<!-- /tmpl_if -->
+									</a>
+
+                    			</td>
+								
+                    			<td>
+                    				<p>
+                    					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
+                    						<!-- tmpl_var created_timestamp --> 
+                    					</a>
+                    				</p> 
+                    			</td>
+								
+    
                     			<td>
                     				<p>
                     					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
@@ -509,6 +631,20 @@
                     					</a>
                     				</p> 
                     			</td>
+								
+					
+								<td>
+									<input 
+										type="button" 
+										class="small button show_preview" 
+										data-draft_id="<!-- tmpl_var id -->" 
+										data-draft_role="schedule" 
+										value="Preview"
+									>
+			
+								</td>
+								
+								
                                 <td>
 									<a
 										href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule"

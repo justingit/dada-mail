@@ -2016,19 +2016,21 @@ sub preview_draft {
 	# preview thing: 
     require DADA::App::MassSend;
     my $ms = DADA::App::MassSend->new( { -list => $list } );
-    my ( $headers, $body ) = $ms->preview_draft(
+    my $r = $ms->preview_draft(
         {
             -cgi_obj     => $q,
         }
     );
 	
-	require JSON;
-	my $json = JSON->new->allow_nonref;
-	my $data = $json->decode($body);
-	$q->param('id', $data->{id});
-	$q->param('flavor', 'email_message_preview');
-	return $self->email_message_preview(); 
-	
+	if($r->{status} == 0){
+		$self->header_props(-type => 'text/plain');
+		return "Problems with creating preview: " . $r->{errors};
+	}
+	elsif($r->{status} == 1){ 
+		$q->param('id', $r->{id});
+		$q->param('flavor', 'email_message_preview');
+		return $self->email_message_preview(); 
+	}
 }
 
 

@@ -16,7 +16,7 @@ use Try::Tiny;
 
 use Carp qw(carp croak);
 
-$Carp::Verbose = 1;
+#$Carp::Verbose = 1;
 
 use strict;
 use vars qw($AUTOLOAD);
@@ -1407,28 +1407,9 @@ sub preview_draft {
 	    carp 'done with construct_and_send!';
 	}
 	if ( $construct_r->{status} == 0 ) {
-	
-		# This has been commented out and replaced in send_a_message... 
-		#
-		#my ($h, $b) = $self->report_mass_mail_errors(
-		#	{ 
-		#		-errors => $construct_r->{errors}, 
-		#		-root_login => $root_login, 
-		#		-wrap => 0, 
-		#	}
-		#);
-	
-	    require JSON;
-	    my $json    = JSON->new->allow_nonref;
-	    my $return  = { status => 0, errors => $construct_r->{errors} };
-	    my $headers = {
-	        '-Cache-Control' => 'no-cache, must-revalidate',
-	        -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
-	        -type            => 'application/json',
-	    };
-	    my $body = $json->pretty->encode($return);
-	    return ( $headers, $body );
-	}
+
+		return $construct_r;
+	} 
 	else { 
 		require DADA::App::EmailMessagePreview; 
 		my $daemp = DADA::App::EmailMessagePreview->new; 			
@@ -1438,19 +1419,12 @@ sub preview_draft {
 			-plaintext => $construct_r->{text_message},
 			-html      => $construct_r->{html_message},
 		});
-		require JSON;
-	    my $json    = JSON->new->allow_nonref;
-	    my $return  = { id => $daemp_id };
-	    my $headers = {
-	        '-Cache-Control' => 'no-cache, must-revalidate',
-	        -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
-	        -type            => 'application/json',
-	    };
-	    my $body = $json->pretty->encode($return);
-	    if($t == 1){ 
-	        require Data::Dumper; 
-	    }			
-	    return ( $headers, $body );
+		
+	    return { 
+			status => 1,
+			errors => undef,  
+			id    => $daemp_id ,
+		};
 	}
 
 }
@@ -1464,7 +1438,6 @@ sub find_draft_id {
     my $restore_from_draft = $q->param('restore_from_draft') || undef; 
 	my $draft_id           = $q->param('draft_id')           || undef; 
     my $role               = $args->{-role}                  || undef; 	
-	my $screen             = $args->{-screen}                || undef; 	
 
 
 	# This check short circuits all the searching below. If we're given all
@@ -1472,12 +1445,10 @@ sub find_draft_id {
 	if(
 		defined($draft_id)
 	 && defined($role) 
-	 && defined($screen)
 	 ){ 
 		if($self->{md_obj}->draft_exists(
 			$draft_id, 
 			$role, 
-			$screen
 			)
 		){ 
 			return $draft_id; 
@@ -1623,8 +1594,8 @@ sub save_as_draft {
     my $self = shift;
     my ($args) = @_;
     if ( $t == 1 ) {
-        #require Data::Dumper;
-        #warn 'args:' . Data::Dumper::Dumper($args);
+        require Data::Dumper;
+        warn 'args:' . Data::Dumper::Dumper($args);
     }
 
     my $q = $args->{-cgi_obj};
@@ -1636,7 +1607,20 @@ sub save_as_draft {
     my $draft_id        = $q->param('draft_id')        || undef;
     my $draft_role      = $q->param('draft_role')      || 'draft';
     my $save_draft_role = $q->param('save_draft_role') || 'draft';
-    my $screen          = $q->param('flavor')          || 'send_email';
+ 
+ 
+ 	if($t == 1){ 
+	
+		
+		require Data::Dumper; 
+		warn Data::Dumper::Dumper({
+		draft_id      => $draft_id, 
+		draft_role    => $draft_role,   
+		save_draft_role => $save_draft_role, 
+	});
+	}
+ 
+ 
  
     # I wanna that we do it, here! 
  
@@ -1646,7 +1630,6 @@ sub save_as_draft {
             -id        => $draft_id,
             -role      => $draft_role,
             -save_role => $save_draft_role, 
-            -screen    => $screen,
         }
     );
 

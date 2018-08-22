@@ -273,7 +273,8 @@ sub save {
             || ($args->{-role} eq 'schedule'   && $args->{-save_role} eq 'schedule')
             
             || ($args->{-role} eq 'stationery' && $args->{-save_role} eq 'stationery')
-        ) {
+        		
+		) {
 
 #            warn "Saving Regularly!"; 
             
@@ -320,7 +321,12 @@ sub save {
             $sth->finish;
             return $id;
         }
-        elsif($args->{-role} eq 'stationery' && $args->{-save_role} eq 'draft') {
+        elsif(
+		
+		$args->{-role} eq 'stationery' && $args->{-save_role} eq 'draft'
+		||
+		$args->{-role} eq 'stationery' && $args->{-save_role} eq 'schedule'
+		) {
             
             # warn 'Draft from Stationery!'; 
              
@@ -337,7 +343,8 @@ sub save {
 			#  -screen => $args->{-screen},
             my $saved_id = $self->create_from_stationery(
                     {
-                        -id     => $args->{-id},
+                        -id         => $args->{-id},
+						-save_role => $args->{-save_role},
                     }
                 ); 
             # warn 'created from stationery!'; 
@@ -555,6 +562,10 @@ sub create_from_stationery {
     my $self    = shift;
     my ($args)  = @_;
 	
+	if(!defined($args->{-save_role})){ 
+		$args->{-save_role} = 'draft';
+	}
+	
 	# -screen => $args->{-screen},
     my $q_draft = $self->fetch(
         {
@@ -567,8 +578,8 @@ sub create_from_stationery {
     my $saved_draft_id = $self->save(
         {
             -cgi_obj   => $q_draft,
-            -role      => 'draft',
-            -save_role => 'draft', 
+            -role      => $args->{-save_role},
+            -save_role => $args->{-save_role}, 
         }
     );
     warn '$saved_draft_id' . $saved_draft_id
@@ -652,7 +663,7 @@ sub draft_index {
         $query =
             'SELECT * FROM '
           . $self->{sql_params}->{message_drafts_table}
-          . ' WHERE list = ? AND (role = ? OR role IS NULL) ORDER BY last_modified_timestamp DESC';
+          . ' WHERE list = ? AND (role = ? OR role IS NULL) ORDER BY created_timestamp DESC';
     }
 
     warn 'QUERY: ' . $query

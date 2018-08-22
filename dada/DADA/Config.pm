@@ -609,6 +609,14 @@ $ADMIN_MENU //= [
 {-Title      => 'Mass Mailing',
  -Activated  => 1,
  -Submenu    => [
+ 
+				{
+				-Title     => 'Drafts/Stationery/Schedules',
+				-Title_URL => "$S_PROGRAM_URL?flavor=drafts",
+				-Function  => 'drafts',
+				-Activated => 1,
+				},
+ 
 				{ 
 				-Title      => 'Send a Message',
 				-Title_URL  => "$S_PROGRAM_URL?flavor=send_email",
@@ -616,20 +624,6 @@ $ADMIN_MENU //= [
 				-Activated  => 1,
 				},
 				
-				{
-				-Title      => 'Send a Webpage',
-				-Title_URL  => "$S_PROGRAM_URL?flavor=send_url_email",
-				-Function   => 'send_url_email',
-				-Activated  => 1,
-				},
-
-				{
-				-Title     => 'Drafts/Stationery/Schedules',
-				-Title_URL => "$S_PROGRAM_URL?flavor=drafts",
-				-Function  => 'drafts',
-				-Activated => 1,
-				},
-
 				{
 				-Title      => 'Monitor',
 				-Title_URL  => "$S_PROGRAM_URL?flavor=sending_monitor",
