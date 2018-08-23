@@ -2,6 +2,65 @@
 
 =encoding utf-8
 
+=head1 11.2.0
+
+=head2 Features
+
+=head3 Drafts/Send a Message UI redesign
+
+The Send a Message part of the app has been given a healthy UI refresh - some things to look for: 
+
+=head4 Default screen: All Drafts/Stationery/Schedules
+
+When you log into your mailing list's list control panel, the default screen is now the, 
+B<All Drafts/Stationery/Schedules> 
+screen, rather than the, B<Send a Message> screen. 
+This is to make loading of the list control panel 
+go a little faster, since the Send a Message screen is very complex, and takes a while to fully load. 
+
+=head4 Send a Webpage screen removed (but all features moved to Send a Message)
+
+Having two screens that can send a mass mailing seems like one too many, so we've removed the, B<Send a Webpage> screen. 
+Don't worry - all the features on that screen have been added to the, B<Send a Message> screen, so no features
+have been removed. What has been removed is a lot of duplicate code on the backend. Getting rid of this code
+makes things just that much more simplier to keep well-maintained. 
+
+A mass mailing message can be created by, 
+
+=over
+
+=item * Writing or pasting content into the rich text editor
+
+=item * fetching the message from a specific URL
+
+=item * creating the message from a RSS/Atom feed
+
+=back
+
+From the Send a Message screen
+
+=head4 All Drafts/Stationery/Schedules screen changes
+
+Individual Drafts/Stationery/Schedules now how a button to preview the message, 
+without having to open them individually for editing. 
+
+All messages are now sorted by creation date, rather than last-modified date, 
+and the creation date is shown. 
+
+=head4 Top Menu Mass Mailing Changes
+
+B<Send a Message> has been renamed, B<+ New Draft Message>. 
+Clicking it will B<always> create a new draft message. 
+In previous versions of Dada Mail, any previous draft message would get loaded. 
+This was problematic, if you had more than one draft message 
+- things got confusing on just what draft message was now loaded. 
+This menu item has moved one item below in the top menu bar of, B<Mass Mailing> 
+
+B<Drafts/Stationery/Schedules> has been renamed, B<All Drafts/Stationery/Schedules>
+and has been moved to the top of the B<Mass Mailing> top bar menu. 
+As has been mentioned, 
+this is the defalt screen now when you log into your mailing list's list control panel. 
+
 =head1 11.1.3
 
 =head2 Bugfixes
