@@ -1284,6 +1284,17 @@ jQuery(document).ready(function($){
 		$("body").on("click", "#parse_bounces_button", function(event) {
 			ajax_parse_bounces_results();
 		});
+	
+		$("body").on("click", ".view_ignore_bounces_list", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '?flavor=view_list&type=ignore_bounces_list';
+		});
+		$("body").on("click", ".add_ignore_bounces_list", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '?flavor=add&type=ignore_bounces_list';
+		});
+		
+	
 	}
 	if ($("#plugins_bounce_handler_parse_bounce").length) {
 		bounce_handler_parse_bounces();

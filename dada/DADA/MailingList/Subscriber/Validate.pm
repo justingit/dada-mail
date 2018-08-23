@@ -104,7 +104,11 @@ sub subscription_check {
         $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     } 
     
-    if ( $args->{-type} ne 'black_list' && $args->{-type} ne 'white_list' ) {
+    if ( 
+		   $args->{-type} ne 'black_list' 
+		&& $args->{-type} ne 'white_list'
+		&& $args->{-type} ne 'ignore_bounces_list'
+	 ) {
         if ( !$skip{invalid_email} ) {
               if(DADA::App::Guts::check_for_valid_email($email) == 1) { 
 			  	$errors->{invalid_email} = 1;

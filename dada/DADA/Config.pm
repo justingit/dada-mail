@@ -396,18 +396,17 @@ $MASS_MAIL_SETTINGS //= "|$MAILPROG -t";
 
 
 $LIST_TYPES //= {
-	sub_confirm_list   => 'Unconfirmed Subscribers',
-    list               => 'Subscribers',
-    black_list         => 'Black Listed',
-    white_list         => 'White Listed',     
-    authorized_senders => 'Authorized Senders',
-    moderators         => 'Moderators',
-    sub_request_list   => 'Subscription Requests',
-    unsub_request_list => 'Unsubscription Requests',
-    bounced_list       => 'Bouncing Addresses',
+	sub_confirm_list    => 'Unconfirmed Subscribers',
+    list                => 'Subscribers',
+    black_list          => 'Black Listed',
+    white_list          => 'White Listed',     
+    authorized_senders  => 'Authorized Senders',
+    moderators          => 'Moderators',
+    sub_request_list    => 'Subscription Requests',
+    unsub_request_list  => 'Unsubscription Requests',
+    bounced_list        => 'Bouncing Addresses',
+	ignore_bounces_list => 'Ignore Bounces',
 };
-
-
 
 $AMAZON_SES_OPTIONS //= { 
     AWS_endpoint                     => undef,
@@ -1625,6 +1624,8 @@ $MIME_TOOLS_PARAMS //= {
 	bounce_handler_forward_abuse_report_msgs_to_list_owner => 1, 
 	bounce_handler_send_unsub_notification                 => 0, 
     bounce_handler_when_threshold_reached                  => 'move_to_bounced_sublist',
+	
+	enable_ignore_bounces_list                             => 0, 
         
     public_api_key   =>  undef, 
     private_api_key  => undef, 

@@ -5,7 +5,7 @@ use lib qw(../../ ../../DADA/perllib);
 
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
-use DADA::App::Guts;
+use DADA::MailingList::Subscribers; 
 
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
@@ -1023,97 +1023,115 @@ sub carry_out_rule {
         }
         $i++;
     }
+	
+	my $ignorning = 0; 
+	if($ls->param('enable_ignore_bounces_list') == 1){
+        my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+		if ( $lh->check_for_double_email( 
+			-Email      => $email, 
+			-Type       => 'ignore_bounces_list',
+			-Match_Type => 'sublist_centric',
+		) == 1 ) {
+			$ignorning = 1; 
+		 	# we're ignoring this email, so let's do just that! 
+	        log_action( $list, $email, $diagnostics, "ignoring" );
+			$report .= "\t*'$email' on, Ignore Bounces sublist. Ignorning.\n"; 
+		}
+	}
+	
+	if($ignorning == 0){
 
-    #	if( $diagnostics->{matched_rule} eq 'unknown_bounce_type') {
-    #		$self->save_bounce( $list, $email, $diagnostics, 'blah', $message );
-    #	}
+	    #	if( $diagnostics->{matched_rule} eq 'unknown_bounce_type') {
+	    #		$self->save_bounce( $list, $email, $diagnostics, 'blah', $message );
+	    #	}
 
-    # And, $actions, usually only has one thing. hmm.
-    for my $action ( keys %$actions ) {
+	    # And, $actions, usually only has one thing. hmm.
+	    for my $action ( keys %$actions ) {
 
-        if ( $action eq 'add_to_score' ) {
-            $report .= $self->add_to_score( $list, $email, $diagnostics, $actions->{$action} );
+	        if ( $action eq 'add_to_score' ) {
+	            $report .= $self->add_to_score( $list, $email, $diagnostics, $actions->{$action} );
 
-            #            $report .=
-            #             $self->append_message_to_file( $list, $email, $diagnostics,
-            #              $actions->{$action}, $message );
-            #
-        }
-        elsif ( $action eq 'unsubscribe_bounced_email' ) {
-            $report .= $self->unsubscribe_bounced_email( $list, $email, $diagnostics, $actions->{$action} );
-        }
-        elsif ( $action eq 'abuse_report' ) {
-            $self->abuse_report( $list, $email, $diagnostics, $actions->{$action} );
-        }
-        elsif ( $action eq 'append_message_to_file' ) {
-            $report .= $self->append_message_to_file( $list, $email, $diagnostics, $actions->{$action}, $message );
-        }
-        elsif ( $action eq 'default' ) {
-            $report .= $self->default_action( $list, $email, $diagnostics, $actions->{$action}, $message );
-        }
-        else {
-            warn "unknown rule trying to be carried out, ignoring";
-        }
+	            #            $report .=
+	            #             $self->append_message_to_file( $list, $email, $diagnostics,
+	            #              $actions->{$action}, $message );
+	            #
+	        }
+	        elsif ( $action eq 'unsubscribe_bounced_email' ) {
+	            $report .= $self->unsubscribe_bounced_email( $list, $email, $diagnostics, $actions->{$action} );
+	        }
+	        elsif ( $action eq 'abuse_report' ) {
+	            $self->abuse_report( $list, $email, $diagnostics, $actions->{$action} );
+	        }
+	        elsif ( $action eq 'append_message_to_file' ) {
+	            $report .= $self->append_message_to_file( $list, $email, $diagnostics, $actions->{$action}, $message );
+	        }
+	        elsif ( $action eq 'default' ) {
+	            $report .= $self->default_action( $list, $email, $diagnostics, $actions->{$action}, $message );
+	        }
+	        else {
+	            warn "unknown rule trying to be carried out, ignoring";
+	        }
 
-        if ( exists( $diagnostics->{'Simplified-Message-Id'} ) && $action ne 'abuse_report' ) {
-            $report .= "\nSaving bounced email report in tracker\n";
-            require DADA::Logging::Clickthrough;
-            my $r           = DADA::Logging::Clickthrough->new( { -list => $list } );
-            my $hard_bounce = 0;
-            my $soft_bounce = 0;
-            if (   $action eq 'add_to_score'
-                && $actions->{$action} eq 'hardbounce_score' )
-            {
-                $hard_bounce = 1;
-            }
-            elsif ($action eq 'add_to_score'
-                && $actions->{$action} eq 'softbounce_score' )
-            {
-                $soft_bounce = 1;
-            }
-            elsif ( $action ne 'add_to_score' ) {
+	        if ( exists( $diagnostics->{'Simplified-Message-Id'} ) && $action ne 'abuse_report' ) {
+	            $report .= "\nSaving bounced email report in tracker\n";
+	            require DADA::Logging::Clickthrough;
+	            my $r           = DADA::Logging::Clickthrough->new( { -list => $list } );
+	            my $hard_bounce = 0;
+	            my $soft_bounce = 0;
+	            if (   $action eq 'add_to_score'
+	                && $actions->{$action} eq 'hardbounce_score' )
+	            {
+	                $hard_bounce = 1;
+	            }
+	            elsif ($action eq 'add_to_score'
+	                && $actions->{$action} eq 'softbounce_score' )
+	            {
+	                $soft_bounce = 1;
+	            }
+	            elsif ( $action ne 'add_to_score' ) {
 
-                #$hard_bounce = 1;
-            }
-            else {
-                # ...
-            }
-            if ( $hard_bounce == 1 ) {
-                $r->bounce_log(
-                    {
-                        -type  => 'hard',
-                        -mid   => $diagnostics->{'Simplified-Message-Id'},
-                        -email => $email,
+	                #$hard_bounce = 1;
+	            }
+	            else {
+	                # ...
+	            }
+	            if ( $hard_bounce == 1 ) {
+	                $r->bounce_log(
+	                    {
+	                        -type  => 'hard',
+	                        -mid   => $diagnostics->{'Simplified-Message-Id'},
+	                        -email => $email,
 
-                        # -rule  => $title,
-                    }
-                );
-            }
-            else {
-                $r->bounce_log(
-                    {
-                        -type  => 'soft',
-                        -mid   => $diagnostics->{'Simplified-Message-Id'},
-                        -email => $email,
+	                        # -rule  => $title,
+	                    }
+	                );
+	            }
+	            else {
+	                $r->bounce_log(
+	                    {
+	                        -type  => 'soft',
+	                        -mid   => $diagnostics->{'Simplified-Message-Id'},
+	                        -email => $email,
 
-                        # -rule  => $title,
-                    }
-                );
-            }
+	                        # -rule  => $title,
+	                    }
+	                );
+	            }
 
-        }
-        else {
-            if ( $action ne 'abuse_report' ) {
-                warn
-"cannot log bounced email from, '$email' for, '$list' in tracker log - no Simplified-Message-Id found. Ignoring!";
-            }
-        }
+	        }
+	        else {
+	            if ( $action ne 'abuse_report' ) {
+	                warn
+	"cannot log bounced email from, '$email' for, '$list' in tracker log - no Simplified-Message-Id found. Ignoring!";
+	            }
+	        }
 
-        # I'm putting the rule used in $diagnostics, for now:
-        $diagnostics->{matched_rule} = $title;
+	        # I'm putting the rule used in $diagnostics, for now:
+	        $diagnostics->{matched_rule} = $title;
 
-        log_action( $list, $email, $diagnostics, "$action $actions->{$action}" );
-    }
+	        log_action( $list, $email, $diagnostics, "$action $actions->{$action}" );
+	    }
+	}
 
     return $report;
 }

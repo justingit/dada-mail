@@ -1200,7 +1200,6 @@ sub check_for_double_email {
         elsif ($args{ -Type } eq 'white_list'
             && $args{ -Match_Type } eq 'sublist_centric' )
         {
-
 			my $m = $self->inexact_match(
 				{
 					-against => 'white_list', 
@@ -1211,8 +1210,22 @@ sub check_for_double_email {
 				return $m; 
 			}
             return 0;
-
         }
+		
+		elsif ($args{ -Type } eq 'ignore_bounces_list'
+		            && $args{ -Match_Type } eq 'sublist_centric' ) {
+			my $m = $self->inexact_match(
+				{
+					-against => 'ignore_bounces_list', 
+					-email => $args{-Email},
+				}
+			);
+			if($m == 1){ 
+				return $m; 
+			}
+	        return 0;
+	    }
+				
         else {
             my $sth =
               $self->{dbh}->prepare( "SELECT email FROM "
