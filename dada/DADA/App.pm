@@ -2009,25 +2009,30 @@ sub preview_draft {
     my $list = $admin_list;
 	
 	
-	# So this is a JSON doc with the id set to where to find the 
-	# preview thing: 
     require DADA::App::MassSend;
     my $ms = DADA::App::MassSend->new( { -list => $list } );
-    my $r = $ms->preview_draft(
-        {
-            -cgi_obj     => $q,
-        }
-    );
+    
+	try {
+		my $r = $ms->preview_draft(
+	        {
+	            -cgi_obj     => $q,
+	        }
+	    );
 	
-	if($r->{status} == 0){
+		if($r->{status} == 0){
+			$self->header_props(-type => 'text/plain');
+			return "Problems with creating preview: " . $r->{errors};
+		}
+		elsif($r->{status} == 1){ 
+			$q->param('id', $r->{id});
+			$q->param('flavor', 'email_message_preview');
+			return $self->email_message_preview(); 
+		}
+	}
+	catch { 
 		$self->header_props(-type => 'text/plain');
-		return "Problems with creating preview: " . $r->{errors};
-	}
-	elsif($r->{status} == 1){ 
-		$q->param('id', $r->{id});
-		$q->param('flavor', 'email_message_preview');
-		return $self->email_message_preview(); 
-	}
+		return "Problems creating preview: $_";
+	};
 }
 
 
