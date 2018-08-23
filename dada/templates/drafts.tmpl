@@ -125,23 +125,20 @@
         		</tr> 
          	<!-- tmpl_loop draft_index --> 
         		<tr>
-
-        			<!-- 
-        				<td>
-        					<p><!-- tmpl_var id --></p>
-        				</td>
-        			--> 
+        			
         			<td>
             		    <input type="checkbox" class="draft_ids" name="draft_ids" value="<!-- tmpl_var id escape="HTML" -->" >
         			</td>
-					
-
 
         			<td>
         				<p>
     						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->">
-    							<!-- tmpl_var Subject escape="HTML" -->
-    						</a>
+    							<!-- tmpl_if Subject -->
+									<!-- tmpl_var Subject escape="HTML" -->
+    							<!-- tmpl_else -->
+									(no Subject)
+								<!-- /tmpl_if -->
+							</a>
         				</p> 
         			</td>
 					
@@ -315,7 +312,11 @@
         			<td>
         				<p>
     						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->" >
-    							<!-- tmpl_var Subject escape="HTML" -->
+    							<!-- tmpl_if Subject -->
+									<!-- tmpl_var Subject escape="HTML" -->
+    							<!-- tmpl_else -->
+									(no Subject)
+								<!-- /tmpl_if -->
     						</a>
         				</p> 
         			</td>
@@ -455,7 +456,11 @@
                 			<td>
                 				<p>
             						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
-            							<!-- tmpl_var Subject escape="HTML" -->
+		    							<!-- tmpl_if Subject -->
+											<!-- tmpl_var Subject escape="HTML" -->
+		    							<!-- tmpl_else -->
+											(no Subject)
+										<!-- /tmpl_if -->
             						</a>
                 				</p> 
                 			</td>
@@ -599,7 +604,11 @@
                     			<td>
                     				<p>
                 						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
-                							<!-- tmpl_var Subject escape="HTML" -->
+			    							<!-- tmpl_if Subject -->
+												<!-- tmpl_var Subject escape="HTML" -->
+			    							<!-- tmpl_else -->
+												(no Subject)
+											<!-- /tmpl_if -->
                 						</a>
                     				</p> 
                     			</td>
