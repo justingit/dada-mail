@@ -86,13 +86,12 @@
 </fieldset> 
 
 
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="bounce_handler_prefs">
+
 <fieldset> 
 	<legend>
 		Scorecard Preferences
 	</legend> 
-
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="bounce_handler_prefs">
-
 		<input type="hidden" name="flavor" value="plugins" > 
 		<input type="hidden" name="plugin" value="bounce_handler" > 
 		<input type="hidden" name="prm" value="edit_prefs" > 
@@ -274,7 +273,7 @@
 	
 	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
 
-	</form>
+</form>
 	
 
 <fieldset>
