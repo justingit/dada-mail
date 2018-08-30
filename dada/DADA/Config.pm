@@ -609,21 +609,20 @@ $ADMIN_MENU //= [
 {-Title      => 'Mass Mailing',
  -Activated  => 1,
  -Submenu    => [
- 
 				{
-				-Title     => 'Drafts/Stationery/Schedules',
+				-Title     => 'All Drafts/Stationery/Schedules',
 				-Title_URL => "$S_PROGRAM_URL?flavor=drafts",
 				-Function  => 'drafts',
 				-Activated => 1,
 				},
- 
+			
 				{ 
-				-Title      => 'Send a Message',
-				-Title_URL  => "$S_PROGRAM_URL?flavor=send_email",
+				-Title      => '+ New Draft Message',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=send_email&restore_from_draft=false",
 				-Function   => 'send_email',
 				-Activated  => 1,
 				},
-				
+
 				{
 				-Title      => 'Monitor',
 				-Title_URL  => "$S_PROGRAM_URL?flavor=sending_monitor",
@@ -1261,6 +1260,7 @@ $MIME_TOOLS_PARAMS //= {
 	resize_drag_and_drop_images            => 1, 
 	mass_mailing_remove_javascript         => 1, 
 	
+	mass_mailing_save_sent_drafts_as_stationery => 0, 
 	
 	mass_mailing_default_layout            => undef, 
 	

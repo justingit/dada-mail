@@ -362,9 +362,9 @@ sub save {
 
 sub change_role { 
 	my $self   = shift; 
-	my ($args) = shift; 
+	my ($args) = @_; 
 	
-	for('-list', '-id', '-from', '-to'){ 
+	for('-id', '-from', '-to'){ 
 		if(!exists($args->{$_})){ 
 			croak, 'arg, ' . $_ . ' required.';
 		}
@@ -381,14 +381,14 @@ sub change_role {
 		$query =
             'UPDATE '
           . $self->{sql_params}->{message_drafts_table}
-          . ' SET role = ?, last_modified_timestamp = CURRENT_TIMESTAMP WHERE list = ? AND id = ? and role = ?';
+          . ' SET role = ?, created_timestamp = CURRENT_TIMESTAMP, last_modified_timestamp = CURRENT_TIMESTAMP WHERE list = ? AND id = ? and role = ?';
     }
     elsif($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql') { 
         # screen = ?, 
 		$query =
             'UPDATE '
           . $self->{sql_params}->{message_drafts_table}
-          . ' SET role = ?, last_modified_timestamp = NULL WHERE list = ? AND id = ? and role = ?';
+          . ' SET role = ?, created_timestamp = NULL, last_modified_timestamp = NULL WHERE list = ? AND id = ? and role = ?';
 		     # NOW() works just fine, too. 
 		  
     }
@@ -397,7 +397,7 @@ sub change_role {
         $query =
             'UPDATE '
           . $self->{sql_params}->{message_drafts_table}
-          . ' SET role = ?, last_modified_timestamp = NOW() WHERE list = ? AND id = ? and role = ?';
+          . ' SET role = ?, created_timestamp = NOW(), last_modified_timestamp = NOW() WHERE list = ? AND id = ? and role = ?';
 
     }	
 	

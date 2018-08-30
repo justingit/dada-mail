@@ -32,7 +32,9 @@
         <input type="hidden" name="flavor"  value="mass_mailing_options" >
     
 <fieldset>
-    <div class="row">
+    <legend>Formatting</legend>
+	
+	<div class="row">
         <div class="small-12 columns">
 			<label for="mass_mailing_convert_plaintext_to_html">  
 	            <input type="checkbox" 
@@ -69,6 +71,12 @@
             <!-- /tmpl_unless -->
         </div> 
     </div> 
+	
+	</fieldset> 
+	
+	
+	<fieldset> 
+	<legend>Images and Attachments</legend>
 	
     <div class="row">
         <div class="small-12 columns">
@@ -118,7 +126,11 @@
 			</div>
 		</div>
 	</div>
+</fieldset> 
+
+<fieldset> 
 	
+	<legend>Security</legend>
 	
     <div class="row">
         <div class="small-12 columns">
@@ -136,19 +148,45 @@
             </label>
         </div> 
     </div>
+	
+	</fieldset> 
+	
+	
+	<fieldset> 
+	
+	<legend>Drafts and Stationery</legend>
+	
+    <div class="row">
+        <div class="small-12 columns">
+            <label for="mass_mailing_save_sent_drafts_as_stationery">
+				<input 
+					type="checkbox" 
+					name="mass_mailing_save_sent_drafts_as_stationery" 
+					id="mass_mailing_save_sent_drafts_as_stationery" 
+					value="1" 
+					<!-- tmpl_if list_settings.mass_mailing_save_sent_drafts_as_stationery -->
+						checked="checked"
+					<!-- /tmpl_if -->
+				>
+                Save sent draft messages as stationery
+            </label>
+        </div> 
+    </div>
+</fieldset> 
+	
+	
 			
 
 	    
+	<fieldset> 
 	
-	
-    <h4>
+    <legend>
 		Default Mass Mailing Layout
-  	</h4>
+  	</legend>
   
     <div class="row">
-		<div class="small-1 columns">
-		</div>	
-		<div class="small-11 columns">
+
+		<div class="small-12 columns">
 			
 			 <div class="alert-box info radius">
 				 Set  a Custom layout in, 

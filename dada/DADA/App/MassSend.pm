@@ -151,6 +151,9 @@ sub construct_and_send {
         }
     );
 
+
+
+
 	if($t == 1){
 		if($con->{status} == 0){ 
 			require Data::Dumper; 
@@ -291,8 +294,7 @@ sub construct_and_send {
 		};
     }
     else {
-     
-        return { 
+     	return { 
 			status       => 1, 
 			errors       => undef, 
 			mid          => undef, 
@@ -1365,17 +1367,28 @@ sub send_email {
         }
         else {
             if ( defined($draft_id) ) {
-               # $self->{md_obj}->remove($draft_id);
-			   $self->{md_obj}->change_role(
-				   { 
-					   -id   => $draft_id, 
-					   -from => 'draft', 
-					   -to   => 'stationery',
-				   }
-			   );
+				
+				require DADA::MailingList::Settings;
+				my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+				
+			   if($ls->param('mass_mailing_save_sent_drafts_as_stationery') == 1){
+					   $self->{md_obj}->change_role(
+					   { 
+						   -id   => $draft_id, 
+						   -from => 'draft', 
+						   -to   => 'stationery',
+					   }
+				   );
+			   } else { 
+			   		$self->{md_obj}->remove($draft_id);
+			   }
+
             }
             my $uri;
-            if ( $q->param('archive_no_send') == 1 && $q->param('archive_message') == 1 ) {
+            if ( 
+				$q->param('archive_no_send') == 1 
+			 && $q->param('archive_message') == 1 
+			) {
                 $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=view_archive&id=' . $construct_r->{mid};
             }
             else {
@@ -1414,7 +1427,6 @@ sub preview_draft {
 	    carp 'done with construct_and_send!';
 	}
 	if ( $construct_r->{status} == 0 ) {
-
 		return $construct_r;
 	} 
 	else { 
