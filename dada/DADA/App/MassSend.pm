@@ -1373,7 +1373,6 @@ sub send_email {
 					   -to   => 'stationery',
 				   }
 			   );
-			   change_role
             }
             my $uri;
             if ( $q->param('archive_no_send') == 1 && $q->param('archive_message') == 1 ) {
