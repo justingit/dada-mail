@@ -1365,7 +1365,15 @@ sub send_email {
         }
         else {
             if ( defined($draft_id) ) {
-                $self->{md_obj}->remove($draft_id);
+               # $self->{md_obj}->remove($draft_id);
+			   $self->{md_obj}->change_role(
+				   { 
+					   -id   => $draft_id, 
+					   -from => 'draft', 
+					   -to   => 'stationery',
+				   }
+			   );
+			   change_role
             }
             my $uri;
             if ( $q->param('archive_no_send') == 1 && $q->param('archive_message') == 1 ) {

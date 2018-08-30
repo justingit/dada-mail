@@ -359,6 +359,66 @@ sub save {
     }
 }
 
+
+sub change_role { 
+	my $self   = shift; 
+	my ($args) = shift; 
+	
+	for('-list', '-id', '-from', '-to'){ 
+		if(!exists($args->{$_})){ 
+			croak, 'arg, ' . $_ . ' required.';
+		}
+	}
+	
+    if ( !$self->id_exists($args->{-id}) ) {
+        carp "id, '" . $args->{-id} . "' doesn't exist! in change_role()";
+        return -1;
+    }
+	
+    my $query; 
+    if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
+        # screen = ?, 
+		$query =
+            'UPDATE '
+          . $self->{sql_params}->{message_drafts_table}
+          . ' SET role = ?, last_modified_timestamp = CURRENT_TIMESTAMP WHERE list = ? AND id = ? and role = ?';
+    }
+    elsif($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql') { 
+        # screen = ?, 
+		$query =
+            'UPDATE '
+          . $self->{sql_params}->{message_drafts_table}
+          . ' SET role = ?, last_modified_timestamp = NULL WHERE list = ? AND id = ? and role = ?';
+		     # NOW() works just fine, too. 
+		  
+    }
+    else { 
+		# screen = ?, 
+        $query =
+            'UPDATE '
+          . $self->{sql_params}->{message_drafts_table}
+          . ' SET role = ?, last_modified_timestamp = NOW() WHERE list = ? AND id = ? and role = ?';
+
+    }	
+	
+    warn 'QUERY: ' . $query
+      if $t;
+
+    my $sth = $self->{dbh}->prepare($query);
+		# $args->{-screen}, 
+       $sth->execute( 
+           $args->{-to}, 
+           $self->{list},
+           $args->{-id}, 
+           $args->{-from}, 
+      )
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
+    $sth->finish;
+    return $args->{-id};
+	
+
+}
+
 sub fill_in_schedule_options { 
     my $self = shift; 
     my $q    = shift; 
