@@ -14,7 +14,7 @@ The Send a Message part of the app has been given a healthy UI refresh - some th
 
 If you try to leave a draft message screen without saving your changes, 
 you'll be reminded of this with a prompt. 
-This should help stop you from inadvertantly leaving the screen prematurely. 
+This should help stop you from inadvertently leaving the screen prematurely. 
 
 =head4 Default screen: All Drafts/Stationery/Schedules
 
@@ -72,6 +72,12 @@ B<Drafts/Stationery/Schedules> has been renamed, B<All Drafts/Stationery/Schedul
 and has been moved to the top of the B<Mass Mailing> top bar menu. 
 As has been mentioned, 
 this is the defalt screen now when you log into your mailing list's list control panel. 
+
+=head4 New Option: Save Sent Draft Messages as Stationery
+
+Many times, people would like to re-use a previously sent message for a new mass mailing. Now, 
+Dada Mail has an option to save previously sent messages you've authored in the list control panel as
+new stationery messarges, which you can then use to create a new draft message from. 
 
 =head1 11.1.3
 
