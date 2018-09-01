@@ -4029,7 +4029,7 @@ is controlled by C<DADA::Mail::MailOut>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2017 Justin Simoni 
+Copyright (c) 1999 - 2018 Justin Simoni 
 me - justinsimoni.com
 http://justinsimoni.com 
 All rights reserved. 

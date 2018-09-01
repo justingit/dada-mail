@@ -606,7 +606,7 @@ C<MIME::Lite::HTMLForked> can be found here:
 
 http://search.cpan.org/~alian/MIME-Lite-HTML/
 
-Copyright (c) 1999 - 2017 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2018 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

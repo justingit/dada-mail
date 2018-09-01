@@ -34,7 +34,7 @@ $TEST_SQL_PARAMS = {
 
 	MySQL => { 
 	
-		test_enabled     => 1, 
+		test_enabled     => 0, 
 	    database         => 'test',
 	    dbserver         => 'localhost',
 	    port             => '3306',     
@@ -45,7 +45,7 @@ $TEST_SQL_PARAMS = {
 	}, 
 
 	PostgreSQL => { 
-		test_enabled     => 1, 
+		test_enabled     => 0, 
 		database         => 'dadademo_test',
 	    dbserver         => 'localhost', 
 	    port             => '5432',     
