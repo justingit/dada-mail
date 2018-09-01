@@ -449,7 +449,7 @@ sub update_profile_fields {
 	    my $profile_fields = $self->{cgi_obj}->param('profile_fields');
 	       $profile_fields = $json->decode($profile_fields);
 
-		   warn 'pf:' . $profile_fields; 
+		   #warn 'pf:' . $profile_fields; 
 		   
 	    # check to see if profiles exist?
 	    # Actually, it doesnm't matter to me if the profile exists or not,

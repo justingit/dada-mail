@@ -131,6 +131,24 @@ You'll want to copy this module to the client side server you want to utilize th
         $params
     ); 
     print Dumper($results); 
+	
+	
+    # Update Profile Fields
+    my $params = {  
+		email  => 'test9@example.com',
+	    profile_fields => {
+	    	favorite_color => 'blue',
+	    },
+        
+    };
+    $results  = $ws->request(
+        $list, 
+        'update_profile_fields', 
+        $params
+    ); 
+    print Dumper($results);
+	
+	
     
 
 =head4 new
@@ -162,6 +180,8 @@ The C<request> method will make the request for the service you want, see the Sy
 =item * settings
 
 =item * update_settings
+
+=item * update_profile_fields
 
 =back
 
@@ -297,6 +317,8 @@ The C<request> method will make the request for the service you want, see the Sy
 =item * settings
 
 =item * update_settings
+
+=item * update_profile_fields
 
 =back
 
@@ -612,6 +634,41 @@ Returned will be a JSON doc,
             "saved" : 1
            }
         }
+    }
+
+B<nonce> - same as C<validate_subscription>
+
+
+=head4 update_profile_fields
+
+B<update_profile_fields> allows you to update 
+an address's profile fields
+The following paramaters are required to be passed:
+
+B<email> holds the address you would like to update the profile fields for
+
+B<profile_Fields> The fields you would like to update. 
+
+   {
+      "email" : "test@example.com",
+      "profile_fields" : {
+         "first_name" : "Joanne"
+      }
+   }
+
+
+
+Returned will be a JSON doc, 
+
+    {
+       "saved" : 1,
+	   "email" : "test@example.com",
+       "profile_fields" : {
+            "first_name" : "Joanne"
+           },
+        "previous_profile_fields" : {
+             "first_name" : "John"
+        },
     }
 
 B<nonce> - same as C<validate_subscription>

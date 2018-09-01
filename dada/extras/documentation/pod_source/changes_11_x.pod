@@ -73,11 +73,38 @@ and has been moved to the top of the B<Mass Mailing> top bar menu.
 As has been mentioned, 
 this is the defalt screen now when you log into your mailing list's list control panel. 
 
-=head4 New Option: Save Sent Draft Messages as Stationery
+=head3 New Option: Save Sent Draft Messages as Stationery
 
 Many times, people would like to re-use a previously sent message for a new mass mailing. Now, 
 Dada Mail has an option to save previously sent messages you've authored in the list control panel as
 new stationery messarges, which you can then use to create a new draft message from. 
+
+=head3 New Ignore Bounces Sublist
+
+Some users have reported problems with addresses they know are valid, 
+but which that bounce anyways: 
+there's a (hopefully) temporary problem on the receiving mail server. 
+
+To counter this, 
+Dada Mail now allows you to set up a list of addresses that the Bounce Handler 
+will not process as it does usually. 
+Instead, 
+bounces from the addresses will just be ignored. 
+
+Addresses can be added simonilar to the Black List and White List: 
+segments of addresses are allowed. 
+
+For example,
+if you want to ignore a specific email address, 
+you can. 
+If you want to ignore all address from a domain, 
+you can do that as well. 
+
+=head3 RESTful API Support for Update Profile Fields
+
+The RESTful API now supports updating profile fields 
+(look for, C<update_profile_fields> in the API docs) 
+for an individual email address at a time. 
 
 =head1 11.1.3
 
