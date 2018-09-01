@@ -816,19 +816,21 @@ sub get_list_types {
 
     my $self = shift;
     return {
-        list               => 1,
-        black_list         => 1,
-        authorized_senders => 1,
-        moderators         => 1,
-        testers            => 1,
-        white_list         => 1,
-        sub_confirm_list   => 1,
-        unsub_confirm_list => 1,
-        invitelist         => 1,
-        invited_list       => 1,
-        sub_request_list   => 1,
-        unsub_request_list => 1,
-        bounced_list       => 1,
+        list                => 1,
+        black_list          => 1,
+        authorized_senders  => 1,
+        moderators          => 1,
+        testers             => 1,
+        white_list          => 1,
+        sub_confirm_list    => 1,
+        unsub_confirm_list  => 1,
+        invitelist          => 1,
+        invited_list        => 1,
+        sub_request_list    => 1,
+        unsub_request_list  => 1,
+        bounced_list        => 1,
+		
+		ignore_bounces_list => 1, 
     };
 
 }

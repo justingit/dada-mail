@@ -86,13 +86,12 @@
 </fieldset> 
 
 
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="bounce_handler_prefs">
+
 <fieldset> 
 	<legend>
 		Scorecard Preferences
 	</legend> 
-
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="bounce_handler_prefs">
-
 		<input type="hidden" name="flavor" value="plugins" > 
 		<input type="hidden" name="plugin" value="bounce_handler" > 
 		<input type="hidden" name="prm" value="edit_prefs" > 
@@ -234,11 +233,48 @@
 	</div> 
 </div> 
 
-<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
 
-</form> 
 </fieldset>
 
+	<fieldset> 
+		<legend>
+			Ignore Bounces
+		</legend> 
+		<div class="alert-box info radius">
+			Allow a list of certain addresses/domains to be ignored when processing bounced messages
+		</div>
+
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="enable_ignore_bounces_list">
+					<input 
+						type="checkbox" 
+						name="enable_ignore_bounces_list" 
+						id="enable_ignore_bounces_list" 
+						value="1" 
+						<!--tmpl_if list_settings.enable_ignore_bounces_list -->checked="checked"<!--/tmpl_if-->
+					> 
+						Enable Ignore Bounces
+				</label>
+			</div>
+		</div>
+		<div class="clearfix">
+			<ul class="button-group right">
+			    <li>
+					<input type="button"  class="success view_ignore_bounces_list button small" value="View Ignore Bounces (<!-- tmpl_var ignore_bounces_list_count -->)">
+				</li>
+				<li>
+					<input type="button" class="success add_ignore_bounces_list button small" value="Add to Ignore Bounces">
+				</li>
+			</ul>
+		</div>
+	</fieldset>
+	
+	
+	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
+
+</form>
+	
 
 <fieldset>
 	<legend> 
@@ -295,6 +331,15 @@
 				>
 	</form> 
 </fieldset> 
+
+
+
+
+
+
+	
+	
+	
 
 <fieldset> 
 

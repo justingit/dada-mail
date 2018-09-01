@@ -3489,6 +3489,7 @@ sub list_types {
         unsub_request_list => 'Unsubscription Requests',
         bounced_list       => 'Bouncing Addresses',
 		sub_confirm_list   => 'Unconfirmed Subscribers',
+		ignore_bounces_list => 'Ignore Bounces',
     	
 	};
 }

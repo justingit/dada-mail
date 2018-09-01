@@ -4939,6 +4939,12 @@ sub view_list {
                     bounced_list_num => scalar commify(
                         $lh->num_subscribers( { -type => 'bounced_list' } )
                     ),
+					
+					ignore_bounces_list_num => 
+						scalar commify(
+							$lh->num_subscribers( { -type => 'ignore_bounces_list' } )
+					), 
+					
                     sub_confirm_list_num => scalar commify(
                         $lh->num_subscribers( { -type => 'sub_confirm_list' } )
                     ),
@@ -5741,11 +5747,12 @@ sub membership {
         my %add_list_types = %{ DADA::App::Guts::list_types() };
 
         my $add_to = {
-            list               => 1,
-            black_list         => 1,
-            white_list         => 1,
-            authorized_senders => 1,
-            moderators         => 1,
+            list                => 1,
+            black_list          => 1,
+            white_list          => 1,
+            authorized_senders  => 1,
+            moderators          => 1,
+			ignore_bounces_list => 1, 
         };
 
         # Except when, it's already a part of that sublist:
@@ -5797,6 +5804,9 @@ sub membership {
 
         }
 
+		# guess add a thingy where we do not allow adds to this unless the bounce handler is running.. 
+		# and the option to use this guy is enabled. ignore_bounces_list
+
         my $is_bouncing_address = 0;
         my $bouncing_info       = '';
         if ( $subscribed_to_lt->{bounced_list} == 1 ) {
@@ -5830,7 +5840,7 @@ sub membership {
 
         foreach (%$subscribed_to_lt) {
             if ( $_ =~
-m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list|sub_confirm_list)$/
+m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list|ignore_bounces_list|sub_confirm_list)$/
               )
             {
                 push( @$member_of,
@@ -6028,7 +6038,7 @@ sub validate_update_email {
                         {
                             -email => $email,
                             -types => [
-                                qw(list black_list white_list authorized_senders moderators)
+                                qw(list black_list white_list authorized_senders moderators ignore_bounces_list)
                             ],
                         }
                     )
@@ -6179,7 +6189,7 @@ sub also_member_of {
         {
             -email => $email,
             -types =>
-              [qw(list black_list white_list authorized_senders moderators)],
+              [qw(list black_list white_list authorized_senders moderators ignore_bounces_list)],
         }
     );
     if ( scalar @also_subscribed_to > 0 ) {
@@ -6230,7 +6240,7 @@ sub validate_remove_email {
                 {
                     -email => $email,
                     -types => [
-                        qw(list black_list white_list authorized_senders moderators sub_confirm_list)
+                        qw(list black_list white_list authorized_senders moderators sub_confirm_list ignore_bounces_list)
                     ],
                 }
             );
@@ -6254,7 +6264,7 @@ sub validate_remove_email {
                         {
                             -email => $email,
                             -types => [
-                                qw(list black_list white_list authorized_senders moderators  sub_confirm_list)
+                                qw(list black_list white_list authorized_senders moderators  sub_confirm_list ignore_bounces_list)
                             ],
                         }
                     )
@@ -6866,7 +6876,7 @@ sub add {
         }
 
         require HTML::Menu::Select;
-        my $list_type_switch_widget = HTML::Menu::Select::popup_menu(
+        my $view_list_type_switch_widget = HTML::Menu::Select::popup_menu(
             {
                 name    => 'type',
                 values  => [ keys %{ DADA::App::Guts::list_types() } ],
@@ -6920,18 +6930,28 @@ sub add {
                     type_title         => $DADA::Config::LIST_TYPES->{$type},
                     flavor             => 'add',
                     rand_string        => $rand_string,
-                    list_subscribers_num =>
-                      $lh->num_subscribers( { -type => 'list' } ),
-                    black_list_subscribers_num =>
-                      $lh->num_subscribers( { -type => 'black_list' } ),
-                    white_list_subscribers_num =>
-                      $lh->num_subscribers( { -type => 'white_list' } ),
-                    authorized_senders_num =>
-                      $lh->num_subscribers( { -type => 'authorized_senders' } ),
-                    moderators_num =>
-                      $lh->num_subscribers( { -type => 'moderators' } ),
-                    bounced_list_num =>
-                      $lh->num_subscribers( { -type => 'bounced_list' } ),
+                    
+					list_subscribers_num =>
+                      scalar $lh->num_subscribers( { -type => 'list' } ),
+                    
+					black_list_subscribers_num =>
+                      scalar $lh->num_subscribers( { -type => 'black_list' } ),
+                    
+					white_list_subscribers_num =>
+                      scalar $lh->num_subscribers( { -type => 'white_list' } ),
+                    
+					authorized_senders_num =>
+                      scalar $lh->num_subscribers( { -type => 'authorized_senders' } ),
+                    
+					moderators_num =>
+                      scalar $lh->num_subscribers( { -type => 'moderators' } ),
+                    
+					bounced_list_num =>
+                      scalar $lh->num_subscribers( { -type => 'bounced_list' } ),
+					
+					ignore_bounces_list_num => 
+						scalar $lh->num_subscribers( { -type => 'ignore_bounces_list' } ),
+					  
                     fields => $fields,
                     can_have_subscriber_fields =>
                       $lh->can_have_subscriber_fields,

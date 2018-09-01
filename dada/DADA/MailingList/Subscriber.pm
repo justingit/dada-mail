@@ -78,9 +78,10 @@ sub _init {
 		$args->{-validation_check} = 1; 
 	}
 	if(
-		exists($args->{-type})         &&
-		$args->{-type} ne 'black_list' &&
-		$args->{-type} ne 'white_list' 
+		exists($args->{-type})         
+		&& $args->{-type} ne 'black_list' 
+		&& $args->{-type} ne 'white_list' 
+		&& $args->{-type} ne 'ignore_bounces_list' 
 	){ 
 		if($args->{-validation_check} == 1) { 		
 		    if(DADA::App::Guts::check_for_valid_email($args->{-email}) == 1){ 

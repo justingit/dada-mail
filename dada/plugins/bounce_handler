@@ -288,6 +288,12 @@ sub cgi_default {
         $plugin_configured = 0;
     }
 
+    require DADA::MailingList::Subscribers;
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+    my $ignore_bounces_list_count = $lh->num_subscribers( { -type => 'ignore_bounces_list' } );
+	
+	
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -317,6 +323,8 @@ sub cgi_default {
                 bounce_handler_hardbounce_score_popup_menu => $bounce_handler_hardbounce_score_popup_menu,
                 bounce_handler_decay_score_popup_menu      => $bounce_handler_decay_score_popup_menu,
                 bounce_handler_threshold_score_popup_menu  => $bounce_handler_threshold_score_popup_menu,
+				
+				ignore_bounces_list_count                  => $ignore_bounces_list_count, 
 				root_login                                 => $root_login, 
             },
             -list_settings_vars_param => {
@@ -346,6 +354,7 @@ sub edit_prefs {
 				bounce_handler_forward_abuse_report_msgs_to_list_owner => 0, 
 				bounce_handler_send_unsub_notification                 => 0, 
                 bounce_handler_when_threshold_reached                  => undef,
+				enable_ignore_bounces_list                             => 0, 
             },
 			-also_save_for => $also_save_for_list,
         }

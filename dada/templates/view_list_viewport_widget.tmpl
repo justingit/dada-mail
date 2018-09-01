@@ -1,6 +1,6 @@
 <!-- begin view_list_viewport_widget.tmpl -->
 
-<!-- tmpl_include list_type_switch_widget.tmpl -->
+<!-- tmpl_include view_list_type_switch_widget.tmpl -->
     
     <!-- tmpl_include advanced_list_search_form.tmpl --> 
     
@@ -41,7 +41,7 @@
             
             <p>
              There are currently no members of <!-- tmpl_var type_title -->.
-                <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
+                <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list') || (type eq 'ignore_bounces_list'))" -->
         
                     <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=add&amp;type=<!-- tmpl_var type -->">
                         <!-- tmpl_if EXPR="(type eq 'list')" -->
@@ -102,7 +102,7 @@
             <!-- tmpl_var num_subscribers --> 
        </strong>
 
-        <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
+        <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list') || (type eq 'ignore_bounces_list'))" -->
             <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=add&amp;type=<!-- tmpl_var type -->">
                     <!-- tmpl_if EXPR="(type eq 'list')" -->
                         Invite
@@ -139,7 +139,7 @@
         <div class="small-11 columns">
             <ul class="button-group">
                 
-     		 <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list') || (type eq 'sub_confirm_list'))" -->
+     		 <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list') || (type eq 'ignore_bounces_list')  || (type eq 'sub_confirm_list'))" -->
 
              <input type="hidden" name="process" value="delete" >
              <input type="hidden" name="flavor"       value="remove_subscribers" >
@@ -203,7 +203,7 @@
     
         </form>
 		
-        <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list') || (type eq 'sub_confirm_list'))" -->
+        <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list')  || (type eq 'ignore_bounces_list') || (type eq 'sub_confirm_list'))" -->
         
             <!-- tmpl_unless query -->
 			    <li>

@@ -1,9 +1,14 @@
-<!-- begin list_type_switch_widget.tmpl -->
+<!-- begin view_list_type_switch_widget.tmpl -->
+
+
 		<!-- tmpl_if flavor_is_view_list --> 
 			<ul  class="tabs" data-tab>
 		<!-- tmpl_else -->
 			<ul  class="tabs">
 		<!-- /tmpl_if -->
+		
+		
+		
 			<li class="tab-title <!-- tmpl_if EXPR="(type eq 'list')" -->active<!-- /tmpl_if -->" >
 				<!-- tmpl_if flavor_is_view_list --> 
 					<a href="#" class="change_type" data-type="list">
@@ -41,15 +46,15 @@
 			
 			
 			<li class="tab-title <!-- tmpl_if EXPR="(type eq 'black_list')" --> active<!-- /tmpl_if -->">
-			<!-- tmpl_if flavor_is_view_list -->
-				<a href="#" class="change_type" data-type="black_list">
-			<!-- tmpl_else --> 
-				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var flavor -->;type=black_list">
-			<!-- /tmpl_if -->
-			<span>
-		   		Black List (<!-- tmpl_var black_list_subscribers_num -->)
-			</span>
-			</a>
+				<!-- tmpl_if flavor_is_view_list -->
+					<a href="#" class="change_type" data-type="black_list">
+				<!-- tmpl_else --> 
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var flavor -->;type=black_list">
+				<!-- /tmpl_if -->
+				<span>
+			   		Black List (<!-- tmpl_var black_list_subscribers_num -->)
+				</span>
+				</a>
 			</li>
 			
 			<!-- tmpl_if list_settings.enable_white_list -->
@@ -111,6 +116,22 @@
 			<!-- /tmpl_if --> 
 			
 			
+			<!-- tmpl_if show_bounced_list -->
+				<li  class="tab-title <!-- tmpl_if EXPR="(type eq 'ignore_bounces_list')" -->active<!-- /tmpl_if -->">
+					<!-- tmpl_if flavor_is_view_list --> 
+						<a href="#" class="change_type" data-type="ignore_bounces_list">
+					<!-- tmpl_else --> 
+						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var flavor -->;type=ignore_bounces_list">					
+					<!-- /tmpl_if -->
+						<span>
+							Ignore Bounces (<!-- tmpl_var ignore_bounces_list_num -->)
+						</span>  
+					</a>
+				</li>
+			<!-- /tmpl_if --> 
+
+
+			
 			<!-- tmpl_if flavor_is_view_list --> 
 				<!-- tmpl_if list_settings.view_list_show_sub_confirm_list -->
 					<li  class="tab-title <!-- tmpl_if EXPR="(type eq 'sub_confirm_list')" -->active<!-- /tmpl_if -->">
@@ -130,4 +151,4 @@
 		</ul>
 
 
-<!-- end list_type_switch_widget.tmpl --> 
+<!-- end view_list_type_switch_widget.tmpl --> 
