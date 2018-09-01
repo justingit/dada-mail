@@ -58,7 +58,7 @@ sub insert {
 			return 1; 
 	}		
 		
-	if($args->{-mode} eq 'preserve_if_defined' && $fields_exists){ 
+	if($fields_exists && $args->{-mode} eq 'preserve_if_defined'){ 
 		$self->{email} = $args->{ -email };
 		unless($self->are_empty) { 
 			return 1; 

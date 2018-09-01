@@ -76,6 +76,19 @@ sub request {
         $qs     = $self->the_query_string($query);
         $digest = $self->digest($qs);        
     }
+    elsif($service eq 'update_profile_fields') { 
+        $query = {
+            nonce          => $nonce,
+            email          => $self->{json_obj}->utf8->encode( $params->{email} ),
+			profile_fields => $self->{json_obj}->utf8->encode( $params->{profile_fields} ),
+        };
+        $q->param( 'email',          $query->{email} );
+        $q->param( 'nonce',          $query->{nonce} );
+        $q->param( 'profile_fields', $query->{profile_fields} );
+        
+        $qs     = $self->the_query_string($query);
+        $digest = $self->digest($qs);        
+    }
     elsif($service eq 'settings'){ 
         $digest = $self->digest($nonce); 
     }
@@ -126,6 +139,7 @@ sub the_query_string {
     my $self         = shift;
     my $query_params = shift;
     my $new_q        = CGI->new;
+	   $new_q->delete_all();
     for ( sort { lc $a cmp lc $b } ( keys %$query_params ) ) {
         $new_q->param( $_, $query_params->{$_} );
     }

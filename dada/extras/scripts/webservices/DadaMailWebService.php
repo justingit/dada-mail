@@ -59,11 +59,11 @@ Class DadaMailWebService
                     $params['test'] = 0;
                 }
                 $query_params = array(
-                    'format' => $params['format'],
+                    'format'  => $params['format'],
                     'message' => $params['message'],
-                    'nonce' => $nonce,
+                    'nonce'   => $nonce,
                     'subject' => $params['subject'],
-                    'test' => $params['test']
+                    'test'    => $params['test']
                 );
                 $rpd          = $this->the_query_string($query_params);
                 $digest       = $this->digest($rpd);
@@ -71,13 +71,24 @@ Class DadaMailWebService
             case 'update_settings':
                 $encoded_settings = json_encode($params['settings']);
                 $query_params     = array(
-                    'nonce' => $nonce,
+                    'nonce'    => $nonce,
                     'settings' => $encoded_settings
                 );
                 $rpd              = $this->the_query_string($query_params);
                 $digest           = $this->digest($rpd);
                 break;
-            case 'settings':
+			case 'update_profile_fields':
+            	$encoded_profile_fields = json_encode($params['profile_fields']);
+				$encoded_email          = json_encode($params['email']);
+                $query_params     = array(
+                    'email'          => $encoded_email,
+				    'nonce'          => $nonce,
+					'profile_fields' => $encoded_profile_fields
+                );
+                $rpd              = $this->the_query_string($query_params);
+                $digest           = $this->digest($rpd);
+                break;
+			case 'settings':
                 $digest = $this->digest($nonce);
                 break;
             case 'validate_subscription':
