@@ -6910,6 +6910,16 @@ sub add {
         {
             $list_is_closed = 1;
         }
+		
+        my $show_bounced_list = 0;
+        if (   $lh->num_subscribers( { -type => 'bounced_list' } ) > 0
+            || $ls->param('bounce_handler_when_threshold_reached') eq
+            'move_to_bounced_sublist' )
+        {
+            $show_bounced_list = 1;
+        }
+		
+		
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -6951,6 +6961,8 @@ sub add {
 					
 					ignore_bounces_list_num => 
 						scalar $lh->num_subscribers( { -type => 'ignore_bounces_list' } ),
+						
+					show_bounced_list => $show_bounced_list,
 					  
                     fields => $fields,
                     can_have_subscriber_fields =>

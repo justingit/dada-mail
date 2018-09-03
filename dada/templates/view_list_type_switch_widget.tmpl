@@ -115,7 +115,7 @@
 				<!-- /tmpl_if -->
 			<!-- /tmpl_if --> 
 			
-			<!-- tmpl_if expr="((list_settings.show_bounced_list == 1) && (list_settings.enable_ignore_bounces_list == 1))" --> 			
+			<!-- tmpl_if expr="((show_bounced_list == 1) && (list_settings.enable_ignore_bounces_list == 1))" --> 			
 				<li  class="tab-title <!-- tmpl_if EXPR="(type eq 'ignore_bounces_list')" -->active<!-- /tmpl_if -->">
 					<!-- tmpl_if flavor_is_view_list --> 
 						<a href="#" class="change_type" data-type="ignore_bounces_list">
