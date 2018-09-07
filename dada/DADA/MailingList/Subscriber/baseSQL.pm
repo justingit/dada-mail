@@ -10,14 +10,9 @@ use DADA::App::Guts;
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
 
-
-use Data::Dumper; 
-
 sub add {
 
     my $self = shift;
-	
-	#warn Dumper({'args' => $args}); 
 	my ($args) = @_;
 
     if ($t) {
