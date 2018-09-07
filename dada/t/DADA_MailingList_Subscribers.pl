@@ -226,7 +226,35 @@ ok($lh->num_subscribers == 1, "there are now one subscriber on list");
 ok( $lh->remove_all_subscribers == 1, "Removed all the subscribers!" );
 
 
-
+# Case check: 
+# https://github.com/justingit/dada-mail/issues/758
+ok(
+    defined($lh->add_subscriber(
+        {
+            -email => 'Case.Check@example.com',
+            -type  => 'list',
+            -dupe_check => {
+                -enable  => 1,
+                -on_dupe => 'error',
+            },
+        }
+    )),
+    'cAsE address added once'
+);
+ok(
+    $lh->add_subscriber(
+        {
+            -email => 'case.check@example.com',
+            -type  => 'list',
+            -dupe_check => {
+                -enable  => 1,
+                -on_dupe => 'ignore_add',
+            },
+        }
+    ) eq undef,
+    'cAsE address can\'t be added twice'
+);
+$lh->remove_all_subscribers( { -type => 'list' } );
 ###
 
 #### copy_subscriber

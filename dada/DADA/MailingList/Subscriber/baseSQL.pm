@@ -60,6 +60,7 @@ sub add {
     if ( length( strip( $args->{-email} ) ) <= 0 ) {
         croak("You MUST supply an email address in the -email parameter!");
     }
+    $args->{-email} = strip( cased( $args->{-email} ) );
 
     if ( !exists( $args->{-confirmed} ) ) {
         $args->{-confirmed} = 1;
