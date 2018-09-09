@@ -77,23 +77,13 @@ Class DadaMailWebService
                 $rpd              = $this->the_query_string($query_params);
                 $digest           = $this->digest($rpd);
                 break;
-			case 'update_profile_fields':
-            	$encoded_profile_fields = json_encode($params['profile_fields']);
-				$encoded_email          = json_encode($params['email']);
-                $query_params     = array(
-                    'email'          => $encoded_email,
-				    'nonce'          => $nonce,
-					'profile_fields' => $encoded_profile_fields
-                );
-                $rpd              = $this->the_query_string($query_params);
-                $digest           = $this->digest($rpd);
-                break;
 			case 'settings':
                 $digest = $this->digest($nonce);
                 break;
             case 'validate_subscription':
             case 'subscription':
             case 'unsubscription':
+			case 'update_profile_fields':
                 $encoded_addresses = json_encode($params['addresses']);
                 $query_params      = array(
                     'addresses' => $encoded_addresses,

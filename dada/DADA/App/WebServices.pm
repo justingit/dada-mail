@@ -425,75 +425,122 @@ sub update_profile_fields {
     my $lh = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
 
     my $json = JSON->new->allow_nonref;
-    my $r    = {};
 
-    my $email = $self->{cgi_obj}->param('email');
-	   $email = $json->decode($email);
-       $email = cased( xss_filter($email) );
-	   
+    my $addresses         = $self->{cgi_obj}->param('addresses');
+    my $decoded_addresses = $json->decode($addresses);
 
-	if ( check_for_valid_email($email) == 1 ) {
-		return  {
-		   	status => 0,
-		   	errors => 'invalid_email',
-			email  => $email,
-		};
-	}
+    if ($t) {
+        require Data::Dumper;
+        warn 'update_profile_fields() $decoded_addresses: '
+          . Data::Dumper::Dumper($decoded_addresses);
+    }
 
+    # this is what we're returning
+    my $addy_results = [];
 
-    try {
-		
-	    require DADA::Profile;
-	    my $prof = DADA::Profile->new( { -email => $email } );
+    require DADA::Profile;
 
-	    my $profile_fields = $self->{cgi_obj}->param('profile_fields');
-	       $profile_fields = $json->decode($profile_fields);
+    for my $addies (@$decoded_addresses) {
 
-		   #warn 'pf:' . $profile_fields; 
-		   
-	    # check to see if profiles exist?
-	    # Actually, it doesnm't matter to me if the profile exists or not,
+        # normalize the addresses, so weird casing isn't a problem.
+        my $email          = cased( xss_filter( $addies->{email} ) );
+        my $profile_fields = $addies->{profile_fields};
 
-        my $new_fields = {};
-        for my $nfield ( @{ $lh->subscriber_fields() } ) {
-            if ( exists( $profile_fields->{$nfield} ) ) {
-                $new_fields->{$nfield} = $profile_fields->{$nfield};
-            }
+        # Not a valid email? Let's skip - but return a status of, "0"
+        if ( check_for_valid_email($email) == 1 ) {
+            push(
+                @$addy_results,
+                {
+                    status         => 0,
+                    errors         => 'invalid_email',
+                    email          => $email,
+                    profile_fields => $profile_fields
+                }
+            );
+            next;
         }
 
-        my $dpf = DADA::Profile::Fields->new({-email => $email});
-		my $orig = $dpf->get;
-		
-		delete($orig->{email});
-		delete($orig->{email_name});
-		delete($orig->{email_domain});
-		
-		
-           $dpf->insert(
-            {
-                -email  => $email,
-                -fields => $new_fields,
-            }
-        );
-        $r = {
-            status  => 1,
-            results => { 
-					saved => 1,
-					email => $email, 
-					profile_fields => $new_fields,
-					previous_profile_fields => $orig,
-					
-			},
-        };
-    } catch {
-        $r = {
-            status => 0,
-            errors => $_
-        };
-    };
+        try {
 
-    return $r;
+            my $prof = DADA::Profile->new( { -email => $email } );
+
+            # Init obj
+            my $dpf = DADA::Profile::Fields->new( { -email => $email } );
+            my $orig = $dpf->get;
+
+            my $new_fields = {};
+            for my $nfield ( @{ $lh->subscriber_fields() } ) {
+                if ( exists( $profile_fields->{$nfield} ) ) {
+                    $new_fields->{$nfield} = $profile_fields->{$nfield};
+                }
+                else {
+
+                 # Uncommented, this would fold old with new values
+                 # which means you would only have to pass the new values
+                 # that you would like saved, rather than having to pass all the
+                 # profile fields when you do an update.
+                 # Perhaps a future feature? 'update style' param or something?
+
+                    #
+                    #	$new_fields->{$nfield} = $orig->{$nfield};
+                    #
+
+                }
+            }
+
+            delete( $orig->{email} );
+            delete( $orig->{email_name} );
+            delete( $orig->{email_domain} );
+
+            # this is update:
+            $dpf->insert(
+                {
+                    -email  => $email,
+                    -fields => $new_fields,
+                }
+            );
+            push(
+                @$addy_results,
+                {
+                    email   => $email,
+                    status  => 1,
+                    results => {
+                        saved                   => 1,
+                        profile_fields          => $new_fields,
+                        previous_profile_fields => $orig,
+
+                    },
+                }
+            );
+            undef $prof;
+        }
+        catch {
+            push(
+                @$addy_results,
+                {
+                    email          => $email,
+                    status         => 0,
+                    errors         => $_,
+                    profile_fields => $profile_fields,
+
+                }
+            );
+        };
+    }
+
+    if ($t) {
+        require Data::Dumper;
+        warn 'update_profile_fields() $addy_results'
+          . Data::Dumper::Dumper($addy_results);
+    }
+
+    return $addy_results;
+
 }
+
+
+
+
 
 
 sub check_request {
@@ -596,12 +643,7 @@ sub check_digest {
         $n_digest = $self->digest($self->{cgi_obj}->param('nonce'));
 
 	}
-	elsif ( $self->{service} eq 'update_profile_fields' ) {
-        $qq->param( 'email',           $self->{cgi_obj}->param('email') );
-        $qq->param( 'nonce',           $self->{cgi_obj}->param('nonce') );
-        $qq->param( 'profile_fields',  $self->{cgi_obj}->param('profile_fields') );
-        $n_digest = $self->digest( $qq->query_string() );
-	}else {
+	else {
         $qq->param( 'addresses', $self->{cgi_obj}->param('addresses') );
         $qq->param( 'nonce',     $self->{cgi_obj}->param('nonce') );
         $n_digest = $self->digest( $qq->query_string() );        
