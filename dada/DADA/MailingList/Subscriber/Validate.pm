@@ -52,6 +52,10 @@ sub subscription_check {
         $args->{-email} = '';
     }
     my $email = $args->{-email};
+	
+	# my $email = $self->normalize_email(
+	#	$args->{-email}
+	#);
     
     if ( !exists( $args->{-type} ) ) {
         $args->{-type} = 'list';
@@ -186,7 +190,7 @@ sub subscription_check {
     if ( !$skip{subscribed} ) {
         $errors->{subscribed} = 1
           if $self->{lh}->check_for_double_email(
-            -Email => $email,
+            -Email => $self->normalize_email($email),
             -Type  => $args->{-type}
           ) == 1;
     }
@@ -196,7 +200,7 @@ sub subscription_check {
 		   	if($ls->param('invite_only_list') == 1){ 
                 if(
 					$self->{lh}->check_for_double_email(
-                    	-Email => $email,
+                    	-Email => $self->normalize_email($email),
                    	 -Type  => 'invited_list'
                 	 ) == 1
 				){ 
@@ -264,7 +268,7 @@ sub subscription_check {
             if ( $ls->param('black_list') == 1 ) {
                 $errors->{black_listed} = 1
                   if $self->{lh}->check_for_double_email(
-                    -Email => $email,
+                    -Email => $self->normalize_email($email),
                     -Type  => 'black_list'
                   ) == 1;
             }
@@ -278,7 +282,7 @@ sub subscription_check {
 
                 $errors->{not_white_listed} = 1
                   if $self->{lh}->check_for_double_email(
-                    -Email => $email,
+                    -Email => $self->normalize_email($email),
                     -Type  => 'white_list'
                   ) != 1;
             }
@@ -287,7 +291,10 @@ sub subscription_check {
 
     if ( !$skip{already_sent_sub_confirmation} ) {
         if ( $ls->param('limit_sub_confirm') == 1 ) {
-            if( $self->{lh}->check_for_double_email(-Email => $email, -Type  => 'sub_confirm_list') == 1) { 
+            if( $self->{lh}->check_for_double_email(
+				-Email => $self->normalize_email($email),
+				-Type  => 'sub_confirm_list'
+			) == 1) { 
                   $errors->{already_sent_sub_confirmation} = 1;
               }
         }
@@ -485,7 +492,10 @@ sub unsubscription_check {
     if ( !exists( $args->{ -email } ) ) {
         $args->{ -email } = '';
     }
-    my $email = $args->{ -email };
+    #my $email = $self->normalize_email(
+	#	$args->{ -email }
+	#);
+	my $email = $args->{ -email };
 
     if ( !exists( $args->{ -type } ) ) {
         $args->{ -type } = 'list';
@@ -519,7 +529,9 @@ sub unsubscription_check {
 
     if ( !$skip{not_subscribed} ) {
         $errors{not_subscribed} = 1
-          if $self->{lh}->check_for_double_email( -Email => $email ) != 1;
+          if $self->{lh}->check_for_double_email( 
+		  	-Email => $self->normalize_email($email), 
+		) != 1;
     }
 
     if ( !$skip{already_sent_unsub_confirmation} ) {
@@ -527,7 +539,7 @@ sub unsubscription_check {
         if ( $li->{limit_sub_confirm} == 1 ) {
             $errors{already_sent_unsub_confirmation} = 1
               if $self->{lh}->check_for_double_email(
-                -Email => $email,
+                -Email => $self->normalize_email($email),
                 -Type  => 'unsub_confirm_list'
               ) == 1;
         }
@@ -702,5 +714,12 @@ sub suspicious_activity_by_ip {
 	return 1; 
 
 }
+
+sub normalize_email {
+    my $self  = shift;
+    my $email = shift;
+    return lc_email( strip($email) );
+}
+
 
 1;
