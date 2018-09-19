@@ -75,19 +75,7 @@ jQuery(document).ready(function($){
 		//alert('if ($("#navcontainer").length) {!');
 		
 		admin_menu_notifications(); 
-/*
-		var admin_menu_callbacks = $.Callbacks();
-		admin_menu_callbacks.add(admin_menu_drafts_notification());
-		admin_menu_callbacks.add(admin_menu_sending_monitor_notification());
-		admin_menu_callbacks.add(admin_menu_subscriber_count_notification());
-		admin_menu_callbacks.add(admin_menu_archive_count_notification());
-		admin_menu_callbacks.add(admin_menu_mail_sending_options_notification());
-		admin_menu_callbacks.add(admin_menu_mailing_sending_mass_mailing_options_notification());
-		admin_menu_callbacks.add(admin_menu_bounce_handler_notification());
-		admin_menu_callbacks.add(admin_menu_tracker_notification());
-		admin_menu_callbacks.add(admin_menu_bridge_notification());
-		admin_menu_callbacks.fire();
-*/
+
 		if($("#screen_meta").length) {
 			var highlight_scrn = $("#screen_meta").attr("data-menu_highlight");
 			$( ".admin_menu_" + highlight_scrn ).addClass( "active" );
@@ -196,11 +184,7 @@ jQuery(document).ready(function($){
 			}
 	    });
 
-		
-
-		
-		
-
+	
 
 		$("body").on("click", ".scheduled_type", function(event) {
 			toggle_schedule_options();
@@ -222,6 +206,8 @@ jQuery(document).ready(function($){
 				$(this).hide();
 			}
 		});
+		
+	//	alert("setting up send_url_options_setup");
 		
 		$("body").on("click", ".toggle_send_url_options", function(event) {
 			send_url_options_setup();
@@ -2902,6 +2888,9 @@ function toggle_SASL_options() {
 
 function send_url_options_setup() {
 
+
+
+	
 	var hidden = [];
 	var visible = [];
 
@@ -2911,49 +2900,43 @@ function send_url_options_setup() {
 			'HTML_content_from_textarea_widget'
 		];
 		visible = [
-			'HTML_content_from_url_widget', 
-			'HTML_content_advanced_options'
+			'HTML_content_from_url_widget' 
 		];
-	}
-	if ($("#content_from_feed_url").prop("checked") === true) {
+	} else if ($("#content_from_feed_url").prop("checked") === true) {
+	
+		hidden = [
+			'HTML_content_from_textarea_widget',
+			'HTML_content_from_url_widget'
+		];
+		visible = [
+			'HTML_content_from_feed_url_widget'
+		];
+	} else if ($("#content_from_textarea").prop("checked") === true) {
 		hidden = [
 			'HTML_content_from_url_widget',
+			'HTML_content_from_feed_url_widget' 
+		];
+		visible = [
 			'HTML_content_from_textarea_widget'
 		];
-		visible = [
-			'HTML_content_from_feed_url_widget', 
-			'HTML_content_advanced_options'
-		];
-	}
-	if ($("#content_from_textarea").prop("checked") === true) {
-		hidden = [
-			'HTML_content_from_url_widget',
-			'HTML_content_from_feed_url_widget', 
-		];
-		visible = [
-			'HTML_content_from_textarea_widget', 
-			'HTML_content_advanced_options'
-		];
-	}
-	if ($("#content_from_none").prop("checked") === true) {
+	} else if  ($("#content_from_none").prop("checked") === true) {
 		hidden = [
 			'HTML_content_from_url_widget', 
 			'HTML_content_from_feed_url_widget', 
-			'HTML_content_from_textarea_widget', 
-			'HTML_content_advanced_options'
+			'HTML_content_from_textarea_widget'
 		];
 		visible = [];
 	}
 	
-	var i;
-	for (i = 0; i < hidden.length; i += 1) {
-		if ($('#' + hidden[i]).is(':visible')) {
+	var i;	
+	for (i = 0; i < hidden.length; i += 1) {			
+			if (  $('#' + hidden[i]).css('display') != 'none' ||  $('#' + hidden[i]).css("visibility") != "hidden"){
 			$('#' + hidden[i]).hide('blind');
 		}
 	}
 	i = 0;
-	for (i = 0; i < visible.length; i += 1) {
-		if ($('#' + visible[i]).is(':hidden')) {
+	for (i = 0; i < visible.length; i += 1) {	
+		if ( $('#' + visible[i]).css('display') == 'none' || $('#' + visible[i]).css("visibility") == "hidden"){
 			$('#' + visible[i]).show('blind');
 		}
 	}
@@ -2978,19 +2961,18 @@ function send_url_options_PlainText_setup() {
 		pthidden = ['PlainText_content_from_url_widget', 'PlainText_content_from_text_widget'];
 	}
 
-	var i;
-	for (i = 0; i < pthidden.length; i += 1) {
-		//if ($('#' + pthidden[i]).is(':visible')) {
+	var i;	
+	for (i = 0; i < pthidden.length; i += 1) {			
+			if (  $('#' + pthidden[i]).css('display') != 'none' ||  $('#' + pthidden[i]).css("visibility") != "hidden"){
 			$('#' + pthidden[i]).hide('blind');
-		//}
-	}
-	i = 0;
-	for (i = 0; i < ptvisible.length; i += 1) {
-		if ($('#' + ptvisible[i]).is(':hidden')) {
-			$('#' + ptvisible[i]).show('blind');
 		}
 	}
-	
+	i = 0;
+	for (i = 0; i < ptvisible.length; i += 1) {	
+		if ( $('#' + ptvisible[i]).css('display') == 'none' || $('#' + ptvisible[i]).css("visibility") == "hidden"){
+			$('#' + ptvisible[i]).show('blind');
+		}
+	}	
 }
 
 
