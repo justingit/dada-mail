@@ -14888,7 +14888,7 @@ sub profile_update_email {
                         -type => 'list'
                     }
                 );
-				$prof->update_email({-list => $in_list});
+				$prof->update_email({-list => $in_list->{'list_settings.list'}});
             }
            
 		   
