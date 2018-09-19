@@ -2915,6 +2915,7 @@ sub mass_mailing_options {
 					mass_mailing_remove_javascript              => 0, 
                 	mass_mailing_default_layout                 => undef, 
 					mass_mailing_save_sent_drafts_as_stationery => 0, 
+					mass_mailing_show_by_default_type           => undef, 
 				},
                 -also_save_for => $also_save_for_list,
             }

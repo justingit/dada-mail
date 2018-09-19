@@ -9,7 +9,9 @@
 			id="content_from_textarea" 
 			value="content_from_textarea"
 			class="toggle_send_url_options"
-			checked="checked"
+			<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type eq 'html')" -->
+				checked="checked"
+			<!-- /tmpl_if -->
 		>
 		<label for="content_from_textarea">
 			Write/Paste in Content
@@ -261,6 +263,9 @@
 			id="content_from_none"
 			value="none"
 			class="toggle_send_url_options"
+			<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type ne 'html')" -->
+				checked="checked"
+			<!-- /tmpl_if -->
 		>
 		<label for="content_from_none">
 			Do not send an HTML version (only PlainText version)

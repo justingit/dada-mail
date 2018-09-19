@@ -1263,6 +1263,7 @@ $MIME_TOOLS_PARAMS //= {
 	
 	mass_mailing_default_layout            => undef, 
 	
+	mass_mailing_show_by_default_type     => 'html',
 	
     #quotas
     use_subscription_quota => 0,

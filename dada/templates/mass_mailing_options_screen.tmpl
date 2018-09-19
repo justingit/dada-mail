@@ -34,6 +34,45 @@
 <fieldset>
     <legend>Formatting</legend>
 	
+	
+	<p><label>Default to authoring:<label></p> 
+	
+	<div class="row">
+		<div class="small-1 columns"></div>
+        <div class="small-11 columns">
+			<label for="mass_mailing_show_by_default_type_html">  
+	            <input type="radio" 
+	                name="mass_mailing_show_by_default_type" 
+	                id="mass_mailing_show_by_default_type_html" 
+	                value="html" 
+					<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type eq 'html')" -->
+	             		checked="checked"
+					<!--/tmpl_if -->
+	             >
+                HTML Version
+            </label>
+        </div>
+		
+    </div>
+	<div class="row">
+		<div class="small-1 columns"></div>
+        <div class="small-11 columns">
+			<label for="mass_mailing_show_by_default_type_plaintext">  
+	            <input type="radio" 
+	                name="mass_mailing_show_by_default_type" 
+	                id="mass_mailing_show_by_default_type_plaintext" 
+	                value="plaintext" 
+					<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type eq 'plaintext')" -->
+	             		checked="checked"
+					<!--/tmpl_if -->
+				 >
+                PlainText Version
+            </label>
+        </div>
+    </div>
+	
+	
+	
 	<div class="row">
         <div class="small-12 columns">
 			<label for="mass_mailing_convert_plaintext_to_html">  

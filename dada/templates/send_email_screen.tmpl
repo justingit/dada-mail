@@ -134,24 +134,24 @@
 			<!-- tmpl_include send_email_headers_widget.tmpl --> 
 			
 			    <ul class="tabs show-for-medium-up" data-tab>
-			      <li 
-				  	<!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->
-						class="tab-title"
-					<!-- tmpl_else -->
-						class="tab-title active"
-					<!-- /tmpl_if -->
-					>
+			      
+				  
+				  <!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type eq 'html')" -->
+				  		<li class="tab-title active ">
+				  <!-- tmpl_else -->
+				  		<li class="tab-title ">
+				  <!-- /tmpl_if -->
+				  
 					  	<a href="#html_message">
 							HTML Version
 						</a>
 				  </li>
-			      <li
-				  	<!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->
-						class="tab-title active"
-					<!-- tmpl_else -->
-						class="tab-title"
-					<!-- /tmpl_if -->
-					>
+				  <!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type ne 'html')" -->
+				  		<li class="tab-title active ">
+				  <!-- tmpl_else -->
+				  		<li class="tab-title ">
+				  <!-- /tmpl_if -->
+			      
 				 		<a href="#plaintext_message">
 					  	  PlainText Version
 					  	</a>
@@ -177,13 +177,14 @@
 					<a href="#html_message" class="show-for-small-only">
 						HTML Version
 					</a>
-					<div id="html_message" 
-				  	<!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->
-						class="content"
+					
+					
+					<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type eq 'html')" -->
+							<div id="html_message" class="content active">
 					<!-- tmpl_else -->
-						class="content active"
+						<div id="html_message" class="content">
 					<!-- /tmpl_if -->
-					>
+					
 						<div class="content-box section-box">
 							<!-- tmpl_include send_email_html_message_form_field_widget.tmpl --> 
 		    			</div>
@@ -191,13 +192,13 @@
 					<a href="#plaintext_message" class="show-for-small-only">
 						PlainText Version
 					</a>
-					<div id="plaintext_message" 
-					  	<!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->
-							class="content active"
+					
+					  	<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type ne 'html')" -->
+							<div id="plaintext_message" class="content active">
 						<!-- tmpl_else -->
-							class="content"
+							<div id="plaintext_message" class="content">
 						<!-- /tmpl_if -->
-					>
+
 						<div class="content-box section-box">
 		    				<!-- tmpl_include send_email_plaintext_message_form_field_widget.tmpl -->
 		    			</div>

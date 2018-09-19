@@ -11,6 +11,9 @@
 			id="plaintext_content_from_text" 
 			value="text"
 			class="toggle_send_url_options"
+			<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type ne 'html')" -->
+				checked="checked"
+			<!-- /tmpl_if -->
 		>
 		<label for="plaintext_content_from_text">
 			Write/Paste Text
@@ -65,8 +68,10 @@
 			name="plaintext_content_from" 
 			id="plaintext_content_from_auto" 
 			value="auto" 
-			checked="checked"
 			class="toggle_send_url_options"
+			<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type eq 'html')" -->
+				checked="checked"
+			<!-- /tmpl_if -->
 		>
 		<label for="plaintext_content_from_auto">
 			Create a PlainText version automatically
