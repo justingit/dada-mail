@@ -6,9 +6,55 @@
 
 =head2 Features
 
+=head3 Set a default version (HTML, Plaintext) for mass mailing authoring
+
+Sometimes, you want to send only PlainText mass mailings. 
+
+This new feature makes this much easier to configure. In v11.2.1 (and above), go to: 
+
+B<Mass Mailing: Options> 
+
+Under, 
+
+B<Formatting>
+
+set, 
+
+B<Default to authoring:>
+
+to,
+
+B<PlainText Version>
+
+Doing so will: 
+
+=over
+
+=item * select, "PlainText Version" tab by default, instea of "HTML Version""
+
+=item * select, "Write/Paste Text by default" in the PlainText Version tab
+
+=item * select, "Do not send an HTML version (only PlainText version)" in the HTML Version tab
+
+=back
+
 =head2 Bugfixes
 
-=head3 
+=head3 Profile email update creates 500 error
+
+L<https://github.com/justingit/dada-mail/issues/763>
+
+=head3 "HTML Version", "PlainText Version" options can lose their stickiness
+
+L<https://github.com/justingit/dada-mail/issues/762>
+
+=head3 Custom Subject not added to new draft messages
+
+L<https://github.com/justingit/dada-mail/issues/759>
+
+=head3 Email Addresses can be subscribed twice if cased differently
+
+L<https://github.com/justingit/dada-mail/issues/758>
 
 =head1 11.2.0
 
