@@ -1475,59 +1475,8 @@ sub find_draft_id {
 		}
 	}
 	else {
-		# back to what's below
-	    $draft_id            = 0;
+		return 0; 
 	}
-	#/
-
-=pod	
-
-	# I really don't know what this is all about - either you give a valid draft_id + role
-	# or you didn't. 
-	# We don't load up the latest draft id, or anyting like that. 
-	
-    # Get $draft_id based on if an id is passed, and role:
-    # $restore_from_draft defaults to, "true" if no param is passed.
-    if ($self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => $role } ) )
-    {
-         $draft_id = undef;
-    }
-    elsif ($self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'draft' } )
-        && $role eq 'draft' )
-    {    # so, only drafts (not stationery),
-        if ( defined( $q->param('draft_id') ) ) {
-            $draft_id = $q->param('draft_id');
-        }
-        else {
-            $draft_id = $self->{md_obj}->latest_draft_id( { -screen => $args->{-screen}, -role => 'draft' } );
-        }
-    }
-    elsif ($self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'stationery' } )
-        && $role eq 'stationery' )
-    {
-        if ( defined( $q->param('draft_id') ) ) {
-            $draft_id = $q->param('draft_id');
-        }
-        else {
-            # $draft_id = $self->{md_obj}->latest_draft_id( { -screen => 'send_email', -role => 'draft' } );
-            # we don't want to load up the most recent stationery, since that's not how stationery... works.
-        }
-    }
-    elsif ($self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'schedule' } )
-        && $role eq 'schedule' )
-    {
-        if ( defined( $q->param('draft_id') ) ) {
-            $draft_id = $q->param('draft_id');
-        }
-        else {
-            # we don't want to load up the most recent schedule, since that's not how schedules... work.
-        }
-    }
-=cut
-
-    #/ Get $draft_id based on if an id is passed, and role:
-    return $draft_id;
-
 }
 
 sub delete_draft {
