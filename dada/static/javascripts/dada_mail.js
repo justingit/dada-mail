@@ -2001,7 +2001,13 @@ function save_msg(async) {
 	
 
 		$('#draft_notice .alert').text('auto-saving...');
-
+		
+		// this should certainoy be changed, if we're saving as draft, right? 
+		// I honestly don't know why the form saves this value - 
+		// I guess because the initial send a message screen should be fetched from a draft? 
+		// ?!?!?!
+		$('#restore_from_draft').val('true');
+		
 
 		// remove warning about unsaved changes
 		$('.changed-input').removeClass('changed-input');
@@ -2029,6 +2035,7 @@ function save_msg(async) {
 				console.log('status: ' + xhr.status);
 				console.log('thrownError:' + thrownError);
 				r = false;
+				// ?!?! $('#restore_from_draft').val('false');
 			},
 		});
 		return r;
@@ -2036,6 +2043,8 @@ function save_msg(async) {
 }
 
 function auto_save_as_draft() {
+	
+	// I'm guessing we should set restore_from_draft to true after this is triggered... 
 	if ($("#using_ckeditor").length) {
 		if(CKEDITOR.instances['html_message_body']) {
 			CKEDITOR.instances['html_message_body'].updateElement();
@@ -2048,7 +2057,10 @@ function auto_save_as_draft() {
 	}
 
 	$("#save_draft_role").val($("#draft_role").val());
-
+	
+	// this is to pass, restore_from_draft to the bakend, since we just serialize all the vals. 
+	$('#restore_from_draft').val('true');
+	
 	var r = 60 * 1000; // Every 1 minute.
 	//var r = 10 * 1000; // Every 10 seconds
 	var refresh_loop = function(no_loop) {
