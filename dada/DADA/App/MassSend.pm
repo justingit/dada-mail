@@ -1019,10 +1019,11 @@ sub send_email {
 
     my $process            = xss_filter( strip( scalar $q->param('process') ) );
     my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
-    my $restore_from_draft = $q->param('restore_from_draft') || 'true';
     my $test_sent          = xss_filter( strip( scalar $q->param('test_sent') ) ) || 0;
     my $test_recipient     = $q->param('test_recipient');
 	my $done               = xss_filter( strip( scalar $q->param('done') ) ) || 0;
+   
+	# draft_role defaults to, "draft", but only does so, here: 
     my $draft_role         = $q->param('draft_role') || 'draft';
     my $ses_params         = $self->ses_params;
 
@@ -1122,6 +1123,7 @@ sub send_email {
 			$mailout_will_be_queued 
 		) = $self->mass_mailout_info;
 		
+		# All this does is invalidate a draft id if it mismatches its role: 
         my $draft_id = $self->find_draft_id(
             {
                 -role    => $draft_role,
@@ -1154,7 +1156,6 @@ sub send_email {
                     flavor                     => $flavor,
                     draft_id           => $draft_id,
                     draft_role         => $draft_role,
-                    restore_from_draft => $restore_from_draft,
                     done               => $done,
                     
                     test_sent      => $test_sent,
@@ -1215,7 +1216,7 @@ sub send_email {
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
-        if ( $restore_from_draft eq 'true' ) {
+        if ( $draft_id > 0) {
             $scrn = $self->fill_in_draft_msg(
                 {
                     -list     => $self->{list},
@@ -1357,8 +1358,6 @@ sub send_email {
                       . $q->param('test_recipient')
                       . '&draft_id='
                       . $q->param('draft_id')
-                      . '&restore_from_draft='
-                      . $q->param('restore_from_draft')
                       . '&draft_role='
                       . $q->param('draft_role')
                 },
@@ -1454,7 +1453,6 @@ sub find_draft_id {
     my ($args) = @_;
 
     my $q = $args->{-cgi_obj};
-    my $restore_from_draft = $q->param('restore_from_draft') || undef; 
 	my $draft_id           = $q->param('draft_id')           || undef; 
     my $role               = $args->{-role}                  || undef; 	
 
@@ -1478,21 +1476,23 @@ sub find_draft_id {
 	}
 	else {
 		# back to what's below
-		$restore_from_draft  = $q->param('restore_from_draft') || 'true';
-	    $draft_id            = undef;
+	    $draft_id            = 0;
 	}
 	#/
-	
+
+=pod	
+
+	# I really don't know what this is all about - either you give a valid draft_id + role
+	# or you didn't. 
+	# We don't load up the latest draft id, or anyting like that. 
 	
     # Get $draft_id based on if an id is passed, and role:
     # $restore_from_draft defaults to, "true" if no param is passed.
-    if (   $restore_from_draft ne 'true'
-        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => $role } ) )
+    if ($self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => $role } ) )
     {
          $draft_id = undef;
     }
-    elsif ($restore_from_draft eq 'true'
-        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'draft' } )
+    elsif ($self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'draft' } )
         && $role eq 'draft' )
     {    # so, only drafts (not stationery),
         if ( defined( $q->param('draft_id') ) ) {
@@ -1502,8 +1502,7 @@ sub find_draft_id {
             $draft_id = $self->{md_obj}->latest_draft_id( { -screen => $args->{-screen}, -role => 'draft' } );
         }
     }
-    elsif ($restore_from_draft eq 'true'
-        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'stationery' } )
+    elsif ($self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'stationery' } )
         && $role eq 'stationery' )
     {
         if ( defined( $q->param('draft_id') ) ) {
@@ -1514,8 +1513,7 @@ sub find_draft_id {
             # we don't want to load up the most recent stationery, since that's not how stationery... works.
         }
     }
-    elsif ($restore_from_draft eq 'true'
-        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'schedule' } )
+    elsif ($self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'schedule' } )
         && $role eq 'schedule' )
     {
         if ( defined( $q->param('draft_id') ) ) {
@@ -1525,7 +1523,7 @@ sub find_draft_id {
             # we don't want to load up the most recent schedule, since that's not how schedules... work.
         }
     }
-
+=cut
 
     #/ Get $draft_id based on if an id is passed, and role:
     return $draft_id;

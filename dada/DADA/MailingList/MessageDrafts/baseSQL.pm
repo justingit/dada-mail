@@ -70,7 +70,7 @@ sub draft_exists {
     }
     my $query = 'SELECT COUNT(*) FROM ' 
 	. $self->{sql_params}->{message_drafts_table} 
-	. ' WHERE list = ? AND id = ? AND role = ?'; # AND screen = ?
+	. ' WHERE list = ? AND id = ? AND role = ?';
 
     warn 'QUERY: ' . $query
       if $t;

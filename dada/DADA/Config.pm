@@ -617,7 +617,7 @@ $ADMIN_MENU //= [
 			
 				{ 
 				-Title      => '+ New Draft Message',
-				-Title_URL  => "$S_PROGRAM_URL?flavor=send_email&restore_from_draft=false",
+				-Title_URL  => "$S_PROGRAM_URL?flavor=send_email&draft_role=draft",
 				-Function   => 'send_email',
 				-Activated  => 1,
 				},

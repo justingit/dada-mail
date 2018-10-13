@@ -2085,7 +2085,7 @@ sub create_from_stationery {
     $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
           . '?flavor='
           . $screen
-          . '&restore_from_draft=true&draft_id='
+          . '&draft_id='
           . $new_id );
 
 }
