@@ -66,11 +66,11 @@ sub start_consent {
 		my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 		
 		my $new_pp_id = $ppm->add(
 			{ 
-				-list           => -list => $args->{-list}, 
+				-list           => $args->{-list}, 
 				-privacy_policy => $ls->param('privacy_policy'), 
 			}
 		); 
-		$pp_data = $ppm->latest_privacy_policy({-list => -list => $args->{-list}});
+		$pp_data = $ppm->latest_privacy_policy({-list => $args->{-list}});
 	}
 	
 	$args->{-privacy_policy_id}	= $pp_data->{privacy_policy_id};
