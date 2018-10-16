@@ -2,6 +2,16 @@
 
 =encoding utf-8
 
+=head1 10.2.2
+
+This is mostly a bug-fix release for issues found in the v11.2.1 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 Send a Message screen, "Send Test" will not pull up saved draft when screen refreshes 
+
+L<https://github.com/justingit/dada-mail/issues/766>
+
 =head1 11.2.1
 
 =head2 Features
