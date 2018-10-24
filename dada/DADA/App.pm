@@ -1195,13 +1195,13 @@ sub drag_and_drop_file_upload {
 	my $list = shift; 
     my $q    = $self->query();
 
-    my $fh = $q->upload('upload');
-
+    my $fh = $q->upload('imagefilename');
+	
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     my $message = undef;
 
-    my $filename = $q->param('upload');
+    my $filename = $q->param('imagefilename');
 	
 	$filename = $filename; 
 	
@@ -1331,7 +1331,7 @@ sub drag_and_drop_file_upload {
         return ( 1, $message, $filename );
     }
     catch {
-        return ( 0, 'Problems with the upload', undef, undef, undef );
+        return ( 0, "Problems with the upload $_", undef, undef, undef );
     };
 
 }
