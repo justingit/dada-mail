@@ -2,6 +2,28 @@
 
 =encoding utf-8
 
+=head1 10.2.3
+
+This is mostly a bug-fix release for issues found in the v11.2.1 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 CKEditor drag and drop image upload broken
+
+L<https://github.com/justingit/dada-mail/issues/768>
+
+=head3 Text in Privacy Policy is white, with yellow background
+
+L<https://github.com/justingit/dada_mail_foundation_email_templates/issues/8>
+
+=head3 Unneeded Comment after, "Ready to Join," and "Privacy Policy for,"
+
+L<https://github.com/justingit/dada_mail_foundation_email_templates/issues/7>
+
+=head3 "Request Removal" link/buttons don't appear - wrong template var used
+
+L<https://github.com/justingit/dada_mail_foundation_email_templates/issues/6>
+
 =head1 10.2.2
 
 This is mostly a bug-fix release for issues found in the v11.2.1 release of Dada Mail. 
