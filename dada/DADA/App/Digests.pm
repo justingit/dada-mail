@@ -325,6 +325,8 @@ sub send_out_digest {
 
 	require CGI; 
     my $qq = CGI->new();
+       $qq->charset($DADA::Config::HTML_CHARSET);
+
        $qq->delete_all();
         
         $qq->param('Subject', $subject_scr); 
