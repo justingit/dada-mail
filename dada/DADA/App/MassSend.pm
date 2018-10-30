@@ -315,13 +315,9 @@ sub construct_from_url {
 	my ($args)  = @_;
 	
 	my $draft_q  = $args->{-cgi_obj}; 
-	my $mode     = 'url';
 	my $preview  = 0; 
 	my $process  = undef; 
 	
-	if(exists($args->{-mode})) { 
-		 $mode = $args->{-mode};
-	}
     if ( exists( $args->{-preview} ) ) {
         $preview = $args->{-preview};
     }
@@ -330,11 +326,21 @@ sub construct_from_url {
         $process = $args->{-process};
     }
 	
-	my $subject_from           = $draft_q->param('subject_from')           || 'input';
-	my $content_from           = $draft_q->param('content_from')           || 'url';
+	#my $content_from           = $draft_q->param('content_from')           || 'url';
+	# Why is this a default at all, exactly?
+	my $content_from           = $draft_q->param('content_from')           || 'content_from_textarea';
+	
+	my $subject_from = 'input';
+	# This should only work, if the content is coming from a URL... 
+	if($content_from eq 'url'){ 
+		$subject_from = $draft_q->param('subject_from') || 'input';
+		if($subject_from ne 'title_tag'){ 
+			$subject_from = 'input';
+		}
+	}
+	
 	my $plaintext_content_from = $draft_q->param('plaintext_content_from') || 'auto';
     
-
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
@@ -343,21 +349,7 @@ sub construct_from_url {
 	if($ls->param('email_embed_images_as_attachments') != 1){ 
 		$url_options = 'extern'; 
 	}
-	
-	if($mode eq 'text') { 
-		$subject_from = 'input';
-		$content_from = 'content_from_textarea';		
-		if(! defined(scalar $draft_q->param('html_message_body'))) { 
-			$content_from = 'none';
-		}
-		if(defined(scalar $draft_q->param('text_message_body'))) { 
-			$plaintext_content_from = 'text';
-		}
-		else { 
-			$plaintext_content_from = 'auto';
-		}
-	}
-	
+		
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
     $fm->mass_mailing(1);
@@ -432,14 +424,9 @@ sub construct_from_url {
 	}
 	
     if($subject_from eq 'title_tag') { 
-		if($content_from eq 'feed_url') { 
-			# We handle this below
-		}
-		else {
-	       my $url_subject = $self->subject_from_title_tag($draft_q); 
-	       if(defined($url_subject)){ 
-	            $headers{Subject} = $url_subject; 
-	        }
+		my $url_subject = $self->subject_from_title_tag($draft_q); 
+		if(defined($url_subject)){ 
+			$headers{Subject} = $url_subject; 
 		}
     }
     
@@ -520,9 +507,11 @@ sub construct_from_url {
 				
 			 $html_message = $feed_r->{html};
 			 
-			 if($subject_from eq 'title_tag') {
-				  $headers{Subject} = $feed_r->{vars}->{title}; 
-			 } 	
+			 # This is only doable via Send via URL - the option doesn't exist for Feeds
+			 # I'll leave this in therne in case I want to add it. 
+			 #if($subject_from eq 'title_tag') {
+			 #  $headers{Subject} = $feed_r->{vars}->{title}; 
+			 #} 	
 			 
 			 # We don't actualy use this, we use 
 			 #$feed_r->{vars}->{most_recent_entry}
@@ -549,7 +538,7 @@ sub construct_from_url {
 			# ...
 	}
 	else {
-		# $content_from_textarea?		
+		# $content_from_textarea? (default, in any case... )	
 		$html_message = $draft_q->param('html_message_body');
 	   ( $text_message, $html_message ) = $fm->pre_process_msg_strings( $text_message, $html_message );
 	}
