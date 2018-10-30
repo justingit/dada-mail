@@ -21,15 +21,18 @@
 <div id="drafts_screen"></div> 
 <div id="screen_meta" data-menu_highlight="drafts"></div>
 
+
 <form>
 	<input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var s_program_url -->">
+</form>
+
+
 <!-- tmpl_if delete_draft --> 
 	<div data-alert class="alert-box success radius">
 			Message Deleted. 
 			<a href="#" class="close">&times;</a>
 	</div> 
 <!-- /tmpl_if --> 
-
 
 
     
@@ -54,6 +57,7 @@
 	
 	<div class="tabs-content">	
 		<div class="content tab-title active" id="drafts">		
+	   
 	    <div class="alert-box info radius">
             <strong>
             Drafts
@@ -80,118 +84,122 @@
 			</div>
 		</div>
 		
-        <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-            <input type="hidden" name="flavor" value="delete_drafts" > 
+         <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+             <input type="hidden" name="flavor" value="delete_drafts" > 
         
-        	<table style="width:100%" class="responsive tablesorter" id="sortable_table_drafts">
-        			<thead> 
-					<th>
-        				<p>&nbsp;</p>
-        			</th>
+         	<table style="width:100%" class="responsive tablesorter" id="sortable_table_drafts">
+         			<thead> 
+						<tr> 
+ 					<th>
+         				<p>&nbsp;</p>
+         			</th>
         			
-        			<th>
-        				<p>
-        					<strong>
-        						Subject
-        					</strong>
-        				</p> 
-        			</th>
+         			<th>
+         				<p>
+         					<strong>
+         						Subject
+         					</strong>
+         				</p> 
+         			</th>
 					
-        			<th>
-        				<p>
-        					<strong>
-        						Created
-        					</strong>
-        				</p> 
-        			</th>
+         			<th>
+         				<p>
+         					<strong>
+         						Created
+         					</strong>
+         				</p> 
+         			</th>
 					
-        			<th>
-        				<p>
-        					<strong>
-        						Last Modified
-        					</strong>
-        				</p> 
-        			</th>
+         			<th>
+         				<p>
+         					<strong>
+         						Last Modified
+         					</strong>
+         				</p> 
+         			</th>
 					
-        			<th>
-        				&nbsp;
-        			</th>
+         			<th>
+         				&nbsp;
+         			</th>
 					
-        			<th>
-        				&nbsp;
-        			</th>
+         			<th>
+         				&nbsp;
+         			</th>
+				</tr>
+ 				
 				</thead> 
-				<tbody> 
-        		</tr> 
-         	<!-- tmpl_loop draft_index --> 
-        		<tr>
-        			
-        			<td>
-            		    <input type="checkbox" class="draft_ids" name="draft_ids" value="<!-- tmpl_var id escape="HTML" -->" >
-        			</td>
-
-        			<td>
-        				<p>
-    						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=draft&draft_id=<!-- tmpl_var id -->">
-    							<!-- tmpl_if Subject -->
-									<!-- tmpl_var Subject escape="HTML" -->
-    							<!-- tmpl_else -->
-									(no Subject)
-								<!-- /tmpl_if -->
-							</a>
-        				</p> 
-        			</td>
-					
-					<td>
-						<p>
-							<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=draft&draft_id=<!-- tmpl_var id -->">
-								<!-- tmpl_var created_timestamp --> 
-							</a>
-						</p> 
-					</td>
-					
-        			<td>
-        				<p>
-        					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=draft&draft_id=<!-- tmpl_var id -->">
-        						<!-- tmpl_var last_modified_timestamp --> 
-        					</a>
-        				</p> 
-					</td>
-					
-					<td>
-						<input type="button" class="small button show_preview" data-draft_id="<!-- tmpl_var id -->" data-draft_role="draft" value="Preview">
 			
-					</td>
+         		
+ 					<tbody> 
+          	<!-- tmpl_loop draft_index --> 
+         		<tr>
+        			
+         			<td>
+             		    <input type="checkbox" class="draft_ids" name="draft_ids" value="<!-- tmpl_var id escape="HTML" -->" >
+         			</td>
+
+         			<td>
+         				<p>
+     						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=draft&draft_id=<!-- tmpl_var id -->">
+     							<!-- tmpl_if Subject -->
+ 									<!-- tmpl_var Subject escape="HTML" -->
+     							<!-- tmpl_else -->
+ 									(no Subject)
+ 								<!-- /tmpl_if -->
+ 							</a>
+         				</p> 
+         			</td>
 					
-        			<td>
-						<a 
-							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=draft&draft_id=<!-- tmpl_var id -->" class="small button success"
-							class="small button success"
-						> 
-							<i class="fi-page-edit"></i> Edit
-						</a> 
-				    </td>
-        		</tr> 
-        	<!-- /tmpl_loop -->
-        	</table>  
+ 					<td>
+ 						<p>
+ 							<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=draft&draft_id=<!-- tmpl_var id -->">
+ 								<!-- tmpl_var created_timestamp --> 
+ 							</a>
+ 						</p> 
+ 					</td>
+					
+         			<td>
+         				<p>
+         					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=draft&draft_id=<!-- tmpl_var id -->">
+         						<!-- tmpl_var last_modified_timestamp --> 
+         					</a>
+         				</p> 
+ 					</td>
+					
+ 					<td>
+ 						<input type="button" class="small button show_preview" data-draft_id="<!-- tmpl_var id -->" data-draft_role="draft" value="Preview">
+			
+ 					</td>
+					
+         			<td>
+ 						<a 
+ 							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=draft&draft_id=<!-- tmpl_var id -->" class="small button success"
+ 							class="small button success"
+ 						> 
+ 							<i class="fi-page-edit"></i> Edit
+ 						</a> 
+ 				    </td>
+         		</tr> 
+         	<!-- /tmpl_loop -->
+ 		</tbody> 
+         	</table>  
         	
-        	<table  style="width:100%" class="responsive">
-              <tr>
-               	<td width="25">
-            		<input class="toggleCheckboxes" type="checkbox" data-target_class="draft_ids" >
-               	</td>
-            	<td>
-            	 <button 
-				 	type="submit" 
-					class="button small alert"
-				 >
-						<i class="fi-x"></i> Delete Checked
-				  </button>
-            	 </td>
-            	</tr>
-			</tbody> 
-            </table>
-            </form>
+         	<table  style="width:100%" class="responsive">
+               <tr>
+                	<td width="25">
+             		<input class="toggleCheckboxes" type="checkbox" data-target_class="draft_ids" >
+                	</td>
+             	<td>
+             	 <button 
+ 				 	type="submit" 
+ 					class="button small alert"
+ 				 >
+ 						<i class="fi-x"></i> Delete Checked
+ 				  </button>
+             	 </td>
+             	</tr>
+             </table>
+        </form>
             
         <!-- tmpl_else -->
         	<div class="alert-box info radius">
@@ -293,8 +301,9 @@
         			</th>
 
         		</tr> 
+			</thead>
 
-
+			<tbody>
          	<!-- tmpl_loop stationery_index --> 
         		<tr>
                     <td>
@@ -357,6 +366,7 @@
 
         		</tr> 
         	<!-- /tmpl_loop -->
+		</tbody>
         	</table>  
         	
         	<table  style="width:100%" class="responsive">
@@ -397,7 +407,8 @@
             
             
             	<table  style="width:100%" class="responsive">
-            		<tr>
+            		<thead>
+					<tr>
             			<th>
             				<p>&nbsp;</p>
             			</th>
@@ -445,8 +456,9 @@
             				</p> 
             			</th>
             		</tr> 
+				</thead>
              	<!-- tmpl_loop active_schedule_index --> 
-         	    
+         	    <tbody>
             		    <tr>
                 			<td>
                     		    <input type="checkbox" class="asched_ids" name="draft_ids" value="<!-- tmpl_var id escape="HTML" -->" >
@@ -520,7 +532,8 @@
 
                 		</tr> 
             	<!-- /tmpl_loop -->
-            	</table> 
+				</tbody>
+				</table> 
             	<table  style="width:100%" class="responsive">
                   <tr>
                    	<td width="25">
@@ -546,7 +559,8 @@
 
 
                 	<table  style="width:100%" class="responsive">
-                		<tr>
+                		<thead> 
+							<tr>
                 			<th>
                 				<p>&nbsp;</p>
                 			</th>
@@ -594,8 +608,9 @@
                 				</p> 
                 			</th>
                 		</tr> 
+					</thead>
                  	<!-- tmpl_loop inactive_schedule_index --> 
-
+					<tbody>
                 		    <tr>
                     			<td>
                         		    <input type="checkbox" class="iasched_ids" name="draft_ids" value="<!-- tmpl_var id escape="HTML" -->" >
@@ -664,7 +679,8 @@
                     			</td>
 
                     		</tr> 
-                	<!-- /tmpl_loop -->
+                	</tbody>
+					<!-- /tmpl_loop -->
                 	</table> 
                 	<table  style="width:100%" class="responsive">
                       <tr>
