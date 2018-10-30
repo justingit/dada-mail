@@ -2,9 +2,27 @@
 
 =encoding utf-8
 
-=head1 10.2.3
+=head1 11.2.4
 
-This is mostly a bug-fix release for issues found in the v11.2.1 release of Dada Mail. 
+This is mostly a bug-fix release for issues found in the v11.2.3 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 Digest message draft information using wrong character encoding (not UTF-8)
+
+L<https://github.com/justingit/dada-mail/issues/771>
+
+=head3 Missing closing</form> tag in, dada/template/drafts.tmpl
+
+L<https://github.com/justingit/dada-mail/issues/770>
+
+=head3 Mass Mailing Digests Broken
+
+L<https://github.com/justingit/dada-mail/issues/769>
+
+=head1 11.2.3
+
+This is mostly a bug-fix release for issues found in the v11.2.2 release of Dada Mail. 
 
 =head2 Bugfixes
 
