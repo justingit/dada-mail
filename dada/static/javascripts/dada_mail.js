@@ -309,10 +309,10 @@ jQuery(document).ready(function($){
 						  maxWidth: '640px',
 						};
 						
-
+						
 						if(content.status === 0){ 
 							$.colorbox({
-								html: content.body,
+								html: content.errors,
 								opacity: 0.50,
 								maxWidth: '640px',
 								width: '95%',

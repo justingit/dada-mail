@@ -338,8 +338,22 @@ sub construct_from_url {
 			$subject_from = 'input';
 		}
 	}
-	
 	my $plaintext_content_from = $draft_q->param('plaintext_content_from') || 'auto';
+
+	
+	if($content_from eq 'none' && $plaintext_content_from eq 'auto'){ 
+		my $errors = "Sorry: you cannot set the content for HTML Version set to, 'none' and content for Plaintext version set to, 'auto' - no message will be created!";
+		return { 
+			status       => 0, 
+			errors       => $errors,
+		};
+	
+	}
+
+
+
+
+
     
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
@@ -371,6 +385,12 @@ sub construct_from_url {
     }
 
     my $url               = strip( scalar $draft_q->param('url') );
+	if(length($url) <= 4 && $content_from eq 'url'){ 
+ 		return { 
+ 			status       => 0, 
+ 			errors       => 'HTML Version is blank in url',
+ 		};
+	}
 
     my @attachments       = $self->has_attachments( { -cgi_obj => $draft_q } );
     my $num_attachments   = scalar(@attachments);
