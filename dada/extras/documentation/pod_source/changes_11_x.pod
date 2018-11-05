@@ -2,6 +2,24 @@
 
 =encoding utf-8
 
+=head1 11.2.5
+
+This is mostly a bug-fix release for issues found in the v11.2.4 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 Send a Message: no error returned if HTML Version uses Send a Webpage, but URL is blank
+
+L<https://github.com/justingit/dada-mail/issues/774>
+
+=head3 Send a Message: Errors in constructing email message don't always show in, "Preview"
+
+L<https://github.com/justingit/dada-mail/issues/773>
+
+=head3 Send a Webpage check needed if, "Do not send an HTML version (only PlainText version)" and, "Create a PlainText version automatically" are both selected
+ 
+L<https://github.com/justingit/dada-mail/issues/772>
+
 =head1 11.2.4
 
 This is mostly a bug-fix release for issues found in the v11.2.3 release of Dada Mail. 
