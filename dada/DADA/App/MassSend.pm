@@ -574,15 +574,31 @@ sub construct_from_url {
     undef($errors);
 
     if(
-			length($draft_q->param('text_message_body')) > 0  
-		 && $plaintext_content_from eq 'text'
+		$plaintext_content_from eq 'text'
+	 && length($draft_q->param('text_message_body')) > 0  
 	 ) {
 		$text_message = $draft_q->param('text_message_body');
+		
+    } elsif ( $plaintext_content_from eq 'url' ) {    
+		if(length($draft_q->param('plaintext_url')) <= 4){ 
+			return { 
+				status       => 0, 
+				errors       => 'PlainText Version is blank in url',
+			};
+		}
+		else {		
+	        my $res; 
+			my $md5; 
+	        ( $text_message, $res, $md5 ) = grab_url(
+				{
+					-url => $draft_q->param('plaintext_url') 
+				}
+			);	
+		}	
     } elsif (
-			length($text_message) <= 0  #? Hmm...
+			length($text_message) <= 0  # I kinda get this - if there's no $text_message, make it from the HTML ver. We always want a PlainText Ver... - this could just be an else statement
 		 || $plaintext_content_from eq 'auto'
-	 ) {
- 		
+	 ) { 		
 		$text_message = $html_message;  
 		$text_message = $fm->body_content_only($text_message);
     	$text_message = html_to_plaintext(
@@ -595,11 +611,8 @@ sub construct_from_url {
                 }
             }
         );
-    } elsif ( $plaintext_content_from eq 'url' ) {    
-        my $res; 
-		my $md5; 
-        ( $text_message, $res, $md5 ) = grab_url({-url => $draft_q->param('plaintext_url') });
-    }
+	}
+
     my ( $status, $errors ) = $self->message_tag_check($text_message);
     if ( $status == 0 ) {
 		return { 
@@ -612,7 +625,7 @@ sub construct_from_url {
 	
 	if(
 		length($html_message) <= 0
-		&& length($text_message) >= 0
+		&& length($text_message) > 0
 		&& $ls->param('mass_mailing_convert_plaintext_to_html') == 1){ 
 			
 			$html_message = markdown_to_html( { -str => $text_message } );	
