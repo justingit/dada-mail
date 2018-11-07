@@ -452,18 +452,22 @@ sub format_mlm {
 	        };
 		}
 		
-		# CSS Inlining
-        try {
-            require DADA::App::FormatMessages::Filters::CSSInliner;
-            my $css_inliner =
-              DADA::App::FormatMessages::Filters::CSSInliner->new;
-            $content = $css_inliner->filter( { -html_msg => $content } );
-        }
-        catch {
-            carp 'Problems with filter:' . $_ if 
-				$t;
-        };
+		if ($self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1) {
+			
+			# CSS Inlining
+	        try {
+	            require DADA::App::FormatMessages::Filters::CSSInliner;
+	            my $css_inliner =
+	              DADA::App::FormatMessages::Filters::CSSInliner->new;
+	            $content = $css_inliner->filter( { -html_msg => $content } );
+	        }
+	        catch {
+	            carp 'Problems with filter:' . $_ if 
+					$t;
+	        };
+		}
 
+		
         # Change inlined images into separate files we'll link
         # (and hopefully embed later down the chain)
         if (   $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1
