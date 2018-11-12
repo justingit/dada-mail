@@ -2,6 +2,20 @@
 
 =encoding utf-8
 
+=head1 11.2.6
+
+This is mostly a bug-fix release for issues found in the v11.2.5 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 mailing_list_message-none.html should not have moustache template tags to render any HTML, it really should be, "none" #9 
+
+L<https://github.com/justingit/dada_mail_foundation_email_templates/issues/9>
+
+=head3 Mass Mailing: Options, "Convert CSS <style> blocks to inline styles in HTML messages " has no effect
+
+L<https://github.com/justingit/dada-mail/issues/782>
+
 =head1 11.2.5
 
 This is mostly a bug-fix release for issues found in the v11.2.4 release of Dada Mail. 
