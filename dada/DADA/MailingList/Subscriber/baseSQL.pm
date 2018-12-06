@@ -52,6 +52,8 @@ sub add {
     if ( !exists $args->{-email} ) {
         croak("You MUST supply an email address in the -email parameter!");
     }
+	$args->{-email} = lc_email( strip( $args->{-email} ) ); 
+	
     if ( length( strip( $args->{-email} ) ) <= 0 ) {
         croak("You MUST supply an email address in the -email parameter!");
     }
@@ -120,8 +122,12 @@ sub add {
     my $dbh     = $dbi_obj->dbh_obj;
     my $sth     = $dbh->prepare($query);
 
-    $sth->execute( $args->{-email}, $args->{-list}, $args->{-type}, 1 )
-      or croak "cannot do statement (at add_subscriber)! $DBI::errstr\n";
+    $sth->execute( 
+		$args->{-email}, 
+		$args->{-list}, 
+		$args->{-type}, 
+		1 
+	) or croak "cannot do statement (at add_subscriber)! $DBI::errstr\n";
     $sth->finish;
 
     if ( $args->{-type} eq 'list' || $args->{-type} eq 'sub_confirm_list' ) { # Erm, invitelist, as well?

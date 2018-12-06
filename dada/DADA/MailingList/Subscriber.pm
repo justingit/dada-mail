@@ -71,6 +71,8 @@ sub _init {
 	if ( !exists $args->{ -email } ) {
 	    croak("You MUST supply an email address in the -email parameter!");
 	}
+	$args->{-email} = lc_email( strip( $args->{-email} ) ); 
+	
 	if ( length( strip( $args->{ -email } ) ) <= 0 ) {
 	    croak("You MUST supply an email address in the -email parameter!");
 	}

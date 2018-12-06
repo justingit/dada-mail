@@ -1057,6 +1057,8 @@ sub filter_subscribers_w_meta {
 
     for my $n_address ( @{$info} ) {
 
+		$n_address->{email} = lc_email( strip( $n_address->{email} ) );
+		
         if ( exists( $dupe_check->{ $n_address->{email} } ) ) {
             carp "already looked at: '"
               . $n_address->{email}
