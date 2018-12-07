@@ -3044,13 +3044,21 @@ sub list_headers {
 	            $lh{'List-Subscribe'} =
 					'<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>';
 	        }
-
-	        $lh{'List-Unsubscribe'} =
-				'<mailto:' . $self->{ls}->param('list_owner_email') . '?Subject=Unsubscribe%20from%20<!-- tmpl_var list_settings.list_name escape="URL" -->>, <<!-- tmpl_var list_unsubscribe_link -->>';
+			
+			if ( 
+				   $self->{ls}->param('private_list') == 1 
+				&& $self->{ls}->param('show_request_removal_links') == 0 
+			) {
+	            if ( exists( $lh{'List-Unsubscribe'} ) ) {
+	                delete( $lh{'List-Unsubscribe'} );
+	            }
+			} else {			
+				$lh{'List-Unsubscribe'} =
+					'<mailto:' . $self->{ls}->param('list_owner_email') . '?Subject=Unsubscribe%20from%20<!-- tmpl_var list_settings.list_name escape="URL" -->>, <<!-- tmpl_var list_unsubscribe_link -->>';
+			}
 		}
 
         # List-Owner
-        #$lh{'List-Owner'} = '<<!-- tmpl_var list_settings.list_owner_email -->>';
 		$lh{'List-Owner'} = '<' . $self->{ls}->param('list_owner_email') . '>';
 
         # List-Archive
