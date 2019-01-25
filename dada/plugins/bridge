@@ -2334,6 +2334,9 @@ sub process {
             }
         );
     }
+	else { 
+		 $r .= "\t* NOTE: Message is NOT being sent to Subscribers.\n";
+	}
 
     if (   $ls->param('send_msg_copy_to')
         && $ls->param('send_msg_copy_address') )
