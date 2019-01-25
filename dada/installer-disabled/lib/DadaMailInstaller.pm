@@ -338,14 +338,11 @@ sub cl_run {
     my $self = shift;
     my $r; 
     
+	
     my $cl_params = $self->param('cl_params'); 
-
+	
     if ( scalar( keys %$cl_params ) == 0 ) {
         return $self->cl_quickhelp();
-        exit;
-    }
-    elsif ( $cl_params->{cl_params} == 1 ) {
-        return $self->cl_help();
         exit;
     }
     
@@ -356,6 +353,12 @@ sub cl_run {
     foreach ( keys %$cl_params ) {
         $dash_opts->{ '-' . $_ } = $cl_params->{$_};
     }
+	
+	if($dash_opts->{ '-help' } == 1){ 	
+		return $self->cl_help();	
+		exit;	
+	}
+	
     
     # Shortcut, so we don't have to pass two params: 
     if(exists($cl_params->{deployment_running_under})){ 
@@ -534,8 +537,7 @@ sub cl_quickhelp {
 }
 
 sub cl_help {
-    my $self = shift; 
-
+    my $self = shift; 	
     return 
         DADA::Template::Widgets::screen(
             {
