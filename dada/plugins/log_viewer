@@ -137,25 +137,35 @@ sub cgi_view {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
 
-	require HTML::Menu::Select; 
-	
+    my @log_name_strings =
+      ( 'Usage Log', 'Error Log', 'Bounce Handler Log', 'Cronjob Output' );
+    my @order_of_names = ();
+    for my $log_names (@log_name_strings) {
+        if ( exists( $logs->{$log_names} ) ) {
+            push( @order_of_names, $log_names, );
+            delete( $logs->{$log_names} );
+        }
+    }
+    push( @order_of_names, keys %$logs );
+
+    require HTML::Menu::Select;
     my $logs_popup_menu = HTML::Menu::Select::popup_menu(
-		{
-	        name     => 'log_name',
-	        id       => 'log_name',
-	        values   => [ keys %$logs ],
-	        default  => $log_name,
-		}
+        {
+            name    => 'log_name',
+            id      => 'log_name',
+            values  => [@order_of_names],
+            default => $log_name,
+        }
     );
     my $log_lines = [];
-    for ( 100, 1, 10, 20, 25, 50, 100, 200, 500, 1000, 10000, 100000, 1000000 ) {
+    for ( 100, 1, 10, 20, 25, 50, 100, 200, 500, 1000, 10000, 100000, 1000000 )
+    {
         push( @$log_lines, { line_count => $_ } );
     }
 
     $Default_Log = $log_name;
 
-    my @log_names = keys %$logs;
-	
+    my @log_names = @order_of_names;
 
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -178,6 +188,7 @@ sub cgi_view {
     return ( {}, $scrn );
 
 }
+
 
 sub ajax_view_logs_results {
 
@@ -434,7 +445,7 @@ sub get_logs {
     my %logs   = (
         'Usage Log'              => $DADA::Config::PROGRAM_USAGE_LOG,
         'Error Log'              => $DADA::Config::PROGRAM_ERROR_LOG,
-        'Clickthrough Log (raw)' => $DADA::Config::LOGS . '/' . $l_list . '-clickthrough.log',
+        # 'Clickthrough Log (raw)' => $DADA::Config::LOGS . '/' . $l_list . '-clickthrough.log',
         'Bounce Handler Log'     => $DADA::Config::LOGS . '/' . 'bounces.txt',
         'Cronjob Output'         => $DADA::Config::LOGS . '/' . 'cronjob_output.txt',
         
