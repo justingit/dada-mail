@@ -2742,12 +2742,17 @@ sub subscription_form {
 
 		# This is so that we don't show the entire form, if we don't have to:
 		if(
-			
-			$ls->param('invite_only_list') == 1 || 
-			$ls->param('closed_list') == 1 
-			
+			(
+				$ls->param('invite_only_list') == 1
+			 || $ls->param('closed_list') == 1
+			) 
 		){ 
-			 $args->{-show_fields} = 0;
+			if($ls->param('invites_show_profile_fields_in_subscription_form') == 0){ 
+				$args->{-show_fields} = 0;
+			}
+			else { 
+				$args->{-show_fields} = 0;
+			} 
 		}
 		
 		my $tmpl_name = 'subscription_form_widget.tmpl'; 

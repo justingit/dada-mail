@@ -1462,8 +1462,9 @@ $MIME_TOOLS_PARAMS //= {
 
     # List Invite Prefs
 
-    invites_check_for_already_invited => 1,
-    invites_prohibit_reinvites        => 1,
+    invites_check_for_already_invited                => 1,
+    invites_prohibit_reinvites                       => 1,
+	invites_show_profile_fields_in_subscription_form => 0,
 
 
 	email_theme_name => undef, 

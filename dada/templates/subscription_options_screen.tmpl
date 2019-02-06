@@ -266,6 +266,27 @@
           </label>
        </div> 
   </div>
+  
+    <div class="row">
+        <div class="small-12 columns">      
+            <input 
+              type="checkbox"
+              name="invites_show_profile_fields_in_subscription_form" 
+              id="invites_show_profile_fields_in_subscription_form" 
+              value="1" 
+              <!-- tmpl_if invites_show_profile_fields_in_subscription_form -->checked="checked"<!--/tmpl_if--> 
+             >
+            <label for="invites_show_profile_fields_in_subscription_form">
+				Show all profile fields in closed (invite only), private mailing list invitation subscription forms
+            </label>
+			<div class="alert-box info radius">
+				By default, profile fields aren't shown to capture information in the subscription form shown when inviting 
+				addresses on a mailing list that's BOTH private, and invite-only/closed.
+			</div>
+       </div> 
+  </div>
+  
+  
 
 
 </fieldset> 
