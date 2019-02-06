@@ -1726,6 +1726,7 @@ function admin_menu_notifications(){
 					"view_archive",    
 					"mail_sending_options",
 					"mailing_sending_mass_mailing_options",
+					"profile_fields",
 					"bounce_handler",     
 					"tracker",            
 					"bridge"            

@@ -798,6 +798,9 @@ sub admin_menu_notifications {
 		$r->{view_archive}                         = $self->admin_menu_archive_count_notification(); 
 		$r->{mail_sending_options}                 = $self->admin_menu_mail_sending_options_notification(); 
 		$r->{mailing_sending_mass_mailing_options} = $self->admin_menu_mailing_sending_mass_mailing_options_notification();
+		$r->{profile_fields}                       = $self->admin_menu_profiles_notification();
+
+
 		$r->{bounce_handler}                       = $self->admin_menu_bounce_handler_notification();
 		$r->{tracker}                              = $self->admin_menu_tracker_notification();
 		$r->{bridge}                               = $self->admin_menu_bridge_notification();
@@ -1024,6 +1027,32 @@ sub admin_menu_mailing_sending_mass_mailing_options_notification {
         carp($_);
         return '';
     };
+}
+
+sub admin_menu_profiles_notification { 
+    my $self = shift;
+    my $q    = $self->query();
+
+    try {
+        my ( $admin_list, $root_login, $checksout, $error_msg ) =
+          check_list_security( -cgi_obj => $q, );
+        if ($checksout) {
+            require DADA::ProfileFieldsManager;
+			my $fields = DADA::ProfileFieldsManager->new->fields;
+			my $num = scalar @$fields; 
+            if ($num  > 0 ) {
+                return commify($num);
+            }
+			else { 
+				return '0'; 
+			}
+        }
+    }
+    catch {
+        carp($_);
+        return '';
+    };
+
 }
 
 sub admin_menu_bounce_handler_notification {
@@ -7857,6 +7886,7 @@ sub subscription_options {
                     enable_white_list                    => 0,
                     invites_check_for_already_invited    => 0,
                     invites_prohibit_reinvites           => 0,
+					invites_show_profile_fields_in_subscription_form => 0, 
                 },
                 -also_save_for => $also_save_for_list,
             }
