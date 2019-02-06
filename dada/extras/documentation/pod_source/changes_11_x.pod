@@ -4,7 +4,19 @@
 
 =head1 11.2.7
 
-This is mostly a bug-fix release for issues found in the v11.2.6 release of Dada Mail. 
+This is mostly a bug-fix release for issues found in the v11.2.6 release of Dada Mail. A few small changes and features did sneak in: 
+
+=head2 Features
+
+=head3 Show all profile fields in closed (invite only), private mailing list invitation subscription forms
+
+By default, closed/private lists can still invite subscibers, but the subscription form does not show any 
+profile fields. This option, found in: B<Membership: Options>, will allow you to show those fields. 
+
+=head3 Number of Profile Fields shown in the admin menu
+
+If you're wondering how many, or even if you have any profile fields, that information is now shown in the 
+admin menu itself, saving you a click. 
 
 =head2 Changes
 
@@ -28,12 +40,6 @@ Then, any other log will be shown - most likely, "Mass Mailing" logs. These logs
 
 L<https://github.com/justingit/dada-mail/issues/761>
 
-=head2 Features
-
-=head3 Show all profile fields in closed (invite only), private mailing list invitation subscription forms
-
-By default, closed/private lists can still invite subscibers, but the subscription form does not show any 
-profile fields. This option, found in: B<Membership: Options>, will allow you to show those fields. 
 
 =head2 Bugfixes
 
