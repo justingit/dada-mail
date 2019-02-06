@@ -2747,8 +2747,8 @@ sub subscription_form {
 			 || $ls->param('closed_list') == 1
 			) 
 		){ 
-			if($ls->param('invites_show_profile_fields_in_subscription_form') == 0){ 
-				$args->{-show_fields} = 0;
+			if($ls->param('invites_show_profile_fields_in_subscription_form') == 1){ 
+				$args->{-show_fields} = 1;
 			}
 			else { 
 				$args->{-show_fields} = 0;
