@@ -3520,7 +3520,7 @@ sub Email_Address_parse {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2018 Justin Simoni 
+Copyright (c) 1999 - 2019 Justin Simoni 
 
 http://justinsimoni.com 
 
