@@ -2,6 +2,57 @@
 
 =encoding utf-8
 
+=head1 11.2.7
+
+This is mostly a bug-fix release for issues found in the v11.2.6 release of Dada Mail. 
+
+=head2 Changes
+
+=head3 Log Viewer Plugin: order of logs in popup menu
+
+The following logs will now always be shown first (if the log is available):
+
+=over
+
+=item * Usage Log
+
+=item * Error Log
+
+=item * Bounce Handler Log
+
+=item * Cronjob Output
+
+=back
+
+Then, any other log will be shown - most likely, "Mass Mailing" logs. These logs will stop NOT be in any useful order, but that issue will be addressed in a future release. This is currently an open issue: 
+
+L<https://github.com/justingit/dada-mail/issues/761>
+
+=head2 Features
+
+=head3 Show all profile fields in closed (invite only), private mailing list invitation subscription forms
+
+By default, closed/private lists can still invite subscibers, but the subscription form does not show any 
+profile fields. This option, found in: B<Membership: Options>, will allow you to show those fields. 
+
+=head2 Bugfixes
+
+=head3 Bridge: log does not report correctly when messages are *only* sent to list owner (and not to subscribers)
+
+L<https://github.com/justingit/dada-mail/issues/790>
+
+=head3 install.cgi does not generate usage text 
+
+L<https://github.com/justingit/dada-mail/issues/789>
+
+=head3 Unsubscription Check does not normalize email case
+
+L<https://github.com/justingit/dada-mail/issues/787>
+
+=head3 Private Lists with "Request Removal" button not shown still have List-Unsubscribe present
+
+L<https://github.com/justingit/dada-mail/issues/784>
+
 =head1 11.2.6
 
 This is mostly a bug-fix release for issues found in the v11.2.5 release of Dada Mail. 
