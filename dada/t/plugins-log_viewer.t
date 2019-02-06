@@ -52,7 +52,8 @@ my $results   = log_viewer::search_logs(
     'found',
     1, 
     $list
-);
+);			
+				
 my $find_this = quotemeta('<em class="dm_highlighted">found</em>'); 
 like($results, qr/$find_this/, "found the stuff, escaped."); 
 
