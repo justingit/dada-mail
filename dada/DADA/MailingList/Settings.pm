@@ -127,13 +127,10 @@ sub post_process_get {
             $li->{list_info} = $li->{info};
         }
 
-        # sasl_smtp_password
-        # pop3_password
-
         # If we don't need to load, DADA::Security::Password, let's not.
 
         my $d_password_check = 0;
-        for ( 'sasl_smtp_password', 'pop3_password',
+        for ( 'sasl_smtp_password',
             'discussion_pop_password' )
         {
             if (   exists( $DADA::Config::LIST_SETUP_DEFAULTS{$_} )
@@ -145,7 +142,7 @@ sub post_process_get {
             }
         }
         
-        for ( 'sasl_smtp_password', 'pop3_password',
+        for ( 'sasl_smtp_password',
             'discussion_pop_password' )
         {
 
@@ -214,7 +211,7 @@ sub post_process_get {
 
 
 
-        for ( 'sasl_smtp_password', 'pop3_password',
+        for ( 'sasl_smtp_password',
             'discussion_pop_password' )
         {
             if ( $DADA::Config::LIST_SETUP_OVERRIDES{$_} ) {
@@ -233,7 +230,6 @@ sub post_process_get {
     # DEV: Strange, that it's been left out? Did it get removed?
     for ( keys %DADA::Config::LIST_SETUP_OVERRIDES ) {
         next if $_ eq 'sasl_smtp_password';
-        next if $_ eq 'pop3_password';
         next if $_ eq 'discussion_pop_password';
         $li->{$_} = $DADA::Config::LIST_SETUP_OVERRIDES{$_};
     }

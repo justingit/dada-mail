@@ -84,7 +84,6 @@ ok(
 
 my @pass_settings = qw(
 sasl_smtp_password
-pop3_password
 discussion_pop_password
 ); 
 
@@ -116,7 +115,6 @@ ok( defined($@), "Error when attempting to save a non-existent setting: $@" );
 require DADA::Security::Password;
 my @password_settings = qw(
   sasl_smtp_password
-  pop3_password
   discussion_pop_password
 );
 

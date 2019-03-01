@@ -9,7 +9,7 @@ use DADA::App::Guts;  # For now, my dear.
 use Try::Tiny; 
 
 
-my $t = 0; 
+my $t = 1; 
 
 
 my $dbi_obj = undef; 
@@ -80,7 +80,8 @@ sub save {
 	
     my ( $self, $args ) = @_;
 
-	my $new_settings  = $args->{-settings};
+	my $new_settings  = {%{$args->{-settings}}};
+	my $orig_settings = {%{$args->{-settings}}};
 	
 	my $also_save_for = [];
 	if(exists($args->{-also_save_for})) {
@@ -109,7 +110,36 @@ sub save {
     if ( !$self->{RAW_DB_HASH} ) {
         $self->_raw_db_hash;
     }
-
+				
+				
+	# some keys need to be encrypted
+	for (qw(
+		sasl_smtp_password 
+		discussion_pop_password
+		)) {
+		if(exists($new_settings->{$_})){ 
+			
+			$new_settings->{$_} = strip( $new_settings->{$_} );
+			
+	        if ( defined($new_settings->{$_}) ) {
+				
+				require DADA::Security::Password; 
+				require DADA::MailingList::Settings; 
+				my $local_copy_ls = DADA::MailingList::Settings->new(
+					{
+						-list => $self->{name}
+					}
+				);
+	            $new_settings->{$_} = DADA::Security::Password::cipher_encrypt(
+	                    $local_copy_ls->param('cipher_key'),
+	                    $new_settings->{$_}
+				);
+				undef($local_copy_ls);				
+	        }
+		}
+	}
+	#/ some keys need to be encrypted	 
+		 
     if ($new_settings) {
 
         $self->_existence_check($new_settings);
@@ -181,10 +211,10 @@ sub save {
 
 		for my $other_list(@$also_save_for){ 
 			try {
-				my $other_ls = DADA::MailingList::Settings->new({-list => $other_list}); 
+				my $other_ls = DADA::MailingList::Settings->new({-list => $other_list}); 				
 				$other_ls->save({
-				-also_save_for => [],
-				-settings      => $args->{-settings}, 
+					-also_save_for => [],
+					-settings      => $orig_settings, 
 				}); 
 			} catch { 
 				warn 'problem saving settings for, ' . $other_list . ' because:' . $_; 

@@ -136,7 +136,6 @@ L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
 
     pop3_server   => undef,
     pop3_username => undef,
-    pop3_password => undef,
     pop3_use_ssl  => undef,
 
     # Can be set to,

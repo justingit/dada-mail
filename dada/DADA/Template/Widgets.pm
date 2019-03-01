@@ -1652,7 +1652,6 @@ sub screen {
                     # this is to get really naughty bits out: 
                     foreach(qw(
                         password
-                        pop3_password
                         sasl_smtp_password
                         pass_auth_id
                         discussion_pop_password

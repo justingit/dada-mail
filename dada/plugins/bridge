@@ -689,19 +689,6 @@ sub edit {
             $q->param( 'open_discussion_list', 0 );
         }
 
-        my $discussion_pop_password = $q->param('discussion_pop_password') || undef;
-
-        if ( defined($discussion_pop_password) ) {
-            $q->param(
-                'discussion_pop_password',
-                DADA::Security::Password::cipher_encrypt(
-                    $ls->param('cipher_key'),
-                    $q->param('discussion_pop_password')
-                )
-            );
-            $bridge_settings_defaults{discussion_pop_password} = undef;
-        }
-
         $ls->save_w_params(
             {
                 -associate => $q,

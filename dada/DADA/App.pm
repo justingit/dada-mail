@@ -4054,29 +4054,8 @@ sub mail_sending_options {
     }
     else {
 
-        my $sasl_smtp_password = strip( scalar $q->param('sasl_smtp_password') )
-          || undef;
-        if ( defined($sasl_smtp_password) ) {
-            $q->param(
-                'sasl_smtp_password',
-                DADA::Security::Password::cipher_encrypt(
-                    $ls->param('cipher_key'),
-                    $sasl_smtp_password
-                )
-            );
-        }
-
         my $also_save_for_list = $ls->also_save_for_list($q);
-
-
-		# This will not work for multiple lists, as the password will be encrypted with the wrong cipher key. D'oh!
-		# WHAT TO DO?!
-		# Handle it in save() I guess... 
-		# 
-		
-		#use Data::Dumper; 
-		#warn Dumper($q);
-		
+				
         $ls->save_w_params(
             {
                 -associate => $q,
@@ -4097,7 +4076,7 @@ sub mail_sending_options {
                     smtp_port            => undef,
                 },
                 -also_save_for => $also_save_for_list,
-            }
+            }, 
         );
         if ( $q->param('no_redirect') == 1 ) {
             return undef;    # I mean, I guess...
