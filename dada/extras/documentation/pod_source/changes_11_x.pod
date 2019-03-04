@@ -2,6 +2,20 @@
 
 =encoding utf-8
 
+=head1 11.2.8
+
+This is mostly a bug-fix release for issues found in the v11.2.7 release of Dada Mail.
+
+=head2 Bugfixes
+
+=head3 RESTful API and saving list passwords not working correctly? #794 
+
+L<https://github.com/justingit/dada-mail/issues/794>
+
+=head3  Sending: Options - saving SMTP settings that include a password fail when, "Save for Multiple Lists" is used #793 
+
+L<https://github.com/justingit/dada-mail/issues/793>
+
 =head1 11.2.7
 
 This is mostly a bug-fix release for issues found in the v11.2.6 release of Dada Mail. A few small changes and features did sneak in: 
