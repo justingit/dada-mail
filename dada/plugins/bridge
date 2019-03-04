@@ -640,6 +640,7 @@ sub edit {
         discussion_pop_server                      => undef,
 		discussion_pop_port                        => 'AUTO',
         discussion_pop_username                    => undef,
+		discussion_pop_password                    => undef, 
         discussion_pop_auth_mode                   => undef,
         discussion_pop_use_ssl                     => 0,
 		discussion_pop_starttls                    =>  0,
@@ -843,7 +844,7 @@ sub edit {
     my $program_abs_path = $RealScript; 
     $program_abs_path    =~ s/$FindBin::Bin//; 
     $program_abs_path    = $FindBin::Bin . '/' . $RealScript; 
-    
+    	
     
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -1540,12 +1541,12 @@ sub pop3_login {
     my $ls = shift;
 
     my $r;
-
     my $password =
-      DADA::Security::Password::cipher_decrypt( $ls->param('cipher_key'), $ls->param('discussion_pop_password') );
-
+      DADA::Security::Password::cipher_decrypt( $ls->param('cipher_key'),
+        $ls->param('discussion_pop_password') );
     if ( !valid_login_information($ls) ) {
-        $r .= "Some POP3 Login Information is missing - please double check! (aborting login attempt)\n";
+        $r .=
+"Some POP3 Login Information is missing - please double check! (aborting login attempt)\n";
         return ( undef, undef, $r );
     }
     else {
@@ -1565,13 +1566,14 @@ sub pop3_login {
                     AUTH_MODE => $ls->param('discussion_pop_auth_mode'),
                 }
             );
-        } catch { 
+        }
+        catch {
             $r .= "Problems Logging in:\n$_";
             warn $_;
             return ( undef, undef, $r );
-		};		
-        
-		return ( $pop, $status, $log );
+        };
+
+        return ( $pop, $status, $log );
     }
 
     return $r;
