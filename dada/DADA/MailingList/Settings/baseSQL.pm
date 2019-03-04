@@ -139,6 +139,20 @@ sub save {
 		}
 	}
 	#/ some keys need to be encrypted	 
+
+	
+	# Encrypts the List Password, if it's passed: 
+	if(exists($new_settings->{password})){ 
+		if(defined($new_settings->{password})){ 
+			require DADA::Security::Password;
+			$new_settings->{password} 
+				= DADA::Security::Password::encrypt_passwd(
+					$new_settings->{password}
+				); 
+		}
+	}
+	# /Encrypts the List Password, if it's passed
+	
 		 
     if ($new_settings) {
 

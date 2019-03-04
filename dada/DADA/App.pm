@@ -3429,8 +3429,7 @@ sub change_password {
         $ls->save(
             {
                 -settings => {
-                    password =>
-                      DADA::Security::Password::encrypt_passwd($new_password)
+                    password => $new_password
                 }
             }
         );
@@ -11284,8 +11283,7 @@ sub new_list {
         else {
 
             $list_owner_email = lc_email($list_owner_email);
-            $password = DADA::Security::Password::encrypt_passwd($password);
-
+            
             my $new_info = {
 
                 #	list             =>   $list,
@@ -12469,13 +12467,11 @@ sub email_password {
     {
 
         my $new_password = DADA::Security::Password::generate_password();
-        my $new_encrypt =
-          DADA::Security::Password::encrypt_passwd($new_password);
-
+		
         $ls->save(
             {
                 -settings => {
-                    password     => $new_encrypt,
+                    password     => $new_password,
                     pass_auth_id => ''
                 }
             }
