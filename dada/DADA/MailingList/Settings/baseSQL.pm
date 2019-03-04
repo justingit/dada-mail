@@ -9,7 +9,7 @@ use DADA::App::Guts;  # For now, my dear.
 use Try::Tiny; 
 
 
-my $t = 1; 
+my $t = 0; 
 
 
 my $dbi_obj = undef; 
