@@ -45,12 +45,14 @@ sub _init  {
 	
     if($args->{-new_list} == 1){ 
 	
-		$self->{name} = $args->{-list};
+		$self->{name}     = $args->{-list};
+		$self->{new_list} = 1;
 	}else{ 
 		
 		if($self->_list_name_check($args->{-list}) == 0) { 
     		croak('BAD List name "' . $args->{-list} . '" ' . $!);
 		}
+		$self->{new_list} = 0;
 	}
 }
 

@@ -34,7 +34,6 @@ sub new {
 		$args->{-new_list} = 0;
 	}
 	
-	$self->{new_list} = $args->{-new_list};
 	$self->_init($args); 
 	$self->_sql_init(); 
 	
@@ -111,34 +110,36 @@ sub save {
         $self->_raw_db_hash;
     }
 				
-				
-	# some keys need to be encrypted
-	for (qw(
-		sasl_smtp_password 
-		discussion_pop_password
-		)) {
-		if(exists($new_settings->{$_})){ 
+	
+	if($self->{new_list} != 1){		
+		# some keys need to be encrypted
+		for (qw(
+			sasl_smtp_password 
+			discussion_pop_password
+			)) {
+			if(exists($new_settings->{$_})){ 
 			
-			$new_settings->{$_} = strip( $new_settings->{$_} );
+				$new_settings->{$_} = strip( $new_settings->{$_} );
 			
-	        if ( defined($new_settings->{$_}) ) {
+		        if ( defined($new_settings->{$_}) ) {
 				
-				require DADA::Security::Password; 
-				require DADA::MailingList::Settings; 
-				my $local_copy_ls = DADA::MailingList::Settings->new(
-					{
-						-list => $self->{name}
-					}
-				);
-	            $new_settings->{$_} = DADA::Security::Password::cipher_encrypt(
-	                    $local_copy_ls->param('cipher_key'),
-	                    $new_settings->{$_}
-				);
-				undef($local_copy_ls);				
-	        }
+					require DADA::Security::Password; 
+					require DADA::MailingList::Settings; 
+					my $local_copy_ls = DADA::MailingList::Settings->new(
+						{
+							-list => $self->{name}
+						}
+					);
+		            $new_settings->{$_} = DADA::Security::Password::cipher_encrypt(
+		                    $local_copy_ls->param('cipher_key'),
+		                    $new_settings->{$_}
+					);
+					undef($local_copy_ls);				
+		        }
+			}
 		}
+		#/ some keys need to be encrypted	 
 	}
-	#/ some keys need to be encrypted	 
 
 	
 	# Encrypts the List Password, if it's passed: 
