@@ -1,5 +1,6 @@
 package DADA::Security::AuthenCAPTCHA;;
 
+# This is all sorts of messed up. 
 use strict; 
 
 use lib qw(../../ ../../DADA ../perllib ./ ../ ../perllib ../../ ../../perllib); 
