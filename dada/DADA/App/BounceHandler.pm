@@ -138,8 +138,8 @@ sub test_bounces {
     my $files_to_test = [];
 
     if ( $test_type eq 'pop3' ) {
-        my ( $pop3_obj, $pop3_status, $pop3_log ) = $self->test_pop3;
-        return $pop3_log;
+        my ( $imail_obj, $imail_status, $imail_log ) = $self->test_pop3;
+        return $imail_log;
     }
     elsif ( -d $test_type ) {
         @$files_to_test = $self->dir_list($test_type);
@@ -164,7 +164,12 @@ sub test_bounces {
 sub test_pop3 {
 
     my $self = shift;
-    require DADA::App::POP3Tools;
+    if(1 == 1){
+		require DADA::App::IMAPTools; 
+	}
+	else { 
+		require DADA::App::POP3Tools;
+	}
 
     my $lock_file_fh;
     if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
@@ -172,34 +177,47 @@ sub test_pop3 {
         $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check( { name => 'bounce_handler.lock', } );
     }
 
-    my ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::net_pop3_login(
-        {
+	my ( $imail_obj, $imail_status, $imail_log );
 
-            server          => $self->config->{Server},
-            username        => $self->config->{Username},
-            password        => $self->config->{Password},
-            port            => $self->config->{Port},
-            USESSL          => $self->config->{USESSL},
-			starttls        => $self->config->{starttls},
-			SSL_verify_mode => $self->config->{SSL_verify_mode},
-            AUTH_MODE       => $self->config->{AUTH_MODE},
-        }
-    );
+	if(1 == 1){ 
+		( $imail_obj, $imail_status, $imail_log ) = DADA::App::IMAPTools::imap_login(
+	        {
+	            IMAP_server          => $self->config->{IMAP_Server},
+	            IMAP_username        => $self->config->{IMAP_Username},
+	            IMAP_password        => $self->config->{IMAP_Password},
+	            IMAP_port            => $self->config->{IMAP_Port},
+	        }
+	    );
+	}
+	else { 
+		( $imail_obj, $imail_status, $imail_log ) = DADA::App::POP3Tools::net_pop3_login(
+	        {
 
-    if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
-        DADA::App::POP3Tools::_unlock_pop3_check(
-            {
-                name => 'bounce_handler.lock',
-                fh   => $lock_file_fh,
-            },
-        );
-    }
+	            server          => $self->config->{Server},
+	            username        => $self->config->{Username},
+	            password        => $self->config->{Password},
+	            port            => $self->config->{Port},
+	            USESSL          => $self->config->{USESSL},
+				starttls        => $self->config->{starttls},
+				SSL_verify_mode => $self->config->{SSL_verify_mode},
+	            AUTH_MODE       => $self->config->{AUTH_MODE},
+	        }
+	    );
 
-    if ( defined($pop3_obj) ) {
-		$pop3_obj->quit();
-    }
+	    if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
+	        DADA::App::POP3Tools::_unlock_pop3_check(
+	            {
+	                name => 'bounce_handler.lock',
+	                fh   => $lock_file_fh,
+	            },
+	        );
+	    }
+	    if ( defined($imail_obj) ) {
+			$imail_obj->quit();
+	    }
+	}
 
-    return ( $pop3_obj, $pop3_status, $pop3_log );
+    return ( $imail_obj, $imail_status, $imail_log  );
 }
 
 sub test_files {
@@ -329,73 +347,121 @@ sub parse_all_bounces {
         my $lh = DADA::MailingList::Subscribers->new( { -list => $list_to_check } );
 
         $log .= "Checking Bounces for Mailing List: " . $ls->param('list_name') . "\n";
+		
+		if(1 == 1) {
+			# ... 
+		}
+		else { 
+	        if (   !defined( $self->config->{Server} )
+	            || !defined( $self->config->{Username} )
+	            || !defined( $self->config->{Password} ) )
+	        {
+	            $log .= "The Server Username and/password haven't been filled out, stopping.";
 
-        if (   !defined( $self->config->{Server} )
-            || !defined( $self->config->{Username} )
-            || !defined( $self->config->{Password} ) )
-        {
-            $log .= "The Server Username and/password haven't been filled out, stopping.";
-
-            return $log;
-        }
-
+	            return $log;
+	        }
+		}
+		
         if ( $isa_test == 1 ) {
             $log .= "Testing is enabled -  messages will be parsed and examined, but will not be acted upon.\n\n";
         }
 
-        $log .= "Making POP3 Connection to " . $self->config->{Server} . "...\n";
-
-        require DADA::App::POP3Tools;
-
+		if(1 == 1){ 
+			$log .= "Making IMAP Connection to " . $self->config->{IMAP_Server} . "...\n";				
+		}
+		else {
+			$log .= "Making POP3 Connection to " . $self->config->{Server} . "...\n";
+		}
+	    if(1 == 1){
+			require DADA::App::IMAPTools; 
+		}
+		else { 
+			require DADA::App::POP3Tools;
+		}
+		
         my $lock_file_fh;
-        if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
-            $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check( { name => 'bounce_handler.lock' } );
-        }
-
-        my ( $pop3_obj, $pop3status, $pop3log ) = DADA::App::POP3Tools::net_pop3_login(
-            {
-                server          => $self->config->{Server},
-                username        => $self->config->{Username},
-                password        => $self->config->{Password},
-                port            => $self->config->{Port},
-				starttls        => $self->config->{starttls},
-				SSL_verify_mode => $self->config->{SSL_verify_mode},
-                USESSL          => $self->config->{USESSL},
-                AUTH_MODE       => $self->config->{AUTH_MODE},
-            }
-        );
-        if ( $pop3status != 1 ) {
-            $log .= "Status returned $pop3status\n\n$pop3log";
-            if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
-                DADA::App::POP3Tools::_unlock_pop3_check(
-                    {
-                        name => 'bounce_handler.lock',
-                        fh   => $lock_file_fh,
-                    },
-                );
-            }
-
-            next LISTCHECK;
-        }
-
-        $log .= $pop3log;
-        if ( $pop3status == 0 ) {
-            if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
-                DADA::App::POP3Tools::_unlock_pop3_check(
-                    {
-                        name => 'bounce_handler.lock',
-                        fh   => $lock_file_fh,
-                    },
-                );
-            }
+        if(1 == 1){ 
+			# ... 
+		}
+		else { 
+			if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
+	            $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check( { name => 'bounce_handler.lock' } );
+	        }
+		}
+		
+		my ( $imail_obj, $imail_status, $imail_log );
+	   
+		if(1 == 1){ 
+			( $imail_obj, $imail_status, $imail_log ) = DADA::App::IMAPTools::imap_login(
+		        {
+		            IMAP_server          => $self->config->{IMAP_Server},
+		            IMAP_username        => $self->config->{IMAP_Username},
+		            IMAP_password        => $self->config->{IMAP_Password},
+		            IMAP_port            => $self->config->{IMAP_Port},
+		        }
+		    );
+		}
+		else { 
+	        ( $imail_obj, $imail_status, $imail_log ) = DADA::App::POP3Tools::net_pop3_login(
+	             {
+	                 server          => $self->config->{Server},
+	                 username        => $self->config->{Username},
+	                 password        => $self->config->{Password},
+	                 port            => $self->config->{Port},
+	 				 starttls        => $self->config->{starttls},
+	 				 SSL_verify_mode => $self->config->{SSL_verify_mode},
+	                 USESSL          => $self->config->{USESSL},
+	                 AUTH_MODE       => $self->config->{AUTH_MODE},
+	             }
+	         );
+		}
+		
+		
+      
+        if ( $imail_status != 1 ) {
+            $log .= "Status returned $imail_status\n\n$imail_log";
+			if(1 == 1){ 
+				# ... 
+			}
+			else { 
+	            if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
+	                DADA::App::POP3Tools::_unlock_pop3_check(
+	                    {
+	                        name => 'bounce_handler.lock',
+	                        fh   => $lock_file_fh,
+	                    },
+	                );
+	            }
+			}
 
             next LISTCHECK;
         }
 
         my @delete_list = ();
 		
-		my $list = $pop3_obj->list; 
-
+		my $list = {}; 
+		if(1 == 1){ 
+		    my $nm = 0; 
+		    my @boxes   = $imail_obj->mailboxes;
+		    for my $box(@boxes){ 
+				next if $box =~ m/^Calendar/; 
+				my $box_count = $imail_obj->select($box); 				
+				if($box_count ne '0E0'){ 
+		       		$nm += $box_count; 
+					my $box_list = $imail_obj->list || {};
+					for(keys %$box_list){ 
+						my $og_num = $box_list->{$_};
+						$box_list->{$_} = $box . '=seperator=' . $og_num; 
+					}
+					$list = {%$list, %$box_list};	
+			 	}
+		    }
+				
+		}
+		else { 
+			$list = $imail_obj->list; 
+		}
+		
 		if(! defined $list) {
             $log .= "\tNo bounces to handle.\n";
             $has_bounces = 0;
@@ -414,10 +480,15 @@ sub parse_all_bounces {
                 $msg_num++;
                 $log .= "\n# $msg_num:\n";
                 my $need_to_delete = undef;
-                #my ( $msgnum, $msgsize ) = split( '\s+', $msg_info );
 				
 				my $msgnum  = $msg_info; 
-				my $msgsize = $list->{$msg_info};
+				my $msgsize = undef; 
+				if(1 == 1){
+					my ($inner_box_name, $inner_box_msgsize) = split('=seperator=', $list->{$msg_info}, 2);
+					$msgsize = $inner_box_msgsize 
+				}else { 
+					$msgsize = $list->{$msg_info};
+				}
 				
                 if ( $msgsize > $self->config->{Max_Size_Of_Any_Message} ) {
                     $log .=
@@ -434,14 +505,25 @@ sub parse_all_bounces {
 
                 }
                 else {
+				  my $msg_ar; 
+				  my $msg; 
+				  
+				  # Similar
+				   if(1 == 1){	
+   						my ($inner_box_name, $inner_box_msgsize) = split('=seperator=', $list->{$msg_info}, 2);
+						$imail_obj->select($inner_box_name); 
+					   
+					   my @message_lines = $imail_obj->get( $msgnum ) or die 'MSGNUM: ' . $msgnum . ':' . $imail_obj->errstr;
+					   $msg = join("", @message_lines); 
+					   #$log .= "\nMSG:\n\n:$msg\n\n";
+					   	
+				   } else{
+				   	   $msg_ar = $imail_obj->get($msgnum);
+					   # lazy, but... 
+					   $msg = join("", @$msg_ar); 
+				   }
 				   
-				   my $msg_ar = $pop3_obj->get($msgnum);
-
-				   # lazy, but... 
-				   my $msg = join("", @$msg_ar); 
-				   
-				   # ?
-				    my $full_msg = $msg;
+				   my $full_msg = $msg;
 
                     my $msg_report  = '';
                     my $rule_report = '';
@@ -551,24 +633,35 @@ sub parse_all_bounces {
         if ( !$isa_test ) {
             for (@delete_list) {
                 $log .= "deleting message #: $_\n";
-				$pop3_obj->delete($_); 
-            }
+				# Sames: 
+				if(1 == 1){ 
+					$imail_obj->delete($_); 
+				} else {
+					$imail_obj->delete($_); 
+            	}
+				
+			}
         }
         else {
             $log .= "Skipping Message Deletion.\n";
         }
 
-       $pop3_obj->quit();
+	   # Sames
+       $imail_obj->quit();
 	   
-	    if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
-            DADA::App::POP3Tools::_unlock_pop3_check(
-                {
-                    name => 'bounce_handler.lock',
-                    fh   => $lock_file_fh,
-                },
-            );
-        }
-
+	   if(1 == 1){
+		   # ... 
+	   }
+	   else { 
+		    if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
+	            DADA::App::POP3Tools::_unlock_pop3_check(
+	                {
+	                    name => 'bounce_handler.lock',
+	                    fh   => $lock_file_fh,
+	                },
+	            );
+	        }
+		}
         if ( !$isa_test ) {
             $log .= "\nSaving Scores...\n\n";
             my $r = $self->save_scores(

@@ -60,6 +60,11 @@ my $Plugin_Config = {
     Enable_POP3_File_Locking => 1,
     Plugin_URL               => $DADA::Config::S_PROGRAM_URL . '?flavor=plugins&plugin=bounce_handler',
     Plugin_Name              => 'Bounce Handler',
+	IMAP_Server              => undef, 
+	IMAP_Username            => undef, 
+    IMAP_Password            => undef,
+	IMAP_Port                => undef, 
+	
 };
 
 #---------------------------------------------------------------------#
