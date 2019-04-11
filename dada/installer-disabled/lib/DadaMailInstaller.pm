@@ -791,6 +791,8 @@ sub scrn_configure_dada_mail {
                 can_use_CAPTCHA_Google_reCAPTCHA   => scalar test_can_use_CAPTCHA_Google_reCAPTCHA(),
 
                 can_use_CAPTCHA_reCAPTCHA_Mailhide => scalar test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
+                can_use_Net_IMAP_Simple            => scalar test_can_use_Net_IMAP_Simple(),
+
                 can_use_HTML_Tree                  => scalar can_use_HTML_Tree(), 
                 error_cant_read_config_dot_pm      => scalar $self->test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm     => scalar $self->test_can_write_config_dot_pm(),
@@ -4132,6 +4134,19 @@ sub test_can_use_CAPTCHA_reCAPTCHA_Mailhide {
         return 1;
     }
 }
+
+sub test_can_use_Net_IMAP_Simple {
+    eval { require Net::IMAP::Simple; };
+    if ($@) {
+        carp $@;
+        $Big_Pile_Of_Errors .= $@;
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+
 
 sub test_str_is_blank {
 
