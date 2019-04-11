@@ -15,6 +15,7 @@ use Fcntl qw(
     O_TRUNC
 
 );
+use Try::Tiny; 
 
 require Exporter; 
 @ISA = qw(Exporter); 
@@ -32,8 +33,12 @@ sub imap_login {
     my ($args) = @_;
 	my $r = ''; 
 		
-	require Net::IMAP::Simple;
-   
+	try {
+		require Net::IMAP::Simple;
+    } catch { 
+		return (undef, 0, 'Net::IMAP::Simple needs to be installed for IMAP support.'); 
+	};
+	
     if(! exists($args->{server})){ 
         croak "No Server Passed!";
     }
