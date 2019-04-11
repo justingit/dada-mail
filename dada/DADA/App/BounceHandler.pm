@@ -182,10 +182,12 @@ sub test_pop3 {
 	if(1 == 1){ 
 		( $imail_obj, $imail_status, $imail_log ) = DADA::App::IMAPTools::imap_login(
 	        {
-	            IMAP_server          => $self->config->{IMAP_Server},
-	            IMAP_username        => $self->config->{IMAP_Username},
-	            IMAP_password        => $self->config->{IMAP_Password},
-	            IMAP_port            => $self->config->{IMAP_Port},
+	            server          => $self->config->{Server},
+	            username        => $self->config->{Username},
+	            password        => $self->config->{Password},
+	            port            => $self->config->{Port},
+	            USESSL          => $self->config->{USESSL},
+				starttls        => $self->config->{starttls},
 	        }
 	    );
 	}
@@ -367,7 +369,7 @@ sub parse_all_bounces {
         }
 
 		if(1 == 1){ 
-			$log .= "Making IMAP Connection to " . $self->config->{IMAP_Server} . "...\n";				
+			$log .= "Making IMAP Connection to " . $self->config->{Server} . "...\n";				
 		}
 		else {
 			$log .= "Making POP3 Connection to " . $self->config->{Server} . "...\n";
@@ -394,10 +396,13 @@ sub parse_all_bounces {
 		if(1 == 1){ 
 			( $imail_obj, $imail_status, $imail_log ) = DADA::App::IMAPTools::imap_login(
 		        {
-		            IMAP_server          => $self->config->{IMAP_Server},
-		            IMAP_username        => $self->config->{IMAP_Username},
-		            IMAP_password        => $self->config->{IMAP_Password},
-		            IMAP_port            => $self->config->{IMAP_Port},
+		            server          => $self->config->{Server},
+		            username        => $self->config->{Username},
+		            password        => $self->config->{Password},
+		            port            => $self->config->{Port},
+		            USESSL          => $self->config->{USESSL},
+					starttls        => $self->config->{starttls},
+					
 		        }
 		    );
 		}

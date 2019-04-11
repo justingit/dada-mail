@@ -33,8 +33,12 @@ jQuery(document).ready(function($){
 		$("body").on("click", '.template_options_mode', function(event) {
 			installer_toggle_template_mode_magic_options();
 		});
-		
-	
+
+/*
+		$("body").on("click", '.bounce_handler_Connection_Protocol', function(event) {
+			installer_toggle_bounce_handler_Connection_Protocol_options();
+		});
+*/			
 		$("body").on("click", '.test_CAPTCHA_configuration', function(event) {
 			test_CAPTCHA_configuration();
 		});
@@ -162,7 +166,7 @@ jQuery(document).ready(function($){
 		installer_toggle_dada_files_dirOptions();
 		installer_toggle_captcha_type_options();
 		installer_toggle_template_mode_magic_options();
-
+		//installer_toggle_bounce_handler_Connection_Protocol_options();
 
 		var hiding = [
 			"dada_files_help", 
@@ -251,6 +255,13 @@ function installer_test_pop3_connection() {
 		bounce_handler_SSL_verify_mode = 1; 
 	}
 	
+	bounce_handler_Connection_Protocol = 'POP3';
+	if($("#bounce_handler_Connection_Protocol_POP3").prop("checked") === true){ 
+		bounce_handler_Connection_Protocol = 'POP3'; 
+	}
+	if($("#bounce_handler_Connection_Protocol_IMAP").prop("checked") === true){ 
+		bounce_handler_Connection_Protocol = 'IMAP'; 
+	}
 	
 	
 	var request = $.ajax({
@@ -259,14 +270,15 @@ function installer_test_pop3_connection() {
 		cache: false,
 		data: {
 			flavor: 'cgi_test_pop3_connection',
-			bounce_handler_Server:    $("#bounce_handler_Server").val(),
-			bounce_handler_Username:  $("#bounce_handler_Username").val(),
-			bounce_handler_Password:  $("#bounce_handler_Password").val(),
-			bounce_handler_USESSL:    bounce_handler_USESSL,
+			bounce_handler_Connection_Protocol: bounce_handler_Connection_Protocol,
+			bounce_handler_Server:          $("#bounce_handler_Server").val(),
+			bounce_handler_Username:        $("#bounce_handler_Username").val(),
+			bounce_handler_Password:        $("#bounce_handler_Password").val(),
+			bounce_handler_USESSL:          bounce_handler_USESSL,
 			bounce_handler_SSL_verify_mode: bounce_handler_SSL_verify_mode, 
-			bounce_handler_starttls: bounce_handler_starttls, 
-			bounce_handler_AUTH_MODE: $("#bounce_handler_AUTH_MODE").val(),
-			bounce_handler_Port:      $("#bounce_handler_Port").val()
+			bounce_handler_starttls:        bounce_handler_starttls, 
+			bounce_handler_AUTH_MODE:       $("#bounce_handler_AUTH_MODE").val(),
+			bounce_handler_Port:            $("#bounce_handler_Port").val(),
 
 		},
 		dataType: "html"
@@ -577,6 +589,27 @@ function installer_toggle_template_mode_magic_options() {
 		}
 	}	
 }
+
+/*
+function installer_toggle_bounce_handler_Connection_Protocol_options() { 
+	if ($("#bounce_handler_Connection_Protocol_POP3").prop("checked") === true) {
+		if ($('#bounce_handler_Connection_Protocol_IMAP_options').is(':visible')) {
+			$('#bounce_handler_Connection_Protocol_IMAP_options').hide('blind');
+		}
+		if ($('#bounce_handler_Connection_Protocol_POP3_options').is(':hidden')) {
+			$('#bounce_handler_Connection_Protocol_POP3_options').show('blind');
+		}
+	}
+	if ($("#bounce_handler_Connection_Protocol_IMAP").prop("checked") === true) {
+		if ($('#bounce_handler_Connection_Protocol_IMAP_options').is(':hidden')) {
+			$('#bounce_handler_Connection_Protocol_IMAP_options').show('blind');
+		}
+		if ($('#bounce_handler_Connection_Protocol_POP3_options').is(':visible')) {
+			$('#bounce_handler_Connection_Protocol_POP3_options').hide('blind');
+		}
+	}
+}
+*/
 
 function installer_move_installer_dir(file_chmod) {
 	
