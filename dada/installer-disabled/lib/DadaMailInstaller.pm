@@ -1288,7 +1288,7 @@ sub grab_former_config_vals {
     if (   defined($BootstrapConfig::GLOBAL_UNSUBSCRIBE)
         || defined($BootstrapConfig::GLOBAL_BLACK_LIST) )
     {
-        $opt->{'configure_global_mailing_list_options'} = 1;
+        $opt->{'configure_global_mailing_list'} = 1;
         if ( defined($BootstrapConfig::GLOBAL_UNSUBSCRIBE) ) {
             $opt->{'global_mailing_list_options_GLOBAL_UNSUBSCRIBE'} = $BootstrapConfig::GLOBAL_UNSUBSCRIBE;
         }
@@ -1670,7 +1670,7 @@ sub query_params_to_install_params {
       captcha_reCAPTCHA_Mailhide_public_key
       captcha_reCAPTCHA_Mailhide_private_key
 
-      configure_global_mailing_list_options
+      configure_global_mailing_list
       global_mailing_list_options_GLOBAL_UNSUBSCRIBE
       global_mailing_list_options_GLOBAL_BLACK_LIST
 
@@ -2362,7 +2362,7 @@ sub create_dada_config_file {
 	}
   
     my $global_mailing_list_options = {};
-    if ( $ip->{-configure_global_mailing_list_options} == 1 ) {
+    if ( $ip->{-configure_global_mailing_list} == 1 ) {
         $global_mailing_list_options->{configure_global_mailing_list_options} = 1;
         $global_mailing_list_options->{global_mailing_list_options_GLOBAL_UNSUBSCRIBE} =
           strip( $ip->{-global_mailing_list_options_GLOBAL_UNSUBSCRIBE} );
