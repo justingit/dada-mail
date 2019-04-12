@@ -2,7 +2,21 @@
 
 =encoding utf-8
 
+=head1 11.2.9
+
+This is mostly a bug-fix release for issues found in the v11.2.8 release of Dada Mail.
+
 =head1 11.2.8
+
+=head2 Bugfixes
+
+=head3  Installation: Global Black List + Global Unsubscribe options do not get read or saved #805 
+
+L<https://github.com/justingit/dada-mail/issues/805>
+
+=head3 Cloning list settings during list creation does not work #799 
+
+L<https://github.com/justingit/dada-mail/issues/799>
 
 This is mostly a bug-fix release for issues found in the v11.2.7 release of Dada Mail.
 

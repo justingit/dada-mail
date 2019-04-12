@@ -41,8 +41,8 @@ Let's go!
 		<a 
 			class="button success expand" 
 			target="_blank"
-			href="https://sourceforge.net/projects/dadamail/files/dada-11_2_8.tar.gz/download">
-	        Download Dada Mail, v11.2.8
+			href="https://sourceforge.net/projects/dadamail/files/dada-11_2_9.tar.gz/download">
+	        Download Dada Mail, v11.2.9
 		</a> 
 
 		<p>
@@ -67,11 +67,11 @@ Let's go!
 
 =end html 
 
-I<When installing Pro Dada, use B<I<pro_dada-11_2_8.tar.gz>> as the name of the distribution in these directions.>
+I<When installing Pro Dada, use B<I<pro_dada-11_2_9.tar.gz>> as the name of the distribution in these directions.>
 
 =head3 Upload the Dada Mail distribution
 
-Once you have downloaded the Dada Mail distribution ( C<dada-11_2_8.tar.gz>, upload it to your hosting account.
+Once you have downloaded the Dada Mail distribution ( C<dada-11_2_9.tar.gz>, upload it to your hosting account.
 
 =begin html
 
@@ -104,20 +104,20 @@ Download using the link below - it's a small CGI Perl script - so you will want 
 <a 
 	class="button success expand" 
 	target="_blank"
-	href="https://raw.github.com/justingit/dada-mail/v11_2_8-stable_2019_03_04/uncompress_dada.cgi"
+	href="https://raw.github.com/justingit/dada-mail/v11_2_9-stable_2019_04_12/uncompress_dada.cgi"
 >
-	uncompress_dada.cgi for v11.2.8 (Save Page/Link As...)
+	uncompress_dada.cgi for v11.2.9 (Save Page/Link As...)
 </a>
 
 =end html
 
-and upload the C<uncompress_dada.cgi> script (PlainTest/ASCII mode - NOT binary!) to the same directory in your hosting account that you just uploaded, I<dada-11_2_8.tar.gz>. 
+and upload the C<uncompress_dada.cgi> script (PlainTest/ASCII mode - NOT binary!) to the same directory in your hosting account that you just uploaded, I<dada-11_2_9.tar.gz>. 
 
 =head3 Change the file permissions of the helper script to, "755"
 
 =head3 Visit the helper script in your web browser
 
-Visiting the C<uncompress_dada.cgi> script should attempt to uncompress the I<dada-11_2_8.tar.gz> and change the necessary permissions of various files and prep the actual installer for you to use. 
+Visiting the C<uncompress_dada.cgi> script should attempt to uncompress the I<dada-11_2_9.tar.gz> and change the necessary permissions of various files and prep the actual installer for you to use. 
 
 Once it's finished running, 
 you should be presented with a link to use the actual installer. 
@@ -131,7 +131,7 @@ B<Continue Installing and Configuring Dada Mail!> to continue.
 
 <p>See, <a href="./FAQ-install_upgrade.pod.html#prepping_dada_mail_manually">Prepping Dada Mail Manually</a> if this doesn't happen and you get a message in your browser window, sort of like this: </p>
 
-<pre>Can't find dada-11_2_8.tar to uncompress! You may have to uncompress and prep Dada Mail manually.</pre> 
+<pre>Can't find dada-11_2_9.tar to uncompress! You may have to uncompress and prep Dada Mail manually.</pre> 
 
 </div>
 
