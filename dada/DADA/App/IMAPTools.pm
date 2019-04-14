@@ -142,20 +142,22 @@ sub imap_login {
 			$args->{password})
 		){
 			$status = 1; 
-			$r .= "* IMAP login successful\n";
+			#$r .= "* IMAP login successful\n";
 		} else {
 		    $r .=  "* IMAP login failed: " . $imap->errstr . "\n";
 			$imap = undef; 
 		}
-	
-		my $count = 0; 
-		   $count = $imap->select('INBOX');
 		
-		$r .= "\n";			
-        $r .= "* IMAP Login succeeded!\n";
-        $r .= "* INBOX Message count: " . $count . "\n";
+		if($status == 1){ 
+			my $count = 0; 
+			   $count = $imap->select('INBOX');
+		
+			$r .= "\n";			
+	        $r .= "* IMAP Login successful.\n";
+	        $r .= "* INBOX Message count: " . $count . "\n";
   
-           return ( $imap, 1, $r );
+	           return ( $imap, 1, $r );
+		   }
       
 	  }
 }

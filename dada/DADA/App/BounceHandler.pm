@@ -164,8 +164,8 @@ sub test_bounces {
 sub test_pop3 {
 
     my $self = shift;
-    if(1 == 1){
-		require DADA::App::IMAPTools; 
+    if($self->config->{Connection_Protocol} eq 'IMAP'){
+		 require DADA::App::IMAPTools; 
 	}
 	else { 
 		require DADA::App::POP3Tools;
@@ -179,7 +179,7 @@ sub test_pop3 {
 
 	my ( $imail_obj, $imail_status, $imail_log );
 
-	if(1 == 1){ 
+    if($self->config->{Connection_Protocol} eq 'IMAP'){ 
 		( $imail_obj, $imail_status, $imail_log ) = DADA::App::IMAPTools::imap_login(
 	        {
 	            server          => $self->config->{Server},
@@ -350,31 +350,28 @@ sub parse_all_bounces {
 
         $log .= "Checking Bounces for Mailing List: " . $ls->param('list_name') . "\n";
 		
-		if(1 == 1) {
-			# ... 
-		}
-		else { 
-	        if (   !defined( $self->config->{Server} )
-	            || !defined( $self->config->{Username} )
-	            || !defined( $self->config->{Password} ) )
-	        {
-	            $log .= "The Server Username and/password haven't been filled out, stopping.";
+		
+        if (   !defined( $self->config->{Server} )
+            || !defined( $self->config->{Username} )
+            || !defined( $self->config->{Password} ) )
+        {
+            $log .= "The Server Username and/password haven't been filled out, stopping.";
 
-	            return $log;
-	        }
-		}
+            return $log;
+        }
+	
 		
         if ( $isa_test == 1 ) {
             $log .= "Testing is enabled -  messages will be parsed and examined, but will not be acted upon.\n\n";
         }
 
-		if(1 == 1){ 
+		if($self->config->{Connection_Protocol} eq 'IMAP'){ 
 			$log .= "Making IMAP Connection to " . $self->config->{Server} . "...\n";				
 		}
 		else {
 			$log .= "Making POP3 Connection to " . $self->config->{Server} . "...\n";
 		}
-	    if(1 == 1){
+	    if($self->config->{Connection_Protocol} eq 'IMAP'){
 			require DADA::App::IMAPTools; 
 		}
 		else { 
@@ -382,7 +379,7 @@ sub parse_all_bounces {
 		}
 		
         my $lock_file_fh;
-        if(1 == 1){ 
+        if($self->config->{Connection_Protocol} eq 'IMAP'){ 
 			# ... 
 		}
 		else { 
@@ -393,7 +390,7 @@ sub parse_all_bounces {
 		
 		my ( $imail_obj, $imail_status, $imail_log );
 	   
-		if(1 == 1){ 
+		if($self->config->{Connection_Protocol} eq 'IMAP'){ 
 			( $imail_obj, $imail_status, $imail_log ) = DADA::App::IMAPTools::imap_login(
 		        {
 		            server          => $self->config->{Server},
@@ -421,11 +418,9 @@ sub parse_all_bounces {
 	         );
 		}
 		
-		
-      
         if ( $imail_status != 1 ) {
             $log .= "Status returned $imail_status\n\n$imail_log";
-			if(1 == 1){ 
+			if($self->config->{Connection_Protocol} eq 'IMAP'){ 
 				# ... 
 			}
 			else { 
@@ -441,11 +436,14 @@ sub parse_all_bounces {
 
             next LISTCHECK;
         }
+		else { 
+            $log .= $imail_log;
+		}
 
         my @delete_list = ();
 		
 		my $list = {}; 
-		if(1 == 1){ 
+		if($self->config->{Connection_Protocol} eq 'IMAP'){ 
 		    my $nm = 0; 
 		    my @boxes   = $imail_obj->mailboxes;
 		    for my $box(@boxes){ 
@@ -488,7 +486,7 @@ sub parse_all_bounces {
 				
 				my $msgnum  = $msg_info; 
 				my $msgsize = undef; 
-				if(1 == 1){
+				if($self->config->{Connection_Protocol} eq 'IMAP'){
 					my ($inner_box_name, $inner_box_msgsize) = split('=seperator=', $list->{$msg_info}, 2);
 					$msgsize = $inner_box_msgsize 
 				}else { 
@@ -514,7 +512,7 @@ sub parse_all_bounces {
 				  my $msg; 
 				  
 				  # Similar
-				   if(1 == 1){	
+				   if($self->config->{Connection_Protocol} eq 'IMAP'){	
    						my ($inner_box_name, $inner_box_msgsize) = split('=seperator=', $list->{$msg_info}, 2);
 						$imail_obj->select($inner_box_name); 
 					   
@@ -639,11 +637,11 @@ sub parse_all_bounces {
             for (@delete_list) {
                 $log .= "deleting message #: $_\n";
 				# Sames: 
-				if(1 == 1){ 
+				#if($self->config->{Connection_Protocol} eq 'IMAP'){ 
+				#	$imail_obj->delete($_); 
+				#} else {
 					$imail_obj->delete($_); 
-				} else {
-					$imail_obj->delete($_); 
-            	}
+				#}
 				
 			}
         }
@@ -654,7 +652,7 @@ sub parse_all_bounces {
 	   # Sames
        $imail_obj->quit();
 	   
-	   if(1 == 1){
+	   if($self->config->{Connection_Protocol} eq 'IMAP'){
 		   # ... 
 	   }
 	   else { 
