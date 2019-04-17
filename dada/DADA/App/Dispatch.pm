@@ -394,11 +394,41 @@ sub translate {
         }
         elsif ( $info =~ /^t\// ) {
 
-            my ( $pi_flavor, $pi_token, $etc ) = split( '/', $info, 3 );
+            my ( $pi_flavor, $pi_token, $token_context ) = split( '/', $info, 3 );
 
-            $q->param( 'flavor', 'token' );
-            $q->param( 'token',  $pi_token );
-
+            $q->param( 'flavor',       'token' );
+            $q->param( 'token',        $pi_token );
+			$q->param('token_context', $token_context );
+			
+			
+			if(!defined($q->url_param('List-Unsubscribe'))
+			&& defined($q->param('List-Unsubscribe'))
+			&& $q->param('List-Unsubscribe') eq 'One-Click'){
+			
+				warn "OK that's ok";
+			}
+			else { 
+				warn "NOOOOPE.";
+			}
+			 
+			
+			
+			
+			
+			if(defined($q->url_param('List-Unsubscribe'))){ 
+				
+				
+				# that's not supposed to be able to be passed in a URL... 
+				$q->param('List-Unsubscribe', undef);	
+				warn q{that's not supposed to be able to be passed in a URL... } . $q->url_param('List-Unsubscribe'); 
+				
+			} elsif(defined($q->param('List-Unsubscribe'))){ 
+				# See that's OK
+				warn 'List-Unsubscribe passed: ' . $q->param('List-Unsubscribe'); 
+			}
+			else { 
+			
+			}
         }
 
         elsif ( $info =~ /^subscribe_form/ ) {

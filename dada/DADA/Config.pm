@@ -1738,6 +1738,8 @@ $PROGRAM_NAME //= "Dada Mail";
     'List-Post'                 => undef,
     'List-Subscribe'            => undef,
     'List-Unsubscribe'          => undef,
+    'List-Unsubscribe'          => undef,
+	'List-Unsubscribe-Post'     => undef, 
     'List-URL'                  => undef,
     'X-BeenThere'               => undef,
 	'X-Beenthere'               => undef,
@@ -1781,6 +1783,7 @@ $PROGRAM_NAME //= "Dada Mail";
   List-Post
   List-Subscribe
   List-Unsubscribe
+  List-Unsubscribe-Post
   List-URL
   X-BeenThere
   X-Beenthere

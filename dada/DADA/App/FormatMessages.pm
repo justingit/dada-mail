@@ -1576,6 +1576,7 @@ sub _encode_header {
         || $label eq 'List-Owner'
         || $label eq 'List-Subscribe'
         || $label eq 'List-Unsubscribe'
+        || $label eq 'List-Unsubscribe-Post'
 		|| $label eq 'X-Preheader'
         || $label eq 'just_phrase' 
 	) {
@@ -2984,7 +2985,7 @@ sub email_template {
         'Reply-To',   'Return-Path',
         'List',       'List-URL',
         'List-Owner', 'List-Subscribe',
-        'List-Unsubscribe'
+        'List-Unsubscribe', 'List-Unsubscribe-Post', 
       )
     {
 
