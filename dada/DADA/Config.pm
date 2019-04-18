@@ -1233,7 +1233,7 @@ $MIME_TOOLS_PARAMS //= {
 	website_url          => undef,
 	facebook_page_url    => undef,
 	twitter_url          => undef,
-	google_plus_page_url => undef,
+	instagram_url => undef,
 	youtube_url          => undef, 
 
     # Mailing List >> List Password

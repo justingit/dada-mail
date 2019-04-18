@@ -3110,7 +3110,7 @@ sub change_info {
 					facebook_page_url    => xss_filter( strip( scalar $q->param('facebook_page_url') )),
                     youtube_url          => xss_filter( strip( scalar $q->param('youtube_url') )),
                     twitter_url          => xss_filter( strip( scalar $q->param('twitter_url') ) ),
-                    google_plus_page_url => xss_filter( strip( scalar $q->param('google_plus_page_url') )),
+                    instagram_url => xss_filter( strip( scalar $q->param('instagram_url') )),
                 }
             }
         );
