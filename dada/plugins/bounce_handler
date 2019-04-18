@@ -46,6 +46,8 @@ use DADA::Template::HTML;
 use DADA::App::BounceHandler;
 
 my $Plugin_Config = {
+
+	Connection_Protocol      => 'POP3',
     Server                   => undef,
     Username                 => undef,
     Password                 => undef,
@@ -78,6 +80,7 @@ use Fcntl qw(
 my $debug;
 my $help;
 my $test;
+my $connection_protocol; 
 my $server;
 my $username;
 my $password;
@@ -91,20 +94,21 @@ my $admin_list;
 my $root_login;
 
 sub reset_globals {
-    $debug            = 0;
-    $help             = 0;
-    $test             = undef;
-    $server           = undef;
-    $username         = undef;
-    $password         = undef;
-    $verbose          = 0;
-    $log              = undef;
-    $messages         = 0;
-    $erase_score_card = 0;
-    $version          = undef;
-    $list             = undef;
-    $admin_list       = undef;
-    $root_login       = undef;
+    $debug               = 0;
+    $help                = 0;
+    $test                = undef;
+    $connection_protocol = undef;
+    $server              = undef;
+    $username            = undef;
+    $password            = undef;
+    $verbose             = 0;
+    $log                 = undef;
+    $messages            = 0;
+    $erase_score_card    = 0;
+    $version             = undef;
+    $list                = undef;
+    $admin_list          = undef;
+    $root_login          = undef;
 }
 
 &init_vars;
@@ -127,11 +131,12 @@ sub init_vars {
 
 sub init {
 
-    $Plugin_Config->{Server}         = $server   if $server;
-    $Plugin_Config->{Username}       = $username if $username;
-    $Plugin_Config->{Password}       = $password if $password;
-    $Plugin_Config->{Log}            = $log      if $log;
-    $Plugin_Config->{MessagesAtOnce} = $messages if $messages > 0;
+    $Plugin_Config->{Connection_Protocol}         = $server   if $server;
+    $Plugin_Config->{Server}                      = $server   if $server;
+    $Plugin_Config->{Username}                    = $username if $username;
+    $Plugin_Config->{Password}                    = $password if $password;
+    $Plugin_Config->{Log}                         = $log      if $log;
+    $Plugin_Config->{MessagesAtOnce}              = $messages if $messages > 0;
 
     if ($test) {
         $debug = 1

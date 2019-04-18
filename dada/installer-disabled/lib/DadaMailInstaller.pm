@@ -194,16 +194,17 @@ show_annoying_whiny_pro_dada_notice => 0,
 
 # Address isn't in here.
 my %bounce_handler_plugin_configs = (
-    Server                   => { default => '',     if_blank => 'undef' },
-    Username                 => { default => '',     if_blank => 'undef' },
-    Password                 => { default => '',     if_blank => 'undef' },
-    Port                     => { default => 'AUTO', if_blank => 'AUTO' },
-    USESSL                   => { default => 0,      if_blank => 0 },
-	starttls                 => { default => 0,      if_blank => 0 },
-    SSL_verify_mode          => { default => 0,      if_blank => 0 },
-	AUTH_MODE                => { default => 'POP', if_blank => 'POP' },
-    MessagesAtOnce           => { default => '100',  if_blank => '100' },
-    Enable_POP3_File_Locking => { default => 1,      if_blank => 0 },
+	Connection_Protocol      => { default => 'POP3',     if_blank => 'POP3' },
+    Server                   => { default => '',         if_blank => 'undef' },
+    Username                 => { default => '',         if_blank => 'undef' },
+    Password                 => { default => '',         if_blank => 'undef' },
+    Port                     => { default => 'AUTO',     if_blank => 'AUTO' },
+    USESSL                   => { default => 0,          if_blank => 0 },
+	starttls                 => { default => 0,          if_blank => 0 },
+    SSL_verify_mode          => { default => 0,          if_blank => 0 },
+	AUTH_MODE                => { default => 'POP',      if_blank => 'POP' },
+    MessagesAtOnce           => { default => '100',      if_blank => '100' },
+    Enable_POP3_File_Locking => { default => 1,         if_blank => 0 },
 );
 
 my %bridge_plugin_configs = (
@@ -679,6 +680,7 @@ sub scrn_configure_dada_mail {
         }
         for my $d (
             qw(
+			Connection_Protocol
             Port
             AUTH_MODE
             MessagesAtOnce
@@ -789,6 +791,8 @@ sub scrn_configure_dada_mail {
                 can_use_CAPTCHA_Google_reCAPTCHA   => scalar test_can_use_CAPTCHA_Google_reCAPTCHA(),
 
                 can_use_CAPTCHA_reCAPTCHA_Mailhide => scalar test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
+                can_use_Net_IMAP_Simple            => scalar test_can_use_Net_IMAP_Simple(),
+
                 can_use_HTML_Tree                  => scalar can_use_HTML_Tree(), 
                 error_cant_read_config_dot_pm      => scalar $self->test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm     => scalar $self->test_can_write_config_dot_pm(),
@@ -4131,6 +4135,19 @@ sub test_can_use_CAPTCHA_reCAPTCHA_Mailhide {
     }
 }
 
+sub test_can_use_Net_IMAP_Simple {
+    eval { require Net::IMAP::Simple; };
+    if ($@) {
+        carp $@;
+        $Big_Pile_Of_Errors .= $@;
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+
+
 sub test_str_is_blank {
 
     my $str = shift;
@@ -4243,14 +4260,15 @@ sub cgi_test_pop3_connection {
     my $self = shift;
     my $q    = $self->query();
 
-    my $bounce_handler_server          = $q->param('bounce_handler_Server')                  || undef;
-    my $bounce_handler_username        = $q->param('bounce_handler_Username')                || undef;
-    my $bounce_handler_password        = $q->param('bounce_handler_Password')                || undef;
-    my $bounce_handler_USESSL          = $q->param('bounce_handler_USESSL')                  || 0;
-    my $bounce_handler_starttls        = $q->param('bounce_handler_starttls')                || 0;
-    my $bounce_handler_SSL_verify_mode = $q->param('bounce_handler_SSL_verify_mode')         || 0; 
-	my $bounce_handler_AUTH_MODE       = $q->param('bounce_handler_AUTH_MODE')               || 'POP';
-    my $bounce_handler_Port            = $q->param('bounce_handler_Port')                    || 'AUTO';
+	my $bounce_handler_Connection_Protocol = $q->param('bounce_handler_Connection_Protocol')     || undef; 
+    my $bounce_handler_server              = $q->param('bounce_handler_Server')                  || undef;
+    my $bounce_handler_username            = $q->param('bounce_handler_Username')                || undef;
+    my $bounce_handler_password            = $q->param('bounce_handler_Password')                || undef;
+    my $bounce_handler_USESSL              = $q->param('bounce_handler_USESSL')                  || 0;
+    my $bounce_handler_starttls            = $q->param('bounce_handler_starttls')                || 0;
+    my $bounce_handler_SSL_verify_mode     = $q->param('bounce_handler_SSL_verify_mode')         || 0; 
+	my $bounce_handler_AUTH_MODE           = $q->param('bounce_handler_AUTH_MODE')               || 'POP';
+    my $bounce_handler_Port                 = $q->param('bounce_handler_Port')                   || 'AUTO';
 
     #	my $bounce_handler_MessagesAtOnce = $q->param('bounce_handler_MessagesAtOnce') || 100;
 
@@ -4258,8 +4276,11 @@ sub cgi_test_pop3_connection {
     $bounce_handler_username = make_safer($bounce_handler_username);
     $bounce_handler_password = make_safer($bounce_handler_password);
 
-    my ( $pop3_obj, $pop3_status, $pop3_log ) = test_pop3_connection(
+	
+
+    my ( $imail_obj, $imail_status, $imail_log ) = test_pop3_connection(
         {
+			Mode            => $bounce_handler_Connection_Protocol, 
             Server          => $bounce_handler_server,
             Username        => $bounce_handler_username,
             Password        => $bounce_handler_password,
@@ -4273,17 +4294,17 @@ sub cgi_test_pop3_connection {
 
     #use Data::Dumper;
     #print $q->header('text/plain');
-    #print Dumper([$pop3_status, $pop3_log]);
+    #print Dumper([$imail_status, $imail_log]);
 
     my $r;
 
-    if ( $pop3_status == 1 ) {
+    if ( $imail_status == 1 ) {
         $r .= '<p>Connection is Successful!</p>';
     }
     else {
         $r .= '<p>Connection is NOT Successful.</p>';
     }
-    $r .= '<pre>' . $pop3_log . '</pre>';
+    $r .= '<pre>' . $imail_log . '</pre>';
 
     return $r;
 
@@ -4574,24 +4595,55 @@ sub test_pop3_connection {
 		return ( undef, 0, 'Username will need to be filled out.');
 	}
 	
-    require DADA::App::POP3Tools;
-    my ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::net_pop3_login(
-        {
-            server          => $args->{Server},
-            username        => $args->{Username},
-            password        => $args->{Password},
-            port            => $args->{Port},
-            USESSL          => $args->{USESSL},
-			starttls        => $args->{starttls},
-			SSL_verify_mode => $args->{SSL_verify_mode},
-            AUTH_MODE       => $args->{AUTH_MODE},
-        }
-    );
-    if ( defined($pop3_obj) ) {
-		$pop3_obj->quit();
-    }
+	my ($imail_obj, $imail_status, $imail_log);
+	
+	if($args->{Mode} eq "POP3"){
+	    require DADA::App::POP3Tools;
+	    ( $imail_obj, $imail_status, $imail_log ) = DADA::App::POP3Tools::net_pop3_login(
+	        {
+	            server          => $args->{Server},
+	            username        => $args->{Username},
+	            password        => $args->{Password},
+	            port            => $args->{Port},
+	            USESSL          => $args->{USESSL},
+				starttls        => $args->{starttls},
+				SSL_verify_mode => $args->{SSL_verify_mode},
+	            AUTH_MODE       => $args->{AUTH_MODE},
+	        }
+	    );
+	    if ( defined($imail_obj) ) {
+			$imail_obj->quit();
+	    }
+	}
+	elsif($args->{Mode} eq "IMAP"){
+	    require DADA::App::IMAPTools;
+	    ( $imail_obj, $imail_status, $imail_log ) = DADA::App::IMAPTools::imap_login(
+	        {
+	            server          => $args->{Server},
+	            username        => $args->{Username},
+	            password        => $args->{Password},
+	            port            => $args->{Port},
+	            USESSL          => $args->{USESSL},
+				starttls        => $args->{starttls},
+				SSL_verify_mode => $args->{SSL_verify_mode},
+	            AUTH_MODE       => $args->{AUTH_MODE},
+	        }
+	    );
+	    if ( defined($imail_obj) ) {
+			$imail_obj->quit();
+	    }
+		
+	}
+	else { 
+		return ( 
+			undef, 
+			0, 
+			'Unknown Connection Mode: "' . $args->{Mode} . '"'
+		);
+		
+	}
 
-    return ( $pop3_obj, $pop3_status, $pop3_log );
+    return ( $imail_obj, $imail_status, $imail_log );
 
 }
 
