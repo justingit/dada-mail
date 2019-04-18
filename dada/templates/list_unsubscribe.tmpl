@@ -68,7 +68,12 @@
 								<input type="hidden" id="token"                 name="token" value="<!-- tmpl_var token  escape="HTML" -->" > 
 								<input type="hidden" id="process"               name="process" value="1" > 
 								<input type="hidden" id="auto_attempted"        name="auto_attempted" value="<!-- tmpl_var auto_attempted escape="HTML" -->">
-								<input type="hidden" id="one_click_unsubscribe" name="one_click_unsubscribe" value="<!-- tmpl_var list_settings.one_click_unsubscribe -->">
+								<input 
+									type="hidden" 
+									id="one_click_unsubscribe" 
+									name="one_click_unsubscribe" 
+									value="<!-- tmpl_var one_click_unsubscribe_enabled -->"
+								>
 								<input type="text"   id="email"   name="email" value="<!-- tmpl_var email escape="HTML" -->">
 						</div>
 					</div>

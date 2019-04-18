@@ -3044,17 +3044,22 @@ sub list_headers {
 	            $lh{'List-Subscribe'} =
 					'<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>';
 	        }
-			
 			if ( 
-				   $self->{ls}->param('private_list') == 1 
-				&& $self->{ls}->param('show_request_removal_links') == 0 
+				   ($self->{ls}->param('private_list') == 1 
+				&& $self->{ls}->param('show_request_removal_links') == 0)
+				|| $self->{ls}->param('mass_mailing_use_list_unsubscribe_headers') != 1
 			) {
 	            if ( exists( $lh{'List-Unsubscribe'} ) ) {
 	                delete( $lh{'List-Unsubscribe'} );
 	            }
+	            if ( exists( $lh{'List-Unsubscribe-Post'} ) ) {
+	                delete( $lh{'List-Unsubscribe-Post'} );
+	            }
 			} else {			
-				$lh{'List-Unsubscribe'} =
-					'<mailto:' . $self->{ls}->param('list_owner_email') . '?Subject=Unsubscribe%20from%20<!-- tmpl_var list_settings.list_name escape="URL" -->>, <<!-- tmpl_var list_unsubscribe_link -->>';
+				$lh{'List-Unsubscribe'} = 
+					'<mailto:' . $self->{ls}->param('list_owner_email') . '?Subject=Unsubscribe%20<!-- tmpl_var subscriber.email -->%20from%20<!-- tmpl_var list_settings.list_name escape="URL" -->>,' 
+					.' <<!-- tmpl_var list_unsubscribe_header_link -->>';
+				$lh{'List-Unsubscribe-Post'} = '<!-- tmpl_var list_unsubscribe_post_header -->';
 			}
 		}
 
@@ -3345,9 +3350,12 @@ sub _mail_merge {
     $labeled_data{'list.confirmation_token'} =  $confirmation_token;    # list invites? Messed up.
 	  
 	  
-    $labeled_data{'list_unsubscribe_link'} = $DADA::Config::PROGRAM_URL . '/t/' . $labeled_data{'list.confirmation_token'} . '/';
-
-    my $merge_fields = $self->{merge_fields};
+    $labeled_data{'list_unsubscribe_link'}        = $DADA::Config::PROGRAM_URL . '/t/' . $labeled_data{'list.confirmation_token'} . '/';
+    $labeled_data{'list_unsubscribe_header_link'} = $DADA::Config::PROGRAM_URL . '/t/' . $labeled_data{'list.confirmation_token'} . '/from_email_header/';
+    
+	$labeled_data{'list_unsubscribe_post_header'} = 'List-Unsubscribe=One-Click';
+	
+	my $merge_fields = $self->{merge_fields};
 
     my $i = 0;
     for ( $i = 0 ; $i <= $#$merge_fields ; $i++ ) {

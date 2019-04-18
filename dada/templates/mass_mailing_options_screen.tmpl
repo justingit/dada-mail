@@ -167,6 +167,46 @@
 	</div>
 </fieldset> 
 
+
+
+<fieldset> 
+	
+	<legend>Headers</legend>
+	
+    <div class="row">
+        <div class="small-12 columns">
+            <label for="mass_mailing_use_list_unsubscribe_headers">
+				<input 
+					type="checkbox" 
+					name="mass_mailing_use_list_unsubscribe_headers" 
+					id="mass_mailing_use_list_unsubscribe_headers" 
+					value="1" 
+					<!-- tmpl_if list_settings.mass_mailing_use_list_unsubscribe_headers -->
+						checked="checked"
+					<!-- /tmpl_if -->
+				>
+                Use, &quot;List-Unsubscribe&quot; headers
+            </label>
+			
+			<div class="row">
+				<div class="small-1 columns">
+				</div>
+				<div class="small-11 columns">					
+					 <div class="alert-box info radius">
+						The, <code>List-Unsubscribe</code> headers allow mail readers to 
+						produce an unsubscription link within the UI of the mail reader itself, 
+						making it easier for your subscribers to unsubscribe themselves from 
+						your mailing list. 	 
+					</div>
+				</div>
+			</div>
+        </div> 
+    </div>
+	
+	</fieldset> 
+	
+	
+	
 <fieldset> 
 	
 	<legend>Security</legend>

@@ -1767,6 +1767,7 @@ sub massage_msg_for_resending {
 		'List-Owner', 
 		'List-Subscribe', 
 		'List-Unsubscribe'
+		'List-Unsubscribe-Post'
 		){ 
 	    if($entity->head->count($header)){ 
 			$entity->head->delete($header);

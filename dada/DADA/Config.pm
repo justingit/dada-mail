@@ -1253,17 +1253,15 @@ $MIME_TOOLS_PARAMS //= {
     
 
     # Mass Mailing Options
-    mass_mailing_convert_plaintext_to_html => 1,
-    mass_mailing_block_css_to_inline_css   => 1,
-	email_embed_images_as_attachments      => 1, 
-	resize_drag_and_drop_images            => 1, 
-	mass_mailing_remove_javascript         => 1, 
-	
+    mass_mailing_convert_plaintext_to_html      => 1,
+    mass_mailing_block_css_to_inline_css        => 1,
+	email_embed_images_as_attachments           => 1, 
+	resize_drag_and_drop_images                 => 1, 
+	mass_mailing_remove_javascript              => 1, 
 	mass_mailing_save_sent_drafts_as_stationery => 0, 
-	
-	mass_mailing_default_layout            => undef, 
-	
-	mass_mailing_show_by_default_type     => 'html',
+	mass_mailing_default_layout                 => undef, 
+	mass_mailing_show_by_default_type           => 'html',
+	mass_mailing_use_list_unsubscribe_headers   => 1, 
 	
     #quotas
     use_subscription_quota => 0,
@@ -1738,6 +1736,8 @@ $PROGRAM_NAME //= "Dada Mail";
     'List-Post'                 => undef,
     'List-Subscribe'            => undef,
     'List-Unsubscribe'          => undef,
+    'List-Unsubscribe'          => undef,
+	'List-Unsubscribe-Post'     => undef, 
     'List-URL'                  => undef,
     'X-BeenThere'               => undef,
 	'X-Beenthere'               => undef,
@@ -1781,6 +1781,7 @@ $PROGRAM_NAME //= "Dada Mail";
   List-Post
   List-Subscribe
   List-Unsubscribe
+  List-Unsubscribe-Post
   List-URL
   X-BeenThere
   X-Beenthere
