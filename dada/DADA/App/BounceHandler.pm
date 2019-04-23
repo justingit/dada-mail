@@ -448,6 +448,7 @@ sub parse_all_bounces {
 		    my @boxes   = $imail_obj->mailboxes;
 		    for my $box(@boxes){ 
 				next if $box =~ m/^Calendar/; 
+				next if $box =~ m/^INBOX\.Trash/;
 				my $box_count = $imail_obj->select($box); 				
 				if($box_count ne '0E0'){ 
 		       		$nm += $box_count; 
