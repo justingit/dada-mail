@@ -805,6 +805,19 @@
 								</div>
 							</div>	
 							
+							<!-- tmpl_unless can_use_Net_IMAP_Simple -->
+								<div class="row">
+									<div class="large-5 medium-5 columns">		
+									</div>
+									<div class="large-7 medium-7 columns">
+										<div class="alert-box info radius"> 
+											<code>Net::IMAP::Simple</code> will need to be installed 
+											to connect via <strong>IMAP</strong>.
+										</div>
+									</div>
+								</div>
+							<!-- /tmpl_unless -->
+							
 							<div class="row">
 								<div class="large-5 medium-5 columns">
 									<label 
@@ -831,7 +844,7 @@
 											</div>
 										</div>
 					
-					
+										
 											<div class="row">
 												<div class="small-12 columns">
 													<label>
@@ -842,9 +855,8 @@
 															id="bounce_handler_Connection_Protocol_IMAP" 
 															value="IMAP" 	
 														>								
-														IMAP
+														IMAP 
 													</label>
-							
 											</div>	 
 											</div>
 							

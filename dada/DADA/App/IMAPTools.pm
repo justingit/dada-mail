@@ -33,11 +33,17 @@ sub imap_login {
     my ($args) = @_;
 	my $r = ''; 
 		
+	my $has_net_imap_simple = 1; 
+	
 	try {
 		require Net::IMAP::Simple;
     } catch { 
-		return (undef, 0, 'Net::IMAP::Simple needs to be installed for IMAP support.'); 
+		$has_net_imap_simple = 0; 
+		carp $_; 
 	};
+	if($has_net_imap_simple == 0){ 
+		return (undef, 0, 'Net::IMAP::Simple will need to be installed for IMAP support.'); 
+	}
 	
     if(! exists($args->{server})){ 
         croak "No Server Passed!";
@@ -116,6 +122,7 @@ sub imap_login {
 		my $imap   = undef; 
 		my $status = 0; 
 		
+		require Net::IMAP::Simple; 
 		$imap = Net::IMAP::Simple->new(
 			$args->{server}, 
 			use_ssl => $SSL, 

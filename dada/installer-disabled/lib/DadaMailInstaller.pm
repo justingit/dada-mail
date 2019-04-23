@@ -4616,22 +4616,32 @@ sub test_pop3_connection {
 	    }
 	}
 	elsif($args->{Mode} eq "IMAP"){
-	    require DADA::App::IMAPTools;
-	    ( $imail_obj, $imail_status, $imail_log ) = DADA::App::IMAPTools::imap_login(
-	        {
-	            server          => $args->{Server},
-	            username        => $args->{Username},
-	            password        => $args->{Password},
-	            port            => $args->{Port},
-	            USESSL          => $args->{USESSL},
-				starttls        => $args->{starttls},
-				SSL_verify_mode => $args->{SSL_verify_mode},
-	            AUTH_MODE       => $args->{AUTH_MODE},
-	        }
-	    );
-	    if ( defined($imail_obj) ) {
-			$imail_obj->quit();
-	    }
+		if(test_can_use_Net_IMAP_Simple != 1){ 
+			return ( 
+				undef, 
+				0, 
+				'Net::IMAP::Simple will need to be installed to connect via IMAP.'
+			);
+		}
+		else { 
+		    require DADA::App::IMAPTools;
+		    ( $imail_obj, $imail_status, $imail_log ) = DADA::App::IMAPTools::imap_login(
+		        {
+		            server          => $args->{Server},
+		            username        => $args->{Username},
+		            password        => $args->{Password},
+		            port            => $args->{Port},
+		            USESSL          => $args->{USESSL},
+					starttls        => $args->{starttls},
+					SSL_verify_mode => $args->{SSL_verify_mode},
+		            AUTH_MODE       => $args->{AUTH_MODE},
+		        }
+		    );
+		    if ( defined($imail_obj) ) {
+				$imail_obj->quit();
+		    }
+		}
+	    
 		
 	}
 	else { 
