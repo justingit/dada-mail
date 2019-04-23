@@ -2,6 +2,61 @@
 
 =encoding utf-8
 
+
+=head1 11.3.0
+
+=head2 Changes
+
+=head3 Google+ Support Dropped
+
+Google+ has been effectively shuttered, so we've removed it from the app. 
+
+=head2 Features
+
+=head3 One-Click Unsubscription via email headers (per RFC 8058)
+
+Dada Mail has supported one-click unsubscribe in the unsubscribe link in the email message itself (via a button), 
+as well as in the C<List-Unsubscribe> email header. 
+
+There's a problem though: 
+sometimes the unsubscription link in the header is visted by anti-virus software which, after visiting it, 
+will unsubscribe the user without any action from the subscriber themselves. 
+
+Dada Mail now supports one-click unsubscribe via the C<List-Unsubscribe> header without this problem happening. 
+This is done by following RFC 8058, which provides a mechanism to utilize one-click unsubscribe,
+without having this problem. 
+Any email reader that supports RFC 8058 will allow your subscribers one-click unsubscribe. 
+
+We found that this change is really important, and suggest anyone using Dada Mail to upgrade! 
+This problem seems particularly wide-reaching. 
+
+=head4 List-Unsubscribe header toggle-able
+
+If one decides instead to not have the C<List-Unsubscribe> header available, there is a new option to 
+not utilize it. This option is available in the list control panel under, B<Mass Mailing: Options: Headers:> I<Use, "List-Unsubscribe" headers>
+
+=head4 References: 
+
+L<https://tools.ietf.org/html/rfc8058>
+
+=head3 Bounce Handler Enhancements
+
+=head4 IMAP Support Added
+
+Set up the Bounce Handler to connect to your Bounce Handler Email address via IMAP. 
+This additional option (along with POP3) gives you more flexibility on how to connect 
+to your Bounce Handler Email address to help fit more email hosting scenarios. 
+For example, 
+those who are using Microsoft Exchange to administrate email may find better success using IMAP,
+rather than POP3. 
+
+Option to select B<IMAP> is available in the Dada Mail Installer. 
+
+=head3 Instagram Support Added
+
+Add the link to your Instagram profile in your Mailing List Information, the link will be shown in your
+mailing list messages, along with Facebook, Twitter, Youtube, and website links. 
+
 =head1 11.2.9
 
 This is mostly a bug-fix release for issues found in the v11.2.8 release of Dada Mail.
