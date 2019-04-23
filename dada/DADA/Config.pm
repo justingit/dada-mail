@@ -1279,7 +1279,7 @@ $MIME_TOOLS_PARAMS //= {
     alt_send_subscription_notice_to => '' ,
 
     unsub_show_email_hint             => 1,
-	one_click_unsubscribe             => 1,
+	one_click_unsubscribe             => 0,
     get_unsub_notice                  => 1,
     send_unsubscription_notice_to     => 'list_owner',
     alt_send_unsubscription_notice_to => '', 
