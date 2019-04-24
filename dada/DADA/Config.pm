@@ -1279,7 +1279,10 @@ $MIME_TOOLS_PARAMS //= {
     alt_send_subscription_notice_to => '' ,
 
     unsub_show_email_hint             => 1,
-	# one_click_unsubscribe             => 0,
+	
+	# Not used anymore -  "completing_the_unsubscription" should be set to, "one_click_unsubscribe_no_confirm_screen"
+	one_click_unsubscribe             => 0,
+	
 	completing_the_unsubscription     => 'click_link_on_confirm_screen', 
     get_unsub_notice                  => 1,
     send_unsubscription_notice_to     => 'list_owner',

@@ -128,6 +128,15 @@ sub post_process_get {
         if ( !exists( $li->{list_info} ) ) {
             $li->{list_info} = $li->{info};
         }
+		
+		# This is backwards compat, to move this setting to a new one, but 
+		# only if it was set a certain way: 
+        if ( !exists( $li->{completing_the_unsubscription} ) ) {
+            if($li->{one_click_unsubscribe} == 1){ 
+				$li->{completing_the_unsubscription} = 'one_click_unsubscribe_no_confirm_screen';
+			}
+        }		
+		# Else, the value in $LIST_SETUP_DEFAULTS will be used. 
 
         # If we don't need to load, DADA::Security::Password, let's not.
 
