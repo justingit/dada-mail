@@ -3057,7 +3057,10 @@ sub list_headers {
 	            }
 			} else {			
 				$lh{'List-Unsubscribe'} = 
-					'<mailto:' . $self->{ls}->param('list_owner_email') . '?Subject=Unsubscribe%20<!-- tmpl_var subscriber.email -->%20from%20<!-- tmpl_var list_settings.list_name escape="URL" -->>,' 
+					'<mailto:' 
+					. $self->{ls}->param('list_owner_email') 
+					. '?Subject=Unsubscribe%20<!-- tmpl_var subscriber.email escape="URL" -->%20from%20<!-- tmpl_var list_settings.list escape="URL" -->'
+					. '&Body=Unsubscripton%20Link%20for%20<!-- tmpl_var subscriber.email escape="URL" -->%3A%20%0A%0A<!-- tmpl_var list_unsubscribe_header_link escape="URL" -->>,' 
 					.' <<!-- tmpl_var list_unsubscribe_header_link -->>';
 				$lh{'List-Unsubscribe-Post'} = '<!-- tmpl_var list_unsubscribe_post_header -->';
 			}

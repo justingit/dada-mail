@@ -26,6 +26,9 @@
 				},
 				success: function(data) {
 					if(data.status === 1 && data.email.length > 0){ 
+						
+						alert('here1.');
+						
 						var url = $("#program_url").val() 
 							+ "?flavor=unsubscribe&token="
 							+ encodeURIComponent($('#token').val())
@@ -38,6 +41,7 @@
 							// window.location.replace(url); 
 					}
 					else { 
+						alert('here2.');
 						$("#unsubscription_form").show();
 						$("#automatic_attempt_message").hide();
 					}
@@ -45,6 +49,10 @@
 				error: function(xhr, ajaxOptions, thrownError) {
 					console.log('status: ' + xhr.status);
 					console.log('thrownError:' + thrownError);
+					
+					alert('status: ' + xhr.status);
+					alert('thrownError:' + thrownError);
+					
 					
 					/* Well, if there's an error in the look, let us do this: */
 					$("#unsubscription_form").show();

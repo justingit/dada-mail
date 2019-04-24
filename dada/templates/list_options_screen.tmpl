@@ -809,53 +809,106 @@
 	<legend>
 		Completing the Unsubscription
 </legend>
-
+		
+		<div class="alert-box info radius">  
+			Mailing list unsubscription links/buttons are located in the mailing list messages that are sent out. 
+			Once one of these unsubscribe links/buttons are followed: 
+		</div>
         <div class="row"> 	  		 
   			<div class="small-12  columns"> 
 		        <input 
-					type="checkbox" 
-					name="one_click_unsubscribe" 
-					id="one_click_unsubscribe" 
-					value="1" <!-- tmpl_if list_settings.one_click_unsubscribe -->checked="checked"<!--/tmpl_if -->
+					type="radio" 
+					name="completing_the_unsubscription" 
+					id="completing_the_unsubscription_one_click_unsubscribe_no_confirm_screen" 
+					value="one_click_unsubscribe_no_confirm_screen" 
+					<!-- tmpl_if expr="(list_settings.completing_the_unsubscription eq 'one_click_unsubscribe_no_confirm_screen')" -->
+						checked="checked"
+					<!--/tmpl_if -->
 				 >
-	        	 <label for="one_click_unsubscribe"> 
-	          	   Enable one-click unsubscribe
+	        	 <label for="completing_the_unsubscription_one_click_unsubscribe_no_confirm_screen"> 
+	          	   Unsubscribe the user immediately, with no additional confirmation required (one-click unsubscription)
 			   </label>
 			</div>
 		</div>
-
+		
+		
         <div class="row"> 	  		 
   			<div class="small-12  columns"> 
 		        <input 
-					type="checkbox" 
-					name="unsub_show_email_hint" 
-					id="unsub_show_email_hint" 
-					value="1" <!-- tmpl_if list_settings.unsub_show_email_hint -->checked="checked"<!--/tmpl_if -->
+					type="radio" 
+					name="completing_the_unsubscription" 
+					id="completing_the_unsubscription_click_link_on_confirm_screen" 
+					value="click_link_on_confirm_screen" 
+					<!-- tmpl_if expr="(list_settings.completing_the_unsubscription eq 'click_link_on_confirm_screen')" -->
+						checked="checked"
+					<!--/tmpl_if -->
 				 >
-	        	 <label for="unsub_show_email_hint"> 
-	          	   Show email hint
-	        	 </label>
+	        	 <label for="completing_the_unsubscription_click_link_on_confirm_screen"> 
+	          	   Require the subscriber to click a link/button to confirm unsubscription
+			   </label>
 			</div>
 		</div>
 		
-		 
-	   	<div class="alert-box info radius">  
-
-	         The Unsubscription Form will have the user's email address partially shown to help users fill out the form, with the correct email address.     
-			 <br>
-			 <br>
-	            <strong>
-	                 Example:
-	            </strong>
-        
-	            <em>
-	                <!-- tmpl_var list_settings.list_owner_email -->
-	            </em>    
-	             will be shown as,
-	            <em>
-	                <!-- tmpl_var list_owner_email_anonystar_address -->
-	            </em>
+		
+		
+        <div class="row"> 	  		 
+  			<div class="small-12  columns"> 
+		        <input 
+					type="radio" 
+					name="completing_the_unsubscription" 
+					id="completing_the_unsubscription_fill_out_form_on_confirm_screen" 
+					value="fill_out_form_on_confirm_screen" 
+					<!-- tmpl_if expr="(list_settings.completing_the_unsubscription eq 'fill_out_form_on_confirm_screen')" -->
+						checked="checked"
+					<!--/tmpl_if -->
+				 >
+	        	 <label for="completing_the_unsubscription_fill_out_form_on_confirm_screen"> 
+	          	   Require the subscriber to fill out a form with their subscribed email address to confirm unsubscription
+			   </label>
+			</div>
 		</div>
+		
+		<div class="row"> 	  		 
+	 
+		 <div class="small-1  columns"></div> 
+		 <div class="small-11  columns">
+	        <input 
+				type="checkbox" 
+				name="unsub_show_email_hint" 
+				id="unsub_show_email_hint" 
+				value="1" <!-- tmpl_if list_settings.unsub_show_email_hint -->checked="checked"<!--/tmpl_if -->
+			 >
+        	 <label for="unsub_show_email_hint"> 
+          	   Show email hint
+        	 </label>
+			 
+ 		   	<div class="alert-box info radius">  
+
+ 		         The Unsubscription Form will have the user's email address partially shown to help users fill out the form, with the correct email address.     
+ 				 <br>
+ 				 <br>
+ 		            <strong>
+ 		                 Example:
+ 		            </strong>
+        
+ 		            <em>
+ 		                <!-- tmpl_var list_settings.list_owner_email -->
+ 		            </em>    
+ 		             will be shown as,
+ 		            <em>
+ 		                <!-- tmpl_var list_owner_email_anonystar_address -->
+ 		            </em>
+ 			</div>
+			
+	 
+		 </div>
+		
+		</div>
+		
+		
+		
+		
+
     </fieldset><!-- Completing the Unsubscription --> 
     
     

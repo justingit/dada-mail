@@ -17,7 +17,7 @@ use Try::Tiny;
 use vars qw($AUTOLOAD);
 use strict;
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
+my $t = 1;# $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
 
 my %allowed = ( test => 0, );
 
@@ -154,6 +154,8 @@ sub token {
             );
         }
         elsif ( $data->{data}->{flavor} eq 'unsub_confirm' ) {
+			warn '$data->{data}->{flavor}: ' . $data->{data}->{flavor}
+				if $t; 
             $q->param( 'token', $token );
             $self->unsubscribe(
                 {
@@ -1638,6 +1640,10 @@ sub unsubscription_request {
 
 sub unsubscribe {
 
+    warn 'at, ' . ( caller(0) )[3] 
+		if $t;
+	
+	
     my $self = shift;
     my ($args) = @_;
 
@@ -1663,9 +1669,15 @@ sub unsubscribe {
             }
         );
     }
+	
 
-    my $token = $q->param('token')                 || undef;
+    my $token         = $q->param('token')         || undef;
 	my $token_context = $q->param('token_context') || undef; 
+	
+	if($t == 1){ 
+		warn '$token: '         . $token; 
+		warn '$token_context: ' . $token_context; 	
+	}
 	
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
@@ -1694,25 +1706,36 @@ sub unsubscribe {
 
     my $is_valid    = 1;
     my $list_exists = DADA::App::Guts::check_if_list_exists( -List => $data->{data}->{list} );
-
 	
 	my $skip_email_valid_check = 0; 
-	if($token_context eq 'from_email_header'){
-		if(
-			   !defined($q->url_param('List-Unsubscribe'))
-			&& defined($q->param('List-Unsubscribe'))
-			&& $q->param('List-Unsubscribe') eq 'One-Click'
-		){
-			
-			# do the thing.
-			$process = 1;  
-			$skip_email_valid_check = 1; 
+	
+	if($list_exists == 1){ 
+	    require DADA::MailingList::Settings;
+	    my $ls = DADA::MailingList::Settings->new( { -list => $data->{data}->{list} } );
+	
+		if($token_context eq 'from_email_header'){
+			if(
+				   !defined($q->url_param('List-Unsubscribe'))
+				&& defined($q->param('List-Unsubscribe'))
+				&& $q->param('List-Unsubscribe') eq 'One-Click'
+			){
+				# do the thing.
+				$process = 1;  
+				$skip_email_valid_check = 1; 
+			}
 		}
-	}				
-				
-				
+		elsif(
+			$ls->param('completing_the_unsubscription') eq 'click_link_on_confirm_screen'
+			&& $process == 1
+			){ 
+				$skip_email_valid_check = 1; 
+		}	
+		undef $ls;
+	}			
+						
     if ( $process == 1 ) {
 
+		
         my $email = lc_email( strip( xss_filter( scalar $q->param('email') ) ) );
         
 		if($skip_email_valid_check == 1){
@@ -1734,9 +1757,9 @@ sub unsubscribe {
             $args->{-email}    = $data->{email};
 			$args->{-source}   = $data->{data}->{source};
             
-            require DADA::MailingList::Settings;
-            my $ls = DADA::MailingList::Settings->new( { -list => $data->{data}->{list} } );
-
+		    require DADA::MailingList::Settings;
+		    my $ls = DADA::MailingList::Settings->new( { -list => $data->{data}->{list} } );
+			
             if ( $ls->param('private_list') == 1 ) {
                 return $self->pl_unsubscription_request($args);
             }
@@ -1749,11 +1772,15 @@ sub unsubscribe {
         # Process is 0. 
     }
     
-    my $report_abuse_token = $self->_create_report_abuse_token( { -unsub_token => $token } ); 
+    my $report_abuse_token = $self->_create_report_abuse_token( 
+		{ 
+			-unsub_token => $token 
+		} 
+	); 
 
 	
 	
-	# This shuld really never get to the point, if we're one click unsubscribing via an email header, 
+	# This should really never get to the point, if we're one click unsubscribing via an email header, 
 	# But...:
 	my $auto_attempted = $q->param('auto_attempted') || 0; 
     my $one_click_unsubscribe_enabled = 0; 
@@ -1762,7 +1789,9 @@ sub unsubscribe {
         require DADA::MailingList::Settings;
         my $ls = DADA::MailingList::Settings->new( { -list => $data->{data}->{list} } );
 		
-		if(!defined($token_context) && $ls->param('one_click_unsubscribe') == 1 ){ 
+		if(!defined($token_context) 
+			&& $ls->param('completing_the_unsubscription') eq 'one_click_unsubscribe_no_confirm_screen' 
+		){ 
 			$one_click_unsubscribe_enabled = 1;
 		}
 		elsif (
@@ -1786,14 +1815,14 @@ sub unsubscribe {
             -with   => 'list',
             -expr   => 1,
             -vars   => {
-                token              => $token,
-                process            => $process,
-                is_valid           => $is_valid,
-                list_exists        => $list_exists,
-                email_hint         => $data->{data}->{email_hint},
-				source             => $data->{data}->{source},
-                report_abuse_token => $report_abuse_token, 
-				auto_attempted     => $auto_attempted, 
+                token                         => $token,
+                process                       => $process,
+                is_valid                      => $is_valid,
+                list_exists                   => $list_exists,
+                email_hint                    => $data->{data}->{email_hint},
+				source                        => $data->{data}->{source},
+                report_abuse_token            => $report_abuse_token, 
+				auto_attempted                => $auto_attempted, 
 				one_click_unsubscribe_enabled => $one_click_unsubscribe_enabled,
             },
             ( $list_exists == 1 )
@@ -1850,7 +1879,7 @@ sub unsubscribe_email_lookup {
 	else { 
 		require DADA::MailingList::Settings; 
 		my $ls = DADA::MailingList::Settings->new( { -list =>  $data->{data}->{list} } );
-		if($ls->param('one_click_unsubscribe') != 1){ 
+		if($ls->param('completing_the_unsubscription') ne 'one_click_unsubscribe_no_confirm_screen'){ 
 			$status = 0; 
 		}
 	}

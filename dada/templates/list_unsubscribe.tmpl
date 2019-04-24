@@ -16,33 +16,34 @@
 	<div id="unsubscription_form">
 		<div class="row">
 			<div class="small-12 medium-8 large-8 medium-centered large-centered columns">
-	
+				
 				<!-- tmpl_if expr="((process == 1) && (is_valid == 0))" --> 
-				<div class="alert-box info radius"> 
-				<!-- tmpl_if list_settings.private_list --> 
-			    <p><strong>Problems with Unsubscription Request</strong>	
-				<!-- tmpl_else --> 
-				    <p><strong>Problems with Unsubscription</strong>
-				<!-- /tmpl_if --> 
+					<div class="alert-box info radius"> 
+					
+						<!-- tmpl_if list_settings.private_list --> 
+					   	 	<p><strong>Problems with Unsubscription Request</strong>	
+						<!-- tmpl_else --> 
+						    <p><strong>Problems with Unsubscription</strong>
+						<!-- /tmpl_if --> 
 	
-					<p>
-						Please make sure you're entering the correct email address that is subscribed, below. 
-					</p>
+						<p>
+							Please make sure you're entering the correct email address that is subscribed, below. 
+						</p>
 	
-					<p>To be manually removed from this mailing list, please email the List Owner at:</p> 
-					<p class="text-center">
-						<strong>
-							<a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->?Subject=Unsubscription%20Request%20from%20<!-- tmpl_var list_settings.list_name escape=URL -->">
-								<!-- tmpl_var list_settings.list_owner_email -->
-							</a>
-						</strong>
-					</p>	
-				</div>  
+						<p>To be manually removed from this mailing list, please email the List Owner at:</p> 
+						<p class="text-center">
+							<strong>
+								<a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->?Subject=Unsubscription%20Request%20from%20<!-- tmpl_var list_settings.list_name escape=URL -->">
+									<!-- tmpl_var list_settings.list_owner_email -->
+								</a>
+							</strong>
+						</p>	
+					</div>  
 
 				<!-- /tmpl_if -->
-
-
-				<div class="panel"> 
+					<div class="panel"> 
+					
+				<!-- tmpl_if expr="((list_settings.completing_the_unsubscription eq 'fill_out_form_on_confirm_screen') || (list_settings.completing_the_unsubscription eq 'one_click_unsubscribe_no_confirm_screen'))" -->		
 					<div class="row">
 						<div class="small-12 columns">
 							<!-- tmpl_if list_settings.unsub_show_email_hint --> 
@@ -52,43 +53,56 @@
 							<!-- /tmpl_if -->
 						</div>
 					</div> 
-					<div class="row">
-						<div class="small-12 columns">				
+				<!-- /tmpl_if --> 
+				<div class="row">
+					<div class="small-12 columns">		
+						<!-- tmpl_if expr="((list_settings.completing_the_unsubscription eq 'fill_out_form_on_confirm_screen') || (list_settings.completing_the_unsubscription eq 'one_click_unsubscribe_no_confirm_screen'))" -->		
 							<label for="email">
 								Please enter your email address that is currently subscribed below:
 							</label> 
-						</div>
-					</div> 
+						<!-- tmpl_else -->
+							<label id="unsub_button">
+								Click the button below to unsubscribe:
+							</label>
+						<!-- /tmpl_if -->
+					</div>
+				</div> 
+				
+					
 					<div class="row">
 						<div class="small-12 columns">
 							<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" id="unsubscription_form" > 
 							
 								<input type="hidden" id="program_url"            name="program_url" value="<!-- tmpl_var PROGRAM_URL -->" >
-								<input type="hidden" id="flavor"                name="flavor" value="u" >
-								<input type="hidden" id="token"                 name="token" value="<!-- tmpl_var token  escape="HTML" -->" > 
-								<input type="hidden" id="process"               name="process" value="1" > 
-								<input type="hidden" id="auto_attempted"        name="auto_attempted" value="<!-- tmpl_var auto_attempted escape="HTML" -->">
+								<input type="hidden" id="flavor"                 name="flavor" value="u" >
+								<input type="hidden" id="token"                  name="token" value="<!-- tmpl_var token  escape="HTML" -->" > 
+								<input type="hidden" id="process"                name="process" value="1" > 
+								<input type="hidden" id="auto_attempted"         name="auto_attempted" value="<!-- tmpl_var auto_attempted escape="HTML" -->">
 								<input 
 									type="hidden" 
 									id="one_click_unsubscribe" 
 									name="one_click_unsubscribe" 
 									value="<!-- tmpl_var one_click_unsubscribe_enabled -->"
 								>
-								<input type="text"   id="email"   name="email" value="<!-- tmpl_var email escape="HTML" -->">
+								<!-- tmpl_if expr="((list_settings.completing_the_unsubscription eq 'fill_out_form_on_confirm_screen') || (list_settings.completing_the_unsubscription eq 'one_click_unsubscribe_no_confirm_screen'))" -->		
+									<input type="text"   id="email"   name="email" value="<!-- tmpl_var email escape="HTML" -->">
+								<!-- /tmpl_if -->
+							</div>
 						</div>
-					</div>
-					<div class="row">
-						<div class="small-12 columns">				
-							<!-- tmpl_if list_settings.private_list --> 
-								<input type="submit" value="Request Unsubscription" class="success button"> 
-							<!-- tmpl_else --> 
-								<input type="submit" value="Unsubscribe" class="success large button expand">
-							<!-- /tmpl_if -->
-						</div> 
-					</div>
-				</form> 
+						<div class="row">
+							<div class="small-12 columns">				
+								<!-- tmpl_if list_settings.private_list --> 
+									<input type="submit" value="Request Unsubscription" class="success button" id="unsub_button"> 
+								<!-- tmpl_else --> 
+									<input type="submit" value="Unsubscribe" class="success large button expand" id="unsub_button">
+								<!-- /tmpl_if -->
+							</div> 
+						</div>
+					</form> 
 
 				</div> 
+				
+				
 			</div>
 		</div> 
 	

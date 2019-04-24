@@ -3607,7 +3607,7 @@ sub list_options {
                 values => [qw(list list_owner alt)],
             }
           );
-
+		    
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'list_options_screen.tmpl',
@@ -3701,7 +3701,8 @@ sub list_options {
                     alt_url_unsub_success                                   => '',
                     alt_url_unsub_success_w_qs                              => 0,
                     unsub_show_email_hint                                   => 0,
-                    one_click_unsubscribe                                   => 0,
+                    # one_click_unsubscribe                                   => 0,
+					completing_the_unsubscription                           => undef, 
                     enable_subscription_approval_step                       => 0,
                     enable_mass_subscribe                                   => 0,
                     enable_mass_subscribe_only_w_root_login                 => 0,
