@@ -9,42 +9,92 @@
 
 =head3 Google+ Support Dropped
 
-Google+ has been effectively shuttered, so we've removed it from the app. 
+Google+ has been effectively shuttered, so we've removed support for it from the app. 
 
 =head2 Features
 
-=head3 One-Click Unsubscription via email headers (per RFC 8058)
+=head3 Enhanced One-Click Unsubscription support via Email Headers (per RFC 8058)
 
-Dada Mail has supported one-click unsubscribe in the unsubscribe link in the email message itself (via a button), 
-as well as in the C<List-Unsubscribe> email header. 
+Dada Mail has supported "one-click unsubscribe" when a user clicsk one of the unsubscribe buttons/links in the mailing list message, 
+as well as via the C<List-Unsubscribe> email header. The latter of which isn't shown directly to a subscriber, 
+but may be used by their mail reader to provide a mechanism to unsubscribe through it's own UI. 
 
-There's a problem though: 
-sometimes the unsubscription link in the header is visted by anti-virus software which, after visiting it, 
-will unsubscribe the user without any action from the subscriber themselves. 
+There's a problem though with this C<List-Unsubscribe> header: 
+
+Sometimes the unsubscription link in the header is visted by anti-virus software which, 
+after visiting the link will unsubscribe the user without any direct action from the subscriber themselves! 
+This leads to all sort of administration problems, as list owners are losing subscribers who would like very much to stay on their mailing list. 
 
 Dada Mail now supports one-click unsubscribe via the C<List-Unsubscribe> header without this problem happening. 
-This is done by following RFC 8058, which provides a mechanism to utilize one-click unsubscribe,
-without having this problem. 
+This is done by following RFC 8058, which provides a mechanism to utilize one-click unsubscribe via the headers, but stops the scenario described above from happening. 
+ 
 Any email reader that supports RFC 8058 will allow your subscribers one-click unsubscribe. 
+Any mail reader that doesn't support this mechanism will still be able to use the fallback, 
+email-only option, also located in the mail header. Either way, incorrect unsubscriptions throught his mechanism shouldn't happen anymore. 
+In our testing, we've found that most email readers actually only support emailing the list owner, 
+when a user clicks the email reader-provided unsubscribe link. 
 
-We found that this change is really important, and suggest anyone using Dada Mail to upgrade! 
-This problem seems particularly wide-reaching. 
+=head4 Enhanced List-Unsubscribe header email-only option
 
-=head4 List-Unsubscribe header toggle-able
+If the above mechanism isn't supported by the mail reader, there's a good chance that the fallback is. That fallback being: the mail reader sends an actual email message to the list owner. This email message option has also now been made a bit more useful. In past versions of Dada Mail, an email would be sent to the list owner, telling them the address that wants to be removed as well as the list they should be removed from. 
+It was up to the list owner to go through the list control panel to remove this address. 
 
-If one decides instead to not have the C<List-Unsubscribe> header available, there is a new option to 
-not utilize it. This option is available in the list control panel under, B<Mass Mailing: Options: Headers:> I<Use, "List-Unsubscribe" headers>
+Starting with v11.3.0, the unsubscription link itself needed to unsubscribe the address from the list 
+will be embedded within the email message the list owner receives, 
+so all they have to do now is click that link. 
+
+=head4 List-Unsubscribe header can now be enabled/disabled
+
+If one decides instead to not have the C<List-Unsubscribe> header available at all, there is a new option to 
+not enable/disable it from being used. 
+This option is available in the list control panel under, 
+
+B<Mass Mailing: Options: Headers:> I<Use, "List-Unsubscribe" headers>
 
 =head4 References: 
 
 L<https://tools.ietf.org/html/rfc8058>
+
+=head3 New Options to Complete Unsubscriptions
+
+To coincide with the enhancements to the C<List-Unsubscribe> header, we've expanded the options on what happens when a subscriber clicks the unsubscription buttons/links in mailing list messages themselves.
+
+The three options are now: 
+
+=head4 One-Click Unsubscription
+
+Once a subscriber clicks on a unsubscription link/button in the mailing list message, they'll be unsubscribed right away, with no 
+further action by the user. Super convenient for the subscriber! 
+And one we suggest, especially since the enhancements to the C<List-Unsubscribe> header
+have been made and the problem with anti-virus software getting in the way have now been worked out. 
+
+One issue with this option though is that a user may inadvertantly click the unsubscription button/link, or forward the mailing list message to 
+someone else, that then clicks that same button/link. Yikes!
+
+=head4 Click a link/button in Dada Mail
+
+Once a subscriber clicks on a unsubscription link/button in the mailing list message, 
+they will be presented with a screen, that just asks them to click a link/button to complete the unsubscription. 
+This method may help with people inadvertantly clicking the unsubscribe link/buttons in the mailing list message by mistake. It's the option selected by default. This option is also the newest option added. 
+
+=head3 Fill in the email address, the submit a form
+
+Once a subscriber clicks on a unsubscription link/button in the mailing list message, they will be present with a screen with a form in it, that 
+just asks them to fill in their email address to complete the unsubscription. 
+
+This option is a good one, if you're running a discussion mailing list where email messages are commonly replied to/forwarded to other members.
+ 
+The unsubscription buttons/links embedded in the message may be clicked upon by a different user than the one that received the message, and this simple
+form can help stop unsubscriptoions done inadvertantly. 
+
+All these options work ndependently to the "one-click unsubscribe" support through the C<List-Unsubsribe> header, which doesn't requires (and cannot have!) any user intervention. 
 
 =head3 Bounce Handler Enhancements
 
 =head4 IMAP Support Added
 
 Set up the Bounce Handler to connect to your Bounce Handler Email address via IMAP. 
-This additional option (along with POP3) gives you more flexibility on how to connect 
+This additional option (along with original option of connecting via POP3) gives you more flexibility on how to connect 
 to your Bounce Handler Email address to help fit more email hosting scenarios. 
 For example, 
 those who are using Microsoft Exchange to administrate email may find better success using IMAP,
@@ -52,10 +102,13 @@ rather than POP3.
 
 Option to select B<IMAP> is available in the Dada Mail Installer. 
 
+IMAP support requires that you separately install the C<Net::IMAP::Simple> CPAN Perl module, 
+or install/upgrade the C<Bundle::DadaMail> CPAN Perl Module. 
+
 =head3 Instagram Support Added
 
-Add the link to your Instagram profile in your Mailing List Information, the link will be shown in your
-mailing list messages, along with Facebook, Twitter, Youtube, and website links. 
+Add a link to your Instagram profile in your Mailing List Information, the link will be shown in your
+mailing list messages, along with Facebook, Twitter, Youtube, and your website links. 
 
 =head1 11.2.9
 
