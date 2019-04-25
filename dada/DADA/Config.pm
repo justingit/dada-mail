@@ -1707,7 +1707,7 @@ $MAIL_VERP_SEPARATOR //= '-';
 
 
 $VERSION = 11.3.0;
-$VER     = '11.3.0 Stable 04/20/19';
+$VER     = '11.3.0 Stable 04/25/19';
 
 #
 #
