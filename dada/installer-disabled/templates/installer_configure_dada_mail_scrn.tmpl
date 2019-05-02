@@ -714,21 +714,17 @@
 			Bounce Handler
 		</label>
 
+
+
 		<div id="bounce_handler_options">
 			<div class="panel">
+				
 				<div id="bounce_handler_configuration_help" class="alert-box info radius">
 					The Bounce Handler requires a new POP3 email account to be created, in order to work correctly. 
 					Make sure the email address isn't used for any other purpose, except for the bounce handler. 
 					See the <a href="<!-- tmpl_var DOC_URL -->/bounce_handler.html"  target="_blank">documentation for this plugin</a> for additional information. 
 				</div> 
-				
-				
-				
-				
-					
-						
-				
-				
+
 				<div class="row">
 					<div class="large-5 medium-5 columns">
 						<label 
@@ -737,261 +733,248 @@
 						>
 							Bounce Handler Email Address
 						</label> 
+					</div>					
+					<div class="large-7 medium-7 columns">
+						<input 
+							type="text" 
+							name="bounce_handler_Address" 
+							id="bounce_handler_Address" 
+							value=""
+						>
 					</div>
-					
-					
-								<div class="large-7 medium-7 columns">
+				</div>
+		
+				<div class="row">
+					<div class="large-5 medium-5 columns">
+						<label 
+							for="bounce_handler_Server"
+							class="medium-only-text-right large-only-text-right"
+						>
+							Mail Server
+						</label>
+					</div>
+					<div class="large-7 medium-7 columns">
+						<input 
+							type="text" 
+							name="bounce_handler_Server" 
+							id="bounce_handler_Server" 
+							value=""
+						>
+					</div>
+				</div>
+		
+				<div class="row">
+					<div class="large-5 medium-5 columns">
+						<label 
+							for="bounce_handler_Username"
+							class="medium-only-text-right large-only-text-right"
+						>
+							Username
+						</label>
+					</div>
+					<div class="large-7 medium-7 columns">
+						<input 
+							type="text" 
+							name="bounce_handler_Username" 
+							id="bounce_handler_Username" 
+							value=""
+						>
+					</div>
+				</div>
+		
+				<div class="row">
+					<div class="large-5 medium-5 columns">
+						<label 
+							for="bounce_handler_Password"
+							class="medium-only-text-right large-only-text-right"
+						>
+							Password
+						</label>
+					</div>
+					<div class="large-7 medium-7 columns">
+						<input 
+							type="text" 
+							name="bounce_handler_Password" 
+							id="bounce_handler_Password" 
+							value=""
+						>
+					</div>
+				</div>	
+		
+				<!-- tmpl_unless can_use_Net_IMAP_Simple -->
+					<div class="row">
+						<div class="large-5 medium-5 columns">		
+						</div>
+						<div class="large-7 medium-7 columns">
+							<div class="alert-box info radius"> 
+								<code>Net::IMAP::Simple</code> will need to be installed 
+								to connect via <strong>IMAP</strong>.
+							</div>
+						</div>
+					</div>
+				<!-- /tmpl_unless -->
+		
+				<div class="row">
+			
+					<div class="large-5 medium-5 columns">
+						<label 
+							class="medium-only-text-right large-only-text-right"
+						>
+							Connect via
+						</label>
+					</div>
+			
+					<div class="large-7 medium-7 columns">
+						<div class="row">
+							<div class="small-12 columns">
+								<label>
 									<input 
-										type="text" 
-										name="bounce_handler_Address" 
-										id="bounce_handler_Address" 
-										value=""
-									>
-								</div>
+										type="radio" 
+										class="bounce_handler_Connection_Protocol"
+										name="bounce_handler_Connection_Protocol" 
+										id="bounce_handler_Connection_Protocol_POP3" 
+										value="POP3" 	
+										checked="checked"
+									>								
+									POP3
+								</label>
 							</div>
-							
-								<div class="row">
-									<div class="large-5 medium-5 columns">
-										<label 
-											for="bounce_handler_Server"
-											class="medium-only-text-right large-only-text-right"
-											>
-											Mail Server
-										</label>
-									</div>
-									<div class="large-7 medium-7 columns">
-										<input 
-										type="text" 
-										name="bounce_handler_Server" 
-										id="bounce_handler_Server" 
-										value=""
-									>
-								</div>
-							</div>
-							<div class="row">
-								<div class="large-5 medium-5 columns">
-									<label 
-										for="bounce_handler_Username"
-										class="medium-only-text-right large-only-text-right"
-									>
-										Username
-									</label>
-								</div>
-								<div class="large-7 medium-7 columns">
-									<input 
-										type="text" 
-										name="bounce_handler_Username" 
-										id="bounce_handler_Username" 
-										value=""
-									>
-								</div>
-							</div>
-							<div class="row">
-								<div class="large-5 medium-5 columns">
-									<label 
-										for="bounce_handler_Password"
-										class="medium-only-text-right large-only-text-right"
-									>
-										Password
-									</label>
-								</div>
-								<div class="large-7 medium-7 columns">
-									<input 
-										type="text" 
-										name="bounce_handler_Password" 
-										id="bounce_handler_Password" 
-										value=""
-									>
-								</div>
-							</div>	
-							
-							<!-- tmpl_unless can_use_Net_IMAP_Simple -->
-								<div class="row">
-									<div class="large-5 medium-5 columns">		
-									</div>
-									<div class="large-7 medium-7 columns">
-										<div class="alert-box info radius"> 
-											<code>Net::IMAP::Simple</code> will need to be installed 
-											to connect via <strong>IMAP</strong>.
-										</div>
-									</div>
-								</div>
-							<!-- /tmpl_unless -->
-							
-							<div class="row">
-								<div class="large-5 medium-5 columns">
-									<label 
-										class="medium-only-text-right large-only-text-right"
-									>
-										Connect via
-									</label>
-								</div>
-								<div class="large-7 medium-7 columns">
-				
-										<div class="row">
-											<div class="small-12 columns">
-												<label>
-													<input 
-														type="radio" 
-														class="bounce_handler_Connection_Protocol"
-														name="bounce_handler_Connection_Protocol" 
-														id="bounce_handler_Connection_Protocol_POP3" 
-														value="POP3" 	
-														checked="checked"
-													>								
-													POP3
-												</label>
-											</div>
-										</div>
-					
-										
-											<div class="row">
-												<div class="small-12 columns">
-													<label>
-														<input 
-															type="radio" 
-															class="bounce_handler_Connection_Protocol"
-															name="bounce_handler_Connection_Protocol" 
-															id="bounce_handler_Connection_Protocol_IMAP" 
-															value="IMAP" 	
-														>								
-														IMAP 
-													</label>
-											</div>	 
-											</div>
-							
-								</div> 
-							</div>
-							
-							
-							<div class="row">
-								<div class="large-5 medium-5 columns">
-									<label 
-										for="bounce_handler_Port"
-										class="medium-only-text-right large-only-text-right"
-									>
-										Port
-									</label> 
-									</div>
-									<div class="large-7 medium-7 columns">
-									<input type="text" name="bounce_handler_Port" id="bounce_handler_Port" value="">
-								</div>
-							</div>
-							
-							
-							
-							
-
+						</div>
 
 				
+						<div class="row">
+							<div class="small-12 columns">
+								<label>
+									<input 
+										type="radio" 
+										class="bounce_handler_Connection_Protocol"
+										name="bounce_handler_Connection_Protocol" 
+										id="bounce_handler_Connection_Protocol_IMAP" 
+										value="IMAP" 	
+									>								
+									IMAP 
+								</label>
+							</div>	 
+						</div>		
+					</div>
+				</div>
+		
+		
+				<div class="row">
+					<div class="large-5 medium-5 columns">
+						<label 
+							for="bounce_handler_Port"
+							class="medium-only-text-right large-only-text-right"
+						>
+							Port
+						</label> 
+					</div>
+					<div class="large-7 medium-7 columns">
+						<input 
+							type="text" 
+							name="bounce_handler_Port" 
+							id="bounce_handler_Port" 
+							value=""
+						>
+					</div>
+				</div>
 						
-						<div class="panel">
-							<a href="#" class="toggleDivs" data-target="additional_bounce_handler_configuration">
-								+/-
-								Additional Configuration Options
-							</a>
-							<div id="additional_bounce_handler_configuration"> 
-								
-								
-								
-								
-								
-								<div class="row">
-									<div class="small-12 columns">
-										<label for="bounce_handler_USESSL">
-											<input type="checkbox" name="bounce_handler_USESSL" id="bounce_handler_USESSL" value="1">
-											Use Secure Sockets Layer  
-										</label>
-									</div>
-								</div>
-					
-								<div class="row">
-									<div class="small-1 columns">
-									</div>
-									<div class="small-11 columns">
-										<label for="bounce_handler_starttls">
-											<input type="checkbox" name="bounce_handler_starttls" id="bounce_handler_starttls" value="1">
-											Upgrade from an insecure connection
-										</label>
-									</div>
-								</div>
-					
-					
-					
-								<div class="row">
-									<div class="small-1 columns">
-									</div>
 						
-									<div class="small-11 columns">
+				<div class="panel">
+					
+					<a href="#" class="toggleDivs" data-target="additional_bounce_handler_configuration">
+						+/- Additional Configuration Options
+					</a>
+					
+					<div id="additional_bounce_handler_configuration"> 
 						
-										<label for="bounce_handler_SSL_verify_mode">
-											<input type="checkbox" name="bounce_handler_SSL_verify_mode" id="bounce_handler_SSL_verify_mode" value="1">
-											Verify SSL Certificate (POP3-only)
-										</label>
-									</div>
-								</div>
-					
-					
-								<div class="row">
-									<div class="small-12 columns">
-										<label for="bounce_handler_AUTH_MODE">
-											POP3 Authentication Type
-										</label>
-										<select name="bounce_handler_AUTH_MODE" id="bounce_handler_AUTH_MODE">
-											<option value="POP">POP</option> 
-											<option value="APOP">APOP</option> 
-										</select> 
-									</div>
-								</div>
-								
-								
-								<div class="row">
-									<div class="small-12 columns">
-										<label for="bounce_handler_Enable_POP3_File_Locking">
-											<input type="checkbox" name="bounce_handler_Enable_POP3_File_Locking" id="bounce_handler_Enable_POP3_File_Locking" value="1">
-												Enable POP3 File Locking
-											</label>
-										</div>
-									</div>
-									
-									<div class="row">
-										<div class="small-12 columns">
-											<label for="bounce_handler_MessagesAtOnce">
-												# Messages to Check at Once
-											</label>
-											<select name="bounce_handler_MessagesAtOnce" id="bounce_handler_MessagesAtOnce">
-												<option value="1">1</option> 
-												<option value="5">5</option> 
-												<option value="10">10</option> 
-												<option value="25">25</option> 
-												<option value="50">50</option> 
-												<option value="100">100</option> 
-												<option value="150">150</option> 
-												<option value="200">200</option> 
-											</select> 
-										</div>
-									</div>
-									
-								</div> 
-								
-								
-								
-								
-								
-							</div> 
+						<div class="row">
+							<div class="small-12 columns">
+								<label for="bounce_handler_USESSL">
+									<input type="checkbox" name="bounce_handler_USESSL" id="bounce_handler_USESSL" value="1">
+									Use Secure Sockets Layer  
+								</label>
+							</div>
+						</div>
+			
+						<div class="row">
+							<div class="small-1 columns">
+							</div>
+							<div class="small-11 columns">
+								<label for="bounce_handler_starttls">
+									<input type="checkbox" name="bounce_handler_starttls" id="bounce_handler_starttls" value="1">
+									Upgrade from an insecure connection
+								</label>
+							</div>
+						</div>
+			
+						<div class="row">
+							<div class="small-1 columns">
+							</div>
+				
+							<div class="small-11 columns">
+				
+								<label for="bounce_handler_SSL_verify_mode">
+									<input type="checkbox" name="bounce_handler_SSL_verify_mode" id="bounce_handler_SSL_verify_mode" value="1">
+									Verify SSL Certificate (POP3-only)
+								</label>
+							</div>
+						</div>
+			
+			
+						<div class="row">
+							<div class="small-12 columns">
+								<label for="bounce_handler_AUTH_MODE">
+									POP3 Authentication Type
+								</label>
+								<select name="bounce_handler_AUTH_MODE" id="bounce_handler_AUTH_MODE">
+									<option value="POP">POP</option> 
+									<option value="APOP">APOP</option> 
+								</select> 
+							</div>
 						</div>
 						
-						
-						<input 
-							type="button" 
-							class="processing small button expand test_bounce_handler_pop3_connection" 
-							value="Test Bounce Handler Connection"
-						>
-						<div id="test_bounce_handler_pop3_connection_results" class="alert-box info radius"></div>
-								
-								
-			</div> 
+						<div class="row">
+							<div class="small-12 columns">
+								<label for="bounce_handler_Enable_POP3_File_Locking">
+									<input type="checkbox" name="bounce_handler_Enable_POP3_File_Locking" id="bounce_handler_Enable_POP3_File_Locking" value="1">
+									Enable POP3 File Locking
+								</label>
+							</div>
+						</div>
+							
+						<div class="row">
+							<div class="small-12 columns">
+								<label for="bounce_handler_MessagesAtOnce">
+									# Messages to Check at Once
+								</label>
+								<select name="bounce_handler_MessagesAtOnce" id="bounce_handler_MessagesAtOnce">
+									<option value="1">1</option> 
+									<option value="5">5</option> 
+									<option value="10">10</option> 
+									<option value="25">25</option> 
+									<option value="50">50</option> 
+									<option value="100">100</option> 
+									<option value="150">150</option> 
+									<option value="200">200</option> 
+								</select> 
+							</div>
+						</div>
+							
+					</div> 
+				</div>
+				
+				
+				<input 
+					type="button" 
+					class="processing small button expand test_bounce_handler_pop3_connection" 
+					value="Test Bounce Handler Connection"
+				>
+				<div id="test_bounce_handler_pop3_connection_results" class="alert-box info radius">
+				</div>		
+			</div>
 		</div> 
+	
 
 		<label for="install_bridge">
 			<input 
