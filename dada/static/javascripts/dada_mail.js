@@ -3798,29 +3798,37 @@ function message_email_report_table(type, target_div) {
 
 	console.log('type:' + type + ' target_div:' + target_div);
 
-	$("#" + target_div + "_loading").html(loading_str);
-	var request = $.ajax({
-		url: $("#s_program").val(),
-		type: "POST",
-		cache: false,
-		data: {
-			flavor: 'plugins',
-			plugin: 'tracker',
-			prm: 'message_email_report_table',
-			mid: $('#tracker_message_id').val(),
-			type: type
-		},
-		dataType: "html"
-	});
-	request.done(function(content) {
+	if (
+		   $("#" + target_div + "_loading").length
+		&& $("#" + target_div).length
+	){
+		$("#" + target_div + "_loading").html(loading_str);	
+		var request = $.ajax({
+			url: $("#s_program").val(),
+			type: "POST",
+			cache: false,
+			data: {
+				flavor: 'plugins',
+				plugin: 'tracker',
+				prm: 'message_email_report_table',
+				mid: $('#tracker_message_id').val(),
+				type: type
+			},
+			dataType: "html"
+		});
+		request.done(function(content) {
 
-		$("#" + target_div).hide();
-		$("#" + target_div).html(content);
-		$("#" + target_div).show('fade');
+			$("#" + target_div).hide();
+			$("#" + target_div).html(content);
+			$("#" + target_div).show('fade');
 
-		$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
-		//  $("#sortable_table_" + type).tablesorter();
-	});
+			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
+			//  $("#sortable_table_" + type).tablesorter();
+		});
+	}
+	else { 
+		console.log('did not find: ' + target_div);
+	}
 }
 
 function tracker_message_email_activity_listing_table(target_div) {
@@ -3861,43 +3869,52 @@ function email_breakdown_chart(type, label, target_div) {
 
 	console.log('type:' + type + ' label: ' + label + ' target_div:' + target_div);
 
-	$("#" + target_div + "_loading").html(loading_str);
-	$.ajax({
-		url: $("#s_program_url").val(),
-		dataType: "json",
-		data: {
-			flavor: 'plugins',
-			plugin: 'tracker',
-			prm: 'email_stats_json',
-			mid: $('#tracker_message_id').val(),
-			type: type,
-			label: label
-		},
-		async: true,
-		success: function(jsonData) {
-			var data = new google.visualization.DataTable(jsonData);
-			var chart = new google.visualization.PieChart(document.getElementById(target_div));
-			var options = {
-				width: $("#" + target_div).width(),
-				height: ($("#" + target_div).width()/1.68).toFixed(0),
-				chartArea: {
-					left: 20,
-					top: 20,
-					width: "90%",
-					height: "90%"
-				},
-				pieSliceTextStyle: {
-					color: '#FFFFFF'
-				},
-				colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
-				is3D: true
-			};
-			chart.draw(data, options);
-			trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
+	if (
+		   $("#" + target_div + "_loading").length
+		&& $("#" + target_div).length
+	){
+	
+		$("#" + target_div + "_loading").html(loading_str);
+		$.ajax({
+			url: $("#s_program_url").val(),
+			dataType: "json",
+			data: {
+				flavor: 'plugins',
+				plugin: 'tracker',
+				prm: 'email_stats_json',
+				mid: $('#tracker_message_id').val(),
+				type: type,
+				label: label
+			},
+			async: true,
+			success: function(jsonData) {
+				var data = new google.visualization.DataTable(jsonData);
+				var chart = new google.visualization.PieChart(document.getElementById(target_div));
+				var options = {
+					width: $("#" + target_div).width(),
+					height: ($("#" + target_div).width()/1.68).toFixed(0),
+					chartArea: {
+						left: 20,
+						top: 20,
+						width: "90%",
+						height: "90%"
+					},
+					pieSliceTextStyle: {
+						color: '#FFFFFF'
+					},
+					colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
+					is3D: true
+				};
+				chart.draw(data, options);
+				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
 			
-			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
-		}
-	});
+				$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
+			}
+		});
+	}
+	else { 
+		console.log('did not find: ' + target_div);
+	}
 }
 
 
@@ -3906,47 +3923,58 @@ function tracker_the_basics_piechart(type, label, target_div) {
 
 	console.log('type:' + type + ' label: ' + label + ' target_div:' + target_div);
 
-	$("#" + target_div + "_loading").html(loading_str);
-	$.ajax({
-		url: $("#s_program_url").val(),
-		dataType: "json",
-		data: {
-			flavor: 'plugins',
-			plugin: 'tracker',
-			prm: 'the_basics_piechart_json',
-			mid: $('#tracker_message_id').val(),
-			type: type,
-			label: label
-		},
-		async: true,
-		success: function(jsonData) {
-			var data = new google.visualization.DataTable(jsonData);
-			var chart = new google.visualization.PieChart(document.getElementById(target_div));
-			var options = {
-				chartArea: {
-					left: 10,
-					top: 10,
-					width: "90%",
-					height: "90%"
-				},
-				title: $('#' + target_div).attr("data-title"),
-				pieSliceTextStyle: {
-					color: '#FFFFFF'
-				},
-				colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
-				is3D: true, 
-				width: $("#" + target_div).width(),
-				height: ($("#" + target_div).width()/1.68).toFixed(0),
-				target_div: target_div
-			};
+	if (
+		   $("#" + target_div + "_loading").length
+		&& $("#" + target_div).length
+	){
+	
+		$("#" + target_div + "_loading").html(loading_str);
+		$.ajax({
+			url: $("#s_program_url").val(),
+			dataType: "json",
+			data: {
+				flavor: 'plugins',
+				plugin: 'tracker',
+				prm: 'the_basics_piechart_json',
+				mid: $('#tracker_message_id').val(),
+				type: type,
+				label: label
+			},
+			async: true,
+			success: function(jsonData) {
+				var data = new google.visualization.DataTable(jsonData);
+				var chart = new google.visualization.PieChart(document.getElementById(target_div));
+				var options = {
+					chartArea: {
+						left: 10,
+						top: 10,
+						width: "90%",
+						height: "90%"
+					},
+					title: $('#' + target_div).attr("data-title"),
+					pieSliceTextStyle: {
+						color: '#FFFFFF'
+					},
+					colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
+					is3D: true, 
+					width: $("#" + target_div).width(),
+					height: ($("#" + target_div).width()/1.68).toFixed(0),
+					target_div: target_div
+				};
 			
-			chart.draw(data, options);
-			trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
+				chart.draw(data, options);
+				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
 			
-			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
+				$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 			
-		}
-	});
+			}
+		});
+		
+	}
+	else { 
+		console.log('did not find: ' + target_div);
+	}
+	
 }
 
 

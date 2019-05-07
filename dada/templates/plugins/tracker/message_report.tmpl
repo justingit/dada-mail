@@ -53,21 +53,33 @@
 	<input type="hidden" id="can_use_country_geoip_data" name="can_use_country_geoip_data" value="<!-- tmpl_var can_use_country_geoip_data -->" >
 </form> 
 
-<div class="row">
-	<div class="large-4 medium-4 columns">
-		<div id="the_basics_bounces" data-title="Bounces" data-label="Bounces"></div>
-		<div id="the_basics_bounces_loading"></div>
+<!-- tmpl_if list_settings.tracker_track_email -->
+	<div class="row">
+		<div class="large-4 medium-4 columns">
+			<div id="the_basics_bounces" data-title="Bounces" data-label="Bounces"></div>
+			<div id="the_basics_bounces_loading"></div>
+		</div>
+		<div class="large-4 medium-4 columns">	
+			<div id="the_basics_opens" data-title="Opens" data-label="Opens"></div>
+			<div id="the_basics_opens_loading"></div>
+		</div>
+		<div class="large-4 medium-4 columns">
+				<div id="the_basics_unsubscribes" data-title="Unsubscribes" data-label="Unsubscribes"></div>
+				<div id="the_basics_unsubscribes_loading"></div>
+		</div>
 	</div>
-	<div class="large-4 medium-4 columns">	
-		<div id="the_basics_opens" data-title="Opens" data-label="Opens"></div>
-		<div id="the_basics_opens_loading"></div>
-	</div>
-	<div class="large-4 medium-4 columns">
-			<div id="the_basics_unsubscribes" data-title="Unsubscribes" data-label="Unsubscribes"></div>
-			<div id="the_basics_unsubscribes_loading"></div>
-	</div>
-</div>
-		
+<!-- tmpl_else -->
+	<div class="row">
+		<div class="large-4 medium-6 columns">
+			<div id="the_basics_bounces" data-title="Bounces" data-label="Bounces"></div>
+			<div id="the_basics_bounces_loading"></div>
+		</div>
+		<div class="large-4 medium-6 columns">
+				<div id="the_basics_unsubscribes" data-title="Unsubscribes" data-label="Unsubscribes"></div>
+				<div id="the_basics_unsubscribes_loading"></div>
+		</div>
+	</div>	
+<!-- /tmpl_if -->
 		
 <table  style="width:100%">
 	<tr> 
@@ -103,7 +115,7 @@
 			<a href="#opens">
 				Total: <!-- tmpl_var opens -->
 				
-				<!-- tmpl_if comment -->
+				<!-- tmpl_if list_settings.tracker_track_email -->
 					, Unique: <!-- tmpl_var unique_opens --> - <!-- tmpl_var unique_opens_percent -->%
 				<!-- /tmpl_if -->
 			</a> 
@@ -116,7 +128,7 @@
 		<td class="text-right"> 
 			<a href="#clickthroughs">
 				Total: <!-- tmpl_var clickthroughs -->
-				<!-- tmpl_if comment -->
+				<!-- tmpl_if list_settings.tracker_track_email -->
 					, Unique: <!-- tmpl_var unique_clickthroughs --> - <!-- tmpl_var unique_clickthroughs_percent -->%
 				<!-- /tmpl_if -->	
 			</a>
@@ -131,7 +143,7 @@
 		<td class="text-right"> 
 			<a href="#unsubscribes">
 				<!-- tmpl_var unsubscribes default="0" -->
-				<!-- tmpl_if comment -->
+				<!-- tmpl_if list_settings.tracker_track_email -->
 					- 
 					<!-- tmpl_var unique_unsubscribes_percent -->%
 				<!-- /tmpl_if -->
@@ -148,9 +160,8 @@
 			<a href="#bounces">
 				Soft: <!-- tmpl_var soft_bounce default="0" -->, 
 				Hard: <!-- tmpl_var hard_bounce  default="0" --> 
-				<!-- tmpl_if comment -->
+				<!-- addresses that are bounces are tallied, even if we're not collecting email addresses *shrug* -->
 					- <!-- tmpl_var unique_bounces_percent -->%
-				<!-- /tmpl_if -->
 			</a>
 		</td> 
 	</tr>	
@@ -387,19 +398,21 @@
 	Unsubscribes
 </h2>
 <a name="unsubscribes"></a>		
-
 	
-<div class="row">
-	<div class="large-4 medium-4 columns">
-		<div id="unsubscribe_table_loading"></div> 
-		<div id="unsubscribe_table" ></div>
+<!-- tmpl_if list_settings.tracker_track_email -->
+<!-- if we're not tracking this, there's no use to show a table of nothing. -->
+	<div class="row">
+		<div class="large-4 medium-4 columns">
+			<div id="unsubscribe_table_loading"></div> 
+			<div id="unsubscribe_table" ></div>
+		</div> 
+		<div class="large-8 medium-8 columns">
+			<div id="unsubscribe_graph_loading"></div> 
+			<div id="unsubscribe_graph" data-title="Unsubscribes"></div> 
+		</div> 	
 	</div> 
-	<div class="large-8 medium-8 columns">
-		<div id="unsubscribe_graph_loading"></div> 
-		<div id="unsubscribe_graph" data-title="Unsubscribes"></div> 
-	</div> 	
-</div> 
-
+<!-- /tmpl_if --> 
+	
 <h2>
 	Unsubscribes Over Time
 </h2> 
