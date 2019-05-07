@@ -101,8 +101,11 @@
 		</td> 
 		<td class="text-right"> 
 			<a href="#opens">
-				Total: <!-- tmpl_var opens -->, Unique: <!-- tmpl_var unique_opens --> - <!-- tmpl_var unique_opens_percent -->%
-
+				Total: <!-- tmpl_var opens -->
+				
+				<!-- tmpl_if comment -->
+					, Unique: <!-- tmpl_var unique_opens --> - <!-- tmpl_var unique_opens_percent -->%
+				<!-- /tmpl_if -->
 			</a> 
 		</td> 
 	</tr>
@@ -112,8 +115,10 @@
 		</td> 
 		<td class="text-right"> 
 			<a href="#clickthroughs">
-				Total: <!-- tmpl_var clickthroughs -->,
-				Unique: <!-- tmpl_var unique_clickthroughs --> - <!-- tmpl_var unique_clickthroughs_percent -->%
+				Total: <!-- tmpl_var clickthroughs -->
+				<!-- tmpl_if comment -->
+					, Unique: <!-- tmpl_var unique_clickthroughs --> - <!-- tmpl_var unique_clickthroughs_percent -->%
+				<!-- /tmpl_if -->	
 			</a>
 		</td> 
 	</tr>
@@ -126,8 +131,10 @@
 		<td class="text-right"> 
 			<a href="#unsubscribes">
 				<!-- tmpl_var unsubscribes default="0" -->
-				- 
-				<!-- tmpl_var unique_unsubscribes_percent -->%
+				<!-- tmpl_if comment -->
+					- 
+					<!-- tmpl_var unique_unsubscribes_percent -->%
+				<!-- /tmpl_if -->
 			</a>
 		</td> 
 	</tr>
@@ -141,7 +148,9 @@
 			<a href="#bounces">
 				Soft: <!-- tmpl_var soft_bounce default="0" -->, 
 				Hard: <!-- tmpl_var hard_bounce  default="0" --> 
-				- <!-- tmpl_var unique_bounces_percent -->%
+				<!-- tmpl_if comment -->
+					- <!-- tmpl_var unique_bounces_percent -->%
+				<!-- /tmpl_if -->
 			</a>
 		</td> 
 	</tr>	
