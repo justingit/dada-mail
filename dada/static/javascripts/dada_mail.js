@@ -2432,51 +2432,64 @@ function drawTrackerDomainBreakdownChart() {
 function user_agent_chart(type, target_div) {
 	console.log('user_agent_chart! type: ' + type + ';target_div:' + target_div);
 
-	$("#" + target_div + "_loading").html(loading_str);
-	$.ajax({
-		url: $("#s_program_url").val(),
-		type: "POST",
-		data: {
-			flavor: 'plugins',
-			plugin: 'tracker',
-			prm: 'user_agent_json',
-			mid: $('#tracker_message_id').val(),
-			type: type
-		},
-		dataType: "json",
-		cache: false,
-		async: true,
-		success: function(jsonData) {
-			// Create our data table out of JSON data loaded from server.
-			var options = {
-				chartArea: {
-					left: 20,
-					top: 20,
-					width: "90%",
-					height: "90%"
-				},
-				pieSliceTextStyle: {
-					color: '#FFFFFF'
-				},
-				colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
-				is3D: true,
-				width: $("#" + target_div).width(),
-				height: ($("#" + target_div).width()/1.68).toFixed(0),
-				target_div: target_div
-			};
-			var data = new google.visualization.DataTable(jsonData);
-			var chart = new google.visualization.PieChart(document.getElementById(target_div));
+	if ($("#" + target_div).length){ 
+	
+		console.log('FOUND: ' + target_div);
+		
+		$("#" + target_div + "_loading").html(loading_str);
+		$.ajax({
+			url: $("#s_program_url").val(),
+			type: "POST",
+			data: {
+				flavor: 'plugins',
+				plugin: 'tracker',
+				prm: 'user_agent_json',
+				mid: $('#tracker_message_id').val(),
+				type: type
+			},
+			dataType: "json",
+			cache: false,
+			async: true,
+			success: function(jsonData) {
+				// Create our data table out of JSON data loaded from server.
+				var options = {
+					chartArea: {
+						left: 20,
+						top: 20,
+						width: "90%",
+						height: "90%"
+					},
+					pieSliceTextStyle: {
+						color: '#FFFFFF'
+					},
+					colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
+					is3D: true,
+					width: $("#" + target_div).width(),
+					height: ($("#" + target_div).width()/1.68).toFixed(0),
+					target_div: target_div
+				};
+				var data = new google.visualization.DataTable(jsonData);
+				var chart = new google.visualization.PieChart(document.getElementById(target_div));
 
-			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
-			$("#" + target_div).hide("fade", function() {
-				chart.draw(data, options);
-				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
 				$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
-				$("#" + target_div).show('fade');
-			});
-		}
-	});
-
+				$("#" + target_div).hide("fade", function() {
+					chart.draw(data, options);
+					trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
+					$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
+					$("#" + target_div).show('fade');
+				});
+			}, 
+			error: function(xhr, ajaxOptions, thrownError) {
+				console.log('status: ' + xhr.status);
+				console.log('thrownError:' + thrownError);
+				return undef;
+			}
+			
+		});
+	}
+	else { 
+		console.log('did not find: ' + target_div);
+	}
 }
 
 function selectHandler(event) {
@@ -3594,204 +3607,236 @@ var country_geoip_map_infos = {
 
 function country_geoip_map(type, target_div) {
 
-	$("#" + target_div + "_loading").html(loading_str);
+	if ($("#" + target_div).length){ 
 	
-	var target  = document.getElementById(target_div);
-	var spinner = new Spinner(spinner_opts).spin(target);
+		$("#" + target_div + "_loading").html(loading_str);
 	
-	$.ajax({
-		url: $("#s_program_url").val(),
-		type: "POST",
-		data: {
-			flavor: 'plugins',
-			plugin: 'tracker',
-			prm: 'country_geoip_json',
-			mid: $('#tracker_message_id').val(),
-			type: type
-		},
-		dataType: "json",
-		cache: false,
-		async: true,
-		success: function(jsonData) {
-			// Create our data table out of JSON data loaded from server.
-			var data = new google.visualization.DataTable(jsonData);
-			var options = {
-				region: 'world',
-				keepAspectRatio: true,
-				backgroundColor: "#FFFFFF",
-				colorAxis: {
-					colors: ['#e5f2ff', '#ff0066']
-				},
-				width: $("#" + target_div).width(),
-				height: ($("#" + target_div).width()/1.68).toFixed(0),
-				target_div: target_div
-			};
-			var chart = new google.visualization.GeoChart(document.getElementById(target_div));
+		var target  = document.getElementById(target_div);
+		var spinner = new Spinner(spinner_opts).spin(target);
+	
+		$.ajax({
+			url: $("#s_program_url").val(),
+			type: "POST",
+			data: {
+				flavor: 'plugins',
+				plugin: 'tracker',
+				prm: 'country_geoip_json',
+				mid: $('#tracker_message_id').val(),
+				type: type
+			},
+			dataType: "json",
+			cache: false,
+			async: true,
+			success: function(jsonData) {
+				// Create our data table out of JSON data loaded from server.
+				var data = new google.visualization.DataTable(jsonData);
+				var options = {
+					region: 'world',
+					keepAspectRatio: true,
+					backgroundColor: "#FFFFFF",
+					colorAxis: {
+						colors: ['#e5f2ff', '#ff0066']
+					},
+					width: $("#" + target_div).width(),
+					height: ($("#" + target_div).width()/1.68).toFixed(0),
+					target_div: target_div
+				};
+				var chart = new google.visualization.GeoChart(document.getElementById(target_div));
 
 
-			$("#" + target_div).fadeTo(200, 0, function() {
-				chart.draw(data, options);
-				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
-				$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
-				$("#" + target_div).fadeTo(200, 1);
-				spinner.stop(); 
-			});
+				$("#" + target_div).fadeTo(200, 0, function() {
+					chart.draw(data, options);
+					trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
+					$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
+					$("#" + target_div).fadeTo(200, 1);
+					spinner.stop(); 
+				});
 
 			
-			google.visualization.events.addListener(chart, 'select', country_geoip_map_selectHandler);
+				google.visualization.events.addListener(chart, 'select', country_geoip_map_selectHandler);
 
-			function country_geoip_map_selectHandler(event) {
-				var selectedItem = chart.getSelection()[0];
-				if (selectedItem) {
-					var country_code = data.getValue(selectedItem.row, 0);
-					individual_country_geoip_map(type, country_code, "country_geoip_" + type + "_map");
+				function country_geoip_map_selectHandler(event) {
+					var selectedItem = chart.getSelection()[0];
+					if (selectedItem) {
+						var country_code = data.getValue(selectedItem.row, 0);
+						individual_country_geoip_map(type, country_code, "country_geoip_" + type + "_map");
+					}
 				}
 			}
-		}
-	});
-
+		});
+	}
+	else { 
+		console.log('did not find: ' + target_div);
+	}
 }
 
 function message_individual_email_activity_table(email, target_div) {
-	$("#" + target_div + "_loading").html(loading_str);
-	$.ajax({
-		url: $("#s_program_url").val(),
-		data: {
-			flavor: 'plugins',
-			plugin: 'tracker',
-			prm: 'message_individual_email_activity_report_table',
-			mid: $('#tracker_message_id').val(),
-			email: email
-		},
-		dataType: "html",
-		async: true,
-		success: function(content) {
-			$("#" + target_div).hide("fade", function() {
-				$("#" + target_div).html(content);
-				$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
-				$("#" + target_div).show('fade');
-			});
-		}
-	});
+	
+	if ($("#" + target_div).length){ 
+	
+		$("#" + target_div + "_loading").html(loading_str);
+		$.ajax({
+			url: $("#s_program_url").val(),
+			data: {
+				flavor: 'plugins',
+				plugin: 'tracker',
+				prm: 'message_individual_email_activity_report_table',
+				mid: $('#tracker_message_id').val(),
+				email: email
+			},
+			dataType: "html",
+			async: true,
+			success: function(content) {
+				$("#" + target_div).hide("fade", function() {
+					$("#" + target_div).html(content);
+					$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
+					$("#" + target_div).show('fade');
+				});
+			}
+		});
+	}
+	else { 
+		console.log('did not find: ' + target_div);
+	}
+	
 
 }
 
 function individual_country_geoip_map(type, country, target_div) {
 	
-	var target  = document.getElementById(target_div);
-	var spinner = new Spinner(spinner_opts).spin(target);
+	if ($("#" + target_div).length){ 
+
+		var target  = document.getElementById(target_div);
+		var spinner = new Spinner(spinner_opts).spin(target);
 	
-	$("#" + target_div + "_loading").html(loading_str);
-	$.ajax({
-		url: $("#s_program_url").val(),
-		data: {
-			flavor: 'plugins',
-			plugin: 'tracker',
-			prm: 'individual_country_geoip_json',
-			mid: $('#tracker_message_id').val(),
-			type: type,
-			country: country
-		},
-		dataType: "json",
-		async: true,
-		success: function(jsonData) {
-			// Create our data table out of JSON data loaded from server.
-			var data = new google.visualization.DataTable(jsonData);
-			var options = {
-				region: country,
-				displayMode: 'markers',
-				resolution: 'provinces',
-				colorAxis: {
-					colors: ['#3399ff', '#ff0066']
-				},
-				width: $("#" + target_div).width(),
-				height: ($("#" + target_div).width()/1.68).toFixed(0),
-				target_div: target_div
-			};
-			var chart = new google.visualization.GeoChart(document.getElementById(target_div));
+		$("#" + target_div + "_loading").html(loading_str);
+		$.ajax({
+			url: $("#s_program_url").val(),
+			data: {
+				flavor: 'plugins',
+				plugin: 'tracker',
+				prm: 'individual_country_geoip_json',
+				mid: $('#tracker_message_id').val(),
+				type: type,
+				country: country
+			},
+			dataType: "json",
+			async: true,
+			success: function(jsonData) {
+				// Create our data table out of JSON data loaded from server.
+				var data = new google.visualization.DataTable(jsonData);
+				var options = {
+					region: country,
+					displayMode: 'markers',
+					resolution: 'provinces',
+					colorAxis: {
+						colors: ['#3399ff', '#ff0066']
+					},
+					width: $("#" + target_div).width(),
+					height: ($("#" + target_div).width()/1.68).toFixed(0),
+					target_div: target_div
+				};
+				var chart = new google.visualization.GeoChart(document.getElementById(target_div));
 
 
-			$("#" + target_div).fadeTo(200, 0, function() {
-				chart.draw(data, options);
-				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
-				$("#" + target_div + "_loading").html('<p class="label secondary"><a href="#" data-type="' + type + '" class="back_to_geoip_map">&lt; &lt;Back to World Map</a> | <a href="#"  data-type="' + type + '" data-country="' + country + '" class="individual_country_cumulative_geoip_table">Table View</a></p>');
-				$("#" + target_div).fadeTo(200, 1);
-				spinner.stop();
-			});
+				$("#" + target_div).fadeTo(200, 0, function() {
+					chart.draw(data, options);
+					trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
+					$("#" + target_div + "_loading").html('<p class="label secondary"><a href="#" data-type="' + type + '" class="back_to_geoip_map">&lt; &lt;Back to World Map</a> | <a href="#"  data-type="' + type + '" data-country="' + country + '" class="individual_country_cumulative_geoip_table">Table View</a></p>');
+					$("#" + target_div).fadeTo(200, 1);
+					spinner.stop();
+				});
 			
-		}
-	});
+			}
+		});
+	}
+	else { 
+		console.log('did not find: ' + target_div);
+	}
 }
 
 function individual_country_cumulative_geoip_table(type, country, target_div) {
-	$("#" + target_div + "_loading").html(loading_str);
-	var target  = document.getElementById(target_div);
-	var spinner = new Spinner(spinner_opts).spin(target);
-	$.ajax({
-		url: $("#s_program_url").val(),
-		data: {
-			flavor: 'plugins',
-			plugin: 'tracker',
-			prm: 'individual_country_geoip_report_table',
-			mid: $('#tracker_message_id').val(),
-			type: 'ALL',
-			country: country
-		},
-		dataType: "html",
-		async: true,
-		success: function(content) {
-			$("#" + target_div).fadeTo(200, 0, function() {
-				$("#" + target_div).html(content);
-				$("#" + target_div + "_loading").html('<p class="label secondary"><a href="#" data-type="' + type + '" data-country="' + country + '"  class="individual_country_geoip">&lt; &lt; Back to Country Map</a></p>');
-				$("#" + target_div).fadeTo(200, 1);
-				spinner.stop(); 
-			});
-		}
-	});
-
+	
+	if ($("#" + target_div).length){ 
+	
+		$("#" + target_div + "_loading").html(loading_str);
+		var target  = document.getElementById(target_div);
+		var spinner = new Spinner(spinner_opts).spin(target);
+		$.ajax({
+			url: $("#s_program_url").val(),
+			data: {
+				flavor: 'plugins',
+				plugin: 'tracker',
+				prm: 'individual_country_geoip_report_table',
+				mid: $('#tracker_message_id').val(),
+				type: 'ALL',
+				country: country
+			},
+			dataType: "html",
+			async: true,
+			success: function(content) {
+				$("#" + target_div).fadeTo(200, 0, function() {
+					$("#" + target_div).html(content);
+					$("#" + target_div + "_loading").html('<p class="label secondary"><a href="#" data-type="' + type + '" data-country="' + country + '"  class="individual_country_geoip">&lt; &lt; Back to Country Map</a></p>');
+					$("#" + target_div).fadeTo(200, 1);
+					spinner.stop(); 
+				});
+			}
+		});
+	}
+	else { 
+		console.log('did not find: ' + target_div);
+	}
 }
 
 function data_over_time_graph(type, label, target_div) {
-	$("#" + target_div + "_loading").html(loading_str);
-	var request = $.ajax({
-		url: $("#s_program_url").val(),
-		data: {
-			flavor: 'plugins',
-			plugin: 'tracker',
-			prm: 'data_over_time_json',
-			mid: $("#tracker_message_id").val(),
-			type: type,
-			label: label
-		},
-		cache: false,
-		dataType: "json",
-		async: true,
-		success: function(jsonData) {
-			var data = new google.visualization.DataTable(jsonData);
-			var options = {
-				chartArea: {
-					left: 60,
-					top: 20,
-					width: "75%",
-					height: "75%"
-				},
-				backgroundColor: {
-					stroke: '#FFFFFF',
-					strokeWidth: 0
-				},
-				hAxis: {
-					slantedText: true
-				},
-				width: $("#" + target_div).width(),
-				height: ($("#" + target_div).width()/1.68).toFixed(0),
-				target_div: target_div
-			};
-			var chart = new google.visualization.AreaChart(document.getElementById(target_div));
-			chart.draw(data, options);
-			trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
-			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
-		}
-	});
+	
+	if ($("#" + target_div).length){ 
+		
+		$("#" + target_div + "_loading").html(loading_str);
+		var request = $.ajax({
+			url: $("#s_program_url").val(),
+			data: {
+				flavor: 'plugins',
+				plugin: 'tracker',
+				prm: 'data_over_time_json',
+				mid: $("#tracker_message_id").val(),
+				type: type,
+				label: label
+			},
+			cache: false,
+			dataType: "json",
+			async: true,
+			success: function(jsonData) {
+				var data = new google.visualization.DataTable(jsonData);
+				var options = {
+					chartArea: {
+						left: 60,
+						top: 20,
+						width: "75%",
+						height: "75%"
+					},
+					backgroundColor: {
+						stroke: '#FFFFFF',
+						strokeWidth: 0
+					},
+					hAxis: {
+						slantedText: true
+					},
+					width: $("#" + target_div).width(),
+					height: ($("#" + target_div).width()/1.68).toFixed(0),
+					target_div: target_div
+				};
+				var chart = new google.visualization.AreaChart(document.getElementById(target_div));
+				chart.draw(data, options);
+				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
+				$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
+			}
+		});
+	}
+	else { 
+		console.log('did not find: ' + target_div);
+	}
 }
 
 function message_email_report_table(type, target_div) {
@@ -3834,35 +3879,38 @@ function message_email_report_table(type, target_div) {
 function tracker_message_email_activity_listing_table(target_div) {
 	console.log('target_div:' + target_div);
 
-	$("#" + target_div + "_loading").html(loading_str);
-	var request = $.ajax({
-		url: $("#s_program_url").val(),
-		type: "POST",
-		cache: false,
-		data: {
-			flavor: 'plugins',
-			plugin: 'tracker',
-			prm: 'message_email_activity_listing_table',
-			mid: $('#tracker_message_id').val()
-		},
-		dataType: "html"
-	});
-	request.done(function(content) {
+	if ($("#" + target_div).length){ 
+	
+		$("#" + target_div + "_loading").html(loading_str);
+		var request = $.ajax({
+			url: $("#s_program_url").val(),
+			type: "POST",
+			cache: false,
+			data: {
+				flavor: 'plugins',
+				plugin: 'tracker',
+				prm: 'message_email_activity_listing_table',
+				mid: $('#tracker_message_id').val()
+			},
+			dataType: "html"
+		});
+		request.done(function(content) {
 
-		$("#" + target_div).hide();
-		$("#" + target_div).html(content);
-		$("#" + target_div).show('fade');
+			$("#" + target_div).hide();
+			$("#" + target_div).html(content);
+			$("#" + target_div).show('fade');
 
-		$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
-		//$("#sortable_table_" + type).tablesorter();
-		if ($('#first_for_message_email_activity_listing_table').length) {
-			message_individual_email_activity_table($('#first_for_message_email_activity_listing_table').html(), 'message_individual_email_activity_report_table');
-		}
-
-
-		// alert("This: " + $('#first_for_message_email_activity_listing_table').html());
-
-	});
+			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
+			//$("#sortable_table_" + type).tablesorter();
+			if ($('#first_for_message_email_activity_listing_table').length) {
+				message_individual_email_activity_table($('#first_for_message_email_activity_listing_table').html(), 'message_individual_email_activity_report_table');
+			}
+			// alert("This: " + $('#first_for_message_email_activity_listing_table').html());
+		});
+	}
+	else { 
+		console.log('did not find: ' + target_div);
+	}
 }
 
 function email_breakdown_chart(type, label, target_div) {
