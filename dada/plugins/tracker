@@ -916,6 +916,7 @@ sub message_report {
         unique_unsubscribes_percent => $m_report->{'unique_unsubscribes_percent'} || 0,
         soft_bounce                 => commify( $m_report->{'soft_bounce'} )      || 0,
         hard_bounce                 => commify( $m_report->{'hard_bounce'} )      || 0,
+		total_bounce                => ($m_report->{'soft_bounce'} + $m_report->{'hard_bounce'} ) || 0, 
 
         errors_sending_to         => commify( $m_report->{'errors_sending_to'} ) || 0,
         errors_sending_to_percent => $m_report->{'errors_sending_to_percent'}    || 0,

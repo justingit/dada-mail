@@ -3642,7 +3642,6 @@ function country_geoip_map(type, target_div) {
 					height: ($("#" + target_div).width()/1.68).toFixed(0),
 					target_div: target_div
 				};
-				
 				google.charts.load('current', {
 				        'packages':['geochart'],
 				        // Note: you will need to get a mapsApiKey for your project.
@@ -3669,7 +3668,6 @@ function country_geoip_map(type, target_div) {
 							individual_country_geoip_map(type, country_code, "country_geoip_" + type + "_map");
 						}
 					}
-					
 				}
 				
 			}
