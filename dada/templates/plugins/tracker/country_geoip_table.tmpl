@@ -16,14 +16,27 @@
 	   <!-- tmpl_loop c_geo_ip_report --> 
 	   	<tr <!-- tmpl_if __odd__ --> class="odd"<!-- tmpl_else -->class="even"<!-- /tmpl_if -->> 
         <td>
-			<a href="#" class="individual_country_geoip" data-type="<!-- tmpl_var type -->" data-country="<!-- tmpl_var code -->">
+			
+			<!-- tmpl_if expr="name eq 'Unknown'" -->
 				<!-- tmpl_var name -->
-			</a>
+			<!-- tmpl_else -->
+				<a href="#" class="individual_country_geoip" data-type="<!-- tmpl_var type -->" data-country="<!-- tmpl_var code -->">
+					<!-- tmpl_var name -->
+				</a>
+			<!-- /tmpl_if -->
+
 		</td> 
         <td style="text-align:right; width: 50px">
-			<a href="#" class="individual_country_geoip" data-type="<!-- tmpl_var type -->" data-country="<!-- tmpl_var code -->">
-			<!-- tmpl_var count -->
-			</a>
+			
+			<!-- tmpl_if expr="name eq 'Unknown'" -->
+				<!-- tmpl_var count -->
+			<!-- tmpl_else -->
+				<a href="#" class="individual_country_geoip" data-type="<!-- tmpl_var type -->" data-country="<!-- tmpl_var code -->">
+				<!-- tmpl_var count -->
+				</a>
+			<!-- /tmpl_if -->
+			
+
 		</td>
        </tr> 
 	  <!-- /tmpl_loop --> 
