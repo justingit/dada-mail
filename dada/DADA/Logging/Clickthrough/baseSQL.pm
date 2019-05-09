@@ -1853,6 +1853,8 @@ sub country_geoip_json {
 		}
 	);
 	
+#	require Locale::Country;
+
 	if(! defined($json)){ 
 	
 		my $report = $self->country_geoip_data($args);	
@@ -1861,23 +1863,40 @@ sub country_geoip_json {
 		my $datatable = Data::Google::Visualization::DataTable->new();
 
 		$datatable->add_columns(
-		       { id => 'location',  label => "Location",       type => 'string',},
-		       { id => 'color',     label => $args->{-label},  type => 'number',},
-	#	       { id => 'type',      label => 'Type',           type => 'string',},
+		       { id => 'location',  label => "Location",       type => 'string'},
+		       { id => 'color',     label => $args->{-label},  type => 'number'},
+			   
+		       #{ id => 'country',   label => 'Country',           type => 'string'},
 		);
 
 		for(@$report){ 
+			
+			# "Unknown" does a GeoIP lookup in the Maps API, which is something that needs to be granted/paid-for
+			next if $_->{name} =~ m/unknown/i;
+			
+			
 			$datatable->add_rows(
 		        [
 		               { v => $_->{code}, f => $_->{name}},
-		               { v => $_->{count} },
-	#	               { v => $args->{-type} },
+					
+					
+					# { 
+					#	 	f => uc(Locale::Country::country2code($_->{name})), 
+					#		v => $_->{code}
+					# },
+					
+					 
+	               { 
+					   	v => $_->{count} 
+				   },
+
 	
 		       ],
 			);
 		}
 
-
+		use Data::Dumper; 
+		warn '$datatable' . Dumper($datatable); 
 		$json = $datatable->output_javascript(
 			pretty  => 1,
 		);
@@ -1998,6 +2017,8 @@ sub individual_country_geoip_json {
 	my $report = $self->individual_country_geoip($args);
 
 
+
+
 	$json = $dc->retrieve(
 		{
 			-list    => $self->{name}, 
@@ -2016,6 +2037,9 @@ sub individual_country_geoip_json {
 		$datatable->add_columns(
 		       { id => 'latitude',     label => "Latitude",        type => 'number',},
 		       { id => 'longitude',    label => "Longitude",       type => 'number',},
+			   
+		     #  { id => 'marker',  label => "marker",     type => 'string',},
+
 		       { id => 'DESCRIPTION',  label => "Description",     type => 'string',},
 		       { id => 'marker_color', label => "Clickthroughs",   type => 'number',},
 		);
@@ -2032,6 +2056,10 @@ sub individual_country_geoip_json {
 			);
 		}
 	
+		use Data::Dumper; 
+		warn '$datatable' . Dumper($datatable); 
+		
+		
 		$json = $datatable->output_javascript(
 			pretty  => 1,
 		);

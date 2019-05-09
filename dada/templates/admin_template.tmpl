@@ -20,7 +20,12 @@
  
 <!-- tmpl_if load_google_viz --> 
 	<!-- Google Visualization -->
-	<script type="text/javascript" src="//www.google.com/jsapi"></script>
+	<!-- tmpl_if comment -->
+		<script type="text/javascript" src="//www.google.com/jsapi"></script>
+	<!-- /tmpl_if -->
+    	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	
+	
 <!-- /tmpl_if --> 
 
 <!-- jQuery -->
