@@ -319,6 +319,7 @@ sub setup {
             'install_file_browser=s',
             'deployment_running_under=s',
             'scheduled_jobs_flavor=s', 
+			'google_maps_api_key=s'
             'amazon_ses_AWSAccessKeyId=s',
             'amazon_ses_AWSSecretKey=s',
             'amazon_ses_AWS_endpoint=s',
@@ -1287,7 +1288,13 @@ sub grab_former_config_vals {
               $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{private_key};
         }
     }
-
+	
+	# Google Maps API
+    if (keys %{$BootstrapConfig::GOOGLE_MAPS_API_PARAMS} ){ 
+        $opt->{'configure_google_maps'} = 1;
+		$opt->{'google_maps_api_key'} = $BootstrapConfig::GOOGLE_MAPS_API_PARAMS->{api_key};
+	}
+ 
     # Global Mailing List Options
     if (   defined($BootstrapConfig::GLOBAL_UNSUBSCRIBE)
         || defined($BootstrapConfig::GLOBAL_BLACK_LIST) )
@@ -1673,6 +1680,9 @@ sub query_params_to_install_params {
       captcha_reCAPTCHA_private_key
       captcha_reCAPTCHA_Mailhide_public_key
       captcha_reCAPTCHA_Mailhide_private_key
+	  
+	  configure_google_maps
+	  google_maps_api_key
 
       configure_global_mailing_list
       global_mailing_list_options_GLOBAL_UNSUBSCRIBE
@@ -2356,7 +2366,13 @@ sub create_dada_config_file {
         $captcha_params->{captcha_reCAPTCHA_Mailhide_private_key} =
           clean_up_var( $ip->{-captcha_reCAPTCHA_Mailhide_private_key} );
     }
-	
+
+
+    my $google_maps_params = {};
+    if ( $ip->{-configure_google_maps} == 1 ) {
+        $google_maps_params->{configure_google_maps} = 1;
+		$google_maps_params->{google_maps_api_key}   = $ip->{-google_maps_api_key};
+    }
 	
 	my $mime_tools_params = {}; 
 	if($ip->{-configure_mime_tools} == 1) { 
@@ -2474,6 +2490,7 @@ sub create_dada_config_file {
                 %{$profiles_params},
                 %{$security_params},
                 %{$captcha_params},
+				%{$google_maps_params},
 				%{$mime_tools_params},
                 %{$global_mailing_list_options},
                 %{$mass_mailing_params},

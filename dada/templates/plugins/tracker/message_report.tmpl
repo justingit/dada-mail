@@ -48,9 +48,30 @@
 <!-- /tmpl_if --> 
 
 <form id="tracker_message_info">
-	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" > 
-	<input type="hidden" id="tracker_message_id" name="tracker_message_id" value="<!-- tmpl_var mid -->" >
-	<input type="hidden" id="can_use_country_geoip_data" name="can_use_country_geoip_data" value="<!-- tmpl_var can_use_country_geoip_data -->" >
+	<input 
+		type="hidden" 
+		id="s_program_url"
+		name="s_program_url"
+		value="<!-- tmpl_var S_PROGRAM_URL -->"
+	> 
+	<input 
+		type="hidden" 
+		id="tracker_message_id"
+		name="tracker_message_id"
+		value="<!-- tmpl_var mid -->"
+	>
+	<input
+		type="hidden"
+		id="can_use_country_geoip_data"
+		name="can_use_country_geoip_data"
+		value="<!-- tmpl_var can_use_country_geoip_data -->"
+	>
+	<input 
+		type="hidden"
+			id="google_maps_api_key"
+			name="google_maps_api_key"
+			value="<!-- tmpl_var GOOGLE_MAPS_API_PARAMS_api_key -->"
+		>
 </form> 
 
 <!-- tmpl_if list_settings.tracker_track_email -->

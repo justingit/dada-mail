@@ -285,6 +285,18 @@ $RECAPTHCA_MAILHIDE_PARAMS = {
 };
 <!-- /tmpl_if -->
 
+<!-- tmpl_if configure_google_maps --> 
+#---------------------------------------------------------------------#
+# Google Maps API Options 
+
+$GOOGLE_MAPS_API_PARAMS = {
+	api_key =>  '<!-- tmpl_var google_maps_api_key default="" -->',
+};
+
+<!-- /tmpl_if -->
+
+
+
 <!-- tmpl_if configure_mime_tools -->
 #---------------------------------------------------------------------#
 # MIME_TOOLS Options 
