@@ -2,6 +2,19 @@
 
 =encoding utf-8
 
+=head1 11.3.1
+
+This is mostly a bug-fix release for issues found in the v11.3.0 release of Dada Mail.
+
+=head2 Bugfixes
+
+=head3 UI bug in Installer - Advanced Options bleeds out of div #810 
+
+L<https://github.com/justingit/dada-mail/issues/810>
+
+=head3 Tracker: "Unique" Opens/Clickthroughs, etc aren't calculated correctly, as Personally Identifying Information isn't collected since v11
+
+L<https://github.com/justingit/dada-mail/issues/812>
 
 =head1 11.3.0
 
@@ -39,7 +52,7 @@ when a user clicks the email reader-provided unsubscribe link.
 If the above mechanism isn't supported by the mail reader, there's a good chance that the fallback is. That fallback being: the mail reader sends an actual email message to the list owner. This email message option has also now been made a bit more useful. In past versions of Dada Mail, an email would be sent to the list owner, telling them the address that wants to be removed as well as the list they should be removed from. 
 It was up to the list owner to go through the list control panel to remove this address. 
 
-Starting with v11.3.0, the unsubscription link itself needed to unsubscribe the address from the list 
+Starting with v11.3.1, the unsubscription link itself needed to unsubscribe the address from the list 
 will be embedded within the email message the list owner receives, 
 so all they have to do now is click that link. 
 
