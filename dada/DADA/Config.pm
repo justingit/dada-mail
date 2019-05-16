@@ -253,7 +253,7 @@ $PROFILE_OPTIONS //= {
 $PII_OPTIONS { 
 	allow_logging_emails_in_analytics => 0, 
 	ip_address_logging_style          => 'anonymized', 
-}
+};
 
 
 $PLUGIN_RUNMODES //= { 
