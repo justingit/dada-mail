@@ -227,25 +227,129 @@
 			</label>
 		</div>
 	</div>
+	
+	
 	<div class="row">
 		<div class="small-12 columns ">				
+
+
+
 	    <input 
 			type="checkbox" 
 			name="tracker_track_email" 
 			id="tracker_track_email"  
 			value="1" 
-			<!-- tmpl_if list_settings.tracker_track_email -->checked="checked"<!--/tmpl_if -->
+			
+			<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
+				checked="checked"
+			<!--/tmpl_if -->
+			
+			<!-- tmpl_unless PII_OPTIONS_allow_logging_emails_in_analytics --> 
+				disabled="disabled"
+			<!-- /tmpl_unless -->
+		
 		> 
 	    <label for="tracker_track_email"> 
-	     	Track with email addresses
+	     	Track with email addresses 
+			<!-- tmpl_unless PII_OPTIONS_allow_logging_emails_in_analytics -->
+				(Disabled)
+			<!-- /tmpl_unless -->
 	    </label>
-			<div class="alert-box info radius"> 		
-				Message Clickthroughs, and Opens will also track the subscriber's email address. 
-				Tracking data with the user's email address allows
-				more refined email analytics and reports. 
-			</div>
+		
+		
+		
 		</div>
 	</div>
+	
+	
+	<div class="row">
+		<div class="small-1 columns ">
+		</div>
+		<div class="small-11 columns ">
+	
+			<!-- tmpl_if PII_OPTIONS_allow_logging_emails_in_analytics -->
+				<div class="alert-box info radius"> 		
+					Message Clickthroughs, and Opens will also track the subscriber's email address. 
+					Tracking data with the user's email address allows
+					more refined email analytics and reports. 
+				</div>
+			<!-- tmpl_else -->
+				<div class="alert-box info radius">
+					<strong>Disabled.</strong> Logging email addresses for analytical purposes is not enabled.
+				</div>
+			<!-- /tmpl_if -->
+			
+			
+		</div>
+	</div> 
+	
+	
+	<div class="row">
+		<div class="small-12 columns ">				
+			
+			
+		    <input 
+				type="checkbox" 
+				name="tracker_show_location_data" 
+				id="tracker_show_location_data"  
+				value="1" 
+				<!-- tmpl_if list_settings.tracker_show_location_data -->
+					checked="checked"
+				<!-- /tmpl_if -->
+			> 
+		    <label for="tracker_show_location_data"> 
+		     	Show location data in message reports
+		    </label>
+			
+			
+	
+			<div class="row">
+				<div class="small-1 columns ">
+				</div>
+				<div class="small-11 columns ">
+		
+					<!-- tmpl_if expr="(PII_OPTIONS_ip_address_logging_style ne 'original')" --> 
+						<div class="alert-box warning radius">
+							Location data and maps will not be accurate, as IP addresses logged are anonymized.
+						</div>
+					<!-- /tmpl_if -->
+					
+				    <input 
+						type="checkbox" 
+						name="tracker_show_maps_in_reports" 
+						id="tracker_show_maps_in_reports"  
+						value="1" 
+						<!-- tmpl_if list_settings.tracker_show_maps_in_reports -->
+							checked="checked"
+						<!-- /tmpl_if -->
+			
+						<!-- tmpl_unless GOOGLE_MAPS_API_PARAMS_api_key -->
+							disabled="disabled"
+						<!-- /tmpl_unless -->
+					> 
+				    <label for="tracker_show_maps_in_reports"> 
+				     	Show maps in message reports
+						<!-- tmpl_unless GOOGLE_MAPS_API_PARAMS_api_key -->
+							(Disabled)
+						<!-- /tmpl_unless -->
+				    </label>
+		
+					<!-- tmpl_unless GOOGLE_MAPS_API_PARAMS_api_key -->
+						<div class="alert-box info radius">
+							<strong>Disabled.</strong> A Google Maps API Key is required.
+						</div>
+					<!-- /tmpl_unless -->
+					
+					
+					
+				</div>
+			</div> 
+
+		</div>
+	</div>
+	
+	
+	
 	<div class="row">
 		<div class="small-1 columns ">
 		</div>

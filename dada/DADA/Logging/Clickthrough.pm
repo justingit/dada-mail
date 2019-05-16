@@ -805,7 +805,10 @@ sub redirect_encode {
 	      . $key 
 	      . '/';
 	
-		if($self->{ls}->param('tracker_track_email') == 1) { 
+		if(
+			   $DADA::Config::PII_OPTIONS->{allow_logging_emails_in_analytics} == 1
+			&& $self->{ls}->param('tracker_track_email') == 1
+		) { 
 			$redirect_url .= '<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/'; 
 		}
 

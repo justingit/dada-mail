@@ -349,9 +349,12 @@ sub r_log {
     }
     $sth->finish;
     
-    if($self->{ls}->param('tracker_track_email') == 1 
-    && $self->{ls}->param('tracker_update_profiles_w_geo_ip_data') == 1
-    && $args->{-email} ne '') { 
+    if(
+		   $DADA::Config::PII_OPTIONS->{allow_logging_emails_in_analytics} == 1
+		&& $self->{ls}->param('tracker_track_email') == 1 
+   	    && $self->{ls}->param('tracker_update_profiles_w_geo_ip_data') == 1
+        && $args->{-email} ne ''
+	) { 
         try { 
             warn '$args->{-email}' . $args->{-email} 
                 if $t; 
@@ -704,9 +707,11 @@ sub mass_mailing_event_log {
         }
     }
 	if($event eq 'open') { 
-	    if($self->{ls}->param('tracker_track_email') == 1 
-	    && $self->{ls}->param('tracker_update_profiles_w_geo_ip_data') == 1
-	    && $args->{-email} ne '') { 
+	    if(
+			   $DADA::Config::PII_OPTIONS->{allow_logging_emails_in_analytics} == 1
+			&& $self->{ls}->param('tracker_track_email') == 1 
+		    && $self->{ls}->param('tracker_update_profiles_w_geo_ip_data') == 1
+		    && $args->{-email} ne '') { 
 			warn 'updating profile fields..'
 				if $t; 
 	        try { 
@@ -1504,14 +1509,6 @@ sub export_by_email {
 	
 	return ($headers, $r); 
 	
-}
-
-
-
-
-
-sub can_use_country_geoip_data { 
-	return 1; 
 }
 
 

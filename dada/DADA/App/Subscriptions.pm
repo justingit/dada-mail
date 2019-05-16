@@ -2086,7 +2086,11 @@ sub complete_unsubscription {
 		   $r->unsubscribe_log(
                 {
                     -mid   => $mid,
-                    ($ls->param('tracker_track_email') == 1)
+                    (
+						   $DADA::Config::PII_OPTIONS->{allow_logging_emails_in_analytics} == 1
+						&& $ls->param('tracker_track_email') == 1
+						
+					)
 					 ? (-email => $email) 
 					 : ()
                 }

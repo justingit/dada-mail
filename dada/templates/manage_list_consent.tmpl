@@ -48,7 +48,7 @@
 		</p>	
     </div>
 	
-	<!-- tmpl_if expr="list_settings.tracker_track_email == 1" -->
+	<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
 		<div class="alert-box warning radius">
 			<p>
 				This mailing list currently tracks mass mailing clickthrough and mass mailing message open tracking data, 
@@ -56,7 +56,7 @@
 			</p>
 		</div>
 	<!-- /tmpl_if -->
-	
+		
 
 		<fieldset> 
 			<legend>List Consents</legend>

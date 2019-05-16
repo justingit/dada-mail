@@ -245,6 +245,8 @@ sub default {
                 can_use_auto_redirect_tag        => $can_use_auto_redirect_tag,
                 num_subscribers                  => commify( $lh->num_subscribers ),
                 field_names                      => $field_names,
+				PII_OPTIONS_allow_logging_emails_in_analytics 
+					=> $DADA::Config::PII_OPTIONS->{allow_logging_emails_in_analytics},
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -826,6 +828,8 @@ sub edit_prefs {
                 tracker_auto_parse_mailto_links                 => 0,
                 tracker_track_opens_method                      => undef,
                 tracker_track_email                             => 0,
+				tracker_show_location_data                      => 0,
+				tracker_show_maps_in_reports                    => 0, 
                 tracker_clean_up_reports                        => 0,
                 tracker_show_message_reports_in_mailing_monitor => 0,
 
@@ -933,7 +937,6 @@ sub message_report {
         soft_bounce_report     => $m_report->{'soft_bounce_report'}             || [],
         hard_bounce_report     => $m_report->{'hard_bounce_report'}             || [],
 
-        can_use_country_geoip_data => $rd->can_use_country_geoip_data,
         Plugin_URL                 => $Plugin_Url,
         Plugin_Name                => $Plugin_Config->{Plugin_Name},
         chrome                     => $chrome,
@@ -949,6 +952,11 @@ sub message_report {
                 -expr   => 1,
                 -vars   => { %tmpl_vars, },
             },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+           
         );
     }
     else {
@@ -962,7 +970,12 @@ sub message_report {
                     -List       => $ls->param('list'),
                 },
                 -vars => { %tmpl_vars, },
+	            -list_settings_vars_param => {
+	                -list   => $list,
+	                -dot_it => 1,
+	            },
             },
+           
         );
     }
     return ( {}, $scrn );

@@ -60,21 +60,21 @@
 		name="tracker_message_id"
 		value="<!-- tmpl_var mid -->"
 	>
-	<input
-		type="hidden"
-		id="can_use_country_geoip_data"
-		name="can_use_country_geoip_data"
-		value="<!-- tmpl_var can_use_country_geoip_data -->"
-	>
 	<input 
 		type="hidden"
-			id="google_maps_api_key"
-			name="google_maps_api_key"
-			value="<!-- tmpl_var GOOGLE_MAPS_API_PARAMS_api_key -->"
-		>
+		id="GOOGLE_MAPS_API_PARAMS_api_key"
+		name="GOOGLE_MAPS_API_PARAMS_api_key"
+		value="<!-- tmpl_var GOOGLE_MAPS_API_PARAMS_api_key -->"
+	>
+	
+	<input 
+		type="hidden"
+		name="tracker_show_maps_in_reports"
+		value="<!-- tmpl_var list_settings.tracker_show_maps_in_reports -->"
+	>
 </form> 
 
-<!-- tmpl_if list_settings.tracker_track_email -->
+<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
 	<div class="row">
 		<div class="large-4 medium-4 columns">
 			<div id="the_basics_bounces" data-title="Bounces" data-label="Bounces"></div>
@@ -136,7 +136,7 @@
 			<a href="#opens">
 				Total: <!-- tmpl_var opens -->
 				
-				<!-- tmpl_if list_settings.tracker_track_email -->
+				<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
 					, Unique: <!-- tmpl_var unique_opens --> - <!-- tmpl_var unique_opens_percent -->%
 				<!-- /tmpl_if -->
 			</a> 
@@ -149,7 +149,7 @@
 		<td class="text-right"> 
 			<a href="#clickthroughs">
 				Total: <!-- tmpl_var clickthroughs -->
-				<!-- tmpl_if list_settings.tracker_track_email -->
+				<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
 					, Unique: <!-- tmpl_var unique_clickthroughs --> - <!-- tmpl_var unique_clickthroughs_percent -->%
 				<!-- /tmpl_if -->	
 			</a>
@@ -164,7 +164,7 @@
 		<td class="text-right"> 
 			<a href="#unsubscribes">
 				<!-- tmpl_var unsubscribes default="0" -->
-				<!-- tmpl_if list_settings.tracker_track_email -->
+				<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
 					- 
 					<!-- tmpl_var unique_unsubscribes_percent -->%
 				<!-- /tmpl_if -->
@@ -259,7 +259,7 @@
 </h2>
 <a name="subscriber_activity"></a>
 
-<!-- tmpl_if list_settings.tracker_track_email -->
+<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
 	<!-- this one is also a strange one to show, if no email addresses are being shown -->
 	<div class="row">
 		<div class="large-4 medium-4 columns">
@@ -280,10 +280,10 @@
 
 <!-- tmpl_if opens -->
 
-	<h3>
-		Message Opens by Country
-	</h3>
-	<!-- tmpl_if can_use_country_geoip_data --> 
+	<!-- tmpl_if list_settings.tracker_show_location_data -->
+		<h3>
+			Message Opens by Country
+		</h3>
 		<div class="row">
 			<div class="large-4 medium-4 columns">
 				<div id="country_geoip_opens_table_loading"></div> 
@@ -294,10 +294,6 @@
 				<div id="country_geoip_opens_map"></div>
 			</div>
 		</div>
-	<!-- tmpl_else --> 
-		<div class="alert-box info radius">
-			Nothing to report.
-		</div> 
 	<!-- /tmpl_if -->
 
 	<h3>
@@ -340,11 +336,11 @@
 <a name="clickthroughs"></a>
 
 <!-- tmpl_if clickthroughs -->	
-	<h3>
-		Clickthroughs by Country
-	</h3>
+	<!-- tmpl_if list_settings.tracker_show_location_data -->
+		<h3>
+			Clickthroughs by Country
+		</h3>
 
-	<!-- tmpl_if can_use_country_geoip_data --> 
 		<div class="row">
 			<div class="large-4 medium-4 columns">
 				<div id="country_geoip_clickthroughs_table_loading"></div> 
@@ -355,11 +351,7 @@
 				<div id="country_geoip_clickthroughs_map"   ></div> 
 			</div> 
 		</div>
-	<!-- tmpl_else --> 
-		<div class="alert-box info radius">
-			Nothing to report.
-		</div> 
-	<!-- /tmpl_if --> 
+	<!-- /tmpl_if -->
 		
 	<h3>
 		Clickthroughs Over Time
@@ -435,7 +427,7 @@
 <a name="unsubscribes"></a>		
 	
 <!-- tmpl_if unsubscribes --> 
-	<!-- tmpl_if list_settings.tracker_track_email -->
+	<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
 	<!-- if we're not tracking this, there's no use to show a table of nothing. -->
 		<div class="row">
 			<div class="large-4 medium-4 columns">
@@ -459,18 +451,18 @@
 		Nothing to report.
 	</div> 
 <!-- /tmpl_if -->
-		
-			
+				
 <h2 data-magellan-destination="archive_views">
 	Archive Views
 </h2>
 <a name="archive_views"></a>
 
+
 <!-- tmpl_if view_archive --> 
-	<h3>
-		Archive Views by Country
-	</h3>
-	<!-- tmpl_if can_use_country_geoip_data --> 
+	<!-- tmpl_if list_settings.tracker_show_location_data -->
+		<h3>
+			Archive Views by Country
+		</h3>
 		<div class="row">
 			<div class="large-4 medium-4 columns">
 				<div id="country_geoip_view_archive_table_loading"></div> 
@@ -481,10 +473,6 @@
 				<div id="country_geoip_view_archive_map"   ></div>
 			</div> 
 		</div>
-	<!-- tmpl_else --> 
-		<div class="alert-box info radius">
-			Nothing to report.
-		</div> 
 	<!-- /tmpl_if -->
 
 	<h3>
@@ -509,11 +497,11 @@
 
 
 <!-- tmpl_if forward_to_a_friend -->
-	<h3>
-		&quot;Forward to a Friend&quot; by Country
-	</h3>
+	<!-- tmpl_if list_settings.tracker_show_location_data -->
+		<h3>
+			&quot;Forward to a Friend&quot; by Country
+		</h3>
 
-	<!-- tmpl_if can_use_country_geoip_data --> 
 		<div class="row">
 			<div class="large-4 medium-4 columns">
 				<div id="country_geoip_forwards_table_loading"></div> 
@@ -524,11 +512,8 @@
 				<div id="country_geoip_forwards_map"></div>
 			</div> 
 		</div> 
-	<!-- tmpl_else --> 
-		<div class="alert-box info radius">
-			Nothing to report.
-		</div> 
 	<!-- /tmpl_if -->
+
 
 	<h3>
 		&quot;Forward to a Friend&quot; Over Time

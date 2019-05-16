@@ -3457,7 +3457,9 @@ function update_plugins_tracker_message_report() {
 		event.preventDefault();
 		
 		// only show maps, if with have a set Google Map API:
-		if ($("#GOOGLE_MAPS_API_PARAMS_api_key").length > 0){ 
+		if (
+			$("#GOOGLE_MAPS_API_PARAMS_api_key").val().length > 0
+		){ 
 			individual_country_geoip_map(
 					$(this).attr("data-type"), 
 					$(this).attr("data-country"), 
@@ -3485,43 +3487,27 @@ function update_plugins_tracker_message_report() {
 
 
 	var tracker_message_report_callback = $.Callbacks();
+	tracker_message_report_callback.add(
+		function(){
+			tracker_message_email_activity_listing_table('message_email_activity_listing_table');
+			country_geoip_table('clickthroughs',       'Clickthroughs', 'country_geoip_clickthroughs_table');
+			country_geoip_table('opens',               'Opens',         'country_geoip_opens_table');
+			country_geoip_table('view_archive',        'Archive Views', 'country_geoip_view_archive_table');
+			country_geoip_table('forward_to_a_friend', 'Forwards',      'country_geoip_forwards_table');
+		}
+	); 
 
-	if ($("#can_use_country_geoip_data").val() == 1) {
 
-		tracker_message_report_callback.add(
-			function(){
-				tracker_message_email_activity_listing_table('message_email_activity_listing_table');
-				country_geoip_table('clickthroughs',       'Clickthroughs', 'country_geoip_clickthroughs_table');
-				country_geoip_table('opens',               'Opens',         'country_geoip_opens_table');
-				country_geoip_table('view_archive',        'Archive Views', 'country_geoip_view_archive_table');
-				country_geoip_table('forward_to_a_friend', 'Forwards',      'country_geoip_forwards_table');
-			}
-		); 
-		
-/*
-		tracker_message_report_callback.add(tracker_message_email_activity_listing_table('message_email_activity_listing_table'));
-		tracker_message_report_callback.add(country_geoip_table('clickthroughs', 'Clickthroughs', 'country_geoip_clickthroughs_table'));
-		tracker_message_report_callback.add(country_geoip_table('opens', 'Opens', 'country_geoip_opens_table'));
-		tracker_message_report_callback.add(country_geoip_table('view_archive', 'Archive Views', 'country_geoip_view_archive_table'));
-		tracker_message_report_callback.add(country_geoip_table('forward_to_a_friend', 'Forwards', 'country_geoip_forwards_table'));
-*/
-		/*
-		google.setOnLoadCallback(country_geoip_map('clickthroughs', 'country_geoip_clickthroughs_map'));
-		google.setOnLoadCallback(country_geoip_map('opens', 'country_geoip_opens_map'));
-		google.setOnLoadCallback(country_geoip_map('view_archive', 'country_geoip_view_archive_map'));
-		google.setOnLoadCallback(country_geoip_map('forward_to_a_friend', 'country_geoip_forwards_map'));
-		*/
-		
-		google.setOnLoadCallback(
-			function(){
-				country_geoip_map('clickthroughs',       'country_geoip_clickthroughs_map');
-				country_geoip_map('opens',               'country_geoip_opens_map');
-				country_geoip_map('view_archive',        'country_geoip_view_archive_map');
-				country_geoip_map('forward_to_a_friend', 'country_geoip_forwards_map');
-			}
-		); 
-		
-	}
+	google.setOnLoadCallback(
+		function(){
+			country_geoip_map('clickthroughs',       'country_geoip_clickthroughs_map');
+			country_geoip_map('opens',               'country_geoip_opens_map');
+			country_geoip_map('view_archive',        'country_geoip_view_archive_map');
+			country_geoip_map('forward_to_a_friend', 'country_geoip_forwards_map');
+		}
+	); 
+	
+
 
 	google.setOnLoadCallback(
 		function(){	
@@ -3622,7 +3608,9 @@ var country_geoip_map_infos = {
 function country_geoip_map(type, target_div) {
 
 	// No API Key, no map: 
-	if($("#GOOGLE_MAPS_API_PARAMS_api_key").length <= 0){ 
+	if (
+		$("#GOOGLE_MAPS_API_PARAMS_api_key").val().length <= 0
+	){ 
 		return false;
 	}
 	
@@ -3812,7 +3800,9 @@ function individual_country_cumulative_geoip_table(type, country, target_div) {
 				$("#" + target_div).fadeTo(200, 0, function() {
 					$("#" + target_div).html(content);
 					
-					if ($("#GOOGLE_MAPS_API_PARAMS_api_key").length > 0){ 
+					if (
+						$("#GOOGLE_MAPS_API_PARAMS_api_key").val().length > 0
+					){ 
 						$("#" + target_div + "_loading").html('<p class="label secondary"><a href="#" data-type="' + type + '" data-country="' + country + '"  class="individual_country_geoip">&lt; &lt; Back to Country Map</a></p>');
 					} else { 
 						$("#" + target_div + "_loading").html(''); 
