@@ -586,11 +586,11 @@ sub sfs_check {
 		); 
 	}
 	if($r_ip == 1){ 
-		warn 'sfs_check FAIL ip lookup: ' . anonymize_ip($ENV{'REMOTE_ADDR'})
+		warn 'sfs_check FAIL ip lookup: ' . ip_address_logging_filter($ENV{'REMOTE_ADDR'})
 			if $t; 
 	}
 	else { 
-		warn 'sfs_check PASS ip lookup: ' . anonymize_ip($ENV{'REMOTE_ADDR'})
+		warn 'sfs_check PASS ip lookup: ' . ip_address_logging_filter($ENV{'REMOTE_ADDR'})
 			if $t; 
 	}
 	

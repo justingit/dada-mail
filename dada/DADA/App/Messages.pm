@@ -395,7 +395,7 @@ sub send_abuse_report {
                 type        => 'list',
                 mid         => $args->{-mid},
                 flavor      => 'unsub_request_approve',
-                remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
+                remote_addr => ip_address_logging_filter($ENV{REMOTE_ADDR}),
             },
             -remove_previous => 0,
         }

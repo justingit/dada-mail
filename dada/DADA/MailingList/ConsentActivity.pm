@@ -115,7 +115,7 @@ sub ch_record {
 	
 	if(!exists($args->{-remote_addr},)){ 
 		$args->{-remote_addr} = $self->remote_addr;
-		$args->{-remote_addr} = anonymize_ip($args->{-remote_addr}); 
+		$args->{-remote_addr} = ip_address_logging_filter($args->{-remote_addr}); 
 		
 	}
 
@@ -241,10 +241,10 @@ sub remote_addr {
     if(exists($ENV{HTTP_X_FORWARDED_FOR})){ 
         # http://en.wikipedia.org/wiki/X-Forwarded-For
         my ($client, $proxies) = split(',', $ENV{HTTP_X_FORWARDED_FOR}, 2); 
-        return anonymize_ip($client); 
+        return ip_address_logging_filter($client); 
     }
     else { 
-        return anonymize_ip($ENV{'REMOTE_ADDR'}) || '127.0.0.1';
+        return ip_address_logging_filter($ENV{'REMOTE_ADDR'}) || '127.0.0.1';
     }
 }
 

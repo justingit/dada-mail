@@ -110,6 +110,7 @@ require Exporter;
   
   naive_csv_split
   
+  ip_address_logging_filter
   anonymize_ip
   
   Email_Address_parse
@@ -3423,6 +3424,16 @@ sub naive_csv_split {
     
 }
 
+sub ip_address_logging_filter { 
+	my $ip = shift; 
+		
+	if($DADA::Config::PII_OPTIONS->{ip_address_logging_style} eq 'anonymized'){ 
+		return anonymize_ip($ip);
+	}
+	else { 
+		return $ip; 
+	}
+}
 sub anonymize_ip {
 
 	my $ip = shift; 

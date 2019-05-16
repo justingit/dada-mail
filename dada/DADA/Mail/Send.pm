@@ -3531,7 +3531,7 @@ sub _make_token {
             #        list        => $args->{-list},
              #       flavor      => 'sub_confirm',
               #      type        => 'list',
-               #     remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
+               #     remote_addr => ip_address_logging_filter($ENV{REMOTE_ADDR}),
                 #    invite      => 1,
                 #}
            # }

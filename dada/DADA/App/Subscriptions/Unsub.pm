@@ -81,7 +81,7 @@ sub unsub_link {
 				type        => 'list', 
 				flavor      => 'unsub_confirm', 
 				 mid        => $args->{-mid},
-#				remote_addr => anonymize_ip($ENV{REMOTE_ADDR}),
+#				remote_addr => ip_address_logging_filter($ENV{REMOTE_ADDR}), #? why is this commented out? 
 				email_hint  => DADA::App::Guts::anonystar_address_encode($args->{-email}),
 				source      => $args->{-source}, 
 			},
