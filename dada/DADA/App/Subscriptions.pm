@@ -17,7 +17,7 @@ use Try::Tiny;
 use vars qw($AUTOLOAD);
 use strict;
 
-my $t = 1;# $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
 
 my %allowed = ( test => 0, );
 
