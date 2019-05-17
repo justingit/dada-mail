@@ -58,6 +58,24 @@ Install Core Five FileManager
 
 Select this option to use B<Core Five FileManager> (L<https://github.com/simogeo/Filemanager>). In Dada Mail, Filemanager uses the same sessioning system as Dada Mail itself, which can make for a smoother experience, if KCFinder is not working correctly. 
 
+=head2 Configure Handling Personal Identifiable Information (PII) 
+
+Personal Identifiable Information (PII) is any information that can be used to identify a person.
+
+For example: an email address can pretty easily be tied to one individual. Coupled with the IP Address of where requests to the app comes from, we can then know where this individual is on Earth. The timestamp saved can also tell us when that person was at that specific location. Further, we can then easily create a history of where this individual is over time, as well as exactly how they interacted with the application.
+
+By default, Dada Mail attempts to record I<as little Personal Identifiable Information as possible>, and this is reflected with the defaults in the app. This is done for many reasons. One is to respect the privacy of the users of the app. Another is to make sure that a mailing list follows the guidelines put down by GDPR. So, by default, email addresses are not logged for analytic purposes (message opens, clickthroughs, etc), and IP Addresses (which locations can be extrapolated from) are anonymized.
+
+=head3 Allow email addresses to be logged for tracking/analytical purposes 
+
+When checked, this will allow, per list, the option to be presented to add email addresses logging for items like message opens, clickthroughs, etc. 
+
+Each mailing list will still need to explicitely set this option in the Tracker plugin - checking this option installer just makes that now available. 
+
+=head3 Logging IP Addresses
+
+By default, all IP addresses that can be tied to users of the app are logged with IP addresses that are B<anonymized>, so that the exact location cannot be estimated via reverse IP lookup. This option allows you to choose, installation-wide, if IP addresses are logged as they originally are reported to by the app, or if they are anonymized. ("anonymized" is the default). 
+
 =head2 Configure Scheduled Jobs 
 
 Dada Mail requires a cronjob to run for some of its more advanced features: keeping tabs on mass mailings going out, sending out scheduled mailings, the Bridge plugin (discussion lists, and announcement messages sent via email), etc. 
@@ -533,7 +551,7 @@ Although rate limiting in Dada Mail was first implemeted for the above scenario,
 
 Check this option to enable Rate Limiting. B<Enabled by default>
 
-=head4 Timeframe (in minutes): 
+=head4 Timeframe (in minutes):
 
 Timeframe is the amount of time a number of requests for a certain feature/function can be made
 
@@ -544,6 +562,17 @@ Max Hits are the amount of requests for a certain feature/function that may be d
 If more requests than the Max Hits happens within the Timeframe, the feature/function will be inaccessible, until the number of requests is below the Max Hits threshold. Any other feature mentioned will still be available to the user, and any other users of the app will not be affected (unless of course they're being tied to that same IP Address)
 
 B<Config Variable:> C<$RATE_LIMITING>. 
+
+=head2 Configure Google Maps 
+
+Google Maps is used indirectly by the Tracker plugin, when it shows it's World and country maps. As of June 1st, 2019, showing these maps
+requires a Google Maps API Key, which is available through Google: 
+
+L<https://developers.google.com/maps/documentation/javascript/get-api-key>
+
+If this key is not available, the Tracker plugin will not show these maps. Rather, a table will be presented with similar information, broken down by location. 
+
+Related to showing information via map charts, Dada Mail, by default anonymized IP addresses when logging information like opens and clickthroughs. See, B<Configure Handling Personal Identifiable Information (PII) > in this same doc. 
 
 =head2 Configure CAPTCHA Options
 

@@ -296,6 +296,18 @@ $GOOGLE_MAPS_API_PARAMS = {
 <!-- /tmpl_if -->
 
 
+<!-- tmpl_if configure_pii --> 
+#---------------------------------------------------------------------#
+# Personal Identifying Information
+
+$PII_OPTIONS { 
+	allow_logging_emails_in_analytics => '<!-- tmpl_var pii_allow_logging_emails_in_analytics default="0" -->', 
+	ip_address_logging_style          => '<!-- tmpl_var pii_ip_address_logging_style default="anonymized" -->', 
+};
+<!-- /tmpl_if -->
+
+
+
 
 <!-- tmpl_if configure_mime_tools -->
 #---------------------------------------------------------------------#

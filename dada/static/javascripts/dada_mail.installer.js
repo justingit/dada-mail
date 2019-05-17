@@ -500,7 +500,6 @@ function test_captcha_reCAPTCHA_Mailhide_configuration() {
 
 function installer_checkbox_toggle_option_groups(checkbox_id, target_id){ 
 	
-	alert(checkbox_id);
 	if ($("#" + checkbox_id).length) {
 		if ($("#" + checkbox_id).prop("checked") === true) {
 			if ($('#' + target_id).is(':hidden')) {

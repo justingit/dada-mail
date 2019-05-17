@@ -1212,6 +1212,7 @@
 			<!-- tmpl_include upgrade_to_pro_dada.tmpl --> 
 		<!-- /tmpl_if -->
 
+	<!-- tmpl_if show_pii_options --> 
 
 		<label for="configure_pii">
 			<input 
@@ -1226,32 +1227,33 @@
 		<div id="pii_options">
 			<div class="panel">
 				
-				<label for="pii_options_allow_logging_emails_in_analytics">
+				<label for="pii_allow_logging_emails_in_analytics">
 					<input 
 						type="checkbox" 
-						name="pii_options_allow_logging_emails_in_analytics" 
-						id="pii_options_allow_logging_emails_in_analytics" 
+						name="pii_allow_logging_emails_in_analytics" 
+						id="pii_allow_logging_emails_in_analytics" 
 						value="1"
 					>			
 						Allow email addresses to be logged for tracking/analytical purposes
 				</label>
 
-				<label for="pii_options_ip_address_logging_style_original">
+				<label for="pii_ip_address_logging_style_original">
 					<input 
 						type="radio" 
-						name="pii_options_ip_address_logging_style" 
-						id="pii_options_ip_address_logging_style_original" 
+						name="pii_ip_address_logging_style" 
+						id="pii_ip_address_logging_style_original" 
 						value="original"
 					>			
 						Log complete IP addresses
 				</label>
 
-				<label for="pii_options_ip_address_logging_style_original_anonymized">
+				<label for="pii_ip_address_logging_style_original_anonymized">
 					<input 
 						type="radio" 
-						name="pii_options_ip_address_logging_style" 
-						id="pii_options_ip_address_logging_style_original_anonymized" 
+						name="pii_ip_address_logging_style" 
+						id="pii_ip_address_logging_style_original_anonymized" 
 						value="anonymized"
+						checked="checked"
 					>			
 						Log anonymized IP addresses
 				</label>
@@ -1259,6 +1261,8 @@
 			</div>
 		</div>
 
+	<!-- /tmpl_if -->
+		
 
 		<!-- tmpl_if show_scheduled_jobs_options --> 
 
@@ -2111,7 +2115,8 @@
 		<!-- /tmpl_if --> 
 
 
-
+		<!-- tmpl_if show_google_maps_options -->
+		
 			<label for="configure_google_maps">
 				<input 
 					type="checkbox" 
@@ -2135,7 +2140,8 @@
 					>
 				</div> 
 			</div>
-
+		<!-- /tmpl_if --> 
+		
 		<!-- tmpl_if show_captcha_options --> 
 
 			<label for="configure_captcha">

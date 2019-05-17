@@ -175,11 +175,13 @@ $plugins_extensions->{usage_log_to_consent_activity}->{code} = q{#					{
 
 
 my $advanced_config_params = {
+show_pii_options                    => 1,
 show_scheduled_jobs_options         => 1,
 show_deployment_options             => 1,
 show_profiles                       => 1,
 show_global_template_options        => 1,
 show_security_options               => 1,
+show_google_maps_options            => 1,
 show_captcha_options                => 1,
 show_global_mailing_list_options    => 1,
 show_global_mass_mailing_options    => 1,
@@ -319,7 +321,8 @@ sub setup {
             'install_file_browser=s',
             'deployment_running_under=s',
             'scheduled_jobs_flavor=s', 
-			'google_maps_api_key=s'
+			'google_maps_api_key=s',
+			
             'amazon_ses_AWSAccessKeyId=s',
             'amazon_ses_AWSSecretKey=s',
             'amazon_ses_AWS_endpoint=s',
@@ -1294,6 +1297,14 @@ sub grab_former_config_vals {
         $opt->{'configure_google_maps'} = 1;
 		$opt->{'google_maps_api_key'} = $BootstrapConfig::GOOGLE_MAPS_API_PARAMS->{api_key};
 	}
+	
+	# PII Options
+    if (keys %{$BootstrapConfig::PII_OPTIONS} ){ 
+        $opt->{'configure_pii'} = 1;
+		$opt->{'pii_allow_logging_emails_in_analytics'} = $BootstrapConfig::PII_OPTIONS->{allow_logging_emails_in_analytics};
+		$opt->{'pii_ip_address_logging_style'}          = $BootstrapConfig::PII_OPTIONS->{ip_address_logging_style};
+	}
+	
  
     # Global Mailing List Options
     if (   defined($BootstrapConfig::GLOBAL_UNSUBSCRIBE)
@@ -1683,6 +1694,11 @@ sub query_params_to_install_params {
 	  
 	  configure_google_maps
 	  google_maps_api_key
+
+	  configure_pii
+	  pii_allow_logging_emails_in_analytics
+	  pii_ip_address_logging_style
+
 
       configure_global_mailing_list
       global_mailing_list_options_GLOBAL_UNSUBSCRIBE
@@ -2111,6 +2127,7 @@ sub create_dada_config_file {
     my $self = shift;
     my $ip   = $self->param('install_params');
 
+
     my $loc = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name;
 
     # eval {
@@ -2374,6 +2391,13 @@ sub create_dada_config_file {
 		$google_maps_params->{google_maps_api_key}   = $ip->{-google_maps_api_key};
     }
 	
+    my $pii_params = {};
+    if ( $ip->{-configure_pii} == 1 ) {
+        $pii_params->{configure_pii} = 1;
+		$pii_params->{pii_ip_address_logging_style}            = $ip->{-pii_ip_address_logging_style};
+		$pii_params->{pii_allow_logging_emails_in_analytics}   = $ip->{-pii_allow_logging_emails_in_analytics};
+    }
+	
 	my $mime_tools_params = {}; 
 	if($ip->{-configure_mime_tools} == 1) { 
         $mime_tools_params->{configure_mime_tools}           = 1;
@@ -2491,6 +2515,7 @@ sub create_dada_config_file {
                 %{$security_params},
                 %{$captcha_params},
 				%{$google_maps_params},
+				%{$pii_params},
 				%{$mime_tools_params},
                 %{$global_mailing_list_options},
                 %{$mass_mailing_params},
