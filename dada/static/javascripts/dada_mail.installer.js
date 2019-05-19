@@ -138,6 +138,7 @@ jQuery(document).ready(function($){
 			"cache",
 			"mime_tools",
 			"debugging", 
+			"google_maps",
 			"security", 
 			"captcha", 
 			"global_mailing_list", 
