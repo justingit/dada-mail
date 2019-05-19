@@ -3649,12 +3649,24 @@ function country_geoip_map(type, target_div) {
 					height: ($("#" + target_div).width()/1.68).toFixed(0),
 					target_div: target_div
 				};
-				google.charts.load('current', {
+				
+				if (
+					$("#GOOGLE_MAPS_API_PARAMS_api_key").val().length <= 0
+				){ 
+					google.charts.load('current', {
 				        'packages':['geochart'],
 				        // Note: you will need to get a mapsApiKey for your project.
 				        // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
 				        'mapsApiKey': $("#GOOGLE_MAPS_API_PARAMS_api_key").val()
 				      });
+				  }
+				  else { 
+  					google.charts.load('current', {
+  				        'packages':['geochart'],
+						// no maps API sent - this is more to get that error thrown back..
+  				      });
+				  }
+				
 				google.charts.setOnLoadCallback(drawChart);
 				function drawChart() {
 					var chart = new google.visualization.GeoChart(document.getElementById(target_div));
@@ -3752,12 +3764,23 @@ function individual_country_geoip_map(type, country, target_div) {
 					target_div: target_div
 				};
 				
-				google.charts.load('current', {
+				if (
+					$("#GOOGLE_MAPS_API_PARAMS_api_key").val().length <= 0
+				){ 
+				
+					google.charts.load('current', {
 				        'packages':['geochart'],
 				        // Note: you will need to get a mapsApiKey for your project.
 				        // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
 				        'mapsApiKey': $("#GOOGLE_MAPS_API_PARAMS_api_key").val()
-				      });
+					});
+				}
+				else { 
+					google.charts.load('current', {
+				        'packages':['geochart'],
+					});
+				
+				}
 				google.charts.setOnLoadCallback(drawChart);
 				function drawChart() {
 					var chart = new google.visualization.GeoChart(document.getElementById(target_div));
