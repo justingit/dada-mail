@@ -1893,8 +1893,6 @@ sub country_geoip_json {
 			);
 		}
 
-		use Data::Dumper; 
-		warn '$datatable' . Dumper($datatable); 
 		$json = $datatable->output_javascript(
 			pretty  => 1,
 		);
@@ -2054,10 +2052,6 @@ sub individual_country_geoip_json {
 			);
 		}
 	
-		use Data::Dumper; 
-		warn '$datatable' . Dumper($datatable); 
-		
-		
 		$json = $datatable->output_javascript(
 			pretty  => 1,
 		);
