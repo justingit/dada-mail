@@ -4,7 +4,98 @@
 
 =head1 11.4.0
 
-Fill me out!
+This release has changes mostly that relate to the Tracker plugin: 
+
+=over
+
+=item * Support to add a Google Maps API Key has been added
+
+=item * Ability to log full (rather than anonymized) IP addresses has been restored
+
+=back
+
+=head2 Features
+
+=head3 Google Maps API Key support
+
+On June 1st, Google will require anyone that accesses their maps API to get an API Key (and thus, sign up for Google Cloud Platform). Dada Mail uses the map charts to show location data, 
+and this falls under using their maps. Rather than remove this feature from Dada Mail, we've 
+instead added support to add this Maps API Key into Dada Mail.
+
+You can grab an API key using these instructions: 
+
+L<https://developers.google.com/maps/documentation/javascript/get-api-key> 
+
+Once you have a key, you may add it to Dada Mail through the Dada Mail Installer - look for a checkbox labeled, 
+
+B<Configure Google Maps>
+
+Check it, then add your Google Maps API Key in the textbox labeled, 
+
+B<Google Maps API Key>
+
+If this API Key is not available, none of the map charts will be shown, but tabular data will be available where that makes sense. You can also disable showing maps in the Tracker plugin with a new option labeled, 
+
+B<Show maps in message reports> 
+
+=head3 Configure Handling Personally Identifiable Information (PII) 
+
+Dada Mail now has the ability - install-wide to control just what personally identifying information is allowed to be collected. New options are available in the installer under the option, 
+
+B<Configure Handling Personally Identifiable Information (PII)>
+
+Options are: 
+
+=head4 Allow email addresses to be logged for tracking/analytical purposes 
+
+B<Default:> I<disabled>
+
+If enabled, Dada Mail will then enable an option in the Tracker plugin labeled, 
+
+B<Track with email addresses> 
+
+Which may be enabled/disabled per mailing list. 
+
+When this option is enabled, the Tracker plugin will log and report data that includes the email address. 
+
+If disabled, the following message will be shown in the Tracker plugin, 
+
+     Disabled. Logging email addresses for analytical purposes is not enabled. 
+
+
+=head4 	Log complete/anonymized IP addresses 
+
+B<Default:> I<anonymized>
+
+Dada Mail by default anonymizes IP addresses before logging them. If you would like to enable
+saving the actual IP address being reported, you now have the option to do so. 
+
+Make sure to be educated on these options - if you need to follow the guidelines put forth by the GDPR, neither tracking with an email address, nor logging IP addresses should be things you should be doing, unless you've been given consent to do so. See also 
+
+L<https://dadamailproject.com/d/gdpr_guide.pod.html>
+
+
+=head4 IP addresses and the Tracker plugin 
+
+One of the places that full IP addresses are useful, is when reporting where opens, clickthroughs, etc are done geographically, and Dada Mail reports this using it's map charts. 
+
+If IP address logging is anonymized, this location lookup by IP address is negatively impacted. 
+
+This is now noted in the Tracker plugin, and a new option is available to simple enable/disable maps from being shown completely. Look for the option labeled, 
+
+B<Show location data in message reports> 
+
+=head3 More Information
+
+These topics are touched upon in then following blog post: 
+
+L<https://blog.dadamailproject.com/2019/05/21/enhancing-message-reports-in-the-tracker-plugin-in-v11-4-0/>
+
+=head2 Bugfixes
+
+=head3 Tracker: "Unique" Opens/Clickthroughs, etc aren't calculated correctly, as Personally Identifying Information isn't collected since v11
+
+L<https://github.com/justingit/dada-mail/issues/812>
 
 =head1 11.3.1
 
