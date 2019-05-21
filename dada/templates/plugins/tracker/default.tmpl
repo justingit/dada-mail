@@ -233,7 +233,6 @@
 		<div class="small-12 columns ">				
 
 
-
 	    <input 
 			type="checkbox" 
 			name="tracker_track_email" 
@@ -255,12 +254,9 @@
 				(Disabled)
 			<!-- /tmpl_unless -->
 	    </label>
-		
-		
-		
+	
 		</div>
 	</div>
-	
 	
 	<div class="row">
 		<div class="small-1 columns ">
@@ -281,7 +277,68 @@
 			
 			
 		</div>
-	</div> 
+	</div>
+	
+ 	<div class="row">
+ 		<div class="small-1 columns ">
+ 		</div>
+ 		<div class="small-11 columns ">
+ 			<div id="tracker_track_email_options">   
+ 		       <fieldset> 
+ 		           <legend>Profile Updates</legend>
+ 		                 <input 
+ 						 	type="checkbox" 
+ 							name="tracker_update_profiles_w_geo_ip_data" 
+ 							id="tracker_update_profiles_w_geo_ip_data" 
+ 							value="1" 
+ 							<!-- tmpl_if list_settings.tracker_update_profiles_w_geo_ip_data -->checked="checked"<!-- /tmpl_if -->
+ 						   >
+ 		                   <label for="tracker_update_profiles_w_geo_ip_data">
+ 		                       Update Profiles, after opens/clickthroughs
+ 		                   </label> 
+
+ 				   		<div class="small-1 columns ">
+ 				   		</div>
+ 				   		<div class="small-11 columns ">
+ 				   			<div id="tracker_track_email_options">   
+						   
+ 			                   <div id="field_name_group">                
+ 			                		    <!-- tmpl_loop field_names --> 
+ 											<div class="row">
+ 												<div class="small-1 columns ">				
+ 				                                    <input type="checkbox" 
+ 				                                          id="<!-- tmpl_var name escape="HTML" -->.enabled" 
+ 				                                        name="<!-- tmpl_var name escape="HTML" -->.enabled" 
+ 				                                        class="field_checkbox" 
+ 				                                        data-target="<!-- tmpl_var name escape="HTML" -->_popup_menu" 
+ 				                                        value="1" 
+ 				                                        <!-- tmpl_if enabled -->
+ 				                                            checked="checked"
+ 				                                        <!-- /tmpl_if --> 
+ 				                                    >
+ 												</div>
+ 												<div class="small-3 columns ">				
+ 				                                    <label for="<!-- tmpl_var name escape="HTML" -->.enabled">
+ 														<!-- tmpl_var label  escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->):
+ 													</label>
+ 												</div>
+ 												<div class="small-8 columns ">				
+ 				                                    <div id="<!-- tmpl_var name escape="HTML" -->_popup_menu">
+ 				                                        <!-- tmpl_var popup_menu -->
+ 				                                    </div>
+ 												</div>
+ 											</div>
+ 									   <!-- /tmpl_loop --> 
+ 			                    </div> 
+ 							 </div> 
+ 						</div> 
+ 		       </fieldset> 
+ 		   </div> 
+    		</div> 
+    </div>
+	
+	
+	
 	
 	
 	<div class="row">
@@ -350,63 +407,7 @@
 	
 	
 	
-	<div class="row">
-		<div class="small-1 columns ">
-		</div>
-		<div class="small-11 columns ">
-			<div id="tracker_track_email_options">   
-		       <fieldset> 
-		           <legend>Profile Updates</legend>
-		                 <input 
-						 	type="checkbox" 
-							name="tracker_update_profiles_w_geo_ip_data" 
-							id="tracker_update_profiles_w_geo_ip_data" 
-							value="1" 
-							<!-- tmpl_if list_settings.tracker_update_profiles_w_geo_ip_data -->checked="checked"<!-- /tmpl_if -->
-						   >
-		                   <label for="tracker_update_profiles_w_geo_ip_data">
-		                       Update Profiles, after opens/clickthroughs
-		                   </label> 
-
-				   		<div class="small-1 columns ">
-				   		</div>
-				   		<div class="small-11 columns ">
-				   			<div id="tracker_track_email_options">   
-						   
-			                   <div id="field_name_group">                
-			                		    <!-- tmpl_loop field_names --> 
-											<div class="row">
-												<div class="small-1 columns ">				
-				                                    <input type="checkbox" 
-				                                          id="<!-- tmpl_var name escape="HTML" -->.enabled" 
-				                                        name="<!-- tmpl_var name escape="HTML" -->.enabled" 
-				                                        class="field_checkbox" 
-				                                        data-target="<!-- tmpl_var name escape="HTML" -->_popup_menu" 
-				                                        value="1" 
-				                                        <!-- tmpl_if enabled -->
-				                                            checked="checked"
-				                                        <!-- /tmpl_if --> 
-				                                    >
-												</div>
-												<div class="small-3 columns ">				
-				                                    <label for="<!-- tmpl_var name escape="HTML" -->.enabled">
-														<!-- tmpl_var label  escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->):
-													</label>
-												</div>
-												<div class="small-8 columns ">				
-				                                    <div id="<!-- tmpl_var name escape="HTML" -->_popup_menu">
-				                                        <!-- tmpl_var popup_menu -->
-				                                    </div>
-												</div>
-											</div>
-									   <!-- /tmpl_loop --> 
-			                    </div> 
-							 </div> 
-						</div> 
-		       </fieldset> 
-		   </div> 
-   		</div> 
-   </div> 
+	
    
 	<div class="row">
 		<div class="small-12 columns ">	
