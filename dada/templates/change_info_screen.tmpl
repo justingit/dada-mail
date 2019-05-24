@@ -1,8 +1,11 @@
 <!-- begin change_info_screen.tmpl -->
 
+<!-- tmpl_set name="load_jquery_validate" value="1" -->
+
 
 <!-- tmpl_set name="title" value="Mailing List &#187; List Information" -->
 <div id="screen_meta" data-menu_highlight="change_info"></div>
+<div id="change_info"></div>
 
 
 <div class="row hide-for-small-only" id="control_panel_breadcrumbs">
@@ -39,7 +42,13 @@
 
 <!--/tmpl_if-->
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+<form 
+	action="<!-- tmpl_var S_PROGRAM_URL -->" 
+	method="post" 
+	name="change_info_form"
+	id="change_info_form" 
+	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+>
 
 
 <input type="hidden" name="flavor"       value="change_info" >
@@ -88,7 +97,12 @@
         	</label>
 			</div>
 			<div class="large-9 medium-9 columns">
-		    	<input type="text" name="list_name" id="list_name" value="<!-- tmpl_var list_name escape="HTML" -->"  >
+		    	<input 
+					type="text" 
+					name="list_name" 
+					id="list_name" 
+					value="<!-- tmpl_var list_name escape="HTML" -->"
+				>
 		    </div>
 		</div>
 
@@ -117,7 +131,12 @@
 			</label>
 		</div>
 		<div class="large-9 medium-9 columns">
-		  <input type="text" name="list_owner_email" id="list_owner_email" value="<!-- tmpl_var list_owner_email escape="HTML" -->" >
+		  <input 
+		  	type="text" 
+			name="list_owner_email" 
+			id="list_owner_email" 
+			value="<!-- tmpl_var list_owner_email escape="HTML" -->"
+		>
 		</div>
 	</div>
 
@@ -139,7 +158,12 @@
 			</label>
 		</div>
 		<div class="large-9 medium-9 columns">
-        	<input type="text" name="admin_email" id="admin_email" value="<!-- tmpl_var admin_email escape="HTML" -->"  >
+        	<input 
+				type="text" 
+				name="admin_email" 
+				id="admin_email" 
+				value="<!-- tmpl_var admin_email escape="HTML" -->"
+			>
        </div>
     </div>
 
@@ -159,7 +183,10 @@
             </label>
 		</div>
 		<div class="large-9 medium-9 columns">
-			<textarea name="info" id="info"  rows="5"><!-- tmpl_var info --></textarea>        
+			<textarea 
+				name="info" 
+				id="info"  
+				rows="5"><!-- tmpl_var info --></textarea>        
 	   </div>
 	</div>
 
@@ -180,7 +207,10 @@
  		</label>
 	</div>
 	<div class="large-9 medium-9 columns">
-   		 <textarea name="physical_address" id="physical_address" rows="5"><!-- tmpl_var physical_address --></textarea>
+   		 <textarea 
+		 	name="physical_address" 
+			id="physical_address" 
+			rows="5"><!-- tmpl_var physical_address --></textarea>
     </div>
  </div>
 
@@ -272,7 +302,7 @@
  	<div class="large-3 medium-3 columns">
  	    <label 
  			class="medium-text-right"
- 			for="facebook_page_url"
+ 			for="youtube_url"
  		>
           	Youtube Channel URL
  		</label>

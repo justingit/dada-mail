@@ -1084,6 +1084,56 @@ jQuery(document).ready(function($){
 	if ($("#html_code").length) {
  	   new Clipboard('.copy_button');		
 	}
+	
+	if ($("#change_info").length){ 
+		
+		$("#change_info_form").validate({
+			rules: {
+				list_name: { 
+					required: true,
+				}, 
+				list_owner_email: { 
+					required: true, 
+					email: true
+				},
+				admin_email: { 
+					required: false, 
+					email: true
+				},
+				info: { 
+					required: true, 				
+				},
+				physical_address: { 
+					required: true, 								
+				},
+				logo_image_url: { 
+					required: false, 
+					url: true					
+				},
+				website_url: {
+					required: false, 
+					url: true					
+				},
+				facebook_page_url: {
+					required: false, 
+					url: true					
+				},
+				youtube_url: {
+					required: false, 
+					url: true					
+				},
+				twitter_url: {
+					required: false, 
+					url: true					
+				},
+
+				instagram_url: {
+					required: false, 
+					url: true					
+				}
+			}			
+		});
+	}
 
 
 	// Membership >> View List
