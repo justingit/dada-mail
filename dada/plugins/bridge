@@ -166,6 +166,7 @@ sub cgi_main {
         'manual_start'                => \&admin_cgi_manual_start,
         'admin_cgi_manual_start_ajax' => \&admin_cgi_manual_start_ajax,
         'cgi_test_pop3_ajax'          => \&cgi_test_pop3_ajax,
+		#'cgi_inject'                  => \&cgi_inject,
         'mod'                         => \&mod,
     );
 
@@ -3304,6 +3305,26 @@ sub inject {
         return ( 0, { disabled => 1 }, $r );
     }
 
+}
+
+sub cgi_inject { 
+
+ my $q = shift; 
+ my $fn = $q->param('fn') || die "no filename passed";
+ $verbose  = 1;
+ my $r; 
+ 
+ 
+$r = inject_msg(
+ 	
+ { 
+	 -filename => $fn, 
+	 -list     => $list, 
+ }); 
+ 
+ 
+ return ( {}, $r );
+  
 }
 
 
