@@ -2,6 +2,20 @@
 
 =encoding utf-8
 
+=head1 11.4.1
+
+This is mostly a bug-fix release for issues found in the v11.4.0 release of Dada Mail.
+
+=head2 Bugfixes
+
+=head3  Broken Image shown if Logo Image URL set incorrectly #814 
+
+L<https://github.com/justingit/dada-mail/issues/814>
+
+=head3 "mailing_list_message-none.html" is shipped with styling (no styling should be present) #10 
+
+L<https://github.com/justingit/dada_mail_foundation_email_templates/issues/10>
+
 =head1 11.4.0
 
 This release has changes mostly that relate to the Tracker plugin: 
