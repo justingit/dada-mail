@@ -685,11 +685,23 @@ sub edit {
     my $list_email_status = 1;
     my $list_email_errors = {};
 
+
     if ( $q->param('process') == 1 ) {
 
         if ( $Plugin_Config->{Allow_Open_Discussion_List} == 0 ) {
             $q->param( 'open_discussion_list', 0 );
         }
+		
+	    if ( ! defined( $q->param('discussion_pop_password') )
+		 || length($q->param('discussion_pop_password')) <= 0
+		 
+		 ) {
+			# warn 'no discussion_pop_password: '  . $q->param('discussion_pop_password');
+			delete($bridge_settings_defaults{discussion_pop_password}); 
+	    }
+		else { 
+			# warn 'yes discussion_pop_password: '  . $q->param('discussion_pop_password');
+		}
 
         $ls->save_w_params(
             {
