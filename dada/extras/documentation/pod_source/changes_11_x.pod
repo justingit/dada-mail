@@ -2,6 +2,16 @@
 
 =encoding utf-8
 
+=head1 11.4.2
+
+This is mostly a bug-fix release for issues found in the v11.4.1 release of Dada Mail.
+
+=head2 Bugfixes
+
+=head3 Plugins: Bridge: saving settings will delete POP3 Discussion Password
+
+L<https://github.com/justingit/dada-mail/issues/815>
+
 =head1 11.4.1
 
 This is mostly a bug-fix release for issues found in the v11.4.0 release of Dada Mail.
