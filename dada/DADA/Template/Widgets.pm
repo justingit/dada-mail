@@ -2752,7 +2752,7 @@ sub subscription_form {
 		if(
 			(
 				$ls->param('invite_only_list') == 1
-			 || $ls->param('closed_list') == 1
+			&&  $ls->param('closed_list') == 1
 			) 
 		){ 
 			if($ls->param('invites_show_profile_fields_in_subscription_form') == 1){ 
