@@ -11,9 +11,9 @@ CKEDITOR.editorConfig = function(config) {
 	config.imageUploadUrl = '<!-- tmpl_var S_PROGRAM_URL -->';
 	
    <!-- tmpl_if configure_file_browser --> 
-   config.filebrowserBrowseUrl      = '<!-- tmpl_var file_manager_browse_url -->?type=files';
-   config.filebrowserImageBrowseUrl = '<!-- tmpl_var file_manager_browse_url -->?type=images';
-   config.filebrowserFlashBrowseUrl = '<!-- tmpl_var file_manager_browse_url -->?type=flash';
+   config.filebrowserBrowseUrl      = '<!-- tmpl_var file_manager_browse_url -->?type=files&rand_string=' + rand_string();
+   config.filebrowserImageBrowseUrl = '<!-- tmpl_var file_manager_browse_url -->?type=images&rand_string=' + rand_string();
+   config.filebrowserFlashBrowseUrl = '<!-- tmpl_var file_manager_browse_url -->?type=flash&rand_string=' + rand_string();
    config.filebrowserUploadUrl      = null;
    config.filebrowserImageUploadUrl = null;
    config.filebrowserFlashUploadUrl = null;
@@ -47,3 +47,8 @@ CKEDITOR.editorConfig = function(config) {
         { name: 'document',       items : [ 'Source','Maximize', 'ShowBlocks'] },
     ];
 };
+
+function rand_string() { 
+	return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+

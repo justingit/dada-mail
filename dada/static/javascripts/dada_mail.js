@@ -389,8 +389,9 @@ jQuery(document).ready(function($){
 			
 		if ($("#using_ckeditor").length) {
 			
+			/* "rand_string()" is there to avoid caching */
 			CKEDITOR.replace('html_message_body', {
-				customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
+				customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js' + '?' + rand_string(), 
 				toolbar: 'DadaMail_Admin'
 			}).on( 'fileUploadRequest', function( evt ) {
 				evt.data.requestData.flavor = 'image_drag_and_drop';
@@ -428,7 +429,8 @@ jQuery(document).ready(function($){
 								    + cleanUpFuncRef 
 								    + '&langCode=en' 
 								    + '&CKEditor=' 
-									+ event.editor.name;
+									+ event.editor.name
+								    + '&rand_string=' + rand_string(); // to avoid caching
 							var iframe = $("<iframe id='fm-iframe' class='fm-modal'/>").attr({
 	                            src: editor_url_query
 	                        });
@@ -4852,3 +4854,8 @@ Date.prototype.format = function(format) //author: meizz
         ("00"+ o[k]).substr((""+ o[k]).length));
   return format;
 }
+
+function rand_string() { 
+	return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+
