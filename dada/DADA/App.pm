@@ -386,9 +386,13 @@ sub yikes {
 
     my $self  = shift;
     my $error = shift;
+
     warn $error;
 
     my $TIME = scalar( localtime() );
+
+    $self->header_props( -status => '500' );
+
     return qq{
 <html>
 <head></head>
@@ -425,6 +429,9 @@ sub rate_limit_reached {
 
     my $self = shift;
     sleep(30);
+	
+    $self->header_props( -status => '429' );
+	
     return qq{
 <html>
 <head></head>
