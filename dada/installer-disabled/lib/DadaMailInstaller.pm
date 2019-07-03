@@ -1230,15 +1230,29 @@ sub grab_former_config_vals {
 	)
     {
         $opt->{'configure_security'} = 1;
-        if ( $BootstrapConfig::SHOW_ADMIN_LINK == 2 ) {
-            $opt->{'security_no_show_admin_link'} = 1;
-        }
-        else {
-            $opt->{'security_no_show_admin_link'} = 0;
-        }
-        $opt->{'security_DISABLE_OUTSIDE_LOGINS'} = $BootstrapConfig::DISABLE_OUTSIDE_LOGINS;
-        $opt->{'security_ADMIN_FLAVOR_NAME'}      = $BootstrapConfig::ADMIN_FLAVOR_NAME;
-        $opt->{'security_SIGN_IN_FLAVOR_NAME'}    = $BootstrapConfig::SIGN_IN_FLAVOR_NAME;
+        
+		# I'm not sure why I want explicitly, "1" or, "anything else" but here you go: 
+		
+		if (defined($BootstrapConfig::SHOW_ADMIN_LINK == 1 )) {
+			if ( $BootstrapConfig::SHOW_ADMIN_LINK == 1 ) {
+	            $opt->{'security_no_show_admin_link'} = 0;
+	        }
+	        else {
+	            $opt->{'security_no_show_admin_link'} = 1;			
+	        }
+		}
+		
+		if(defined($BootstrapConfig::DISABLE_OUTSIDE_LOGINS)){
+			$opt->{'security_DISABLE_OUTSIDE_LOGINS'} = $BootstrapConfig::DISABLE_OUTSIDE_LOGINS;
+		}
+		
+		if(defined($BootstrapConfig::ADMIN_FLAVOR_NAME)){
+			$opt->{'security_ADMIN_FLAVOR_NAME'}      = $BootstrapConfig::ADMIN_FLAVOR_NAME;
+		}
+		
+		if(defined($BootstrapConfig::SIGN_IN_FLAVOR_NAME)){
+        	$opt->{'security_SIGN_IN_FLAVOR_NAME'}    = $BootstrapConfig::SIGN_IN_FLAVOR_NAME;
+		}
 		
 		if(keys    %$BootstrapConfig::CP_SESSION_PARAMS) { 
 			$opt->{'security_session_params_check_matching_ip_addresses'} 
