@@ -2,6 +2,24 @@
 
 =encoding utf-8
 
+=head1 11.4.3
+
+This is mostly a bug-fix release for issues found in the v11.4.2 release of Dada Mail.
+
+=head2 Bugfixes
+
+=head3  Yikes! App/Server Problem! page returns the wrong HTTP response code 200 instead of 500 #817 
+
+L<https://github.com/justingit/dada-mail/issues/817>
+
+=head3 "Hide Administration Link" Option always reverted to showing in install/configure #818 
+
+L<https://github.com/justingit/dada-mail/issues/818>
+
+=head3  Adding random query strings to some resources to get past caching #821 
+
+L<https://github.com/justingit/dada-mail/issues/821> 
+
 =head1 11.4.2
 
 This is mostly a bug-fix release for issues found in the v11.4.1 release of Dada Mail.
