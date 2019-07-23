@@ -131,8 +131,8 @@ default_password text
 CREATE TABLE IF NOT EXISTS dada_message_drafts (
 id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 list varchar(16),
-created_timestamp TIMESTAMP default '0000-00-00 00:00:00', 
-last_modified_timestamp TIMESTAMP DEFAULT NOW() ON UPDATE NOW(),
+created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+last_modified_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 name varchar(80), 
 screen varchar(80),
 role varchar(80),
