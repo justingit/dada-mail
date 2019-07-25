@@ -1990,6 +1990,11 @@ sub _expand_macro_tags {
 
     $data =~ s/$f_to_a_f_l/$f_to_a_f_l_expanded/g;
 
+	# Not used, not ever used
+    # my $a_m_url = quotemeta('<!-- tmpl_var archived_message_url -->');
+    # my $a_m_url_expanded = '<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/';
+    # $data =~ s/$a_m_url/$f_to_a_f_l_expanded/g;
+
     # This is kinda out of place...
     if ( $self->originating_message_url ) {
         my $omu = $self->originating_message_url;

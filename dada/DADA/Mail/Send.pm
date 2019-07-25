@@ -3340,6 +3340,14 @@ sub _mail_merge {
     $labeled_data{'list_settings.list_name'} = shift @$data;
     $labeled_data{message_id}                = shift @$data;
 
+
+	# I feel that this will have other reprocussions, but this will work for now
+	# See this also in, sub email_message_preview in DADA::App
+	if ( $self->mass_test == 1 ) {
+		$labeled_data{message_id} = 'PREVIEW_MESSAGE_ID';
+	}
+
+
     # type is passed in, $self->list_type
     my $confirmation_token = $self->_make_token(
         {

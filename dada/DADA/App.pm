@@ -1445,7 +1445,11 @@ sub email_message_preview {
 
 	my $fake_vars = {};
     $fake_vars->{'list_unsubscribe_link'} = $DADA::Config::PROGRAM_URL . '/t/'  . 'CONFIRMATION_TOKEN' . '/';
-	$fake_vars->{'sender.email'} = $ls->param('list_owner_email');
+	$fake_vars->{'sender.email'} = $ls->param('list_owner_email');	
+	
+	
+	$fake_vars->{message_id} = 'PREVIEW_MESSAGE_ID';
+	
 	
 	# warn q{$fake_vars->{'list_unsubscribe_link'}} . $fake_vars->{'list_unsubscribe_link'}; 
 	
@@ -11661,8 +11665,26 @@ sub list_archive {
     }
     else {    # There's an id...
 
+	
         $id = $archive->newest_entry if $id =~ /newest/i;
         $id = $archive->oldest_entry if $id =~ /oldest/i;
+		
+		if($id eq 'PREVIEW_MESSAGE_ID'){ 			
+			
+		    my $scrn = DADA::Template::Widgets::wrap_screen(
+		        {
+		            -screen => 'archive_screen_preview_placeholder.tmpl',
+		            -with   => 'list',
+		            -vars   => {},
+		            -list_settings_vars_param => {
+		                -list   => $list,
+		                -dot_it => 1,
+		            },
+		        }
+		    );
+			return $scrn;
+		}
+
 
         if ( $q->param('extran') ) {
 
