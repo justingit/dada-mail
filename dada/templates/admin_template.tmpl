@@ -20,12 +20,7 @@
  
 <!-- tmpl_if load_google_viz --> 
 	<!-- Google Visualization -->
-	<!-- tmpl_if comment -->
-		<script type="text/javascript" src="//www.google.com/jsapi"></script>
-	<!-- /tmpl_if -->
-    	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-	
-	
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <!-- /tmpl_if --> 
 
 <!-- jQuery -->
@@ -57,14 +52,21 @@
 <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/dada_mail.js?v=<!-- tmpl_var VER escape=URL -->" type="text/javascript"></script>
 
 <!-- tmpl_if load_wysiwyg_editor --> 
+	<!-- WYSIWYG Editor to load: '<!-- tmpl_var use_wysiwyg_editor -->' -->
 	<!-- WYSIWYG Editors --> 
 	<!-- tmpl_if using_ckeditor --> 
+		<!-- CKeditor is being used. -->
 		<script src="<!-- tmpl_var CKEDITOR_URL -->/ckeditor.js?v=<!-- tmpl_var VER escape=URL -->"         type="text/javascript" ></script>
 		<script src="<!-- tmpl_var CKEDITOR_URL -->/adapters/jquery.js?v=<!-- tmpl_var VER escape=URL -->"  type="text/javascript"></script>
+	<!-- tmpl_else -->
+		<!-- CKeditor is NOT being used. -->
 	<!-- /tmpl_if --> 
 	<!-- tmpl_if using_tiny_mce --> 
+		<!-- TinyMCE is being used. -->
 		<script src="<!-- tmpl_var TINY_MCE_URL -->/tinymce.min.js?v=<!-- tmpl_var VER escape=URL -->"         type="text/javascript"></script>
 		<script src="<!-- tmpl_var TINY_MCE_URL -->/dada_mail_config.js?v=<!-- tmpl_var VER escape=URL -->" type="text/javascript"></script>
+	<!-- tmpl_else -->
+		<!-- TinyMCE is NOT being used. -->
 	<!-- /tmpl_if -->
 <!-- /tmpl_if --> 
 
@@ -72,9 +74,6 @@
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/colorbox/jquery.colorbox-min.js?v=<!-- tmpl_var VER escape=URL -->"></script>    	
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/modernizr.js?v=<!-- tmpl_var VER escape=URL -->"></script>
     
-	
-
-
 	<link type="text/css" media="screen" rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/responsive-tables.css?v=<!-- tmpl_var VER escape=URL -->" >
 	<script type="text/javascript" src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/responsive-tables.js?v=<!-- tmpl_var VER escape=URL -->"></script>
 
