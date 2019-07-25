@@ -104,9 +104,9 @@ This running of the scheduled jobs will only happen in this manner no more than 
 
 B<Config Variable:> C<$SCHEDULED_JOBS_OPTIONS>
 
-=head2 Configure Deployment Options
+=head2 Configure Deployment Options (EXPERIMENTA)
 
-Dada Mail can be deployed as a CGI, FastCGI, or PSGI/Plack app. 
+Dada Mail can be deployed as a CGI, FastCGI, or PSGI/Plack app. Any deployment, other than CGI is marked as, B<EXPERIMENTAL>.
 
 If you're setting things up using the included installer through the web-based interface, you're probably going to keep this set as the default, C<CGI> or C<FastCGI>. If you would like to set Dada Mail up to be deployed under PSGI, it's best to use the command line interface of the installer, as the web-based installer itself runs under CGI. 
 
