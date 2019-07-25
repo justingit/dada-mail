@@ -1085,10 +1085,10 @@ sub grab_former_config_vals {
         $opt->{'scheduled_jobs_flavor'} = $ran_str;
     }
 
-    # CGI/FastCGI/PSGI
+    # FastCGI/PSGI (CGI is default/implicit)
     if ( defined($BootstrapConfig::RUNNING_UNDER) 
 		&& $BootstrapConfig::RUNNING_UNDER 
-		=~ m/^(CGI|FastCGI|PSGI)$/ 
+		=~ m/^(FastCGI|PSGI)$/ 
 	) {
         $opt->{'configure_deployment'}                 = 1;
         $opt->{'deployment_running_under'}             = $BootstrapConfig::RUNNING_UNDER;
@@ -2227,11 +2227,6 @@ sub create_dada_config_file {
             $deployment_params->{deployment_running_under} = $ip->{-deployment_running_under} || 'CGI'; 
     }
 
-
-    my $deployment_params = {};
-    if ( $ip->{-configure_deployment} == 1 ) {
-            $deployment_params->{deployment_running_under} = $ip->{-deployment_running_under} || 'CGI'; 
-    }
 	my $perl_env_params = {}; 
     if ( $ip->{-configure_perl_env} == 1 ) {
 		$perl_env_params->{configure_perl_env} = 1; 
