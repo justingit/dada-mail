@@ -2386,22 +2386,23 @@ sub upgrade_tables {
 			# last_modified_timestamp = 0000-00-00 00:00:00
 				
 			if(
-		
-			   $m_info->{created_timestamp}->{COLUMN_DEF} eq 'CURRENT_TIMESTAMP'
-			|| $m_info->{last_modified_timestamp}->{COLUMN_DEF} =~ m/00/	
-			) { 
-		
+			   $m_info->{created_timestamp}->{COLUMN_DEF} =~ m/00/
+			){ 
 				my $query =  'ALTER TABLE '
 				. $DADA::Config::SQL_PARAMS{message_drafts_table}
-				. " MODIFY COLUMN created_timestamp TIMESTAMP default '0000-00-00 00:00:00'";
+				. " MODIFY COLUMN created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP";
 				my $sth = $dbh->do($query)
 					or croak $dbh->errstr;
 				undef $query;
 				undef $sth;
-  
+			}
+			   
+			if(
+				$m_info->{last_modified_timestamp}->{COLUMN_DEF} =~ m/00/	
+			) { 
 				my $query =  'ALTER TABLE '
 				. $DADA::Config::SQL_PARAMS{message_drafts_table}
-				. " MODIFY COLUMN last_modified_timestamp TIMESTAMP DEFAULT NOW() ON UPDATE NOW()";
+				. " MODIFY COLUMN last_modified_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,";
 				my $sth = $dbh->do($query)
 					or croak $dbh->errstr;
 				undef $query;
