@@ -2,6 +2,20 @@
 
 =encoding utf-8
 
+=head1 11.4.4
+
+This is mostly a bug-fix release for issues found in the v11.4.3 release of Dada Mail.
+
+=head2 Bugfixes
+
+=head3 Make FastCGI/PSGI setup "Experimental" so to give people pause before using it #823
+
+L<https://github.com/justingit/dada-mail/issues/823>
+
+=head3 MySQL Schema, default TIMESTAMP set to, '0000-00-00 00:00:00' in dada_message_drafts
+
+L<https://github.com/justingit/dada-mail/issues/822>
+
 =head1 11.4.3
 
 This is mostly a bug-fix release for issues found in the v11.4.2 release of Dada Mail.
