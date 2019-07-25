@@ -16,6 +16,10 @@ L<https://github.com/justingit/dada-mail/issues/823>
 
 L<https://github.com/justingit/dada-mail/issues/822>
 
+=head3  Link to view archived message in browser broken in preview/test mass mailing messages #820 
+
+L<https://github.com/justingit/dada-mail/issues/820>
+
 =head1 11.4.3
 
 This is mostly a bug-fix release for issues found in the v11.4.2 release of Dada Mail.
