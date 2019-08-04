@@ -109,9 +109,15 @@
 		</li>
 		<!-- /tmpl_if -->             
 		<!-- tmpl_if error_unknown_user --> 
-			<li>
-				Profile User Unknown - have you registered?
-			</li>
+			<!-- tmpl_if profile_settings.register -->
+				<li>
+					Profile User Unknown - have you registered?
+				</li>
+			<!-- tmpl_else -->
+				<li>
+					Profile User Unknown - self-registration is also disabled.
+				</li>
+			<!-- /tmpl_if -->
 		<!-- /tmpl_if --> 
 		<!-- tmpl_if error_incorrect_pass --> 
 			<li>
