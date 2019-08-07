@@ -1239,16 +1239,41 @@ sub soft_max_msg_test {
     my $size = $args->{-size};
     if ( $size > $ls->param('msg_soft_size_limit') ) {
 
-        $r .=
-            "\t* Warning! Message size ( "
-          . $size
-          . " ) is larger than the soft maximum size allowed ( "
-          . $ls->param('msg_soft_size_limit') . " )\n";
-        warn "bridge Warning! Message size ( "
-          . $size
-          . " ) is larger than the soft maximum size allowed ( "
-          . $ls->param('msg_soft_size_limit') . ")";
+	
 
+		my $e_msg = "\t* Warning! Message size ( "
+          . $size
+          . " bytes) is larger than the soft maximum size allowed ( "
+          . $ls->param('msg_soft_size_limit') . "bytes )\n";
+		
+		
+	    if ( $size < $ls->param('msg_hard_size_limit') ) {
+			my $msg_ref = $args->{-msg_ref};
+			try { 
+				
+				require Number::Bytes::Human;
+				
+				$e_msg = "\t* Warning! Message size ( "
+				          . Number::Bytes::Human::format_bytes($size) 
+				          . " ) is larger than the soft maximum size allowed ( "
+				          . Number::Bytes::Human::format_bytes($ls->param('msg_soft_size_limit'))   . " )\n";
+						  
+				my $entity = $parser->parse_data($$msg_ref); 	
+				
+				$e_msg .= "\t\tMailing List: " . $ls->param('list_name') .            "\n";
+				$e_msg .= "\t\tDate: "         . $entity->head->get( 'Date', 0 );
+				$e_msg .= "\t\tFrom: "         . $entity->head->get( 'From', 0 );
+				$e_msg .= "\t\tSubject: "      . $entity->head->get( 'Subject', 0 );
+			
+			} catch { 
+				warn $_; 
+			}
+		}
+		
+        $r .= $e_msg; 
+            
+        warn $e_msg;
+		
         return ( 0, $r );
     }
     else {
@@ -1319,8 +1344,9 @@ sub inject_msg {
     else {
         my ( $status, $error_msg ) = soft_max_msg_test( 
             { 
-                -size => $size,
-                -ls_obj => $ls, 
+                -size    => $size,
+                -ls_obj  => $ls, 
+				-msg_ref => \$msg, 
             } 
         );
         if ( $status == 0 ) {
