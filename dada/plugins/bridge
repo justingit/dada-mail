@@ -1071,6 +1071,7 @@ sub start {
                 { 
                     -size   => $msgsize,
                     -ls_obj => $ls, 
+					-msg_ref => \$full_msg,
                  } 
             );
             $r .= $smmt_r; 
@@ -1239,8 +1240,8 @@ sub soft_max_msg_test {
     my $size = $args->{-size};
     if ( $size > $ls->param('msg_soft_size_limit') ) {
 
-	
 
+		
 		my $e_msg = "\t* Warning! Message size ( "
           . $size
           . " bytes) is larger than the soft maximum size allowed ( "
@@ -1257,14 +1258,20 @@ sub soft_max_msg_test {
 				          . Number::Bytes::Human::format_bytes($size) 
 				          . " ) is larger than the soft maximum size allowed ( "
 				          . Number::Bytes::Human::format_bytes($ls->param('msg_soft_size_limit'))   . " )\n";
+				
+	  			$e_msg .= "\t\tMailing List: " . $ls->param('list_name') .            "\n";
+				
 						  
 				my $entity = $parser->parse_data($$msg_ref); 	
 				
-				$e_msg .= "\t\tMailing List: " . $ls->param('list_name') .            "\n";
-				$e_msg .= "\t\tDate: "         . $entity->head->get( 'Date', 0 );
-				$e_msg .= "\t\tFrom: "         . $entity->head->get( 'From', 0 );
-				$e_msg .= "\t\tSubject: "      . $entity->head->get( 'Subject', 0 );
-			
+				if ( !$entity ) {
+					warn "couldn't parse the entity?"; 
+				}
+				else{ 
+					$e_msg .= "\t\tDate: "         . $entity->head->get( 'Date', 0 );
+					$e_msg .= "\t\tFrom: "         . $entity->head->get( 'From', 0 );
+					$e_msg .= "\t\tSubject: "      . $entity->head->get( 'Subject', 0 ) . "\n";				
+				}
 			} catch { 
 				warn $_; 
 			}
