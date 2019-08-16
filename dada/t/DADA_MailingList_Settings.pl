@@ -55,7 +55,8 @@ use Encode;
 diag 'LIST NAME! ' . Encode::encode('UTF-8',$li->{list_name}); 
 
 for ( keys %$list_params ) {
-    ok( ( $li->{$_} eq $list_params->{$_} ), $_ );
+	next if $_ eq 'password'; # Passwords are saved one-way encrypted. 
+    ok( ( $li->{$_} eq $list_params->{$_} ), $_);
 }
 
 # These have been problematic variables...
