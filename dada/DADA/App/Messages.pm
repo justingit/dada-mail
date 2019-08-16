@@ -1059,13 +1059,17 @@ sub send_you_are_already_subscribed_message {
             -html_body      => $etp->{html},
 
             -tmpl_params => {
-                -list_settings_vars_param =>
-                  { -list => $self->ls->param('list'), },
+                -list_settings_vars_param => { 
+					-list => $self->ls->param('list'), 
+				},
                 -subscriber_vars_param => {
                     -list  => $self->ls->param('list'),
                     -email => $email,
                     -type  => 'list'
                 },
+                -vars => {
+                    'profile.email' => $email, # I feel this is a cop out/faking it. 
+                }
             },
 
             -test => $self->test,
