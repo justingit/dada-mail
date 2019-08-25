@@ -1,5 +1,40 @@
 <!-- begin view_list_viewport_widget.tmpl -->
 
+		<!-- tmpl_if expr="(type eq 'authorized_senders')" -->
+        	<div class="alert-box info radius">
+               <p>
+				   Authorized Senders may send messages to your mailing list (announce-only, or discussion), 
+			 	  without having to be a Subscriber themselves. 
+				</p>
+				<!-- tmpl_if list_settings.enable_authorized_sending -->			
+					
+				<!-- tmpl_else -->				
+					<p>
+						Authorized Senders is not enabled, but can be enabled in the Bridge plugin.
+					</p>
+				<!-- /tmpl_if -->
+				
+				<!-- tmpl_if list_settings.enable_moderation --> 
+					<!-- tmpl_if list_settings.authorized_sending_no_moderation --> 
+						<p>
+							Authorized Senders are also allowed to send messages to your Subscribers List without needing to be accepted by a moderator.
+						</p> 
+					<!-- tmpl_else --> 
+						<p>
+							Messages sent by Authorized Senders will still need to be moderated. 
+						</p>
+					<!-- /tmpl_if -->
+				<!-- tmpl_else -->
+					<p>
+						Moderation is not enabled, so messages sent by Authorized Senders will be sent right away 
+						to your mailing list. 
+				<!-- /tmpl_if -->
+				
+
+			</div>
+		<!-- tmpl_else -->
+		<!-- /tmpl_if -->
+
 <!-- tmpl_include view_list_type_switch_widget.tmpl -->
     
     <!-- tmpl_include advanced_list_search_form.tmpl --> 
@@ -37,10 +72,11 @@
             <div class="alert-box info radius">
                 No Results were found.
 			</div>            
-        <!-- tmpl_else -- >
-            
+        <!-- tmpl_else -->
+			
             <p>
              There are currently no members of <!-- tmpl_var type_title -->.
+			 
                 <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list') || (type eq 'ignore_bounces_list'))" -->
         
                     <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=add&amp;type=<!-- tmpl_var type -->">
