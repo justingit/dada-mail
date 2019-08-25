@@ -125,6 +125,18 @@
 					Couldn't find, <code>&lt;!-- tmpl_var content --&gt;</code> tag in your custom template! 
 				</div>
 				<!-- /tmpl_if --> 
+				
+				
+				<!-- tmpl_if header_content_tag_found_in_template --> 
+					<div class="alert-box success radius">
+						<code>&lt;!-- tmpl_var header_content --&gt;</code> tag found in custom template.
+					</div>
+				<!-- tmpl_else --> 
+				<div class="alert-box alert radius">
+					Couldn't find, <code>&lt;!-- tmpl_var header_content --&gt;</code> tag in your custom template! 
+				</div>
+				<!-- /tmpl_if -->
+				
 
 				<!-- tmpl_if template_saved --> 
 					<div class="alert-box success radius">
@@ -165,6 +177,19 @@
 								<div class="alert-box success radius">
 									URL accessible.
 								</div>
+							
+							
+							<!-- tmpl_if header_content_tag_found_in_url_template --> 
+								<div class="alert-box success radius">
+									<code>&lt;!-- tmpl_var header_content --&gt;</code> tag found in custom template.
+								</div>
+							<!-- tmpl_else --> 
+								<div class="alert-box alert radius">
+									Couldn't find, <code>&lt;!-- tmpl_var header_content --&gt;</code> tag in your custom template! 
+								</div>
+							<!-- /tmpl_if -->
+							
+							
 							<!-- tmpl_if content_tag_found_in_url_template --> 
 								<div class="alert-box success radius">
 									<code>&lt;!-- tmpl_var content --&gt;</code> tag found in custom template.
@@ -174,6 +199,8 @@
 									Couldn't find, <code>&lt;!-- tmpl_var content --&gt;</code> tag in your custom template! 
 								</div>
 							<!-- /tmpl_if -->
+							
+							
 						<!-- tmpl_else --> 
 								<div class="alert-box alert radius">
 									Problems fetching the below URL. Please check the URL and try again:

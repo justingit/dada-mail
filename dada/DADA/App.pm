@@ -9215,11 +9215,19 @@ sub edit_template {
     );
 
     if ( !$process ) {
+		
+		# This test is pretty primative. 
+		
         my $content_tag_found_in_template         = 0;
         my $content_tag_found_in_url_template     = 0;
         my $content_tag_found_in_default_template = 0;
 
-        my $content_tag = quotemeta('<!-- tmpl_var content -->');
+        my $header_content_tag_found_in_template         = 0;
+        my $header_content_tag_found_in_url_template     = 0;
+        my $header_content_tag_found_in_default_template = 0;
+		
+        my $content_tag        = quotemeta('<!-- tmpl_var content -->');
+        my $header_content_tag = quotemeta('<!-- tmpl_var header_content -->');
 
         if (   $DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled} == 1
             && $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} eq 'magic' )
@@ -9228,6 +9236,7 @@ sub edit_template {
                 $content_tag_found_in_default_template = 1;
             }
             else {
+				# srsrly wtf: 
                 my $list_template_body_code_block =
                   DADA::Template::Widgets::_raw_screen(
                     {
@@ -9243,6 +9252,9 @@ sub edit_template {
             if ( $raw_template =~ m/$content_tag/ ) {
                 $content_tag_found_in_default_template = 1;
             }
+            if ( $raw_template =~ m/$header_content_tag/ ) {
+                $header_content_tag_found_in_default_template = 1;
+            }
         }
 
         # .tmpl
@@ -9253,6 +9265,10 @@ sub edit_template {
         }
         if ( $edit_this_template =~ m/$content_tag/ ) {
             $content_tag_found_in_template = 1;
+        }
+		
+        if ( $edit_this_template =~ m/$header_content_tag/ ) {
+            $header_content_tag_found_in_template = 1;
         }
 
         my $get_template_data_from_default_template = 0;
@@ -9292,6 +9308,11 @@ sub edit_template {
                     if ( $tmp_tmpl =~ m/$content_tag/ ) {
                         $content_tag_found_in_url_template = 1;
                     }
+					
+                    if ( $tmp_tmpl =~ m/$header_content_tag/ ) {
+                        $header_content_tag_found_in_url_template = 1;
+                    }
+					
                 }
                 else {
 
@@ -9329,6 +9350,10 @@ sub edit_template {
                       $content_tag_found_in_url_template,
                     content_tag_found_in_default_template =>
                       $content_tag_found_in_default_template,
+					  
+				  header_content_tag_found_in_template     => $header_content_tag_found_in_template,
+				  header_content_tag_found_in_url_template => $header_content_tag_found_in_url_template,
+					  
 
                 },
                 -list_settings_vars_param => {

@@ -878,8 +878,31 @@ sub list_template {
      }
     
     
-	
-    my $final_list_template = DADA::Template::Widgets::screen(
+	 my $header_content = DADA::Template::Widgets::screen({
+	 		-screen => 'list_template_header_code_block.tmpl', 
+			-vars   => { 
+				include_jquery_lib   =>  $header_options->{include_jquery_lib},
+                include_app_user_js  =>  $header_options->{include_app_user_js},
+				# Just gunna have to add this one, huh? 
+				load_colorbox        => 1, 
+                add_app_css          =>  $header_options->{add_app_css},
+			
+			},
+			
+            (
+                ( defined($list) )
+                ? (
+                    -list_settings_vars_param => {
+                        -list   => $list,
+                        -dot_it => 1,
+                    },
+                  )
+                : (),
+            )
+	 
+	 }); 
+
+	 my $final_list_template = DADA::Template::Widgets::screen(
         {
             -data                   => \$list_template,
             -vars                   => {
@@ -898,6 +921,9 @@ sub list_template {
 				include_jquery_lib   =>  $header_options->{include_jquery_lib},
                 include_app_user_js  =>  $header_options->{include_app_user_js},
                 add_app_css          =>  $header_options->{add_app_css},
+				
+				header_content       => $header_content, 
+				
                 
                 %{ $args{ -vars } },
             },
