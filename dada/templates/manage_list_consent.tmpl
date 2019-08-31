@@ -1,12 +1,13 @@
 <!-- begin manage_list_consent.tmpl -->
 
-
 <!-- tmpl_set name="title" value="Mailing List &#187; Manage List Consent" -->
 <!-- tmpl_set name="load_jquery_validate" value="1" -->
 
-
-<div id="screen_meta" data-menu_highlight="manage_list_consent"></div>
-
+<div 
+	id="screen_meta" 
+	data-menu_highlight="manage_list_consent">
+</div>
+<div id="manage_list_consent"></div> 
 
 <div class="row hide-for-small-only" id="control_panel_breadcrumbs">
 	<div class="medium-10 small-9 columns">
@@ -27,9 +28,13 @@
 	</div>
 </div>
 
-<div id="manage_list_consent"></div> 
 <form>
-	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->">
+	<input 
+		type="hidden" 
+		id="s_program_url" 
+		name="s_program_url" 
+		value="<!-- tmpl_var S_PROGRAM_URL -->"
+	>
 </form>
 
 <!-- tmpl_if done -->
@@ -60,11 +65,8 @@
 		</div>
 	<!-- /tmpl_if -->
 		
-
-		<fieldset> 
-			<legend>List Consents</legend>
-			
-		
+	<fieldset> 
+		<legend>List Consents</legend>
 			<!-- tmpl_if consents --> 
 				<table style="width:100%" class="responsive">
 					<tr> 
@@ -74,81 +76,88 @@
 						<th>
 							&nbsp;
 						</th>
-
 				      </tr> 
-
-						<!-- tmpl_loop consents --> 
-						<tr>  
-				         <td> 
-				           <!-- tmpl_var consent --> 
+					  <!-- tmpl_loop consents --> 
+					  <tr>  
+						  <td> 
+							  <!-- tmpl_var consent --> 
 				         </td>
 						 <td>
 				        
-						   	<ul class="button-group">
-						   		<li>
-						            <form 
+							<ul class="button-group">
+								<li>
+									<form 
 										action="<!-- tmpl_var S_PROGRAM_URL -->" 
 										method="post" 
 										accept-charset="<!-- tmpl_var HTML_CHARSET -->"
 									>
-						             <input type="hidden" name="flavor" value="manage_list_consent"> 
-						             <input type="hidden" name="process" value="remove"> 
-						            <button type="button" class="button small alert remove_list_consent" data-id="<!-- tmpl_var id -->">
-											<i class="fi-x"></i>
-										</button>
-						           </form> 
-								</li>
-							</ul>
-						</td>
-						</tr>
-				        <!-- /tmpl_loop --> 
-				        </table> 
-				
-				
-			
-<!-- tmpl_else --> 
-	<div class="alert-box info radius">
-		There are current no consents set up. 
-	</div>
-<!-- /tmpl_if -->
-	
-	
-	
-	
+									<input 
+										type="hidden" 
+										name="flavor" 
+										value="manage_list_consent"
+									> 
+									<input 
+										type="hidden" 
+										name="process" 
+										value="remove"
+									> 
+									<button 
+										type="button" 
+										class="button small alert remove_list_consent" 
+										data-id="<!-- tmpl_var id -->"
+									>
+										<i class="fi-x"></i>
+									</button>
+								</form> 
+							</li>
+						</ul>
+					</td>
+				</tr>
+			<!-- /tmpl_loop --> 
+		</table> 
+							
+	<!-- tmpl_else --> 
+		<div class="alert-box info radius">
+			There are current no consents set up. 
+		</div>
+	<!-- /tmpl_if -->
 
-
-
-	
-
-	</fieldset>
+</fieldset>
 	
 
 <fieldset> 
 	<legend>Create a New Consent</legend>
-<form 
-	action="<!-- tmpl_var PROGRAM_URL -->" 
-	method="POST" 
-	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
-	id="create_a_new_consent_form"
-	> 
+		<form 
+			action="<!-- tmpl_var PROGRAM_URL -->" 
+			method="POST" 
+			accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+			id="create_a_new_consent_form"
+		> 
 
-     <input type="hidden" name="flavor" value="manage_list_consent"> 
-     <input type="hidden" name="process" value="add_consent" > 
-	
-	 <textarea 
-	 	cols="60" 
-		rows="2" 
-		name="new_consent" 
-		required="required"
-	></textarea>
+	     <input 
+		 	type="hidden" 
+			name="flavor" 
+			value="manage_list_consent"
+		> 
+	     <input 
+		 	type="hidden" 
+			name="process" 
+			value="add_consent"
+		> 
 
-<div class="clearfix">
-	<ul class="button-group right">
-	    <li><input type="reset"  class="warning button" value="Clear Changes" ></li>
-	    <li><input type="submit" class="success button" value="Save New Consent" ></li>
-	</ul>
-</div>
-<form> 
+		 <textarea 
+		 	cols="60" 
+			rows="2" 
+			name="new_consent" 
+			required="required"
+		></textarea>
+
+		<div class="clearfix">
+			<ul class="button-group right">
+			    <li><input type="reset"  class="warning button" value="Clear Changes" ></li>
+			    <li><input type="submit" class="success button" value="Save New Consent" ></li>
+			</ul>
+		</div>
+	</form> 
 </fieldset> 	
 <!-- begin manage_list_consent.tmpl -->
-
