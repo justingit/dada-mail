@@ -95,16 +95,16 @@
 			>
             	List Name
         	</label>
-			</div>
-			<div class="large-9 medium-9 columns">
-		    	<input 
-					type="text" 
-					name="list_name" 
-					id="list_name" 
-					value="<!-- tmpl_var list_name escape="HTML" -->"
-				>
-		    </div>
 		</div>
+		<div class="large-9 medium-9 columns">
+	    	<input 
+				type="text" 
+				name="list_name" 
+				id="list_name" 
+				value="<!-- tmpl_var list_name escape="HTML" -->"
+			>
+	    </div>
+	</div>
 
 <!-- tmpl_if flags_invalid_list_owner_email -->
     <div class="alert-box alert radius">
@@ -121,6 +121,9 @@
 <!-- /tmpl_if -->
 
 
+
+
+	
 	<div class="row">
 		<div class="large-3 medium-3 columns">
 		    <label 
@@ -131,6 +134,15 @@
 			</label>
 		</div>
 		<div class="large-9 medium-9 columns">
+			
+			<div class="alert-box info radius">
+				<p>
+					The List Owner Address is the email address that 
+					mailing list messages will be sent on behalf of. 
+				</p>
+			</div>
+			
+			
 		  <input 
 		  	type="text" 
 			name="list_owner_email" 
@@ -140,13 +152,12 @@
 		</div>
 	</div>
 
-   <!-- tmpl_if expr="(using_ses eq '1') && (list_admin_ses_verified ne '1')" -->
-       <div class="alert-box warning radius">
-   	    <p>
-   	        Your current <strong>List Administrator</strong>, <!-- tmpl_var admin_email escape="HTML" -->has not been verified through <strong>Amazon SES</strong>.
-   	    </p>
-   	</div>
-   <!-- /tmpl_if -->
+
+
+	
+	
+	
+
 
 	<div class="row">
 		<div class="large-3 medium-3 columns">
@@ -158,6 +169,45 @@
 			</label>
 		</div>
 		<div class="large-9 medium-9 columns">
+			
+			<div class="alert-box info radius">
+				<p>
+					The List Administrator Address is the email address that
+					bounced messages will be sent to.
+				</p>
+				
+				<!-- tmpl_if PLUGINS_ENABLED_bounce_handler -->
+					<!-- tmpl_if Bounce_Handler_Address -->
+						<p>
+							The Bounce Handler plugin is <strong>enabled</strong>. 
+							For it to function correctly, set the List Administrator Address to, 
+							<strong>
+								<!-- tmpl_var Bounce_Handler_Address -->
+							</strong>
+						</p>
+					<!-- /tmpl_if -->
+				<!-- tmpl_else -->
+					<p>
+						The Bounce Handler plugin doesn't seem to be enabled, so bounced messages
+						will have to be <strong>handled manually</strong>.
+					</p>
+				<!-- /tmpl_if -->
+			
+			</div>
+			
+			
+		    <!-- tmpl_if expr="(using_ses eq '1') && (list_admin_ses_verified ne '1')" -->
+		        <div class="alert-box warning radius">
+		    	    <p>
+		    	        Your current <strong>List Administrator</strong>,
+						 <!-- tmpl_var admin_email escape="HTML" -->has not been verified through 
+						 <strong>Amazon SES</strong>.
+		    	    </p>
+		    	</div>
+		    <!-- /tmpl_if -->			
+		
+			
+			
         	<input 
 				type="text" 
 				name="admin_email" 

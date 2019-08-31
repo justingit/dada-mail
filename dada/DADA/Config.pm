@@ -295,6 +295,7 @@ $PLUGIN_CONFIGS //= {
 
 	Bounce_Handler => {
 		Server                      => undef,
+		Address                     => undef,
 		Username                    => undef,
 		Password                    => undef,
 		Port                        => undef,

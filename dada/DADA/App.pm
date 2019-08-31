@@ -3086,7 +3086,12 @@ sub change_info {
                     info => $info ? $info : $ls->param('info'),
                     physical_address => $physical_address ? $physical_address
                     : $ls->param('physical_address'),
-                    flags_list_name => $flags_list_name,
+                    
+					PLUGINS_ENABLED_bounce_handler => $DADA::Config::PLUGINS_ENABLED->{bounce_handler},
+					Bounce_Handler_Address         => $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Address},
+					
+					
+					flags_list_name => $flags_list_name,
                     flags_invalid_list_owner_email =>
                       $flags_invalid_list_owner_email,
                     flags_list_info        => $flags_list_info,
