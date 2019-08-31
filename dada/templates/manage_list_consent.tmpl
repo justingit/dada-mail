@@ -2,6 +2,9 @@
 
 
 <!-- tmpl_set name="title" value="Mailing List &#187; Manage List Consent" -->
+<!-- tmpl_set name="load_jquery_validate" value="1" -->
+
+
 <div id="screen_meta" data-menu_highlight="manage_list_consent"></div>
 
 
@@ -122,12 +125,22 @@
 
 <fieldset> 
 	<legend>Create a New Consent</legend>
-<form action="<!-- tmpl_var PROGRAM_URL -->" method="POST" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+<form 
+	action="<!-- tmpl_var PROGRAM_URL -->" 
+	method="POST" 
+	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+	id="create_a_new_consent_form"
+	> 
 
      <input type="hidden" name="flavor" value="manage_list_consent"> 
      <input type="hidden" name="process" value="add_consent" > 
 	
-<textarea cols="60" rows="2" name="new_consent"></textarea>
+	 <textarea 
+	 	cols="60" 
+		rows="2" 
+		name="new_consent" 
+		required="required"
+	></textarea>
 
 <div class="clearfix">
 	<ul class="button-group right">

@@ -53,6 +53,9 @@ sub add {
     if ( !exists( $args->{-consent} ) ) {
         croak '-consent is required!';
     }
+	elsif(length($args->{-consent}) < 16) { 
+		croak "You need to pass a longer list content!";
+	}
 
     my $query =
         'INSERT INTO '

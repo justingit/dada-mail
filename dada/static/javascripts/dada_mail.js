@@ -584,7 +584,18 @@ jQuery(document).ready(function($){
 				+ $(this).attr("data-id");
 				return true;
 			}
-		}); 		
+		});
+		
+		$("#create_a_new_consent_form").validate({
+			debug: false,
+			rules: {
+				new_consent: {
+					required: true,
+					minlength: 16
+				}
+			}
+		});
+			 		
 	}
 	
 
