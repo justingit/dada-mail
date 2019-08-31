@@ -843,6 +843,8 @@ sub forward_to_list_owner {
         carp "problem with parsing message! $@";
         return undef;
     }
+	
+	# Perhaps an, "X-Originally-From/To" (or whatever)
 
     if ( $entity->head->get( 'To', 0 ) ) {
         $entity->head->delete('To');
