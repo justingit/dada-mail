@@ -75,7 +75,11 @@ sub Create {
 'DADA::MailingList::Settings did not give back the right kind of object!';
     }
 
-	my $consent = $args->{ -settings }->{consent};
+	my $consent = undef; 
+	if(defined($args->{ -settings }->{consent})) { 
+		$consent = $args->{ -settings }->{consent};
+		$consent = strip($consent);
+	}
 	delete( $args->{ -settings }->{consent} );
 
     $args->{ -settings }->{list} = $args->{ -list };
@@ -99,6 +103,7 @@ sub Create {
     }
 
     $ls->save({ -settings => $args->{ -settings } });
+	
 		
 	if(
 		  defined($consent) 
