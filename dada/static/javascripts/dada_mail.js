@@ -289,6 +289,7 @@ jQuery(document).ready(function($){
 						console.log('content.id:'     + content.id);
 						console.log('content.status:' + content.status);
 						console.log('content.body:'   + content.body);
+						console.log('content.errors:'   + content.errors);
 						
 						//if(content.status == 0){
 						//	alert('Problems saving preference:' . content.error)
@@ -308,15 +309,19 @@ jQuery(document).ready(function($){
 						  maxWidth: '640px',
 						};
 						
-						
-						if(content.status === 0){ 
-							$.colorbox({
-								html: content.errors,
-								opacity: 0.50,
-								maxWidth: '640px',
-								width: '95%',
-								height: '95%'					
-							});
+						if (content.status === 0){ 
+							
+							var return_this = '<p><strong>Problems found:</strong></p><pre>' 
+								+ content.errors 
+								+ '</pre>';
+								
+								$.colorbox({
+									html: return_this,
+									opacity: 0.50,
+									maxWidth: '640px',
+									width: '95%',
+									height: '95%'					
+								});
 						}
 						else {					
 						

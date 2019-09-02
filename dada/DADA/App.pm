@@ -2060,8 +2060,8 @@ sub preview_draft {
 	    );
 	
 		if($r->{status} == 0){
-			$self->header_props(-type => 'text/plain');
-			return "Problems with creating preview: " . $r->{errors};
+			$self->header_props(-type => 'text/html');
+			return "<p><strong>Problems with creating preview:</strong></p><pre> " . $r->{errors} . '</pre>';
 		}
 		elsif($r->{status} == 1){ 
 			$q->param('id', $r->{id});

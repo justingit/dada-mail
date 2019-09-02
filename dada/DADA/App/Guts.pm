@@ -3025,10 +3025,11 @@ sub slurp {
 }
 
 sub grab_url {
+
+	# DEV: time to return a hashref, I'm thinking. 
     my ($args) = @_; 
     my $url = $args->{-url}; 
     
-	
     try {
         require LWP;
     }
@@ -3036,7 +3037,7 @@ sub grab_url {
         carp "LWP not installed?" . $_
 			if $t; 
 		if(wantarray){ 
-            return (undef, undef, undef); 
+            return (undef, undef, undef, undef); 
         }
         else { 
 		    return undef; 
@@ -3055,19 +3056,29 @@ sub grab_url {
         my $res = $ua->get( $url, 
             'Accept-Encoding' => $can_accept, 
         );
-        if ($res->is_success) {
-            if(wantarray){
+        if ($res->is_success) {      
+			if(wantarray){
                 my $dc = $res->decoded_content;  
-                return ($dc, $res, md5_checksum(\$dc)); 
+                return ($dc, $res, md5_checksum(\$dc), undef); 
             }
             else { 
-                $res->decoded_content
+                return $res->decoded_content;
             }
     	}
     	else { 
-    	    # carp "Problem fetching webpage, '$url':" . $res->status_line;
+			require Data::Dumper;
+			my $e_r = { 
+				url         => $url, 
+				code        => $res->code, 
+				headers     => $res->headers, 
+				status_line => $res->status_line, 
+				message     => $res->message, 				
+			};
+			my $e_m = "Problem fetching URL:\n"; 
+			   $e_m .= Data::Dumper::Dumper($e_r);
+			   carp $e_m; 
     		if(wantarray){ 
-                return (undef, $res, undef); 
+                return (undef, $res, undef, $e_m); 
             }
             else { 
     		    return undef; 
@@ -3079,16 +3090,26 @@ sub grab_url {
         if ($res->is_success) {
             if(wantarray){ 
                 my $dc = safely_decode( $res->content );      
-                return ($dc, $res, md5_checksum(\$dc)); 
+                return ($dc, $res, md5_checksum(\$dc), undef); 
             }
     		else { 
     		    return safely_decode( $res->content ); 
     		}
         }
     	else { 
-    	    # carp "Problem fetching webpage, '$url':" . $res->status_line;
+			require Data::Dumper;
+			my $e_r = { 
+				url         => $url, 
+				code        => $res->code, 
+				headers     => $res->headers, 
+				status_line => $res->status_line, 
+				message     => $res->message, 				
+			};
+			my $e_m = "Problem fetching URL:\n"; 
+			   $e_m .= Data::Dumper::Dumper($e_r);
+			   carp $e_m; 
     		if(wantarray){ 
-                return (undef, $res, undef); 
+                return (undef, $res, undef, $e_m); 
             }
             else { 
     		    return undef; 

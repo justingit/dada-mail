@@ -479,9 +479,20 @@ sub construct_from_url {
    	my $base = undef; 
 	
     if ($content_from eq 'url' ) {
-		
+		my ( $rtc, $res, $md5, $e_m ) = grab_url(
+			{
+				-url => $url 
+			}
+		);
+
+		if($res->is_error == 1){ 
+			return { 
+				status       => 0, 
+				errors       => $e_m,
+			};
+		}
+				
         # Redirect tag check
-        my ( $rtc, $res, $md5 ) = grab_url({-url => $url });
         my ( $status, $errors ) = $self->message_tag_check($rtc);
         if ( $status == 0 ) {
 			return { 
@@ -524,7 +535,14 @@ sub construct_from_url {
 						) : ())
 					}
 				); 
-				
+			
+			if($feed_r->{status} == 0){ 
+				return { 
+					status => 0, 
+					errors => $feed_r->{errors},
+				}
+			}
+	
 			 $html_message = $feed_r->{html};
 			 
 			 # This is only doable via Send via URL - the option doesn't exist for Feeds
@@ -589,11 +607,21 @@ sub construct_from_url {
 		else {		
 	        my $res; 
 			my $md5; 
-	        ( $text_message, $res, $md5 ) = grab_url(
+			my $e_m; 
+			warn 'here.';
+	        ( $text_message, $res, $md5, $e_m ) = grab_url(
 				{
 					-url => $draft_q->param('plaintext_url') 
 				}
 			);	
+			
+			if($res->is_error){ 
+				return { 
+					status       => 0, 
+					errors       => $e_m,
+				};
+			}
+			
 		}	
     } elsif (
 			length($text_message) <= 0  # I kinda get this - if there's no $text_message, make it from the HTML ver. We always want a PlainText Ver... - this could just be an else statement
@@ -831,12 +859,13 @@ sub subject_from_title_tag {
     my $html;
 
     if ( $draft_q->param('content_from') eq 'url' ) {
-        my ( $src, $res, $md5 ) = grab_url({-url => $draft_q->param('url') });
+		warn 'here.';
+        my ( $src, $res, $md5, $e_m ) = grab_url({-url => $draft_q->param('url') });
         if ( $res->is_success ) {
             $html = $src;
         }
         else {
-            carp 'couldn\'t fetch url: ' . $draft_q->param('url');
+            carp $e_m;
             return undef;
         }
     }
@@ -893,21 +922,34 @@ sub content_from_feed_url {
 	my $status = 1; 
 	my $error  = {};
 	
-	my ( $rtc, $res, $md5 ) = grab_url({-url => $feed_url });
+	warn 'here.';
+	my ( $rtc, $res, $md5, $e_m ) = grab_url({-url => $feed_url });
 	
 	if(!$rtc){ 
 		return { 
-			status => 1, 
-			errors => {no_content => 1}, 
+			status => 0, 
+			errors => "No Content", 
 			html   => undef, 
 			md5    => undef, 
 			vars   => {},
 		};
 	}
 	
+	if($res->is_error){
+		return { 
+			status => 0, 
+			errors => $e_m, 
+			html   => undef, 
+			md5    => undef, 
+			vars   => {},
+		};
+	}
+	
+	
+	
 	my $tmpl_vars = {};
 	
-						
+			
 	require XML::FeedPP; 
 	
 	my $feed = XML::FeedPP->new( $rtc, -type => 'string' );
@@ -1262,7 +1304,8 @@ sub send_email {
         return ( $headers, $body );
     }
     elsif ( $process =~ m/preview/i ) {
-     	    my $draft_id = $self->save_as_draft(
+     	    
+			my $draft_id = $self->save_as_draft(
             {
                 -cgi_obj => $q,
                 -list    => $self->{list},
@@ -1285,6 +1328,8 @@ sub send_email {
             carp 'done with construct_and_send!';
         }
         if ( $construct_r->{status} == 0 ) {
+			
+			warn 'FINALLY, here.';
 			
 			# This has been commented out and replaced in send_a_message... 
 			#
@@ -1422,6 +1467,8 @@ sub send_email {
 
 sub preview_draft { 
 
+	warn 'preview_draft';
+	
     my $self = shift;
     my ($args) = @_;
 
@@ -1439,18 +1486,26 @@ sub preview_draft {
 			-preview  => 1, 
 	    }
 	);
+	
+	warn 'and were still here...'; 
+	
 
-	#use Data::Dumper; 
-	#die Dumper($construct_r);
+	use Data::Dumper; 
+	warn Dumper($construct_r);
 	
 	if($t) { 
 	    carp '$construct_r->{mid} ' . $construct_r->{mid};
 	    carp 'done with construct_and_send!';
 	}
 	if ( $construct_r->{status} == 0 ) {
-		return $construct_r;
+		warn 'here.';
+		return { 
+			status => 0, 
+			errors => $construct_r->{errors},
+		}
 	} 
 	else { 
+		warn 'here.';
 		require DADA::App::EmailMessagePreview; 
 		my $daemp = DADA::App::EmailMessagePreview->new; 			
 		my $daemp_id = $daemp->save({
