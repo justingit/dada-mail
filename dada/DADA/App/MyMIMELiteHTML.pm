@@ -66,17 +66,11 @@ sub parse {
         }
         else {
             $html_ver = safely_decode($content);
-            #if ( $self->{crop_html_content} == 1 ) {
-            #    $html_ver = $self->crop_html($html_ver);
-            #}
         }
         $rootPage = $url1 || $res->base;
     }
     else {
         $html_ver = $url_page;
-        #if ( $self->{crop_html_content} == 1 ) {
-        #    $html_ver = $self->crop_html($html_ver);
-        #}
         $rootPage = $url1;
         $html_md5 = md5_checksum( \$html_ver );
     }

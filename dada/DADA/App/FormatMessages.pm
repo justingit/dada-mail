@@ -359,6 +359,8 @@ sub format_phrase_address {
 
 sub format_mlm {
 
+	carp 'format_mlm()' 
+		if $t; 
     my $self = shift;
     my ($args) = shift;
 
@@ -381,10 +383,6 @@ sub format_mlm {
     if ( !exists( $args->{-crop_html_options} ) ) {
         $args->{-crop_html_options} = { enabled => 0, };
     }
-
-
-	
-	
 	
 	
     if ( $type eq 'text/html' ) {
@@ -398,17 +396,18 @@ sub format_mlm {
 
         # Crop HTML:
         if ( $args->{-crop_html_options}->{enabled} == 1 ) {
-            $content = $self->crop_html(
-                {
-                    %{
-                        -html => $content,
-                        $args->{-crop_html_options},
-                    },
-                }
-            );
+			$args->{-crop_html_options}->{-html} = $content;
+            my ($status, $cropped_content, $errors) = $self->crop_html($args->{-crop_html_options});
+			
+			if($status == 1){ 
+				# uhuh.
+				$content = $cropped_content;
+			}
+			else { 
+				warn $errors; 
+				#?: croak $errors;
+			}
         }
-		
-		
        
 		if($args->{-utm_options}->{-enabled} == 1){
 			 try {
@@ -417,7 +416,7 @@ sub format_mlm {
 		        $content = $utm->filter(
 					{ 
 						-type => $args->{-type},
-						-data=> $content, 
+						-data => $content, 
 				    } 
 				);		
 		    } catch {
@@ -759,8 +758,9 @@ sub crop_html {
 
     my $self   = shift;
     my ($args) = @_;
+	
     my $html   = $args->{-html};
-
+	my @r = (); 
     try {
         require HTML::Tree;
         require HTML::Element;
@@ -777,22 +777,23 @@ sub crop_html {
         $root->elementify();
         my $replace_tag = undef;
         my $crop        = undef;
+		my $continue    = 0; 
 
         if ( $args->{crop_html_content_selector_type} eq 'id' ) {
-            if (
+			if (
                 $replace_tag = $root->look_down(
                     "id", $args->{crop_html_content_selector_label}
                 )
               )
             {
+				
                 $crop = $replace_tag->as_HTML( undef, '  ' );
+				$continue = 1; 
             }
             else {
-                warn 'cannot crop html: '
-                  . 'cannot find id, '
-                  . $args->{crop_html_content_selector_label}
-				  	if $t;
-                return $html;
+				my $e = 'cannot crop html: ' . 'cannot find id, "' . $args->{crop_html_content_selector_label} . '"';
+				carp $e;
+                @r = (0, undef, $e);
             }
         }
         elsif ( $args->{crop_html_content_selector_type} eq 'class' ) {
@@ -803,30 +804,38 @@ sub crop_html {
               )
             {
                 $crop = $replace_tag->as_HTML( undef, '  ' );
+				$continue = 1; 
             }
-            else {
-                warn 'cannot crop html: '
-                  . 'cannot find class, '
-                  . $args->{crop_html_content_selector_label}
-				  	if $t;
-                return $html;
+            else {				
+                my $e = 'cannot crop html: ' . 'cannot find class, "' . $args->{crop_html_content_selector_label} . '"';
+				carp $e;
+                @r = (0, undef, $e);
             }
         }
-
-        my $body_tag = $root->find_by_tag_name('body');
-        $body_tag->delete_content();
-        $body_tag->push_content(
-            HTML::Element->new(
-                '~literal', 'text' => $crop,
-            )
-        );
-        return $root->as_HTML( undef, '  ' );
-
+		if($continue == 1) {
+			my $body_tag = $root->find_by_tag_name('body');
+	        $body_tag->delete_content();
+	        $body_tag->push_content(
+	            HTML::Element->new(
+	                '~literal', 'text' => $crop,
+	            )
+	        );
+	        my $n_html = $root->as_HTML( undef, '  ');
+			@r = (1, $n_html, undef); 
+			undef $root;
+		}
+		else { 
+			undef $root;
+		}
     }
     catch {
-        warn 'cannot crop html: ' . substr($_, 0, 100) . '...';
-        return $html;
+        my $e = 'cannot crop html: ' . substr($_, 0, 100) . '...';
+        @r = (0, undef, $e);
+		return @r; 
     };
+
+	return @r; 
+	
 }
 
 
@@ -907,12 +916,6 @@ sub _format_body {
                         {
                             -content           => $content,
                             -type              => $entity->head->mime_type,
-                            -crop_html_options => {
-
-#enabled                          => scalar $draft_q->param('crop_html_content'),
-#crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
-#crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
-                            },
                             -rel_to_abs_options => {
                                 enabled => 0,
 

@@ -655,9 +655,30 @@ sub construct_from_url {
 		length($html_message) <= 0
 		&& length($text_message) > 0
 		&& $ls->param('mass_mailing_convert_plaintext_to_html') == 1){ 
-			
 			$html_message = markdown_to_html( { -str => $text_message } );	
 	}
+
+
+	# We have to double-check that the HTML cropping is working: 
+	if($draft_q->param('crop_html_content') == 1){ 
+		my($status, $cropped_html, $errors) = $fm->crop_html(
+			{
+				-html              => $html_message,
+				crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
+		   	 	crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
+			}
+		); 	
+		if($status == 0){ 
+			return { 
+				status       => 0, 
+				errors       => $errors,
+			};
+		}
+	    undef($status);
+	    undef($errors);
+	}
+	# /end check HTML cropping
+	
 	
 	if(length($html_message) > 0) {
 		$html_message = $fm->format_mlm( 
