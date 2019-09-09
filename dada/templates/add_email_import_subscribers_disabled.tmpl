@@ -2,7 +2,14 @@
 	<!-- tmpl_if expr="(type eq 'list')" -->
 	    <!-- tmpl_unless list_is_closed -->
 	        <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 0)) || ((list_settings.enable_mass_subscribe == 1) && (root_login == 0) && (list_settings.enable_mass_subscribe_only_w_root_login == 1))" --> 
-	            <div class="alert-box warning radius">
+	            <!-- tmpl_if comment -->
+					The only time things would be disabled is: 
+					* enable_mass_subscribe is set to 0
+					* enable_mass_subscribe you're not logged in via root, and enable_mass_subscribe_only_w_root_login is set to 1
+				<!-- /tmpl_if -->
+				
+				
+				<div class="alert-box warning radius">
 	                    <ul>
 							<li>
 								Importing Subscribers via the List Control Panel has been <strong>disabled.</strong> 
