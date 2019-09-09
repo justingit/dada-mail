@@ -194,11 +194,11 @@ show_s_program_url_options          => 0,
 show_annoying_whiny_pro_dada_notice => 0,
 };
 
-# Address isn't in here.
 my %bounce_handler_plugin_configs = (
 	Connection_Protocol      => { default => 'POP3',     if_blank => 'POP3' },
     Server                   => { default => '',         if_blank => 'undef' },
-    Username                 => { default => '',         if_blank => 'undef' },
+    Address                  => { default => '',         if_blank => 'undef' },
+	Username                 => { default => '',         if_blank => 'undef' },
     Password                 => { default => '',         if_blank => 'undef' },
     Port                     => { default => 'AUTO',     if_blank => 'AUTO' },
     USESSL                   => { default => 0,          if_blank => 0 },
@@ -993,6 +993,7 @@ sub grab_former_config_vals {
     if ( exists( $BootstrapConfig::LIST_SETUP_INCLUDE{admin_email} ) ) {
         $opt->{'bounce_handler_Address'} = $BootstrapConfig::LIST_SETUP_INCLUDE{admin_email};
     }
+	
     if ( exists( $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler} ) ) {
         for my $config ( keys %bounce_handler_plugin_configs ) {
             if ( exists( $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config} ) ) {
