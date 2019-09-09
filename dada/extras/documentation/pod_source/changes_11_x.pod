@@ -4,11 +4,13 @@
 
 =head1 11.4.5
 
+This is mostly a bug-fix release for issues found in the v11.4.4 release of Dada Mail.
+
 =head2 Changes
 
 =head3 Better error reporting when sending webpages
 
-If problems occur when trying to send a message via the option, "Grab content from a URL" (and then entering a URL), error reporting has now been enhanced, both right in the UI, as well as in the error log. 
+If problems occur when trying to send a message via the option, "Grab content from a URL" (and then entering a URL), error reporting has now been enhanced both right in the UI, as well as in the error log. 
 
 Error reporting has also been enhanced in similar ways when cropping a webpage by id/class. 
 
@@ -30,7 +32,7 @@ This is to make it easier to understand how to set up the Bounce Handler correct
 
 L<https://github.com/justingit/dada-mail/issues/830>
 
-=head3 
+=head3
 
 =head2 Bugfixes 
 
@@ -58,7 +60,7 @@ L<https://github.com/justingit/dada-mail/issues/827>
 
 L<https://github.com/justingit/dada-mail/issues/826>
 
-=head3 Plugin: Tracker: Hard Bounce report sometimes not shown #848 
+=head3 Plugin: Tracker: Hard Bounce report sometimes not shown
 
 L<https://github.com/justingit/dada-mail/issues/848>
 
