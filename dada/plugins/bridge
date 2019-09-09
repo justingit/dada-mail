@@ -3010,13 +3010,18 @@ sub handle_errors {
 
         }
 
-        warn
-    "bridge rejecting sending of received message - \tFrom: $from\tSubject: $subject\tMessage-ID: $message_id\tReasons: $reasons";
+        warn "Bridge is rejecting sending out the received message:\n"
+			. "\tList: " . $ls->param('list')
+			. "\tFrom: $from"
+			. "\tSubject: $subject"
+			. "\tMessage-ID: $message_id"
+			. "\tReasons: $reasons"
+		;
 
         $r .= "\tReasons:\n";
 
         my %error_descriptions = (
-            needs_moderation        => 'Messages need to be moderated',
+            needs_moderation        => 'Message needs to be moderated',
             msg_not_from_subscriber => 'Message is not from a Subscriber',
             msg_not_from_list_owner => 'Message is not from the List Owner',
         );
