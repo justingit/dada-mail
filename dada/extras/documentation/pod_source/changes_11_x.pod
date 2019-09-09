@@ -2,6 +2,21 @@
 
 =encoding utf-8
 
+=head1 11.4.5
+
+=head2 Changes
+
+=head3 Better error reporting when sending webpages
+
+If problems occur when trying to send a message via the option, "Grab content from a URL" (and then entering a URL), error reporting has now been enhanced, both right in the UI, as well as in the error log. 
+
+Error reporting has also been enhanced in similar ways when cropping a webpage by id/class. 
+
+
+
+=head3 Bugfixes 
+
+
 =head1 11.4.4
 
 This is mostly a bug-fix release for issues found in the v11.4.3 release of Dada Mail.
