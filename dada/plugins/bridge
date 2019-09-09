@@ -1278,8 +1278,6 @@ sub soft_max_msg_test {
 		}
 		
         $r .= $e_msg; 
-            
-        warn $e_msg;
 		
         return ( 0, $r );
     }

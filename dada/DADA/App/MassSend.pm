@@ -608,7 +608,6 @@ sub construct_from_url {
 	        my $res; 
 			my $md5; 
 			my $e_m; 
-			warn 'here.';
 	        ( $text_message, $res, $md5, $e_m ) = grab_url(
 				{
 					-url => $draft_q->param('plaintext_url') 
@@ -880,7 +879,6 @@ sub subject_from_title_tag {
     my $html;
 
     if ( $draft_q->param('content_from') eq 'url' ) {
-		warn 'here.';
         my ( $src, $res, $md5, $e_m ) = grab_url({-url => $draft_q->param('url') });
         if ( $res->is_success ) {
             $html = $src;
@@ -943,7 +941,6 @@ sub content_from_feed_url {
 	my $status = 1; 
 	my $error  = {};
 	
-	warn 'here.';
 	my ( $rtc, $res, $md5, $e_m ) = grab_url({-url => $feed_url });
 	
 	if(!$rtc){ 
@@ -1349,9 +1346,7 @@ sub send_email {
             carp 'done with construct_and_send!';
         }
         if ( $construct_r->{status} == 0 ) {
-			
-			warn 'FINALLY, here.';
-			
+						
 			# This has been commented out and replaced in send_a_message... 
 			#
 			#my ($h, $b) = $self->report_mass_mail_errors(
@@ -1488,7 +1483,8 @@ sub send_email {
 
 sub preview_draft { 
 
-	warn 'preview_draft';
+	warn 'preview_draft'
+		if $t; 
 	
     my $self = shift;
     my ($args) = @_;
@@ -1508,25 +1504,17 @@ sub preview_draft {
 	    }
 	);
 	
-	warn 'and were still here...'; 
-	
-
-	use Data::Dumper; 
-	warn Dumper($construct_r);
-	
 	if($t) { 
 	    carp '$construct_r->{mid} ' . $construct_r->{mid};
 	    carp 'done with construct_and_send!';
 	}
 	if ( $construct_r->{status} == 0 ) {
-		warn 'here.';
 		return { 
 			status => 0, 
 			errors => $construct_r->{errors},
 		}
 	} 
 	else { 
-		warn 'here.';
 		require DADA::App::EmailMessagePreview; 
 		my $daemp = DADA::App::EmailMessagePreview->new; 			
 		my $daemp_id = $daemp->save({
