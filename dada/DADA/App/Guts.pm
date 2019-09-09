@@ -3070,7 +3070,7 @@ sub grab_url {
 			my $e_r = { 
 				url         => $url, 
 				code        => $res->code, 
-				headers     => $res->headers, 
+				# headers     => $res->headers, 
 				status_line => $res->status_line, 
 				message     => $res->message, 				
 			};
@@ -3101,7 +3101,7 @@ sub grab_url {
 			my $e_r = { 
 				url         => $url, 
 				code        => $res->code, 
-				headers     => $res->headers, 
+				# headers     => $res->headers, 
 				status_line => $res->status_line, 
 				message     => $res->message, 				
 			};
