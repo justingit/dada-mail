@@ -1,0 +1,20 @@
+<!-- begin add_email_import_subscribers_disabled.tmpl -->
+	<!-- tmpl_if expr="(type eq 'list')" -->
+	    <!-- tmpl_unless list_is_closed -->
+	        <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 0)) || ((list_settings.enable_mass_subscribe == 1) && (root_login == 0) && (list_settings.enable_mass_subscribe_only_w_root_login == 1))" --> 
+	            <div class="alert-box warning radius">
+	                    <ul>
+							<li>
+								Importing Subscribers via the List Control Panel has been <strong>disabled.</strong> 
+	                    	</li>
+							<li>
+								You may still <strong>Invite</strong> Subscribers to join. 
+							</li>
+				</div> 
+	        <!-- /tmpl_if --> 
+	    <!-- /tmpl_unless --> 
+	<!-- /tmpl_if -->
+<!-- end add_email_import_subscribers_disabled.tmpl -->
+	
+	
+	
