@@ -374,7 +374,7 @@ $AMAZON_SES_OPTIONS = {
 %LIST_SETUP_INCLUDE = (
 	set_smtp_sender              => 1, # For SMTP
 	add_sendmail_f_flag          => 1, # For Sendmail Command
-	admin_email                  => '<!-- tmpl_var bounce_handler_Address default="" -->',
+	admin_email                  => <!-- tmpl_var bounce_handler_Address default="undef" -->,
 );
 <!-- tmpl_if cut_list_settings_default -->
 =cut

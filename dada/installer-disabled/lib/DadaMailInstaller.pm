@@ -1002,11 +1002,21 @@ sub grab_former_config_vals {
                       $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config};
                 }
                 else {
-                    $opt->{ 'bounce_handler_' . $config } = $bounce_handler_plugin_configs{$config}->{default};
-                }
+					if($config eq 'Address' && defined($opt->{'bounce_handler_Address'})){ 
+						# Oh, well: good. 
+					}
+					else {
+						$opt->{ 'bounce_handler_' . $config } = $bounce_handler_plugin_configs{$config}->{default};
+                	}
+				}
             }
             else {
-                $opt->{ 'bounce_handler_' . $config } = $bounce_handler_plugin_configs{$config}->{default};
+				if($config eq 'Address' && defined($opt->{'bounce_handler_Address'})){ 
+					# Oh, well: good. 
+				}
+				else {
+                	$opt->{ 'bounce_handler_' . $config } = $bounce_handler_plugin_configs{$config}->{default};
+				}
             }
         }
     }
@@ -2478,10 +2488,6 @@ sub create_dada_config_file {
                   _sq( $bounce_handler_plugin_configs{$config}->{if_blank} );
             }
         }
-
-        # This one's special:
-        $bounce_handler_params->{'bounce_handler_Address'} = strip( $ip->{-bounce_handler_Address} );
-
     }
     my $bridge_params = {};
     if ( $ip->{-install_bridge} == 1 ) {
