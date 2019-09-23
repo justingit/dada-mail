@@ -1143,68 +1143,114 @@ sub date_this {
 }
 
 
-#TODO - fix this? 
 
 
-sub html_to_plaintext { 
+sub html_to_plaintext {
 
-	my ($args) = @_; 
-	if(!exists($args->{-str})){ 
-		croak "You need to pass the string you want to convert in the, '-str' param!"; 
-	}
-	if(!exists($args->{-formatter_params})){
-		$args->{-formatter_params} = {
-			before_link => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
-			footnote    => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET --> %l',
-		}; 
-	}
-	# I'm not sure what sort of other arguments I want, but... 
+    my ($args) = @_;
+    if ( !exists( $args->{-str} ) ) {
+        croak
+"You need to pass the string you want to convert in the, '-str' param!";
+    }
+    if ( !exists( $args->{-formatter_params} ) ) {
+        $args->{-formatter_params} = {
+            before_link =>
+              '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
+            footnote =>
+'<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET --> %l',
+        };
+    }
 
-	my $formatted = undef; 
+    # I'm not sure what sort of other arguments I want, but...
+
+    my $formatted = undef;
+    my $hftwl     = 1;
+
+# Removing comments is a good thing, removing template tags that look like comments is a bad thing:
+    my ( $mask_beginning_comment, $mask_ending_comment, $tmp_str ) =
+      _hide_tmpl_tags( $args->{-str} );
+    my $mask_beginning_comment_qm = quotemeta($mask_beginning_comment);
+    my $mask_ending_comment_qm    = quotemeta($mask_ending_comment);
+
+    try {
+
+        require HTML::FormatText::WithLinks;
+        my $f =
+          HTML::FormatText::WithLinks->new( %{ $args->{-formatter_params} } );
+
+        if ( $formatted = $f->parse($tmp_str) ) {
+            $formatted =~ s/$mask_beginning_comment_qm/</g;
+            $formatted =~ s/$mask_ending_comment_qm/>/g;
+        }
+        else {
+            carp $DADA::Config::PROGRAM_NAME . ' '
+              . $DADA::Config::VER
+              . ' warning: Something went wrong with the HTML to PlainText conversion: '
+              . $f->error;
+            $formatted = convert_to_ascii( _chomp_off_body( $args->{-str} ) );
+            $formatted =~ s/$mask_beginning_comment_qm/</g;
+            $formatted =~ s/$mask_ending_comment_qm/>/g;
+
+        }
+    }
+    catch {
+        $hftwl = 0;
+        carp
+'HTML to Plaintext conversion with HTML::FormatText::WithLinks not successful - falling back to convert_to_ascii()';
+    };
+
+    if ( $hftwl == 0 ) {
+        my $pt = _chomp_off_body( $args->{-str} );
+        $pt = convert_to_ascii($pt);
+        $pt =~ s/$mask_beginning_comment_qm/</g;
+        $pt =~ s/$mask_ending_comment_qm/>/g;
+        return $pt;
+    }
+    else {
+        return $formatted;
+    }
 	
-	my $hftwl = 1; 
-	
-	try { 
-		
-		require HTML::FormatText::WithLinks; 
-	   	my $f = HTML::FormatText::WithLinks->new( %{$args->{-formatter_params}} );
-		require DADA::Security::Password;
-		my $ran_str = DADA::Security::Password::generate_rand_string();
-		
-		# hide comments, so they don't get destroyed: 
-		my $mask_begining_comment = quotemeta('[--' . $ran_str . 'DM_TMP');
-		my $mask_ending_comment   = quotemeta('DM_TMP' . $ran_str . '--]');
-		
-		my $tmp_str = $args->{-str};
-		   $tmp_str =~ s/\<\!\-\-/$mask_begining_comment/g; 
-		   $tmp_str =~ s/\-\-\>/$mask_ending_comment/g; 
-		if($formatted = $f->parse($tmp_str)){ 
-			#....
-		}
-		else { 
-			carp $DADA::Config::PROGRAM_NAME . ' ' . $DADA::Config::VER . 
-				' warning: Something went wrong with the HTML to PlainText conversion: ' . 
-				$f->error; 
-			return convert_to_ascii(_chomp_off_body($args->{-str})); 
-		}
-	} catch {
-		$hftwl = 0; 
-		#carp $DADA::Config::PROGRAM_NAME . ' ' . $DADA::Config::VER . 
-		#	' warning: Something went wrong with the HTML to PlainText conversion: ' . $_; 
-		#return convert_to_ascii(_chomp_off_body($args->{-str})); 
-		carp 'HTML to Plaintext conversion with HTML::FormatText::WithLinks not successful - falling back to convert_to_ascii()';
-	};
-		 
-	if($hftwl == 0){
-		my $pt = _chomp_off_body($args->{-str}); 
-		   $pt = convert_to_ascii($pt); 
-		return $pt; 
-	}	
-	else{ 
-		return $formatted; 
-	}
-		
 }
+
+
+
+
+
+
+sub _hide_tmpl_tags {
+
+    my $str = shift;
+
+    require DADA::Security::Password;
+
+    my $ran_str = DADA::Security::Password::generate_rand_string();
+
+    my $b1 = quotemeta('<!--');
+    my $e1 = quotemeta('-->');
+
+    my $b2 = quotemeta('<');
+    my $e2 = quotemeta('>');
+
+    my $mask_beginning_comment    = '[--' . $ran_str . 'DM_TMP';
+    my $mask_beginning_comment_qm = quotemeta($mask_beginning_comment);
+
+    my $mask_ending_comment    = 'DM_TMP' . $ran_str . '--]';
+    my $mask_ending_comment_qm = quotemeta($mask_ending_comment);
+
+    $str =~
+s{$b1(\s*tmpl_(.*?)\s*)($e1|$e2)}{$mask_beginning_comment\!-- tmpl_$2 \-\-$mask_ending_comment}gi;
+    $str =~
+s{$b2(\s*tmpl_(.*?)\s*)($e1|$e2)}{$mask_beginning_comment\tmpl_$2$mask_ending_comment}gi;
+    $str =~
+s{$b1(\s*/tmpl_(.*?)\s*)($e1|$e2)}{$mask_beginning_comment\!-- /tmpl_$2\-\-$mask_ending_comment}gi;
+    $str =~
+s{$b2(\s*/tmpl_(.*?)\s*)($e1|$e2)}{$mask_beginning_comment/tmpl_$2$mask_ending_comment}gi;
+
+    return ( $mask_beginning_comment, $mask_ending_comment, $str );
+
+}
+
+
 
 
 sub _chomp_off_body {
