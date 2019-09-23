@@ -2,6 +2,16 @@
 
 =encoding utf-8
 
+=head1 11.4.6
+
+This is mostly a bug-fix release for issues found in the v11.4.5 release of Dada Mail.
+
+=head2 Bugfixes
+
+=head3 HTML to PlainText subroutine does not properly strip out HTML comments 
+
+L<https://github.com/justingit/dada-mail/issues/849>
+
 =head1 11.4.5
 
 This is mostly a bug-fix release for issues found in the v11.4.4 release of Dada Mail.
@@ -31,8 +41,6 @@ L<https://github.com/justingit/dada-mail/issues/840>
 This is to make it easier to understand how to set up the Bounce Handler correctly to process bounced messages. 
 
 L<https://github.com/justingit/dada-mail/issues/830>
-
-=head3
 
 =head2 Bugfixes 
 
