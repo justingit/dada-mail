@@ -163,6 +163,7 @@ sub fetch {
             $html = $self->slurp($html_file, 1);
             if ( defined( $self->list ) ) {
                 $html = $self->munge_logo_img($html);
+				$html = $self->remove_css_link($html);
             }
         }
         else {
@@ -300,6 +301,16 @@ sub munge_logo_img {
 	
 	
     return $html;
+}
+
+sub remove_css_link { 
+    my $self = shift;
+    my $html = shift;
+	my $tag       = quotemeta('<link rel="stylesheet" type="text/css" href="css/app.css">');
+	
+	$html =~ s/$tag//;
+	
+	return $html
 }
 
 sub slurp {
