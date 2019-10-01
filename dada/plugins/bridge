@@ -1666,6 +1666,7 @@ sub validate_msg {
         msg_not_from_list_owner                  => 0,
         msg_not_from_an_authorized_sender        => 0,
         message_seen_as_spam                     => 0,
+		message_too_old                          => 0,
     };
 
     my $lh =
@@ -2084,6 +2085,17 @@ sub validate_msg {
         $r .= "\t* SpamAssassin check is disabled.\n";
     }
 
+
+	# Message too old test
+	my ($too_old_check, $too_old_r) = test_msg_is_too_old($entity);
+	if($too_old_check == 1){ 
+		$status = 0; 
+		$errors->{message_too_old} = 1; 
+		 $r .= "\t* Message is more than 7 days old, will not process/send\n";
+	}	
+	#/MEssage too old test 
+	
+	
     $r .= "\n";
 
     # This below probably can't happen anymore...
@@ -2101,6 +2113,47 @@ sub validate_msg {
 
     return ( $status, $errors, $r );
 }
+
+sub test_msg_is_too_old {
+	 
+    my $entity = shift;
+	my $r = ''; 
+	my $date = $entity->head->get( 'Date', 0);
+	#chomp($date);
+	
+	$r .= "Date: '$date'\n";
+	
+    if ( $date ) { 
+    	
+		$r .= "Found a date!\n";
+		
+		require Date::Parse;
+		my $t = Date::Parse::str2time($date);
+		
+		$r .= "t '" . $t . "'\n";
+		
+		# Is today's date - 7 days less than or equal to the date received?
+		# If so, the message is too old.
+		if((int(time) - 604_800) <= int($t)){ 
+			$r .= "too young to fail\n";
+			return (0, $r);
+		}
+		else { 
+			$r .= "yup, Too old!";
+			return (1, $r);
+		}
+    }
+    else {
+		# No Date found... WTF?
+		# I wanna return "1" for this, but something tells me 
+		# there's a weird edge case, and this will break 
+		# for SOMEONE out there...
+		$r .= "Couldnt find a date!";
+        return (0, $r);
+    }
+	
+}
+
 
 sub test_Check_List_Owner_Return_Path_Header {
 
