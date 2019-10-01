@@ -2624,7 +2624,7 @@ sub create_sql_tables {
 					# an index couldn't be made. 
 	                my $sth = $dbh->prepare($_);
 	                $sth->execute
-	                  or carp "cannot do statement! $DBI::errstr\n";
+	                  or carp "cannot do statement:\n$_\nBecause: $DBI::errstr\n";
 				
 				}
 				else {
@@ -2632,7 +2632,7 @@ sub create_sql_tables {
 					# if a table can't be made.  
 	                my $sth = $dbh->prepare($_);
 	                $sth->execute
-	                  or croak "cannot do statement! $DBI::errstr\n";
+	                  or croak "cannot do statement:\n$_\nBecause: $DBI::errstr\n";
 				 }
 			}
         }
@@ -2708,7 +2708,7 @@ sub clear_sessions {
 		warn '$query:' . $query; 
 		
 		my $sth   = $dbh->prepare($query);
-		$sth->execute or croak "cannot do statement! $DBI::errstr\n";
+		$sth->execute or croak "cannot do statement:\n$query\nBecause: $DBI::errstr\n";
 		
 		my $php_sess_dir = make_safer($ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions');
 		if(-d $php_sess_dir){ 
