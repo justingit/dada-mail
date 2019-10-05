@@ -2704,8 +2704,9 @@ sub clear_sessions {
         }
 
 		my $query = 'TRUNCATE ' . 'dada_sessions'; # <---- HARD CODED!
-		
-		warn '$query:' . $query; 
+		if ( $dbtype eq 'SQLite' ) {
+			$query = 'DELETE FROM dada_sessions';
+		}
 		
 		my $sth   = $dbh->prepare($query);
 		$sth->execute or croak "cannot do statement:\n$query\nBecause: $DBI::errstr\n";
