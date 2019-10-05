@@ -1,16 +1,13 @@
 #!/usr/bin/perl 
-
-
-BEGIN {
-        open( STDERR, ">>./errors.txt" );
-}
-
-
-
-
-
 package DadaMailInstaller;
 use base 'CGI::Application';
+
+my $installer_error_log = './installer_errors.txt';
+BEGIN {
+	my $installer_error_log = './installer_errors.txt';
+    open( STDERR, ">>$installer_error_log" );
+}
+
 
 #use CGI::Application::Plugin::DebugScreen;
 
@@ -274,6 +271,7 @@ sub setup {
 
     $self->start_mode('install_or_upgrade');
     $self->mode_param('flavor');
+	$self->error_mode('yikes');
     $self->run_modes(
         install_or_upgrade                => \&install_or_upgrade,
         check_install_or_upgrade          => \&check_install_or_upgrade,
@@ -336,6 +334,65 @@ sub setup {
         $self->start_mode('cl_run');
     
     }
+}
+
+
+sub yikes {
+
+    my $self  = shift;
+    my $error = shift;
+	
+	warn $error;
+
+    if ( !$ENV{GATEWAY_INTERFACE} ) {
+		die $error; 
+	}
+	else { 
+		
+		my $TIME = scalar( localtime() );
+
+    	$self->header_props( -status => '500' );
+
+    	return qq{
+		<html>
+		<head></head>
+		<body>
+		<div style="padding:5px;border:3px dotted #ccc; font-family:helvetica; font-size:.7em; line-height:150%; width:600px;margin-left:auto;margin-right:auto;margin-top:100px;">
+		<img alt="Dada Mail" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAC
+		WCAMAAAAL34HQAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAxQTFRFCAgIXV
+		1dp6en/f39XG2aJgAAAqpJREFUeNrs3OGO4yAMBOB0+/7vvFWRLMtjjAkEqDT5dddyy1fJNwSH7vU+8
+		rrIWsX6+15k/TTr+l6v12s6jqxlrA/oUtdEHFm7WKXOyPotltZ8CmuijKw1LCks7ZiVFGQtYOlocF8n
+		63CWZAGWkbxF1uGsYGEW1mBGkPUoyw13fJesY1k6GuKyWxoQZM0I9ya6t9TIeojV3KPWsqNwydrOisP
+		duKWSPn+4l/tkTWc1w702Rm+QyNrIaoZ7HB/3GkxkzWVl2rW1lgRZJ7Ay4a6Lzx1G1kZWJtx18XVth8
+		oqrh+R6iffZE1hJcM9sxgj64KrTCf1R9YUVibcm9Ggb5qFheMxhsgaZwVLr2tyh5UBWiYv4mcoY8iax
+		cr8nzcmd5ihaGLtB5I1yJK1sxkNGZOulQyrfAyyBll4jieYT48pk5lTlfqD6c0PWY+ycNZaN0EPKOML
+		SGK9ycIP3MgtsjpTHnG1w3baoUsK+w7mmNeEOwiyOnc+meDQ9WFYZhssAl2R2Xt5snpYZv02/YKgIkv
+		cByxcKrDmyJrIynTtyw/VT8Jilukc+TfcZC1hmfN2+q8Bq3yAaU9fyRpjmcR3tzqi1JVH1mks3KCaZq
+		IkSNfXSMhaw9IpgEeZcQdF1oGs2taldivcdQaIrC2sN3yfGXdK+W/JkrWLFfeG+pYQss5gjVxk3WaZj
+		oNOcPf15ADsYtQmImucVfvVAKYb2OwbmplqveDgOTdZt1lB8z1o6WLX3sxE1kaWbqPXWLX2vXvjRdbT
+		LHcCt27co1c4mKz1rGAC8wr+Agi3EN1FAlmNpZqsuyw32bEa8EGXW4LN2sKnLGTdY8Xh7tbN1bqSrOh
+		ZNVlpFpYOHkw3LPNPZBuD05C1niXvmeM4Zkwt94NmrjnpRdZcFvtbv8z6F2AA/5G8jEIpBJoAAAAASU
+		VORK5CYII=" style="float:left;padding:10px"/></p>
+		<h1>Yikes! App/Server Problem!</h1>
+		<p>We apologize, but the server encountered a problem when attempting to complete its task.</p> 
+		<p>More information about this error may be available in the 
+		<em>installers's own error log, named: 'installer_errors.txt' located in the same directory 
+		the, 'instal.cgi' script is running in.</em>.
+		</p> 
+		<p>Time of error: <strong>$TIME</strong></p> 
+		<p>Last error returned:</p>
+		<p>
+			<pre>
+				$error
+			</pre>
+		</p>
+			
+		</div>
+		</body> 
+		</html> 
+		};
+	}
+
 }
 
 sub cl_run {
@@ -1447,6 +1504,10 @@ sub connectdb {
     }
 
     require DBI;
+	
+	# Why not have a bit more to work with? 
+	DBI->trace(1, $installer_error_log);
+	
     my $dbh;
     my $that_didnt_work = 1;
     $dbh = DBI->connect( "$data_source", $user, $pass )
@@ -2616,8 +2677,7 @@ sub create_sql_tables {
         my @statements = split( ';', $schema );
         for (@statements) {
             if ( length($_) > 10 ) {
-
-                # print "\nquery:\n" . $_;
+				warn 'Running statement: ' . $_ . "\n";
 				
 				if($_ =~ m/CREATE INDEX/) {
 					# Basically, I don't want this to fail, because 
@@ -2635,12 +2695,17 @@ sub create_sql_tables {
 	                  or croak "cannot do statement:\n$_\nBecause: $DBI::errstr\n";
 				 }
 			}
+			else { 
+				warn 'Statement too short to run: ' . $_ . "\n";
+			}
         }
 
     };
     if ($@) {
-        carp $!;
+        
+		carp $!;
         $Big_Pile_Of_Errors .= $@;
+		
         return 0;
     }
     else {
