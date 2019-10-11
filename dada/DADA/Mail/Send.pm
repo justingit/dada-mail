@@ -13,7 +13,7 @@ my $dbi_obj;
 
 use DADA::Config qw(!:DEFAULT);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Mail_Send};
+my $t = 1;# $DADA::Config::DEBUG_TRACE->{DADA_Mail_Send};
 
 use DADA::Logging::Usage;
 my $log = new DADA::Logging::Usage;
@@ -41,7 +41,8 @@ my %allowed = (
     list      => undef,
     list_info => {},
     ls        => undef,
-    list_type => 'list',
+    
+	list_type => 'list',
 
     mass_mailing_params => { 
 		-delivery_preferences => 'individual' 
@@ -54,7 +55,6 @@ my %allowed = (
     ignore_schedule_bulk_mailings => 0,
     saved_message                 => undef,
 
-    also_send_to    => [],
     im_mass_sending => 0,
 
     num_subscribers => undef,
@@ -455,7 +455,6 @@ sub send {
            # Uh, unless it's a list invitation we're sending - why would we want
            # replies from a non-subscriber posting to the list?
                     if ( $self->list_type ne 'invitelist' ) {
-
                         # This goes against RFC
                         $fields{'Reply-To'} = $formatted_disc_email;
                     }
@@ -1176,11 +1175,6 @@ sub mass_send {
             %param_headers = %{ $args->{-msg} };
         }
 
-        # And then, we can pass a few neat things:
-        if ( exists( $args->{-also_send_to} ) ) {
-            $self->also_send_to( $args->{-also_send_to} );
-
-        }
         if ( exists( $args->{-partial_sending} ) ) {
             $self->partial_sending( $args->{-partial_sending} );
         }
@@ -1207,11 +1201,15 @@ sub mass_send {
         if ( exists( $args->{-mass_test} ) ) {
             $self->mass_test( $args->{-mass_test} );
         }
-
-        # And who is this rest recipient?
-        if ( exists( $args->{-mass_test_recipient} ) ) {
-            $self->mass_test_recipient( $args->{-mass_test_recipient} );
-        }
+		
+		# As in, "test"
+		if(
+			exists($args->{-list_type})
+		){ 
+			$self->list_type(
+				$args->{-list_type}
+			);
+		}
 		
 		if(!exists($args->{-vars})){ 
 			$args->{-vars} = {}; 
@@ -1286,7 +1284,10 @@ sub mass_send {
           if $t;
 
         # Shazzam!
-        $mailout->associate( $self->restart_with, $self->list_type );
+        $mailout->associate(
+			$self->restart_with, 
+			$self->list_type
+		);
 
         if ( $mailout->should_be_restarted == 1 ) {
 
@@ -1333,12 +1334,12 @@ sub mass_send {
             }
         );
 
-        if ( $self->test_return_after_mo_create == 1 ) {
-            warn
-"test_return_after_mo_create is set to 1, and we're getting out of the mass_send method"
-              if $t;
-            return;
-        }
+		## Is this ever set? 
+        #if ( $self->test_return_after_mo_create == 1 ) {
+        # #   warn "test_return_after_mo_create is set to 1, and we're getting out of the mass_send method"
+        #      if $t;
+        #    return;
+        #}
 
         $self->_adjust_bounce_score;
 
@@ -1654,7 +1655,8 @@ sub mass_send {
               . $self->{list}
               . '] Mass Mailing:'
               . $mailout_id
-              . " opened MAILLIST ($$)"
+              . " opened MAILLIST ($$) at: " 
+			  . $mailout->subscriber_list
               if $t;
             $mailout->log('opened MAILLIST');
 
@@ -2082,12 +2084,12 @@ sub mass_send {
                 # / Three strikes, and you're out:
                 ##############################################################
 
-                # I hate to wrap this in yet another If... state ment, but...
-                if ( $self->mass_test == 1 ) {
-
-# Well, for a test, we do nothing, so we can skip the batch settings stuff, since we only send 1 message.
-                }
-                else {
+               # # I hate to wrap this in yet another If... state ment, but...
+               # if ( $self->mass_test == 1 ) {
+			   # #
+				#  # Well, for a test, we do nothing, so we can skip the batch settings stuff, since we only send 1 message.
+               # }
+               # else {
 
                     warn '['
                       . $self->{list}
@@ -2425,7 +2427,7 @@ sub mass_send {
                         }
 
                     }
-                }
+               # }
             }
 
             warn '['
@@ -3688,6 +3690,8 @@ sub _log_sub_count {
 
 }
 
+=pod
+
 sub mass_test_recipient {
 
     warn 'mass_test_recipient'
@@ -3732,6 +3736,7 @@ sub mass_test_recipient {
         }
     }
 }
+=cut
 
 sub DESTROY {
 

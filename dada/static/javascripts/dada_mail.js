@@ -4489,7 +4489,6 @@ function preview_message_receivers() {
 
 	var al = [];
 	var alternative_lists = '';
-	var multi_list_send_no_dupes = 0;
 
 
 	$("#field_comparisons :input").each(function() {
@@ -4499,14 +4498,9 @@ function preview_message_receivers() {
 		al.push(this.value);
 	});
 	alternative_lists = al.join(',');
-	if (
-	$('#multi_list_send_no_dupes').val() == 1 && $("#multi_list_send_no_dupes").prop("checked") === true) {
-		multi_list_send_no_dupes = 1;
-	}
 
 	f_params.flavor                  = 'preview_message_receivers';
 	f_params.alternative_lists       = alternative_lists;
-	f_params.multi_list_send_no_dupe = multi_list_send_no_dupes;
 
 	var responsive_options = {
 	  width: '95%',

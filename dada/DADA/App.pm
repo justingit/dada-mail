@@ -2174,7 +2174,6 @@ sub preview_message_receivers {
     my $al = $q->param('alternative_lists') || '';
     my @alternative_list = split( ',', $al );
 
-    my $multi_list_send_no_dupes = $q->param('multi_list_send_no_dupes') || 0;
     require DADA::MailingList::Settings;
     my $list   = $admin_list;
     my $lh     = DADA::MailingList::Subscribers->new( { -list => $list } );

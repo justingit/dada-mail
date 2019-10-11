@@ -20,7 +20,7 @@ use Fcntl qw(
 my $dbi_obj;
 
 use DADA::Config qw(!:DEFAULT);
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Mail_MailOut};
+my $t = 1;# $DADA::Config::DEBUG_TRACE->{DADA_Mail_MailOut};
 
 use DADA::App::Guts;
 use DADA::Logging::Usage;
@@ -802,14 +802,14 @@ sub create_subscriber_list {
         -ID                  => $self->_internal_message_id,
         -Type                => $self->mailout_type,
         -Save_At             => $self->dir . '/' . $file_names->{tmp_subscriber_list},
-        -Bulk_Test           => $args->{-mh_obj}->{mass_test},
-        -Test_Recipient      => $args->{-mh_obj}->mass_test_recipient,
+        
+		#
+		#-Bulk_Test           => $args->{-mh_obj}->{mass_test},
         -Ban                 => $args->{-mh_obj}->{do_not_send_to},
         -Create_Tokens => ( $args->{-mh_obj}->list_type eq 'invitelist' || $args->{-mh_obj}->list_type eq 'list' )
         ? 1
         : 0,
 
-        # -Sending_Lists   => $args->{-mh_obj}->also_send_to,
         # I'm pretty scoobied why these are passed as params, and the above are just
         # culled from the $mh object. Like, what?
 
@@ -1885,6 +1885,9 @@ sub message_for_mail_send {
 }
 
 sub clean_up {
+	 
+	 return 1;
+	 
 
     my $self = shift;
     my ($args) = @_;

@@ -1451,7 +1451,9 @@ SKIP: {
     ( $path_to_list, $total_sending_out_num ) = $lh->create_mass_sending_file(
         -ID        => DADA::App::Guts::message_id(),    #argh. That's messy.
         -Type      => 'list',
-        -Bulk_Test => 1,
+        # Not quite sure why -Bulk_Test is set to 1 here, but it's a test, and we're
+		# Changing the API so if this now fails, we can change the tests. 
+		# -Bulk_Test => 1,
     );
     my $file_contents = slurp($path_to_list);
 

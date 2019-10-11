@@ -13,7 +13,7 @@ my $email_id = $DADA::Config::SQL_PARAMS{id_column} || 'email_id';
 
 $DADA::Config::SQL_PARAMS{id_column} ||= 'email_id';
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
+my $t = 1;# $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
 
 use Fcntl qw(
   O_WRONLY
@@ -1382,6 +1382,8 @@ sub copy_all_subscribers {
 
 sub create_mass_sending_file {
 
+	warn 'create_mass_sending_file()';
+	
     my $self = shift;
 
     my %args = (
@@ -1389,20 +1391,25 @@ sub create_mass_sending_file {
         -Pin                 => 1,
         -ID                  => undef,
         -Ban                 => undef,
-        -Bulk_Test           => 0,
+        # -Bulk_Test           => 0,
         -Save_At             => undef,
-        -Test_Recipient      => undef,
         -partial_sending     => {},
         -mass_mailing_params => {},
         -exclude_from        => [],
         @_
     );
 
+	use Data::Dumper; 
+	
+	warn 'create_mass_sending_file args: ' . Dumper({%args});
 
 	my $b_time = time; 
 	
     my $list = $self->{list};
     my $type = $args{-Type};
+	
+	warn '$type: ' . $type 
+		if $t; 
 		
     my @f_a_lists = available_lists();
     my %list_names;
@@ -1455,14 +1462,18 @@ sub create_mass_sending_file {
     chmod( $SENDINGFILE, $DADA::Config::FILE_CHMOD );
     flock( $SENDINGFILE, LOCK_EX );
 
+
+#	
 	my $have_first_recipient = 1; 
-	if(
-		$args{'-Bulk_Test'} == 0 
-	 && $self->{ls}->param('mass_mailing_send_to_list_owner') == 0
-	){ 
+#	if(
+#		$args{'-Bulk_Test'} == 0 
+#	 && $self->{ls}->param('mass_mailing_send_to_list_owner') == 0
+#	){ 
+	if($self->{ls}->param('mass_mailing_send_to_list_owner') == 0) {
 		$have_first_recipient = 0; 
 	}
 	# Sending these types of messages to the list owner is very confusing
+	# "test" tmp lists should still have the list owner if, "mass_mailing_send_to_list_owner" is still set to , "1"
 	elsif($type =~ m/_tmp\-just_subscribed\-|_tmp\-just_unsubscribed\-|_tmp\-just_subed_archive\-/){ 
 		$have_first_recipient = 0; 		
 	}
@@ -1473,23 +1484,19 @@ sub create_mass_sending_file {
     require     Text::CSV;
     my $csv   = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
     my $total = 0;
-
-    warn '$args{-Test_Recipient} ' . $args{-Test_Recipient}
-            if $t; 
-    warn '$args{-Bulk_Test}' . $args{-Bulk_Test}
-        if $t; 
             
 	if($have_first_recipient == 1){ 
 	    my $first_email = $self->{ls}->param('list_owner_email');
-	    if ( 
-			$args{-Bulk_Test} == 1 
-		 && $args{-Test_Recipient} 
-		) {
-	        $first_email = $args{-Test_Recipient};
-	    }
-	    
-	    warn '$first_email ' . $first_email
-            if $t; 
+# $first_email should always be the list owner email. This should fail on a blank list, I'm thinking. 
+#	    if ( 
+#			$args{-Bulk_Test} == 1 
+#		 && $args{-Test_Recipient} 
+#		) {
+#	        $first_email = $args{-Test_Recipient};
+#	    }
+#	    
+#	    warn '$first_email ' . $first_email
+ #           if $t; 
             
 	    my ( $lo_e_name, $lo_e_domain ) = split( '@', $first_email );
 
@@ -1521,6 +1528,7 @@ sub create_mass_sending_file {
 	    if ( $csv->combine(@lo) ) {
 	        my $hstring = $csv->string;
 	        print $SENDINGFILE $hstring, "\n";
+			warn '[Adding to Sending File:]' . $hstring;
 	    }
 	    else {
 	        my $err = $csv->error_input;
@@ -1529,7 +1537,7 @@ sub create_mass_sending_file {
 	    $total++;
 	}
 	
-	if($args{'-Bulk_Test'} != 1){ 
+	#if($args{'-Bulk_Test'} != 1){ 
 		
         my $query = $self->SQL_subscriber_profile_join_statement(
             {
@@ -1577,6 +1585,7 @@ sub create_mass_sending_file {
                 if ( $csv->combine(@sub) ) {
                     my $hstring = $csv->string;
                     print $SENDINGFILE $hstring, "\n";
+					warn '[Adding to Sending File(2):]' . $hstring;
                 }
                 else {
                     my $err = $csv->error_input;
@@ -1588,7 +1597,7 @@ sub create_mass_sending_file {
         }
 
         $sth->finish;
-    }
+	#}
 
     close($SENDINGFILE)
       or croak(

@@ -21,7 +21,7 @@ use Carp qw(carp croak);
 use strict;
 use vars qw($AUTOLOAD);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
 
 my %allowed = ( test => 0, );
 
@@ -116,7 +116,6 @@ sub construct_and_send {
     my $self = shift;
     my ($args) = @_;
 
-
     my $draft_q = undef;
        $draft_q = $self->q_obj_from_draft($args);
 
@@ -200,6 +199,7 @@ sub construct_and_send {
 			};
         }
 
+		# Test in this case, sends the message to a file, not send a test mass mailing. 
         $mh->test( $self->test );
 
         my %mailing =
@@ -211,14 +211,11 @@ sub construct_and_send {
           partial_sending_query_to_params( $draft_q, $naked_fields );
 
         if ( $draft_q->param('archive_no_send') != 1 ) {
-            my @alternative_list = ();
+            
+			# @alternative_list, eh? 
+			my @alternative_list = ();
             @alternative_list = $draft_q->multi_param('alternative_list');
-            $mh->mass_test_recipient(
-                scalar $draft_q->param('test_recipient') );
-            my $multi_list_send_no_dupes =
-              $draft_q->param('multi_list_send_no_dupes')
-              || 0;
-
+            
             if ( exists( $args->{-Ext_Request} ) ) {
                 $mh->Ext_Request( $args->{-Ext_Request} );
             }
@@ -226,19 +223,13 @@ sub construct_and_send {
             $message_id = $mh->mass_send(
                 {
                     -msg             => {%mailing},
-                    -partial_sending => $partial_sending,
-                    -multi_list_send => {
-                        -lists    => [@alternative_list],
-                        -no_dupes => $multi_list_send_no_dupes,
-                    },
-                    -also_send_to => [@alternative_list],
-					
+                    -partial_sending => $partial_sending,					
 				    -mass_mailing_params => $args->{-mass_mailing_params},
-					
+					#  -test_recipient => $draft_q->param('test_recipient'),
 					 ( $process =~ m/test/i )
                     ? (
-                        -mass_test      => 1,
-                        -test_recipient => $draft_q->param('test_recipient'),
+                        -mass_test      => 1,	
+						-list_type      => $args->{-list_type}
                       )
                     : ( -mass_test => 0, )
 
@@ -1083,6 +1074,7 @@ sub content_from_feed_url {
 }
 
 sub send_email {
+	
 	warn 'send_email'
 		if $t; 
 	
@@ -1103,6 +1095,7 @@ sub send_email {
     my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
     my $test_sent          = xss_filter( strip( scalar $q->param('test_sent') ) ) || 0;
     my $test_recipient     = $q->param('test_recipient');
+	
 	my $done               = xss_filter( strip( scalar $q->param('done') ) ) || 0;
    
 	# draft_role defaults to, "draft", but only does so, here: 
@@ -1223,6 +1216,15 @@ sub send_email {
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
 
+		my $test_recipient_list = []; 	
+		if($test_sent == 1){ 
+			my @recipients = $self->_find_email_addresses($test_recipient); 
+			
+			for(@recipients){ 
+				push(@$test_recipient_list, {test_email => $_});
+			}
+		}
+
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'send_email_screen.tmpl',
@@ -1240,8 +1242,9 @@ sub send_email {
                     draft_role         => $draft_role,
                     done               => $done,
                     
-                    test_sent      => $test_sent,
-                    test_recipient => $test_recipient,
+                    test_sent           => $test_sent,
+                    test_recipient      => $test_recipient,
+					test_recipient_list => $test_recipient_list, 
 					
                     priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu( $self->{ls_obj}->get ),
                     type                       => 'list',
@@ -1394,6 +1397,34 @@ sub send_email {
 	}
     else {
 
+		# Make up the test list, if this is a test: 
+	    my $test_list_type_label = '_tmp-test_list-' . time;
+		
+		if ( $process =~ m/test/i ) {
+			
+			require DADA::MailingList::Settings;
+			my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+			
+			my @recipients = $self->_find_email_addresses($test_recipient); 
+			
+			for (@recipients){ 	
+				warn 'adding, '  . $_ . 'to: ' . $test_list_type_label
+					if $t; 
+				
+		        my $dmls = $self->{lh_obj}->add_subscriber(
+		            {
+		                -email      => $_,
+		                -type       => $test_list_type_label,
+		                -dupe_check => {
+		                    -enable  => 1,
+		                    -on_dupe => 'ignore_add',
+		                },
+		            }
+		        );
+		    }
+		}
+		
+
         # Draft now has all our form params
         # draft_id and role will be saved in $q
         my $draft_id = $self->save_as_draft(
@@ -1407,9 +1438,10 @@ sub send_email {
         # my ( $status, $errors, $message_id, $md5 ) =
 		my $construct_r =  $self->construct_and_send(
             {
-                -draft_id => $draft_id,
-                -role     => $draft_role,
-                -process  => $process,
+                -draft_id  => $draft_id,
+                -role      => $draft_role,
+                -process   => $process,
+				-list_type => $test_list_type_label, 
             }
         );
 
@@ -1424,6 +1456,9 @@ sub send_email {
 				-root_login => $root_login
 			});
         }
+		
+		# We'll probably want to want to go to the mailing monitor screen 
+		# if we send to > 1 addresses... 
         if ( $process =~ m/test/i ) {
 			
             warn 'test sending'
@@ -1438,7 +1473,7 @@ sub send_email {
                       . '?flavor='
                       . $flavor
                       . '&test_sent=1&test_recipient='
-                      . $q->param('test_recipient')
+                      . uriescape($q->param('test_recipient'))
                       . '&draft_id='
                       . $q->param('draft_id')
                       . '&draft_role='
@@ -1645,10 +1680,10 @@ sub save_as_draft {
 
     my $self = shift;
     my ($args) = @_;
-    if ( $t == 1 ) {
-        require Data::Dumper;
-        warn 'args:' . Data::Dumper::Dumper($args);
-    }
+    #if ( $t == 1 ) {
+    #    require Data::Dumper;
+    #    warn 'args:' . Data::Dumper::Dumper($args);
+    #}
 
     my $q = $args->{-cgi_obj};
 
@@ -2006,15 +2041,6 @@ sub list_invite {
 		
         if ( exists( $args->{-Ext_Request} ) ) {
             $mh->Ext_Request( $args->{-Ext_Request} );
-        }
-
-        $mh->mass_test(1)
-          if ( $process =~ m/test/i );
-
-        my $test_recipient = '';
-        if ( $process =~ m/test/i ) {
-            $mh->mass_test_recipient( strip( scalar $q->param('test_recipient') ) );
-            $test_recipient = $mh->mass_test_recipient;
         }
 		
 		my %f_headers = $mh->return_headers($final_header); 
@@ -2771,6 +2797,30 @@ sub send_last_archived_msg_mass_mailing {
     my $message_id = $mh->mass_send( { -msg => { $mh->return_headers($head), Body => $body, }, } );
     return 1;
 }
+
+sub _find_email_addresses { 
+	my  $self = shift; 
+	my  $str  = shift; 
+	
+	my @addresses = (); 
+	
+	# parse out the addresses sent to us:
+	my @recipients = (); 
+	require Email::Find;
+	# Simply print out all the addresses found leaving the text undisturbed.
+	my $finder = Email::Find->new(sub {
+	                                  my($email, $orig_email) = @_;
+	                                  push(@addresses, $email->format);
+	                                  return $orig_email;
+	                              });
+	$finder->find(\$str);
+	# parse out the addresses sent to us:
+	
+	return @addresses; 
+
+}
+
+
 
 sub DESTROY {
 
