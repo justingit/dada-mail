@@ -802,9 +802,6 @@ sub create_subscriber_list {
         -ID                  => $self->_internal_message_id,
         -Type                => $self->mailout_type,
         -Save_At             => $self->dir . '/' . $file_names->{tmp_subscriber_list},
-        
-		#
-		#-Bulk_Test           => $args->{-mh_obj}->{mass_test},
         -Ban                 => $args->{-mh_obj}->{do_not_send_to},
         -Create_Tokens => ( $args->{-mh_obj}->list_type eq 'invitelist' || $args->{-mh_obj}->list_type eq 'list' )
         ? 1
@@ -1885,10 +1882,7 @@ sub message_for_mail_send {
 }
 
 sub clean_up {
-	 
-	 return 1;
-	 
-
+	
     my $self = shift;
     my ($args) = @_;
 

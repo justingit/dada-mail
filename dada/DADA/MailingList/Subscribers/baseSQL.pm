@@ -1391,7 +1391,6 @@ sub create_mass_sending_file {
         -Pin                 => 1,
         -ID                  => undef,
         -Ban                 => undef,
-        # -Bulk_Test           => 0,
         -Save_At             => undef,
         -partial_sending     => {},
         -mass_mailing_params => {},
@@ -1463,12 +1462,7 @@ sub create_mass_sending_file {
     flock( $SENDINGFILE, LOCK_EX );
 
 
-#	
 	my $have_first_recipient = 1; 
-#	if(
-#		$args{'-Bulk_Test'} == 0 
-#	 && $self->{ls}->param('mass_mailing_send_to_list_owner') == 0
-#	){ 
 	if($self->{ls}->param('mass_mailing_send_to_list_owner') == 0) {
 		$have_first_recipient = 0; 
 	}
@@ -1487,17 +1481,6 @@ sub create_mass_sending_file {
             
 	if($have_first_recipient == 1){ 
 	    my $first_email = $self->{ls}->param('list_owner_email');
-# $first_email should always be the list owner email. This should fail on a blank list, I'm thinking. 
-#	    if ( 
-#			$args{-Bulk_Test} == 1 
-#		 && $args{-Test_Recipient} 
-#		) {
-#	        $first_email = $args{-Test_Recipient};
-#	    }
-#	    
-#	    warn '$first_email ' . $first_email
- #           if $t; 
-            
 	    my ( $lo_e_name, $lo_e_domain ) = split( '@', $first_email );
 
 	    my @lo  = (
@@ -1537,67 +1520,65 @@ sub create_mass_sending_file {
 	    $total++;
 	}
 	
-	#if($args{'-Bulk_Test'} != 1){ 
-		
-        my $query = $self->SQL_subscriber_profile_join_statement(
-            {
-                -type                => $args{-Type},
-                -partial_listing     => $args{-partial_sending},
-                -mass_mailing_params => $args{-mass_mailing_params},
-                -exclude_from        => $args{-exclude_from},
-            }
-        );
+    my $query = $self->SQL_subscriber_profile_join_statement(
+        {
+            -type                => $args{-Type},
+            -partial_listing     => $args{-partial_sending},
+            -mass_mailing_params => $args{-mass_mailing_params},
+            -exclude_from        => $args{-exclude_from},
+        }
+    );
 
-        my $sth = $self->{dbh}->prepare($query);
+    my $sth = $self->{dbh}->prepare($query);
 
-        $sth->execute()
-          or croak
-          "cannot do statement (at create mass_sending_file)! $DBI::errstr\n";
+    $sth->execute()
+      or croak
+      "cannot do statement (at create mass_sending_file)! $DBI::errstr\n";
 
-        my $field_ref;
+    my $field_ref;
 
-        while ( $field_ref = $sth->fetchrow_hashref ) {
+    while ( $field_ref = $sth->fetchrow_hashref ) {
 
-            chomp $field_ref->{email};    #new..
+        chomp $field_ref->{email};    #new..
 
-            unless ( exists( $banned_list{ $field_ref->{email} } ) ) {
+        unless ( exists( $banned_list{ $field_ref->{email} } ) ) {
 
-                my @sub = (
-                    $field_ref->{email},
-                    ( split( '@', $field_ref->{email} ) ), # 2..
-                    $field_ref->{list},
-                    $list_names{ $field_ref->{list} },
-                    $n_msg_id,
-                );
+            my @sub = (
+                $field_ref->{email},
+                ( split( '@', $field_ref->{email} ) ), # 2..
+                $field_ref->{list},
+                $list_names{ $field_ref->{list} },
+                $n_msg_id,
+            );
 
-                for ( @{ $self->subscriber_fields } ) {
-                    if ( defined( $field_ref->{$_} ) ) {
-                        chomp $field_ref->{$_};
-                        $field_ref->{$_} =~ s/\n|\r/ /g;
-                    }
-                    else {
-                        $field_ref->{$_} = '';
-                    }
-
-                    push( @sub, $field_ref->{$_} );
-                }
-
-                if ( $csv->combine(@sub) ) {
-                    my $hstring = $csv->string;
-                    print $SENDINGFILE $hstring, "\n";
-					warn '[Adding to Sending File(2):]' . $hstring;
+            for ( @{ $self->subscriber_fields } ) {
+                if ( defined( $field_ref->{$_} ) ) {
+                    chomp $field_ref->{$_};
+                    $field_ref->{$_} =~ s/\n|\r/ /g;
                 }
                 else {
-                    my $err = $csv->error_input;
-                    carp "combine() failed on argument: ", $err, "\n";
+                    $field_ref->{$_} = '';
                 }
-                $total++;
+
+                push( @sub, $field_ref->{$_} );
             }
 
+            if ( $csv->combine(@sub) ) {
+                my $hstring = $csv->string;
+                print $SENDINGFILE $hstring, "\n";
+				warn '[Adding to Sending File(2):]' . $hstring;
+            }
+            else {
+                my $err = $csv->error_input;
+                carp "combine() failed on argument: ", $err, "\n";
+            }
+            $total++;
         }
 
-        $sth->finish;
-	#}
+    }
+
+    $sth->finish;
+
 
     close($SENDINGFILE)
       or croak(
