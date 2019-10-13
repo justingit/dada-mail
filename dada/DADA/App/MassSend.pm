@@ -225,8 +225,8 @@ sub construct_and_send {
                     -msg             => {%mailing},
                     -partial_sending => $partial_sending,					
 				    -mass_mailing_params => $args->{-mass_mailing_params},
-					#  -test_recipient => $draft_q->param('test_recipient'),
-					 ( $process =~ m/test/i )
+					# "-list_type" will hold the tmp list that we're sending to. 
+ 					 ( $process =~ m/test/i )
                     ? (
                         -mass_test      => 1,	
 						-list_type      => $args->{-list_type}

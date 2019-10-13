@@ -1197,7 +1197,8 @@ sub mass_send {
             $self->test( $args->{-test} );
         }
 
-        # Send to only a test recipient, instead of the entire list?
+        # Send to only to test recipients (of a test list/tmp test list), 
+		# rather thanhe entire list?
         if ( exists( $args->{-mass_test} ) ) {
             $self->mass_test( $args->{-mass_test} );
         }
@@ -2084,336 +2085,305 @@ sub mass_send {
                 # / Three strikes, and you're out:
                 ##############################################################
 
-               # # I hate to wrap this in yet another If... state ment, but...
-               # if ( $self->mass_test == 1 ) {
-			   # #
-				#  # Well, for a test, we do nothing, so we can skip the batch settings stuff, since we only send 1 message.
-               # }
-               # else {
+               
+                warn '['
+                  . $self->{list}
+                  . '] Mass Mailing:'
+                  . $mailout_id
+                  . ' Batching settings: $batching_enabled: '
+                  . $batching_enabled
+                  . ' $batch_size '
+                  . $batch_size
+                  . ' $batch_wait '
+                  . $batch_wait
+                  if $t;
+
+                if ( $batching_enabled == 1 ) {
 
                     warn '['
                       . $self->{list}
                       . '] Mass Mailing:'
                       . $mailout_id
-                      . ' Batching settings: $batching_enabled: '
-                      . $batching_enabled
-                      . ' $batch_size '
-                      . $batch_size
-                      . ' $batch_wait '
-                      . $batch_wait
+                      . ' $batching_enabled is set to 1'
                       if $t;
 
-                    if ( $batching_enabled == 1 ) {
+                    if ( $batch_num_sent >= $batch_size ) {
 
                         warn '['
                           . $self->{list}
                           . '] Mass Mailing:'
                           . $mailout_id
-                          . ' $batching_enabled is set to 1'
+                          . ' reached the amount of messages for this batch:'
+                          . $batch_num_sent
+                          . ', sleeping (estimate):'
+                          . $batch_wait
                           if $t;
 
-                        if ( $batch_num_sent >= $batch_size ) {
+                        $batch_num_sent = 0;
+
+                        # Undefined after each batch, if it is defined
+                        if ( defined( $self->net_smtp_obj ) ) {
 
                             warn '['
                               . $self->{list}
                               . '] Mass Mailing:'
                               . $mailout_id
-                              . ' reached the amount of messages for this batch:'
-                              . $batch_num_sent
-                              . ', sleeping (estimate):'
-                              . $batch_wait
+                              . 'Quitting a SMTP connection for this batch that\'s still going on... '
                               if $t;
 
-                            $batch_num_sent = 0;
-
-                            # Undefined after each batch, if it is defined
-                            if ( defined( $self->net_smtp_obj ) ) {
-
-                                warn '['
-                                  . $self->{list}
-                                  . '] Mass Mailing:'
-                                  . $mailout_id
-                                  . 'Quitting a SMTP connection for this batch that\'s still going on... '
-                                  if $t;
-
-                                $self->net_smtp_obj->quit
-                                  or carp "problems 'QUIT'ing SMTP server.";
-
-                                warn '['
-                                  . $self->{list}
-                                  . '] Mass Mailing:'
-                                  . $mailout_id
-                                  . ' Purging Net::STMP object, since we have reached the final message of the batch.'
-                                  if $t;
-
-                                $self->net_smtp_obj(undef);
-                            }
-
-                            if ( defined( $self->ses_obj ) ) {
-                                warn '['
-                                  . $self->{list}
-                                  . '] Mass Mailing:'
-                                  . $mailout_id
-                                  . ' undef\'ing ses_obj'
-                                  if $t;
-                                $self->ses_obj(undef);
-                            }
+                            $self->net_smtp_obj->quit
+                              or carp "problems 'QUIT'ing SMTP server.";
 
                             warn '['
                               . $self->{list}
                               . '] Mass Mailing:'
                               . $mailout_id
-                              . ' calling Mail::MailOut::status() '
+                              . ' Purging Net::STMP object, since we have reached the final message of the batch.'
                               if $t;
-                            my $batch_status =
-                              $mailout->status( { -mail_fields => 0 } );
 
-                            my $batch_log_message =
-                              "Subject:$fields{Subject}, Start Time: "
-                              . scalar( localtime( $status->{first_access} ) );
-                            for ( keys %$batch_status ) {
-                                next if $_ eq 'email_fields';
-                                next if $_ =~ m/formatted/;
-                                $batch_log_message .=
-                                  ' ' . $_ . ': ' . $batch_status->{$_};
-                            }
+                            $self->net_smtp_obj(undef);
+                        }
 
-                            $mailout->log('Batch successfully completed.');
+                        if ( defined( $self->ses_obj ) ) {
                             warn '['
                               . $self->{list}
                               . '] Mass Mailing:'
                               . $mailout_id
-                              . ' Batch Successfully Completed: '
-                              . $batch_log_message
+                              . ' undef\'ing ses_obj'
                               if $t;
+                            $self->ses_obj(undef);
+                        }
 
-                            # Reset the batch settings.
+                        warn '['
+                          . $self->{list}
+                          . '] Mass Mailing:'
+                          . $mailout_id
+                          . ' calling Mail::MailOut::status() '
+                          if $t;
+                        my $batch_status =
+                          $mailout->status( { -mail_fields => 0 } );
 
-                            if ( $batch_status->{queued_mailout} == 1 ) {
-                                carp '['
-                                  . $self->{list}
-                                  . '] Mass Mailing:'
-                                  . $mailout_id
-                                  . ' Mailing has been queued';
-                                $mailout->log(
-                                    'Warning: Mailing has been queued');
-                                $mailout->unlock_batch_lock;
-                                if ( $DADA::Config::RUNNING_UNDER eq 'FastCGI' )
-                                {
-                                    return (0);
-                                }
-                                else {
-                                    exit(0);
-                                }
-                            }
-                            if ( $batch_status->{paused} > 0 ) {
-                                carp '['
-                                  . $self->{list}
-                                  . '] Mass Mailing:'
-                                  . $mailout_id
-                                  . ' Mailing has been paused';
-                                $mailout->log(
-                                    'Warning: Mailing has been paused');
-                                $mailout->unlock_batch_lock;
-                                if ( $DADA::Config::RUNNING_UNDER eq 'FastCGI' )
-                                {
-                                    return (0);
-                                }
-                                else {
-                                    exit(0);
-                                }
-                            }
-                            if ( $batch_status->{integrity_check} != 1 ) {
-                                carp '['
-                                  . $self->{list}
-                                  . '] Mass Mailing:'
-                                  . $mailout_id
-                                  . ' is currently reporting an integrity check warning! Pausing mailing.';
-                                $mailout->log(
-'Warning: Mailing is currently reporting an integrity check warning! Pausing mailing.'
-                                );
-                                $mailout->unlock_batch_lock;
-                                $mailout->pause;
-                                if ( $DADA::Config::RUNNING_UNDER eq 'FastCGI' )
-                                {
-                                    return (0);
-                                }
-                                else {
-                                    exit(0);
-                                }
-                            }
+                        my $batch_log_message =
+                          "Subject:$fields{Subject}, Start Time: "
+                          . scalar( localtime( $status->{first_access} ) );
+                        for ( keys %$batch_status ) {
+                            next if $_ eq 'email_fields';
+                            next if $_ =~ m/formatted/;
+                            $batch_log_message .=
+                              ' ' . $_ . ': ' . $batch_status->{$_};
+                        }
 
-   # SES: explicitly reset the batch params cache after every 100 messages sent.
-                            if (
-                                (
-                                    (
-                                        $mass_mailing_count % (
-                                            int($batch_wait) * 100 )
-                                    )
-                                ) == 0
-                              )
+                        $mailout->log('Batch successfully completed.');
+                        warn '['
+                          . $self->{list}
+                          . '] Mass Mailing:'
+                          . $mailout_id
+                          . ' Batch Successfully Completed: '
+                          . $batch_log_message
+                          if $t;
+
+                        # Reset the batch settings.
+
+                        if ( $batch_status->{queued_mailout} == 1 ) {
+                            carp '['
+                              . $self->{list}
+                              . '] Mass Mailing:'
+                              . $mailout_id
+                              . ' Mailing has been queued';
+                            $mailout->log(
+                                'Warning: Mailing has been queued');
+                            $mailout->unlock_batch_lock;
+                            if ( $DADA::Config::RUNNING_UNDER eq 'FastCGI' )
                             {
-                                $mailout->log("Resetting Batch Params Cache");
-                                $mailout->reset_batch_params_cache;
-
-                                ( $batching_enabled, $batch_size, $batch_wait )
-                                  = $mailout->batch_params;
-                                $mailout->log( 'Batching Enabled: '
-                                      . $batching_enabled
-                                      . ', Batch Size: '
-                                      . $batch_size
-                                      . ', Batch Sleep: '
-                                      . $batch_wait );
+                                return (0);
                             }
                             else {
-                                # Batch params also expire after 10 mins.
-                                ( $batching_enabled, $batch_size, $batch_wait )
-                                  = $mailout->batch_params;
+                                exit(0);
                             }
-
-                            ##############################################
-                            # This is all to attempt to tweak the sleep time
-                            # to more reflect the batch settings
-                            #
-
-                            my $sleep_for_this_amount = $batch_wait;
-                            if ( $self->{ls}->param('adjust_batch_sleep_time')
-                                == 1 )
+                        }
+                        if ( $batch_status->{paused} > 0 ) {
+                            carp '['
+                              . $self->{list}
+                              . '] Mass Mailing:'
+                              . $mailout_id
+                              . ' Mailing has been paused';
+                            $mailout->log(
+                                'Warning: Mailing has been paused');
+                            $mailout->unlock_batch_lock;
+                            if ( $DADA::Config::RUNNING_UNDER eq 'FastCGI' )
                             {
-                                my $batch_time_took = time - $batch_start_time;
-                                if ( $batch_time_took > 0 ) {
+                                return (0);
+                            }
+                            else {
+                                exit(0);
+                            }
+                        }
+                        if ( $batch_status->{integrity_check} != 1 ) {
+                            carp '['
+                              . $self->{list}
+                              . '] Mass Mailing:'
+                              . $mailout_id
+                              . ' is currently reporting an integrity check warning! Pausing mailing.';
+                            $mailout->log(
+'Warning: Mailing is currently reporting an integrity check warning! Pausing mailing.'
+                            );
+                            $mailout->unlock_batch_lock;
+                            $mailout->pause;
+                            if ( $DADA::Config::RUNNING_UNDER eq 'FastCGI' )
+                            {
+                                return (0);
+                            }
+                            else {
+                                exit(0);
+                            }
+                        }
 
-                       #warn "SLEEP: This batch took: $batch_time_took seconds";
-                                    if ( $batch_time_took >= $batch_wait ) {
-                                        warn '['
-                                          . $self->{list}
-                                          . '] Mass Mailing:'
-                                          . $mailout_id
-                                          . ' SLEEP: batch time took MORE time than $batch_wait - skipping sleeping'
-                                          if $t;
-                                        $sleep_for_this_amount = 0;
-                                    }
-                                    else {
-                                        $sleep_for_this_amount =
-                                          ( $sleep_for_this_amount -
-                                              $batch_time_took );
-                                        warn '['
-                                          . $self->{list}
-                                          . '] Mass Mailing:'
-                                          . $mailout_id
-                                          . ' SLEEP: setting sleep time to: '
-                                          . $sleep_for_this_amount
-                                          . ' seconds. Sweet Dreams'
-                                          if $t;
-                                    }
-                                }
-                                else {
+# SES: explicitly reset the batch params cache after every 100 messages sent.
+                        if (
+                            (
+                                (
+                                    $mass_mailing_count % (
+                                        int($batch_wait) * 100 )
+                                )
+                            ) == 0
+                          )
+                        {
+                            $mailout->log("Resetting Batch Params Cache");
+                            $mailout->reset_batch_params_cache;
+
+                            ( $batching_enabled, $batch_size, $batch_wait )
+                              = $mailout->batch_params;
+                            $mailout->log( 'Batching Enabled: '
+                                  . $batching_enabled
+                                  . ', Batch Size: '
+                                  . $batch_size
+                                  . ', Batch Sleep: '
+                                  . $batch_wait );
+                        }
+                        else {
+                            # Batch params also expire after 10 mins.
+                            ( $batching_enabled, $batch_size, $batch_wait )
+                              = $mailout->batch_params;
+                        }
+
+                        ##############################################
+                        # This is all to attempt to tweak the sleep time
+                        # to more reflect the batch settings
+                        #
+
+                        my $sleep_for_this_amount = $batch_wait;
+                        if ( $self->{ls}->param('adjust_batch_sleep_time')
+                            == 1 )
+                        {
+                            my $batch_time_took = time - $batch_start_time;
+                            if ( $batch_time_took > 0 ) {
+
+                   #warn "SLEEP: This batch took: $batch_time_took seconds";
+                                if ( $batch_time_took >= $batch_wait ) {
                                     warn '['
                                       . $self->{list}
                                       . '] Mass Mailing:'
                                       . $mailout_id
-                                      . ' SLEEP: batch was basically instantaneous - no need to tweak sleep time...'
+                                      . ' SLEEP: batch time took MORE time than $batch_wait - skipping sleeping'
                                       if $t;
-                                }
-                            }
-                            #
-                            # / Tweak Sleep Times
-                            ##############################################
-
-                            my $before_sleep_time = time;
-                            warn '['
-                              . $self->{list}
-                              . '] Mass Mailing:'
-                              . $mailout_id
-                              . ' Sleeping for '
-                              . $sleep_for_this_amount
-                              . ' seconds. See you in the morning. Time: '
-                              . $before_sleep_time
-                              if $t;
-
-                            if ( $sleep_for_this_amount > 0 ) {
-                                warn '['
-                                  . $self->{list}
-                                  . '] Mass Mailing:'
-                                  . $mailout_id
-                                  . ' sleeping for: '
-                                  . $sleep_for_this_amount
-                                  . ', time:'
-                                  . time
-                                  if $t;
-                                sleep($sleep_for_this_amount);
-                                warn '['
-                                  . $self->{list}
-                                  . '] Mass Mailing:'
-                                  . $mailout_id
-                                  . ' Good morning!, time:'
-                                  . time
-                                  if $t;
-                            }
-
-                            warn '['
-                              . $self->{list}
-                              . '] Mass Mailing:'
-                              . $mailout_id
-                              . ' I\'m awake! from sleep()ing, Time: '
-                              . time
-                              . ', Slept for: '
-                              . ( time - $before_sleep_time )
-                              . ' seconds. '
-                              if $t;
-
-                            if ( !$mailout->still_around ) {
-                                warn '['
-                                  . $self->{list}
-                                  . '] Mass Mailing:'
-                                  . $mailout_id
-                                  . ' Seems to have been removed.'
-                                  if $t;
-                                if ( $DADA::Config::RUNNING_UNDER eq 'FastCGI' )
-                                {
-                                    return (0);
+                                    $sleep_for_this_amount = 0;
                                 }
                                 else {
-                                    exit(0);
+                                    $sleep_for_this_amount =
+                                      ( $sleep_for_this_amount -
+                                          $batch_time_took );
+                                    warn '['
+                                      . $self->{list}
+                                      . '] Mass Mailing:'
+                                      . $mailout_id
+                                      . ' SLEEP: setting sleep time to: '
+                                      . $sleep_for_this_amount
+                                      . ' seconds. Sweet Dreams'
+                                      if $t;
                                 }
-                            }
-
-                    # Let's make sure I'm still supposed to be working on stuff:
-                            if ( $batch_status->{controlling_pid} == $$ ) {
-
-                                # Good to go.
-
-                                warn '['
-                                  . $self->{list}
-                                  . '] Mass Mailing:'
-                                  . $mailout_id
-                                  . " Controlling PID check says we're ($$) still in control."
-                                  if $t;
-
                             }
                             else {
                                 warn '['
                                   . $self->{list}
                                   . '] Mass Mailing:'
                                   . $mailout_id
-                                  . ' Problem! Another process (Current PID: '
-                                  . $$
-                                  . ', Controlling PID: '
-                                  . $batch_status->{controlling_pid}
-                                  . ' has taken over sending for this mailing! '
-                                  . ' stopping to allow that process to do it\'s business!';
-                                if ( $DADA::Config::RUNNING_UNDER eq 'FastCGI' )
-                                {
-                                    return (0);
-                                }
-                                else {
-                                    exit(0);
-                                }
+                                  . ' SLEEP: batch was basically instantaneous - no need to tweak sleep time...'
+                                  if $t;
                             }
+                        }
+                        #
+                        # / Tweak Sleep Times
+                        ##############################################
 
-                            $mailout->unlock_batch_lock;
-                            $mailout->batch_lock;
-                            $batch_start_time = time;
+                        my $before_sleep_time = time;
+                        warn '['
+                          . $self->{list}
+                          . '] Mass Mailing:'
+                          . $mailout_id
+                          . ' Sleeping for '
+                          . $sleep_for_this_amount
+                          . ' seconds. See you in the morning. Time: '
+                          . $before_sleep_time
+                          if $t;
+
+                        if ( $sleep_for_this_amount > 0 ) {
+                            warn '['
+                              . $self->{list}
+                              . '] Mass Mailing:'
+                              . $mailout_id
+                              . ' sleeping for: '
+                              . $sleep_for_this_amount
+                              . ', time:'
+                              . time
+                              if $t;
+                            sleep($sleep_for_this_amount);
+                            warn '['
+                              . $self->{list}
+                              . '] Mass Mailing:'
+                              . $mailout_id
+                              . ' Good morning!, time:'
+                              . time
+                              if $t;
+                        }
+
+                        warn '['
+                          . $self->{list}
+                          . '] Mass Mailing:'
+                          . $mailout_id
+                          . ' I\'m awake! from sleep()ing, Time: '
+                          . time
+                          . ', Slept for: '
+                          . ( time - $before_sleep_time )
+                          . ' seconds. '
+                          if $t;
+
+                        if ( !$mailout->still_around ) {
+                            warn '['
+                              . $self->{list}
+                              . '] Mass Mailing:'
+                              . $mailout_id
+                              . ' Seems to have been removed.'
+                              if $t;
+                            if ( $DADA::Config::RUNNING_UNDER eq 'FastCGI' )
+                            {
+                                return (0);
+                            }
+                            else {
+                                exit(0);
+                            }
+                        }
+
+                # Let's make sure I'm still supposed to be working on stuff:
+                        if ( $batch_status->{controlling_pid} == $$ ) {
+
+                            # Good to go.
+
+                            warn '['
+                              . $self->{list}
+                              . '] Mass Mailing:'
+                              . $mailout_id
+                              . " Controlling PID check says we're ($$) still in control."
+                              if $t;
 
                         }
                         else {
@@ -2421,13 +2391,37 @@ sub mass_send {
                               . $self->{list}
                               . '] Mass Mailing:'
                               . $mailout_id
-                              . ' More messages to be sent in this batch '
-                              if $t;
-
+                              . ' Problem! Another process (Current PID: '
+                              . $$
+                              . ', Controlling PID: '
+                              . $batch_status->{controlling_pid}
+                              . ' has taken over sending for this mailing! '
+                              . ' stopping to allow that process to do it\'s business!';
+                            if ( $DADA::Config::RUNNING_UNDER eq 'FastCGI' )
+                            {
+                                return (0);
+                            }
+                            else {
+                                exit(0);
+                            }
                         }
 
+                        $mailout->unlock_batch_lock;
+                        $mailout->batch_lock;
+                        $batch_start_time = time;
+
                     }
-               # }
+                    else {
+                        warn '['
+                          . $self->{list}
+                          . '] Mass Mailing:'
+                          . $mailout_id
+                          . ' More messages to be sent in this batch '
+                          if $t;
+
+                    }
+
+                }
             }
 
             warn '['
@@ -3343,13 +3337,6 @@ sub _mail_merge {
     $labeled_data{message_id}                = shift @$data;
 
 
-	# I feel that this will have other reprocussions, but this will work for now
-	# See this also in, sub email_message_preview in DADA::App
-	if ( $self->mass_test == 1 ) {
-		$labeled_data{message_id} = 'PREVIEW_MESSAGE_ID';
-	}
-
-
     # type is passed in, $self->list_type
     my $confirmation_token = $self->_make_token(
         {
@@ -3559,7 +3546,7 @@ sub _make_token {
                 -email => $args->{-email},
                 -data  => {
                     list       => $args->{-list},
-                    type       => 'list',
+                    type       => $self->list_type, # new
                     flavor     => $token_type,
                     mid        => $args->{-msg_id},
                     email_hint => DADA::App::Guts::anonystar_address_encode(
@@ -3614,6 +3601,7 @@ sub _log_sub_count {
     return
       if $self->list_type ne 'list';
 
+	# Hmmm... 
     return
       if $self->mass_test;
 
@@ -3690,59 +3678,11 @@ sub _log_sub_count {
 
 }
 
-=pod
-
-sub mass_test_recipient {
-
-    warn 'mass_test_recipient'
-      if $t;
-
-    my $self           = shift;
-    my $test_recipient = shift;
-
-    warn '$test_recipient ' . $test_recipient
-      if $t;
-
-    if ( !$test_recipient ) {
-
-        if ( !$self->{test_recipient} ) {
-
-            return $self->{ls}->param('list_owner_email');
-
-            warn "sending over the list owner as the test recipient.."
-              if $t;
-
-        }
-        else {
-
-            warn "sending over " . $self->{test_recipient}
-              if $t;
-            return $self->{test_recipient};
-
-        }
-
-    }
-    else {
-
-        if ( DADA::App::Guts::check_for_valid_email($test_recipient) == 0 ) {
-
-            $self->{test_recipient} = $test_recipient;
-
-        }
-        else {
-            warn
-              "Test Recipient, '$test_recipient' is not a valid email address!"
-              if $t;
-        }
-    }
-}
-=cut
 
 sub DESTROY {
 
     # DESTROY ALL ASTROMEN!
     my $self = shift;
-
     # This is probably a really stupid place to put this...
 
 }
