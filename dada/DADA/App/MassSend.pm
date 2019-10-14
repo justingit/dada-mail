@@ -110,6 +110,8 @@ sub are_we_archiving_based_on_params {
 }
 
 sub construct_and_send {
+
+
     warn 'construct_and_send'
       if $t;
 
@@ -1091,10 +1093,11 @@ sub send_email {
 		}
 	);
 
-    my $process            = xss_filter( strip( scalar $q->param('process') ) );
-    my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
-    my $test_sent          = xss_filter( strip( scalar $q->param('test_sent') ) ) || 0;
-    my $test_recipient     = $q->param('test_recipient');
+    my $process             = xss_filter( strip( scalar $q->param('process') ) );
+    my $flavor              = xss_filter( strip( scalar $q->param('flavor') ) );
+    my $test_sent           = xss_filter( strip( scalar $q->param('test_sent') ) ) || 0;
+	my $test_recipient_type = xss_filter( strip( scalar $q->param('test_recipient_type') ) ) || 'from_textbox';
+    my $test_recipients     = $q->param('test_recipients') || '';
 	
 	my $done               = xss_filter( strip( scalar $q->param('done') ) ) || 0;
    
@@ -1216,14 +1219,19 @@ sub send_email {
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
 
+		# Probably don't need this anymore, if I'm going to instead redirect them to the 
+		# monitor screen
 		my $test_recipient_list = []; 	
 		if($test_sent == 1){ 
-			my @recipients = $self->_find_email_addresses($test_recipient); 
-			
+			my @recipients = $self->_find_email_addresses($test_recipients); 
 			for(@recipients){ 
 				push(@$test_recipient_list, {test_email => $_});
 			}
 		}
+		# /
+		
+        
+		
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -1242,9 +1250,12 @@ sub send_email {
                     draft_role         => $draft_role,
                     done               => $done,
                     
-                    test_sent           => $test_sent,
-                    test_recipient      => $test_recipient,
-					test_recipient_list => $test_recipient_list, 
+                    # test_sent           => $test_sent,
+                    # test_recipient      => $test_recipients,
+					# test_recipient_list => $test_recipient_list, 
+			        test_list_subscribers_num => scalar commify(
+			            $self->{lh_obj}->num_subscribers( { -type => 'test_list' } ) 
+					),
 					
                     priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu( $self->{ls_obj}->get ),
                     type                       => 'list',
@@ -1362,7 +1373,10 @@ sub send_email {
 			
 	        require JSON;
 	        my $json    = JSON->new->allow_nonref;
-	        my $return  = { status => 0, errors => $construct_r->{errors} };
+	        my $return  = { 
+					status => 0, 
+					errors => $construct_r->{errors} 
+			};
 	        my $headers = {
 	            '-Cache-Control' => 'no-cache, must-revalidate',
 	            -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
@@ -1398,33 +1412,47 @@ sub send_email {
     else {
 
 		# Make up the test list, if this is a test: 
-	    my $test_list_type_label = '_tmp-test_list-' . time;
+        require DADA::Security::Password;
+        my $ran_number =
+          DADA::Security::Password::generate_rand_string('1234567890', 4);
+		
+		my $test_list_type_label = '_tmp_test_list_' . $ran_number . '_' . time;
 		
 		if ( $process =~ m/test/i ) {
 			
 			require DADA::MailingList::Settings;
 			my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 			
-			my @recipients = $self->_find_email_addresses($test_recipient); 
+			if($test_recipient_type eq 'from_textbox'){
 			
-			for (@recipients){ 	
-				warn 'adding, '  . $_ . 'to: ' . $test_list_type_label
-					if $t; 
+				my @recipients = $self->_find_email_addresses($test_recipients); 
+				for (@recipients){ 	
+					warn 'adding, '  . $_ . 'to: ' . $test_list_type_label
+						if $t; 
+			        my $dmls = $self->{lh_obj}->add_subscriber(
+			            {
+			                -email      => $_,
+			                -type       => $test_list_type_label,
+			                -dupe_check => {
+			                    -enable  => 1,
+			                    -on_dupe => 'ignore_add',
+			                },
+			            }
+			        );
+			    }				
+			}
+			elsif($test_recipient_type eq 'from_text_list'){
 				
-		        my $dmls = $self->{lh_obj}->add_subscriber(
-		            {
-		                -email      => $_,
-		                -type       => $test_list_type_label,
-		                -dupe_check => {
-		                    -enable  => 1,
-		                    -on_dupe => 'ignore_add',
-		                },
-		            }
-		        );
-		    }
+	            $self->{lh_obj}->copy_all_subscribers(
+	                {
+	                    -from => 'test_list',
+	                    -to   => $test_list_type_label,
+	                }
+	            );
+			}
+		
 		}
 		
-
         # Draft now has all our form params
         # draft_id and role will be saved in $q
         my $draft_id = $self->save_as_draft(
@@ -1459,11 +1487,31 @@ sub send_email {
 		
 		# We'll probably want to want to go to the mailing monitor screen 
 		# if we send to > 1 addresses... 
+
+		
         if ( $process =~ m/test/i ) {
 			
             warn 'test sending'
-              if $t;
-			
+              if $t;			
+			  my $uri = $DADA::Config::S_PROGRAM_URL 
+			  . '?flavor=sending_monitor'
+			  . '&type=' . $test_list_type_label
+			  . '&id=' 
+			  . $construct_r->{mid}
+              . '&draft_id='
+              . $q->param('draft_id')
+			  ;
+
+			  # . '&isatest=1'
+              # . '&draft_role='
+              #. $q->param('draft_role')
+              
+			  
+			  
+              return ( { -redirect_uri => $uri }, undef );
+=pod
+			  
+			  
             $self->wait_for_it(
 				$construct_r->{mid}
 			);
@@ -1481,6 +1529,8 @@ sub send_email {
                 },
                 undef
             );
+=cut
+		
         }
         else {
             if ( defined($draft_id) ) {

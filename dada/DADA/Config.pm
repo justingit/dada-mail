@@ -413,6 +413,7 @@ $LIST_TYPES //= {
     unsub_request_list  => 'Unsubscription Requests',
     bounced_list        => 'Bouncing Addresses',
 	ignore_bounces_list => 'Ignore Bounces',
+	test_list           => 'Testers',
 };
 
 $AMAZON_SES_OPTIONS //= { 

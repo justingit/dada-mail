@@ -1,24 +1,65 @@
 <!-- begin send_email_test_recipient_widget.tmpl --> 
 <div id="send_test_messages_to"> 	
+
+	<p><strong>Send Test Messages To:</strong></p>
+	
 	<div class="row">
-		<div class="large-3 medium-3 columns">
+		
+		<div class="large-1 medium-1 columns">
+		</div>
+		
+		<div class="large-11 medium-11 columns">
+			<input 
+				type="radio"
+				name="test_recipient_type"
+				id="test_recipient_type_from_textbox"
+				value="from_textbox"
+				checked="checked"
+			>
 			<label 
-				for="test_recipient" 
+				for="test_recipient_type_from_textbox" 
 				class="medium-text-right"
 			>
-				Send Test Messages To:
+				These Email Addresses:
 			</label>
-		</div>
-		<div class="large-9 medium-9 columns">
-			<input 
-				type="text" 
-				id="test_recipient" 
-				 
-				name="test_recipient" 
-				value="<!-- tmpl_var list_settings.list_owner_email -->" 
-				placeholder="you@yours.com"
-			>
+		
+			<div class="row">
+				<div class="large-1 medium-1 columns">
+				</div>
+
+				<div class="large-11 medium-11 columns">
+					<textarea 
+						name="test_recipients" 
+						id="test_recipients"
+						placeholder="you@yours.com"></textarea>
+				</div>
+			</div>
+			
 		</div>
 	</div>
+
+	
+	<div class="row">
+		<div class="large-1 medium-1 columns">
+		</div>
+		
+		<div class="large-11 medium-11 columns">
+			<input 
+				type="radio"
+				name="test_recipient_type"
+				id="test_recipient_type_from_test_list"
+				value="from_test_list"
+			>
+			<label 
+				for="test_recipient_type_from_test_list" 
+				class="medium-text-right"
+			>
+				Testers Sublist (<!-- tmpl_var test_list_subscribers_num default="0" -->)
+			</label>
+		</div>
+	</div>
+	
+	
+	
 </div>
 <!-- end send_email_test_recipient_widget.tmpl --> 

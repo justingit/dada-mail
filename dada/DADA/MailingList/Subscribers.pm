@@ -611,8 +611,16 @@ sub admin_update_address {
 
     if ( $self->can_have_subscriber_fields ) {
         require DADA::Profile;
-        $og_prof = DADA::Profile->new( { -email => $email } );
-    }
+        $og_prof = DADA::Profile->new( 
+			{ 
+				-email                         => $email, 
+				-override_profile_enable_check => 1, 
+			} 
+		);
+	}
+	else { 
+		warn 'NO $og_prof';
+	}
 
     # Switch the addresses around
 
@@ -669,6 +677,7 @@ sub admin_update_address {
             );
         }
 
+
        # Is there another mailing list that has the old address as a subscriber?
        # Remember, we already changed over ONE of the subscriptions.
 
@@ -711,7 +720,12 @@ sub admin_update_address {
         # So, no other mailing list has a subscription for the new email address
         #
             my $updated_prof =
-              DADA::Profile->new( { -email => $updated_email } );
+              DADA::Profile->new( 
+			  	{
+						-email                         => $updated_email, 
+						-override_profile_enable_check => 1, 
+				}
+			);
 
             # But does this profile already exists for the updated address?
 
@@ -739,7 +753,12 @@ sub admin_update_address {
         }
 
         # so, the old prof have any subscriptions?
-        my $old_prof = DADA::Profile->new( { -email => $email } );
+        my $old_prof = DADA::Profile->new( 
+			{	
+				-email                         => $email, 
+				-override_profile_enable_check => 1, 
+			 }
+		);
         if ( $old_prof->exists ) {
 
             # Again, this will only touch, "list" sublist...
@@ -829,8 +848,8 @@ sub get_list_types {
         sub_request_list    => 1,
         unsub_request_list  => 1,
         bounced_list        => 1,
-		
 		ignore_bounces_list => 1, 
+		test_list           => 1,
     };
 
 }

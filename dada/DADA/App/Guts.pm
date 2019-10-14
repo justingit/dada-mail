@@ -3559,17 +3559,18 @@ sub generate_rand_string_md5 {
 
 sub list_types { 
     return {
-        list               => 'Subscribers',
-        black_list         => 'Black Listed',
-        white_list         => 'White Listed',            # White listed isn't working, no?
-        authorized_senders => 'Authorized Senders',
-        moderators         => 'Moderators',
-        sub_request_list   => 'Subscription Requests',
-        unsub_request_list => 'Unsubscription Requests',
-        bounced_list       => 'Bouncing Addresses',
-		sub_confirm_list   => 'Unconfirmed Subscribers',
+        list                => 'Subscribers',
+		test_list           => 'Testers',
+        black_list          => 'Black Listed',
+        white_list          => 'White Listed',            # White listed isn't working, no?
+        authorized_senders  => 'Authorized Senders',
+        moderators          => 'Moderators',
+        sub_request_list    => 'Subscription Requests',
+        unsub_request_list  => 'Unsubscription Requests',
+        bounced_list        => 'Bouncing Addresses',
+		sub_confirm_list    => 'Unconfirmed Subscribers',
 		ignore_bounces_list => 'Ignore Bounces',
-    	
+		test_list           => 'Testers',	
 	};
 }
 

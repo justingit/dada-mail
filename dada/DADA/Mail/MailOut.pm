@@ -2122,6 +2122,7 @@ sub current_mailouts {
         # $gh{'Message-ID'} = '<' .  DADA::App::Guts::message_id() . '.'. $ran_number . '@' . $From_obj->host . '>';
         # This is what the file looks like:
         # sendout-j-list-20070320181623.91081883_at_skazat.com
+		#
         #  $junk   $list $listtype $id
         #
         #So, I got this:
@@ -2217,14 +2218,30 @@ sub current_mailouts {
 
 sub mailout_exists {
 
+	warn 'mailout_exists'
+		if $t; 
+	
     my $list = shift;
     my $id   = shift;
     my $type = shift;
 
+
+	warn 'orig $id: ' . $id; 
+	
     $id =~ s/\@/_at_/g;
     $id =~ s/\>|\<//g;
 
-    croak "You did not supply a list!"
+	# There shouldn't be any '-'s in our $id - if so, we need to do some massaging. 
+	my ( $r_list, $r_listtype, $real_id ) = split( '-', $id, 3);
+	undef($real_id);
+	
+	$id = $real_id; 
+
+	warn '$id: '   . $id; 
+    warn '$list: ' . $list;
+	warn '$type: ' . $type;
+	
+	croak "You did not supply a list!"
       if !$list;
     croak "You did not supply an id! "
       if !$id;
@@ -2234,7 +2251,10 @@ sub mailout_exists {
     my @mailouts = current_mailouts( { -list => $list } );
 
     for my $mo (@mailouts) {
-
+		warn '$mo->{id}: '   . $mo->{id}; 
+		warn '$mo->{type}: ' . $mo->{type}; 
+		warn '$mo->{list}: ' . $mo->{list};
+		
         if ( $mo->{id} eq $id && $mo->{type} eq $type && $mo->{list} eq $list ) {
 
             return 1;

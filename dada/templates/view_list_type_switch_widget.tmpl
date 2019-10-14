@@ -21,6 +21,17 @@
 				</a>				
 			</li>
 			
+			<li class="tab-title <!-- tmpl_if EXPR="(type eq 'test_list')" --> active<!-- /tmpl_if -->">
+					<!-- tmpl_if flavor_is_view_list -->
+						<a href="#" class="change_type" data-type="test_list">
+					<!-- tmpl_else --> 
+						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var flavor -->;type=test_list">
+					<!-- /tmpl_if -->
+					<span>
+				   		Testers (<!-- tmpl_var test_list_subscribers_num -->)
+					</span>
+					</a>
+				</li>
 			
 			<!-- tmpl_if flavor_is_view_list --> 
 				<!-- tmpl_if list_settings.enable_subscription_approval_step -->

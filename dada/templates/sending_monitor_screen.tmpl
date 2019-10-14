@@ -23,6 +23,16 @@
 	</div>
 </div>
 
+<!-- tmpl_if mass_mailing_has_draft -->
+	
+	<p>
+		<a href="<!-- tmpl_var draft_url -->" class="button">
+			<< Return to Editing Draft
+		</a>
+	</p>
+	
+<!-- /tmpl_if -->
+
 <!-- tmpl_if integrity_check --> 
     <!-- tmpl_if is_paused -->
  		<div class="alert-box warning radius">
@@ -113,7 +123,7 @@
 						disabled="disabled" 
 						class="button disabled" 
 					<!-- tmpl_else -->
-						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=restart"
+						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&draft_id=<!-- tmpl_var draft_id escape="HTML"-->&process=restart"
 						class="button success"
 					<!--/tmpl_unless-->
 				>
@@ -130,7 +140,7 @@
 						disabled="disabled" 
 						class="button disabled"
 					<!-- tmpl_else -->
-						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=resume"
+						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&draft_id=<!-- tmpl_var draft_id escape="HTML"-->&process=resume"
 						class="button warning"
 					<!--/tmpl_unless -->
 				><i class="fi-play"></i><span class="hide-for-small-only"> Resume</span></a>
@@ -143,7 +153,7 @@
 						disabled="disabled" 
 						class="button disabled"
 					<!-- tmpl_else -->
-						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=pause"
+						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&draft_id=<!-- tmpl_var draft_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=pause"
 						class="button warning pauseMonitoredSending"
 					<!--/tmpl_if -->
 				>
@@ -165,11 +175,11 @@
 							disabled="disabled" class="button disabled"
 						<!-- tmpl_else -->
 							class="button alert killMonitoredSending stop_mass_mailing"
-							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=kill"
+							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&draft_id=<!-- tmpl_var draft_id escape="HTML"-->&process=kill"
 						<!--/tmpl_if -->
 					<!-- tmpl_else -->
 						class="button alert killMonitoredSending stop_mass_mailing" 						
-						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=kill"
+						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&draft_id=<!-- tmpl_var draft_id escape="HTML"-->&process=kill"
 					<!--/tmpl_unless -->
 				>
 					<i class="fi-x"></i>
@@ -273,6 +283,7 @@
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" target="_blank">
 	  <input type="hidden" name="flavor"    value="print_mass_mailing_log"                              > 
 	  <input type="hidden" name="id"   value="<!-- tmpl_var message_id escape="HTML" -->"          > 
+
 	  <input type="hidden" name="type" value="<!-- tmpl_var message_type -->"                      > 
 	  <input type="submit"             value="Open Mass Mailing Log in a New Window" class="button plain" > 
 	 </form> 
@@ -288,7 +299,7 @@
     <!-- tmpl_else --> 
 		<div class="alert-box info radius">
 	    	This Mass Mailing has completed.
-		</div>	
+		</div>			
     <!-- /tmpl_if --> 
 <!--/tmpl_if --> 
 

@@ -2373,6 +2373,8 @@ sub sending_monitor {
     if ( !$q->param('id') ) {
         return $self->sending_monitor_index();
     }
+	
+	my $draft_id = $q->param('draft_id');
 
     # 10 is the factory default setting to wait per batch.
     # Let's not refresh an faster, or we'll never have time
@@ -2413,8 +2415,11 @@ sub sending_monitor {
         }
 
         $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
-              . '?flavor=sending_monitor&killed_it=1' );
+        $self->header_props( 
+			-url => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=sending_monitor&killed_it=1' 
+			  . '&draft_id=' . $draft_id
+			  );
 
     }
     elsif ( $q->param('process') eq 'pause' ) {
@@ -2431,7 +2436,9 @@ sub sending_monitor {
                   . $id
                   . '&type='
                   . $type
-                  . '&paused_it=1' );
+                  . '&paused_it=1'
+				  . '&draft_id=' . $draft_id
+			);
         }
         else {
             die "mass mailing does NOT exists! What's going on?!";
@@ -2452,7 +2459,9 @@ sub sending_monitor {
                   . $id
                   . '&type='
                   . $type
-                  . '&resume_it=1' );
+                  . '&resume_it=1'
+				  . '&draft_id=' . $draft_id
+			 );
 
         }
         else {
@@ -2489,7 +2498,8 @@ sub sending_monitor {
               . '&type='
               . $type
               . ' &restart_count='
-              . $restart_count;
+              . $restart_count
+			  . '&draft_id=' . $draft_id; 
         }
         else {
             $refresh_url =
@@ -2497,7 +2507,8 @@ sub sending_monitor {
               . '?flavor=sending_monitor&id='
               . $id
               . '&type='
-              . $type;
+              . $type
+			  . '&draft_id=' . $draft_id; 
         }
         my $r = "<html>
                 <head>
@@ -2620,6 +2631,7 @@ sub sending_monitor {
                 $DADA::Config::S_PROGRAM_URL
               . '?flavor=sending_monitor&id='
               . $id
+			  . '&draft_id=' . $draft_id
               . '&process=restart&type='
               . $type
               . '&restart_count=1';
@@ -2689,7 +2701,28 @@ sub sending_monitor {
             }
         );
 
-        my $scrn = DADA::Template::Widgets::screen(
+       
+	    # I can basically know if this is a test message if: 
+		# the draft is still around... 
+		
+		my $mass_mailing_has_draft = 0; 
+		my $draft_url              = ''; 
+		if($draft_id){ 
+            require DADA::MailingList::MessageDrafts;
+            my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
+			if($d->id_exists($draft_id)){ 
+				my $q_draft = $d->fetch({-id => $draft_id});
+				$mass_mailing_has_draft = 1; 
+				$draft_url = $DADA::Config::S_PROGRAM_URL 
+				. '?flavor=send_email'
+				. '&draft_id='   . $draft_id
+				. '&draft_role=' . $q_draft->param('_internal_draft_role');
+			}
+		}
+		
+		
+		
+	    my $scrn = DADA::Template::Widgets::screen(
             {
                 -screen => 'sending_monitor_screen.tmpl',
                 -expr   => 1,
@@ -2697,6 +2730,9 @@ sub sending_monitor {
                     screen                 => 'sending_monitor',
                     mailout_exists         => $mailout_exists,
                     message_id             => DADA::App::Guts::strip($id),
+					draft_id                    => $draft_id, 
+					mass_mailing_has_draft      => $mass_mailing_has_draft, 
+					draft_url                   => $draft_url,    
                     message_type           => scalar $q->param('type'),
                     total_sent_out         => $status->{total_sent_out},
                     total_sending_out_num  => $status->{total_sending_out_num},
@@ -2759,6 +2795,7 @@ sub sending_monitor {
                 -vars => {
                     screen        => 'sending_monitor',
                     message_id    => DADA::App::Guts::strip($id),
+					draft_id      => $draft_id,
                     message_type  => scalar $q->param('type'),
                     refresh_after => $refresh_after,
 'list_settings.tracker_show_message_reports_in_mailing_monitor'
@@ -4973,6 +5010,10 @@ sub view_list {
                     sub_confirm_list_num => scalar commify(
                         $lh->num_subscribers( { -type => 'sub_confirm_list' } )
                     ),
+					
+                    test_list_subscribers_num => scalar commify(
+                        $lh->num_subscribers( { -type => 'test_list' } ) 
+					),
 
                 },
                 -list_settings_vars_param => {
@@ -5773,6 +5814,7 @@ sub membership {
 
         my $add_to = {
             list                => 1,
+			test_list           => 1,
             black_list          => 1,
             white_list          => 1,
             authorized_senders  => 1,
@@ -5865,7 +5907,7 @@ sub membership {
 
         foreach (%$subscribed_to_lt) {
             if ( $_ =~
-m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list|ignore_bounces_list|sub_confirm_list)$/
+m/^(list|test_list|black_list|white_list|authorized_senders|moderators|bounced_list|ignore_bounces_list|sub_confirm_list)$/
               )
             {
                 push( @$member_of,
@@ -6063,7 +6105,7 @@ sub validate_update_email {
                         {
                             -email => $email,
                             -types => [
-                                qw(list black_list white_list authorized_senders moderators ignore_bounces_list)
+                                qw(list black_list test_list white_list authorized_senders moderators ignore_bounces_list)
                             ],
                         }
                     )

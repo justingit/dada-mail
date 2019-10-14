@@ -533,13 +533,12 @@ sub fetch {
     my $self = shift;
     my ($args) = @_;
 
-    if ( !exists( $args->{-role} ) ) {
-        $args->{-role} = 'draft';
-    }
-    
-	# if ( !exists( $args->{-screen} ) ) {
-    #    die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
-    # }
+	# It's complicated now: 
+   # if ( !exists( $args->{-role} ) ) {
+		#  if($self->id_exists($args->{-id}) == 1){ }
+      	# $args->{-role} = 'draft';
+   # }
+    	
     my $id = undef;
     if ( exists( $args->{-id} ) ) {
         $id = $args->{-id};
@@ -548,11 +547,15 @@ sub fetch {
     my $query;
     if ( !$id ) {
 		
-		#AND screen = ? 
-        $query =
-            'SELECT id, list, role, draft FROM '
-          . $self->{sql_params}->{message_drafts_table}
-          . ' WHERE list = ? AND role = ? ORDER BY id DESC';
+		if ( !exists( $args->{-role} ) ) {
+			$args->{-role} = 'draft';
+		}
+
+		
+		$query = 'SELECT id, list, role, draft FROM '
+	          . $self->{sql_params}->{message_drafts_table}
+	          . ' WHERE list = ? AND role = ? ORDER BY id DESC';
+		 
     }
     else {
 
@@ -560,13 +563,18 @@ sub fetch {
             croak "id, '$id' doesn't exist!";
         }
 
-		# screen, 
-		# AND screen = ? 
-        $query =
-            'SELECT id, list, role, draft FROM '
-          . $self->{sql_params}->{message_drafts_table}
-          . ' WHERE list = ? AND role = ? AND id = ? ORDER BY id DESC';
-
+		if ( !exists( $args->{-role} ) ) {
+	        $query =
+	            'SELECT id, list, role, draft FROM '
+	          . $self->{sql_params}->{message_drafts_table}
+	          . ' WHERE list = ? AND id = ? ORDER BY id DESC';
+		} else { 
+				
+	        $query =
+	            'SELECT id, list, role, draft FROM '
+	          . $self->{sql_params}->{message_drafts_table}
+	          . ' WHERE list = ? AND role = ? AND id = ? ORDER BY id DESC';
+		 }
     }
 
     warn 'QUERY: ' . $query
@@ -577,24 +585,21 @@ sub fetch {
     my $saved = '';
 
     if ( !$id ) {
-
-		# $args->{-screen}, 
-        #use Data::Dumper;
-        #warn 'params (no id)' . Dumper([$self->{list}, $args->{-role}]);
-
-		# $args->{-screen},
+		
         $sth->execute( $self->{list}, $args->{-role} )
           or croak "cannot do statement '$query'! $DBI::errstr\n";
     }
     else {
 
-        #use Data::Dumper;
-		#  $args->{-screen},
-        #warn 'params (id!)' . Dumper([$self->{list}, $args->{-role}]);
 
-		# $args->{-screen},
-        $sth->execute( $self->{list}, $args->{-role}, $id )
-          or croak "cannot do statement '$query'! $DBI::errstr\n";
+		if ( !exists( $args->{-role} ) ) {
+	        $sth->execute( $self->{list}, $id )
+	          or croak "cannot do statement '$query'! $DBI::errstr\n";
+		}
+		else { 
+	        $sth->execute( $self->{list}, $args->{-role}, $id )
+	          or croak "cannot do statement '$query'! $DBI::errstr\n";
+		}
     }
     my $hashref;
 
@@ -614,6 +619,7 @@ sub fetch {
        #warn '$additional_schedule_params->{$_} ' . $additional_schedule_params->{$_}; 
         $q->param($_, $additional_schedule_params->{$_}); 
     }
+	$q->param('_internal_draft_role', $hashref->{role});
     return $q;
 
 }
@@ -917,7 +923,8 @@ sub params_to_save {
         archive_no_send                => 1,
         back_date                      => 1,
         backdate_datetime              => 1,
-        test_recipient                 => 1,
+		test_recipient_type            => 1,
+        test_recipients                => 1,
         Subject                        => 1,
         subject_from                   => 1,
 		'X-Preheader'                  => 1,  

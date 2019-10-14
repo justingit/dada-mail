@@ -552,7 +552,12 @@ jQuery(document).ready(function($){
 	if ($("#sending_monitor_container").length) {
 
 		update_sending_monitor_interface(
-		$("#message_id").val(), $("#message_type").val(), $("#target_id").val(), $("#refresh_after").val());
+			$("#message_id").val(), 
+			$("#draft_id").val(),
+			$("#message_type").val(), 
+			$("#target_id").val(), 
+			$("#refresh_after").val()
+		);
 
 		$('body').on('submit', '#pause_mass_mailing', function(event) {
 			event.preventDefault();
@@ -2151,7 +2156,12 @@ function auto_save_as_draft() {
 
 // Mass Mailings >> Monitor Your Mailings
 
-function update_sending_monitor_interface(message_id, type, target_id, refresh_after) {
+function update_sending_monitor_interface(message_id, draft_id, type, target_id, refresh_after) {
+	
+	// alert('message_id: ' + message_id);
+	// alert('draft_id: '   + draft_id);
+	
+	
 	var r = refresh_after * 1000;
 	var refresh_loop = function(no_loop) {
 			var request = $.ajax({
@@ -2161,6 +2171,7 @@ function update_sending_monitor_interface(message_id, type, target_id, refresh_a
 				data: {
 					flavor: 'sending_monitor',
 					id: message_id,
+					draft_id: draft_id,
 					type: type,
 					process: 'ajax'
 				},
@@ -4611,7 +4622,7 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 			}
 		}
 	}
-	else if(itsatest === false) {
+	else {
 		
 		/*
 		if (has_html === 1 && $("#html_message_body").val().length > 1000000) {
@@ -4627,10 +4638,15 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 			if (!confirm('Archive Message?')) {
 				return false;
 			}
-		}
-		else {
-			if (!confirm('Send Mass Mailing?')) {
-				return false;
+		} else {
+			if (itsatest === true) {
+				if (!confirm('Send Test Mass Mailing?')) {
+					return false;			
+				}
+			} else { 
+				if (!confirm('Send Mass Mailing?')) {
+					return false;
+				}
 			}
 		}
 	}

@@ -17,7 +17,7 @@ require Exporter;
 use strict;
 use vars qw(@EXPORT);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Profile};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_Profile};
 
 sub new {
 
@@ -26,6 +26,11 @@ sub new {
 
     my $self = {};
     bless $self, $class;
+	
+	if( ! exists($args->{-override_profile_enable_check}) ){ 
+		$args->{-override_profile_enable_check} = 0;
+	}
+	
     $self->_init($args);
 
     # This means we want to pull the email we want to use from
@@ -36,9 +41,18 @@ sub new {
 		 !defined( $args->{ -email } ) ) {
        # return undef;
     }
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
-        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
-    {
+	
+	
+	if (
+		(
+			$args->{-override_profile_enable_check} != 1
+		)
+		&&
+		(
+			$DADA::Config::PROFILE_OPTIONS->{enabled} != 1  
+		 || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ 
+		 )
+	) {
         return undef;
     }
 
@@ -55,10 +69,18 @@ sub _init {
     my $self = shift;
 
     my ($args) = @_;
-	if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1  || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
-    {
+	
+	$self->{override_profile_enable_check} = $args->{-override_profile_enable_check};
+	
+	if (
+		$self->{override_profile_enable_check} != 1 
+		&&
+		(
+			$DADA::Config::PROFILE_OPTIONS->{enabled} != 1  
+		 || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ 
+		 )
+	) {
 	    # not enabled... 
-
 	}
 	else { 
 		$self->{sql_params} = {%DADA::Config::SQL_PARAMS};
@@ -477,6 +499,7 @@ sub subscribed_to {
 			                  sub_request_list   => 'Subscription Requests',
 #			                  unsub_request_list => 'Unsubscription Requests',
 							  bounced_list       => 'Bouncing Addresses',
+							  test_list          => 'Testers'
 			);
 			
 			ALL_TYPES: for my $s_type(keys %list_types){
@@ -756,9 +779,16 @@ sub allowed_to_view_archives {
         croak "You must pass a list in the, '-list' param!";
     }
  
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
-        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
-    {
+	if (
+		(
+			$self->{override_profile_enable_check} != 1 
+		)
+		&&
+		(
+			$DADA::Config::PROFILE_OPTIONS->{enabled} != 1  
+		 || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ 
+		 )
+	) {
         return 1;
     }
     else {
@@ -770,9 +800,6 @@ sub allowed_to_view_archives {
 
 			
             if ($self->exists) {
-
-
-
                 if (
                     $self->subscribed_to_list( { -list => $args->{ -list } } ) )
                 {

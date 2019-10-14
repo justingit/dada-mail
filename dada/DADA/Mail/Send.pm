@@ -64,7 +64,6 @@ my %allowed = (
     # This is some ninja stuff...
     test_send_file              => $DADA::Config::TMP . '/test_send_file.txt',
     test                        => 0,
-    test_return_after_mo_create => 0,
 
     partial_sending => {},
 
@@ -1192,7 +1191,7 @@ sub mass_send {
             $self->exclude_from( $args->{-exclude_from} );
         }
 
-        # written to a test file, instead of mailed out?
+        # written to a test file, instead of mailed out:
         if ( exists( $args->{-test} ) ) {
             $self->test( $args->{-test} );
         }
@@ -1335,13 +1334,7 @@ sub mass_send {
             }
         );
 
-		## Is this ever set? 
-        #if ( $self->test_return_after_mo_create == 1 ) {
-        # #   warn "test_return_after_mo_create is set to 1, and we're getting out of the mass_send method"
-        #      if $t;
-        #    return;
-        #}
-
+		
         $self->_adjust_bounce_score;
 
     }
@@ -2960,9 +2953,9 @@ sub _make_general_headers {
 
         my ( $name, $host ) = split( '@', $from_address, 2 );
         $gh{'Message-ID'} = '<'
-          . DADA::App::Guts::message_id() . '.'
-          . $ran_number . '@'
-          . $host . '>';
+          . DADA::App::Guts::message_id() . '.' # this is just a format of the date
+          . $ran_number . '@'					# rand number
+          . $host . '>';						# host
 
         if ( defined( $self->{ls}->param('priority') ) ) {
             if ( $self->{ls}->param('priority') ne 'none' ) {
@@ -3829,7 +3822,7 @@ way.
 			-partial_sending  => {...}, 
 			-test      => 0,
 			-mass_test => 0, 
-			-test_recipient => 'someone@example.com'
+			-test_recipients => 'someone@example.com'
 		}
 	);
 
@@ -3864,12 +3857,12 @@ can be specified using the, C<test_send_file> method. The <-test> parameter work
 the same way as the C<test> method. 
 
 C<-mass_test> is optional and should hold a value of either C<1> or, C<0>. If set to 
-C<1> a mass mailing will be done, but only sent to the recipient set in, C<-test_recipient>, 
+C<1> a mass mailing will be done, but only sent to the recipient set in, C<-test_recipients>, 
 or the list owner, if no valid recipient is set. Works the same as the, C<mass_test> parameter. 
 
-C<-test_recipient> is option and should hold a valid email address of where test mass 
+C<-test_recipients> is option and should hold a valid email address of where test mass 
 mailings should be sent. The, <-mass_test> argument should also be set to, C<1>. 
-Works the same as the C<test_recipient> method. 
+Works the same as the C<test_recipients> method. 
 
 
 =head2 test
