@@ -1413,10 +1413,8 @@ sub send_email {
 
 		# Make up the test list, if this is a test: 
         require DADA::Security::Password;
-        my $ran_number =
-          DADA::Security::Password::generate_rand_string('1234567890', 4);
-		
-		my $test_list_type_label = '_tmp_test_list_' . $ran_number . '_' . time;
+        my $ran_number = uc( substr( DADA::App::Guts::generate_rand_string_md5(), 0, 16 ) );
+		my $test_list_type_label = '_tmp_test_list_' . $ran_number;
 		
 		if ( $process =~ m/test/i ) {
 			

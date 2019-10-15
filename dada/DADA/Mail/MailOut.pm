@@ -2231,15 +2231,18 @@ sub mailout_exists {
     $id =~ s/\@/_at_/g;
     $id =~ s/\>|\<//g;
 
-	# There shouldn't be any '-'s in our $id - if so, we need to do some massaging. 
-	my ( $r_list, $r_listtype, $real_id ) = split( '-', $id, 3);
-	undef($real_id);
+	#This smells... 
+	if($id =~ m/\-/){ 
+		warn 'What IS that smell?!'; 
+		# There shouldn't be any '-'s in our $id - if so, we need to do some massaging. 
+		my ( $r_list, $r_listtype, $real_id ) = split( '-', $id, 3);
+		$id = $real_id; 
+		undef($real_id);
+	}
 	
-	$id = $real_id; 
-
-	warn '$id: '   . $id; 
-    warn '$list: ' . $list;
-	warn '$type: ' . $type;
+	warn '$id: '   . $id if $t
+    warn '$list: ' . $list if $t
+	warn '$type: ' . $type if $t
 	
 	croak "You did not supply a list!"
       if !$list;

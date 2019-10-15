@@ -418,6 +418,12 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 <p>More information about this error may be available in the <em>program's own error log</em>.</p> 
 <p><a href="mailto:$ENV{SERVER_ADMIN}">Contact the Server Admin</a></p>
 <p>Time of error: <strong>$TIME</strong></p> 	
+
+
+<pre> 
+$error
+</pre> 
+
 </div>
 </body> 
 </html> 
@@ -2375,7 +2381,11 @@ sub sending_monitor {
     }
 	
 	my $draft_id = $q->param('draft_id');
-
+	warn '$draft_id: ' . $draft_id; 
+	
+	
+	
+	
     # 10 is the factory default setting to wait per batch.
     # Let's not refresh an faster, or we'll never have time
     # to read the actual screen.
@@ -2388,6 +2398,8 @@ sub sending_monitor {
     # Type ala, list, invitation list, etc
     my $type = $q->param('type');
     $type = xss_filter( DADA::App::Guts::strip($type) );
+	warn '$type: '  . $type; 
+
 
     my $restart_count = $q->param('restart_count') || 0;
 
@@ -2576,17 +2588,25 @@ sub sending_monitor {
         if ( !$@ ) {
             $mailout_exists = $my_test_mailout_exists;
         }
-
+		
+		warn '$mailout_exists: ' . $mailout_exists; 
+		
         if ($mailout_exists) {
 
+			warn 'here.';
+			
             $mailout_exists = 1;
             $mailout = DADA::Mail::MailOut->new( { -list => $list } );
             $mailout->associate( $id, $type );
             $status = $mailout->status();
+			
+			require Data::Dumper; 
+			
+			warn 'status: ' . Data::Dumper::Dumper($status);
 
         }
         else {
-
+			warn 'nope.';
             # Nothing - I believe this is handled in the template.
 
         }
