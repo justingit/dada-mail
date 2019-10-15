@@ -2240,9 +2240,9 @@ sub mailout_exists {
 		undef($real_id);
 	}
 	
-	warn '$id: '   . $id if $t
-    warn '$list: ' . $list if $t
-	warn '$type: ' . $type if $t
+	warn '$id: '   . $id if $t;
+    warn '$list: ' . $list if $t;
+	warn '$type: ' . $type if $t;
 	
 	croak "You did not supply a list!"
       if !$list;

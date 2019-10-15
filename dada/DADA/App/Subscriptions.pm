@@ -17,7 +17,7 @@ use Try::Tiny;
 use vars qw($AUTOLOAD);
 use strict;
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
 
 my %allowed = ( test => 0, );
 
@@ -94,7 +94,26 @@ sub token {
 
         my $data = $ct->fetch($token);
 
-        if ( !exists( $data->{data}->{invite} ) ) {
+		use Data::Dumper; 
+		warn '$data' . Dumper($data);
+		warn '$data->{data}->{type}: ' . $data->{data}->{type}; 
+        # Short circut all this, if this token is from a test mass mailing: 
+		if($data->{data}->{type} =~ m/\_tmp\_test\_list\_/){ 
+            return({},  user_error(
+                {
+                    -error => 'test_list_link',
+                    -test  => $self->test,
+                    -vars  => {
+                        t      => $token,
+                        flavor => $data->{data}->{flavor},
+                    }
+                }
+            ));
+		}
+
+		#/short circuit
+		
+		if ( !exists( $data->{data}->{invite} ) ) {
             $data->{data}->{invite} = 0;
         }
         if ( exists( $data->{data}->{remote_addr} ) ) {
@@ -2902,6 +2921,7 @@ sub fancy_data {
         return ({}, $data_back);
     }
     else {
+		warn 'here.';
         return ({}, $return);
     }
 }
