@@ -6944,9 +6944,8 @@ sub add {
         require DADA::MailingList::Settings;
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-        my $num_subscribers            = $lh->num_subscribers;
+        my $num_subscribers            = $lh->num_subscribers();
         my $subscription_quota_reached = 0;
-
         if ( $type eq 'list' ) {
             if (   $ls->param('use_subscription_quota') == 1
                 && ( $num_subscribers >= $ls->param('subscription_quota') )
@@ -6961,7 +6960,19 @@ sub add {
                 $subscription_quota_reached = 1;
             }
         }
+		
+		# I reuse, "$subscription_quota_reached" here: 
+		if (
+				 $type eq 'test_list' 
+			 && $ls->param('enable_test_list_address_limit')
+		 ) {
 
+	        my $num_subscribers            = $lh->num_subscribers({-type => $type});
+			if($num_subscribers >= $ls->param('test_list_address_limit')){ 
+				$subscription_quota_reached = 1; 
+			}
+		}
+		
         require HTML::Menu::Select;
         my $view_list_type_switch_widget = HTML::Menu::Select::popup_menu(
             {
@@ -7005,8 +7016,6 @@ sub add {
         {
             $show_bounced_list = 1;
         }
-		
-		
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -7030,6 +7039,9 @@ sub add {
                     
 					list_subscribers_num =>
                       scalar $lh->num_subscribers( { -type => 'list' } ),
+					  
+  					test_list_subscribers_num =>
+                        scalar $lh->num_subscribers( { -type => 'test_list' } ),
                     
 					black_list_subscribers_num =>
                       scalar $lh->num_subscribers( { -type => 'black_list' } ),
@@ -7050,6 +7062,8 @@ sub add {
 						scalar $lh->num_subscribers( { -type => 'ignore_bounces_list' } ),
 						
 					show_bounced_list => $show_bounced_list,
+					
+					
 					  
                     fields => $fields,
                     can_have_subscriber_fields =>
@@ -7231,8 +7245,36 @@ sub add_email {
         my $new_info   = [];
 
         if ( $ls->param('use_add_list_import_limit') == 1 ) {
-            my $num_file_lines =
-              DADA::App::Guts::num_file_lines($new_emails_fn);
+			my $num_file_lines = 0; 
+			my $had_problems = 0; 
+			my $scrn; 
+			try {
+            	$num_file_lines =
+              	DADA::App::Guts::num_file_lines($new_emails_fn);
+			} catch {
+				$had_problems = 1; 
+	            my $error = $_;
+	               $scrn = DADA::Template::Widgets::wrap_screen(
+	                {
+	                    -screen         => 'add_email_error_screen.tmpl',
+	                    -with           => 'admin',
+	                    -wrapper_params => {
+	                        -Root_Login => $root_login,
+	                        -List       => $list,
+	                    },
+	                    -expr                     => 1,
+	                    -vars                     => { error => $error },
+	                    -list_settings_vars_param => {
+	                        -list   => $list,
+	                        -dot_it => 1,
+	                    },
+	                }
+	            );
+        	};
+			if($had_problems == 1){ 
+				return $scrn;
+			}
+
             if ( $num_file_lines > $ls->param('add_list_import_limit') ) {
                 my $error = 'over_add_list_import_limit';
 
@@ -7255,17 +7297,18 @@ sub add_email {
                 return $scrn;
             }
         }
-        else {
-            # ...
-        }
+ 
+		my $had_problems = 0; 
+		my $scrn; 
+		
         try {
             ($new_emails) = DADA::App::Guts::csv_subscriber_parse( $admin_list,
                 $new_emails_fn );
         }
         catch {
+			$had_problems  = 1; 
             my $error = $_;
-
-            my $scrn = DADA::Template::Widgets::wrap_screen(
+            $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen         => 'add_email_error_screen.tmpl',
                     -with           => 'admin',
@@ -7281,8 +7324,11 @@ sub add_email {
                     },
                 }
             );
-            return $scrn;
+           
         };
+		if($had_problems == 1){ 
+			return $scrn;
+		}
 
         my ( $not_members, $invalid_email, $subscribed, $black_listed,
             $not_white_listed, $invalid_profile_fields )
@@ -7293,7 +7339,7 @@ sub add_email {
             }
           );
 
-        my $num_subscribers = $lh->num_subscribers;
+        my $num_subscribers = $lh->num_subscribers({ -type => $type });
 
 # and for some reason, this is its own subroutine...
 # This is down here, so the status bar won't disapear before this page is loaded (or the below redirect)
@@ -7338,7 +7384,17 @@ sub add_email {
                 $going_over_quota = 1;
             }
         }
-
+		
+		# Tester List has a quota limit too:
+        if ( $type eq 'test_list' ) {
+            if ( $ls->param('enable_test_list_address_limit') == 1
+                && ( $num_subscribers + scalar(@$not_members) ) >
+                $ls->param('test_list_address_limit') )
+            {
+                $going_over_quota = 1;
+            }
+        }
+		
         my $addresses_to_add = 0;
         if ( exists( $not_members->[0] ) ) {
             $addresses_to_add = 1;
@@ -7529,14 +7585,52 @@ sub add_email {
                         != 1 )
                   )
                 {
-                    die
-"Mass Subscribing via the List Control Panel has been disabled.";
+                    die "Mass Subscribing via the List Control Panel has been disabled.";
                 }
             }
+			
 
             my @address = $q->multi_param("address");
 
-            my @munged_add_addresses = ();
+
+
+            
+			# Tester List has a quota limit too:
+	        if ( $type eq 'test_list' ) {
+	            if ( $ls->param('enable_test_list_address_limit') == 1
+	                && ( $lh->num_subscribers({-type => 'test_list'}) + scalar(@address) ) >
+	                $ls->param('test_list_address_limit') )
+	            {
+	                my $error = 'over_add_list_import_limit';
+
+	                my $scrn = DADA::Template::Widgets::wrap_screen(
+	                    {
+	                        -screen         => 'add_email_error_screen.tmpl',
+	                        -with           => 'admin',
+	                        -wrapper_params => {
+	                            -Root_Login => $root_login,
+	                            -List       => $list,
+	                        },
+	                        -expr                     => 1,
+	                        -vars                     => { error => $error },
+	                        -list_settings_vars_param => {
+	                            -list   => $list,
+	                            -dot_it => 1,
+	                        },
+	                    }
+	                );
+	                return $scrn;
+	            }
+			}
+			#/ Tester List has a quota limit too:
+			
+			
+			
+			
+			
+			
+			
+			my @munged_add_addresses = ();
             for my $a (@address) {
                 push( @munged_add_addresses, $lh->csv_to_cds($a) );
             }
@@ -7635,7 +7729,9 @@ sub delete_email {
                     flavor     => 'delete_email',
                     list_subscribers_num =>
                       $lh->num_subscribers( { -type => 'list' } ),
-                    black_list_subscribers_num =>
+                    test_list_subscribers_num =>
+                        $lh->num_subscribers( { -type => 'test_list' } ),
+					black_list_subscribers_num =>
                       $lh->num_subscribers( { -type => 'black_list' } ),
                     white_list_subscribers_num =>
                       $lh->num_subscribers( { -type => 'white_list' } ),
@@ -7858,6 +7954,15 @@ sub subscription_options {
                 default => $ls->param('subscription_quota'),
             }
         );
+		
+		my $test_list_address_limit_menu = HTML::Menu::Select::popup_menu(
+            {
+                name    => 'test_list_address_limit',
+                id      => 'test_list_address_limit',
+                values  => [(1,2,3,4,5,6,7,8,9,10,15,20,25,30,40,50,60,70,80,90,100)],
+                default => $ls->param('test_list_address_limit'),
+            }
+		);
 
         my @list_amount = (
             3,     5,    10,   25,   50,    100,   150,   200,
@@ -7910,7 +8015,8 @@ sub subscription_options {
                     SUBSCRIPTION_QUOTA => $DADA::Config::SUBSCRIPTION_QUOTA,
                     commified_subscription_quota =>
                       commify( int($DADA::Config::SUBSCRIPTION_QUOTA) ),
-                },
+                	  test_list_address_limit_menu => $test_list_address_limit_menu, 
+				},
                 -list_settings_vars_param => {
                     -list   => $list,
                     -dot_it => 1,
@@ -7926,23 +8032,26 @@ sub subscription_options {
             {
                 -associate => $q,
                 -settings  => {
-                    view_list_subscriber_number          => undef,
-                    view_list_show_timestamp_col         => 0,
-                    view_list_order_by                   => undef,
-                    view_list_order_by_direction         => undef,
-                    view_list_show_sub_confirm_list      => 0,
-                    use_add_list_import_limit            => 0,
-                    add_list_import_limit                => undef,
-                    allow_profile_editing                => 0,
-                    use_subscription_quota               => 0,
-                    subscription_quota                   => undef,
-                    black_list                           => 0,
-                    add_unsubs_to_black_list             => 0,
-                    allow_blacklisted_to_subscribe       => 0,
-                    allow_admin_to_subscribe_blacklisted => 0,
-                    enable_white_list                    => 0,
-                    invites_check_for_already_invited    => 0,
-                    invites_prohibit_reinvites           => 0,
+                    view_list_subscriber_number                      => undef,
+                    view_list_show_timestamp_col                     => 0,
+                    view_list_order_by                               => undef,
+                    view_list_order_by_direction                     => undef,
+                    view_list_show_sub_confirm_list                  => 0,
+                    use_add_list_import_limit                        => 0,
+                    add_list_import_limit                            => undef,
+                    allow_profile_editing                            => 0,
+                    use_subscription_quota                           => 0,
+                    subscription_quota                               => undef,
+                    black_list                                       => 0,
+                    add_unsubs_to_black_list                         => 0,
+                    allow_blacklisted_to_subscribe                   => 0,
+                    allow_admin_to_subscribe_blacklisted             => 0,
+                    enable_white_list                                => 0,
+					enable_test_list                                 => 0,
+					enable_test_list_address_limit                   => 0,
+					test_list_address_limit                          => undef,
+                    invites_check_for_already_invited                => 0,
+                    invites_prohibit_reinvites                       => 0,
 					invites_show_profile_fields_in_subscription_form => 0, 
                 },
                 -also_save_for => $also_save_for_list,
@@ -11047,6 +11156,7 @@ sub resend_conf_no_captcha {
 
 sub show_error {
 
+	
     my $self = shift;
     my $q    = $self->query();
 
@@ -11060,6 +11170,7 @@ sub show_error {
 
     my $list_exists = check_if_list_exists( -List => $list, );
     if ( $list_exists == 0 ) {
+		
         return $self->default();
     }
     if ( !$email ) {

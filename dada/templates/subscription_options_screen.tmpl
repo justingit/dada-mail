@@ -390,7 +390,7 @@
 	 </legend>
 	
 	<div class="alert-box info radius">
-	
+		
         <p>
         	The White List is a list of email addresses only allowed to be a part of your Subscribers List.</p>	
         	<p>You may add both complete email addresses (you@example.com) or 
@@ -409,7 +409,58 @@
     	      </label>
 	     </div> 
 	</div> 
+</fieldset>
+
+<fieldset>
+	 <legend>
+      Testers List
+	 </legend>
+	
+	<div class="alert-box info radius">
+		
+        <p>
+			The Testers List is a list of addresses you can send test mass mailings to. 
+		</p>
+
+    </div> 
+    
+	<div class="row">
+          <div class="small-12 columns">
+			  <input 
+			  	type="checkbox" 
+				name="enable_test_list" 
+				id="enable_test_list" 
+				value="1" <!-- tmpl_if list_settings.enable_test_list -->checked="checked"<!--/tmpl_if--> 
+				>
+    	      <label for="enable_test_list">
+    	          Activate Testers List
+    	      </label>
+	     </div> 
+	</div> 
+    <div class="row">
+		<div class="small-1 columns">
+		</div>
+        <div class="small-11 columns">
+            <input 
+				type="checkbox" 
+				name="enable_test_list_address_limit" 
+				id="enable_test_list_address_limit" 
+				value="1" <!-- tmpl_if list_settings.enable_test_list_address_limit -->checked="checked"<!--/tmpl_if--> >
+            <label for="enable_test_list_address_limit">
+                Limit the number of Testers to:
+            </label>
+        </div>
+    </div>
+    <div class="row">
+		<div class="small-1 columns">
+		</div>
+        <div class="small-11 columns">
+            <!-- tmpl_var test_list_address_limit_menu -->
+        </div> 
+    </div>
+	
 </fieldset> 
+ 
 
 	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
 

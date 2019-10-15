@@ -591,6 +591,7 @@ $GLOBAL_BLACK_LIST                      //= 0;
 $GLOBAL_UNSUBSCRIBE                     //= 0;
 $HIDDEN_SUBSCRIBER_FIELDS_PREFIX        //= '_';
 
+
 $SCREEN_CACHE                           //= 1;
 $DATA_CACHE                             //= 1;
 
@@ -1471,10 +1472,13 @@ $MIME_TOOLS_PARAMS //= {
     allow_admin_to_subscribe_blacklisted => 0,
 
     # White List Prefs
-
-    # white list
     enable_white_list => 0,
-
+	
+	# Testers List Prefs
+	enable_test_list               => 0,
+	enable_test_list_address_limit => 1, 
+	test_list_address_limit        => 10, 
+	
     # List Invite Prefs
 
     invites_check_for_already_invited                => 1,

@@ -4,12 +4,13 @@
 
 <p>Import was not successful. Details:</p> 
 
+
 <!-- tmpl_if expr="(error eq 'over_add_list_import_limit')" --> 
-
-    <p>
+<ul>
+    <li>
         You've tried to import more addresses, than the current limit is set to. 
-    </p> 
-
+	</li> 
+</ul>
 <!-- tmpl_else --> 
     
     <pre><!-- tmpl_var error --></pre> 

@@ -1,63 +1,101 @@
 <!-- begin send_email_test_recipient_widget.tmpl --> 
 <div id="send_test_messages_to"> 	
 
-	<p><strong>Send Test Messages To:</strong></p>
 	
-	<div class="row">
+	
+	<!-- tmpl_if list_settings.enable_test_list -->
+	
+		<div class="row">
 		
-		<div class="large-1 medium-1 columns">
-		</div>
-		
-		<div class="large-11 medium-11 columns">
-			<input 
-				type="radio"
-				name="test_recipient_type"
-				id="test_recipient_type_from_textbox"
-				value="from_textbox"
-				checked="checked"
-			>
-			<label 
-				for="test_recipient_type_from_textbox" 
-				class="medium-text-right"
-			>
-				These Email Addresses:
-			</label>
-		
-			<div class="row">
-				<div class="large-1 medium-1 columns">
-				</div>
-
-				<div class="large-11 medium-11 columns">
-					<textarea 
-						name="test_recipients" 
-						id="test_recipients"
-						placeholder="you@yours.com"></textarea>
-				</div>
+			<div class="large-1 medium-1 columns">
 			</div>
+		
+			<div class="large-11 medium-11 columns">
+				
+				
+				<input 
+	
+					type="radio"
+					name="test_recipient_type"
+					id="test_recipient_type_from_textbox"
+					value="from_textbox"
+					checked="checked"
+				>
+					<label for="test_recipient_type_from_textbox">
+						Send test to these email addresses:
+					
+					<span data-tooltip aria-haspopup="true" class="has-tip" title="List individual email addresses using spaces, commas, or new lines (<!-- tmpl_var formatted_test_list_limit -->)">
+						(?)
+					</span></label>
+
+				<div class="row">
+					<div class="large-1 medium-1 columns">
+					</div>
+
+					<div class="large-11 medium-11 columns">
+						<textarea 
+							name="test_recipients" 
+							id="test_recipients"
+							placeholder="you@yours.com"></textarea>
+					</div>
+				</div>
+				
 			
+			</div>
 		</div>
-	</div>
 
 	
-	<div class="row">
-		<div class="large-1 medium-1 columns">
+		<div class="row">
+			<div class="large-1 medium-1 columns">
+			</div>
+		
+			<div class="large-11 medium-11 columns">
+				<input 
+					type="radio"
+					name="test_recipient_type"
+					id="test_recipient_type_from_test_list"
+					value="from_test_list"
+				>
+				<label 
+					for="test_recipient_type_from_test_list" 
+					class="medium-text-right"
+				>
+					Send to Testers sublist (<!-- tmpl_var test_list_subscribers_num default="0" --> address(es))
+				</label>
+			</div>
 		</div>
 		
-		<div class="large-11 medium-11 columns">
-			<input 
-				type="radio"
-				name="test_recipient_type"
-				id="test_recipient_type_from_test_list"
-				value="from_test_list"
-			>
-			<label 
-				for="test_recipient_type_from_test_list" 
-				class="medium-text-right"
-			>
-				Testers Sublist (<!-- tmpl_var test_list_subscribers_num default="0" -->)
-			</label>
+	<!-- tmpl_else --> 
+		
+		<input 
+			type="hidden"
+			name="test_recipient_type"
+			id="test_recipient_type_from_textbox"
+			value="1"
+		>
+		
+		<p>
+		<label for="test_recipients"> 
+			Send test to these email addresses:
+			<span data-tooltip aria-haspopup="true" class="has-tip" title="List individual email addresses using spaces, commas, or new lines (<!-- tmpl_var formatted_test_list_limit -->)">
+				(?)
+			</span></label>
+		<br>
+		<div class="row">
+			<div class="large-1 medium-1 columns">
+			</div>
+
+			<div class="large-11 medium-11 columns">
+				<textarea 
+					name="test_recipients" 
+					id="test_recipients"
+					placeholder="you@yours.com"></textarea>
+			</div>
 		</div>
-	</div>
+	</p>
+		
+	
+	<!-- /tmpl_if -->
 	
 	
 	

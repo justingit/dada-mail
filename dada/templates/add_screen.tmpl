@@ -73,7 +73,7 @@
 	
 		<!-- tmpl_if use_subscription_quota --> 
 			<div class="alert-box info radius">
-				There is currently a limit of, <!-- tmpl_var subscription_quota --> 
+				There is currently a limit of <!-- tmpl_var subscription_quota --> 
 				Subscribers allowed to be subscribed on your mailing list.
 			</div> 
 		<!-- /tmpl_if --> 
@@ -97,6 +97,26 @@
 	
 <!--/tmpl_if-->
 
+<!-- tmpl_if expr="(type eq 'test_list')" -->
+	<!-- tmpl_if subscription_quota_reached -->
+		<div class="alert-box info radius">
+			<p> 
+				You are at or above the number of 
+			 	Testers you may have for this mailing list. 
+			 	You may not add any more.
+			</p>
+		</div>
+	<!--tmpl_else-->
+		<!-- tmpl_if list_settings.enable_test_list_address_limit --> 
+			<div class="alert-box info radius">
+				There is currently a limit of <strong><!-- tmpl_var list_settings.test_list_address_limit --> 
+				Tester addresses</strong> allowed for this mailing list.
+			</div> 
+		<!-- /tmpl_if --> 		
+	<!--/tmpl_if-->
+<!--/tmpl_if-->
+	
+
 <!-- tmpl_if list_is_closed -->
 		<div class="alert-box info radius"> 
 		<p>
@@ -108,7 +128,6 @@
 		</div>
 <!-- /tmpl_if --> 
 
-
 <!-- tmpl_if list_settings.use_add_list_import_limit --> 
     <div class="alert-box info radius">
             There is a set limit of 
@@ -119,6 +138,10 @@
     </div> 
 <!-- /tmpl_if --> 
 
+
+	
+	
+	
 <!-- tmpl_include add_email_import_subscribers_disabled.tmpl -->
 
 <!-- tmpl_include view_list_type_switch_widget.tmpl -->
@@ -126,7 +149,6 @@
 <!-- tmpl_if list_is_closed -->
 
 <!-- tmpl_else --> 
-
 
 <!-- tmpl_if expr="(type eq 'list')" -->
     <p><strong>CSV Format to use for Import:</strong></p>
@@ -168,7 +190,7 @@
 					type="submit" 
 					value="Verify Addresses..." 
 					
-					<!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> 
+					<!-- tmpl_if expr="(((type eq 'list') || (type eq 'test_list')) && (subscription_quota_reached == 1))" --> 
 						disabled="disabled"
 						class="button disabled"
 					<!-- tmpl_else -->
@@ -219,7 +241,16 @@
 
 		  <ul class="button-group right">
 			  <li><input type="reset"  class="button warning" value="Clear Changes"></li>
-			  <li><input type="submit"          value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="button disabled"<!-- tmpl_else -->class="button success"<!-- /tmpl_if -->></li>
+			  <li><input 
+				  	type="submit"
+					value="Verify Addresses..." 
+					<!-- tmpl_if expr="(((type eq 'list') || (type eq 'test_list')) && (subscription_quota_reached == 1))" --> 
+						 disabled="disabled" class="button disabled"
+					<!-- tmpl_else -->
+						class="button success"
+					<!-- /tmpl_if -->
+				>
+			</li>
 		  </ul>
 
 	</form>
@@ -320,7 +351,18 @@
 		<div class="clearfix">
 			<ul class="button-group right">
 				<li><input type="reset"  class="button warning" value="Clear Changes"></li>
-				<li><input type="submit"        value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="button disabled"<!-- tmpl_else -->class="button success"<!-- /tmpl_if -->></li>
+				<li>
+						<input 
+							type="submit"
+							value="Verify Address..." 
+							<!-- tmpl_if expr="(((type eq 'list') || (type eq 'test_list')) && (subscription_quota_reached == 1))" -->
+								disabled="disabled"
+								class="button disabled"
+							<!-- tmpl_else -->
+								class="button success"
+							<!-- /tmpl_if -->
+							>
+					</li>
 			</ul>
 		</div>
 	</form> 

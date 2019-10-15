@@ -1219,19 +1219,13 @@ sub send_email {
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
 
-		# Probably don't need this anymore, if I'm going to instead redirect them to the 
-		# monitor screen
-		my $test_recipient_list = []; 	
-		if($test_sent == 1){ 
-			my @recipients = $self->_find_email_addresses($test_recipients); 
-			for(@recipients){ 
-				push(@$test_recipient_list, {test_email => $_});
-			}
+		my $formatted_test_list_limit = 'no limit';
+		if($self->{ls_obj}->param('enable_test_list_address_limit')){
+			$formatted_test_list_limit = 
+				'up to ' 
+			. commify($self->{ls_obj}->param('test_list_address_limit')) 
+			. ' address(es)'; 
 		}
-		# /
-		
-        
-		
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -1250,12 +1244,11 @@ sub send_email {
                     draft_role         => $draft_role,
                     done               => $done,
                     
-                    # test_sent           => $test_sent,
-                    # test_recipient      => $test_recipients,
-					# test_recipient_list => $test_recipient_list, 
 			        test_list_subscribers_num => scalar commify(
 			            $self->{lh_obj}->num_subscribers( { -type => 'test_list' } ) 
 					),
+					
+					formatted_test_list_limit => $formatted_test_list_limit, 
 					
                     priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu( $self->{ls_obj}->get ),
                     type                       => 'list',

@@ -6,6 +6,7 @@
 				   Authorized Senders may send messages to your mailing list (announce-only, or discussion), 
 			 	  without having to be a Subscriber themselves. 
 				</p>
+				
 				<!-- tmpl_if list_settings.enable_authorized_sending -->			
 					
 				<!-- tmpl_else -->				
@@ -32,8 +33,25 @@
 				
 
 			</div>
-		<!-- tmpl_else -->
 		<!-- /tmpl_if -->
+		
+		<!-- tmpl_if expr="(type eq 'test_list')" -->
+			<div class="alert-box info radius">
+			<p>
+				The Testers List can be used to send test mass mailings to, before you 
+				send messages to your Subscribers. Addresses on this Testers List cannot remove themselves. 
+			</p>
+
+			<!-- tmpl_if list_settings.enable_test_list -->			
+				<!-- tmpl_if comment -->Well, good.<!-- /tmpl_if -->
+			<!-- tmpl_else -->				
+				<p>
+					The Testers List is not enabled, but can be enabled in, <strong>Membership: Options</strong>
+				</p>
+			<!-- /tmpl_if -->
+			</div>
+		<!-- /tmpl_if -->
+			
 
 <!-- tmpl_include view_list_type_switch_widget.tmpl -->
     

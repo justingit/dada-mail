@@ -76,6 +76,15 @@
         </div>
     <!--/tmpl_if-->
 <!-- /tmpl_if --> 
+<!-- tmpl_if expr="(type eq 'test_list')" --> 
+    <!-- tmpl_if going_over_quota -->
+         <div class="alert-box warning radius">
+             Warning! You cannot add all the addresses that you have submitted,
+             since you will go over your subscription limit. Please re-submit a smaller number of addresses to add.
+        </div>
+    <!--/tmpl_if-->
+<!-- /tmpl_if --> 
+
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
     <!-- tmpl_if list_settings.closed_list -->
