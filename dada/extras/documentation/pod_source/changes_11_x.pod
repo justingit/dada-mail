@@ -2,6 +2,40 @@
 
 =encoding utf-8
 
+=head1 11.5.0
+
+=head2 Features
+
+=head3 Testers List
+
+Testing out your mass mailing is a great idea to do, before you commit to sending out the message to your entire mailing list. 
+
+In past versions, Dada Mail could onoy send only send a  test mass mailing to one email address at one time.
+
+Now, starting with v11.5.0, Dada Mail can send a test mass mailing to multiple addresses at once.
+
+By default, this list of test recipients can be created per draft message by typing in the email addresses in the same text box that previously only supported one email address. By default, up to ten email addresses may be added to this text box. 
+
+Additionally, a Testers List may be enabled so that the same list of addresses can be sent a test mass mailing for all draft messages. This sublist can be administrated simnilarly to your main Subscribers list. 
+
+Here's where to find all these new enhancements: 
+
+When drafting a new mass mailing, click on the, B<Options> tab, then click on the, B<Testing> tab. This is where you'll find the text box to list the addresses you would like your test mass mailing to be sent to. By default, you can enter up to ten addresses (read on to find out how to change this default). Separate each address you enter in the text box by commas, spaces, and/or new lines. 
+
+When you're ready to send out a test mass mailing, click the button at the top of the screen labeled, B<Send Test>. The screen will refresh to show you the mass mailing monitor for your test mass mailing. A button will be shown at the top of the screen labeled, B<Return to Editing Draft>. Click this button to return to your draft message, so that you can continue editing the message, or to send the mass mailing out for real. I<(Note: In previous versions of Dada Mail, you would never leave the draft editing screen, as only one email address would be sent the test mass mailing.)>
+
+To enable the Testers List, go to B<Membership: Options> in the list control panel. Find the section labeled, B<Testers List> to see the options available to you. Check the option labeled, B<[x] Activate Testers List> to enable the Testers List. 
+
+Options below this checkbox will allow you to set if there's a limit to how many addresses you may have in your Testers list as well as what that limit is. The limit set here will also affect how many addresses you can add to the text box in the drafts screen, per draft message. 
+
+Once enabled, the Testers list can be accessed in the list control panel under, B<Membership View>. Click the tab labeled, "Testers" to see add/edit/remove addresses in this sublist. 
+
+And once enabled, you can toggle between using your Testers list and a unique list of addresses per draft message in the draft message itself. Revisit the B<Options: Testers> tab(s) to now see the two options available. Select, B<Send to Testers sublist> to send your test mass mailing to the Testers. 
+
+Sending a test message can be useful in a few different ways. With a test mass mailing, you can make sure that delivery is working to specific addresses, domains, and email services, and that the email message itself is displaying correctly on a spectrum of services and devices. This can also help you get a checkoff of the content an design of your mass mailing if you're working within a team. 
+
+There are a few things that happen differently when sending out a test mass mailing. None of the recipients of a test mass mailing will be able to unsubscribe through the test mass mailing. Test mass mailings also will not be tracked for things like Opens, Clickthroughs, or Bounces. 
+
 =head1 11.4.6
 
 This is mostly a bug-fix release for issues found in the v11.4.5 release of Dada Mail.
