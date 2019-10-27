@@ -665,7 +665,7 @@ $ADMIN_MENU //= [
 				{
 				-Title      => 'Privacy Policy',
 				-Title_URL  => "$S_PROGRAM_URL?flavor=manage_privacy_policy",
-				-Function   => 'manage_list_consent',
+				-Function   => 'manage_privacy_policy',
 				-Activated  => 0,
 				},
 				
