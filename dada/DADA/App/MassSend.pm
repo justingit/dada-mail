@@ -1410,8 +1410,16 @@ sub send_email {
 			require DADA::MailingList::Settings;
 			my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 			
-			if($test_recipient_type eq 'from_textbox'){
-			
+			if($test_recipient_type eq 'from_text_list'){
+				
+	            $self->{lh_obj}->copy_all_subscribers(
+	                {
+	                    -from => 'test_list',
+	                    -to   => $test_list_type_label,
+	                }
+	            );
+			}
+			else {	
 				my @recipients = $self->_find_email_addresses($test_recipients); 
 				for (@recipients){ 	
 					warn 'adding, '  . $_ . 'to: ' . $test_list_type_label
@@ -1428,16 +1436,23 @@ sub send_email {
 			        );
 			    }				
 			}
-			elsif($test_recipient_type eq 'from_text_list'){
-				
-	            $self->{lh_obj}->copy_all_subscribers(
-	                {
-	                    -from => 'test_list',
-	                    -to   => $test_list_type_label,
-	                }
-	            );
+			
+			# Well, we have to send a test message to SOMEONE: 
+			if($ls->param('mass_mailing_send_to_list_owner') == 0) {
+				if($self->{lh_obj}->num_subscribers( { -type => $test_list_type_label } ) == 0){ 
+			        $self->{lh_obj}->add_subscriber(
+			            {
+			                -email      => $ls->param('list_owner_email'),
+			                -type       => $test_list_type_label,
+			                -dupe_check => {
+			                    -enable  => 1,
+			                    -on_dupe => 'ignore_add',
+			                },
+			            }
+			        );	
+				}
 			}
-		
+			
 		}
 		
         # Draft now has all our form params
