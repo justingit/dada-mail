@@ -5,6 +5,7 @@ use lib qw(./ ../ ../DADA ../perllib);
 use Carp qw(croak carp);
 
 use DADA::Config qw(!:DEFAULT); 
+use DADA::App::Guts; 
 
 require Exporter;
 @ISA    = qw(Exporter);
@@ -33,9 +34,8 @@ sub Create {
 		$args->{-test} = 1;
 	}
 
-    require DADA::App::Guts;
     if ( 
-		DADA::App::Guts::check_if_list_exists( -List => $args->{ -list } ) == 1 
+		check_if_list_exists( -List => $args->{ -list } ) == 1 
 		)
     {
         croak 'The list, ' . $args->{ -list } . ' already exists! ';
@@ -43,7 +43,7 @@ sub Create {
 	
 	# One last check.... 
 	if(($args->{-test} == 1)) {	
-		my ($errors, $flags) = DADA::App::Guts::check_list_setup(
+		my ($errors, $flags) = check_list_setup(
 			-fields => 
 			{
 				%{$args->{-settings}},
@@ -135,7 +135,7 @@ sub Create {
 				}
 			); 
 	
-    DADA::App::Guts::available_lists( -clear_cache => 1 );
+    available_lists( -clear_cache => 1 );
 
     return $ls;
 
@@ -152,11 +152,7 @@ sub Remove {
         croak("You must supply a list name in the '-name' parameter.");
     }
     
-    require DADA::App::Guts;
-
-
-    
-    if(DADA::App::Guts::check_if_list_exists(-List => $args->{-name}, -Dont_Die => 1) == 0){ 
+    if(check_if_list_exists(-List => $args->{-name}, -Dont_Die => 1) == 0){ 
         croak 'The list, ' . $args->{-name} . ' does not exists! '; 
     }
 
@@ -203,12 +199,12 @@ sub Remove {
     $la->delete_all_archive_entries();
 
     # Nor this...
-    DADA::App::Guts::delete_list_info( -List => $list );
+    delete_list_info( -List => $list );
 
     # Nor this...
-    DADA::App::Guts::delete_list_template({ -List => $list });
+    delete_list_template({ -List => $list });
 	
-	DADA::App::Guts::available_lists(-clear_cache => 1);
+	available_lists(-clear_cache => 1);
 	
     require DADA::Logging::Usage;
 	
