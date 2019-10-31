@@ -2176,10 +2176,6 @@ sub preview_message_receivers {
       check_list_security( -cgi_obj => $q, );
     if ( !$checksout ) { return $error_msg; }
 
-    # This comes in a s a string, sep. by commas. Sigh.
-    my $al = $q->param('alternative_lists') || '';
-    my @alternative_list = split( ',', $al );
-
     require DADA::MailingList::Settings;
     my $list   = $admin_list;
     my $lh     = DADA::MailingList::Subscribers->new( { -list => $list } );
@@ -2224,25 +2220,15 @@ sub preview_message_receivers {
         $r .= $fancy_r;
     }
     else {
-        if ( $alternative_list[0] ) {
-            $r .= $q->p(
-                $q->em(
-                        'Every Subscriber of each of these mailing lists: '
-                      . $list . ', '
-                      . join( ', ', @alternative_list )
-                      . ' will receive this message.'
-                )
-            );
-        }
-        else {
-            $r .= $q->p(
-                $q->em(
-                        'All '
-                      . $q->strong( commify( $lh->num_subscribers ) )
-                      . ' Subscribers of your mailing list will receive this message.'
-                )
-            );
-        }
+        
+        $r .= $q->p(
+            $q->em(
+                    'All '
+                  . $q->strong( commify( $lh->num_subscribers ) )
+                  . ' Subscribers of your mailing list will receive this message.'
+            )
+        );
+    
     }
     return $r;
 

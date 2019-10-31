@@ -4498,20 +4498,12 @@ function preview_message_receivers() {
 
 	var f_params = {};
 
-	var al = [];
-	var alternative_lists = '';
-
 
 	$("#field_comparisons :input").each(function() {
 		f_params[this.name] = this.value;
 	});
-	$("input:checkbox[name=alternative_list]:checked").each(function() {
-		al.push(this.value);
-	});
-	alternative_lists = al.join(',');
 
 	f_params.flavor                  = 'preview_message_receivers';
-	f_params.alternative_lists       = alternative_lists;
 
 	var responsive_options = {
 	  width: '95%',

@@ -214,11 +214,7 @@ sub construct_and_send {
 
         if ( $draft_q->param('archive_no_send') != 1 ) {
             
-			# @alternative_list, eh? 
-			my @alternative_list = ();
-            @alternative_list = $draft_q->multi_param('alternative_list');
-            
-            if ( exists( $args->{-Ext_Request} ) ) {
+			if ( exists( $args->{-Ext_Request} ) ) {
                 $mh->Ext_Request( $args->{-Ext_Request} );
             }
 
