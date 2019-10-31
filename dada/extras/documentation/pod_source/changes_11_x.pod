@@ -36,6 +36,20 @@ Sending a test message can be useful in a few different ways. With a test mass m
 
 There are a few things that happen differently when sending out a test mass mailing. To start, none of the recipients of a test mass mailing will be able to unsubscribe through the test mass mailing. Also, test mass mailings will not be tracked for things like Opens, Clickthroughs, or Bounces. 
 
+=head2 Bugfixes 
+
+=head3 "List Consents" and, "Privacy Policy" admin control panel menus highlighted when on the "List Consents" screen. 
+
+L<https://github.com/justingit/dada-mail/issues/859>
+
+=head3 Error when creating mailing list w/List Consen
+
+L<https://github.com/justingit/dada-mail/issues/856>
+
+=head3 Problem fetching URL: "css/app.css" Whenever an email is sent out with a theme's template applied
+
+L<https://github.com/justingit/dada-mail/issues/852>
+
 =head1 11.4.6
 
 This is mostly a bug-fix release for issues found in the v11.4.5 release of Dada Mail.
