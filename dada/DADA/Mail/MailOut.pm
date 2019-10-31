@@ -2254,9 +2254,9 @@ sub mailout_exists {
     my @mailouts = current_mailouts( { -list => $list } );
 
     for my $mo (@mailouts) {
-		warn '$mo->{id}: '   . $mo->{id}; 
-		warn '$mo->{type}: ' . $mo->{type}; 
-		warn '$mo->{list}: ' . $mo->{list};
+		#warn '$mo->{id}: '   . $mo->{id}; 
+		#warn '$mo->{type}: ' . $mo->{type}; 
+		#warn '$mo->{list}: ' . $mo->{list};
 		
         if ( $mo->{id} eq $id && $mo->{type} eq $type && $mo->{list} eq $list ) {
 

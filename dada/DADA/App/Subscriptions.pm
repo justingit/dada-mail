@@ -94,10 +94,11 @@ sub token {
 
         my $data = $ct->fetch($token);
 
-		use Data::Dumper; 
-		warn '$data' . Dumper($data);
-		warn '$data->{data}->{type}: ' . $data->{data}->{type}; 
-        # Short circut all this, if this token is from a test mass mailing: 
+		#use Data::Dumper; 
+		#warn '$data' . Dumper($data);
+		#warn '$data->{data}->{type}: ' . $data->{data}->{type}; 
+        
+		# Short circut all this, if this token is from a test mass mailing: 
 		if($data->{data}->{type} =~ m/\_tmp\_test\_list\_/){ 
             return({},  user_error(
                 {
@@ -287,7 +288,6 @@ sub subscribe {
         warn 'sent over Vars:';
         require Data::Dumper;
         warn Data::Dumper::Dumper( { $q->Vars } );
-    
 		warn 'subscribe args: ' . Data::Dumper::Dumper($args); 
 	}
 

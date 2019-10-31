@@ -1381,8 +1381,6 @@ sub copy_all_subscribers {
 
 
 sub create_mass_sending_file {
-
-	warn 'create_mass_sending_file()';
 	
     my $self = shift;
 
@@ -1398,9 +1396,8 @@ sub create_mass_sending_file {
         @_
     );
 
-	use Data::Dumper; 
-	
-	warn 'create_mass_sending_file args: ' . Dumper({%args});
+	# use Data::Dumper; 
+	# warn 'create_mass_sending_file args: ' . Dumper({%args});
 
 	my $b_time = time; 
 	
