@@ -21,7 +21,7 @@ use Carp qw(carp croak);
 use strict;
 use vars qw($AUTOLOAD);
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
 
 my %allowed = ( test => 0, );
 
@@ -1486,42 +1486,19 @@ sub send_email {
               if $t;			
 			  my $uri = $DADA::Config::S_PROGRAM_URL 
 			  . '?flavor=sending_monitor'
-			  . '&type=' . $test_list_type_label
+			  . '&type=' . uriescape($test_list_type_label)
 			  . '&id=' 
-			  . $construct_r->{mid}
+			  . uriescape($construct_r->{mid})
               . '&draft_id='
-              . $q->param('draft_id')
+              . uriescape($q->param('draft_id'))
 			  ;
 
 			  # . '&isatest=1'
               # . '&draft_role='
               #. $q->param('draft_role')
-              
-			  
 			  
               return ( { -redirect_uri => $uri }, undef );
-=pod
-			  
-			  
-            $self->wait_for_it(
-				$construct_r->{mid}
-			);
-            return (
-                {
-                        -redirect_uri => $DADA::Config::S_PROGRAM_URL
-                      . '?flavor='
-                      . $flavor
-                      . '&test_sent=1&test_recipient='
-                      . uriescape($q->param('test_recipient'))
-                      . '&draft_id='
-                      . $q->param('draft_id')
-                      . '&draft_role='
-                      . $q->param('draft_role')
-                },
-                undef
-            );
-=cut
-		
+
         }
         else {
             if ( defined($draft_id) ) {
@@ -1547,10 +1524,10 @@ sub send_email {
 				$q->param('archive_no_send') == 1 
 			 && $q->param('archive_message') == 1 
 			) {
-                $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=view_archive&id=' . $construct_r->{mid};
+                $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=view_archive&id=' . uriescape($construct_r->{mid});
             }
             else {
-                $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=list&id=' . $construct_r->{mid};
+                $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=list&id=' . uriescape($construct_r->{mid});
             }
             return ( { -redirect_uri => $uri }, undef );
         }

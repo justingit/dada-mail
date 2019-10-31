@@ -17,7 +17,7 @@ require Exporter;
 use strict;
 use vars qw(@EXPORT);
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_Profile};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_Profile};
 
 sub new {
 

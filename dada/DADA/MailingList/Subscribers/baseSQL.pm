@@ -13,7 +13,7 @@ my $email_id = $DADA::Config::SQL_PARAMS{id_column} || 'email_id';
 
 $DADA::Config::SQL_PARAMS{id_column} ||= 'email_id';
 
-my $t = 1;# $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
 
 use Fcntl qw(
   O_WRONLY

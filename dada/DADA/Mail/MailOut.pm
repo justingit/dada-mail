@@ -20,7 +20,7 @@ use Fcntl qw(
 my $dbi_obj;
 
 use DADA::Config qw(!:DEFAULT);
-my $t = 1;# $DADA::Config::DEBUG_TRACE->{DADA_Mail_MailOut};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_Mail_MailOut};
 
 use DADA::App::Guts;
 use DADA::Logging::Usage;
