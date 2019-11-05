@@ -187,6 +187,11 @@ Send email messages, including mass mailings.
 
 =back 
 
+=head2 Finding the error log when errors happen when installing Dada Mail
+
+The included installer for Dada Mail keeps its own error log. You may find it in the same directory that
+the installer lives in, in a file named FINISH THIS, PLEASE> 
+
 =head2 General Problems
 
 =head2 Perl Version
@@ -376,6 +381,16 @@ L<http://dadamailproject.com/support/documentation/features-screen_cache.pod.htm
 
 I've seen this error, when the Dada Mail SQL database isn't imported correctly. My advice is to export your list from within Dada Mail's List Control Panel (Your Subscribers -> View, Open List in New Window)
 Drop the dada_subscribers table, recreate the table and subscribe the subscribers back into your database via Dada Mail's list control panel (Your Subscribers -> Add)
+
+=head2 execute failed: Specified key was too long; max key length is 767 bytes
+
+This happen, if you attempt to use Dada Mail with a version of MySQL that is below version 5.7. There are a few workarounds, the easiest seems to be to alter the database itself, by issuing the following SQL: 
+
+	ALTER DATABASE dbname CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+More information: 
+
+L<https://stackoverflow.com/questions/1814532/1071-specified-key-was-too-long-max-key-length-is-767-bytes>
 
 =head2 Died at /usr/lib/perl5/5.8.8/base.pm line 85
 
