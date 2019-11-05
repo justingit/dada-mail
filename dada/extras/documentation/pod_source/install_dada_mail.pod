@@ -438,7 +438,13 @@ Once you've gotten the, C<dada/DADA/Config.pm> file edited (if needed) and moved
 
 Press the button labeled, C<Start Working With Dada Mail> to begin!
 
-Good Luck! 
+Good Luck!
+
+=head2 Errors When Installing
+
+Sometimes an install doesn't work as planned. If the installer can't continue doing it's job, the last error will be reported 
+in the browser in a, "Yikes!" screen. All errors will be logged in the, C<installer_errors.txt> file one can find within 
+the same directory as the, C<install.cgi> script. 
 
 =head2 Making Additional Global Configuration Changes using the Dada Mail Installer
 

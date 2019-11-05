@@ -783,6 +783,19 @@ sub parse_bounce {
         # Save it for another go.
         return ( $found_list, 0, $msg_report, '', $diagnostics );
     }
+	
+
+	my ($msg_too_old, $add_to_r) = $self->msg_too_old($entity);
+
+	#$msg_report .= $add_to_r; 
+	
+	if($msg_too_old == 1){ 
+        $msg_report .= "Bounced Message is too old. Skipping Over.\n";
+		 return ( undef, 1, $msg_report, '', $diagnostics );
+	}
+
+	
+	
 
     # /Tests!
     ##########################################################################
@@ -897,6 +910,47 @@ sub bounce_from_me {
     else {
         return 0;
     }
+}
+
+sub msg_too_old {
+	 
+    my $self   = shift;
+    my $entity = shift;
+	my $r = ''; 
+	my $date = $entity->head->get( 'Date', 0);
+	#chomp($date);
+	
+	$r .= "Date: '$date'\n";
+	
+    if ( $date ) { 
+    	
+		$r .= "Found a date!\n";
+		
+		require Date::Parse;
+		my $t = Date::Parse::str2time($date);
+		
+		$r .= "t '" . $t . "'\n";
+		
+		# Is today's date - 7 days less than or equal to the date received?
+		# If so, the message is too old.
+		if((int(time) - 604_800) <= int($t)){ 
+			$r .= "too young to fail\n";
+			return (0, $r);
+		}
+		else { 
+			$r .= "yup, Too old!";
+			return (1, $r);
+		}
+    }
+    else {
+		# No Date found... WTF?
+		# I wanna return "1" for this, but something tells me 
+		# there's a weird edge case, and this will break 
+		# Bounce Handler for SOMEONE out there...
+		$r .= "Couldnt find a date!";
+        return (0, $r);
+    }
+
 }
 
 sub save_scores {
