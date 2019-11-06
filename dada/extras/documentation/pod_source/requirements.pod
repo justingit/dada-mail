@@ -42,7 +42,7 @@ Dada Mail can pass messages to send to a sendmail-like command that applications
 
 =head2 SQL Backend
 
-Dada Mail is tested with MySQL B<5.6>, PostgreSQL B<8> and SQLite B<3>. We highly suggest using Dada Mail with either MySQL or PostgreSQL, and utilizing he latest versions of either. 
+Dada Mail is tested with MySQL B<5.7>, PostgreSQL B<8> and SQLite B<3>. We highly suggest using Dada Mail with either MySQL or PostgreSQL, and utilizing the latest versions of either. 
 
 To utilize these backends, not only will you have to have these databases installed, you will need the Perl driver for these databases: 
 
