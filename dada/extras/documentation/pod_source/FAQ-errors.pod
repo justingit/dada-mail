@@ -190,7 +190,7 @@ Send email messages, including mass mailings.
 =head2 Finding the error log when errors happen when installing Dada Mail
 
 The included installer for Dada Mail keeps its own error log. You may find it in the same directory that
-the installer lives in, in a file named FINISH THIS, PLEASE> 
+the installer lives in (I<dada/installer>), in a file named, B<installer_errors.txt>
 
 =head2 General Problems
 
