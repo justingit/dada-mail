@@ -262,11 +262,11 @@
             <!-- tmpl_unless query -->
 			    <li>
                 <!-- tmpl_if expr="(type eq 'list')" -->
-                      <a href="#" class="small button alert unsubscribeAllSubscribers" data-type="<!-- tmpl_var type -->">
+                      <a href="#" class="small button alert unsubscribeAllSubscribers" data-type="<!-- tmpl_var type -->" data-type_title="<!-- tmpl_var type_title escape="HTML" -->">
 						  &#8656; Unsubscribe ALL <!-- tmpl_var type_title -->
 					  </a>
                 <!-- tmpl_else --> 
-                      <a href="#" class="small button alert unsubscribeAllSubscribers" data-type="<!-- tmpl_var type -->">
+                      <a href="#" class="small button alert unsubscribeAllSubscribers" data-type="<!-- tmpl_var type -->" data-type_title="<!-- tmpl_var type_title escape="HTML" -->">
 						  &#8656; Remove ALL <!-- tmpl_var type_title -->
 				      </a>
                 <!-- /tmpl_if -->

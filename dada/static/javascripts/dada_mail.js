@@ -1180,21 +1180,13 @@ jQuery(document).ready(function($){
 
 		event.preventDefault();
 		
- 	 	var type = $(this).data("type"); 
-		var confirm_msg = '';
-		if (type == 'Subscribers') {
-			confirm_msg = "Are you sure you want to unsubscribe ALL Subscribers? ";
-		} else {
-			confirm_msg = "Are you sure you want to remove ALL " + type + "?";
-		}
+ 	 	var type       = $(this).data("type"); 
+		var type_title = $(this).data("type_title"); 
 
+		var confirm_msg = "Are you sure you want to remove ALL " + type_title + "?";
+		
 		if (!confirm(confirm_msg)) {
-			if (type == 'Subscribers') {
-				alert("Subscribers not unsubscribed.");
-			} else {
-				alert("'" + type + "' not removed.");
-			}
-			return false;
+				alert("'" + type_title + "' not removed.");
 		} else {
 			window.location.href = $("#s_program_url").val() + '?flavor=remove_all_subscribers&type=' + type;
 			return true;
