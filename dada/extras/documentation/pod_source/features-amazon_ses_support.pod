@@ -590,7 +590,7 @@ Amazon SES requires a few more CPAN Perl modules than the base Dada Mail install
 
 =item * XML::LibXML
 
-=item * LWP 6
+=item * LWP
 
 =back
 

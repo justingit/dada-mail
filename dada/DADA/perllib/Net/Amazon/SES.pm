@@ -25,7 +25,7 @@ our @EXPORT = qw();
 #use Switch;
 use Digest::SHA qw (hmac_sha1_base64 hmac_sha256_base64 sha256);
 use URI::Escape qw (uri_escape_utf8);
-use LWP 6;
+use LWP;
 use LWP::Protocol::https;
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);

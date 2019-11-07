@@ -1298,7 +1298,7 @@ sub amazon_ses_requirements_widget {
 		{module => 'MIME::Base64', installed => 1}, 	
 		{module => 'Crypt::SSLeay', installed => 1}, 	
 		{module => 'XML::LibXML', installed => 1},
-		{module => 'LWP 6',       installed => 1}, 
+		{module => 'LWP',         installed => 1}, 
 #		{module => 'Some::Unknown::Module',       installed => 1}, 
 	];
 
@@ -1345,12 +1345,7 @@ sub amazon_ses_requirements_widget {
 		$amazon_ses_required_modules->[6]->{installed}           = 0;
 		$amazon_ses_has_needed_cpan_modules = 0; 
 	}
-	else { 
-		if($LWP::VERSION < 6){ 
-			$amazon_ses_required_modules->[6]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-	}
+	
 #	try {
 #		require Some::Unknown::Module;
 #	} catch { 
