@@ -2,6 +2,59 @@
 
 =encoding utf-8
 
+=head1 11.5.1
+
+This is mostly a bug-fix release for issues found in the v11.5.0 release of Dada Mail. There a few small features to look out for: 
+
+=head2 Features
+
+=head3 Cleaned up Discussion List Moderation Screen
+
+Dada Mail primarly moderates discussion list messages via an email interface: copies of messages that require 
+moderation are sent to all the Moderators via an email notification. The moderators can then approve or deny 
+a message from being sent. 
+
+We've now made it easier to see awaiting messages within the List Control Panel. Under, B<Plugins/Extensions: Bridge>, 
+look under B<Moderation> for a button that will allow you to view the messages awaiting moderation. This button 
+will only be enabled, if Moderation is also enabeled. Clicking this button will take you to a new screen which will list all messages that are awaiting moderation in a table, in descending order by date. 
+
+For each message, you will have the ability to approve, deny, or simply delete the message from the moderation queue (no notification will be sent to the subscriber if you choose the latter). You may also re-send the moderation notification to all your moderators, where they may view the message itself.
+
+=head3 Easier to see errors during installation 
+
+Although it's rare, sometimes the installer doesn't run correctly. When this happens, it's sometimes useful to look 
+into the error log, to see what happened (and report the problems to us!). Finding this error log wsn't very well documented, so we've fixed that problem, and made the installer a little more aggressive on displaying errors in a way that's more easy to work with. 
+
+=head2 Bugfixes
+
+=head3 Bundled version of LWP is woefully outdated and should be removed 
+
+L<https://github.com/justingit/dada-mail/issues/864>
+
+=head3 Membership: View, Alert Prompt to Delete all Subscribers is strangely worded 
+
+L<https://github.com/justingit/dada-mail/issues/863>
+
+=head3 Error, "execute failed: Specified key was too long; max key length is 767 bytes" when attempting to make SQL tables
+
+L<https://github.com/justingit/dada-mail/issues/862>
+
+=head3 Finding the Installer's error log is not obvious 
+
+L<https://github.com/justingit/dada-mail/issues/855>
+
+=head3 "TRUNCATE" SQL statement used in installed incompatible with SQLite bug recreated
+
+L<https://github.com/justingit/dada-mail/issues/854>
+
+=head3 "Freshness" check on messages sent to Bridge
+
+L<https://github.com/justingit/dada-mail/issues/853>
+
+=head3 LWP v6 is listed as a requirement for Amazon SES, but v5 is fine
+
+L<https://github.com/justingit/dada-mail/issues/858>
+
 =head1 11.5.0
 
 =head2 Features
@@ -49,6 +102,7 @@ L<https://github.com/justingit/dada-mail/issues/856>
 =head3 Problem fetching URL: "css/app.css" Whenever an email is sent out with a theme's template applied
 
 L<https://github.com/justingit/dada-mail/issues/852>
+
 
 =head1 11.4.6
 
