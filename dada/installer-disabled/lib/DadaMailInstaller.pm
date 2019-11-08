@@ -2044,6 +2044,18 @@ sub install_dada_mail {
     else {
         $log .= "* Success!\n";
     }
+	
+	$log .= "* Removing Old Backups in, " . $Support_Files_Dir_Name . " dir...\n";
+    #eval { $self->remove_old_backups(); };
+	eval { $self->remove_old_backups(); };
+	
+    if ($@) {
+        $log .= "* WARNING: Couldn't remove old backups: $@\n";
+    }
+    else {
+        $log .= "* Success!\n";
+    }
+	
 
     # That's it.
     $log .= "* Installation and Configuration Complete!\n";
@@ -2075,7 +2087,63 @@ sub remove_old_screen_cache {
     else {
         return 1;
     }
+}
 
+sub remove_old_backups { 
+	
+	
+	
+    my $self = shift;
+    my $ip   = $self->param('install_params');
+
+	my $dmsf_dir = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name;
+
+    if ( -d $dmsf_dir ) {
+        my $f;
+		
+		my $backup_dirs = {}; 		
+        opendir( SFD, make_safer($dmsf_dir) )
+			or croak "Can't open '" . $dmsf_dir . "' to read because: $!";
+ 
+		while ( defined( $f = readdir SFD ) ) {
+
+            #don't read '.' or '..'
+		    next if $f =~ /^\.\.?$/;
+		    $f =~ s(^.*/)();
+	
+			if($f =~ m/\-backup\-/){ 
+				if($f =~ m/^(core5_filemanager|ckeditor|RichFilemanager|static|themes|tinymce|fckeditor)/){ 
+					warn "looks good: $f\n";
+					my ($dir_type, $dir_backup, $dir_y, $dir_m, $dir_d, $time) = split('-', $f, 6);
+					$backup_dirs->{$dir_type}->{$f} = $time;
+				}
+			}
+        }
+        closedir(SFD);
+
+		require File::Path;
+		for my $dir_type (qw(core5_filemanager ckeditor RichFilemanager static themes tinymce fckeditor)){ 	
+			my $dir_list = $backup_dirs->{$dir_type}; 
+	
+			my $n = 0; 
+			foreach my $name (sort { $dir_list->{$b} <=> $dir_list->{$a} } keys %$dir_list) {
+				$n++;
+				if ($n <= 3){ 
+					warn "keeping $name\n";
+					next; 
+				}
+				
+
+				warn "removing $name\n";
+				File::Path::remove_tree( make_safer($dmsf_dir . '/' . $name) );
+			}
+		}
+    }
+    else {
+		croak "couldn't find, $dmsf_dir";
+       # return 1;
+    }
+	
 }
 
 sub edit_config_dot_pm {
