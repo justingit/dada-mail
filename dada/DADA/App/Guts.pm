@@ -1190,20 +1190,19 @@ sub html_to_plaintext {
             $formatted = convert_to_ascii( _chomp_off_body( $args->{-str} ) );
             $formatted =~ s/$mask_beginning_comment_qm/</g;
             $formatted =~ s/$mask_ending_comment_qm/>/g;
-
         }
     }
     catch {
         $hftwl = 0;
-        carp
-'HTML to Plaintext conversion with HTML::FormatText::WithLinks not successful - falling back to convert_to_ascii()';
+        carp 'HTML to Plaintext conversion with HTML::FormatText::WithLinks not successful - falling back to convert_to_ascii()'
+			if $t; 
     };
 
     if ( $hftwl == 0 ) {
         my $pt = _chomp_off_body( $args->{-str} );
-        $pt = convert_to_ascii($pt);
-        $pt =~ s/$mask_beginning_comment_qm/</g;
-        $pt =~ s/$mask_ending_comment_qm/>/g;
+           $pt = convert_to_ascii($pt);
+           $pt =~ s/$mask_beginning_comment_qm/</g;
+           $pt =~ s/$mask_ending_comment_qm/>/g;
         return $pt;
     }
     else {
