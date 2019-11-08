@@ -1474,6 +1474,10 @@ jQuery(document).ready(function($){
 			event.preventDefault();
 			window.location.href = $("#s_program_url").val() + '?flavor=add&type=moderators';
 		});
+		$("body").on("click", ".view_awaiting_msgs", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '/plugins/bridge?prm=awaiting_msgs';
+		});
 
 
 

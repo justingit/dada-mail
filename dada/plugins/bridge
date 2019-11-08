@@ -281,54 +281,19 @@ sub cgi_awaiting_msgs {
 
     my $r = '';
 
-    $r .= admin_template_header(
-        -Title      => "Messages Awaiting Moderation",
-        -List       => $list,
-        -Form       => 0,
-        -Root_Login => $root_login
-    );
-
     $run_list = $list;
     $verbose  = 1;
-    my $popupscript = <<EOF
-
-<script type="text/javascript">
-<!-- 
-// This is the function that will open the
-// new window when the mouse is moved over the link
-function open_new_window(msgtext) 
-{
-new_window = open("","hoverwindow","width=440,height=300,left=10,top=10");
-
-// open new document 
-  new_window.document.open();
-  
-// Text of the new document
-// Replace your " with ' or \" or your document.write statements will fail
-new_window.document.write("<html><title>Raw View of Message</title>");
-new_window.document.write("<body>");
-new_window.document.write(msgtext);
-new_window.document.write("</body></html>");
-
-// close the document
-  new_window.document.close();  
-}
-
-// -->
-</script> 
-
-EOF
-      ;
-
-    $r .= $popupscript . '<br><pre>';
-
+ 
     my $mod = SimpleModeration->new( { -List => $list } );
     my $awaiting_msgs = $mod->awaiting_msgs();
-    $r .= "List of Messages Still Awaiting Moderation:\n\n"
-      if $verbose;
+    #$r .= "List of Messages Still Awaiting Moderation:\n\n"
+    #  if $verbose;
 
+	my $msg_entries = []; 
+	  
     for my $messagename (@$awaiting_msgs) {
-        my $parser = $parser;#!?
+        
+		my $parser = $parser;#!?
        
 
         # unescape URI encoded stuff:
@@ -349,7 +314,7 @@ EOF
 			# ... 
 		};
         if ( !$entity ) {
-            $r .= "can't show message $messagename: $@\n";
+           # $r .= "can't show message $messagename: $@\n";
         }
         else {
             my $subject = $entity->head->get( 'Subject', 0 );
@@ -358,40 +323,78 @@ EOF
             $from =~ s/\n//g;
             my $date = $entity->head->get( 'Date', 0 );
             $date =~ s/\n//g;
-            my $messagehdr = "From: " . $from . "; Subj: " . $subject . " ; Date: " . $date;
+            #my $messagehdr = "From: " . $from . "; Subj: " . $subject . " ; Date: " . $date;
 
-#        my $messagetxt = quotemeta($entity->head->get('Body', 0));
-#        my $view_link = "<a href=\"#\" onMouseOver=\"open_new_window(\'" . $messagehdr . "<br>" . $messagetxt . "\')\">View</a>";
 
-            my $confirmation_link =
-                "<a href="
-              . $DADA::Config::S_PROGRAM_URL
+             
+  			my $resend_link = 
+  				$DADA::Config::S_PROGRAM_URL
+                . '?flavor=plugins&plugin=bridge&prm=mod&list='
+                . DADA::App::Guts::uriescape($list)
+                . '&process=resend&msg_id='
+                . DADA::App::Guts::uriescape($messagename);
+			
+            my $confirmation_link =   
+               $DADA::Config::S_PROGRAM_URL
               . '?flavor=plugins&plugin=bridge&prm=mod&list='
               . DADA::App::Guts::uriescape($list)
               . '&process=confirm&msg_id='
-              . DADA::App::Guts::uriescape($messagename)
-              . ">Accept</a>";
+              . DADA::App::Guts::uriescape($messagename);
+              
 
             my $deny_link =
-                "<a href="
-              . $DADA::Config::S_PROGRAM_URL
+                $DADA::Config::S_PROGRAM_URL
               . '?flavor=plugins&plugin=bridge&prm=mod&list='
               . DADA::App::Guts::uriescape($list)
               . '&process=deny&msg_id='
-              . DADA::App::Guts::uriescape($messagename)
-              . ">Reject</a>";
-
-            $r .= $confirmation_link . " or " . $deny_link . " - " . $messagehdr . "\n"
-              if $verbose;
+              . DADA::App::Guts::uriescape($messagename);
+			  
+          
+			my $delete_link = 
+				$DADA::Config::S_PROGRAM_URL
+              . '?flavor=plugins&plugin=bridge&prm=mod&list='
+              . DADA::App::Guts::uriescape($list)
+              . '&process=delete&msg_id='
+              . DADA::App::Guts::uriescape($messagename);
+			  
+			push(@$msg_entries, { 
+				subject           => $subject, 
+				from              => $from, 
+				date              => $date, 
+				
+				confirmation_link => $confirmation_link, 
+				deny_link         => $deny_link, 
+				resend_link       => $resend_link, 
+				delete_link       => $delete_link,
+			});  
         }
     }
-    $r .= '</pre>';
-    $r .= admin_template_footer(
-        -Form => 0,
-        -List => $list,
-    );
-    return ( {}, $r );
+    
+  
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -expr           => 1,
+            -screen         => 'plugins/bridge/awaiting_msgs.tmpl',
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -vars => {
+                Plugin_URL                     => $Plugin_Config->{Plugin_URL},
+                Plugin_Name                    => $Plugin_Config->{Plugin_Name},
+				
+            	msg_entries                    => $msg_entries, 
+            },
+            -list_settings_vars_param => {
+                -list                 => $list,
+                -dot_it               => 1,
+                -i_know_what_im_doing => 1,
+            },
+        }
 
+    );
+    return ( {}, $scrn );
 }
 
 sub admin_cgi_manual_start_ajax {
@@ -409,20 +412,14 @@ sub mod {
     my $q = shift; 
     
     my $r = '';
-
-    # $list is global, for some reason...
-    # And I don't quite understand this. I think this is just so, if you're
-    # logged in, you only work with the list you're logged into.
-    # This gets annoying, since sometimes you just want to click the link to
-    # moderate and go about your business.
-    # For now, we'll just say, "Hey, you stink."
     my $checksout = 1;
+	
+	# $list is global, and is only set if the 
+	# user has already logged in. (see: cgi_main)
     if ( $list ne $q->param('list') ) {
         $checksout = 0;
-    }
-    
-    
-
+    }    
+   
     # We'll use the list that's passed to us.
     $list = $q->param('list');
 
@@ -441,25 +438,21 @@ sub mod {
         );
     }
 
-
-
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     my $mod = SimpleModeration->new( { -List => $list } );
     my $msg_id = $q->param('msg_id');
     my ($valid_msg, $imm_r) = $mod->is_moderated_msg($msg_id);
-    
-	
-	# $r .= $imm_r; 
 
-	
+	$r .= "<ul>";
+
 
     if ( $valid_msg == 1 ) {
-        $r .= "<p>Message appears to be valid and exists</p>";
+        $r .= "<li>Message appears to be valid and exists</li>";
 
         if ( $q->param('process') eq 'confirm' ) {
             my $g_msg = $mod->get_msg( { -msg_id => $msg_id } );
-            # Change content-transfer-encoding?
+            
             $r .= "<pre>\n";
 			$r .= process(
                 {
@@ -469,9 +462,9 @@ sub mod {
             );
             $r .= "\n</pre>";
 
-            $r .= "<p>Message has been sent!</p>";
+            $r .= "<li>Message has been sent!</li>";
             if ( $ls->param('send_moderation_accepted_msg') == 1 ) {
-                $r .= "<p>Sending acceptance message!</p>";
+                $r .= "<li>Sending acceptance message</li>";
                 $mod->send_accept_msg( { -msg_id => $msg_id, -parser => $parser } );
             }
 
@@ -480,10 +473,11 @@ sub mod {
         }
         elsif ( $q->param('process') eq 'deny' ) {
 
-            $r .= "<p>Message has been denied and being removed!</p>";
+            $r .= "<li>Message has been denied and being removed</li>";
             if ( $ls->param('send_moderation_rejection_msg') == 1 ) {
-                $r .= "<p>Sending rejection message!</p>";
-                $mod->send_reject_msg(
+                $r .= "<li>Sending rejection message!</li>";
+                
+				$mod->send_reject_msg(
                     {
                         -msg_id => $msg_id,
                         -parser => $parser,
@@ -491,25 +485,48 @@ sub mod {
                 );
 
             }
-
             #gotta do this, after, since removing it will not make the send rejection message thing to work.
-
             $mod->remove_msg( { -msg_id => $msg_id } );
+        }
+        elsif ( $q->param('process') eq 'delete' ) {
+			
+            $mod->remove_msg( { -msg_id => $msg_id } );
+            $r .= "<li>Message has been removed</li>";
+       
+	    }
+        elsif ( $q->param('process') eq 'resend' ) {
 
+            $r .= "<li>Resending Message to Moderations for Moderation....</li>";
+ 		   
+		    # JEBUSS:
+            my $full_msg = $mod->get_msg( { -msg_id => $msg_id } );
+			my $entity = $parser->parse_data(safely_encode($full_msg)); 
+	        my $from = $entity->head->get( 'From', 0 );
+	           $from =~ s/\n//g;
+			
+           $mod->moderation_msg(
+                {
+                    -msg    => $full_msg,
+                    -msg_id => $msg_id,
+                    -from   => $from, # Really. 
+                    -parser => $parser
+                }
+            );
+		   	
         }
         else {
-            $r .= "<p>Invalid action - wazzah?</p>";
+            $r .= "<li>Invalid action</li>";
         }
 
     }
     else {
-        $r .= "<p>Moderated message doesn't exist - most likely it was already moderated.</p>";
+        $r .= "<li>Moderated message doesn't exist - most likely it was already moderated.</li>";
     }
 
+	$r .= "</ul>";
+	
     if ($checksout) {
-
-        $r .=
-            '<p><a href="'
+        $r .= '<p><a class="button" href="'
           . $DADA::Config::S_PROGRAM_URL
           . '?flavor=plugins&plugin=bridge&prm=awaiting_msgs">Awaiting Message Index...</a></p>';
 
@@ -629,7 +646,6 @@ sub edit {
 	
     my %bridge_settings_defaults = (
         disable_discussion_sending                 => 0,
-        
         msg_soft_size_limit                        => undef, 
         msg_hard_size_limit                        => undef,
         group_list                                 => 0,
@@ -792,9 +808,6 @@ sub edit {
 		}
     );
 	
-	
-	
-
     my $msg_sizes = { 
         1048576  => '1 Megabyte',
         2097152  => '2 Megabytes', 
@@ -858,7 +871,10 @@ sub edit {
     $program_abs_path    =~ s/$FindBin::Bin//; 
     $program_abs_path    = $FindBin::Bin . '/' . $RealScript; 
     	
-    
+    my $mod = SimpleModeration->new( { -List => $ls->param('list') } );
+    my $num_awaiting_msgs = $mod->num_awaiting_msgs;
+   
+   
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -expr           => 1,
@@ -879,6 +895,7 @@ sub edit {
                 done                           => $done,
                 authorized_senders_count       => $auth_senders_count,
                 moderators_count               => $moderators_count,
+				num_awaiting_msgs              => $num_awaiting_msgs, 
                 has_discussion_pop_password    => $has_discussion_pop_password,
                 discussion_pop_auth_mode_popup => $discussion_pop_auth_mode_popup,
                 msg_soft_size_limit_popup_menu => $msg_soft_size_limit_popup_menu, 
@@ -3495,6 +3512,11 @@ sub check_moderation_dir {
     }
 }
 
+sub num_awaiting_msgs { 
+	my $self = shift; 
+	return scalar @{$self->awaiting_msgs};
+}
+
 sub awaiting_msgs {
 
     my $self    = shift;
@@ -3510,17 +3532,14 @@ sub awaiting_msgs {
             next unless $f =~ m/^$pattern/;
             my $name = $f;
             $f =~ s/^$pattern//;
-            $allfiles{$f} = ( stat( $self->mod_dir . '/' . $f ) )[9];
+            $allfiles{$f} = ( stat( $self->mod_dir . '/' . $name ) )[9];
         }
 
         closedir(MOD_MSGS)
           or warn "couldn't close: " . $self->mod_dir;
 
-        # if you still need the keys...
-        foreach my $key (    #
-            sort { $allfiles{$b} <=> $allfiles{$a} }    #
-            keys %allfiles
-          )
+		  # we did this song and dance to sort keys based on the date of the file: 
+        foreach my $key (sort { $allfiles{$b} <=> $allfiles{$a} } keys %allfiles)
         {
             push( @awaiting_msgs, $key );
         }
@@ -3561,6 +3580,7 @@ sub save_msg {
 
 sub moderation_msg {
 
+	# This needs to be rewritten to be a honest mass email, with a tmp list. 
     my $self = shift;
     my ($args) = @_;
 	
@@ -3611,6 +3631,7 @@ sub moderation_msg {
       . DADA::App::Guts::uriescape( $self->{list} )
       . '&process=deny&msg_id='
       . DADA::App::Guts::uriescape( $args->{-msg_id} );
+    
 
     #  create an array of recepients
     my @moderators;

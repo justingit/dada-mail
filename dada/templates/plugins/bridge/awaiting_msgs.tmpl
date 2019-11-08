@@ -1,0 +1,132 @@
+<!-- tmpl_set name="title" value="Bridge" -->
+
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Plugins/Extensions
+			 </a>
+	 	    <a 
+				href="#"
+			>	
+				<!-- tmpl_var Plugin_Name -->
+			</a>
+			<a href="#" class="current">
+				Awaiting Messages
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+</div>
+
+<div id="screen_meta" data-menu_highlight="bridge"></div>
+<div id="plugins_bridge_awaiting_msgs"></div> 
+
+
+<!-- tmpl_if msg_entries -->
+	 <table style="width:100%" class="responsive">
+	  <tr>
+		  <th style="width:120px">
+			  &nbsp;
+		 </th>
+	     <th>
+	      From
+	   </th>
+	   <th>
+	      Subject
+	   </th>
+   
+	   <th>
+	      Sent
+	   </th>
+	   <th style="width:310px">
+	   &nbsp;
+	   </th>
+	  </tr>
+  
+  
+	<!-- tmpl_loop msg_entries -->
+		<tr>
+			
+			<td>
+			
+					<a 
+						href="<!-- tmpl_var resend_link -->"
+						alt="Resend Confirmation Email"
+						class="small button"
+						title="Resend Moderation Email to all Moderators"
+						data-list="<!-- tmpl_var list_settings.list escape="HTML" -->"
+						
+					>
+						<i class="fi-plus"></i>
+						<i class="fi-mail"></i>
+						<i class="fi-arrow-right"></i> 
+					</a>
+			</td>
+		
+			<td>
+				<!-- tmpl_var from escape="HTML" -->
+			</td>
+			<td>
+				<!-- tmpl_var subject escape="HTML"  -->
+			</td>
+			<td>
+				<!-- tmpl_var date escape="HTML"  -->
+			</td>
+			<td>
+				
+				
+				<ul class="button-group">
+				  <li>
+				  	
+					<a 
+						class="small button success"
+						href="<!-- tmpl_var confirmation_link -->"
+					>
+						Accept
+					</a>
+					
+				  </li>
+				  <li>
+				  	
+					
+					<a 
+						href="<!-- tmpl_var deny_link -->"
+						class="small button warning"
+					>
+						Deny
+					</a>
+					
+					
+					
+					
+				  </li>
+				  <li>
+				  	
+					
+					<a 
+						href="<!-- tmpl_var delete_link -->"
+						class="small button alert"
+					>
+						<i class="fi-x"></i> Delete 
+					</a>
+					
+					
+					
+				  </li>
+				</ul>
+			</td>
+				
+				
+				
+
+		</tr>
+	<!-- /tmpl_loop -->
+	</table>
+<!-- tmpl_else -->
+	<div class="alert-box info radius">
+		There are no messages awaiting moderation.
+	</div>
+<!-- /tmpl_if -->
