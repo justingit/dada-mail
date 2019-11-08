@@ -921,7 +921,14 @@
 					<div class="clearfix">
 						<ul class="button-group right">
 						    <li>
-								<input type="button"  class="success view_awaiting_msgs button small" value="View Messages Awaiting Moderation (<!-- tmpl_var num_awaiting_msgs default="0" -->)">
+								<input 
+									type="button"  
+									class="success view_awaiting_msgs button small" 
+									value="View Messages Awaiting Moderation <!-- tmpl_if list_settings.enable_moderation -->(<!-- tmpl_var num_awaiting_msgs default="0" -->)<!-- tmpl_else -->(Disabled)<!-- /tmpl_if -->"
+									<!-- tmpl_unless list_settings.enable_moderation -->
+										disabled="disabled"
+									<!-- /tmpl_unless -->
+								>	
 							</li>
 						</ul>
 					</div>
