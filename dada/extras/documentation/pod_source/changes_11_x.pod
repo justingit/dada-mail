@@ -25,6 +25,13 @@ For each message, you will have the ability to approve, deny, or simply delete t
 Although it's rare, sometimes the installer doesn't run correctly. When this happens, it's sometimes useful to look 
 into the error log, to see what happened (and report the problems to us!). Finding this error log wsn't very well documented, so we've fixed that problem, and made the installer a little more aggressive on displaying errors in a way that's more easy to work with. 
 
+=head3 Old backups of directories in dada_mail_support_files directory now removed automatically
+
+Dada Mail's installer makes backups of directories found in the, C<dada_mail_support_files> directory. The problem is 
+that there's nothign that ever removes these backups, so they start piling up and taking up disk space. 
+
+The installer will now remove all but the last three directory backups, per named directory. 
+
 =head2 Bugfixes
 
 =head3 Bundled version of LWP is woefully outdated and should be removed 
@@ -54,6 +61,10 @@ L<https://github.com/justingit/dada-mail/issues/853>
 =head3 LWP v6 is listed as a requirement for Amazon SES, but v5 is fine
 
 L<https://github.com/justingit/dada-mail/issues/858>
+
+=head3 Add option to remove backups made by installer, in the installer 
+
+L<https://github.com/justingit/dada-mail/issues/824>
 
 =head1 11.5.0
 
