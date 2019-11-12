@@ -51,13 +51,17 @@ L<https://github.com/justingit/dada-mail/issues/862>
 
 L<https://github.com/justingit/dada-mail/issues/855>
 
-=head3 "TRUNCATE" SQL statement used in installed incompatible with SQLite bug recreated
+=head3 "TRUNCATE" SQL statement used in installer incompatible with SQLite
 
 L<https://github.com/justingit/dada-mail/issues/854>
 
 =head3 "Freshness" check on messages sent to Bridge
 
 L<https://github.com/justingit/dada-mail/issues/853>
+
+=head3 "Freshness" check for Bounce Handler
+
+L<https://github.com/justingit/dada-mail/issues/809>
 
 =head3 LWP v6 is listed as a requirement for Amazon SES, but v5 is fine
 
