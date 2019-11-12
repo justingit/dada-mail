@@ -4,7 +4,8 @@
 
 =head1 11.5.1
 
-This is mostly a bug-fix release for issues found in the v11.5.0 release of Dada Mail. There a few small features to look out for: 
+This is mostly a bug-fix release for issues found in the v11.5.0 release of Dada Mail. 
+There a few small features to look out for: 
 
 =head2 Features
 
