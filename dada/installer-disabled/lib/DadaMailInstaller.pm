@@ -2110,8 +2110,9 @@ sub remove_old_backups {
 		    next if $f =~ /^\.\.?$/;
 		    $f =~ s(^.*/)();
 	
+			# fkceditor and tiny_mce (not tinymce) aren't really used, but are listed to remove ancient directories: 
 			if($f =~ m/\-backup\-/){ 
-				if($f =~ m/^(core5_filemanager|ckeditor|kcfinder|RichFilemanager|static|themes|tinymce|fckeditor)/){ 
+				if($f =~ m/^(core5_filemanager|ckeditor|kcfinder|RichFilemanager|static|themes|tinymce|tiny_mce|fckeditor)/){ 
 					warn "looks good: $f\n";
 					my ($dir_type, $dir_backup, $dir_y, $dir_m, $dir_d, $time) = split('-', $f, 6);
 					$backup_dirs->{$dir_type}->{$f} = $time;
@@ -2121,7 +2122,7 @@ sub remove_old_backups {
         closedir(SFD);
 
 		require File::Path;
-		for my $dir_type (qw(core5_filemanager ckeditor kcfinder RichFilemanager static themes tinymce fckeditor)){ 	
+		for my $dir_type (qw(core5_filemanager ckeditor kcfinder RichFilemanager static themes tinymce tiny_mce fckeditor)){ 	
 			my $dir_list = $backup_dirs->{$dir_type}; 
 	
 			my $n = 0; 
