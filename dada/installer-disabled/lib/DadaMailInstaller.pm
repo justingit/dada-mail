@@ -2046,7 +2046,6 @@ sub install_dada_mail {
     }
 	
 	$log .= "* Removing Old Backups in, " . $Support_Files_Dir_Name . " dir...\n";
-    #eval { $self->remove_old_backups(); };
 	eval { $self->remove_old_backups(); };
 	
     if ($@) {
@@ -2112,7 +2111,7 @@ sub remove_old_backups {
 		    $f =~ s(^.*/)();
 	
 			if($f =~ m/\-backup\-/){ 
-				if($f =~ m/^(core5_filemanager|ckeditor|RichFilemanager|static|themes|tinymce|fckeditor)/){ 
+				if($f =~ m/^(core5_filemanager|ckeditor|kcfinder|RichFilemanager|static|themes|tinymce|fckeditor)/){ 
 					warn "looks good: $f\n";
 					my ($dir_type, $dir_backup, $dir_y, $dir_m, $dir_d, $time) = split('-', $f, 6);
 					$backup_dirs->{$dir_type}->{$f} = $time;
@@ -2122,7 +2121,7 @@ sub remove_old_backups {
         closedir(SFD);
 
 		require File::Path;
-		for my $dir_type (qw(core5_filemanager ckeditor RichFilemanager static themes tinymce fckeditor)){ 	
+		for my $dir_type (qw(core5_filemanager ckeditor kcfinder RichFilemanager static themes tinymce fckeditor)){ 	
 			my $dir_list = $backup_dirs->{$dir_type}; 
 	
 			my $n = 0; 
