@@ -1508,7 +1508,7 @@ sub create_mass_sending_file {
 	    if ( $csv->combine(@lo) ) {
 	        my $hstring = $csv->string;
 	        print $SENDINGFILE $hstring, "\n";
-			warn '[Adding to Sending File:]' . $hstring;
+			#warn '[Adding to Sending File:]' . $hstring;
 	    }
 	    else {
 	        my $err = $csv->error_input;
@@ -1563,7 +1563,7 @@ sub create_mass_sending_file {
             if ( $csv->combine(@sub) ) {
                 my $hstring = $csv->string;
                 print $SENDINGFILE $hstring, "\n";
-				warn '[Adding to Sending File(2):]' . $hstring;
+				# warn '[Adding to Sending File(2):]' . $hstring;
             }
             else {
                 my $err = $csv->error_input;
