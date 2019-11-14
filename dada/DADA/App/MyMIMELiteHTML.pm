@@ -53,6 +53,8 @@ sub parse {
     my ( $self, $url_page, $url_txt, $url1 ) = @_;
     my ( $type, @mail, $html_ver, $txt_ver, $rootPage );
 
+	my $image_part_added = {}; 
+		
     my $html_md5 = undef;
 
     # Get content of $url_page with LWP
@@ -259,30 +261,62 @@ sub parse {
             && ( ( lc( $$url[0] ) eq 'img' ) || ( lc( $$url[0] ) eq 'src' ) )
             && ( !$images_read{$urlAbs} ) )
         {
+			warn 'here at mmlh for img';
             $images_read{$urlAbs} = 1;
 			my $img_part = $self->create_image_part($urlAbs);
 			if(defined($img_part)){
-				push( @mail, $img_part)
+				push( @mail, $img_part);
+				$image_part_added->{$urlAbs} = 1; 
+			}
+			else { 
+				$image_part_added->{$urlAbs} = 0; 	
 			}
         }
     }
 
+	use Data::Dumper; 
+	warn '$image_part_added: ' . Data::Dumper::Dumper($image_part_added);
     # Replace in HTML link with image with cid:key
-    sub pattern_image_cid {
-        my $sel = shift;
-        return '<img ' . $_[0] . 'src="cid:' . $sel->cid( absUrl( $_[1], $_[2] ) ) . '"';
-    }
+	sub pattern_image_cid {
+		warn 'pattern_image_cid';
+	    my $sel = shift;
+		warn '$_[0]:' . $_[0]; 
+		warn '$_[1]:' . $_[1];
+		warn '$_[2]:' . $_[2]; 
+		warn '$_[3]:' . $_[3]; 	
+		my $image_part_added = $_[3]; 
+		my $r; 
+		if(exists($image_part_added->{$_[1]})){ 
+			warn 'it exists!';
+			if($image_part_added->{$_[1]} == 1){ 
+				warn "It worked!";
+				$r = '<img ' . $_[0] . 'src="cid:' . $sel->cid( absUrl( $_[1], $_[2] ) ) . '"';
+			}
+			else { 
+				warn "it didn't work!";
+				# same as pattern_image... 
+				 $r = '<img ' . $_[0] . 'src="' . absUrl( $_[1], $_[2] ) . '"';
+			}
+		}
+		else { 
+			warn 'it didnt exist!'; 
+			# welp, guess it's OK:
+			$r = '<img ' . $_[0] . 'src="cid:' . $sel->cid( absUrl( $_[1], $_[2] ) ) . '"';
+		}
+		warn '$r: ' . $r; 
+		return $r; 
+	}
+
 
     # Replace relative url for image with absolute
     sub pattern_image {
         return '<img ' . $_[0] . 'src="' . absUrl( $_[1], $_[2] ) . '"';
     }
-
-    # If cid choice, put a cid + absolute url on each link image
     if ( $self->{_include} eq 'cid' ) {
         $html_ver =~ s/<img ([^<>]*) src\s*=\s*(["']?) ([^"'> ]* )(["']?)
-	           /pattern_image_cid($self,$1,$3,$rootPage)/iegx;
+	           /pattern_image_cid($self,$1,$3,$rootPage,$image_part_added)/iegx;
     }
+	
 
     # Else just make a absolute url
     else {

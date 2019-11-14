@@ -239,7 +239,13 @@ sub absUrl($$) {
 
 # Replace in HTML link with image with cid:key
 sub pattern_image_cid {
+	warn 'pattern_image_cid';
     my $sel = shift;
+	warn '$_[0]:' . $_[0]; 
+	warn '$_[1]:' . $_[1];
+	warn '$_[2]:' . $_[2]; 
+	warn '$_[3]:' . $_[3]; 	
+		 	
     return '<img ' . $_[0] . 'src="cid:' . $sel->cid( absUrl( $_[1], $_[2] ) ) . '"';
 }
 
@@ -261,6 +267,8 @@ sub pattern_href {
 sub parse {
     my ( $self, $url_page, $url_txt, $url1 ) = @_;
     my ( $type, @mail, $gabarit, $gabarit_txt, $racinePage );
+	
+	my $image_part_added = {}; 
 
     # Get content of $url_page with LWP
     if ( $url_page && $url_page =~ /^(https?|ftp|file|nntp):\/\// ) {
@@ -336,6 +344,7 @@ sub parse {
             && ( lc( $$url[1] ) eq 'src' )
             && ( $$url[2] ) )
         {
+			warn 'here for iframe';
             $gabarit =~ s/\s src \s* = \s* [\"']? \Q$$url[2]\E ([\"'>])
 		           /pattern_href($urlAbs,"src",$1)/giemx;
             print "Replace ", $$url[2], " with ", $urlAbs, "\n"
@@ -346,6 +355,7 @@ sub parse {
         # For background images
         elsif ( ( lc( $$url[1] ) eq 'background' ) && ( $$url[2] ) ) {
 
+			warn 'here for background';
             # Replace relative url with absolute
             my $v = ( $self->{_include} eq 'cid' ) ? "cid:" . $self->cid($urlAbs) : $urlAbs;
             $gabarit =~ s/background \s* = \s* [\"']? \Q$$url[2]\E ([\"'>])
@@ -355,10 +365,13 @@ sub parse {
             # else add part to mail
             if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
                 $images_read{$urlAbs} = 1;
-				
 				my $img_part = $self->create_image_part($urlAbs);
 				if(defined($img_part)){
 					push( @mail, $img_part);
+					$image_part_added->{$urlAbs} =1;
+				}
+				else { 
+					$image_part_added->{$urlAbs} = 0;
 				}
 			}
         }
@@ -366,6 +379,7 @@ sub parse {
         # For flash part (embed)
         elsif ( lc( $$url[0] ) eq 'embed' && $$url[4] ) {
 
+			warn 'here for embed';
             # rebuild $urlAbs
             $urlAbs = absUrl( $$url[4], $racinePage );
 
@@ -381,6 +395,10 @@ sub parse {
 				my $img_part = $self->create_image_part($urlAbs);
 				if(defined($img_part)){
                 	push( @mail, $img_part );
+					$image_part_added->{$urlAbs} = 1;
+				}
+				else { 
+					$image_part_added->{$urlAbs} = 0;
 				}
             }
         }
@@ -393,6 +411,7 @@ sub parse {
             && lc( $$url[2] ) eq 'movie'
             && $$url[4] )
         {
+			warn 'here for param';
             # rebuild $urlAbs
             $urlAbs = absUrl( $$url[4], $racinePage );
 
@@ -404,32 +423,46 @@ sub parse {
             # Exit with extern configuration, don't include image
             if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
                 $images_read{$urlAbs} = 1;
-				
 				my $img_part = $self->create_image_part($urlAbs);
 				if(defined($img_part)) {
 					push( @mail, $img_part );
+					$image_part_added->{$urlAbs} = 1;
             	}
+				else { 
+					$image_part_added->{$urlAbs} = 0;
+				}
 			}
         }
-
-        # For new images create part
-        # Exit with extern configuration, don't include image
-        elsif (( $self->{_include} ne 'extern' )
+		elsif (( $self->{_include} ne 'extern' )
             && ( ( lc( $$url[0] ) eq 'img' ) || ( lc( $$url[0] ) eq 'src' ) )
             && ( !$images_read{$urlAbs} ) )
         {
+			warn 'here for img';
+			
+	        # For new images create part
+	        # Exit with extern configuration, don't include image
             $images_read{$urlAbs} = 1;
 			my $img_part = $self->create_image_part($urlAbs);
 			if(defined($img_part)) {
 				push( @mail, $img_part );
+				warn 'adding: ' . $urlAbs; 
+				$image_part_added->{$urlAbs} = 1;
         	}
+			else { 
+				warn 'NOT adding: ' . $urlAbs;
+				$image_part_added->{$urlAbs} = 0;
+			}
         }
     }
 
+	require Data::Dumper; 
+	warn '$image_part_added' . Data::Dumper::Dumper($image_part_added);
+	
+	
     # If cid choice, put a cid + absolute url on each link image
     if ( $self->{_include} eq 'cid' ) {
         $gabarit =~ s/<img ([^<>]*) src\s*=\s*(["']?) ([^"'> ]* )(["']?)
-	           /pattern_image_cid($self,$1,$3,$racinePage)/iegx;
+	           /pattern_image_cid($self,$1,$3,$racinePage,$image_part_added)/iegx;
     }
 
     # Else just make a absolute url
@@ -640,6 +673,7 @@ sub pattern_input_image {
     my $ur = URI::URL->new( $url, $base )->abs;
     if ( $self->{_include} ne 'extern' ) {
 	
+		warn 'pattern_input_image';
 		my $img_part = $self->create_image_part($ur);
 		if(defined($img_part)){
 			 push( @$ref_tab_mail,  $img_part); 
@@ -662,12 +696,15 @@ sub input_image(\%$$) {
 # create_image_part
 #------------------------------------------------------------------------------
 sub create_image_part {
+	
+	warn 'here.';
+	
     my ( $self, $ur, $typ ) = @_;
     my ( $type, $buff1 );
 	
-#	warn '$ur:' . $ur; 
-#	warn 'length($ur)' . length($ur); 
-#	warn 'defined($ur)' . defined($ur); 
+	warn '$ur:' . $ur; 
+	warn 'length($ur)' . length($ur); 
+	warn 'defined($ur)' . defined($ur); 
 	
 	if ((length($ur) == 0) || (! defined $ur)) { 
 		warn 'passed blank url'
@@ -696,8 +733,27 @@ sub create_image_part {
     else {    # Get image
         print "Get img ", $ur, "\n" if $self->{_DEBUG};
         my $res2 = $self->{_AGENT}->request( new HTTP::Request( 'GET' => $ur ) );
-        if ( !$res2->is_success ) { $self->set_err("Can't get $ur\n"); }
-        $buff1 = $res2->content;
+        if (!$res2->is_success ) { 
+			require Data::Dumper;
+			my $e_r = { 
+				url         => $ur, 
+				code        => $res2->code, 
+				# headers     => $res->headers, 
+				status_line => $res2->status_line, 
+				message     => $res2->message, 				
+			};
+			my $e_m = "Problem fetching URL:\n"; 
+			   $e_m .= Data::Dumper::Dumper($e_r);
+			   warn $e_m; 
+		   
+			$self->set_err("Can't get $ur\n"); 
+			return undef;
+		}
+		else { 
+			"Yeah, OK successful: ";; 
+			#warn  $res2->content; 
+			$buff1 = $res2->content;
+		}
     }
 
     # Create part
