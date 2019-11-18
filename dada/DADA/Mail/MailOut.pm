@@ -1249,10 +1249,13 @@ sub _integrity_check {
         next if $file_check eq 'pid';
         if ( !-e $self->dir . '/' . $file_names->{$file_check} ) {
 
-            carp "Integrity warning: "
+            my $r = "Integrity warning: "
               . $self->dir . '/'
               . $file_names->{$file_check}
               . " ($file_check) is not present!";
+			carp $r; 
+			$self->log($r);
+			undef $r; 
             return undef;
         }
 
@@ -1262,14 +1265,18 @@ sub _integrity_check {
     my $test_counter = _poll( $self->dir . '/' . $file_names->{counter} );
     if (
         !defined($test_counter)
-
-        #		!defined($test_counter) ||
-        #	$test_counter eq undef  ||
-        #		$test_counter eq ''
       )
     {
-        carp "Polling, '" . $self->dir . '/' . $file_names->{counter} . "' gave back an undefined value!.";
-        return undef;
+        my $r = "Polling, '" 
+		. $self->dir 
+		. '/' 
+		. $file_names->{counter} 
+		. "' gave back an undefined value: (" 
+		. $test_counter 
+		. ").";
+		carp $r; 
+		$self->log($r);
+        return $r;
     }
 
     return 1;
@@ -1370,12 +1377,7 @@ sub status {
 
         $status->{queue_place} = $place;
         $status->{queue_total} = $total;
-
-        # $place starts at, "0" ,
-        # $DADA::Config::MAILOUT_AT_ONCE_LIMIT starts at, "1".
-
-#        carp '$place: ' . $place . ', $DADA::Config::MAILOUT_AT_ONCE_LIMIT - 1 ' . $DADA::Config::MAILOUT_AT_ONCE_LIMIT - 1;
-
+		
         if ( $place > ( $DADA::Config::MAILOUT_AT_ONCE_LIMIT - 1 ) ) {
 
             warn '>>>> >>>> >>>> Place in queue higher than MAILOUT_AT_ONCE_LIMIT'
@@ -1435,7 +1437,6 @@ sub status {
     if ( $status->{total_sent_out} > 0 ) {
 
         eval {
-
             $status->{percent_done} =
               int( int( $status->{total_sent_out} ) / int( $status->{total_sending_out_num} ) * 100 );
         };
@@ -1516,6 +1517,14 @@ sub status {
     }
 
     $self->unlock_file($lock);
+
+	if ( !defined( $self->_integrity_check ) ) {
+		require Data::Dumper;
+		$self->log(
+			"Mass Mailing Integrity Check Failing, status dump: " . Data::Dumper::Dumper($status)
+		);
+	}	 
+		 
 
     return $status;
 
@@ -1811,23 +1820,30 @@ sub reload {
 
         if ( $self->process_stalled_after < 0 ) {
             $self->status;
-            carp "Reloading message... ($$)";
+			my $r = "Reloading message... ($$)";
+            carp $r;
+			$self->log($r);
+			undef $r; 
         }
         else {
 
             my $msg =
                 "Cannot reload! Sending process is locked! Another process may"
-              . " be underway, or, the lock is stale. If so, will remove"
+              . " be underway, or the lock is stale. If so, will remove"
               . " the stale lock in:  "
               . $self->process_stalled_after
               . "  seconds"
               . "( Call status() to remove the stale lock.)";
+			$self->log($msg);
             croak($msg);
         }
     }
     else {
 
-        carp "Reloading message... ($$)";
+        my  $r = "Reloading message... ($$)";
+		carp ($r);
+		$self->log($r);
+		undef($r);
 
     }
 
@@ -1841,12 +1857,16 @@ sub counter_at {
     my $self  = shift;
     my $count = _poll( $self->dir . '/' . $file_names->{counter} );
 
-    croak(  "counter is more than the total number that we're sending out!\n counter: "
-          . $count
-          . "\n total:"
-          . $self->total_sending_out_num )
-      if $count > $self->total_sending_out_num;
+	if($count > $self->total_sending_out_num) {
 
+	    my $r = "counter is more than the total number that we're sending out!\n counter: "
+	          . $count
+	          . "\n total:"
+	          . $self->total_sending_out_num;
+		$self->log($r);  
+		croak($r);
+	}		  
+	
     warn 'counter at: ' . $count
       if $t;
 
@@ -2035,13 +2055,13 @@ sub lock_file {
         {
 
             flock $fh, LOCK_EX | LOCK_NB and last;
-
             sleep 1;
             redo if ++$count < $countdown;
-
-            croak
-"Couldn't lock semaphore file '$lockfile' for '$file' because: '$!', exiting.!";
-
+			
+			my $r = "Couldn't lock semaphore file '$lockfile' for '$file' because: '$!', exiting.!";
+            
+			$self->log($r);
+			croak $r;
         }
     }
 
@@ -2276,13 +2296,15 @@ sub log {
     my $time = scalar( localtime() );
 
     my $file = $self->dir . '/' . $file_names->{log};
-    $file = make_safer($file);
+       $file = make_safer($file);
 
     open( MO_LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
       or carp $!;
     flock( MO_LOG, LOCK_SH );
-    print MO_LOG "[$time]\t$log\n";
-    close(MO_LOG);
+    print MO_LOG "[$time]\t$log\n" 
+		or carp $!;
+    close(MO_LOG) 
+		or carp $!;
 
 }
 
