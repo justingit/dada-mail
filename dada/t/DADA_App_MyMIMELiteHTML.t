@@ -39,8 +39,8 @@ EOF
 
 # This test is to make sure tags embedded in links still work. 
 my $mailHTML = new DADA::App::MyMIMELiteHTML();
-my $MIMELiteObj = $mailHTML->parse($html_msg);
-my $msg = $MIMELiteObj->as_string;
+my $MIME_Entity = $mailHTML->parse($html_msg);
+my $msg = $MIME_Entity->as_string;
 
 use MIME::Parser; 
 my $parser = MIME::Parser->new;

@@ -459,7 +459,7 @@ sub construct_from_url {
     my $text_message = undef; #'This email message requires that your mail reader support HTML'; 
     my $html_message = undef; 
 	
-    my $MIMELiteObj;
+    my $MIME_Entity;
     my $md5; 
 	
 	my $feed_url_vars = {}; 
@@ -729,7 +729,7 @@ sub construct_from_url {
 	}
 	
     try { 
-        ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) 
+        ($mlo_status, $mlo_errors, $MIME_Entity, $md5) 
 			= $mailHTML->parse(
 				safely_encode($html_message), 
 				safely_encode($text_message),
@@ -765,7 +765,7 @@ sub construct_from_url {
     my @MIME_HTML_errors = ();
 
     try { 
-        $source = $MIMELiteObj->as_string; 
+        $source = $MIME_Entity->as_string; 
     } catch { 
         carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER - $_";
         $status           = 0;
@@ -1968,7 +1968,7 @@ sub list_invite {
 			$fm->pre_process_msg_strings( $text_message, $html_message );
 
 		my $mailHTML = undef; 
-		my ($mlo_status, $mlo_errors, $MIMELiteObj, $md5);
+		my ($mlo_status, $mlo_errors, $MIME_Entity, $md5);
 					
 	    try { 
 			require DADA::App::MyMIMELiteHTML;
@@ -1984,7 +1984,7 @@ sub list_invite {
 		            : ()
 		        ),
 		    );
-	        ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) 
+	        ($mlo_status, $mlo_errors, $MIME_Entity, $md5) 
 				= $mailHTML->parse(
 					safely_encode($html_message), 
 					safely_encode($text_message),
@@ -2011,8 +2011,9 @@ sub list_invite {
 	    my $parser = new MIME::Parser;
 	    $parser = optimize_mime_parser($parser);
 
-	    my $entity = $parser->parse_data( $MIMELiteObj->as_string );
-
+	   # my $entity = $parser->parse_data( $MIMELiteObj->as_string );
+	   my $entity = $MIME_Entity; 
+	   
 	     $entity->head->add(
 		 	'Subject',
 			$subject

@@ -56,7 +56,7 @@ use DADA::App::Guts;
 
 use HTML::LinkExtor;
 use URI::URL;
-use MIME::Lite;
+use MIME::Entity;
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 use Carp qw(carp croak);
@@ -545,55 +545,131 @@ sub build_mime_object {
     my ( $self, $html, $txt, $ref_mail ) = @_;
 
     my ( $txt_part, $part, $mail );
+	
+	my $final_entity  = undef; 
+	my $html_entity   = undef;
+	my $text_entity   = undef; 
+
+	require MIME::Entity;
 
     # Create part for HTML if needed
     if ($html) {
-		
-		warn '$html';
-		
-        my $ref = ( $txt || @$ref_mail ) ? {} : $self->{_param};
-        $part = new MIME::Lite(
-            %$ref,
-            'Type'     => 'TEXT',
-            'Encoding' => $self->{_htmlencoding},
-            'Data'     => safely_encode($html)
-        );
-        $part->attr( "content-type" => "text/html; charset=" . $self->{_htmlcharset} );
 
-        # Remove some header for Eudora client in HTML and related part
-        $part->replace( "MIME-Version"        => "" );
-        $part->replace( 'X-Mailer'            => "" );
-        $part->replace( 'Content-Disposition' => "" );
-
-        # only html, no images & no txt
-        $mail = $part unless ( $txt || @$ref_mail );
+		# ?!?!
+		#  my $ref = ( $txt || @$ref_mail ) ? {} : $self->{_param};
+ 		
+		$html_entity = $self->_build_html_part(
+			{
+				-html_str =>  $html, 
+			}
+		);
+		
     }
 
     # Create part for text if needed
     if ($txt) {
-		
 		warn '$txt';
 		
-        my $ref = ( $html ? {} : $self->{_param} );
-        $txt_part = new MIME::Lite(
-            %$ref,
-            'Type'     => 'TEXT',
-            'Data'     => safely_encode($txt),
-            'Encoding' => $self->{_textencoding}
-        );
-        $txt_part->attr( "content-type" => "text/plain; charset=" . $self->{_textcharset} );
-
-        # Remove some header for Eudora client
-        $txt_part->replace( "MIME-Version"        => "" );
-        $txt_part->replace( "X-Mailer"            => "" );
-        $txt_part->replace( "Content-Disposition" => "" );
-
-        # only text, no html
-
-        $mail = $txt_part unless $html;    # unless html?
-
-    }
+		#?!?!
+		# my $ref = ( $html ? {} : $self->{_param} );
 	
+		$text_entity = $self->_build_txt_part(
+			{
+				-text_str =>  $txt, 
+			}
+		);
+    }
+
+	if(
+		   defined($html_entity) 
+		&& defined($text_entity)
+	){ 
+	
+		#multipart alternative with a multipart related HTML Version. 
+		
+		my $html_part = undef; 
+		
+		if(scalar(@$ref_mail) > 0){		
+			# HTML part + Attachments. 	
+			my $html_part = MIME::Entity->build(
+				Type => 'multipart/related', 			
+			); 
+			$html_part->attach($html_entity);
+	        foreach (@$ref_mail) { 
+				$html_part->attach($_); 
+			}
+		}
+		else { 
+			$html_part = $html_entity; 
+		}
+		
+		my $multipart_entity = MIME::Entity->build(
+			Type => 'multipart/alternative', 			
+		);
+		$multipart_entity->attach($text_entity);
+		$multipart_entity->attach($html_part);
+		$final_entity = $multipart_entity;
+	}
+	elsif(
+		   defined($html_entity) 
+		&& ! defined($text_entity)
+	){ 
+			
+		# Why. Why do this: 
+		
+		my $html_part = undef; 
+		
+		if(scalar(@$ref_mail) > 0){		
+			# HTML part + Attachments. 	
+			my $html_part = MIME::Entity->build(
+				Type => 'multipart/related', 			
+			); 
+			$html_part->attach($html_entity);
+	        foreach (@$ref_mail) { 
+				$html_part->attach($_); 
+			}
+		}
+		else { 
+			$html_part = $html_entity; 
+		}
+		
+		$final_entity = $html_part;
+		
+	}
+	elsif(
+		   !defined($html_entity) 
+		&&  defined($text_entity)
+	){ 
+		
+		my $text_part = undef; 
+		
+		if(scalar(@$ref_mail) > 0){		
+			# HTML part + Attachments. 	
+			my $text_part = MIME::Entity->build(
+				Type => 'multipart/related', 			
+			); 
+			$text_part->attach($text_entity);
+	        foreach (@$ref_mail) { 
+				$text_part->attach($_); 
+			}
+		}
+		else { 
+			$text_part = $text_entity; 
+		}
+		
+		$final_entity = $text_part;
+
+	}
+	else { 
+		croak "Talk to me: What are you trying to do?";
+	}
+	
+	
+	
+	
+=pod
+	
+		
 	# New?
 	if ($txt && !$html) {
 		warn '$txt && !$html';
@@ -606,15 +682,24 @@ sub build_mime_object {
 		warn 'were doin this: @$ref_mail and !$txt';
 		
         my $ref = $self->{_param};
-        $$ref{'Type'} = "multipart/related";
-        $mail = new MIME::Lite(%$ref);
+       	# $$ref{'Type'} = "multipart/related";
+        # $mail = new MIME::Lite(%$ref);
+		
+		$mail = MIME::Entity->build(
+			Type => "multipart/related";
+		);		
 
+		# Wow, this is bad - it's hard to keep track on what exactly, "$mail" is, here?: 
         # Attach HTML part to related part
         $mail->attach($part);
 
         # Attach each image to related part
-        foreach (@$ref_mail) { $mail->attach($_); }    # Attach list of part
-        $mail->replace( "Content-Disposition" => "" );
+        foreach (@$ref_mail) { 
+				$mail->attach($_); 
+		}    # Attach list of part
+        
+		# Huh?
+		#$mail->replace( "Content-Disposition" => "" );
     }
 
     # Else if html and text and no images, multipart/alternative
@@ -624,25 +709,34 @@ sub build_mime_object {
 		
         my $ref = $self->{_param};
         $$ref{'Type'} = "multipart/alternative";
-        $mail = new MIME::Lite(%$ref);
-        $mail->attach($txt_part);                      # Attach text part
+        #$mail = new MIME::Lite(%$ref);
+        $mail = MIME::Entity->build(
+			Type => "multipart/alternative", 
+        );
+		$mail->attach($txt_part);                      # Attach text part
         $mail->attach($part);                          # Attach HTML part
     }
 
     # Else (html, txt and images) mutilpart/alternative
     elsif ( $txt && @$ref_mail && $html ) {
 		
+		# We have a text version, Attachments for the HTML version, and an HTML Version
 		warn 'were doin this(3): $txt && @$ref_mail && $html';
 		
         my $ref = $self->{_param};
-        $$ref{'Type'} = "multipart/alternative";
-        $mail = new MIME::Lite(%$ref);
+		
+       # $$ref{'Type'} = "multipart/alternative";
+       # $mail = new MIME::Lite(%$ref);
+       # Create related part
+       # my $rel = new MIME::Lite( 'Type' => 'multipart/related' );
+       # $rel->replace( "Content-transfer-encoding" => "" );
+       # $rel->replace( "MIME-Version"              => "" );
+       # $rel->replace( "X-Mailer"                  => "" );
 
-        # Create related part
-        my $rel = new MIME::Lite( 'Type' => 'multipart/related' );
-        $rel->replace( "Content-transfer-encoding" => "" );
-        $rel->replace( "MIME-Version"              => "" );
-        $rel->replace( "X-Mailer"                  => "" );
+		my $rel = MIME::Entity->build(
+			'Type' => 'multipart/related';
+		); 
+		$rel->attach($part); 
 
         # Attach text part to alternative part
         $mail->attach($txt_part);
@@ -651,7 +745,9 @@ sub build_mime_object {
         $rel->attach($part);
 
         # Attach each image to related part
-        foreach (@$ref_mail) { $rel->attach($_); }
+        foreach (@$ref_mail) { 
+			$rel->attach($_); 
+		}
 
         # Attach related part to alternative part
         $mail->attach($rel);
@@ -660,10 +756,59 @@ sub build_mime_object {
 	warn 'and were here';
 	use Data::Dumper; 
 	warn '$mail: ' . Dumper($mail);
-	
+
+=cut
+		
     $self->{_MAIL} = $mail;
 
 }
+
+
+sub _build_html_part { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	if(!exists($args->{-html_str})){ 
+		croak "Pass HTML String in, -html_str!";
+		
+	}
+	
+	
+	my $entity = MIME::Entity->build(
+        'Type'     => 'text/html',
+        'Encoding' => $self->{_htmlencoding},
+        'Data'     => safely_encode($args->{-html_str})
+	);
+    $entity->head->mime_attr( "content-type.charset" => $self->{_htmlcharset} );
+	return $entity; 
+	
+}
+
+
+
+
+sub _build_txt_part { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	if(!exists($args->{-txt_str})){ 
+		croak "Pass Text String in, -txt_str!";
+	}
+	
+	my $entity = MIME::Entity->build(
+        'Type'     => 'text/plain',
+        'Encoding' => $self->{_textencoding},
+        'Data'     => safely_encode($args->{-txt_str})
+	);
+    $entity->head->mime_attr( "content-type.charset" => $self->{_textcharset} );
+	return $entity; 
+	
+}
+
+
+
+
+
 
 #------------------------------------------------------------------------------
 # include_css
@@ -888,28 +1033,24 @@ sub create_image_part {
 		}
     }
 
+	
     # Create part
-    my $mail = new MIME::Lite( 
-		Data => $buff1, 
-		Encoding => 'base64',
+	my %entity_args = (
+		Data        => $buff1, 
+		Encoding    => 'base64',
 		Disposition => "inline",
-		);
-
-    $mail->attr( "Content-type" => $type );
-
-    # With cid configuration, add a Content-ID field
+		Type        => $type, 	
+	);
     if ( $self->{_include} eq 'cid' ) {
-        $mail->attr( 'Content-ID' => '<' . $self->cid($ur) . '>' );
-    }
-    else {    # Else (location) put a Content-Location field
-        $mail->attr( 'Content-Location' => $ur );
-    }
-
-    # Remove header for Eudora client
-   # $mail->replace( "X-Mailer"            => "" );
-   # $mail->replace( "MIME-Version"        => "" );
-   # $mail->replace( "Content-Disposition" => "" );
-    return $mail;
+        $entity_args{Id} = '<' . $self->cid($ur) . '>';
+	}
+	else {
+		# This isn't a documented thing, but why would we want Content-Location?  
+		$entity_args{'Content-Location'} = $ur;
+	}
+	
+    my $entity = new MIME::Entity->build(%entity_args);
+    return $entity;
 }
 
 #------------------------------------------------------------------------------

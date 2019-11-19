@@ -237,12 +237,12 @@ sub create_multipart_email {
         %{ $args->{-headers} },
     );
 
-    my ( $status, $errors, $MIMELiteObj, $md5 );
+    my ( $status, $errors, $MIME_Entity, $md5 );
 
     if (   length( $args->{-html_body} ) > 0
         && length( $args->{-plaintext_body} ) > 0 )
     {
-        ( $status, $errors, $MIMELiteObj, $md5 ) = $mailHTML->parse(
+        ( $status, $errors, $MIME_Entity, $md5 ) = $mailHTML->parse(
             safely_encode( $args->{-html_body} ),
             safely_encode( $args->{-plaintext_body} )
         );
@@ -250,26 +250,26 @@ sub create_multipart_email {
     elsif (length( $args->{-html_body} ) > 0
         && length( $args->{-plaintext_body} ) <= 0 )
     {
-        ( $status, $errors, $MIMELiteObj, $md5 ) =
+        ( $status, $errors, $MIME_Entity, $md5 ) =
           $mailHTML->parse( safely_encode( $args->{-html_body} ), undef, );
     }
     elsif (length( $args->{-html_body} ) <= 0
         && length( $args->{-plaintext_body} ) > 0 )
     {
-        ( $status, $errors, $MIMELiteObj, $md5 ) =
+        ( $status, $errors, $MIME_Entity, $md5 ) =
           $mailHTML->parse( undef, safely_encode( $args->{-plaintext_body} ), );
     }
     use MIME::Parser;
     my $parser = new MIME::Parser;
     $parser = optimize_mime_parser($parser);
 
-#	warn '$MIMELiteObj->as_string ' . $MIMELiteObj->as_string ; 
+#	warn '$MIME_Entity->as_string ' . $MIME_Entity->as_string ; 
 	
-	my $moas = $MIMELiteObj->as_string; 
+	my $moas = $MIME_Entity->as_string; 
 	if(! defined($moas)){ 
 		carp 'problems with creating multipart email:'; 
 		require Data::Dumper; 
-		carp '$MIMELiteObj: ' . Data::Dumper::Dumper($MIMELiteObj); 
+		carp '$MIME_Entity: ' . Data::Dumper::Dumper($MIME_Entity); 
 		carp '$args:'         . Data::Dumper::Dumper($args);
 	}
 
