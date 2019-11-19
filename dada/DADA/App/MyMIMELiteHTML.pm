@@ -61,6 +61,7 @@ use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 use Carp qw(carp croak);
 use Try::Tiny; 
+use MIME::Parser;
 
 require Exporter;
 
@@ -101,6 +102,10 @@ sub new {
         delete $param{'LoginDetails'};
     }
     
+	my $parser = new MIME::Parser;
+	   $parser = optimize_mime_parser($parser);
+	  $self->{parser} = $parser; 
+	   
 	# These are here, but I don't see them doing anything. 
     for (qw(
             crop_html_content 
@@ -181,6 +186,7 @@ sub new {
     }
     $self->{_param} = \%param;
     if ($url) {
+		warn 'Somehow, I am here.';
         my $m = $self->parse($url);
         $m->send;
     }
@@ -513,8 +519,9 @@ sub parse {
     #    $txt_ver = $self->fill_template( $txt_ver, $self->{_HASH_TEMPLATE} );
     #}
 
-
+	warn 'here.';
     $self->build_mime_object( $html_ver, $txt_ver || undef, \@mail );
+	warn 'here.';
 	
 	my $r_md5 = $html_md5; 
 	if(!$html_ver && $txt_ver){
@@ -523,9 +530,11 @@ sub parse {
 	
 	
     if (wantarray) {
+		warn 'this one';
         return ( 1, undef, $self->{_MAIL}, $r_md5 );
     }
     else {
+		warn 'that one';
         return $self->{_MAIL};
     }
 }
@@ -544,17 +553,16 @@ sub size {
 sub build_mime_object {
     my ( $self, $html, $txt, $ref_mail ) = @_;
 
-    my ( $txt_part, $part, $mail );
 	
 	my $final_entity  = undef; 
 	my $html_entity   = undef;
 	my $text_entity   = undef; 
 
-	require MIME::Entity;
-
     # Create part for HTML if needed
-    if ($html) {
-
+    if (defined($html)) {
+		
+		warn 'html part';
+		
 		# ?!?!
 		#  my $ref = ( $txt || @$ref_mail ) ? {} : $self->{_param};
  		
@@ -566,54 +574,98 @@ sub build_mime_object {
 		
     }
 
+	warn '$txt' . $txt; 
     # Create part for text if needed
-    if ($txt) {
-		warn '$txt';
+    if (defined($txt)) {
+		
+		warn 'txt part';
 		
 		#?!?!
 		# my $ref = ( $html ? {} : $self->{_param} );
 	
 		$text_entity = $self->_build_txt_part(
 			{
-				-text_str =>  $txt, 
+				-txt_str =>  $txt, 
 			}
 		);
     }
+	
+	#use Data::Dumper; 
+	#warn '$text_entity' . Dumper($text_entity); 
+	#warn $text_entity->dump_skeleton(\*STDERR);
 
 	if(
 		   defined($html_entity) 
 		&& defined($text_entity)
 	){ 
+		
+		warn 'text and html';
 	
 		#multipart alternative with a multipart related HTML Version. 
 		
 		my $html_part = undef; 
 		
+		warn 'here.';
+		
 		if(scalar(@$ref_mail) > 0){		
+			
+			warn 'here.';
+			
 			# HTML part + Attachments. 	
-			my $html_part = MIME::Entity->build(
+			$html_part = MIME::Entity->build(
 				Type => 'multipart/related', 			
 			); 
-			$html_part->attach($html_entity);
+			warn 'here.';
+			$html_part->add_part($html_entity);
+			warn 'here.';
 	        foreach (@$ref_mail) { 
-				$html_part->attach($_); 
+				warn 'here.';
+				$html_part->add_part($_); 
+				warn 'skeleton: $html_part' . $html_part->dump_skeleton(\*STDERR);
 			}
 		}
 		else { 
+			warn 'here.';
 			$html_part = $html_entity; 
+			warn 'here.';
 		}
-		
+		warn 'here.';
 		my $multipart_entity = MIME::Entity->build(
 			Type => 'multipart/alternative', 			
 		);
-		$multipart_entity->attach($text_entity);
-		$multipart_entity->attach($html_part);
-		$final_entity = $multipart_entity;
+		
+		warn 'dumping skeleton:';
+		warn 'dump_skeleton' .  $multipart_entity->dump_skeleton(\*STDERR);
+		
+		
+		warn 'here.';
+		$multipart_entity->add_part($text_entity);
+
+
+		warn 'dumping skeleton:';
+		warn 'dump_skeleton' .  $multipart_entity->dump_skeleton(\*STDERR);
+
+
+		warn 'here.';
+		$multipart_entity->add_part($html_part);
+		
+		warn 'dumping skeleton:';
+		warn 'dump_skeleton' .  $multipart_entity->dump_skeleton(\*STDERR);
+		
+		
+		warn 'here.';
+		#$final_entity = $self->copy_entity($multipart_entity);
+		$final_entity = $multipart_entity; 
+		
+		warn 'dumping skeleton:';
+		warn 'dump_skeleton' .  $final_entity->dump_skeleton(\*STDERR);
 	}
 	elsif(
 		   defined($html_entity) 
 		&& ! defined($text_entity)
 	){ 
+		
+		warn 'only html';
 			
 		# Why. Why do this: 
 		
@@ -621,12 +673,12 @@ sub build_mime_object {
 		
 		if(scalar(@$ref_mail) > 0){		
 			# HTML part + Attachments. 	
-			my $html_part = MIME::Entity->build(
+			$html_part = MIME::Entity->build(
 				Type => 'multipart/related', 			
 			); 
-			$html_part->attach($html_entity);
+			$html_part->add_part($html_entity);
 	        foreach (@$ref_mail) { 
-				$html_part->attach($_); 
+				$html_part->add_part($_); 
 			}
 		}
 		else { 
@@ -640,128 +692,49 @@ sub build_mime_object {
 		   !defined($html_entity) 
 		&&  defined($text_entity)
 	){ 
-		
+	
+		warn 'only text';
 		my $text_part = undef; 
 		
 		if(scalar(@$ref_mail) > 0){		
 			# HTML part + Attachments. 	
-			my $text_part = MIME::Entity->build(
+			$text_part = MIME::Entity->build(
 				Type => 'multipart/related', 			
 			); 
-			$text_part->attach($text_entity);
+			$text_part->add_part($text_entity);
 	        foreach (@$ref_mail) { 
-				$text_part->attach($_); 
+				$text_part->add_part($_); 
 			}
 		}
 		else { 
 			$text_part = $text_entity; 
 		}
 		
-		$final_entity = $text_part;
+		#$final_entity = $self->copy_entity($text_part);
+		$final_entity = $text_part; 
 
 	}
 	else { 
+		warn 'nothing';
+		
 		croak "Talk to me: What are you trying to do?";
 	}
 	
+	warn 'about to as_string.';
+	warn 'as_string' , $final_entity->as_string . 'all set!';
 	
-	
-	
-=pod
-	
-		
-	# New?
-	if ($txt && !$html) {
-		warn '$txt && !$html';
-		 $mail = $txt_part;		 
-	}
-
-    # If images and html and no text, multipart/related
-    if ( @$ref_mail and !$txt ) {
-		
-		warn 'were doin this: @$ref_mail and !$txt';
-		
-        my $ref = $self->{_param};
-       	# $$ref{'Type'} = "multipart/related";
-        # $mail = new MIME::Lite(%$ref);
-		
-		$mail = MIME::Entity->build(
-			Type => "multipart/related";
-		);		
-
-		# Wow, this is bad - it's hard to keep track on what exactly, "$mail" is, here?: 
-        # Attach HTML part to related part
-        $mail->attach($part);
-
-        # Attach each image to related part
-        foreach (@$ref_mail) { 
-				$mail->attach($_); 
-		}    # Attach list of part
-        
-		# Huh?
-		#$mail->replace( "Content-Disposition" => "" );
-    }
-
-    # Else if html and text and no images, multipart/alternative
-    elsif ( $txt && !@$ref_mail && $html ) {
-		
-		warn 'were doing this(2):  $txt && !@$ref_mail && $html';
-		
-        my $ref = $self->{_param};
-        $$ref{'Type'} = "multipart/alternative";
-        #$mail = new MIME::Lite(%$ref);
-        $mail = MIME::Entity->build(
-			Type => "multipart/alternative", 
-        );
-		$mail->attach($txt_part);                      # Attach text part
-        $mail->attach($part);                          # Attach HTML part
-    }
-
-    # Else (html, txt and images) mutilpart/alternative
-    elsif ( $txt && @$ref_mail && $html ) {
-		
-		# We have a text version, Attachments for the HTML version, and an HTML Version
-		warn 'were doin this(3): $txt && @$ref_mail && $html';
-		
-        my $ref = $self->{_param};
-		
-       # $$ref{'Type'} = "multipart/alternative";
-       # $mail = new MIME::Lite(%$ref);
-       # Create related part
-       # my $rel = new MIME::Lite( 'Type' => 'multipart/related' );
-       # $rel->replace( "Content-transfer-encoding" => "" );
-       # $rel->replace( "MIME-Version"              => "" );
-       # $rel->replace( "X-Mailer"                  => "" );
-
-		my $rel = MIME::Entity->build(
-			'Type' => 'multipart/related';
-		); 
-		$rel->attach($part); 
-
-        # Attach text part to alternative part
-        $mail->attach($txt_part);
-
-        # Attach HTML part to related part
-        $rel->attach($part);
-
-        # Attach each image to related part
-        foreach (@$ref_mail) { 
-			$rel->attach($_); 
-		}
-
-        # Attach related part to alternative part
-        $mail->attach($rel);
-    }
-
-	warn 'and were here';
-	use Data::Dumper; 
-	warn '$mail: ' . Dumper($mail);
-
-=cut
-		
-    $self->{_MAIL} = $mail;
-
+    #$self->{_MAIL} = $self->copy_entity($final_entity);
+	$self->{_MAIL} = $final_entity;
+	warn 'and were done, here.';
 }
+
+sub copy_entity {
+    my $self      = shift;
+    my $entity    = shift;
+    my $entity_cp = $self->{parser}->parse_data( $entity->as_string );
+    return $entity_cp;
+}
+
 
 
 sub _build_html_part { 
@@ -801,6 +774,7 @@ sub _build_txt_part {
         'Data'     => safely_encode($args->{-txt_str})
 	);
     $entity->head->mime_attr( "content-type.charset" => $self->{_textcharset} );
+	
 	return $entity; 
 	
 }
