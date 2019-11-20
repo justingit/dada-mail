@@ -41,12 +41,14 @@
 
 <div id="send_email"></div> 
 
+<form> 
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL_base64_encoded -->" > 
+</form> 
 
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
 	<input type="hidden" id="list"               name="list"                  value="<!-- tmpl_var list_settings.list -->" >
 	<input type="hidden" id="sched_flavor"       name="sched_flavor"          value="<!-- tmpl_var sched_flavor -->" >
 
-	<input type="hidden" name="s_program_url"      id="s_program_url"    value="<!-- tmpl_var S_PROGRAM_URL -->" >
 	<input type="hidden" name="flavor"            id="flavor"            value="send_email" >
 	<input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" >
 

@@ -28,13 +28,16 @@
 
 <!-- tmpl_unless list_email_status --><!--/tmpl_unless-->
 
+<form> 
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL_base64_encoded -->" > 
+</form> 
+
 <form 
 	name="default_form" 
 	action="<!-- tmpl_var S_PROGRAM_URL -->"
 	method="post"
 	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
 >
-	<input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->"> 
 	<input type="hidden" name="flavor"   value="plugins"> 
 	<input type="hidden" name="plugin"   value="bridge"> 
 	<input type="hidden" name="prm"      value="edit">

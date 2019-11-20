@@ -117,10 +117,11 @@ kcfinder_enabled            => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->
 core5_filemanager_enabled   => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled},
 rich_filemanager_enabled    => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled},
 		
-ROOT_PASS_IS_ENCRYPTED => $DADA::Config::ROOT_PASS_IS_ENCRYPTED, 
-PROGRAM_NAME           => $DADA::Config::PROGRAM_NAME, 
-PROGRAM_URL            => $DADA::Config::PROGRAM_URL,
-S_PROGRAM_URL          => $DADA::Config::S_PROGRAM_URL,
+ROOT_PASS_IS_ENCRYPTED       => $DADA::Config::ROOT_PASS_IS_ENCRYPTED, 
+PROGRAM_NAME                 => $DADA::Config::PROGRAM_NAME, 
+PROGRAM_URL                  => $DADA::Config::PROGRAM_URL,
+S_PROGRAM_URL                => $DADA::Config::S_PROGRAM_URL,
+S_PROGRAM_URL_base64_encoded => encode_html_entities($DADA::Config::S_PROGRAM_URL, '\W'), 
 
 SIGN_IN_FLAVOR_NAME    => $DADA::Config::SIGN_IN_FLAVOR_NAME, 
 DISABLE_OUTSIDE_LOGINS => $DADA::Config::DISABLE_OUTSIDE_LOGINS, 

@@ -33,8 +33,8 @@
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!-- /tmpl_if --> 
 	<form> 
-	 <input type="hidden" name="tracker_page" id="tracker_page" value="1"  > 
-	 <input type="hidden" name="s_program_url"   id="s_program_url"   value="<!-- tmpl_var S_PROGRAM_URL -->" > 
+		<input type="hidden" name="tracker_page" id="tracker_page" value="1"  > 
+		<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL_base64_encoded -->" > 
 	</form> 
 	<!-- tmpl_if expr="DATA_CACHE == 1" -->
 			<div class="clear_fix">
@@ -125,13 +125,16 @@
 		Preferences
 	</legend> 
 
+	<form> 
+		<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL_base64_encoded -->" > 
+	</form> 
+
 	<form 
 		action="<!-- tmpl_var S_PROGRAM_URL -->" 
 		method="post"
 		name="tracker_preferences"
 		id="tracker_preferences"
 	>
-	    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
 		<input type="hidden" name="flavor" value="plugins" > 
 		<input type="hidden" name="plugin" value="tracker" >     
 		<input type="hidden" name="prm" value="edit_prefs" > 
