@@ -50,15 +50,19 @@ package DADA::App::MyMIMELiteHTML;
 # report.
 #
 # See Changes files for older changes
+
+my $t = 0; 
+
 use lib qw(../../); 
 
-use DADA::App::Guts; 
+use strict;
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 
+use DADA::App::Guts; 
 use HTML::LinkExtor;
 use URI::URL;
 use MIME::Entity;
-use strict;
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
+
 use Carp qw(carp croak);
 use Try::Tiny; 
 use MIME::Parser;
@@ -70,7 +74,6 @@ require Exporter;
 $VERSION = ( '$Revision: 1.23 $ ' =~ /(\d+\.\d+)/ )[0];
 
 my $LOGINDETAILS;
-
 
 #------------------------------------------------------------------------------
 # new
@@ -88,25 +91,35 @@ sub new {
     else { $self->{_remove_jscript} = 0; }
 
     # Set debug level
-    #if ( $param{'Debug'} ) {
+    if ( $param{'Debug'} ) {
         $self->{_DEBUG} = 1;
-		
-		warn 'debug is on babe.';
-		
-    #    delete $param{'Debug'};
-    #}
+        delete $param{'Debug'};
+    }elsif($t == 1){ 
+		$self->{_DEBUG} = 1;
+	}
+	
+	# I think MIME::Lite::HTML mixes headers you want set with the rest of the paramaters with new(), 
+	# and I've found that sort of messy, so I want the headers in their own paramaters: 
+	if(exists($param{headers})) {
+		$self->{headers} = $param{headers};
+		delete($param{headers});
+	} 
+	else { 
+		$self->{headers} = {};
+	}
 
-    # Set Login information
+	# Set Login information
     if ( $param{'LoginDetails'} ) {
         $LOGINDETAILS = $param{'LoginDetails'};
         delete $param{'LoginDetails'};
     }
     
+	# We're using MIME::Parser, rather than MIME::Lite: 
 	my $parser = new MIME::Parser;
 	   $parser = optimize_mime_parser($parser);
-	  $self->{parser} = $parser; 
+	   $self->{parser} = $parser; 
 	   
-	# These are here, but I don't see them doing anything. 
+	# These are here, but they don't see them doing anything: 
     for (qw(
             crop_html_content 
             crop_html_content_selector_type 
@@ -121,7 +134,6 @@ sub new {
         }
     }
     
-
     # Set type of include to do
     if ( $param{'IncludeType'} ) {
         die "IncludeType must be in 'extern', 'cid' or 'location'\n"
@@ -159,6 +171,7 @@ sub new {
     ## If you DON't send us-ascii, you wouldn't be able to use
     ## MIME::Lite::HTMLForked anyway :-)
 
+	# I don't think we ever use proxy stuff in DDM, so this is commented out atm: 
 #    # Set proxy to use to get file
 #    if ( $param{'Proxy'} ) {
 #        $self->{_AGENT}->proxy( 'http', $param{'Proxy'} );
@@ -167,29 +180,32 @@ sub new {
 #        delete $param{'Proxy'};
 #    }
 
-    # Set hash to use with template
-    if ( $param{'HashTemplate'} ) {
-        $param{'HashTemplate'} =
-          ref( $param{'HashTemplate'} ) eq "HASH" ? $param{'HashTemplate'} : %{ $param{'HashTemplate'} };
-        $self->{_HASH_TEMPLATE} = $param{'HashTemplate'};
-        delete $param{'HashTemplate'};
-    }
+	# I don't use the templating stuff, so this can be commented out: 
+    # # Set hash to use with template
+    # if ( $param{'HashTemplate'} ) {
+    #    $param{'HashTemplate'} =
+    #      ref( $param{'HashTemplate'} ) eq "HASH" ? $param{'HashTemplate'} : %{ $param{'HashTemplate'} };
+    #    $self->{_HASH_TEMPLATE} = $param{'HashTemplate'};
+    #    delete $param{'HashTemplate'};
+    #}
 
     # Ok I hope I known what I do ;-)
     # MIME::Lite->quiet(1);
 
-    # direct call of new parse & send
-    my $url;
-    if ( $param{'Url'} ) {
-        $url = $param{'Url'};
-        delete $param{'Url'};
-    }
-    $self->{_param} = \%param;
-    if ($url) {
-		warn 'Somehow, I am here.';
-        my $m = $self->parse($url);
-        $m->send;
-    }
+	# We don't use sending for this module, so we comment this out - I don't know wtf 
+	# this was doing in new() anyways: 
+    # # direct call of new parse & send
+    #my $url;
+    #if ( $param{'Url'} ) {
+    #    $url = $param{'Url'};
+    #    delete $param{'Url'};
+    #}
+    #$self->{_param} = \%param;
+    #if ($url) {
+	#	warn 'Somehow, I am here.';
+    #    my $m = $self->parse($url);
+    #    $m->send;
+    #}
 
     return $self;
 }
@@ -225,32 +241,37 @@ sub absUrl($$) {
 
 
 sub pattern_image_cid {
-	warn 'pattern_image_cid';
-    my $sel = shift;
-	warn '$_[0]:' . $_[0]; 
-	warn '$_[1]:' . $_[1];
-	warn '$_[2]:' . $_[2]; 
-	warn '$_[3]:' . $_[3]; 	
+	my $sel = shift;
+	
+	if($t){
+		warn 'pattern_image_cid';
+		warn '$_[0]:' . $_[0]; 
+		warn '$_[1]:' . $_[1];
+		warn '$_[2]:' . $_[2]; 
+		warn '$_[3]:' . $_[3]; 	
+	}
 	my $image_part_added = $_[3]; 
 	my $r; 
 	if(exists($image_part_added->{$_[1]})){ 
-		warn 'it exists!';
+		
 		if($image_part_added->{$_[1]} == 1){ 
-			warn "It worked!";
+			
 			$r = '<img ' . $_[0] . 'src="cid:' . $sel->cid( absUrl( $_[1], $_[2] ) ) . '"';
 		}
 		else { 
-			warn "it didn't work!";
+			
 			# same as pattern_image... 
+			# should just call pattern_image...
 			 $r = '<img ' . $_[0] . 'src="' . absUrl( $_[1], $_[2] ) . '"';
 		}
 	}
 	else { 
-		warn 'it didnt exist!'; 
+	
 		# welp, guess it's OK:
 		$r = '<img ' . $_[0] . 'src="cid:' . $sel->cid( absUrl( $_[1], $_[2] ) ) . '"';
 	}
-	warn '$r: ' . $r; 
+	warn '$r: ' . $r
+		if $t; 
 	return $r; 
 }
 
@@ -272,7 +293,8 @@ sub pattern_href {
 #------------------------------------------------------------------------------
 sub parse {
 	
-	warn 'parse';
+	warn 'parse'
+		if $t;
 
     my ( $self, $url_page, $url_txt, $url1 ) = @_;
     my ( $type, @mail, $html_ver, $txt_ver, $rootPage );
@@ -284,7 +306,6 @@ sub parse {
     # Get content of $url_page with LWP
     if ( $url_page && $url_page =~ /^(https?|ftp|file|nntp):\/\// ) {
 
-        warn "Get ", $url_page, "\n" if $self->{_DEBUG};
         my ( $content, $res, $md5 ) = grab_url( { -url => $url_page } );
         $html_md5 = $md5;
         if ( !$res->is_success ) {
@@ -297,7 +318,6 @@ sub parse {
         $rootPage = $url1 || $res->base;
     }
     else {
-		# warn '$html_ver' . $html_ver; 
         $html_ver = $url_page;
         $rootPage = $url1;
         $html_md5 = md5_checksum( \$html_ver );
@@ -306,8 +326,6 @@ sub parse {
     # Get content of $url_txt with LWP if needed
     if ($url_txt) {
         if ( $url_txt =~ /^(https?|ftp|file|nntp):\/\// ) {
-            warn "Get ", $url_txt, "\n" if $self->{_DEBUG};
-
             my ( $content, $res, $md5 ) = grab_url( { -url => $url_page } );
             if ( !$res->is_success ) {
                 $self->set_err( "Can't fetch $url_txt (" . $res->message . ")" );
@@ -320,9 +338,6 @@ sub parse {
             $txt_ver = $url_txt;
         }
     }
-
-	#warn '$html_ver' . $html_ver; 
-	#warn '$txt_ver'  . $txt_ver; 
 	
     # Means successful, but blank. Blank is no good for us.
     if ( !$html_ver && !$txt_ver) {
@@ -385,14 +400,9 @@ sub parse {
           )                                       # ni les urls deja remplacees
         {
 			
-			#warn 'here!';
-			#warn '$$url[2]' . $$url[2]; 
-			#warn q{pattern_href($urlAbs,"href",$1)} . pattern_href($urlAbs,"href",$1); 
-			
             $html_ver =~ s/\s href \s* = \s* [\"']? \Q$$url[2]\E ([\"'>])
 		           /pattern_href($urlAbs,"href",$1)/giemx;
-            warn "Replace ", $$url[2], " with ", $urlAbs, "\n"
-              if ( $self->{_DEBUG} );
+         
             $url_remplace{$urlAbs} = 1;
         }
 
@@ -403,8 +413,6 @@ sub parse {
         {
             $html_ver =~ s/\s src \s* = \s* [\"']? \Q$$url[2]\E ([\"'>])
 		           /pattern_href($urlAbs,"src",$1)/giemx;
-            warn "Replace ", $$url[2], " with ", $urlAbs, "\n"
-              if ( $self->{_DEBUG} );
             $url_remplace{$urlAbs} = 1;
         }
 
@@ -497,8 +505,6 @@ sub parse {
         }
     }
 
-#	use Data::Dumper; 
-#	warn '$image_part_added: ' . Data::Dumper::Dumper($image_part_added);
     # Replace in HTML link with image with cid:key
 	
     if ( $self->{_include} eq 'cid' ) {
@@ -512,17 +518,8 @@ sub parse {
 
   BUILD_MESSAGE:
 
-    # Substitue value in template if needed
-    #if ( scalar keys %{ $self->{_HASH_TEMPLATE} } != 0 ) {
-    #    $html_ver = $self->fill_template( $html_ver, $self->{_HASH_TEMPLATE} )
-    #      if ($html_ver);
-    #    $txt_ver = $self->fill_template( $txt_ver, $self->{_HASH_TEMPLATE} );
-    #}
-
-	warn 'here.';
     $self->build_mime_object( $html_ver, $txt_ver || undef, \@mail );
-	warn 'here.';
-	
+
 	my $r_md5 = $html_md5; 
 	if(!$html_ver && $txt_ver){
 		$r_md5 = md5_checksum( \$txt_ver );
@@ -530,11 +527,9 @@ sub parse {
 	
 	
     if (wantarray) {
-		warn 'this one';
         return ( 1, undef, $self->{_MAIL}, $r_md5 );
     }
     else {
-		warn 'that one';
         return $self->{_MAIL};
     }
 }
@@ -560,12 +555,6 @@ sub build_mime_object {
 
     # Create part for HTML if needed
     if (defined($html)) {
-		
-		warn 'html part';
-		
-		# ?!?!
-		#  my $ref = ( $txt || @$ref_mail ) ? {} : $self->{_param};
- 		
 		$html_entity = $self->_build_html_part(
 			{
 				-html_str =>  $html, 
@@ -574,101 +563,57 @@ sub build_mime_object {
 		
     }
 
-	warn '$txt' . $txt; 
     # Create part for text if needed
     if (defined($txt)) {
 		
-		warn 'txt part';
-		
-		#?!?!
-		# my $ref = ( $html ? {} : $self->{_param} );
-	
+		warn 'txt part'
+			if $t; 
+			
 		$text_entity = $self->_build_txt_part(
 			{
 				-txt_str =>  $txt, 
 			}
 		);
     }
-	
-	#use Data::Dumper; 
-	#warn '$text_entity' . Dumper($text_entity); 
-	#warn $text_entity->dump_skeleton(\*STDERR);
 
 	if(
 		   defined($html_entity) 
 		&& defined($text_entity)
 	){ 
 		
-		warn 'text and html';
+		warn 'text and html'
+			if $t; 
 	
-		#multipart alternative with a multipart related HTML Version. 
-		
+		#multipart alternative with a multipart related HTML Version. 		
 		my $html_part = undef; 
-		
-		warn 'here.';
-		
+
 		if(scalar(@$ref_mail) > 0){		
-			
-			warn 'here.';
 			
 			# HTML part + Attachments. 	
 			$html_part = MIME::Entity->build(
 				Type => 'multipart/related', 			
 			); 
-			warn 'here.';
 			$html_part->add_part($html_entity);
-			warn 'here.';
 	        foreach (@$ref_mail) { 
-				warn 'here.';
 				$html_part->add_part($_); 
-				warn 'skeleton: $html_part' . $html_part->dump_skeleton(\*STDERR);
 			}
 		}
 		else { 
-			warn 'here.';
 			$html_part = $html_entity; 
-			warn 'here.';
 		}
-		warn 'here.';
 		my $multipart_entity = MIME::Entity->build(
 			Type => 'multipart/alternative', 			
 		);
-		
-		warn 'dumping skeleton:';
-		warn 'dump_skeleton' .  $multipart_entity->dump_skeleton(\*STDERR);
-		
-		
-		warn 'here.';
 		$multipart_entity->add_part($text_entity);
-
-
-		warn 'dumping skeleton:';
-		warn 'dump_skeleton' .  $multipart_entity->dump_skeleton(\*STDERR);
-
-
-		warn 'here.';
 		$multipart_entity->add_part($html_part);
-		
-		warn 'dumping skeleton:';
-		warn 'dump_skeleton' .  $multipart_entity->dump_skeleton(\*STDERR);
-		
-		
-		warn 'here.';
-		#$final_entity = $self->copy_entity($multipart_entity);
 		$final_entity = $multipart_entity; 
-		
-		warn 'dumping skeleton:';
-		warn 'dump_skeleton' .  $final_entity->dump_skeleton(\*STDERR);
 	}
 	elsif(
 		   defined($html_entity) 
 		&& ! defined($text_entity)
 	){ 
-		
-		warn 'only html';
-			
-		# Why. Why do this: 
-		
+				
+
 		my $html_part = undef; 
 		
 		if(scalar(@$ref_mail) > 0){		
@@ -693,7 +638,6 @@ sub build_mime_object {
 		&&  defined($text_entity)
 	){ 
 	
-		warn 'only text';
 		my $text_part = undef; 
 		
 		if(scalar(@$ref_mail) > 0){		
@@ -709,23 +653,21 @@ sub build_mime_object {
 		else { 
 			$text_part = $text_entity; 
 		}
-		
-		#$final_entity = $self->copy_entity($text_part);
 		$final_entity = $text_part; 
 
 	}
-	else { 
-		warn 'nothing';
-		
+	else { 		
 		croak "Talk to me: What are you trying to do?";
 	}
 	
-	warn 'about to as_string.';
-	warn 'as_string' , $final_entity->as_string . 'all set!';
-	
-    #$self->{_MAIL} = $self->copy_entity($final_entity);
+	for(keys %{$self->{headers}}){ 
+	    if ( $final_entity->head->get( $_, 0 ) ) {
+	        $final_entity->head->delete($_);
+	    }
+	    $final_entity->head->add( $_, $self->{headers}->{$_});
+		
+	}
 	$self->{_MAIL} = $final_entity;
-	warn 'and were done, here.';
 }
 
 sub copy_entity {
@@ -996,13 +938,19 @@ sub create_image_part {
 			};
 			my $e_m = "Problem fetching URL:\n"; 
 			   $e_m .= Data::Dumper::Dumper($e_r);
-			   warn $e_m; 
-		   
-			$self->set_err("Can't get $ur\n"); 
-			return undef;
+			  # warn $e_m; 
+			  if($ENV{NO_DADA_MAIL_CONFIG_IMPORT} == 1){
+				  warn "Doing the wrong thing, for the RIGHT reasons:" 
+				  . '$ENV{NO_DADA_MAIL_CONFIG_IMPORT}: ' 
+				  . $ENV{NO_DADA_MAIL_CONFIG_IMPORT}; 
+				  $buff1 = $res2->decoded_content;
+			  }else{ 
+	  			$self->set_err("Can't get $ur\n"); 
+	  			return undef;
+			  }
 		}
 		else { 
-			"Yeah, OK successful: ";; 
+			# "Yeah, OK successful: ";; 
 			$buff1 = $res2->decoded_content;
 		}
     }
