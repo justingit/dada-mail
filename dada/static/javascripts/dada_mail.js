@@ -1149,10 +1149,13 @@ jQuery(document).ready(function($){
 					required: false, 
 					url: true					
 				},
-
 				instagram_url: {
 					required: false, 
 					url: true					
+				},
+				whatsapp_number: {
+					required: false, 
+					digits: true
 				}
 			}			
 		});
