@@ -3078,12 +3078,12 @@ sub handle_errors {
 
         }
 
-        warn "Bridge is rejecting sending out the received message:\n"
-			. "\tList: " . $ls->param('list')
-			. "\tFrom: $from"
-			. "\tSubject: $subject"
-			. "\tMessage-ID: $message_id"
-			. "\tReasons: $reasons"
+        warn "Bridge is rejecting sending out the received message:"
+			. "\n\tList: " . $ls->param('list')
+			. "\n\tFrom: $from"
+			. "\n\tSubject: $subject"
+			. "\n\tMessage-ID: $message_id"
+			. "\n\tReasons: $reasons"
 		;
 
         $r .= "\tReasons:\n";
@@ -3193,6 +3193,7 @@ sub handle_errors {
                 $r .= "\t\t * " . $_ . "\n";
             }
         }
+		warn $r; 
         return $r;
     }
 }
