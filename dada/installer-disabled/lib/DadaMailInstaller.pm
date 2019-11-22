@@ -230,7 +230,6 @@ my @Debug_Option_Names = qw(
   DADA_Profile_Session
   DBI
   HTML_TEMPLATE
-  MIME_LITE_HTML
   NET_POP3
   NET_SMTP
 );
