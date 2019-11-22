@@ -705,7 +705,7 @@ sub construct_from_url {
 		$html_message =~ s/$tag/$tag_value/g; 
 	}
 	
-   # try { 
+    try { 
         ($mlo_status, $mlo_errors, $MIME_Entity, $md5) 
 			= $mailHTML->parse(
 				safely_encode($html_message), 
@@ -713,17 +713,17 @@ sub construct_from_url {
 				$base
 			); 
 			warn '$MIME_Entity->as_string' . $MIME_Entity->as_string;
-    #} catch { 
-    #    my $errors = "Problems sending HTML! \n
-    #    * Are you trying to send a webpage via URL instead?
-    #    * Have you entered anything in the, HTML Version?
-    #    * Returned Error: $_
-    #    ";
-	#	return { 
-	#		status       => 0, 
-	#		errors       => $errors,
-	#	};
-    #}; 
+    } catch { 
+        my $errors = "Problems sending HTML! \n
+        * Are you trying to send a webpage via URL instead?
+        * Have you entered anything in the, HTML Version?
+        * Returned Error: $_
+        ";
+		return { 
+			status       => 0, 
+			errors       => $errors,
+		};
+    }; 
     if($mlo_status == 0){ 
 		return { 
 			status       => 0, 
