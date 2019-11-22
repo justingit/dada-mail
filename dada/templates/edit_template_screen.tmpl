@@ -43,6 +43,11 @@
 	</p>
 </div>
 
+<form> 
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL_base64_encoded -->" > 
+</form> 
+
+
 <form 
 	name="edit_template_form" 
 	id="edit_template_form" 
@@ -50,7 +55,6 @@
 	method="post" 
 	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
 >
-    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
 	<input type="hidden" name="process"          value="true" >
 	<input type="hidden" name="flavor"           value="edit_template" >
 	<input type="hidden" name="default_template" value="<!-- tmpl_var default_template escape="HTML" -->" >

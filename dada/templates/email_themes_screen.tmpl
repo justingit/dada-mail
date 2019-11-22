@@ -39,6 +39,9 @@
 		</p>
 <!-- /tmpl_if -->
 
+<form> 
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL_base64_encoded -->" > 
+</form> 
 
 <form 
 	action="<!-- tmpl_var S_PROGRAM_URL -->" 
@@ -47,10 +50,8 @@
 	id="default_form" 
 	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
 >
-    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
 	<input type="hidden" name="process" value="1">
 	<input type="hidden" name="flavor"  value="email_themes">
-    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
 	
 	<div class="row collapse">
 		

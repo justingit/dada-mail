@@ -23,9 +23,11 @@
 
 <div id="plugins_change_list_shortname"></div> 
 	
+	<form> 
+		<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL_base64_encoded -->" > 
+	</form>
+	
 	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="change_name_form" name="change_name_form">
-
-		<input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
 		<input type="hidden" name="flavor" id="flavor" value="plugins" >
 		<input type="hidden" name="plugin" id="plugin" value="change_list_shortname" >
 		<input type="hidden" name="prm" id="prm" value="verify_change_list_shortname" >

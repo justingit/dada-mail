@@ -26,10 +26,13 @@
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if-->
 
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" id="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-	    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
-	    <input type="hidden" name="process" value="1" >
-        <input type="hidden" name="flavor"  value="mass_mailing_options" >
+<form> 
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL_base64_encoded -->" > 
+</form> 
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" id="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+    <input type="hidden" name="process" value="1" >
+    <input type="hidden" name="flavor"  value="mass_mailing_options" >
     
 <fieldset>
     <legend>Formatting</legend>

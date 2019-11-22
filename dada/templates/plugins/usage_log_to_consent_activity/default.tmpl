@@ -29,6 +29,10 @@
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!-- /tmpl_if --> 
 
+<form> 
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL_base64_encoded -->" > 
+</form> 
+
 <form 
 	name="default_form" 
 	action="<!-- tmpl_var S_PROGRAM_URL -->"
@@ -36,7 +40,6 @@
 	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
 	target="_blank"
 >
-	<input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->"> 
 	<input type="hidden" name="flavor"   value="plugins"> 
 	<input type="hidden" name="plugin"   value="usage_log_to_consent_activity"> 
 	<input type="hidden" name="prm"      value="process">
