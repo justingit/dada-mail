@@ -2,6 +2,56 @@
 
 =encoding utf-8
 
+=head1 11.6.0
+
+=head2 Features
+
+=head3 WhatsApp Number Support
+
+Add your WhatsApp Number! A link to start a WhatsApp chat will appear at the bottom of your 
+email messages, below your physical address and phone number. 
+
+=head3 Better error reporting in individual mass mailing log
+
+In an effort to more easily debug problems with mass mailings, the individual mass mailing log will show more errors.
+
+=head3 BEtter error reporting for problems with messages received with the Bridge plugin
+
+In an effort to more easily debug problems with messages received via the Bridfge plugin, more information 
+will be printed to the error log, when a problem occurs.  
+
+=head2 Bugfixes
+
+=head3 Images that cannot be fetched via URL embedded anyways 
+
+L<https://github.com/justingit/dada-mail/issues/876>
+
+=head3 Some form values (URLs, HTML comments) get rejected by web server firewalls (mod_security)
+
+L<some form values (URLs, HTML comments) get rejected by web server firewalls (mod_security)>
+
+=head3  Verbose Error Logs re: temp mass mailing subscriber file
+
+L<https://github.com/justingit/dada-mail/issues/873>
+
+=head3 Individual Mass Mailing Log should show errors
+
+L<https://github.com/justingit/dada-mail/issues/871>
+
+=head1 Internal Changes 
+
+=head2 Moving Away from MIME::Lite::HTML to MIME::Entity
+
+The largest change in this release is moving away from using the, C<MIME::Lite::HTML> module. 
+C<MIME::Lite::HTML> was an important part of Dada Mail, as it was used to embed images into email messages
+and was the original engine that turned URL's into email messsages.
+ 
+But, C<MIME::Lite> and therefore C<MIME::Lite::HTML> are known to be a little buggy, and aren't well supported
+these days, so we've moved to it's larger brother: C<MIME::Entity>. C<MIME::Entity> and the rest of the C<MIME::Tools>
+collection of modules is already well-entrenched within Dada Mail's codebase. 
+Removing MIME::Lite::HTML also removes a substantial amount of redundant code. 
+
+
 =head1 11.5.1
 
 This is mostly a bug-fix release for issues found in the v11.5.0 release of Dada Mail. 

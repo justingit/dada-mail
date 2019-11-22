@@ -13,7 +13,7 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
 # What's the name of the file I'm looking for to uncompress?
 # Basic Dada Mail
-my $basic = 'dada-11_5_1.tar.gz';
+my $basic = 'dada-11_6_0.tar.gz';
 #
 #
 # Pro Dada
