@@ -1085,7 +1085,9 @@ sub send_email {
     }
 
     my $li = $self->{ls_obj}->get( -all_settings => 1 );
-	
+
+	my $can_use_lwp_simple = 0;
+	my $lwp_simple_error   = undef; 
 	eval { require LWP::Simple };
     if ( !$@ ) {
         $can_use_lwp_simple = 1;
