@@ -3168,7 +3168,8 @@ sub change_info {
 					facebook_page_url    => xss_filter( strip( scalar $q->param('facebook_page_url') )),
                     youtube_url          => xss_filter( strip( scalar $q->param('youtube_url') )),
                     twitter_url          => xss_filter( strip( scalar $q->param('twitter_url') ) ),
-                    instagram_url => xss_filter( strip( scalar $q->param('instagram_url') )),
+                    instagram_url        => xss_filter( strip( scalar $q->param('instagram_url') )),
+					whatsapp_number      => xss_filter( strip( scalar $q->param('whatsapp_number') )),
                 }
             }
         );
