@@ -302,9 +302,8 @@ BEGIN{ use_ok('MIME::Types'); }
 BEGIN{ use_ok('MIME::Lite'); }
 
 # Huh! This actually needs LWP - it may fail on a few systems...
-BEGIN{ use_ok('MIME::Lite::HTMLForked'); }
 # This too: 
-BEGIN { use_ok('DADA::App::MyMIMELiteHTML'); }
+BEGIN { use_ok('DADA::App::HTMLtoMIMEMessage'); }
 # Since it relies on the above. 
 
 BEGIN{ use_ok('MIME::Tools'); }

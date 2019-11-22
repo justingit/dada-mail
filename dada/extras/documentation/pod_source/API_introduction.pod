@@ -53,9 +53,9 @@ Subroutines in this module are subroutines that used to live in the C<mail.cgi> 
 
 Holds subroutines for often used email messages, like the confirmation message. Also has a high-level subroutine for creating email messages, to be passed to, C<DADA::Mail::Send> 
 
-=head2 DADA::App::MyMIMELiteHTML
+=head2 DADA::App::HTMLtoMIMEMessage
 
-A wrapper around, C<MIME::Lite::HTML> that fixes a lot of annoyances. 
+... 
 
 =head2 DADA::App::POP3Tools
 

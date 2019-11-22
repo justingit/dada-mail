@@ -69,30 +69,18 @@
 	 <!-- tmpl_include send_email_button_action_notice_widget.tmpl -->
 	
 	<div id="entire_form">
-		<div id="form_widgets"> 
-			
-			<!-- tmpl_unless can_use_mime_lite_html -->
+		<div id="form_widgets"> 	
+			<!-- tmpl_unless can_use_lwp_simple -->
 				<div class="alert-box alert radius">
 					<p>
-						Disabled. The 'MIME::Lite::HTML' Perl Library needs to be installed, or is missing required components. More information below:
+						Disabled. The 'LWP' Perl Library needs to be installed. More information below: 
 					</p>
 					<code> 
-						<!-- tmpl_var mime_lite_html_error -->
+						<!-- tmpl_var lwp_simple_error --> 
 					</code> 
-				</div>
+				</div> 
 			<!-- tmpl_else-->
-				<!-- tmpl_unless can_use_lwp_simple -->
-					<div class="alert-box alert radius">
-						<p>
-							Disabled. The 'LWP' Perl Library needs to be installed. More information below: 
-						</p>
-						<code> 
-							<!-- tmpl_var lwp_simple_error --> 
-						</code> 
-					</div> 
-				<!-- tmpl_else-->
-				
-
+			
 			<!-- tmpl_if draft_id --> 
 				<!-- tmpl_if expr="(draft_role eq 'draft')" --> 
 					<!-- 
@@ -109,8 +97,8 @@
 				<!-- tmpl_if expr="(draft_role eq 'schedule')" --> 
 					<!-- tmpl_if done --> 
 						<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
-				<!-- /tmpl_if -->
-			<!-- /tmpl_if -->     
+					<!-- /tmpl_if -->
+				<!-- /tmpl_if -->     
 
 			<!-- /tmpl_If --> 
 
@@ -131,59 +119,55 @@
 			<!-- tmpl_include send_email_schedule_options_widget.tmpl -->
 
 			<!-- tmpl_include send_email_headers_widget.tmpl --> 
-			
-			    <ul class="tabs show-for-medium-up" data-tab>
-			      
-				  
-				  <!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type eq 'html')" -->
-				  		<li class="tab-title active ">
-				  <!-- tmpl_else -->
-				  		<li class="tab-title ">
-				  <!-- /tmpl_if -->
-				  
-					  	<a href="#html_message">
-							HTML Version
-						</a>
-				  </li>
-				  <!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type ne 'html')" -->
-				  		<li class="tab-title active ">
-				  <!-- tmpl_else -->
-				  		<li class="tab-title ">
-				  <!-- /tmpl_if -->
-			      
-				 		<a href="#plaintext_message">
-					  	  PlainText Version
-					  	</a>
-				  </li>
-			      <li class="tab-title">
+		
+			<ul class="tabs show-for-medium-up" data-tab>
+
+
+			<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type eq 'html')" -->
+				<li class="tab-title active ">
+			<!-- tmpl_else -->
+				<li class="tab-title ">
+			<!-- /tmpl_if -->
+				<a href="#html_message">
+					HTML Version
+				</a>
+			</li>
+			<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type ne 'html')" -->
+				<li class="tab-title active ">
+			<!-- tmpl_else -->
+				<li class="tab-title ">
+			<!-- /tmpl_if -->
+					<a href="#plaintext_message">
+						PlainText Version
+					</a>
+				</li>
+				<li class="tab-title">
 					<a href="#file_attachments">
 						Attachments
 					</a>
-				  </li>
+				</li>
 				<li class="tab-title">
 					<a href="#layout">
 						Layout
 					</a>
 				</li>
-			      <li class="tab-title">
-					  <a href="#options">
+				<li class="tab-title">
+					<a href="#options">
 						Options
-					  </a>
-				 	</li>
-			    </ul>
-			<dl class="accordion" data-accordion>
-				<dd class="accordion-navigation">
-					<a href="#html_message" class="show-for-small-only">
-						HTML Version
 					</a>
-					
-					
-					<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type eq 'html')" -->
-							<div id="html_message" class="content active">
-					<!-- tmpl_else -->
-						<div id="html_message" class="content">
-					<!-- /tmpl_if -->
-					
+				</li>
+			</ul>
+				<dl class="accordion" data-accordion>
+					<dd class="accordion-navigation">
+						<a href="#html_message" class="show-for-small-only">
+							HTML Version
+						</a>
+
+						<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type eq 'html')" -->
+								<div id="html_message" class="content active">
+						<!-- tmpl_else -->
+							<div id="html_message" class="content">
+						<!-- /tmpl_if -->
 						<div class="content-box section-box">
 							<!-- tmpl_include send_email_html_message_form_field_widget.tmpl --> 
 		    			</div>
@@ -191,68 +175,66 @@
 					<a href="#plaintext_message" class="show-for-small-only">
 						PlainText Version
 					</a>
-					
-					  	<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type ne 'html')" -->
-							<div id="plaintext_message" class="content active">
-						<!-- tmpl_else -->
-							<div id="plaintext_message" class="content">
-						<!-- /tmpl_if -->
+				  	<!-- tmpl_if expr="(list_settings.mass_mailing_show_by_default_type ne 'html')" -->
+						<div id="plaintext_message" class="content active">
+					<!-- tmpl_else -->
+						<div id="plaintext_message" class="content">
+					<!-- /tmpl_if -->
 
-						<div class="content-box section-box">
-		    				<!-- tmpl_include send_email_plaintext_message_form_field_widget.tmpl -->
-		    			</div>
+					<div class="content-box section-box">
+						<!-- tmpl_include send_email_plaintext_message_form_field_widget.tmpl -->
 					</div>
-					<a href="#file_attachments" class="show-for-small-only">
-						Attachments
-					</a>
-					<div id="file_attachments" class="content">
-						<div class="content-box section-box">
-		    				<!-- tmpl_include send_email_file_attachments_widget.tmpl -->
-		       		   </div>
-					</div>
-					
-					
-					<a href="#layout" class="show-for-small-only">
-						Layout
-					</a>
-					<div id="layout" class="content">
-						<div class="content-box section-box">
-		    				<!-- tmpl_include send_email_layout_widget.tmpl -->
-		       		   </div>
-					</div>
-					
-					
-					
-					
-						<a href="#options" class="show-for-small-only">
-						Options
-					</a>
-					<div id="options" class="content">
-						<div class="content-box section-box">
-							<!-- tmpl_include send_email_options_widget.tmpl -->
-		    				
-		       		   </div>
-					</div>
-				</dd>
-			</dl>
+				</div>
+			<a href="#file_attachments" class="show-for-small-only">
+				Attachments
+			</a>
+			<div id="file_attachments" class="content">
+				<div class="content-box section-box">
+					<!-- tmpl_include send_email_file_attachments_widget.tmpl -->
+			   </div>
+			</div>
+	
+	
+			<a href="#layout" class="show-for-small-only">
+				Layout
+			</a>
+			<div id="layout" class="content">
+				<div class="content-box section-box">
+					<!-- tmpl_include send_email_layout_widget.tmpl -->
+			   </div>
+			</div>
+	
+		
 			
+			
+		<a href="#options" class="show-for-small-only">
+			Options
+		</a>
+		<div id="options" class="content">
+			<div class="content-box section-box">
+				<!-- tmpl_include send_email_options_widget.tmpl -->
+			</div>
+		</div>
+	</dd>
+</dl>
+
 			<!-- tmpl_include send_email_draft_notice_widget.tmpl --> 
-			
-			
-					
+		
+		
+				
 					<div class="show-for-small-only">
 						<div class="button_toolbar">
 							<input type="button" value="Loading..." class="button small" >
 						</div>
 					</div>
-					
+				
 					<!--
 					# These are for mime list and lwp simple
 					# I don't know if I can do this screenw ith out mime::list::HTML
 					--> 
-						
+					
 					<!-- /tmpl_unless --> 
-				<!-- /tmpl_unless --> 	
+				
 			
 	</div><!-- entire_form -->
 	</div>

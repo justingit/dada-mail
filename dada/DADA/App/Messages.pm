@@ -211,7 +211,7 @@ sub create_multipart_email {
     if ( !exists( $args->{-headers} ) ) {
         $args->{-headers} = {};
     }
-	# encode those headers, before they hit MyMIMELiteHTML
+	# encode those headers, before they hit HTMLtoMIMEMessage
 	for(keys %{$args->{-headers}}){
 		$args->{-headers}->{$_} = $self->fm->_encode_header( 
 			$_, $args->{-headers}->{$_}
@@ -219,8 +219,8 @@ sub create_multipart_email {
 	}
 
 
-    require DADA::App::MyMIMELiteHTML;
-    my $mailHTML = new DADA::App::MyMIMELiteHTML(
+    require DADA::App::HTMLtoMIMEMessage;
+    my $mailHTML = new DADA::App::HTMLtoMIMEMessage(
 
         remove_jscript =>
           scalar $self->ls->param('mass_mailing_remove_javascript'),
@@ -229,20 +229,15 @@ sub create_multipart_email {
         'HTMLCharset' => scalar $self->ls->param('charset_value'),
         HTMLEncoding  => scalar $self->ls->param('html_encoding'),
         TextEncoding  => scalar $self->ls->param('plaintext_encoding'),
-        (
-              ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
-            ? ( Debug => 1, )
-            : ()
-        ),
         %{ $args->{-headers} },
     );
 
-    my ( $status, $errors, $MIMELiteObj, $md5 );
+    my ( $status, $errors, $MIME_Entity, $md5 );
 
     if (   length( $args->{-html_body} ) > 0
         && length( $args->{-plaintext_body} ) > 0 )
     {
-        ( $status, $errors, $MIMELiteObj, $md5 ) = $mailHTML->parse(
+        ( $status, $errors, $MIME_Entity, $md5 ) = $mailHTML->parse(
             safely_encode( $args->{-html_body} ),
             safely_encode( $args->{-plaintext_body} )
         );
@@ -250,26 +245,26 @@ sub create_multipart_email {
     elsif (length( $args->{-html_body} ) > 0
         && length( $args->{-plaintext_body} ) <= 0 )
     {
-        ( $status, $errors, $MIMELiteObj, $md5 ) =
+        ( $status, $errors, $MIME_Entity, $md5 ) =
           $mailHTML->parse( safely_encode( $args->{-html_body} ), undef, );
     }
     elsif (length( $args->{-html_body} ) <= 0
         && length( $args->{-plaintext_body} ) > 0 )
     {
-        ( $status, $errors, $MIMELiteObj, $md5 ) =
+        ( $status, $errors, $MIME_Entity, $md5 ) =
           $mailHTML->parse( undef, safely_encode( $args->{-plaintext_body} ), );
     }
     use MIME::Parser;
     my $parser = new MIME::Parser;
     $parser = optimize_mime_parser($parser);
 
-#	warn '$MIMELiteObj->as_string ' . $MIMELiteObj->as_string ; 
+#	warn '$MIME_Entity->as_string ' . $MIME_Entity->as_string ; 
 	
-	my $moas = $MIMELiteObj->as_string; 
+	my $moas = $MIME_Entity->as_string; 
 	if(! defined($moas)){ 
 		carp 'problems with creating multipart email:'; 
 		require Data::Dumper; 
-		carp '$MIMELiteObj: ' . Data::Dumper::Dumper($MIMELiteObj); 
+		carp '$MIME_Entity: ' . Data::Dumper::Dumper($MIME_Entity); 
 		carp '$args:'         . Data::Dumper::Dumper($args);
 	}
 
