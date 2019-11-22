@@ -211,7 +211,7 @@ sub create_multipart_email {
     if ( !exists( $args->{-headers} ) ) {
         $args->{-headers} = {};
     }
-	# encode those headers, before they hit MyMIMELiteHTML
+	# encode those headers, before they hit HTMLtoMIMEMessage
 	for(keys %{$args->{-headers}}){
 		$args->{-headers}->{$_} = $self->fm->_encode_header( 
 			$_, $args->{-headers}->{$_}
@@ -219,8 +219,8 @@ sub create_multipart_email {
 	}
 
 
-    require DADA::App::MyMIMELiteHTML;
-    my $mailHTML = new DADA::App::MyMIMELiteHTML(
+    require DADA::App::HTMLtoMIMEMessage;
+    my $mailHTML = new DADA::App::HTMLtoMIMEMessage(
 
         remove_jscript =>
           scalar $self->ls->param('mass_mailing_remove_javascript'),
@@ -229,11 +229,6 @@ sub create_multipart_email {
         'HTMLCharset' => scalar $self->ls->param('charset_value'),
         HTMLEncoding  => scalar $self->ls->param('html_encoding'),
         TextEncoding  => scalar $self->ls->param('plaintext_encoding'),
-        (
-              ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
-            ? ( Debug => 1, )
-            : ()
-        ),
         %{ $args->{-headers} },
     );
 

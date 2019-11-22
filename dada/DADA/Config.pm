@@ -527,12 +527,6 @@ $DEBUG_TRACE //= {
 
     HTML_TEMPLATE => 0,
 
-    # MIME::Lite::HTML, used for the, "Send a Webpage" screen
-    # More information:
-    # http://search.cpan.org/~alian/MIME-Lite-HTML/HTML.pm
-
-    MIME_LITE_HTML => 0,
-
     #  Net::POP3, used for checking awaiting messages on a POP3 Server
     #  More Information:
     #  http://search.cpan.org/~gbarr/libnet/Net/POP3.pm

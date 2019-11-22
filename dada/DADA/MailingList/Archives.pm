@@ -2331,7 +2331,7 @@ sub _bs_raw_msg {
 	my $self = shift; 
 	my ($subject, $message, $format) = @_; 
 	
-	require MIME::Lite; 
+	require MIME::Entity; 
 
 	if(!$message){ 
 		warn "message is blank!?"; 
@@ -2361,14 +2361,14 @@ sub _bs_raw_msg {
 		$format = 'text/plain'; 	
 	}
 	
-	my $msg = MIME::Lite->new(
-	Subject   => $subject, 
-	Type      => $format, 
-	# This should be this way, or the reverse?
-	#Data      => Encode::encode($DADA::Config::HTML_CHARSET, $message), 
-#	Data      => $message, 
-	Data      => safely_encode($message), 
-	Datestamp => 0, 
+	my $msg = MIME::Entity->build(
+		Subject   => $subject, 
+		Type      => $format, 
+		# This should be this way, or the reverse?
+		#Data      => Encode::encode($DADA::Config::HTML_CHARSET, $message), 
+	#	Data      => $message, 
+		Data      => safely_encode($message), 
+		Datestamp => 0, 
 	);
 	#
 	#return $msg->as_string;

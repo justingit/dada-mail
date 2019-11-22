@@ -420,9 +420,6 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 <p>Time of error: <strong>$TIME</strong></p> 	
 
 
-<pre> 
-$error
-</pre> 
 
 </div>
 </body> 
@@ -12459,10 +12456,10 @@ sub send_archive {
         require DADA::App::FormatMessages;
         my $fm = DADA::App::FormatMessages->new( -List => $list );
 		
-        require MIME::Lite;
+        require MIME::Entity;
 
         # DEV: This should really be moved to DADA::App::Messages...
-        my $msg = MIME::Lite->new(
+        my $msg = MIME::Entity->build(
             From => $fm->format_phrase_address(
 				$etp->{vars}->{from_phrase}, 
 				$ls->param('list_owner_email'),
@@ -12475,30 +12472,32 @@ sub send_archive {
             Type    => 'multipart/mixed',
         );
 
-        my $pt = MIME::Lite->new(
+        my $pt = MIME::Entity->build(
             Type     => 'text/plain',
             Data     => $etp->{plaintext},
             Encoding => $ls->param('plaintext_encoding')
         );
 
-        my $html = MIME::Lite->new(
+        my $html = MIME::Entity->build(
             Type     => 'text/html',
             Data     => $etp->{html},
             Encoding => $ls->param('html_encoding'),
         );
+		
+        my $ma = MIME::Entity->build(
+			Type => 'multipart/alternative'
+		);
+        $ma->add_part($pt);
+        $ma->add_part($html);
 
-        my $ma = MIME::Lite->new( Type => 'multipart/alternative' );
-        $ma->attach($pt);
-        $ma->attach($html);
-
-        $msg->attach($ma);
+        $msg->add_part($ma);
 
         my $a_msg;
 
         #... sort of weird.
         if ($raw_msg) {
 
-            $a_msg = MIME::Lite->new(
+            $a_msg = MIME::Entity->build(
                 Type        => 'message/rfc822',
                 Disposition => "inline",
                 Data => $archive->massage_msg_for_resending( -key => $entry ),
@@ -12507,7 +12506,7 @@ sub send_archive {
         }
         else {
 
-            $a_msg = MIME::Lite->new(
+            $a_msg = MIME::Entity->build(
                 Type        => 'message/rfc822',
                 Disposition => "inline",
                 Type        => $format,
@@ -12515,24 +12514,23 @@ sub send_archive {
             );
         }
 
-        $msg->attach($a_msg);
+        $msg->add_part($a_msg);
 
         require DADA::App::FormatMessages;
         my $fm = DADA::App::FormatMessages->new( -List => $list );
         $fm->use_email_templates(0);
         $fm->use_header_info(1);
 
-        my $msg_a_s = safely_encode( $msg->as_string );
-        my ($email_str) = $fm->format_message(
+        $msg = $fm->format_message(
             {
-                -msg => $msg_a_s
+                -entity => $msg,
             }
         );
 
         my ( $e_name, $e_domain ) = split( '@', $to_email, 2 );
         my $entity = $fm->email_template(
             {
-                -entity => $fm->get_entity( { -data => $email_str } ),
+                -entity => $msg,
                 -list_settings_vars_param => { -list => $list, },
                 -vars                     => {
                     from_email                => $from_email,
@@ -12545,9 +12543,9 @@ sub send_archive {
                 },
             }
         );
-
-        $msg = safely_decode( $entity->as_string );
-        my ( $header_str, $body_str ) = split( "\n\n", $msg, 2 );
+		undef($msg);
+        my $n_msg = safely_decode( $entity->as_string );
+        my ( $header_str, $body_str ) = split( "\n\n", $n_msg, 2 );
 
         require DADA::Mail::Send;
         my $mh = DADA::Mail::Send->new(

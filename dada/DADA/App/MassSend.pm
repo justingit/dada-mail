@@ -356,24 +356,6 @@ sub construct_from_url {
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
     $fm->mass_mailing(1);
-
-    my $can_use_mime_lite_html = 1;
-    my $mime_lite_html_error   = undef;
-	
-    try { 
-		require DADA::App::MyMIMELiteHTML; 
-	} catch  {
-        $can_use_mime_lite_html = 0;
-	    $mime_lite_html_error = $@;
-    };
-	
-    if ( !$can_use_mime_lite_html ) {
-		return { 
-			status       => 0, 
-			errors       => $mime_lite_html_error,
-		};
-    }
-
     my $url               = strip( scalar $draft_q->param('url') );
 	if(length($url) <= 4 && $content_from eq 'url'){ 
  		return { 
@@ -440,7 +422,7 @@ sub construct_from_url {
 		}
     }
     
-    my $mailHTML = new DADA::App::MyMIMELiteHTML(
+    my $mailHTML = new DADA::App::HTMLtoMIMEMessage(
 	#	%headers, # I'd rather not send the headers to this module, but I'm honestly confused on how headers are set! MYSTERY! 
         remove_jscript                   => scalar $self->{ls_obj}->param('mass_mailing_remove_javascript'),
 	    'IncludeType'                    => $url_options,
@@ -448,11 +430,6 @@ sub construct_from_url {
         'HTMLCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
         HTMLEncoding                     => scalar $self->{ls_obj}->param('html_encoding'),
         TextEncoding                     => scalar $self->{ls_obj}->param('plaintext_encoding'),
-        (
-              ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
-            ? ( Debug => 1, )
-            : ()
-        ),
 		( ( $num_attachments < 1 ) ? (%headers) : () ),
     );
 
@@ -1109,19 +1086,7 @@ sub send_email {
 
     my $li = $self->{ls_obj}->get( -all_settings => 1 );
 	
-	# not in send_email but probably should have been... 
-    my $can_use_mime_lite_html = 1;
-    my $mime_lite_html_error   = undef;
-    try {
-        require DADA::App::MyMIMELiteHTML
-    }
-    catch {
-        $can_use_mime_lite_html = 0;
-    };
-
-    my $can_use_lwp_simple = 0;
-    my $lwp_simple_error   = undef;
-    eval { require LWP::Simple };
+	eval { require LWP::Simple };
     if ( !$@ ) {
         $can_use_lwp_simple = 1;
     }
@@ -1271,8 +1236,6 @@ sub send_email {
                     rich_filemanager_upload_dir => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{upload_dir},
                     rich_filemanager_upload_url => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{upload_url},
 					
-                    can_use_mime_lite_html     => $can_use_mime_lite_html,
-                    mime_lite_html_error       => $mime_lite_html_error,
                     can_use_lwp_simple         => $can_use_lwp_simple,
 					can_use_XML_FeedPP         => scalar can_use_XML_FeedPP(),
                     lwp_simple_error           => $lwp_simple_error,
@@ -1972,18 +1935,13 @@ sub list_invite {
 		my ($mlo_status, $mlo_errors, $MIME_Entity, $md5);
 					
 	    try { 
-			require DADA::App::MyMIMELiteHTML;
-		    $mailHTML = new DADA::App::MyMIMELiteHTML(
+			require DADA::App::HTMLtoMIMEMessage;
+		    $mailHTML = new DADA::App::HTMLtoMIMEMessage(
 		        'IncludeType'                    => $url_options,
 		        'TextCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
 		        'HTMLCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
 		        HTMLEncoding                     => scalar $self->{ls_obj}->param('html_encoding'),
 		        TextEncoding                     => scalar $self->{ls_obj}->param('plaintext_encoding'),
-		        (
-		              ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
-		            ? ( Debug => 1, )
-		            : ()
-		        ),
 		    );
 	        ($mlo_status, $mlo_errors, $MIME_Entity, $md5) 
 				= $mailHTML->parse(

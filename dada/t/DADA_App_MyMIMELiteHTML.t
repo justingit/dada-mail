@@ -12,7 +12,7 @@ use Test::More qw(no_plan);
 
 my $list = dada_test_config::create_test_list;
 
-use DADA::App::MyMIMELiteHTML;
+use DADA::App::HTMLtoMIMEMessage;
 
 my @tmpl_tags = (
 
@@ -38,7 +38,7 @@ EOF
 ; 
 
 # This test is to make sure tags embedded in links still work. 
-my $mailHTML = new DADA::App::MyMIMELiteHTML();
+my $mailHTML = new DADA::App::HTMLtoMIMEMessage();
 my $MIME_Entity = $mailHTML->parse($html_msg);
 my $msg = $MIME_Entity->as_string;
 

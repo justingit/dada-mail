@@ -1,7 +1,7 @@
-package DADA::App::MyMIMELiteHTML;
+package DADA::App::HTMLtoMIMEMessage;
 
 
-#package MIME::Lite::HTMLForked;
+#package MIME::Lite::HTML
 
 # module MIME::Lite::HTMLForked : Provide routine to transform a HTML page in
 # a MIME::Lite mail
@@ -91,12 +91,10 @@ sub new {
     else { $self->{_remove_jscript} = 0; }
 
     # Set debug level
-    if ( $param{'Debug'} ) {
-        $self->{_DEBUG} = 1;
+    if ( exists($param{'Debug'}) ) {
+        $t = $param{'Debug'}; 
         delete $param{'Debug'};
-    }elsif($t == 1){ 
-		$self->{_DEBUG} = 1;
-	}
+    }
 	
 	# I think MIME::Lite::HTML mixes headers you want set with the rest of the paramaters with new(), 
 	# and I've found that sort of messy, so I want the headers in their own paramaters: 
@@ -744,10 +742,12 @@ sub pattern_css {
 
     # Complete url
     my $ur = URI::URL->new( $url, $root )->abs;
-    warn "Include CSS file $ur\n" if $self->{_DEBUG};
+    warn "Include CSS file $ur\n" 
+		if $t;
     my ( $content, $res, $md5 ) = grab_url( { -url => $ur } );
     if ( $res->is_success ) {
-        warn "Ok file downloaded\n" if $self->{_DEBUG};
+        warn "Ok file downloaded\n" 
+			if $t;
         return '<style type="text/css">' . "\n" . '<!--' . "\n" . safely_decode($content) . "\n-->\n</style>\n";
     }
     else {
@@ -771,7 +771,8 @@ sub include_css(\%$$) {
                 href\s*=\s*["']?([^\"\' ]*)["']?([^>]*)>
     /$self->pattern_css($2,$1,$3,$root)/iegmx;
 
-    warn "Done CSS\n" if ( $self->{_DEBUG} );
+    warn "Done CSS\n" 
+		if ( $self->{_DEBUG} );
     return $tmpl;
 }
 
@@ -782,22 +783,26 @@ sub pattern_js {
     my ( $self, $url, $milieu, $fin, $root ) = @_;
 
     my $ur = URI::URL->new( $url, $root )->abs;
-	warn '$self->{_remove_jscript}' . $self->{_remove_jscript}; 
+	
+	warn '$self->{_remove_jscript}' . $self->{_remove_jscript}
+		if $t; 
+	
     if ( $self->{_remove_jscript} == 1 ) {
 
         # Why should I even try to get the files, if I'm just going to remove them?
-        warn  "Removed Javascript file $ur\n" if $self->{_DEBUG};
+        warn  "Removed Javascript file $ur\n" 
+			if $t;
         return '<!-- removed js: ' . $ur . ' -->';
     }
     else {
         warn "Include Javascript file $ur\n"
-       		if $self->{_DEBUG};
+       		if $t;
 
         my ( $content, $res, $md5 ) = grab_url( { -url => $ur } );
        
 	    if ( $res->is_success ) {
             warn "Ok file downloaded\n"
-              if $self->{_DEBUG};
+              if $t;
             return
                 "\n"
               . "<!-- $ur -->\n"
@@ -831,7 +836,7 @@ sub pattern_js {
 #        # New!
 #        $gabarit =~ s/<script([^>]*)>[\s\S]*?<\/script>//iegmx;
 #    }
-#    print "Done Javascript\n" if $self->{_DEBUG};
+#    print "Done Javascript\n" if $t;
 #    return $gabarit;
 #}
 # In this new version, we never, ever inline javascript. 
@@ -850,7 +855,7 @@ sub include_javascript(\%$$) {
     }
 	
     warn "Done Javascript\n"
-      if $self->{_DEBUG};
+      if $t;
     
 	return $tmpl;
 }
@@ -864,7 +869,8 @@ sub pattern_input_image {
     my $ur = URI::URL->new( $url, $base )->abs;
     if ( $self->{_include} ne 'extern' ) {
 	
-		warn 'pattern_input_image';
+		warn 'pattern_input_image'
+			if $t; 
 		my $img_part = $self->create_image_part($ur);
 		if(defined($img_part)){
 			 push( @$ref_tab_mail,  $img_part); 
@@ -879,7 +885,8 @@ sub input_image(\%$$) {
     my @mail;
     $gabarit =~ s/<input([^<>]*)src\s*=\s*"?([^\"'> ]*)"?([^>]*)>
     /$self->pattern_input_image($1,$2,$3,$root,\@mail)/iegmx;
-    warn "Done input image\n" if $self->{_DEBUG};
+    warn "Done input image\n" 
+		if $t;
     return ( $gabarit, @mail );
 }
 
@@ -888,18 +895,21 @@ sub input_image(\%$$) {
 #------------------------------------------------------------------------------
 sub create_image_part {
 	
-	warn 'here.';
+	warn 'create_image_part'
+		if $t; 
 	
     my ( $self, $ur, $typ ) = @_;
     my ( $type, $buff1 );
 	
-	warn '$ur:' . $ur; 
-	warn 'length($ur)' . length($ur); 
-	warn 'defined($ur)' . defined($ur); 
+	if($t){
+		warn '$ur:'        . $ur; 
+		warn 'length($ur)' . length($ur); 
+		warn 'defined($ur)' . defined($ur); 
+	}
 	
 	if ((length($ur) == 0) || (! defined $ur)) { 
 		warn 'passed blank url'
-			if $self->{_DEBUG};
+			if $t;
 		return undef ;
 	} 
 
@@ -914,7 +924,8 @@ sub create_image_part {
 
     # Url is already in memory
     if ( $self->{_HASH_TEMPLATE}{$ur} ) {
-        warn "Using buffer on: ", $ur, "\n" if $self->{_DEBUG};
+        warn "Using buffer on: ", $ur, "\n" 
+			if $t;
         $buff1 =
           ref( $self->{_HASH_TEMPLATE}{$ur} ) eq "ARRAY"
           ? join "", @{ $self->{_HASH_TEMPLATE}{$ur} }
@@ -923,7 +934,7 @@ sub create_image_part {
     }
     else {    # Get image
         warn "Get img " . $ur 
-			if $self->{_DEBUG};
+			if $t;
         my $res2 = undef; 
 		my ( $content2, $res2, $md52 ) = grab_url( { -url => $ur } );
 	   
@@ -938,9 +949,9 @@ sub create_image_part {
 			};
 			my $e_m = "Problem fetching URL:\n"; 
 			   $e_m .= Data::Dumper::Dumper($e_r);
-			  # warn $e_m; 
+
 			  if($ENV{NO_DADA_MAIL_CONFIG_IMPORT} == 1){
-				  warn "Doing the wrong thing, for the RIGHT reasons:" 
+				  warn "Doing the WRONG thing, for the RIGHT reasons:" 
 				  . '$ENV{NO_DADA_MAIL_CONFIG_IMPORT}: ' 
 				  . $ENV{NO_DADA_MAIL_CONFIG_IMPORT}; 
 				  $buff1 = $res2->decoded_content;
@@ -980,9 +991,6 @@ sub create_image_part {
 #------------------------------------------------------------------------------
 sub cid (\%$) {
     my ( $self, $url ) = @_;
-
-	#warn 'cid $url:"' . $url . '"'; 
-	
 	$url = strip($url); 
 	
     require URI;
@@ -1002,7 +1010,8 @@ sub cid (\%$) {
 	else {
 		$r = $self->md5_checksum($url) . '_' . $filename; 
 	}
-	# warn 'returning: ' . $r;
+	warn 'cid returning: ' . $r
+		if $t; 
 	 return $r; 
 }
 
@@ -1039,7 +1048,8 @@ sub link_form {
     my @mail;
     $gabarit =~ s/<form([^<>]*)action="?([^\"'> ]*)"?([^>]*)>
                 /$self->pattern_link_form($1,$2,$3,$root)/iegmx;
-    warn "Done form\n" if $self->{_DEBUG};
+    warn 
+		"Done form\n" if $t;
     return $gabarit;
 }
 
@@ -1068,7 +1078,8 @@ sub link_form {
 #------------------------------------------------------------------------------
 sub set_err {
     my ( $self, $error ) = @_;
-    warn $error, "\n" if ( $self->{_DEBUG} );
+    warn $error
+		if ( $self->{_DEBUG} );
     my @array;
     if ( $self->{_ERRORS} ) {
         @array = @{ $self->{_ERRORS} };
