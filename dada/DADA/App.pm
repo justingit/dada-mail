@@ -2594,8 +2594,6 @@ sub sending_monitor {
 		# warn '$mailout_exists: ' . $mailout_exists; 
 		
         if ($mailout_exists) {
-
-			warn 'here.';
 			
             $mailout_exists = 1;
             $mailout = DADA::Mail::MailOut->new( { -list => $list } );
