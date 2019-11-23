@@ -179,7 +179,7 @@ screen_cache.cgi is located in the, I<dada/plugins> directory of the Dada Mail d
 
 See the feature overview on Dada Mail's Screen Cache: 
 
-L<http://dadamailproject.com/support/documentation/features-screen_cache.pod.html>
+L<https://dadamailproject.com/support/documentation/features-screen_cache.pod.html>
 
 This plugins allows you to view and remove any currently cached screens. 
 

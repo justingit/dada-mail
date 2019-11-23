@@ -51,7 +51,7 @@ The fields in the schema play the same role as what's described for Postgres, al
 
 =item * DADA::MailingList::Subscribers
 
-L<http://dadamailproject.com/support/documentation/MailingList_Subscribers.pm.html>
+L<https://dadamailproject.com/support/documentation/MailingList_Subscribers.pm.html>
 
 =back
 
@@ -97,19 +97,19 @@ See Also:
 
 =item * DADA::MailingList::Settings
 
-L<http://dadamailproject.com/support/documentation/MailingList_Settings.pm.html>
+L<https://dadamailproject.com/support/documentation/MailingList_Settings.pm.html>
 
 =item * DADA::MailingList::Settings::Db
 
-L<http://dadamailproject.com/support/documentation/MailingList_Settings_Db.pm.html>
+L<https://dadamailproject.com/support/documentation/MailingList_Settings_Db.pm.html>
 
 =item * DADA::MailingList::Settings::baseSQL
 
-L<http://dadamailproject.com/support/documentation/MailingList_Settings_baseSQL.pm.html>
+L<https://dadamailproject.com/support/documentation/MailingList_Settings_baseSQL.pm.html>
 
 =item * DADA::MailingList::Settings::MySQL
 
-L<http://dadamailproject.com/support/documentation/MailingList_Settings_MySQL.pm.html>
+L<https://dadamailproject.com/support/documentation/MailingList_Settings_MySQL.pm.html>
 
 =back
 
@@ -173,24 +173,24 @@ See Also:
 
 =item * DADA::MailingList::Archives
 
-L<http://dadamailproject.com/support/documentation/MailingList_Archives.pm.html>
+L<https://dadamailproject.com/support/documentation/MailingList_Archives.pm.html>
 
 =item * DADA::MailingList::Archives::Db
 
-L<http://dadamailproject.com/support/documentation/MailingList_Archives_Db.pm.html>
+L<https://dadamailproject.com/support/documentation/MailingList_Archives_Db.pm.html>
 
 =item * DADA::MailingList::Archives::baseSQL
 
-L<http://dadamailproject.com/support/documentation/MailingList_Archives_baseSQL.pm.html>
+L<https://dadamailproject.com/support/documentation/MailingList_Archives_baseSQL.pm.html>
 
 =item * DADA::MailingList::Archives::MySQL
 
-L<http://dadamailproject.com/support/documentation/MailingList_Archives_MySQL.pm.html>
+L<https://dadamailproject.com/support/documentation/MailingList_Archives_MySQL.pm.html>
 
 
 =item * DADA::MailingList::Archives::PostgreSQL
 
-L<http://dadamailproject.com/support/documentation/MailingList_Archives_PostgreSQL.pm.html>
+L<https://dadamailproject.com/support/documentation/MailingList_Archives_PostgreSQL.pm.html>
 
 =back
 
@@ -232,7 +232,7 @@ For more information, see the dada/DADA/App/GenericDBFile/Backup.pm Perl module.
 
 You can set how many copies of backups you'd like to save in the Config.pm variable, %B<BACKUP_HISTORY>
 
-http://dadamailproject.com/support/documentation/global_variables.pod.html#_backup_history
+https://dadamailproject.com/support/documentation/global_variables.pod.html#_backup_history
 
 
 =head2 Usage Logs
@@ -259,7 +259,7 @@ B<email1@example.com> More information about the action, in this case, the email
 
 For more information: 
 
-L<http://dadamailproject.com/support/documentation/Logging_Usage.pm.html>
+L<https://dadamailproject.com/support/documentation/Logging_Usage.pm.html>
 
 =head2 Error Logs
 

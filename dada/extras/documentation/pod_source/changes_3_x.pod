@@ -8,7 +8,7 @@
 
 See the Dada Mail download page: 
 
-L<http://dadamailproject.com/download>
+L<https://dadamailproject.com/download>
 
 Huzzah! 
 
@@ -72,7 +72,7 @@ There are really good reasons why you should not mass-subscribe people except fo
 
 We've written a very well thought out response and encourage you to follow good measures when adding people to your mailing list: 
 
-http://dadamailproject.com/installation/using_dada_mail.html#subscriptions
+https://dadamailproject.com/installation/using_dada_mail.html#subscriptions
 
 If you cannot follow this, than maybe Dada Mail is not for you. Once again, this option can be re-enabled easily and is only disabled to give you pause and perhaps allow you to think about just what you're going to get yourself into, if you go mass-subscribing addresses without first properly validating and verifying the addresses. With that, we honestly wash our hands of this issue. 
 
@@ -466,7 +466,7 @@ These changes are between 3.0.0 RC 1 and 3.0.0
 
 =head3 Support Site URL Change
 
-Mention of, L<http://mojo.skazat.com> has been changed to, L<http://dadamailproject.com>
+Mention of, L<http://mojo.skazat.com> has been changed to, L<https://dadamailproject.com>
 
 =head2 Bug Fixes 3.0.0
 
@@ -651,7 +651,7 @@ The blog_index.cgi plugin has been refreshed and allows you to now embed the HTM
 
 The API used in the, "Send a List Message" screen has been introduced in an... introductory manner, in the, I<Integrating Dada Mail into other Programs> docs: 
 
-L<http://dadamailproject.com/support/documentation/COOKBOOK-integration.pod.html#accessing_the__send_a_list_message_api>
+L<https://dadamailproject.com/support/documentation/COOKBOOK-integration.pod.html#accessing_the__send_a_list_message_api>
 
 If there's interest, I'll expand on this topic. 
 
@@ -661,7 +661,7 @@ A new Config.pm variable, C<$MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION> was introdu
 
 B<See also:>
 
-L<http://dadamailproject.com/support/documentation/Config.pm.html#_monitor_mailouts_after_every_execution>
+L<https://dadamailproject.com/support/documentation/Config.pm.html#_monitor_mailouts_after_every_execution>
 
 =head3 List Control Panel Menu Enhancements
 

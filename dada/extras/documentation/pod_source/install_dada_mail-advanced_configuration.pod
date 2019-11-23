@@ -4,7 +4,7 @@
 
 If you're looking for general instructions on how to use the Dada Mail Installer, look no further than:
 
-L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
+L<https://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
 
 =head2 Introduction
 
@@ -12,7 +12,7 @@ Dada Mail's global configuration is saved in a file called, C<.dada_config>, whi
 
 The Installer is generally provided to you so don't have to do this, but many, many global configuration options exist that aren't supported by the Dada Mail Installer. For a rundown of what's fully available, see: 
 
-L<http://dadamailproject.com/support/documentation/global_variables.pod.html>
+L<https://dadamailproject.com/support/documentation/global_variables.pod.html>
 
 We'll be listing the actual global variables used, when discussing what the installer configures for you. You do have the option to edit the C<.dada_config> file that the installer creates, to make even more customizations. 
 
@@ -26,7 +26,7 @@ Some of the plugins/extensions have additional configuration that will need to d
 
 One plugin, B<Bounce Handler>, also requires you to fill out the credentials for the Bounce Handler email account you need to set up to capture bounced emails. See the documentation on the Bounce Handler for more information: 
 
-L<http://dadamailproject.com/d/bounce_handler.html>
+L<https://dadamailproject.com/d/bounce_handler.html>
 
 =head2 WYSIWYG Editors
 
@@ -82,7 +82,7 @@ Dada Mail requires a cronjob to run for some of its more advanced features: keep
 
 More on Scheduled Jobs and Dada Mail: 
 
-L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
+L<https://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
 =head3 Scheduled Jobs Flavor
 
@@ -112,15 +112,15 @@ If you're setting things up using the included installer through the web-based i
 
 More on FastCGI Support: 
 
-L<http://dadamailproject.com/d/features-fastcgi.pod.html>
+L<https://dadamailproject.com/d/features-fastcgi.pod.html>
 
 More on PSGI Support: 
 
-L<http://dadamailproject.com/d/features-psgi_support.pod.html>
+L<https://dadamailproject.com/d/features-psgi_support.pod.html>
 
 Command Line Installer: 
 
-L<http://dadamailproject.com/d/install_dada_mail_cl.pod.html>
+L<https://dadamailproject.com/d/install_dada_mail_cl.pod.html>
 
 B<Config Variable:> C<$RUNNING_UNDER>. 
 Valid values: C<CGI>, C<FastCGI>, C<PSGI>
@@ -133,7 +133,7 @@ Dada Mail comes with most of the CPAN Perl modules it needs to function correctl
 and  optional features can be enabled by installing additional CPAN Perl Modules. 
 See the following docs on how to do that: 
 
-L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 There's a chance that your Perl library has been set up in a location that Dada Mail would not check 
 by default. If that's the case, add the absolute path to this library location in the text box labeled, 
@@ -144,7 +144,7 @@ B<Additional Perl Library Paths>.
 Profiles allow your users to manage their own subscriptions in one centralized location. 
 For an overview of Dada Mail Profiles, see: 
 
-L<http://dadamailproject.com/support/documentation/features-profiles.pod.html>
+L<https://dadamailproject.com/support/documentation/features-profiles.pod.html>
 
 In general, this option allows you to configure the, C<$PROFILE_OPTIONS> config variable, which is explained in detail in the doc above. You'll notice that not all of the parameters in that variable are supported by the installer. 
 
@@ -288,7 +288,7 @@ Dada Mail's log tracing and debugging options can be configured in this section.
 
 We don't suggest keeping any of these debugging settings enabled for production use, as your error log will grow fairly large in size.
 
-For more information on what each option enables, see the section on the, C<$DEBUG_TRACE> and C<%CPAN_DEBUG_SETTINGS> variables, in B<Advanced Error Logging and Reporting>: L<http://dadamailproject.com/d/FAQ-errors.pod.html#advanced_error_logging_and_reporting>
+For more information on what each option enables, see the section on the, C<$DEBUG_TRACE> and C<%CPAN_DEBUG_SETTINGS> variables, in B<Advanced Error Logging and Reporting>: L<https://dadamailproject.com/d/FAQ-errors.pod.html#advanced_error_logging_and_reporting>
 
 =head2 Configure Global Template Options 
 
@@ -316,7 +316,7 @@ I<dada/templates/list_template.tmpl>
 
 Some background on Dada Mail's templating language:
 
-L<http://dadamailproject.com/d/features-email_template_syntax.pod.html>
+L<https://dadamailproject.com/d/features-email_template_syntax.pod.html>
 
 =head3 Server Absolute Path or URL to your User Template: 
 
@@ -332,7 +332,7 @@ Magically creating this template may take a bit of trial and error. There are a 
 
 Magically creating a template requires that you have the C<HTML::Tree> CPAN Module installed. See: 
 
-L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =head4 URL:
 
@@ -580,7 +580,7 @@ Dada Mail uses CAPTCHA challenge-response tests optionally for many things: for 
 
 Dada Mail also supports Mailhide, which uses the reCAPTCHA system to easily protect email addresses shown in Dada Mail's public archives. 
 
-B<More Information:> L<http://dadamailproject.com/d/features-CAPTCHA.pod.html>
+B<More Information:> L<https://dadamailproject.com/d/features-CAPTCHA.pod.html>
 
 In this section, we can configure the CAPTCHA options in Dada Mail: 
 
@@ -674,7 +674,7 @@ and access to the List Control Panel on a secure connection:
 
 =head2 Configure Amazon SES 
 
-You may set up Dada Mail to send via Amazon's Simple Email Service. This is a third party email sending service, which may have a much higher daily email quota and sending rate than what may be allowed on your own hosting account. Amazon SES does charge a fairly low rate for their service (about $0.10 per thousand messages sent). For more information, see the Amazon SES own site (L<http://aws.amazon.com/ses/>) and Dada Mail's docs on Amazon SES (L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>)
+You may set up Dada Mail to send via Amazon's Simple Email Service. This is a third party email sending service, which may have a much higher daily email quota and sending rate than what may be allowed on your own hosting account. Amazon SES does charge a fairly low rate for their service (about $0.10 per thousand messages sent). For more information, see the Amazon SES own site (L<http://aws.amazon.com/ses/>) and Dada Mail's docs on Amazon SES (L<https://dadamailproject.com/d/features-amazon_ses_support.pod.html>)
 
 Amazon SES does have a long list of required Perl CPAN modules that need to be installed, before SES sending will work. If any modules are not installed, the installer will list which CPAN modules are still needed. 
 

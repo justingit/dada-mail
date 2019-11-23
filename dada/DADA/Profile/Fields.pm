@@ -197,7 +197,7 @@ Passing an email that doesn't have a profile saved will also return, C<undef>. C
 
 =head1 AUTHOR
 
-Justin Simoni http://dadamailproject.com
+Justin Simoni https://dadamailproject.com
 
 =head1 LICENSE AND COPYRIGHT
 

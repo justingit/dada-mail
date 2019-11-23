@@ -174,10 +174,10 @@ There's already a few ways to access Dada Mail's subscription/unsubscription API
 
 =item * Subscription Cookbook
 
-http://dadamailproject.com/support/documentation/COOKBOOK-subscriptions.pod.html
+https://dadamailproject.com/support/documentation/COOKBOOK-subscriptions.pod.html
 
 
-=item * http://dadamailproject.com/support/documentation/email_subscription_form.pod.html
+=item * https://dadamailproject.com/support/documentation/email_subscription_form.pod.html
 
 Creating a subscription form in Flash - this uses the main mail.cgi to receive a very simple XML (ish...) document that your program can then parse.  
 
@@ -189,7 +189,7 @@ Creating a subscription form in Flash - this uses the main mail.cgi to receive a
 
 There is an extension called, B<send_dada_mail.pl> that allows you to Send a Message through a command line interface - it's designed to be easy to use from another program, regardless of what that program is written in and is based slightly (ever so slightly) on how you also use the C<sendmail> utility. 
 
-L<http://dadamailproject.com/support/documentation/send_dada_mail.pl.html>
+L<https://dadamailproject.com/support/documentation/send_dada_mail.pl.html>
 
 =head2 Accessing the, "Send a Message" API
 
@@ -344,11 +344,11 @@ Dada Mail comes with a few classic Form-to-Email scripts in the, B<extensions> d
 
 =head3 FormMail
 
-L<http://dadamailproject.com/support/documentation/Dada-ized_FormMail_README.pod.html>
+L<https://dadamailproject.com/support/documentation/Dada-ized_FormMail_README.pod.html>
 
 =head3 TFmail
 
-L<http://dadamailproject.com/support/documentation/Dada-ized_TFMail_README.pod.html>
+L<https://dadamailproject.com/support/documentation/Dada-ized_TFMail_README.pod.html>
 
 =head2 See Also
 
@@ -356,13 +356,13 @@ L<http://dadamailproject.com/support/documentation/Dada-ized_TFMail_README.pod.h
 
 =item * Dada Mail File Formats
 
-http://dadamailproject.com/support/documentation/FAQ-file_formats.pod.html
+https://dadamailproject.com/support/documentation/FAQ-file_formats.pod.html
 
 =back
 
 We'd also like to hear from you about future integration projects of your own.  If you're working on something and need help or would simply like to announce the project, please do so:
 
-L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
+L<https://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 
 
 =cut

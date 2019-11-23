@@ -2903,7 +2903,7 @@ amongst other things.
 
 See the DADA::MailingList::Subscribers::[..]::create_mass_sending_file()
 
-http://dadamailproject.com/support/documentation/MailingList_Subscribers_PlainText.pm.html
+https://dadamailproject.com/support/documentation/MailingList_Subscribers_PlainText.pm.html
 
 method for exactly how this is made.
 
@@ -3256,7 +3256,7 @@ Please report problems to the author of this module
 
 Justin Simoni 
 
-See: http://dadamailproject.com/contact
+See: https://dadamailproject.com/contact
 
 =head1 LICENSE AND COPYRIGHT
 

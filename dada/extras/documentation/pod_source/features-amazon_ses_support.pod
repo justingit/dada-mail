@@ -25,7 +25,7 @@ for current pricing. Using the service in a testing, non-production mode is I<fr
 
 We also provide setting up Dada Mail using your own Amazon SES account as part of our installation/upgrade offerings: 
 
-L<http://dadamailproject.com/installation/request.html>
+L<https://dadamailproject.com/installation/request.html>
 
 Our services for installing and configuring Amazon SES for your Dada Mail is a one-time fee. 
 
@@ -78,7 +78,7 @@ On the top bar, click on your name (my name is Justin in this walkthrough), and 
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-my_security_credentials.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-my_security_credentials.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
 <em>[Your Name]:My Security Credentials</em> 
 </p>
 
@@ -91,7 +91,7 @@ Click, B<Users> (I<#1>) on the left hand menu, then, B<Add User> (I<#2>) at the 
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-users_add_user.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-users_add_user.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
 <em>Users: Add User</em> 
 </p>
 
@@ -108,7 +108,7 @@ Then, click the button labeled, B<Next: Permissions> (I<#3>).
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-set_user_details.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-set_user_details.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
 <em>Set User Details</em> 
 </p>
 
@@ -121,7 +121,7 @@ Click the button labeled, B<Create group>. A modal window will be revealed.
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-create_group.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-create_group.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
 <em>Create Group</em> 
 </p>
 
@@ -137,7 +137,7 @@ Click the button labeled, B<Create group> (I<#4>)
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-select_policy.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-select_policy.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
 <em>Select Policy</em> 
 </p>
 
@@ -151,7 +151,7 @@ Click the button labeled, B<Next: Review>.
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-review.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-review.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
 <em>Review</em> 
 </p>
 
@@ -164,7 +164,7 @@ Click the button labeled, B<Create user>.
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-create_user.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-create_user.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
 <em>Create Group</em> 
 </p>
 
@@ -178,7 +178,7 @@ Copy both the, B<Access key ID> (I<#1>) and, B<Secret access key> (I<#2>) and se
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-copy_keys.jpg" width="1024" height="538" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-copy_keys.jpg" width="1024" height="538" style="border:1px solid black" /><br /> 
 <em>Create Group</em> 
 </p>
 
@@ -198,7 +198,7 @@ Paste in those two keys, and test them by clicking the button labeled, B<Test Yo
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-configure_in_installer.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-configure_in_installer.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
 <em>Configuring SES in the Dada Mail Installer</em> 
 </p>
 
@@ -210,7 +210,7 @@ We'll talk about endpoints a little later, when we talk about Production Access.
 
 B<Remember:> you can drop into the installer to make additional global configurations, without having to reinstall or upgrade Dada Mail. See: 
 
-L<http://dadamailproject.com/d/install_dada_mail.pod.html#Making-Additional-Global-Configuration-Changes-using-the-Dada-Mail-Installer>
+L<https://dadamailproject.com/d/install_dada_mail.pod.html#Making-Additional-Global-Configuration-Changes-using-the-Dada-Mail-Installer>
 
 If the credentials work, you'll be told what your current sending quota is.
 
@@ -243,7 +243,7 @@ Go to B<Services: SES>.
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-services_ses.jpg" width="1024" height="437" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-services_ses.jpg" width="1024" height="437" style="border:1px solid black" /><br /> 
 <em>Services: SES</em> 
 </p>
 
@@ -257,7 +257,7 @@ On the left hand menu, click the, B<Domains> link, then click the, B<Verify a Ne
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-domains_verify_a_new_domain.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-domains_verify_a_new_domain.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
 <em>Domains: Verify a New Domain</em> 
 </p>
 
@@ -272,7 +272,7 @@ Click the button labeled, B<Verify This Domain> (I<#3>)
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-verify_domain_details.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-verify_domain_details.jpg" width="1024" height="673" style="border:1px solid black" /><br /> 
 <em>Domains: Verify a New Domain</em> 
 </p>
 
@@ -289,7 +289,7 @@ Click the link labeled, B<Download Record Set as CSV> to download the DNS record
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-download_dns_records.jpg" width="1024" height="798" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-download_dns_records.jpg" width="1024" height="798" style="border:1px solid black" /><br /> 
 <em>Download DNS Records</em> 
 </p>
 
@@ -345,7 +345,7 @@ Under B<Type>, select C<CNAME> and not C<TXT>.
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-cpanel_add_dns_record.jpg" width="1024" height="672" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-cpanel_add_dns_record.jpg" width="1024" height="672" style="border:1px solid black" /><br /> 
 <em>Download DNS Records</em> 
 </p>
 
@@ -367,7 +367,7 @@ Select, B<Amazon Simple Email Service>, then click, B<Save Changes>
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-dada_mail_sending_options.jpg" width="1024" height="633" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-dada_mail_sending_options.jpg" width="1024" height="633" style="border:1px solid black" /><br /> 
 <em>Download DNS Records</em> 
 </p>
 
@@ -404,7 +404,7 @@ B<Automatically set batching speeds based on your Amazon SES limits>
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-dada_mail_mass_sending_options.jpg" width="1024" height="543" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-dada_mail_mass_sending_options.jpg" width="1024" height="543" style="border:1px solid black" /><br /> 
 <em>Download DNS Records</em> 
 </p>
 
@@ -452,7 +452,7 @@ The B<SMTP Username> and B<SMTP Password> will be revealed. Copy both these valu
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-smtp_credentials.jpg" width="1024" height="388" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-smtp_credentials.jpg" width="1024" height="388" style="border:1px solid black" /><br /> 
 <em>SMTP Credentials</em> 
 </p>
 
@@ -475,7 +475,7 @@ After you've finished, SES should now be set up for your list. Click the button 
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-smtp_test_results.jpg" width="1024" height="626" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-smtp_test_results.jpg" width="1024" height="626" style="border:1px solid black" /><br /> 
 <em>SMTP Test Results</em> 
 </p>
 
@@ -486,7 +486,7 @@ An email will also be sent to the List Owner. B<If that message is received>, th
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/ses/ses-smtp_sending_test_email.jpg" width="694" height="584" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/ses/ses-smtp_sending_test_email.jpg" width="694" height="584" style="border:1px solid black" /><br /> 
 <em>SMTP Test Results</em> 
 </p>
 
@@ -598,7 +598,7 @@ Installing, C<Bundle::DadaMail> alone will install all of the above modules.
 
 See also the FAQ, B<How do you install, "CPAN Perl Modules"> 
 
-L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =head2 Related Projects
 

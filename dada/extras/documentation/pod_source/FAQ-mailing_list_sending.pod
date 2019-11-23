@@ -50,7 +50,7 @@ After you've submitted a mailing list message, keep that screen open until your 
 
 The Dada Mail Manual goes over every option in the B<Mail Sending - Mass Mailing Options> screen:
 
-L<http://dadamailproject.com/pro_dada/mailing_sending_mass_mailing_options.html>
+L<https://dadamailproject.com/pro_dada/mailing_sending_mass_mailing_options.html>
 
 =head2 Batch Settings
 
@@ -242,7 +242,7 @@ If you're using the Bridge plugin, it also has the same functionality as the B<M
 
 =head4 Mass Mailings/Auto Pickup API 
 
-See: L<http://dadamailproject.com/support/documentation/Mail_MailOut.pm.html>
+See: L<https://dadamailproject.com/support/documentation/Mail_MailOut.pm.html>
 
 in Dada Mail itself, see the B<Mailing Monitor> plugin noted above, or the C<sending_monitor()> subroutine in the mail.cgi file.
 
@@ -290,7 +290,7 @@ If you cannot get them raised, it's time to start looking for alternatives to se
 
 One service we highly suggest is to use Amazon SES, which works seamlessly with your already-installed Dada Mail, hosting setup, and is quite inexpensive. More information on SES and Dada Mail: 
 
-L<http://dadamailproject.com/support/documentation-6_8_1/features-amazon_ses_support.pod.html>
+L<https://dadamailproject.com/support/documentation-6_8_1/features-amazon_ses_support.pod.html>
 
 =head3 WHM 
 

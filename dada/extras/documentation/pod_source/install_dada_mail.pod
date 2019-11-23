@@ -19,7 +19,7 @@ The instructions below are tailored for installing Dada Mail on a shared hosting
 You won't need ssh access, or root privileges or anything like that.
 If you're running something else, you may want to look at the command line instructions, 
 
-L<http://dadamailproject.com/d/install_dada_mail_cl.pod.html>
+L<https://dadamailproject.com/d/install_dada_mail_cl.pod.html>
 
 =head1 Overview
 
@@ -58,7 +58,7 @@ Let's go!
     <a 
 	class="button success expand" 
 	target="_blank"
-	href="http://dadamailproject.com/pro_dada">
+	href="https://dadamailproject.com/pro_dada">
         Log into your Pro Dada Subscriber area to Download Pro Dada...
     </a>
 	</div> 
@@ -366,7 +366,7 @@ Dada Mail's installer does support additional global configuration options.
 
 <div class="alert-box info radius">
 
-	<a 	href="http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html"
+	<a 	href="https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html"
 	>
 		See the documentation on Advanced Configuration Options
 	</a>
@@ -392,7 +392,7 @@ The unique command needed to run the required jobs will be shown.
 
 More information on Dada Mail's scheduled job: 
 
-L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
+L<https://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
 =head3 Required: Move the, "installer" directory 
 
@@ -419,7 +419,7 @@ Dada Mail's capability is greatly enhanced by installing the following CPAN Perl
 
 	Bundle::DadaMail
 
-More Information: Installing CPAN Perl Modules L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+More Information: Installing CPAN Perl Modules L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =head2 Making Additional Edits
 
@@ -430,7 +430,7 @@ Making additional configurations is a lot more advanced than running the install
 
 Instructions on how to configure more of Dada Mail's more advanced global features can be found here: 
 
-L<http://dadamailproject.com/d/global_variables.pod.html>
+L<https://dadamailproject.com/d/global_variables.pod.html>
 
 =head2 Running Dada Mail for the First Time
 
@@ -487,13 +487,13 @@ to gain many of these optional features. We B<highly recommend this step!>
 
 See the separate docs on installing CPAN Modules: 
 
-L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =head2 Command Line Interface
 
 An alternative command line interface is available:
 
-L<http://dadamailproject.com/d/install_dada_mail_cl.pod.html>
+L<https://dadamailproject.com/d/install_dada_mail_cl.pod.html>
 
 =cut
 

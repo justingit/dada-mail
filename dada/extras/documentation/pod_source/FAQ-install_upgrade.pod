@@ -134,7 +134,7 @@ If you are running a B<Basic> Installation of Dada Mail, we really suggest upgra
 
 =head4 More Information
 
-L<http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
+L<https://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
 
 =head3 Contemporary Installation 
 
@@ -171,6 +171,6 @@ Upgrade a Simple Scripts installed Dada Mail through Simple Scripts on interface
 
 If you want to use the included Dada Mail installer to upgrade Dada Mail (perhaps, you purchased Pro Dada?), you can turn a Simple Scripts install into a Contemporary Installation with these directions: 
 
-L<http://dadamailproject.com/d/upgrade_from_simple_scripts.pod.html>
+L<https://dadamailproject.com/d/upgrade_from_simple_scripts.pod.html>
 
 =cut

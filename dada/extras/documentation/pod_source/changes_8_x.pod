@@ -72,7 +72,7 @@ These four options control how Dada Mail inserts its own Javascript into the tem
 
 More can be learned about Magic User Templates in Dada Mail's documentation on Advanced Installation Configuration options in the Dada Mail Installer. These options are available in Pro Dada: 
 
-L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Global-Template-Options>
+L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Global-Template-Options>
 
 =head3 Send a Webpage: grab the Subject of a message, from the Title of the Webpage
 
@@ -114,7 +114,7 @@ Set a beginning and end date of your mass mailings, the time they should all go 
 
 More information on Single and Recurring Scheduled Mass Mailings can be found here: 
 
-L<http://dadamailproject.com/d/features-scheduled_mass_mailings.pod.html>
+L<https://dadamailproject.com/d/features-scheduled_mass_mailings.pod.html>
 
 =head2 Bugfixes 
 
@@ -138,7 +138,7 @@ This release primarily introduces Magic User Templates as an experimental featur
 
 Magic Templates allow you to simply set a URL to fetch a webpage, which will then be utilized as your global user template. Various options to adjust the output of your template are available, all of which are available in the included Dada Mail Installer's Advanced Configuration: 
 
-L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Global-Template-Options>
+L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Global-Template-Options>
 
 =head1 8.0.3
 

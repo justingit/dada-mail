@@ -18,7 +18,7 @@ the included C<HTML::Template> can significantly speed up mail sending.
 If you do not already have the C<HTML::Template::Pro> module installed, you may 
 grab it via CPAN. See our FAQ on how to install CPAN Perl Modules: 
 
-L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =head2 Configuring Dada Mail to use HTML::Template::Pro
 
@@ -27,6 +27,6 @@ Once C<HTML::Template::Pro> is installed, there's nothing else you need to do, t
 You can disable using C<HTML::Template::Pro>, if you so desire.  See the docs for the C<$TEMPLATE_SETTINGS> 
 config variable:
 
-L<http://dadamailproject.com/d/global_variables.pod.html#_template_settings>, specifically, the, C<engine> parameter. 
+L<https://dadamailproject.com/d/global_variables.pod.html#_template_settings>, specifically, the, C<engine> parameter. 
 
 =cut

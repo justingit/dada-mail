@@ -259,7 +259,7 @@ This extension will be removed from future versions of Dada Mail, if favor of fo
 
 =head2 The UPGRADE FAQ
 
-L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
+L<https://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
 
 =head2 Technical Documentation
 
@@ -269,7 +269,7 @@ The nerdy Perl API has changed drastically (and probably, for the better) in 3.0
 
 For the Mailing List Subscriber API do consult: 
 
-L<http://dadamailproject.com/support/documentation/MailingList_Subscribers.pm.html>
+L<https://dadamailproject.com/support/documentation/MailingList_Subscribers.pm.html>
 
 Which should be fairly complete. 
 
@@ -277,10 +277,10 @@ Which should be fairly complete.
 
 The HTML Screen and Email Template parts of Dada Mail all use the same system. See: 
 
-L<http://dadamailproject.com/support/documentation/Template_Widgets.pm.html#screen>
+L<https://dadamailproject.com/support/documentation/Template_Widgets.pm.html#screen>
 
 And also: 
 
-L<http://dadamailproject.com/support/documentation/App_FormatMessages.pm.html#email_template>
+L<https://dadamailproject.com/support/documentation/App_FormatMessages.pm.html#email_template>
 
 =cut

@@ -20,7 +20,7 @@ Dada Mail's jQuery plugin for subscribing to a mailing list had a fairly big pro
 
 We've adjusted the plugin and the RESTful API to work correctly when accessing it either with the json and jsonp method. See the docs on the jQuery plugin for more details on any modifications you may have to do to your own code: 
 
-L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html#jQuery-Plugin>
+L<https://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html#jQuery-Plugin>
 
 =head3 Amazon SES New Endpoint/Region Support
 
@@ -108,14 +108,14 @@ L<http://labs.corefive.com/projects/filemanager/>
 
 Learn more about the rich text editors and web-based file browser support in Dada Mail: 
 
-L<http://dadamailproject.com/d/features-wysiwyg_editors.pod.html>
+L<https://dadamailproject.com/d/features-wysiwyg_editors.pod.html>
 
 =head3 Bridge 6.8.0
 
 The Bridge plugin transforms a Dada Mail mailing list from an announce-only mailing list, where you send message through Dada Mail's own List Control panel, to a full-blown discussion list, where members can send a message from their own mail reader (whichever one they'd like!) and have it sent to the entire mailing list, creating group discussions. Bridge can also be used for an announce-only mailing list, allowing the List Owner, and/or a seperate list of addresses, called Authorized Senders, to send messages to your mailing list, without allowing your Subscribers to do the same. 
 
 Read about the Bridge plugin: 
-L<http://dadamailproject.com/d/bridge.cgi.html>
+L<https://dadamailproject.com/d/bridge.cgi.html>
 
 This version of Dada Mail supports many difference enhancements: 
 
@@ -144,7 +144,7 @@ Sometimes, large or busy mailing lists will have the scenario, where messages ta
 Dada Mail supports sending email using a variety of methods: one of these methods is using the Amazon Simple Email Service. Amazon SES allows you to a large amount of messages, fast, with great deliverability for a low cost. 
 
 Read more about Dada Mail and Amazon SES, see: 
-L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+L<https://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 Dada Mail already self-adjusts its batch sending rates, to work with Amazon SES's set limits. As SES's limits grows, so will your sending speed. 
 
@@ -255,7 +255,7 @@ The included Dada Mail Installer now allows you to configure the CAPTCHA system 
 
 We're shipping Basic Dada Mail B<with only Amazon SES> configuration available in, B<Advanced Configuration>. We're really hoping you love Dada Mail enough to go and get a copy of Pro Dada: 
 
-L<http://dadamailproject.com/purchase/pro.html> 
+L<https://dadamailproject.com/purchase/pro.html> 
 
 =head3 jQuery Dada Mail Subscription plugin
 
@@ -267,7 +267,7 @@ The jQuery plugin has 100% support for graceful degredation: if a user uses Dada
 
 See the Subscription Cookbook docs for more information about this plugin: 
 
-L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
+L<https://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
 
 =head2 Changes 6.7.0
 
@@ -433,7 +433,7 @@ These fields can be edited by the user themselves, as well as in this tab. You m
 
 Dada Mail has a new B<EXPERIMENTAL> RESTful interface to its mailing list subscription system, which should allow you to use it as a service in another app of yours. For more information, see the Subscription Cookbook docs: 
 
-L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
+L<https://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
 
 Examples of how to use this API are included, written in JavaScript and Perl. A fully-functioning demo, complete with all the trimmings is also included in this release, that you may use to explore the service.
 
@@ -551,7 +551,7 @@ We bobbled on implementing the, "randomness" of this all and Bridge wouldn't wor
 
 If you're running Bridge, do look into using a Mail Forward, rather than a POP3 account for your List Email: messages are received instantaneously by Brige (rather than Bridge checking things on a schedule), and you won't fall victim to any queue problems, like this fix hopes to mitigate: 
 
-L<http://dadamailproject.com/d/bridge.cgi.html#setup_as__mail_forward>
+L<https://dadamailproject.com/d/bridge.cgi.html#setup_as__mail_forward>
 
 =head2 Bugfixes 6.5.2
 
@@ -667,13 +667,13 @@ These global parameters can be read from previous configurations, and can be edi
 
 A new doc helps explain the plethora of options available: 
 
-L<http://dadamailproject.com/support/documentation/install_dada_mail-advanced_configuration.pod.html>
+L<https://dadamailproject.com/support/documentation/install_dada_mail-advanced_configuration.pod.html>
 
 We're shipping the Installer that comes with Pro Dada with B<all these options> available to be configured. 
 
 We're shipping Basic Dada Mail, B<with only Amazon SES> configuration available. We're really hoping you love Dada Mail enough to go and get a copy of Pro Dada: 
 
-L<http://dadamailproject.com/purchase/pro.html> 
+L<https://dadamailproject.com/purchase/pro.html> 
 
 And honestly, we're hoping this helps to entice you to support the Dada Mail Project!
 
@@ -823,7 +823,7 @@ Unsubscriptions are now tracked, and data can be viewed/exported in the Tracker 
 
 More information about Dada Mail's Unsubscription System can be found in the new feature overview for unsubscriptions: 
 
-L<http://dadamailproject.com/d/features-unsubscription_system.pod.html>
+L<https://dadamailproject.com/d/features-unsubscription_system.pod.html>
 
 =head3 Tracker Plugin
 
@@ -902,7 +902,7 @@ The installer will also be able to detect your previous Amazon SES settings, whe
 
 More information on Dada Mail and Amazon SES: 
 
-L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+L<https://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 =head3 Email Tracking for Opens/Clickthroughs
 
@@ -925,7 +925,7 @@ This is an experimental feature, and you will have to seperately install the C<C
 
 Installer CPAN modules is covered here: 
 
-L<http://dadamailproject.com/d/FAQ-general.pod.html#how_do_you_install__cpan_perl_modules>
+L<https://dadamailproject.com/d/FAQ-general.pod.html#how_do_you_install__cpan_perl_modules>
 
 =head3 Admin Menu: Archive Count now shown
 
@@ -1017,7 +1017,7 @@ This screen isn't meant to actually be shown to the user, other than in somewhat
 
 We've written an extended description about this here: 
 
-L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/archive/homepage_blog/20130310231707/>
+L<https://dadamailproject.com/cgi-bin/dada/mail.cgi/archive/homepage_blog/20130310231707/>
 
 =head2 Bugfixes 6.2.0
 
@@ -1070,7 +1070,7 @@ running Dada Mail to upgrade.
 
 An extended reasoning and explaination for the changes made in this version can be found at: 
 
-L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/archive/homepage_blog/20130218232934/>
+L<https://dadamailproject.com/cgi-bin/dada/mail.cgi/archive/homepage_blog/20130218232934/>
 
 As always, we look forward to your feedback about the changes and enhancements we make in Dada Mail. 
 
@@ -1176,7 +1176,7 @@ L<https://github.com/justingit/dada-mail/issues/332>
 
 This major release of Dada Mail includes major changes to the Dada Mail codebase. A detailed explanation of these changes, compared to v5 of Dada Mail can be found at, 
 
-L<http://dadamailproject.com/d/dada5_to_dada6.pod.html>
+L<https://dadamailproject.com/d/dada5_to_dada6.pod.html>
 
 When upgrading from I<any> previous version of Dada Mail, make sure to create a new C<.dada_config> file, as old C<.dada_config> files will not work with v6 of Dada Mail. 
 

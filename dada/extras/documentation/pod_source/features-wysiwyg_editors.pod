@@ -245,7 +245,7 @@ Image data is embedded in the HTML source of the message you write. Dada Mail wi
 
 Long Story Short, WYSIWYG editors break any Dada Mail template tags you set in the, "href" of any HTML tag - including sadly, Clickthrough Tracker tags -  and may also munge up any template tags. Please! Send a test message out, before comitting to a large mass mailing! We suggest using the, B<Clickthrough Track All Message Links>, option in the Tracker Plugin. 
 
-B<See:> L<http://dadamailproject.com/d/tracker.html#clickthrough_tags_and_wysiwyg_editors__ckeditor_tiny_mce>
+B<See:> L<https://dadamailproject.com/d/tracker.html#clickthrough_tags_and_wysiwyg_editors__ckeditor_tiny_mce>
 
 for more information. 
 

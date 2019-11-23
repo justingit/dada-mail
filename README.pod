@@ -38,17 +38,17 @@ And the Dada Mailers
 
 =head1 HOMEPAGE
 
-L<http://dadamailproject.com>
+L<https://dadamailproject.com>
 
 =head1 INSTALLING 
 
-L<http://dadamailproject.com/d/install_dada_mail.pod.html>
+L<https://dadamailproject.com/d/install_dada_mail.pod.html>
 
 =head1 DOCUMENTATION
 
 See: 
 
-L<http://dadamailproject.com/d>
+L<https://dadamailproject.com/d>
 
 Version-specific documentation is located in this distribution, under: 
 
@@ -62,7 +62,7 @@ directory. Just open up 'index.html' in a web browser.
 
 =item * Discussion Mailing List: 
 
-L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
+L<https://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 
 =back 
 
@@ -78,7 +78,7 @@ L<http://github.com/justingit/dada-mail>
 
 Mailing List: 
 
-L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
+L<https://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 
 
 =head1 LICENSE AND COPYRIGHT 

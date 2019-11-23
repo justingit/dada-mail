@@ -17,14 +17,14 @@ It's the easiest way to fully integrate Dada Mail into your website.
 
 Magic User Templates can most easily be configured using Dada Mail's including Installer, and is an additional feature available in Pro Dada: 
 
-L<http://dadamailproject.com/purchase/pro.html>
+L<https://dadamailproject.com/purchase/pro.html>
 
 In this doc, we're going to go over some of the options available, and how we configured Magic User Templates for our own install of Dada Mail Here's what Dada Mail looked before, with it's default design, 
 
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/docs/magic_user_templates_disabled.jpg" width="720" height="442" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/docs/magic_user_templates_disabled.jpg" width="720" height="442" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -35,7 +35,7 @@ and here's the result of using Magic User Templates,
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/docs/magic_user_templates_enabled.jpg" width="720" height="442" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/docs/magic_user_templates_enabled.jpg" width="720" height="442" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -46,7 +46,7 @@ The design of Dada Mail matches exactly the rest of our site. Rejoice! For refer
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/docs/magic_user_templates_configuration.jpg" width="708" height="669" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/docs/magic_user_templates_configuration.jpg" width="708" height="669" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -54,7 +54,7 @@ The design of Dada Mail matches exactly the rest of our site. Rejoice! For refer
 
 For a listing of all the options available, and a complete explanation of what they do, see the docs on Magic User Templates, in the B<Advanced Configuration with the Dada Mail Installer> docs, 
 
-L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Global-Template-Options>
+L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Global-Template-Options>
 
 These options are reflected in the installation's C<.dada_config> file, if you decide you would like to edit them directly, without the installer:
 
@@ -68,9 +68,9 @@ These options are reflected in the installation's C<.dada_config> file, if you d
                     template_url => '',
                 },
                 magic_options  => { 
-                    template_url         => 'http://dadamailproject.com/', 
+                    template_url         => 'https://dadamailproject.com/', 
                     add_base_href        =>  1, 
-                    base_href_url        => 'http://dadamailproject.com/', 
+                    base_href_url        => 'https://dadamailproject.com/', 
                     replace_content_from => 'id',
                     replace_id           => 'contentcolumn', 
                     replace_class        => '', 
@@ -90,13 +90,13 @@ In this doc, we're using v8.3 of B<Pro Dada> - the options may be slightly diffe
 
 First, we checked the options, B<Configure Global Template Options>, B<Use a Custom User Template>, and selected, B<Magically>. This will configure Dada Mail to use Magic User Templates. 
 
-We're going to base our layout of Dada Mail based on Dada Mail's homepage at, L<http://dadamailproject.com/>, so that's what we're going to type into the textbox labeled, B<URL:>. 
+We're going to base our layout of Dada Mail based on Dada Mail's homepage at, L<https://dadamailproject.com/>, so that's what we're going to type into the textbox labeled, B<URL:>. 
 
-We're also going to check the option, B<Add a, E<lt>base href="..."E<gt> tag:>, to keep images and links working correctly and use that same URL, L<http://dadamailproject.com/> for what the base href should be. 
+We're also going to check the option, B<Add a, E<lt>base href="..."E<gt> tag:>, to keep images and links working correctly and use that same URL, L<https://dadamailproject.com/> for what the base href should be. 
 
 You'll see the results of those options in the sourcecode of the default screen of Dada Mail, 
 
-        <base href="http://dadamailproject.com/" />
+        <base href="https://dadamailproject.com/" />
 
 We've unchecked the option, B<Include Dada Mail's own stylesheet>, as the resulting formatting of the text on the page clashed with the rest of the site's design. 
 
@@ -113,7 +113,7 @@ Navigate to the page you want to use as the basis for your Magic Template, and f
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/docs/magic_user_templates_inspector.jpg" width="720" height="518" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/docs/magic_user_templates_inspector.jpg" width="720" height="518" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 

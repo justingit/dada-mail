@@ -69,7 +69,7 @@ other than, C<1>. You can re-enable it at anytime by setting the C<$SCREEN_CACHE
 
 There's also a plugin available to view and selectively remove cached screens: 
 
-L<http://dadamailproject.com/support/documentation/screen_cache.cgi.html>
+L<https://dadamailproject.com/support/documentation/screen_cache.cgi.html>
 
 
 =cut

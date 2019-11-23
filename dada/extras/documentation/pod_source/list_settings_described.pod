@@ -53,7 +53,7 @@ Doing so will invalidate any passwords created with the previous key.
 
 C<1|0> - Setting to C<1> enables a private list: 
 
-L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
+L<https://dadamailproject.com/d/features-public_and_private_lists.pod.html>
 
 
 

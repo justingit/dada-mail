@@ -16,7 +16,7 @@ B<Appearance: Custom Mass Mailing Layout>.
 
 First, understand the difference between a public, and private mailing list: 
 
-L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
+L<https://dadamailproject.com/d/features-public_and_private_lists.pod.html>
 
 For private lists, a new option allows you to set if the B<Request Removal> buttons/links will show in
 email messages sent with Dada Mail. This option can be found in the list control panel under, B<Mailing List: Options>,  
@@ -268,7 +268,7 @@ Or is summer already here?
 =back
 
 These themes - and all other themes (except the, "default" theme) are now ONLY distributed 
-with Pro Dada (L<http://dadamailproject.com/purchase/pro.html>). 
+with Pro Dada (L<https://dadamailproject.com/purchase/pro.html>). 
 
 Grab a Pro Dada subscription yourself, and help support the project!3
 
@@ -635,15 +635,15 @@ Several of the included docs have been refreshed significantly, including:
 
 =head3 Google reCAPTCHA v2 Support
 
-L<http://dadamailproject.com/d/features-CAPTCHA.pod.html> 
+L<https://dadamailproject.com/d/features-CAPTCHA.pod.html> 
 
 =head3 Amazon SES Third Party Email Sending Support
 
-L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html> 
+L<https://dadamailproject.com/d/features-amazon_ses_support.pod.html> 
 
 =head3 Installing CPAN Perl Modules
 
-L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html> 
+L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html> 
  
  =head2 Bugfixes
 
@@ -837,7 +837,7 @@ L<http://blog.dadamailproject.com/2016/12/06/add-google-recaptcha-on-dada-mail-s
 
 as well as the docs on advanced installation configuration, 
 
-L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-CAPTCHA>
+L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-CAPTCHA>
 
 We've also removed support for reCAPTCHA v1, and the Default CAPTCHA type. You're
 so much better served with reCAPTCHA v2, that these other choices just aren't worth your time. 
@@ -846,7 +846,7 @@ reCAPTCHA v2 requires the following CPAN module: C<Google::reCAPTCHA>, which you
 or through our, C<Bundle::DadaMail> module, which will install all the other optional CPAN modules Dada Mail
 takes advantage of. Here's how you install CPAN modules, 
 
-L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =head1 10.1.0
 
@@ -967,7 +967,7 @@ L<https://github.com/justingit/dada_mail_foundation_email_templates>
 
 which you may use as a starter for your own customized email templates for Dada Mail:
 
-L<http://dadamailproject.com/d/features-email_themes.pod.html>
+L<https://dadamailproject.com/d/features-email_themes.pod.html>
 
 =head4 Email Themes
 

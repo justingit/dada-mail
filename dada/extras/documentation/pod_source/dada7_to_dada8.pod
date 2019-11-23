@@ -22,7 +22,7 @@ Dada Mail now requires v5.10.1 of Perl and cannot be run under a version lower. 
 
 Dada Mail now has FastCGI support! FastCGI support is explained in detail here: 
 
-L<http://dadamailproject.com/d/features-fastcgi.pod.html>
+L<https://dadamailproject.com/d/features-fastcgi.pod.html>
 
 In a nutshell, FastCGI allows you to run Dada Mail in a persistent environment. A persistent environment cuts out much of the startup time that happens when running Dada Mail as a CGI script. 
 
@@ -32,7 +32,7 @@ This time-savings really becomes apparent if you have a busy website, where Dada
 
 Dada Mail also has PSGI support. PSGI support has many of the advantages of running Dada Mail under FastCGI, but is much more modern and flexible because of its idea of Middleware. Details: 
 
-L<http://dadamailproject.com/d/features-psgi_support.pod.html>
+L<https://dadamailproject.com/d/features-psgi_support.pod.html>
 
 =head1 CGI Support
 
@@ -56,7 +56,7 @@ The cronjob that's needed will be shown at the last screen of the included insta
 
 This cronjob can be customized, and the output of the cronjob can be logged by Dada Mail - both these options can be configured in the Installer as well. See the docs on Scheduled Jobs in Dada Mail: 
 
-L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
+L<https://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
 =head1 Supported Backends: SQL, Unsupported Backend: Default
 

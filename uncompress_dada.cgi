@@ -9,7 +9,7 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
 #----------------------------------------------------------------------------#
 # For information on what this script is used for, please see:
-# http://dadamailproject.com/d/install_dada_mail.pod.html
+# https://dadamailproject.com/d/install_dada_mail.pod.html
 
 # What's the name of the file I'm looking for to uncompress?
 # Basic Dada Mail

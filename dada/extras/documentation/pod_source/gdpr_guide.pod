@@ -14,7 +14,7 @@ We're not lawyers ourself (and this isn't legal advice).
 If you do have any questions, 
 consult a legal professional. 
 If you would like a referal to someone we know, 
-L<please contact us directly|http://dadamailproject.com/contact/>. 
+L<please contact us directly|https://dadamailproject.com/contact/>. 
 
 Whatever you do, B<don't put off upgrading if you are required to comply with the GDPR!> 
 

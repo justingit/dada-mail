@@ -11,7 +11,7 @@ These are broad ideas that we'd like to share about some new features we're like
 
 We're looking for comments about this issue, here: 
 
-L<http://dadamailproject.com/support/boards/viewtopic.php?flavor=25&t=2457>
+L<https://dadamailproject.com/support/boards/viewtopic.php?flavor=25&t=2457>
 
 If you have ideas, please post them, we could really use your help! 
 
@@ -20,7 +20,7 @@ If you have ideas, please post them, we could really use your help!
 B<I<Update 8/1/11 - Amazon SES Web Service Integration has been added in v4.6.0 as
 an experimental feature. See:>>
 
-L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+L<https://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 B<I<Postmark is not looking super interesting, as they're focusing on transactional emails only>>
 
@@ -175,7 +175,7 @@ The downside of envelope sending is that you would lose absolutely all your mail
 
 B<I<Update 8/1/11: Many of these features are found in the Tracker Plugin:>>
 
-L<http://dadamailproject.com/d/tracker.html>
+L<https://dadamailproject.com/d/tracker.html>
 
 The Click through Tracker plugin currently tracks the following: 
 
@@ -199,7 +199,7 @@ We would also like to have the addition of graphing features in Dada Mail, so yo
 
 B<I<Update 8/1/11: There is an installer for Dada Mail:>>
 
-L<http://dadamailproject.com/d/install_dada_mail.pod.html>
+L<https://dadamailproject.com/d/install_dada_mail.pod.html>
 
 Currently, there is no installer for Dada Mail - you have to, albeit minimally, edit Dada Mail's source file's manually to get Dada Mail installed. 
 

@@ -3252,11 +3252,11 @@ receive a re-design of its API. Also, returning, C<undef> on success is also not
 
 Rather, you may want to look into Dada Mail's JSON API: 
 
-L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
+L<https://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
 
 =head1 AUTHOR
 
-Justin Simoni http://dadamailproject.com
+Justin Simoni https://dadamailproject.com
 
 =head1 LICENSE AND COPYRIGHT
 

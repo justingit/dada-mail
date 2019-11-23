@@ -47,9 +47,9 @@ If you want to run Dada Mail under a different environment, for example: you're 
 
 FastCGI support for Dada Mail is new! We expect some growing pains. We would love to hear your feedback on how Dada Mail is running under FastCGI. Please contact us directly: 
 
-L<http://dadamailproject.com/contact/>
+L<https://dadamailproject.com/contact/>
 
 sign up and post to the dadadev mailing list: 
 
-L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
+L<https://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 

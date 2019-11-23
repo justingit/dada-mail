@@ -422,6 +422,7 @@ sub construct_from_url {
 		}
     }
     
+	require DADA::App::HTMLtoMIMEMessage; 
     my $mailHTML = new DADA::App::HTMLtoMIMEMessage(
 	#	%headers, # I'd rather not send the headers to this module, but I'm honestly confused on how headers are set! MYSTERY! 
         remove_jscript                   => scalar $self->{ls_obj}->param('mass_mailing_remove_javascript'),
@@ -712,7 +713,7 @@ sub construct_from_url {
 				safely_encode($text_message),
 				$base
 			); 
-			warn '$MIME_Entity->as_string' . $MIME_Entity->as_string;
+			#warn '$MIME_Entity->as_string' . $MIME_Entity->as_string;
     } catch { 
         my $errors = "Problems sending HTML! \n
         * Are you trying to send a webpage via URL instead?

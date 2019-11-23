@@ -738,7 +738,7 @@ Please report problems to the author of this module
 
 Justin Simoni 
 
-See: http://dadamailproject.com/contact
+See: https://dadamailproject.com/contact
 
 =head1 LICENSE AND COPYRIGHT
 

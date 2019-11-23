@@ -40,7 +40,7 @@ Another CPAN Perl Module, called C<Bundle::DadaMailXXL> has also been created th
 
 More information: 
 
-L<http://dadamailproject.com/d/FAQ-general.pod.html#how_do_you_install__cpan_perl_modules>
+L<https://dadamailproject.com/d/FAQ-general.pod.html#how_do_you_install__cpan_perl_modules>
 
 
 =head2 No more "Appearance - Email Message Templates" list control panel
@@ -53,7 +53,7 @@ Using the SASS workflow is actally pretty approachable by a competent web design
 
 Here's how to work with email themes, and create your own:
 
-L<http://dadamailproject.com/d/features-email_themes.pod.html>
+L<https://dadamailproject.com/d/features-email_themes.pod.html>
 
 Each theme is available for all mailing lists. 
 

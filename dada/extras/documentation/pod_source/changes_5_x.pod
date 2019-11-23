@@ -232,7 +232,7 @@ You now how the option to receive a notification of any changes made by a user o
 
 For more information about this feature, see: 
 
-L<http://dadamailproject.com/d/features-profiles.pod.html#send_notification_to_profile_email> 
+L<https://dadamailproject.com/d/features-profiles.pod.html#send_notification_to_profile_email> 
 
 =head4 Multiple Admin Profile Email Addresses Supported
 
@@ -240,13 +240,13 @@ You may now set more than one email addresses used for administration email noti
 
 For more information about this feature, see: 
 
-L<http://dadamailproject.com/d/features-profiles.pod.html#profile_email> 
+L<https://dadamailproject.com/d/features-profiles.pod.html#profile_email> 
 
 =head4 Customize Email Validation Steps for Profile Email Address Changes
 
 For more information about this feature, see: 
 
-L<http://dadamailproject.com/d/features-profiles.pod.html#subscription_check_skip>
+L<https://dadamailproject.com/d/features-profiles.pod.html#subscription_check_skip>
 
 =head4 Enable/Disable Major Profile Features
 
@@ -268,7 +268,7 @@ This plugin now gives you that ability.
 
 See the docs on the plugin for more information: 
 
-L<http://dadamailproject.com/d/change_list_shortname.cgi.html>
+L<https://dadamailproject.com/d/change_list_shortname.cgi.html>
 
 =head3 New Plugin: Password Protect Directories
 
@@ -278,7 +278,7 @@ This plugin allows you to password protect a directory, only allowing your maili
 
 See the docs on the plugin for more information: 
 
-L<http://dadamailproject.com/d/password_protect_directories.cgi.html>
+L<https://dadamailproject.com/d/password_protect_directories.cgi.html>
 
 This feature was commissioned by Jeff Berger for "Websites That Work" -- L<http://www.websitesthatworkusa.com>.
 
@@ -291,7 +291,7 @@ B<Send a Webpage> screens, as well as in B<Beatitude>.
 
 See the docs on the plugin for more information: 
 
-L<http://dadamailproject.com/d/default_mass_mailing_messages.cgi>
+L<https://dadamailproject.com/d/default_mass_mailing_messages.cgi>
 
 =head2 Changes 5.1.0 
 
@@ -315,7 +315,7 @@ Instad of bringing you to a new screen, a modal box is used instead.
 
 A new script called, C<tracker_add_missing_num_subs.cgi> is included with Dada Mail, in attempt to retrieve missing  Tracker reports from previous versions of Dada Mail. For more information, please see: 
 
-L<http://dadamailproject.com/d/tracker_add_missing_num_subs.cgi.html>
+L<https://dadamailproject.com/d/tracker_add_missing_num_subs.cgi.html>
 
 =head4 Support added for RFC 6522-style Delivery Status Notification Reports,
 

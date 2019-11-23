@@ -30,7 +30,7 @@ Dada Mail will require additional CPAN modules that are not shipped with Dada Ma
 
 You probably will want to install Dada Mail using the command line interface of Dada Mail's included installer. Documentation to do so is located here: 
 
-L<http://dadamailproject.com/d/installer_dada_mail_cl.pod>
+L<https://dadamailproject.com/d/installer_dada_mail_cl.pod>
 
 One thing to note is the C<--deployment_running_under> flag, which you will want to pass, C<PSGI>: 
 

@@ -7,7 +7,7 @@ Dada Mail supports both single and recurring scheduled mass mailings.
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/docs/recurring_schedules.jpg" width="720" height="612" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/docs/recurring_schedules.jpg" width="720" height="612" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -74,7 +74,7 @@ Click the Subject of your schedule, or click the button labeled, B<Edit...> to f
 
 Dada Mail's system-wide cronjob checks and runs the scheduled mass mailings. Make sure it's set, or your scheduled mass mailings will not go out:
 
-L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
+L<https://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
 You may manually check all the Scheduled Jobs in the list control panel under, B<Control Panel Settings- Scheduled Jobs> 
 
@@ -94,7 +94,7 @@ Recurring Scheduled Mass Mailings require the following CPAN Perl Modules:
 
 These modules can be installed in a variety of ways: 
 
-L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =cut
 

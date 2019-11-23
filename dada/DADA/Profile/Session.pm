@@ -369,7 +369,7 @@ Most likely, if the profile is not logged in, C<undef> will be returned.
 
 =head1 AUTHOR
 
-Justin Simoni http://dadamailproject.com
+Justin Simoni https://dadamailproject.com
 
 =head1 LICENSE AND COPYRIGHT
 

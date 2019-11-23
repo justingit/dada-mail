@@ -24,7 +24,7 @@ Plugging in the site and secret keys, and telling Dada Mail to use Google reCAPT
 
 The easiest way to work with that is through Dada Mail's included web-based installer, so an install or upgrade would be the perfect time to set all this up. 
 
-You can also drop back into the installer to make these configuration changes: L<http://dadamailproject.com/d/install_dada_mail.pod.html#Making-Additional-Global-Configuration-Changes-using-the-Dada-Mail-Installer>
+You can also drop back into the installer to make these configuration changes: L<https://dadamailproject.com/d/install_dada_mail.pod.html#Making-Additional-Global-Configuration-Changes-using-the-Dada-Mail-Installer>
 
 Once in the installer's configure screen, look for B<Advanced Options>.
 
@@ -42,14 +42,14 @@ Test to make sure if everything works, by clicking the button labeled, B<Test CA
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/google_recaptcha/google_recaptcha_v2.jpg" width="649" height="716" style="border:1px solid black" />
+<img src="https://dadamailproject.com/images/support/documentation/v10/google_recaptcha/google_recaptcha_v2.jpg" width="649" height="716" style="border:1px solid black" />
 </p>
 
 =end html
 
 =head3 Required Perl CPAN Module?
 
-Dada Mail's Google reCAPTCHA support requires the C<Google::reCAPTCHA> Perl module, which you can install from CPAN. See, L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+Dada Mail's Google reCAPTCHA support requires the C<Google::reCAPTCHA> Perl module, which you can install from CPAN. See, L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 
 =head1 Using CAPTCHA in Dada Mail

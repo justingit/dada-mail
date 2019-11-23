@@ -1852,7 +1852,7 @@ This method will croak if the profile you're trying to set an authorization code
 
 =head1 AUTHOR
 
-Justin Simoni http://dadamailproject.com
+Justin Simoni https://dadamailproject.com
 
 =head1 LICENSE AND COPYRIGHT
 

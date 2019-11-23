@@ -62,7 +62,7 @@ Holds the internal id of the archived message. You can then construct a link to 
 
 C<date> tags are available within the digest_messages loop, and will correspond to the date of the archived message. Date tags are listed at:
 
-L<http://dadamailproject.com/d/features-email_template_syntax.pod.html#Date-related-tags>
+L<https://dadamailproject.com/d/features-email_template_syntax.pod.html#Date-related-tags>
 
 Tags listed in, B<Flexible Date and Time formats> are not currently supported. 
 

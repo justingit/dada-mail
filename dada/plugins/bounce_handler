@@ -10,7 +10,7 @@ $|++;
 #
 # Documentation:
 #
-#  http://dadamailproject.com/d/bounce_handler.html
+#  https://dadamailproject.com/d/bounce_handler.html
 #
 #---------------------------------------------------------------------#
 
@@ -885,11 +885,11 @@ The usual action that is taken is to apply a B<score> to the email address that 
 
 For a guide on using Bounce Handler, see the B<Dada Mail Manual>: 
 
-L<http://dadamailproject.com/pro_dada/using_bounce_handler.html>
+L<https://dadamailproject.com/pro_dada/using_bounce_handler.html>
 
 For more information on Pro Dada/Dada Mail Manual: 
 
-L<http://dadamailproject.com/purchase/pro.html>
+L<https://dadamailproject.com/purchase/pro.html>
 
 =head1 Obtaining a Copy of the Plugin
 
@@ -937,7 +937,7 @@ Once Dada Mail installed, all new mailing lists will use the Bounce Handler's em
 
 Bounce Handler runs in the background on a schedule. Make sure to set Dada Mail's cronjob: 
 
-L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
+L<https://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
 =head1 FAQ
 

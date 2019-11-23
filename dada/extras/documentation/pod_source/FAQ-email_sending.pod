@@ -10,15 +10,15 @@ This FAQ attempts to answer questions specifically to sending out email from Dad
 
 =item * Mass Mailing Sending FAQ
 
-L<http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.html>
+L<https://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.html>
 
 =item * General FAQ
 
-L<http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html>
+L<https://dadamailproject.com/support/documentation/FAQ-general.pod.html.html>
 
 =item * Error FAQ
 
-L<http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html>
+L<https://dadamailproject.com/support/documentation/FAQ-general.pod.html.html>
 
 =back
 
@@ -158,7 +158,7 @@ If you were hoping that you can just use SSL connections with Dada Mail - you ca
 
 Yes, see: 
 
-L<http://dadamailproject.com/support/documentation/bounce_handler.html>
+L<https://dadamailproject.com/support/documentation/bounce_handler.html>
 
 =head2 Where are my bounce messages going? 
 
@@ -232,7 +232,7 @@ And, that's it.
 
 Now that you know how to set the B<Return-Path> header, put it to some good use! Set up the Bounce Handler for Dada Mail: 
 
-http://dadamailproject.com/support/documentation/bounce_handler.html
+https://dadamailproject.com/support/documentation/bounce_handler.html
 
 =head2 Dada Mail and Google Apps for Domains
 

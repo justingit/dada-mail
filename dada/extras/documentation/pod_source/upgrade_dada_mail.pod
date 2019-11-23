@@ -59,7 +59,7 @@ Moving the directory:
 
 =head2 Step #2 Install the new Dada Mail
 
-Upgrading will now be similar to installing Dada Mail (L<http://dadamailproject.com/d/install_dada_mail.pod.html>) 
+Upgrading will now be similar to installing Dada Mail (L<https://dadamailproject.com/d/install_dada_mail.pod.html>) 
 
 Except that on the first screen of the Installer, instead of choosing, "Install"...
 
@@ -106,4 +106,4 @@ Select this option if you are upgrading between minor versions of Dada Mail. For
 
 It's a B<I<very very>> good idea to look at the changelog and note B<any> incompatibilities between versions. It's possible that incompatibilities could break your installation, when you upgrade. 
 
-Changelog: L<http://dadamailproject.com/d/changes_8_x.pod.html>
+Changelog: L<https://dadamailproject.com/d/changes_8_x.pod.html>

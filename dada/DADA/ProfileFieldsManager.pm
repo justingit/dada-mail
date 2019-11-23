@@ -215,7 +215,7 @@ This method will also croak if you pass a field that does not exist, or if you p
 
 =head1 AUTHOR
 
-Justin Simoni http://dadamailproject.com
+Justin Simoni https://dadamailproject.com
 
 =head1 LICENSE AND COPYRIGHT
 

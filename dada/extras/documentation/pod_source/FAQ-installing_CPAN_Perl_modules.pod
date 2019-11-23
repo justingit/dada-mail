@@ -31,7 +31,7 @@ Log into your cPanel. Search for, B<Perl Modules>
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/cpan/cpan-cpanel-perl_modules.jpg" width="1024" height="597" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/cpan/cpan-cpanel-perl_modules.jpg" width="1024" height="597" style="border:1px solid black" /><br /> 
 <em>Perl Modules</em> 
 </p>
 
@@ -45,7 +45,7 @@ Scroll down, and find the form labeled, B<Install a Perl Module>.  In this form 
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/support/documentation/v10/cpan/cpan-install_a_module.jpg" width="1024" height="189" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/support/documentation/v10/cpan/cpan-install_a_module.jpg" width="1024" height="189" style="border:1px solid black" /><br /> 
 <em>Install a Module</em> 
 </p>
 

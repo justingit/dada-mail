@@ -481,7 +481,7 @@ Copyright (c) 1999 - 2019 Justin Simoni All rights reserved.
 
 To contact info, please see: 
 
-L<http://dadamailproject.com/contact/>
+L<https://dadamailproject.com/contact/>
 
 All rights reserved. 
 

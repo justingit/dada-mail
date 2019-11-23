@@ -7,7 +7,7 @@
 Dada Mail's RESTful API is currently in the B<Experimental> stage and may 
 change in the future. We would love to hear your feedback on how we can make things work better for you: 
 
-L<http://dadamailproject.com/contact>
+L<https://dadamailproject.com/contact>
 
 The best way to do that, is to try it out!
 
@@ -522,7 +522,7 @@ When you call this service you would receive the following JSON doc back,
 
 Errors returned back are the same for the following method: 
 
-L<http://dadamailproject.com/d/MailingList_Subscribers.pm.html#subscription_check>
+L<https://dadamailproject.com/d/MailingList_Subscribers.pm.html#subscription_check>
 
 =head4 subscription
 
@@ -707,7 +707,7 @@ C<message_id> is the message id associated with this particular mass mailing.
 The actual underlying module for Dada Mail's web services, C<DADA::App::WebServices>, may have debugging turned on. This also will return additional debugging information to the client itslf, B<including sensitive information (like the private key!)>.
 
 This debugging may be turned on from within the installer. See:
-L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Debugging>
+L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Debugging>
 
 You'll want to check the option for, C<DADA::App::WebServices>.
 

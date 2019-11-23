@@ -12,7 +12,7 @@ Although easier to set up, the Default backend for Dada Mail does not have as ma
 
 We highly suggest that you use the SQL Backend with a Contemporary Installation setup and NOT the Basic Installation setup. If you're not currently using a Contemporary Installation Method, switch beforehand: 
 
-L<http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
+L<https://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
 
 If you've installed Dada Mail using the included Dada Mail installer, you are already running a Contemporary Installation of Dada Mail. 
 
@@ -24,7 +24,7 @@ You can reconfigure your Dada Mail to use the SQL backend by using the Dada Mail
 
 Renable the Dada Mail installer by moving the I<dada/installer> directory back into place - it may have been renamed to, C<installer-disabled>(followed by a random string of letters/numbers) and changing the permissions of the, I<dada/installer/install.cgi> script to, C<755>. Visit the, C<install.cgi> script again in your web browser and follow the directions to install Dada Mail with one of the SQL backends: 
 
-L<http://dadamailproject.com/d/install_dada_mail.pod>
+L<https://dadamailproject.com/d/install_dada_mail.pod>
 
 The installer should: 
 
@@ -59,21 +59,21 @@ You will want to make sure to run them in this order:
 
 Docs: 
 
-http://dadamailproject.com/support/documentation/dada_settings_db_to_sql.pl.html
+https://dadamailproject.com/support/documentation/dada_settings_db_to_sql.pl.html
 
 
 =item * dada_archives_db_to_sql.pl
 
 Docs: 
 
-http://dadamailproject.com/support/documentation/dada_archives_db_to_sql.pl.html
+https://dadamailproject.com/support/documentation/dada_archives_db_to_sql.pl.html
 
 
 =item * dada_subscribers_plaintext_to_sql.pl
 
 Docs: 
 
-http://dadamailproject.com/support/documentation/dada_subscribers_plaintext2sql.pl.html
+https://dadamailproject.com/support/documentation/dada_subscribers_plaintext2sql.pl.html
 
 =item * dada_clickthrough_plaintext_to_sql.pl
 
@@ -81,7 +81,7 @@ I<You'll only need to run this, if you were using the Clickthrough Tracking exte
 
 Docs: 
 
-http://dadamailproject.com/support/documentation/dada_clickthrough_plaintext_to_sql.pl.html
+https://dadamailproject.com/support/documentation/dada_clickthrough_plaintext_to_sql.pl.html
 
 =back
 

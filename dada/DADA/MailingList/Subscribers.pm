@@ -2519,7 +2519,7 @@ Used to remove a fallback field value. Used internally.
 
 =head1 AUTHOR
 
-Justin Simoni http://dadamailproject.com
+Justin Simoni https://dadamailproject.com
 
 =head1 LICENSE AND COPYRIGHT
 

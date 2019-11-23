@@ -64,7 +64,7 @@ will remind you.
 
 Here is the information on finding/using and running the 3.x to 4.x migration tool: 
 
-L<http://dadamailproject.com/support/documentation/dada3_to_dada4_sql.pl.html>
+L<https://dadamailproject.com/support/documentation/dada3_to_dada4_sql.pl.html>
 
 Please! make sure to make manual backups of your SQL table information - all of it, so 
 in the event of a castastrophic error, you'll be OK. 
@@ -214,13 +214,13 @@ and,
 
 For more information on what these variables do, see the documentation embedded in the C<Config.pm> file: 
 
-L<http://dadamailproject.com/support/documentationConfig.pm.html#dada_mail_profile_options>
+L<https://dadamailproject.com/support/documentationConfig.pm.html#dada_mail_profile_options>
 
 =head2 List of Changes from 3.x to 4.x
 
 The Master (I guess) list of changes from 3.x to 4.x is located at: 
 
-L<http://dadamailproject.com/support/documentation/changes_4_x.pod.html>
+L<https://dadamailproject.com/support/documentation/changes_4_x.pod.html>
 
 
 

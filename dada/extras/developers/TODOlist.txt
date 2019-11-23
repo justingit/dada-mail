@@ -286,7 +286,7 @@ make the tmp subscribe list right before sending, as mass mailings get queued.
 
 [ ] Integration w/StopForumSpam
     Here's some discussion:
-    http://dadamailproject.com/support/boards/viewtopic.php?flavor=9&t=4066&p=14868
+    https://dadamailproject.com/support/boards/viewtopic.php?flavor=9&t=4066&p=14868
     http://stopforumspam.com
 
 
@@ -571,7 +571,7 @@ origin of action - from the subscriber, or the list owner?
 	
 
 [ ] This is a good idea for the approval system: 
-http://dadamailproject.com/support/boards/viewtopic.php?flavor=25&t=2082&p=7931#p7931
+https://dadamailproject.com/support/boards/viewtopic.php?flavor=25&t=2082&p=7931#p7931
 Since the "Subscription requests approving/denying (experimental)" is asking for feedback, 
 I would suggest that the "white list" email addresses can bypass the manual approval process, 
 and be seen as a "pre-approval" list, or that there be an option under this feature to
@@ -613,12 +613,12 @@ actually having code in them, so that we have built in API documentation.
 Make it possible to define other profile fields like a checkbox, radio buttons, text area and select list. Besides public and hidden fields (those starting with an underscore) add another category "read-only": these are showed publicly but cannot be changed by a subscriber, e.g. by adding attribute "disabled" to the corresponding <input> tag.
 
 [ ] API to login from other software
-Currently I am using the following code in main.cgi (sub login) to login from a CMS, enter a specific admin screen (f=send_url_email) and pass another parameter (url=http://dadamailproject.com/ used by my modified "send_url_email"):
+Currently I am using the following code in main.cgi (sub login) to login from a CMS, enter a specific admin screen (f=send_url_email) and pass another parameter (url=https://dadamailproject.com/ used by my modified "send_url_email"):
 
 require DADA::App::Session; 
 my $dada_session = DADA::App::Session->new(); 
 
-# login by means of a url: http://www.domain.com/cgi-bin/dada/mail.cgi?flavor=login&admin_password=password&admin_list=listname&auth_state=1&admin_option1=f=send_url_email&admin_option2=url=http://dadamailproject.com/
+# login by means of a url: http://www.domain.com/cgi-bin/dada/mail.cgi?flavor=login&admin_password=password&admin_list=listname&auth_state=1&admin_option1=f=send_url_email&admin_option2=url=https://dadamailproject.com/
 
                 $referer = "$DADA::Config::S_PROGRAM_URL?".$q->param('admin_option1') if($q->param('admin_option1'));
                 $referer .= '&'.$q->param('admin_option2') if($q->param('admin_option2'));
@@ -1005,9 +1005,9 @@ It seems like a lot of work.
     and also screens used for individual subscribers. 
     
     See: 
-    <http://dadamailproject.com/support/documentation-dada-2_11-alpha_5/projects.pod.html#multiple_subscriber_fields>
+    <https://dadamailproject.com/support/documentation-dada-2_11-alpha_5/projects.pod.html#multiple_subscriber_fields>
     
-    <http://dadamailproject.com/support/documentation-dada-2_11-alpha_5/Multiple_Fields.pod.html> 
+    <https://dadamailproject.com/support/documentation-dada-2_11-alpha_5/Multiple_Fields.pod.html> 
     
 [ ] Work on Manage Subscribers -> Add Screen * Medium+ Priority * 
 
@@ -1037,7 +1037,7 @@ It seems like a lot of work.
     [ -] Update command line interface/docs to match Bounce Handler CLI API where features overlap. 
     [ ] Flesh out (finally) extensible moderation system. 
         Refer to:
-        <http://dadamailproject.com/support/documentation-dada-2_11-alpha_5/projects.pod.html#enhancements_to_the_moderation_system_in_discussion_lists__bridge_pl_>
+        <https://dadamailproject.com/support/documentation-dada-2_11-alpha_5/projects.pod.html#enhancements_to_the_moderation_system_in_discussion_lists__bridge_pl_>
     [?] Any Sponsors?
 
 [ ] work on Beatitude
@@ -1207,7 +1207,7 @@ Send a Message/Send a webpage, etc need the same options, "open in a new window,
 
 [x] The, "Add to whitelist" screen does not take on the look and feel of the list - dummy...
 
-[] http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1118782581;start=0#2
+[] https://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1118782581;start=0#2
 [] When using a SQL backend and trying to restore from a backup: 
 
 	Can't locate object method "backupToDir" via package "DADA::MailingList::Archives" at force_backup.cgi line 18, <CONFIG> line 1.
@@ -1225,7 +1225,7 @@ Send a Message/Send a webpage, etc need the same options, "open in a new window,
 
 
 [x] clickthrough: 
-		http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1111320574;start=0#3
+		https://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1111320574;start=0#3
 
 
 [x] Note on Email Confirmation to include the list owner's email address in their addressbook/whitelist; 

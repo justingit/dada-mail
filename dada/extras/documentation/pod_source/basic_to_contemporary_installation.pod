@@ -35,11 +35,11 @@ This directory should hold most all the files/directories that represent your Ma
 
 You may either use the Dada Mail Installer (preferred): 
 
-L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
+L<https://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
 
 Or Manually install Dada Mail (more difficult) 
 
-L<http://dadamailproject.com/installation/installation_advanced.html>
+L<https://dadamailproject.com/installation/installation_advanced.html>
 
 Once you've done the install/upgrade, your previous mailing lists will not be available, until after you manually move over the previous installation's Dada Mail files. 
 
@@ -82,6 +82,6 @@ If you upgraded Dada Mail to use the B<Default> Backend, visiting  Dada Mail sho
 
 If you upgraded Dada Mail using the SQL backend (and had previously used the Default Backend> you will need to migrate your old Mailing List Information to the SQL backend. Moving from the Default Backend to one of the SQL backends is covered here: 
 
-L<http://dadamailproject.com/d/FAQ-default_to_SQL_backend.pod.html>
+L<https://dadamailproject.com/d/FAQ-default_to_SQL_backend.pod.html>
 
 =cut

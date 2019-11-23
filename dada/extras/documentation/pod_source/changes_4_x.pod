@@ -18,7 +18,7 @@ L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/SMTP.html>
 
 Dada Mail can now be configured to use Amazon's SES SMTP Interface, as well as working with the Amazon SES API - whichever you prefer. See the Amazon SES docs for more information: 
 
-L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+L<https://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 =head2 Bugfixes 4.9.1
 
@@ -130,7 +130,7 @@ with Dada Mail (C<HTML::Template>). C<HTML::Template::Pro> will need to be insta
 
 See the features doc on C<HTML::Template::Pro> for more information: 
 
-L<http://dadamailproject.com/support/documentation/features-html_template_pro.pod.html>
+L<https://dadamailproject.com/support/documentation/features-html_template_pro.pod.html>
 
 =head3 Faster sending using Amazon SES
 
@@ -142,7 +142,7 @@ speed up sending by .3 - .7 seconds/I<message>.
 Dada Mail now has support for various simple Date and Time formats to use in HTML and Email templates, 
 as well support for more flexible/advanced C<strftime> formats:
 
-L<http://dadamailproject.com/support/documentation/features-email_template_syntax.pod.html#date_related_tags>
+L<https://dadamailproject.com/support/documentation/features-email_template_syntax.pod.html#date_related_tags>
 
 =head3 New import script, dada_archives_backup_to_sql.pl
 
@@ -155,7 +155,7 @@ DB Files are corrupted/incompatible with your current server environment.
 
 A new/update entry in the General FAQ, I<Tuning Dada Mail to Send Mass Mailings Faster>:
 
-L<http://dadamailproject.com/support/documentation/FAQ-general.pod.html#tuning_dada_mail_to_send_mass_mailings_faster>
+L<https://dadamailproject.com/support/documentation/FAQ-general.pod.html#tuning_dada_mail_to_send_mass_mailings_faster>
 
 =head3 Installer: some plugins/extensions installed by default
 
@@ -377,7 +377,7 @@ Documentation on the CAPTCHA for Dada Mail has been moved out of the Config.pm d
 
 They're now located at: 
 
-L<http://dadamailproject.com/d/features-CAPTCHA.pod.html>
+L<https://dadamailproject.com/d/features-CAPTCHA.pod.html>
 
 This the addition of docs for reCAPTCHA Mailhide, including how to install the
 missing CPAN Module needed, via a cPanel setup. 
@@ -699,7 +699,7 @@ We want to make the feature better. Give us feedback!
 
 =head4 See Also: 
 
-L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+L<https://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 =head3 Forward to a Friend
 
@@ -710,7 +710,7 @@ to your mailing list archives.
 
 =head4 More Information: 
 
-L<http://dadamailproject.com/d/features_forward_to_a_friend.pod.html>
+L<https://dadamailproject.com/d/features_forward_to_a_friend.pod.html>
 
 =head2 Unsubscribe Tag/Link Flexibility
 
@@ -741,7 +741,7 @@ The C<auto_pickup.pl> extension will still be shipped with Dada Mail, but will s
 
 =head4 See Also: 
 
-L<http://dadamailproject.com/d/mailing_monitor.cgi.html>
+L<https://dadamailproject.com/d/mailing_monitor.cgi.html>
 
 =head3 Install Plugins/Extensions with the Dada Mail Installer
 
@@ -752,7 +752,7 @@ The installer also gives you the option, when used to upgrade your current Dada 
 
 =head4 See Also
 
-L<http://dadamailproject.com/d/install_dada_mail.pod.html>
+L<https://dadamailproject.com/d/install_dada_mail.pod.html>
 
 =head2 Changes 4.6.0 
 
@@ -857,7 +857,7 @@ information it compiles, for easy digestion.
 
 See the Documenation for the B<Tracker> plugin at: 
 
-L<http://dadamailproject.com/d/tracker.html>
+L<https://dadamailproject.com/d/tracker.html>
 
 =head2 Changes 4.5.0 
 
@@ -869,7 +869,7 @@ Replaced with the Tracker plugin, which is tons better.
 
 Dada Mail ships with a limit of 3 (instead of 5) mailing lists and a limit of 
 10,000 subscribers (instead of 25,000) quotas by default. We encourage you to 
-use Pro Dada, if you need more than that: L<http://dadamailproject.com/purchase/pro.html>
+use Pro Dada, if you need more than that: L<https://dadamailproject.com/purchase/pro.html>
 
 =head2 Bug Fixes 4.5.0 
 
@@ -936,7 +936,7 @@ New documentation is now shipped to give guidance on how to move Dada Mail betwe
 
 The docs are readable here: 
 
-L<http://dadamailproject.com/d/move_dada_mail.pod.html>
+L<https://dadamailproject.com/d/move_dada_mail.pod.html>
 
 =over
 
@@ -1130,7 +1130,7 @@ to balance power and versatility of Dada Mail, with accountability and adherence
 of a legitimate mailing list. We will put on hold the plan to deprecate these features, until 
 we got more feedback from the users of Dada Mail. Please join the discussion: 
 
-L<http://dadamailproject.com/support/boards/viewtopic.php?flavor=25&t=2457>
+L<https://dadamailproject.com/support/boards/viewtopic.php?flavor=25&t=2457>
 
 
 =head3 Code Cleanup
@@ -1305,7 +1305,7 @@ https://github.com/justingit/dada-mail/issues/closed#issue/108
 There's some new documentation about upgrading from a Simple Scripts to a Regular 
 Installation of Dada Mail: 
 
-L<http://dadamailproject.com/d/upgrade_from_simple_scripts.pod.html> 
+L<https://dadamailproject.com/d/upgrade_from_simple_scripts.pod.html> 
 
 =head2 4.3.1
 
@@ -1333,7 +1333,7 @@ Some SOAP proof of concept files have been included in, I<dada/extras/scripts/SO
 
 They can be read at: 
 
-L<http://dadamailproject.com/d/README_SOAP.pod.html>
+L<https://dadamailproject.com/d/README_SOAP.pod.html>
 
 They include a server written in Perl and clients written in Perl and php. They are also documented in the Subscription Cookbook
 
@@ -1679,11 +1679,11 @@ Dada Mail is now longer needed. Heavens be praised.
 
 Dada Installer directions may be found at: 
 
-L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
+L<https://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
 
 Upgrade instructions may be found at: 
 
-L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
+L<https://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
 
 The installar script may also be run via the command line - instructions can be 
 found on how to use it, by invoking the script with the, C<--help> flag, 
@@ -1698,12 +1698,12 @@ of Dada Mail.
 The Dada Mail Installer will install Dada Mail the same way as one would install 
 Dada Mail manually. Directions may be found here: 
 
-L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
+L<https://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
 
 The, "Basic" Installation method is not recommended or supported. If upgrading from a, "Basic" installation, 
 it's recommended to move to a more contemporary installation setup: 
 
-L<http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
+L<https://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
 
 =head2 Setup Info Screen 
 
@@ -1768,11 +1768,11 @@ I<dada/DADA/Template/templates/example_dada_config.tmpl> and, I<dada/extras/exam
 
 =item * Feature Overview: 
 
-L<http://dadamailproject.com/support/documentation/features-screen_cache.pod.html>
+L<https://dadamailproject.com/support/documentation/features-screen_cache.pod.html>
 
 =item * screen_cache.cgi Plugin: 
 
-L<http://dadamailproject.com/support/documentation/features-screen_cache.cgi.html>
+L<https://dadamailproject.com/support/documentation/features-screen_cache.cgi.html>
 
 =back
 
@@ -2006,7 +2006,7 @@ already in that encoding).
 
 If you're upgrading, please read over the updated UTF-8/Unicode FAQ: 
 
-http://dadamailproject.com/support/documentation/features-UTF-8.pod.html
+https://dadamailproject.com/support/documentation/features-UTF-8.pod.html
 
 If you're doing a new install, there's nothing you need to know, Dada Mail should
 work well out of the box in re: to UTF-8/Unicode stuff. 
@@ -2224,11 +2224,11 @@ The following topics were added to the documentation:
 
 =item * Converting from Default to SQL Backend
 
-http://dadamailproject.com/support/documentation/FAQ-default_to_SQL_backend.pod.html
+https://dadamailproject.com/support/documentation/FAQ-default_to_SQL_backend.pod.html
 
 =item * Converting from a Basic to Contemporary Installation
 
-http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html
+https://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html
 
 =back
 
@@ -2300,13 +2300,13 @@ http://github.com/justingit/dada-mail/issues/closed#issue/9
 
 Support has be re-introduced to allow Multiple List Sending. See the separate docs on this feature: 
 
-L<http://dadamailproject.com/support/documentation/feature-multiple_list_sending.pod.html>
+L<https://dadamailproject.com/support/documentation/feature-multiple_list_sending.pod.html>
 
 =item *  Subscriber Profiles
 
 Please see the docs specifically about Dada Mail Subscriber Profiles:
 
-L<http://dadamailproject.com/support/documentation/feature-profiles.pod.html>
+L<https://dadamailproject.com/support/documentation/feature-profiles.pod.html>
 
 =item *  Subscriber Profile Field Labels
 
@@ -2319,7 +2319,7 @@ You can now have an, "open to all to subscribe" mailing list, that still require
 
 Please see the docs specifically about this new feature: 
 
-L<http://dadamailproject.com/support/documentation/features-subscription_approval.pod.html>
+L<https://dadamailproject.com/support/documentation/features-subscription_approval.pod.html>
 
 =item * Slightly better UTF-8 support. 
 
@@ -2329,19 +2329,19 @@ This is because it is hard.
 
 Please see the docs specifically about this new feature: 
 
-L<http://dadamailproject.com/support/documentation/features-UTF-8.pod.html>
+L<https://dadamailproject.com/support/documentation/features-UTF-8.pod.html>
 
 =item * Twitter Support
 
 Yup. Dada Mail can Tweet. More information: 
 
-L<http://dadamailproject.com/support/documentation/features-twitter_support.pod.html>
+L<https://dadamailproject.com/support/documentation/features-twitter_support.pod.html>
 
 =item * CKeditor Support (Experimental) 
 
 We're experimenting with bringing CKeditor support to Dada Mail. Please see the embedded Config.pm docs about this: 
 
-L<http://dadamailproject.com/support/documentation/Config.pm.html#ckeditor_integration____ckeditor_url__experimental__>
+L<https://dadamailproject.com/support/documentation/Config.pm.html#ckeditor_integration____ckeditor_url__experimental__>
 
 =item * Mass Mailings keep their own log
 

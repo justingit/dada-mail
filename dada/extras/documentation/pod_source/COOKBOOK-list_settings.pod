@@ -23,7 +23,7 @@ Before we can use a list, we have to know what lists are available:
 
 For more information on the I<available_lists()> subroutine, see: 
 
-http://dadamailproject.com/support/documentation/App_Guts.pm.html#available_lists
+https://dadamailproject.com/support/documentation/App_Guts.pm.html#available_lists
 
 
 =head2 Making Sure a Listshortname is valid
@@ -84,11 +84,11 @@ B<$li> is a hashref, the keys hold the name of your list setting, the value, the
 And that's all there is to it. To understand what list settings are available, you may want to look at the Config.pm variable, B<%LIST_SETUP_DEFAULTS>, which
 lists just about every list setting being used in Dada Mail. More information on that variable:
 
-http://dadamailproject.com/support/documentation/global_variables.pod.html#_list_setup_defaults
+https://dadamailproject.com/support/documentation/global_variables.pod.html#_list_setup_defaults
 
 More information on the B<get> method: 
 
-http://dadamailproject.com/support/documentation/MailingList_Settings_Db.pm.html#get
+https://dadamailproject.com/support/documentation/MailingList_Settings_Db.pm.html#get
 
 =head2 Storing Information in the List Settings
 
@@ -123,6 +123,6 @@ And that's basically all there is to the B<save> method.
 
 More information on the B<save> method: 
 
-http://dadamailproject.com/support/documentation/MailingList_Settings_Db.pm.html#save
+https://dadamailproject.com/support/documentation/MailingList_Settings_Db.pm.html#save
 
 =cut

@@ -8,13 +8,13 @@
 
 See the Error FAQ: 
 
-L<http://dadamailproject.com/support/documentation/FAQ-errors.pod.html>
+L<https://dadamailproject.com/support/documentation/FAQ-errors.pod.html>
 
 =head2 Support
 
 See the support page on the Dada Mail website: 
 
-L<http://dadamailproject.com/support>
+L<https://dadamailproject.com/support>
 
 =head2 Using Dada Mail
 
@@ -22,7 +22,7 @@ L<http://dadamailproject.com/support>
 
 Complete installation docs are located at: 
 
-L<http://dadamailproject.com/d/install_dada_mail.pod.html>
+L<https://dadamailproject.com/d/install_dada_mail.pod.html>
 
 =head3 Install Dada Mail via a Third Party Services
 
@@ -32,7 +32,7 @@ Many different third party services that are available through different hosting
 
 We do install Dada Mail on behalf of our clients: 
 
-L<http://dadamailproject.com/installation/request.html>
+L<https://dadamailproject.com/installation/request.html>
 
 We do a great job!
 
@@ -108,7 +108,7 @@ The only place that this variable is hardcoded is in the, C<$PROGRAM_URL> variab
 
 There's a plugin called, B<Change Your List Short Name> that can do this for you: 
 
-L<http://dadamailproject.com/d/change_list_shortname.cgi.html>
+L<https://dadamailproject.com/d/change_list_shortname.cgi.html>
 
 =head2 How do I fetch/reset the Dada Mail Root Password?
 
@@ -150,7 +150,7 @@ We do not suggest this, as now you're open to someone exploiting your Dada Mail,
 
 There is also plugin, described here: 
 
-L<http://dadamailproject.com/support/documentation/change_root_password.cgi.html>
+L<https://dadamailproject.com/support/documentation/change_root_password.cgi.html>
 
 That will allow you to change the Dada Mail Root Password. You will first have to log into your list control panel, with the Dada Mail Root Password.  
 
@@ -178,7 +178,7 @@ L<http://www.youtube.com/watch?v=kUENzRN2EPA&hd=1>
 
 =item * RESTful API
 
-L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html#RESTful-API>
+L<https://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html#RESTful-API>
 
 =back
 
@@ -208,7 +208,7 @@ And pasting the HTML into your page's source.
 
 There's also a Dada Mail Extension that'll allow someone to subscribe to more than one list: 
 
-L<http://dadamailproject.com/support/documentation/multiple_subscribe.cgi.html> 
+L<https://dadamailproject.com/support/documentation/multiple_subscribe.cgi.html> 
 
 =head2 Mass Subscribing Email Addresses via the List Control Panel
 
@@ -248,7 +248,7 @@ The following tag is required in your mailing list message:
 
 See the docs on Public and Private Mailing Lists: 
 
-L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
+L<https://dadamailproject.com/d/features-public_and_private_lists.pod.html>
 
 =head2 Hosting
 
@@ -262,13 +262,13 @@ Dada Mail is not really intended to be run locally on your Desktop Computer (unl
 
 I do have some good suggestions on hosting: 
 
-http://dadamailproject.com/support/hosting.html
+https://dadamailproject.com/support/hosting.html
 
 =head2 Dada Mail looks awesome! Installation is way over my head, do you provide installation services? 
 
 Yes: 
 
-http://dadamailproject.com/installation/request.html
+https://dadamailproject.com/installation/request.html
 
 =head2 Upgrading
 
@@ -276,7 +276,7 @@ http://dadamailproject.com/installation/request.html
 
 See: 
 
-L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html> 
+L<https://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html> 
 
 =head2 I have an older version of Dada Mail, or something called Mojo Mail, should I upgrade? 
 
@@ -290,7 +290,7 @@ Dada Mail handles announce only lists with ease - a standard installation will b
 
 Dada Mail can also be set up to allow discussion lists, you'll have to also install the B<Bridge> plugin. 
 
-http://dadamailproject.com/support/documentation/bridge.html
+https://dadamailproject.com/support/documentation/bridge.html
 
 The Bridge Plugin can also be set up to provide announce-only message sending from your mail reader - 
 
@@ -298,7 +298,7 @@ The Bridge Plugin can also be set up to provide announce-only message sending fr
 
 See the B<Bounce Handler> plugin: 
 
-http://dadamailproject.com/support/documentation/bounce_handler.html
+https://dadamailproject.com/support/documentation/bounce_handler.html
 
 =head2 How do I create the HTML Subscription form code to place on my web pages to allow people to subscribe to my list? 
 
@@ -308,11 +308,11 @@ Log into your list control panel, click, B<Appearance - Subscription Form HTML>
 
 Sure - in fact there are B<two> different form handlers to choose from, FormMail.pl
 
-http://dadamailproject.com/support/documentation/Dada-ized_FormMail_README.pod.html
+https://dadamailproject.com/support/documentation/Dada-ized_FormMail_README.pod.html
 
 and: TFmail.pl
 
-http://dadamailproject.com/support/documentation/Dada-ized_TFMail_README.pod.html
+https://dadamailproject.com/support/documentation/Dada-ized_TFMail_README.pod.html
 
 
 Both do a similar job, emailing you the fields filled out on your form and subscribing an email address, also filled out on a form, to a Dada Mail list. 
@@ -339,7 +339,7 @@ Dada Mail isn't designed to require that you do this. What you will want to do i
 
 This topic has it's own FAQ: 
 
-L<http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.html>
+L<https://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.html>
 
 Which is a must-read. 
 
@@ -405,7 +405,7 @@ B<NOTE:> Before being sent, all HTML messages will be changed to a multipart/alt
 
 See:
 
-L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =head2 The List Confirmation Process
 
@@ -429,7 +429,7 @@ Running the Program Generates a 500 Server Error Message when I do, "x"
 
 See the error FAQ: 
 
-http://dadamailproject.com/support/documentation/FAQ-errors.pod.html
+https://dadamailproject.com/support/documentation/FAQ-errors.pod.html
 
 =head2 Dada Mail and HTML Templates
 
@@ -535,7 +535,7 @@ Either, don't edit the individual copy of the list template in the admin control
 
 Information on the C<%LIST_SETUP_OVERRIDES> hash can be found at: 
 
-http://dadamailproject.com/support/documentation/global_variables.pod.html#list_setting_defaults
+https://dadamailproject.com/support/documentation/global_variables.pod.html#list_setting_defaults
 
 =back
 
@@ -640,14 +640,14 @@ I do not have any stats.
 
 I have listed some hosts I like here: 
 
-http://dadamailproject.com/support/hosting.html
+https://dadamailproject.com/support/hosting.html
 
 
 =head2 Can I track statistics like, who opens my email messages, who clicks on my URLs or anything else that ties activity of my mailing list to specific email addresses?
 
 Yes. See the B<Tracker> plugin: 
 
-L<http://dadamailproject.com/d/tracker.html>
+L<https://dadamailproject.com/d/tracker.html>
 
 It can keep track of url clickthroughs, email opens, forwards, archive views, # subscribers in your mailing list, when a message is sent, and soft/hard bounces. 
 
@@ -718,7 +718,7 @@ limit, you can certainly bump up the batch settings to accomodate the resources 
 
 See the Mail Sending FAQ at: 
 
-L<http://dadamailproject.com/support/documentation/FAQ-email_sending.pod.html>
+L<https://dadamailproject.com/support/documentation/FAQ-email_sending.pod.html>
 
 =head2 Archiving
 
@@ -780,7 +780,7 @@ http://www.computerhope.com/jargon/a/absopath.htm
 
 =head2 What do I need to run Dada Mail? 
 
-http://dadamailproject.com/d/requirements.pod.html
+https://dadamailproject.com/d/requirements.pod.html
 
 =head2 Does Dada Mail need any special Perl CPAN modules installed? 
 
@@ -844,7 +844,7 @@ Dada Mail can archive all list messages it sends. Archived messages are archived
 
 See the Dada Mail File Format FAQ: 
 
-http://dadamailproject.com/support/documentation/FAQ-file_formats.pod.html
+https://dadamailproject.com/support/documentation/FAQ-file_formats.pod.html
 
 =head2  Who develops Dada Mail?
 
@@ -856,7 +856,7 @@ Yes.
 
 Please get in touch: 
 
-L<http://dadamailproject.com/contact>
+L<https://dadamailproject.com/contact>
 
 =head2 Is there a public repository for Dada Mail?  
 

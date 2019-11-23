@@ -8,7 +8,7 @@ Simple Scripts/Mojo Marketplace (henceforth, only reffered to as, "B<Mojo Market
 
 Many people who start with a Mojo Marketplace installation of Dada Mail will then want to upgrade to Pro Dada, which allows them to manage more than three lists, and 1,000 subscribers, per mailing list. Below is the instructions on how to do so. Pro Dada can be purchased here: 
 
-L<http://dadamailproject.com/purchase/pro.html>
+L<https://dadamailproject.com/purchase/pro.html>
 
 Mojo Marketplace has, in its history of offering Dada Mail, sometimes changed the method that they install Dada Mail. Since starting to offer Dada Mail, their installs  are less and less different from the install directions we give, and thus, it's much easier to upgrade. 
 
@@ -25,7 +25,7 @@ First, find the B<Simple Scripts> button in your cPanel,
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/search_for_simple_scripts.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/search_for_simple_scripts.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -38,7 +38,7 @@ On the menu at the top, click on the link entitled, B<Scripts & Platforms>,
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/find_scripts_and_platforms.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/find_scripts_and_platforms.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -50,7 +50,7 @@ When the page has refreshed, click on, B<Dada Mail> (it's under Mailing Lists).
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/find_dada_mail.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/find_dada_mail.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -63,7 +63,7 @@ Click the button labeled, B<Start>,
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/start_install.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/start_install.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -77,7 +77,7 @@ I'm going to use the directory, B<mojomarketplace> as my own directory, just to 
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/check_domain.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/check_domain.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -88,7 +88,7 @@ If everything checks out, B<Accept the Terms and Conditions>, and click the butt
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/install_now.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/install_now.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -109,7 +109,7 @@ Once again, enter into Mojo Marketplace, and click on B<Scripts and Platforms>. 
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/view_my_installs.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/view_my_installs.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -122,7 +122,7 @@ Under Dada Mail, click on the link labeled, B<Uninstall> (as scary as that sound
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/click_uninstall_link.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/click_uninstall_link.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -137,7 +137,7 @@ Click the button labeled, B<Remove From List> (Option #2), and then confirm this
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/click_remove_from_list_button.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/click_remove_from_list_button.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -158,7 +158,7 @@ B<mojomarketplace> is our installation directory. If we peak inside this directo
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/find_dada_directory.jpg" width="719" height="607" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/find_dada_directory.jpg" width="719" height="607" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -166,7 +166,7 @@ B<mojomarketplace> is our installation directory. If we peak inside this directo
 
 From here, all we need to do is follow the regular, B<Upgrade Dada Mail> directions, 
 
-L<http://dadamailproject.com/d/upgrade_dada_mail.pod.html>
+L<https://dadamailproject.com/d/upgrade_dada_mail.pod.html>
 
 Here's the basic steps: I<(See the full docs if you have more questions)>
 
@@ -175,7 +175,7 @@ B<Rename the, "dada" Directory:> I'm going to rename this directory, B<dada-6_4_
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/rename_dada_directory.jpg" width="719" height="607" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/rename_dada_directory.jpg" width="719" height="607" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -186,12 +186,12 @@ B<Upload the Dada Mail distro, as well as the, B<uncompress_dada.cgi> helper scr
 
 in this example, we're upgrading to B<v6.5.0> of Pro Dada, so the distro is named, B<pro_dada-6_5_0.tar.gz>. It's possible there's already a copy of the B<uncompress_dada.cgi> script in this directory, you'll still need to put up a specific copy, for this exact version of Pro Dada. Pro Dada copies of the distro and this helper script can be found at the Pro Dada subscribers-only part of the Dada Mail support site: 
 
-L<http://dadamailproject.com/pro_dada>
+L<https://dadamailproject.com/pro_dada>
 
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/put_pro_dada_distro.jpg" width="719" height="607" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/put_pro_dada_distro.jpg" width="719" height="607" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -214,7 +214,7 @@ Simply visit this URL in your web browser to have this script unroll this distro
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/click_install_and_configure_dada_mail.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/click_install_and_configure_dada_mail.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -226,7 +226,7 @@ Once in the installer, you will want to choose, B<Upgrade>, and hopefully, the p
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/click_continue.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/click_continue.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -238,7 +238,7 @@ What's fantastic about moving from a Mojo Marketplace installation of Dada Mail 
 =begin html
 
 <p style="text-align:center">
-<img src="http://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/click_configure_pro_dada.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
+<img src="https://dadamailproject.com/images/v6_5_0-mojo_marketplace_upgrade/click_configure_pro_dada.jpg" width="800" height="589" style="border:1px solid black" /><br /> 
 <em></em> 
 </p>
 
@@ -246,7 +246,7 @@ What's fantastic about moving from a Mojo Marketplace installation of Dada Mail 
 
 Pro Dada has many advanced configuration options above this button that Dada Mail does not have, and which you may want to play around with. A complete walk-through of the many additional, advanced options is covered here: 
 
-L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html>
+L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html>
 
 Click on the button labeled, B<Move the, 'dada/installer' Directory, Disable the, 'install.cgi' script>, and then the button labeled, B<Start working Dada Mail/Pro Dada!>.
 

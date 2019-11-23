@@ -309,7 +309,7 @@ This method returns a B<DADA::MailingList::Settings> object.
 Removes a Mailing List. the B<-name> parameter is required.
 =head1 AUTHOR
 
-Justin Simoni - http://dadamailproject.com/contact
+Justin Simoni - https://dadamailproject.com/contact
 
 =head1 LICENSE AND COPYRIGHT
 

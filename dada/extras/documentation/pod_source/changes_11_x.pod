@@ -11,11 +11,13 @@
 Add your WhatsApp Number! A link to start a WhatsApp chat will appear at the bottom of your 
 email messages, below your physical address and phone number. 
 
+=head3 Theme being used now displayed in Admin Menu
+
 =head3 Better error reporting in individual mass mailing log
 
 In an effort to more easily debug problems with mass mailings, the individual mass mailing log will show more errors.
 
-=head3 BEtter error reporting for problems with messages received with the Bridge plugin
+=head3 Better error reporting for problems with messages received with the Bridge plugin
 
 In an effort to more easily debug problems with messages received via the Bridfge plugin, more information 
 will be printed to the error log, when a problem occurs.  
@@ -50,6 +52,8 @@ But, C<MIME::Lite> and therefore C<MIME::Lite::HTML> are known to be a little bu
 these days, so we've moved to it's larger brother: C<MIME::Entity>. C<MIME::Entity> and the rest of the C<MIME::Tools>
 collection of modules is already well-entrenched within Dada Mail's codebase. 
 Removing MIME::Lite::HTML also removes a substantial amount of redundant code. 
+
+=head2 jQuery upgraded from v2.1.4 to v2.2.4
 
 
 =head1 11.5.1

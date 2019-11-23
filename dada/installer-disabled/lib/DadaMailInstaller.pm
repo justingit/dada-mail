@@ -878,7 +878,7 @@ sub scrn_configure_dada_mail {
                 configured_dada_config_file              => $configured_dada_config_file,
                 configured_dada_files_loc                => $configured_dada_files_loc,
                 DOC_VER                                  => $DOC_VER,
-                DOC_URL                                  => 'http://dadamailproject.com/support/documentation-' . $DOC_VER,
+                DOC_URL                                  => 'https://dadamailproject.com/support/documentation-' . $DOC_VER,
                 original_dada_root_pass                  => $original_dada_root_pass,
                 support_files_dir_path                   => scalar $self->support_files_dir_path_guess(),
                 support_files_dir_url                    => scalar $self->support_files_dir_url_guess(),

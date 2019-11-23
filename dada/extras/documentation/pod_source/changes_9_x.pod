@@ -32,7 +32,7 @@ Bounce Handler will also not resend the bounced message to the List Owner if tha
 
 For reasons like this, we do highly suggest using Amazon SES with Dada Mail for people getting serious with their mailing lists: 
 
-L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+L<https://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 =head3 Bridge accepting email messages sent from Dada Mail
 
@@ -64,9 +64,9 @@ Save Bounce Handler preferences for multiple mailing lists at once.
 The Scheduled Jobs require a cronjob to be set up, but many times this cronjob is not correctly set up or is removed by accident, causing some of Dada Mail's advanced functonality to not work correctly. Now, Dada Mail will periodically run the required Scheduled Jobs, if it thinks the jobs have not been run recently. We still strongly suggest to set up the cronjob to have the best experience with using Dada Mail. 
 
 More information on Dada Mail's Scheduled Jobs (cronjob)
-L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
+L<https://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
-This option can be enabled/disabled in the included installer and is enabled by default. More information: L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Run-Periodically-After-App-Execution>
+This option can be enabled/disabled in the included installer and is enabled by default. More information: L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Run-Periodically-After-App-Execution>
 
 =head3 Tracker
 
@@ -167,7 +167,7 @@ We'll be experimenting with the latter, as it should help with working with larg
 
 More information on how to change these options are available at, 
 
-L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Email-Parsing-Engine>
+L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Email-Parsing-Engine>
 
 =head1 9.4.1
 
@@ -189,7 +189,7 @@ Say you have a subscrption form, and say that form has been targeted by a bot in
 
 Dada Mail's Rate Limiting now monitors who is requesting what, and how many times. If it notices what could potentially be signs of abuse, it'll deny the request for a small amount of time. This stops flagrant and out-of-control abuse of the app and does so easily.
 
-Rate Limiting is enabled by default, and its options can be customized in Dada Mail's included installer. B<More Information:> L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Rate-Limiting>
+Rate Limiting is enabled by default, and its options can be customized in Dada Mail's included installer. B<More Information:> L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Rate-Limiting>
 
 =head1 9.3.0
 
@@ -267,7 +267,7 @@ Dada Mail now support's Google's new reCAPTHCA service, aka reCAPTCHA v2 aka No 
 
 More information on how to setup and utilize the CAPTCHA system in Dada Mail can be found at, 
 
-L<http://dadamailproject.com/d/features-CAPTCHA.pod.html>
+L<https://dadamailproject.com/d/features-CAPTCHA.pod.html>
 
 =head2 Bugfixes
 
@@ -300,7 +300,7 @@ Mandrill has changed their ToS to disallow bulk mailing, so this service is a ba
 
 We love Amazon SES! We've updated and expanded the docs to help you better set up Amazon SES in Dada Mail. Docs can be found here: 
 
-L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+L<https://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 =head3 Ping Test in Sending Options Test for SMTP
 
@@ -356,7 +356,7 @@ L<https://github.com/justingit/dada-mail/issues/546>
 
 Looks like the following script was not working for v9 of Dada Mail: 
 
-L<http://dadamailproject.com/d/dada3_to_dada4_sql.pl.html>
+L<https://dadamailproject.com/d/dada3_to_dada4_sql.pl.html>
 
 This script is still useful, if you're upgrading from v3 of Dada Mail, are using the SQL backend, and also have profile fields. We've updated it to work correctly with v9. 
 

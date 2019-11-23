@@ -41,7 +41,7 @@ Here's how you'd use it, when placing this tag in part of a message:
 =head3 More Information: 
 
 For more information, see the docs on B<The Dada Mail Email Template Syntax>: 
-L<http://dadamailproject.com/d/features-email_template_syntax.pod.html>
+L<https://dadamailproject.com/d/features-email_template_syntax.pod.html>
 
 =head2 Partial List Sending
 
@@ -94,34 +94,34 @@ You'll be presented with a table of your subscribers Clicking on the email addre
 
 =head4 DADA::MailingList::Subscribers
 
-L<http://dadamailproject.com/support/documentation/MailingList_Subscribers.pm.html>
+L<https://dadamailproject.com/support/documentation/MailingList_Subscribers.pm.html>
 
 =head3 Profiles 
 
 =head4 Dada::Profile
 
-L<http://dadamailproject.com/support/documentation/Profile.pm.html>
+L<https://dadamailproject.com/support/documentation/Profile.pm.html>
 
 =head4 DADA::Profile::Fields
 
-L<http://dadamailproject.com/support/documentation/Profile_Fields.pm.html>
+L<https://dadamailproject.com/support/documentation/Profile_Fields.pm.html>
 
 =head4 DADA::Profile::Session
 
-L<http://dadamailproject.com/support/documentation/Profile_Session.pm.html>
+L<https://dadamailproject.com/support/documentation/Profile_Session.pm.html>
 
 =head4 DADA::ProfileFieldsManager
 
-L<http://dadamailproject.com/support/documentation/ProfileFieldsManager.pm.html>
+L<https://dadamailproject.com/support/documentation/ProfileFieldsManager.pm.html>
 
 =head3 Templating System
 
 The HTML Screen and Email Template parts of Dada Mail all use the same system. See: 
 
-L<http://dadamailproject.com/support/documentation/Template_Widgets.pm.html#screen>
+L<https://dadamailproject.com/support/documentation/Template_Widgets.pm.html#screen>
 
 And also: 
 
-L<http://dadamailproject.com/support/documentation/App_FormatMessages.pm.html#email_template>
+L<https://dadamailproject.com/support/documentation/App_FormatMessages.pm.html#email_template>
 
 =cut

@@ -26,7 +26,7 @@ use Carp qw(cluck);
 #  pod2text ./bridge | less
 #
 # Or try online:
-#  http://dadamailproject.com/d/bridge.html
+#  https://dadamailproject.com/d/bridge.html
 #
 #---------------------------------------------------------------------#
 # REQUIRED:
@@ -4061,11 +4061,11 @@ The List Email can be either a regular B<POP3 email account>, which Bridge will 
 
 The below documentation goes into detail on how to I<install> and I<configure> Bridge. A user guide for Bridge is available in the Dada Mail Manual chapter, B<Using Bridge>: 
 
-L<http://dadamailproject.com/pro_dada/using_bridge.html>
+L<https://dadamailproject.com/pro_dada/using_bridge.html>
 
 For more information on Pro Dada/Dada Mail Manual: 
 
-L<http://dadamailproject.com/purchase/pro.html>
+L<https://dadamailproject.com/purchase/pro.html>
 
 =head1 Obtaining The Plugin
 
@@ -4131,7 +4131,7 @@ If you're setting the command in cPanel (or something similar) and it asks you t
 
 Bridge runs in the background on a schedule. Make sure to set Dada Mail's cronjob: 
 
-L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
+L<https://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
 =head2 DMARC Policies and Bridge
 

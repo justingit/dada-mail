@@ -68,7 +68,7 @@ Once everything is in place, you'll need to now reconfigure Dada Mail to work in
 
 Drop back into the installer using the following directions, 
 
-L<http://dadamailproject.com/d/install_dada_mail.pod.html#Making-Additional-Global-Configuration-Changes-using-the-Dada-Mail-Installer> 
+L<https://dadamailproject.com/d/install_dada_mail.pod.html#Making-Additional-Global-Configuration-Changes-using-the-Dada-Mail-Installer> 
 
 You may need to adjust the Program URL, The dada_mail_support_files directory, as well as your MySQL login information. 
 

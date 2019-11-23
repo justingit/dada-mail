@@ -28,7 +28,7 @@ Dada Mail isn't ever tested on a Windows Server or even Apache running on top of
 
 Sometimes, the default system Perl is a lower version that v5.10.1, but a more up-to-date version of Perl may be available at a different location than the what Dada Mail is set to, by default (C</usr/bin/perl>). More information: 
 
-L<http://dadamailproject.com/d/FAQ-errors.pod.html#Perl-Version>
+L<https://dadamailproject.com/d/FAQ-errors.pod.html#Perl-Version>
 
 Since Dada Mail is a CGI app, you'll need support for Perl CGI scripts within your web server environment. 
 
@@ -72,7 +72,7 @@ L<https://metacpan.org/pod/DBD::SQLite>
 
 If these modules are not available, you'll need to install them using the operating system package management system, or using the C<cpan> or C<cpanm> command line tool, which should be installed when Perl is installed, or some hosts (like cPanel) may have a way to install Perl modules through cPanel. See: 
 
-L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =head2 LWP CPAN Perl Module
 
@@ -86,7 +86,7 @@ Dada Mail is shipped with an installer. It can also upgrade your Dada Mail.
 
 This: 
 
-L<http://dadamailproject.com/support/hosting.html>
+L<https://dadamailproject.com/support/hosting.html>
 
 is a very B<incomplete> list of hosting companies that seem to work well with Dada Mail. 
 

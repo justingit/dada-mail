@@ -12,7 +12,7 @@
 
 Digest Messages are messages that are created by taking the content of many messages sent in a timespan, and putting them into a single message to then send out. See the feature overview of Digests here: 
 
-L<http://dadamailproject.com/d/features-digest.pod.html>
+L<https://dadamailproject.com/d/features-digest.pod.html>
 
 Subscribers can now have the option of having individual messages delivered, having a digest message delivered on a scheduled, or having messages that would have been delivered to them held from being delivered.
 
@@ -40,7 +40,7 @@ Dada Mail has had support for scheduled mailings since the inception of the Beat
 
 The fancy new Web Services API support: 
 
-L<http://dadamailproject.com/d/features-restful_web_services.pod.html>
+L<https://dadamailproject.com/d/features-restful_web_services.pod.html>
 
 Although a part of Dada Mail, didn't have the control panel screen available, to actually use, 
 this release fixes that little problem. 
@@ -53,7 +53,7 @@ this release fixes that little problem.
 
 Here's the full docs on our new Experimental Web Services API: 
 
-L<http://dadamailproject.com/d/features-restful_web_services.pod.html>
+L<https://dadamailproject.com/d/features-restful_web_services.pod.html>
 
 In a nutshell, these new webservices give you administrative power to validate and subscribe addresses, unsubscribe addresses get and set list settings and send out mass mailings from another application easily and securely. 
 
@@ -73,7 +73,7 @@ Dealing with complaints is important, especially when using a third party email 
 
 Here's an overview on using Dada Mail with Amazon SES: 
 
-L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+L<https://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 If you're using Amazon SES with Dada Mail, you know that you need to verify the List Owner and List Administror of your mailing list, or your messages won't be sent out, properly. This is sometimes an easy thing to forget to do. If you do forget to this, whole mass mailings can fail.
 
@@ -336,7 +336,7 @@ L<https://github.com/justingit/dada-mail/issues/437>
 
 This is primarily a bugfix release, although, we've have added a few new Advanced Installation Configuration Options, available to your via The Dada Mail Installer. Here's information on the Advanced Installation Configuration Options available: 
 
-L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html>
+L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html>
 
 Including, 
 
@@ -413,7 +413,7 @@ All other options for a mailing list are still available for a Private List, all
 
 More information about Private and Public Mailing Lists:
 
-L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
+L<https://dadamailproject.com/d/features-public_and_private_lists.pod.html>
 
 =head3 Abuse Reporting
 
@@ -472,6 +472,6 @@ Along with Profile Fields, Dada Mail can now allow you to set a Profile Password
 
 See the entire v6.x to v7.x doc: 
 
-L<http://dadamailproject.com/d/dada6_to_dada7.pod.html>
+L<https://dadamailproject.com/d/dada6_to_dada7.pod.html>
 
 =cut

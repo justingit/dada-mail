@@ -802,15 +802,12 @@ sub admin_menu_notifications {
 		$r->{drafts}                               = $self->admin_menu_drafts_notification(); 
 		$r->{sending_monitor}                      = $self->admin_menu_mailing_monitor_notification(); 
 		$r->{view_list}                            = $self->admin_menu_subscriber_count_notification(); 
-		
 		$r->{change_info}                         = $self->admin_menu_change_info_notification();
-		
 		$r->{view_archive}                         = $self->admin_menu_archive_count_notification(); 
 		$r->{mail_sending_options}                 = $self->admin_menu_mail_sending_options_notification(); 
 		$r->{mailing_sending_mass_mailing_options} = $self->admin_menu_mailing_sending_mass_mailing_options_notification();
+		$r->{email_themes}                         = $self->admin_menu_email_themes_notification();
 		$r->{profile_fields}                       = $self->admin_menu_profiles_notification();
-
-
 		$r->{bounce_handler}                       = $self->admin_menu_bounce_handler_notification();
 		$r->{tracker}                              = $self->admin_menu_tracker_notification();
 		$r->{bridge}                               = $self->admin_menu_bridge_notification();
@@ -1062,8 +1059,30 @@ sub admin_menu_profiles_notification {
         carp($_);
         return '';
     };
-
 }
+
+sub admin_menu_email_themes_notification {
+    my $self = shift;
+    my $q    = $self->query();
+    try {
+        my ( $admin_list, $root_login, $checksout, $error_msg ) =
+          check_list_security( -cgi_obj => $q, );
+        if ($checksout) {
+            my $list = $admin_list;
+            require DADA::MailingList::Settings;
+            my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+			my $tn = $ls->param('email_theme_name') || 'default';
+			$tn =~ s/_/ /g; 
+			$tn = join " ", map {ucfirst} split " ", $tn;
+			return $tn;
+        }
+    }
+    catch {
+        carp($_);
+        return '';
+    };
+}
+
 
 sub admin_menu_bounce_handler_notification {
     my $self = shift;

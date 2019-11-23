@@ -385,7 +385,7 @@ Dada Mail comes with a jQuery Plugin, that can be used to create a subscription 
 
 To use the jQuery plugin, you'll first need to load the plugin's .js file, along with other .js files it requires, in the head of your document: 
 
-	<script src="http://example.com/dada_mail_support_files/static/javascripts/vendor/jquery-2.1.4.min.js"></script>
+	<script src="http://example.com/dada_mail_support_files/static/javascripts/vendor/jquery-2.2.4.min.js"></script>
 	
 	<link rel="stylesheet" href="http://example.com/dada_mail_support_files/static/css/vendor/colorbox/colorbox.css">
 	<script src="http://example.com/dada_mail_support_files/static/javascripts/vendor/jquery/colorbox/jquery.colorbox-min.js"></script>
@@ -393,7 +393,7 @@ To use the jQuery plugin, you'll first need to load the plugin's .js file, along
 	<script src="http://example.com/dada_mail_support_files/static/javascripts/jquery.dadamail.js"></script>
 
 
-B<jquery.dadamail.js> is the jQuery plugin itself, but it does require B<jQuery> to be loaded (in our case, it's called, B<jquery-2.1.4.min.js>), as well the Colorbox jQuery plugin (L<http://www.jacklmoore.com/colorbox/>). 
+B<jquery.dadamail.js> is the jQuery plugin itself, but it does require B<jQuery> to be loaded (in our case, it's called, B<jquery-2.2.4.min.js>), as well the Colorbox jQuery plugin (L<http://www.jacklmoore.com/colorbox/>). 
 
 All these are bundled with Dada Mail, but you may use your own copies, if you'd like. To change the design of the modal window that pops up, you'll want to work with Colorbox's own .css file. 
 
@@ -542,7 +542,7 @@ B<LoadingError> holds HTML text, that's then shown if there's a communication pr
 
 You may use Dada Mail's own modules in your own app, see: 
 
-L<http://dadamailproject.com/d/App_Subscriptions.pm.html>
+L<https://dadamailproject.com/d/App_Subscriptions.pm.html>
 
 =head2 Command Line Utility - subscribe_email.pl
 
@@ -592,12 +592,12 @@ Uncheck the option, I<Limit Subscription Confirmation Sending>. Once done testin
 
 See the sourcecode to FormMail to see how we integrated Dada Mail subscription capabilities in this simple form handler:
 
-http://dadamailproject.com/d/Dada-ized_FormMail_README.pod.html
+https://dadamailproject.com/d/Dada-ized_FormMail_README.pod.html
 
 =head4 TFmail Integration 
 
 See the sourcecode to TFmail to see how we integrated Dada Mail subscription capabilities in this simple form handler:
 
-http://dadamailproject.com/d/Dada-ized_TFMail_README.pod.html
+https://dadamailproject.com/d/Dada-ized_TFMail_README.pod.html
 
 =cut

@@ -22,13 +22,13 @@ The following is a short list of such services:
 
 =head2 Amazon SES
 
-Of all the services available, this is the one that I have the most experience with - in fact, it's what we use on L<http://dadamailproject.com> itself. We use it, we love it, Dada Mail has great support for it, and we want you to use it to. We have separate docs that goes through more information on Amazon SES, how to set it up in Dada Mail and some things you should read up on, so you can make sure SES is right for you: 
+Of all the services available, this is the one that I have the most experience with - in fact, it's what we use on L<https://dadamailproject.com> itself. We use it, we love it, Dada Mail has great support for it, and we want you to use it to. We have separate docs that goes through more information on Amazon SES, how to set it up in Dada Mail and some things you should read up on, so you can make sure SES is right for you: 
 
-L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+L<https://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 Amazon SES is also something that we offer as an option on our own installation services:
 
-L<http://dadamailproject.com/installation/request.html>
+L<https://dadamailproject.com/installation/request.html>
 
 =head3 Advantages
 
@@ -62,7 +62,7 @@ All and all, Amazon SES is severely lacking in being simple to set up. The Amazo
 
 We do provide setup of Amazon SES as part of our installation services of Dada Mail - see the installation request form for exact pricing. It's a one-time setup fee, and then the only recurring charge will be from Amazon AWS for messages you send: 
 
-L<http://dadamailproject.com/installation/request.html>
+L<https://dadamailproject.com/installation/request.html>
 
 Starting mail sending limits. For reasons that are lost on me personally, you can only start sending with the service at a rate of 10,000 messages/day. This limit can be raised, but only after the SES system sees that you are using the service up to its limit. Some of my clients now how daily quotes of 500,000 messages and above, but it won't be something you will have right off the bat. 
 

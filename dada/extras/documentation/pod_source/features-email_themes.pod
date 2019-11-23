@@ -106,7 +106,7 @@ like this one:
 These tags will be replaced by the values they correspond to. You can learn about 
 Dada Mail's template tags in its own docs: 
 
-L<http://dadamailproject.com/d/features-email_template_syntax.pod.html>
+L<https://dadamailproject.com/d/features-email_template_syntax.pod.html>
 
 =head1 Creating a New Email Theme
 
@@ -215,7 +215,7 @@ The free distribution of Dada Mail comes with only one theme called, C<default>,
 
 These themes are mostly color scheme changes of the C<default> theme. Learn more about Pro Dada at, 
 
-L<http://dadamailproject.com/purchase/pro.html>
+L<https://dadamailproject.com/purchase/pro.html>
 
 If you've transformed your Dada Mail install to Pro Dada within the app, these new themes will not be automatically available. 
 

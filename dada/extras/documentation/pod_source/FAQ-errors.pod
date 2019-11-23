@@ -137,7 +137,7 @@ Dada Mail uses Perl modules from various sources - mostly CPAN. Each of these mo
 
 In Dada Mail, the CPAN modules that have a debugging/tracing scheme are listed in the, B<%CPAN_DEBUG_SETTINGS> Config.pm variable. More information:
 
-B<http://dadamailproject.com/support/documentation/global_variables.pod.html#_cpan_debug_settings>
+B<https://dadamailproject.com/support/documentation/global_variables.pod.html#_cpan_debug_settings>
 
 Enabling debugging settings in these modules may help debug issues such as:
 
@@ -226,7 +226,7 @@ Save your changes, then run the installer.
 
 Many shared hosting accounts have hourly email sending quotas, that will need to send below. 
 
-B<See the FAQ on Mass Mail Sending:> L<http://dadamailproject.com/d/FAQ-mailing_list_sending.pod.html>
+B<See the FAQ on Mass Mail Sending:> L<https://dadamailproject.com/d/FAQ-mailing_list_sending.pod.html>
 
 The majority of mass mailing delivery problems are from sending over your hosting account's hourly email limit. 
 
@@ -372,7 +372,7 @@ it should be enabled by default. Your changes will not be visible, until after y
 
 See the doc on the Screen Cache feature for more information: 
 
-L<http://dadamailproject.com/support/documentation/features-screen_cache.pod.html>
+L<https://dadamailproject.com/support/documentation/features-screen_cache.pod.html>
 
 
 =head2 Diagnosing Error Messages
@@ -598,7 +598,7 @@ If you're on a WinNT server, you're most likely not going to be using Sendmail t
 
 Dada Mail uses the Google Visualization API to create its charts and graphs. This API needs its data given to it in the JSON format and Dada Mail uses the B<JSON> CPAN module to create the data. If you do not have this module currently installed, you will need to install it, yourself. 
 
-See, B<Installing CPAN Perl Modules>: L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
+See, B<Installing CPAN Perl Modules>: L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 If that's not an option, Dada Mail also ships with a disabled copy of B<JSON>. 
 

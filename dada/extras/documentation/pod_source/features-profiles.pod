@@ -20,7 +20,7 @@ Profiles allow your users to:
 
 Password Protect Directories can be set up using the following plugin: 
 
-L<http://dadamailproject.com/d/password_protect_directories.cgi.html>
+L<https://dadamailproject.com/d/password_protect_directories.cgi.html>
 
 =back
 
@@ -176,7 +176,7 @@ The list doesn't actually exist!
 
 A complete listing of what checks are done (and what may be skipped) may be found at: 
 
-L<http://dadamailproject.com/d/MailingList_Subscribers.pm.html#subscription_check>
+L<https://dadamailproject.com/d/MailingList_Subscribers.pm.html#subscription_check>
 
 To set your own list of checks to skip, you may change the, C<subscription_check_skip> setting to an array ref holding the checks to skip. For example: 
 

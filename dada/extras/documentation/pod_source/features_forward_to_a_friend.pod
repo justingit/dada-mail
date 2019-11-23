@@ -34,7 +34,7 @@ B<Enable CAPTCHA on the, "Forward to a Friend" Form>
 
 B<CAPTCHA in Dada Mail:>
 
-L<http://dadamailproject.com/d/global_variables.pod.html#captcha_in_dada_mail>
+L<https://dadamailproject.com/d/global_variables.pod.html#captcha_in_dada_mail>
 
 =head2 Adding a "Forward to a Friend" link to your outgoing mailing list messages
 
@@ -67,6 +67,6 @@ would look like this:
 
 B<The Dada Mail Email Template Syntax>
 
-L<http://dadamailproject.com/d/features-email_template_syntax.pod.html>
+L<https://dadamailproject.com/d/features-email_template_syntax.pod.html>
 
 =cut

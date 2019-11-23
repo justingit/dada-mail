@@ -12,11 +12,11 @@ The web-based interface works great if you are setting up and running Dada Mail 
 
 The latest version of Dada Mail will be listed on: 
 
-L<http://dadamailproject.com/download>
+L<https://dadamailproject.com/download>
 
 if you are a Pro Dada subscription, you may download the most recent version of Pro Dada at: 
 
-L<http://dadamailproject.com/pro_dada>
+L<https://dadamailproject.com/pro_dada>
 
 Copy the distribution to the directory you would like to install Dada Mail under. 
 
@@ -80,7 +80,7 @@ If you run Dada Mail under PSGI/Plack, you will need to configure your webserver
 
 More on running Dada Mail under PSGI/Plack:
 
-L<http://dadamailproject.com/d/features-psgi_support.pod.html>
+L<https://dadamailproject.com/d/features-psgi_support.pod.html>
 
 =head1 Required Paramaters
 
@@ -267,7 +267,7 @@ Dada Mail supports Amazon SES to send messages out, sending verification
 email messages  and to find out  your sending stats and limitations. More information 
 on Amazon SES support: 
 
-L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+L<https://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 To enable Amazon SES support you will need to pass your  C<AWSAccessKeyId> and C<AWSSecretKey>.
 

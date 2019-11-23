@@ -8,11 +8,11 @@ With the release of v7, Dada Mail supports both B<Public Mailing Lists>, and B<P
 
 To learn more about how to set up both Public and Private Mailing List, see the Dada Mail Manual Chapter on Mailing List Options, 
 
-L<http://dadamailproject.com/pro_dada/list_options.html>
+L<https://dadamailproject.com/pro_dada/list_options.html>
 
 For more information on Pro Dada/Dada Mail Manual: 
 
-L<http://dadamailproject.com/purchase/pro.html>
+L<https://dadamailproject.com/purchase/pro.html>
 
 =head2 Public Mailing Lists
 
