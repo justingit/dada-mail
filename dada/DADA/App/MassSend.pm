@@ -431,7 +431,9 @@ sub construct_from_url {
         'HTMLCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
         HTMLEncoding                     => scalar $self->{ls_obj}->param('html_encoding'),
         TextEncoding                     => scalar $self->{ls_obj}->param('plaintext_encoding'),
-		( ( $num_attachments < 1 ) ? (%headers) : () ),
+		( ( $num_attachments < 1 ) ? (
+			headers => {%headers}
+		) : () ),
     );
 
     my $text_message = undef; #'This email message requires that your mail reader support HTML'; 
