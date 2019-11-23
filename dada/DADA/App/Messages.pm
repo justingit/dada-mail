@@ -218,10 +218,11 @@ sub create_multipart_email {
 		);
 	}
 
-
+	#use Data::Dumper; 
+	#warn '$args->{-headers}' . Dumper($args->{-headers});
+	
     require DADA::App::HTMLtoMIMEMessage;
     my $mailHTML = new DADA::App::HTMLtoMIMEMessage(
-
         remove_jscript =>
           scalar $self->ls->param('mass_mailing_remove_javascript'),
         'IncludeType' => $url_options,
@@ -229,7 +230,7 @@ sub create_multipart_email {
         'HTMLCharset' => scalar $self->ls->param('charset_value'),
         HTMLEncoding  => scalar $self->ls->param('html_encoding'),
         TextEncoding  => scalar $self->ls->param('plaintext_encoding'),
-        %{ $args->{-headers} },
+        headers => $args->{-headers},
     );
 
     my ( $status, $errors, $MIME_Entity, $md5 );

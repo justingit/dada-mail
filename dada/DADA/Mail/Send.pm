@@ -321,7 +321,7 @@ sub send {
     # and back to your regularly scheduled send() subroutine...
 
     if ( $fields{To} =~ m/\<bad\.apple\@example\.com\>$/ ) {
-        warn 'bad apple!';
+        carp 'bad apple!';
         return -1;
     }
 
@@ -681,7 +681,7 @@ sub send {
         }
         else {
             unless ( open( MAIL, $live_mailing_settings ) ) {
-                warn  "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't pipe to mail program using settings: $DADA::Config::MAIL_SETTINGS or $DADA::Config::MASS_MAIL_SETTINGS: $!";
+                carp  "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't pipe to mail program using settings: $DADA::Config::MAIL_SETTINGS or $DADA::Config::MASS_MAIL_SETTINGS: $!";
                 return -1;
             }
         }
@@ -789,28 +789,20 @@ sub send {
 
         $msg .= "\n";
         $msg .= $fields{Body} . "\n";    # DEV: Why the last, "\n"?
-                                         #warn "sending " . time;
-										 
-        my ( $response_code, $response_content ) = $ses_obj->send_msg(
+        
+		my ( $response_code, $response_content ) = $ses_obj->send_msg(
             {
                 -msg => $msg,
             }
         );
 
-        #            require Data::Dumper;
-        #           carp Data::Dumper::Dumper(
-        #               {
-        #                   reponse_code     =>  $response_code,
-        #                   response_content => $response_content,
-        #               }
-        #            );
-
         if ( $response_code == 200 ) {
-
+			# warn "NO Problems sending via SES: " . $response_content;
             # my($sesMessageId, $sesRequestId) = split("\n", $response_content);
             # do something here about the message id
         }
         else {
+			carp "Problems sending via SES: " . $response_content;
             return -1;
         }
     }

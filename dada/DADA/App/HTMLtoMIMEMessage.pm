@@ -662,6 +662,7 @@ sub build_mime_object {
 	    if ( $final_entity->head->get( $_, 0 ) ) {
 	        $final_entity->head->delete($_);
 	    }
+#		warn 'adding: ' . $_ . ' => ' . $self->{headers}->{$_};
 	    $final_entity->head->add( $_, $self->{headers}->{$_});
 		
 	}
