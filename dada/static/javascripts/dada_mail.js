@@ -4490,7 +4490,7 @@ function preview() {
 }
 
 function check_newest_version(ver) {
-	var check = "http://dadamailproject.com/cgi-bin/support/version.cgi?version=" + ver;
+	var check = "https://dadamailproject.com/cgi-bin/support/https://dadamailproject.com?version=" + ver;
 	window.open(check, 'version', 'width=325,height=300,top=20,left=20');
 }
 
