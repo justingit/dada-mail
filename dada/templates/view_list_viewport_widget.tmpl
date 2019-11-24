@@ -262,11 +262,23 @@
             <!-- tmpl_unless query -->
 			    <li>
                 <!-- tmpl_if expr="(type eq 'list')" -->
-                      <a href="#" class="small button alert unsubscribeAllSubscribers" data-type="<!-- tmpl_var type -->" data-type_title="<!-- tmpl_var type_title escape="HTML" -->">
+                      <a 
+					  	href="#"
+						class="small button alert unsubscribeAllSubscribers" 
+						data-type="<!-- tmpl_var type -->"
+						data-type_title="<!-- tmpl_var type_title escape="HTML" -->"
+						data-global_unsubscribe_enabled="<!-- tmpl_var GLOBAL_UNSUBSCRIBE escape="HTML" default="0" -->"
+						>
 						  &#8656; Unsubscribe ALL <!-- tmpl_var type_title -->
 					  </a>
                 <!-- tmpl_else --> 
-                      <a href="#" class="small button alert unsubscribeAllSubscribers" data-type="<!-- tmpl_var type -->" data-type_title="<!-- tmpl_var type_title escape="HTML" -->">
+                      <a 
+					  	href="#"
+						class="small button alert unsubscribeAllSubscribers"
+						data-type="<!-- tmpl_var type -->"
+						data-type_title="<!-- tmpl_var type_title escape="HTML" -->"
+						data-global_blacklist_enabled="<!-- tmpl_var GLOBAL_BLACK_LIST escape="HTML" default="0" -->"
+					>
 						  &#8656; Remove ALL <!-- tmpl_var type_title -->
 				      </a>
                 <!-- /tmpl_if -->

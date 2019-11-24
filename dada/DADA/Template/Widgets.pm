@@ -142,7 +142,11 @@ GIVE_PROPS_IN_HTML             => $DADA::Config::GIVE_PROPS_IN_HTML,
 GIVE_PROPS_IN_SUBSCRIBE_FORM   => $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM, 
 GIVE_PROPS_IN_ADMIN            => $DADA::Config::GIVE_PROPS_IN_ADMIN, 
 GIVE_PROPS_IN_EMAIL            => $DADA::Config::GIVE_PROPS_IN_EMAIL, 
-                               
+          
+		  
+GLOBAL_UNSUBSCRIBE             => $DADA::Config::GLOBAL_UNSUBSCRIBE,                     
+GLOBAL_BLACK_LIST              => $DADA::Config::GLOBAL_BLACK_LIST,             
+
 DEFAULT_ADMIN_SCREEN           => $DADA::Config::DEFAULT_ADMIN_SCREEN, 
 MAIL_SETTINGS                  => $DADA::Config::MAIL_SETTINGS, 
 MASS_MAIL_SETTINGS             => $DADA::Config::MASS_MAIL_SETTINGS, 

@@ -1183,10 +1183,32 @@ jQuery(document).ready(function($){
 
 		event.preventDefault();
 		
- 	 	var type       = $(this).data("type"); 
-		var type_title = $(this).data("type_title"); 
-
+ 	 	var type                       = $(this).data("type"); 
+		var type_title                 = $(this).data("type_title"); 
+		var global_unsubscribe_enabled = $(this).data("global_unsubscribe_enabled");
+		var global_blacklist_enabled   = $(this).data("global_blacklist_enabled");
 		var confirm_msg = "Are you sure you want to remove ALL " + type_title + "?";
+		
+		
+		if (global_unsubscribe_enabled === 1 && type == 'list'){ 
+			confirm_msg += "\n\nGlobal Unsubscribe is ENABLED:\n\n"
+		 	+ "Removing ALL " 
+			+ type_title 
+			+ " from this mailing list will remove ALL " 
+			+ type_title 
+			+ " from EVERY mailing list.";
+		}
+		
+		if (global_blacklist_enabled === 1 && type == 'black_list'){ 
+			confirm_msg += "\n\nGlobal Black List is ENABLED:\n\n"
+		 	+ "Removing ALL " 
+			+ type_title 
+			+ " from this mailing list will remove ALL " 
+			+ type_title 
+			+ " from EVERY mailing list.";
+		}
+		
+		
 		
 		if (!confirm(confirm_msg)) {
 				alert("'" + type_title + "' not removed.");
@@ -1809,9 +1831,17 @@ function admin_menu_notifications(){
 					if ($('.admin_menu_' + target_class + '_notification').length) {
 						$('.admin_menu_' + target_class + '_notification').remove();
 					}
+					
 					content = jsondoc[target_class];
-					if(content.length) {
-						$('.admin_menu_' + target_class + ' a').append('<span class="admin_menu_' + target_class + '_notification round alert label"> ' + content + '</span>');
+					/*
+						console.log('target_class:' + target_class);
+						console.log('jsondoc[target_class] (content): ' + jsondoc[target_class]);
+						console.log('content.length:' + content.length);
+					*/
+					if (typeof content !== "undefined") {
+						if(content.length) {
+							$('.admin_menu_' + target_class + ' a').append('<span class="admin_menu_' + target_class + '_notification round alert label"> ' + content + '</span>');
+						}
 					}
 				}
 
