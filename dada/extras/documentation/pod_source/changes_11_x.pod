@@ -44,6 +44,10 @@ L<https://github.com/justingit/dada-mail/issues/871>
 
 L<https://github.com/justingit/dada-mail/issues/878>
 
+=head3 If Global Unsubscribe/Global Black List is enabled, the, "Remove ALL $List_Type" alert box should remind the user 
+
+L<https://github.com/justingit/dada-mail/issues/879>
+
 =head1 Internal Changes 
 
 =head2 Moving Away from MIME::Lite::HTML to MIME::Entity
