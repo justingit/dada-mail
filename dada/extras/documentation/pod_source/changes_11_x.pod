@@ -13,6 +13,8 @@ email messages, below your physical address and phone number.
 
 =head3 Theme being used now displayed in Admin Menu
 
+See which theme is currently applied to your email messages without having to visit the Email Themes screen
+
 =head3 Better error reporting in individual mass mailing log
 
 In an effort to more easily debug problems with mass mailings, the individual mass mailing log will show more errors.
@@ -20,7 +22,21 @@ In an effort to more easily debug problems with mass mailings, the individual ma
 =head3 Better error reporting for problems with messages received with the Bridge plugin
 
 In an effort to more easily debug problems with messages received via the Bridfge plugin, more information 
-will be printed to the error log, when a problem occurs.  
+will be printed to the error log, when a problem occurs. 
+
+=head3 New Safety Checks When Removing All List Members
+
+In Dada Mail, it's very easy to remove all list members from the, B<Membership: View> screen. 
+Although an alert box does come up when you click this button, 
+it's not eniterely clear if Global Unsubscribe is enabled for your installation. 
+If it is, removing all your members from one list may remove all your members from all your mailing lists, 
+which most likely is not what you want to do. 
+
+To help with this issue, we've disabled this button per mailing list. You can re-enabled it in the, B<Membership: Options> screen. 
+We've also put a alert box on the top of the, B<Membership: View> to remind you if you Global Unsubscribe is enabled. The alert box that comes up if you do try to remove all your members will again remind you that global unsubscribe is enabled. 
+
+All the above also applies to the Global Black List, and you'll get similar notifications in the interface if you try to remove any of the blacklisted members, and have the Global Black List enabled. 
+
 
 =head2 Bugfixes
 
