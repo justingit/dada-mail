@@ -666,6 +666,10 @@ sub build_mime_object {
 	    $final_entity->head->add( $_, $self->{headers}->{$_});
 		
 	}
+	
+    $final_entity->head->delete('X-Mailer')
+      if $final_entity->head->get( 'X-Mailer', 0 );
+	  
 	$self->{_MAIL} = $final_entity;
 }
 
@@ -984,6 +988,10 @@ sub create_image_part {
 	}
 	
     my $entity = new MIME::Entity->build(%entity_args);
+	
+    $entity->head->delete('X-Mailer')
+      if $entity->head->get( 'X-Mailer', 0 );
+	  
     return $entity;
 }
 
