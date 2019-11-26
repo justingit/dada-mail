@@ -1414,6 +1414,7 @@ $MIME_TOOLS_PARAMS //= {
     view_list_subscriber_number            => 100,
     view_list_show_timestamp_col           => 1, 
 	view_list_show_sub_confirm_list        => 1, 
+	view_list_enable_delete_all_button     => 0,
     view_list_order_by                     => 'email', 
     view_list_order_by_direction           => 'ASC', 
 

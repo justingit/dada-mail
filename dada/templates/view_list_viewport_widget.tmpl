@@ -114,12 +114,22 @@
     <!-- /tmpl_if --> 
     
 <!-- tmpl_else -->
-
-<!-- tmpl_unless advanced_search --> 
-    <!-- tmpl_include list_search_form_widget.tmpl --> 
-<!-- tmpl_else --> 
-    
+	<!-- tmpl_unless advanced_search --> 
+	    <!-- tmpl_include list_search_form_widget.tmpl --> 
+	<!-- tmpl_else -->   
 <!-- /tmpl_unless --> 
+
+ <!-- tmpl_if EXPR="((type eq 'black_list') && (GLOBAL_BLACK_LIST == 1))" --> 
+ 	 <div class="alert-box warning radius">
+		 Global Black List is enabled.
+     </div>
+ <!-- /tmpl_if -->
+ <!-- tmpl_if EXPR="((type eq 'list') && (GLOBAL_UNSUBSCRIBE == 1))" --> 
+ 	 <div class="alert-box warning radius">
+		 Global Unsubscribe is enabled.
+     </div>
+ <!-- /tmpl_if -->	 
+
 
 <div class="row"> 
     <div class="small-6 columns">
@@ -178,7 +188,7 @@
 </div> 
 
 
-    <form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+    <form name="membership_email_form" id="membership_email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
     	
 		
          <!-- tmpl_include view_list_table_widget.tmpl --> 
@@ -194,13 +204,16 @@
             <ul class="button-group">
                 
      		 <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'test_list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list') || (type eq 'ignore_bounces_list')  || (type eq 'sub_confirm_list'))" -->
-
-             <input type="hidden" name="process" value="delete" >
-             <input type="hidden" name="flavor"       value="remove_subscribers" >
-             <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
+	             <input type="hidden" name="process" value="delete" >
+	             <input type="hidden" name="flavor"       value="remove_subscribers" >
+	             <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
             <!-- tmpl_if expr="(type eq 'list')" -->
                  <li>
-                     <input type="submit" class="small button warning" value="&#8592; Unsubscribe Checked Subscribers">
+                     <input 
+					 	type="submit" 
+						class="small button warning <!-- tmpl_if GLOBAL_UNSUBSCRIBE -->confirm_global_unsub<!-- /tmpl_if -->" 
+						value="&#8592; Unsubscribe Checked Subscribers"
+					>
                  </li>
             <!-- tmpl_else --> 
                 <li>
@@ -263,21 +276,36 @@
 			    <li>
                 <!-- tmpl_if expr="(type eq 'list')" -->
                       <a 
-					  	href="#"
-						class="small button alert unsubscribeAllSubscribers" 
+					  	
+						
 						data-type="<!-- tmpl_var type -->"
 						data-type_title="<!-- tmpl_var type_title escape="HTML" -->"
 						data-global_unsubscribe_enabled="<!-- tmpl_var GLOBAL_UNSUBSCRIBE escape="HTML" default="0" -->"
+						<!-- tmpl_if list_settings.view_list_enable_delete_all_button -->
+							class="small button alert unsubscribeAllSubscribers" 
+							enabled="enabled"
+							href="#"
+						<!-- tmpl_else -->
+							class="small button alert" 
+							disabled="disabled"
+						<!-- /tmpl_if -->
 						>
 						  &#8656; Unsubscribe ALL <!-- tmpl_var type_title -->
 					  </a>
                 <!-- tmpl_else --> 
                       <a 
-					  	href="#"
-						class="small button alert unsubscribeAllSubscribers"
 						data-type="<!-- tmpl_var type -->"
 						data-type_title="<!-- tmpl_var type_title escape="HTML" -->"
 						data-global_blacklist_enabled="<!-- tmpl_var GLOBAL_BLACK_LIST escape="HTML" default="0" -->"
+						<!-- tmpl_if list_settings.view_list_enable_delete_all_button -->
+							class="small button alert unsubscribeAllSubscribers"
+							enabled="enabled"
+							href="#"
+						<!-- tmpl_else -->
+							disabled="disabled"
+							class="small button alert"
+							
+						<!-- /tmpl_if -->
 					>
 						  &#8656; Remove ALL <!-- tmpl_var type_title -->
 				      </a>

@@ -8037,6 +8037,7 @@ sub subscription_options {
                     view_list_order_by                               => undef,
                     view_list_order_by_direction                     => undef,
                     view_list_show_sub_confirm_list                  => 0,
+					view_list_enable_delete_all_button               => 0,
                     use_add_list_import_limit                        => 0,
                     add_list_import_limit                            => undef,
                     allow_profile_editing                            => 0,

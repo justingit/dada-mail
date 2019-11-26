@@ -1178,6 +1178,22 @@ jQuery(document).ready(function($){
 		event.preventDefault();
 	});
 	
+	$("body").on("click", ".confirm_global_unsub", function(event) {
+		//event.preventDefault();
+		var confirm_msg = "\n\nGlobal Unsubscribe is ENABLED:\n\n"
+	 	+ "Removing checked address(es) from this mailing list"
+		+ " will remove them from all mailing lists." 
+		if (!confirm(confirm_msg)) {
+			alert("Canceled.");
+			return false; 
+		} else {
+			//$("body").off('submit', "#membership_email_form");
+			return true;
+		}
+		
+	});
+		
+	
 	
 	$("body").on("click", ".unsubscribeAllSubscribers", function(event) {
 
@@ -1188,7 +1204,6 @@ jQuery(document).ready(function($){
 		var global_unsubscribe_enabled = $(this).data("global_unsubscribe_enabled");
 		var global_blacklist_enabled   = $(this).data("global_blacklist_enabled");
 		var confirm_msg = "Are you sure you want to remove ALL " + type_title + "?";
-		
 		
 		if (global_unsubscribe_enabled === 1 && type == 'list'){ 
 			confirm_msg += "\n\nGlobal Unsubscribe is ENABLED:\n\n"

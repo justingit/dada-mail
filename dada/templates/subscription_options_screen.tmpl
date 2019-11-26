@@ -64,39 +64,10 @@
             </div> 
         </div>
 		
+    	
         <div class="row">
             <div class="small-12 columns">
-                <input 
-					type="checkbox" 
-					name="view_list_show_sub_confirm_list" 
-					id="view_list_show_sub_confirm_list"
-					value="1" 
-					<!-- tmpl_if list_settings.view_list_show_sub_confirm_list -->checked="checked"<!--/tmpl_if-->
-				>
-                <label for="view_list_show_sub_confirm_list">
-                 Show, &quot;Unconfirmed Subscribers&quot; sublist
-                </label>
-            </div> 
-        </div>
-	    <div class="row">
-	        <div class="small-1 columns">
-	        </div>	
-	        <div class="small-11 columns">
-	        <div class="alert-box info radius">
-			    The <strong>Unconfirmed Subscribers</strong> sublist are addresses that have submitted their address 
-				to subscribe, but haven't yet confirmed via clicking on the confirmation link in the 
-				email message they were sent.
-			</div>
-		    </div> 
-	    </div>
-		
-
-		
-		
-		
-        <div class="row">
-            <div class="small-12 columns">
-                 <label for="view_list_order_by">Order Subscribers by:</label>
+                 <label for="view_list_order_by">Order List Members by:</label>
 			 </div>
 		</div>
 		 
@@ -110,6 +81,20 @@
 	 	</div> 
 
     <!-- /tmpl_if --> 
+	
+    <div class="row">
+        <div class="small-12 columns">
+            <input 
+				type="checkbox" 
+				name="view_list_enable_delete_all_button" 
+				id="view_list_enable_delete_all_button" 
+				value="1" <!-- tmpl_if list_settings.view_list_enable_delete_all_button -->checked="checked"<!--/tmpl_if-->
+			>
+            <label for="view_list_enable_delete_all_button">
+             Enable, &quot;Unsubscribe/Remove ALL&quot; Members button
+            </label>
+        </div> 
+    </div>
 
 </fieldset>
 
@@ -293,7 +278,35 @@
 
 
 </fieldset> 
+<fieldset>
+ <legend>
+	  Unconfirmed Subscribers
+ </legend>
+ 
+     <div class="alert-box info radius">
+	    The <strong>Unconfirmed Subscribers</strong> sublist are addresses that have submitted their address 
+		to subscribe, but haven't yet confirmed via clicking on the confirmation link in the 
+		email message they were sent.
+	</div>
 
+
+    <div class="row">
+        <div class="small-12 columns">
+            <input 
+				type="checkbox" 
+				name="view_list_show_sub_confirm_list" 
+				id="view_list_show_sub_confirm_list"
+				value="1" 
+				<!-- tmpl_if list_settings.view_list_show_sub_confirm_list -->checked="checked"<!--/tmpl_if-->
+			>
+            <label for="view_list_show_sub_confirm_list">
+             Show, &quot;Unconfirmed Subscribers&quot; sublist
+            </label>
+        </div> 
+    </div>
+</fieldset>
+	
+	
 
 <fieldset>
  <legend>
