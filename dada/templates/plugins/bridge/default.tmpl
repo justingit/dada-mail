@@ -551,23 +551,67 @@
 		<div id="announce_list_params"> 
 			<div class="row">
 				<div class="small-12 columns">
+					
+					
+					<h4>
+						From header
+					</h4>
+					
+					
 					<label for="rewrite_anounce_from_header">
 					<input 
 						name="rewrite_anounce_from_header"
 						id="rewrite_anounce_from_header"
-						type="checkbox"
+						type="radio"
 						value="1" 
 						<!--tmpl_if list_settings.rewrite_anounce_from_header -->checked="checked"<!--/tmpl_if-->
 					> 
-						Rewrite the From: header on announce-only messages to the List Owner address 
+						Rewrite From header to List Owner 
 					</label>
 				</div> 
 			</div>
+			<div class="row">
+				<div class="small-12 columns">
+					<label for="rewrite_anounce_from_header_n">
+					<input 
+						name="rewrite_anounce_from_header"
+						id="rewrite_anounce_from_header_n"
+						type="radio"
+						value="0" 
+						<!--tmpl_unless list_settings.rewrite_anounce_from_header -->checked="checked"<!--/tmpl_unless-->
+					> 
+						Rewrite From header to be on-behalf-of List Owner
+					</label>
+				</div> 
+				
+				
+				<div class="row">
+					<div class="small-1 columns">
+					</div>
+					
+					<div class="small-11 columns">
+					<label>Don't rewrite From header for the following domains: (one domain per line)</label>
+						<textarea
+							 rows="4" 
+							 cols="40"
+							 name="announce_from_header_allowed_domains"
+							 ><!-- tmpl_var list_settings.announce_from_header_allowed_domains escape="HTML"--></textarea>
+					</div>
+					
+				</div>
+			
+			
+			</div>
+
+
+
+
+
 
 			<div class="row">
 				<div class="small-12 columns">
 					<h4>
-						Set Reply-To header:
+						Reply-To header
 					</h4>
 				</div>
 			</div> 

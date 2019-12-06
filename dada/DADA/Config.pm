@@ -1597,6 +1597,7 @@ $MIME_TOOLS_PARAMS //= {
     send_invalid_msgs_to_owner   => 1,
     send_msg_copy_to             => 0,
     rewrite_anounce_from_header  => 1,
+	announce_from_header_allowed_domains => '',
 
     msg_soft_size_limit      => 2621440, 
     msg_hard_size_limit      => 5242880, 

@@ -1371,21 +1371,42 @@ sub _format_headers {
               . $entity->head->get( 'Sender', 0 );
             warn 'Only Announce-Only';
         }
+		
+		# No reason to do this, unless authorized sending is enabled: 
+		if ($self->{ls}->param('enable_authorized_sending') == 1){
+	        if ( $entity->head->count('From') ) {
+	            my $og_from = $entity->head->get( 'From', 0 );
+	            chomp($og_from);
+		
+			    if ( $entity->head->count('X-Original-From') ) {
+			        $entity->head->delete('X-Original-From');
+			    }
+			    $entity->head->add( 'X-Original-From', $entity->head->get( 'From', 0 ) );
+
+	            $entity->head->delete('From');
+	            $entity->head->add(
+					'From', 
+					safely_encode( $self->_pp_announce($og_from) )
+				);
+				warn 'we\'ve set the From header specifically for announce_only lists with authorized senders' . 
+					$entity->head->get( 'From', 0 )
+					if $t; 
+	        }
+		}
+		
 
         if ( $self->{ls}->param('bridge_announce_reply_to') eq 'list_owner' ) {
             if ( $entity->head->count('Reply-To') ) {
                 $entity->head->delete('Reply-To');
             }
-            warn
-q{$entity->head->add( 'Reply-To', $self->{ls}->param('list_owner_email') );}
+            warn q{$entity->head->add( 'Reply-To', $self->{ls}->param('list_owner_email') );}
               if $t;
             $entity->head->add( 'Reply-To',
                 $self->{ls}->param('list_owner_email') );
         }
         elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'og_sender' )
         {
-            warn
-q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
+            warn q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
               if $t;
             if ( $entity->head->count('Reply-To') ) {
                 $entity->head->delete('Reply-To');
@@ -1399,8 +1420,15 @@ q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
             else {
                 warn q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}
                   if $t;
-                $entity->head->add( 'Reply-To',
-                    $entity->head->get( 'From', 0 ) );
+                
+				if ($self->{ls}->param('enable_authorized_sending') == 1){
+					$entity->head->add( 'Reply-To',
+	                    $entity->head->get( 'X-Original-From', 0 ) );
+				}
+				else {	
+					$entity->head->add( 'Reply-To',
+	                    $entity->head->get( 'From', 0 ) );
+				}
             }
         }
         elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'none' ) {
@@ -1503,11 +1531,12 @@ q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
 
 }
 
+
 sub _pp {
 
     my $self = shift;
     my $from = shift;
-
+	
     require Email::Address;
     require MIME::EncWords;
     require DADA::Template::Widgets;
@@ -1543,6 +1572,69 @@ sub _pp {
     );
     my $new_from = Email::Address->new();
     $new_from->address( $self->{ls}->param('discussion_pop_email') );
+    $new_from->phrase(
+        MIME::EncWords::encode_mimewords(
+            $new_phrase,
+            Encoding => 'Q',
+            Charset  => $self->{ls}->param('charset_value'),
+        )
+    );
+    return $new_from->format;
+
+}
+
+sub _pp_announce { 
+
+    my $self = shift;
+    my $from = shift;
+
+    require Email::Address;
+    require MIME::EncWords;
+    require DADA::Template::Widgets;
+
+    my $a = ( Email_Address_parse($from) )[0]->address;
+    my ( $e_name, $e_domain ) = split( '@', $a, 2 );
+
+	# I'm going to take a wild stab in thginking that the list owner is going to be sending a lot of
+	# announce-only emails
+	#
+	# We don't have to "On Behalf Of" ourselves.
+    if ( $a eq $self->{ls}->param('list_owner_email') ) {
+        return $from;
+    }
+	my $announce_from_header_allowed_domains = $self->{ls}->param('announce_from_header_allowed_domains');
+	my @domains = split(/\n|\r/, $announce_from_header_allowed_domains);
+	my $c_domains = {}; 
+	for(@domains){ 
+		if($_ =~ m/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/){ 
+			$c_domains->{$_} = 1;
+		}
+	}
+	# if it's on the list to not rewrite, don't: 
+    if(exists($c_domains->{$e_domain})){ 
+		return $from;
+	}
+    my $p = ( Email_Address_parse($from) )[0]->phrase || ( Email_Address_parse($from) )[0]->address;
+    $p = $self->_decode_header($p);
+    my $d          = '<!-- tmpl_var original_from_phrase default="" --> <!-- tmpl_var subscriber.email --> pp: [<!-- tmpl_var list_settings.list_name -->]';
+    my $new_phrase = DADA::Template::Widgets::screen(
+        {
+            -data => \$d,
+            -expr => 1,
+            -vars => {
+                original_from_phrase      => $p,
+                'subscriber.email'        => $a,
+                'subscriber.email_name'   => $e_name,
+                'subscriber.email_domain' => $e_name,
+            },
+            -list_settings_vars_param => {
+                -list   => $self->{ls}->param('list'),
+                -dot_it => 1,
+            },
+        }
+    );
+    my $new_from = Email::Address->new();
+    $new_from->address( $self->{ls}->param('list_owner_email') );
     $new_from->phrase(
         MIME::EncWords::encode_mimewords(
             $new_phrase,

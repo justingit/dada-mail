@@ -687,6 +687,7 @@ sub edit {
         find_spam_assassin_score_by                => undef,
         open_discussion_list                       => 0,
         rewrite_anounce_from_header                => 0,
+		announce_from_header_allowed_domains       => '',
         discussion_template_defang                 => 0,
         digest_enable                              => 0,
         digest_schedule                            => 86400,
@@ -717,6 +718,12 @@ sub edit {
 	    }
 		else { 
 			# warn 'yes discussion_pop_password: '  . $q->param('discussion_pop_password');
+		}
+		
+		if(defined($q->param('announce_from_header_allowed_domains'))){ 
+			my $tmp = $q->param('announce_from_header_allowed_domains');
+			   $tmp =~ s/\r\n/\n/g;
+			   $q->param('announce_from_header_allowed_domains', $tmp); 
 		}
 
         $ls->save_w_params(
@@ -1826,18 +1833,18 @@ sub validate_msg {
 
         $errors->{msg_not_from_list_owner} = 1;
 
-        if ( $ls->param('enable_moderation') ) {
-            $r .= "\t* Moderation enabled.\n";
-            $errors->{needs_moderation} = 1;
-        }
-        else {
-            $r .= "\t* Moderation disabled.\n";
-        }
-
         if ( $ls->param('group_list') == 1 ) {
 
             $r .= "\t* Discussion List Support is enabled.\n";
 
+	        if ( $ls->param('enable_moderation') ) {
+	            $r .= "\t* Moderation enabled.\n";
+	            $errors->{needs_moderation} = 1;
+	        }
+	        else {
+	            $r .= "\t* Moderation disabled.\n";
+	        }
+			
             my ( $s_status, $s_errors ) =
               $lh->subscription_check( 
 			  	{ 
@@ -1849,8 +1856,11 @@ sub validate_msg {
             if ( $s_errors->{subscribed} == 1 ) {
                 $r .= "\t\t* From Subscriber: Yes.\n";
 
+
                 $errors->{msg_not_from_list_owner} = 0;
-                if ( $ls->param('subscriber_sending_no_moderation') ) {
+                
+				# Open discussion list - bad idea. 
+				if ( $ls->param('subscriber_sending_no_moderation') ) {
                     $errors->{needs_moderation} = 0;
                 }
                 elsif ( $errors->{needs_moderation} == 1 ) {
