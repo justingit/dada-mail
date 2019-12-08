@@ -663,6 +663,7 @@ sub edit {
 		discussion_pop_starttls                    =>  0,
 		discussion_pop_ssl_verify_mode             => 0, 
         prefix_discussion_list_subjects_with       => '',
+		bridge_mention_original_sender             => 0, 
         enable_moderation                          => 0,
         moderate_discussion_lists_with             => 'list_owner_email',
         send_moderation_msg                        => 0,

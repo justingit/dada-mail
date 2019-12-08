@@ -1551,9 +1551,9 @@ $MIME_TOOLS_PARAMS //= {
     only_allow_group_plain_text  => 0,
     mail_group_message_to_poster => 1,
     prefix_list_name_to_subject  => 1,
-
     no_prefix_list_name_to_subject_in_archives => 1,
 
+	bridge_mention_original_sender => 1, 
     set_to_header_to_list_address        => 0,
     prefix_discussion_list_subjects_with => 'list_shortname',
     send_received_msg                    => 1, 

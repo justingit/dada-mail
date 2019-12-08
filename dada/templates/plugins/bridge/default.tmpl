@@ -446,6 +446,9 @@
 		<legend> 
 			General
 		</legend> 
+		
+		<h4>Enable/Disable</h4>
+		
 		<div class="row">
 			<div class="small-12 columns">
 				<label for="disable_discussion_sending">
@@ -459,6 +462,8 @@
 				</label>
 			</div>
 		</div>
+
+		<h4>Subject</h4>
 
 		<div class="row">
 			<div class="small-12 columns">
@@ -484,7 +489,9 @@
 		</div>
 
 		<div class="row">
-			<div class="small-12 columns">
+			<div class="small-1 columns">
+			</div>
+			<div class="small-11 columns">
 				<label for="no_prefix_list_name_to_subject_in_archives">
 					<input
 						 type="checkbox" 
@@ -497,6 +504,8 @@
 				</label>
 			</div> 
 		</div>
+	
+		<h4>Message Size</h4>
 
 		<div class="alert-box warning radius"> 
 			<strong>Warning:</strong> Setting the Soft and/or Hard Max Sizes too high will 
@@ -517,6 +526,24 @@
 				</label>
 			</div> 
 		</div>
+		
+		<h4>Original Sender</h4>
+		<div class="row">
+			<div class="small-12 columns">
+				
+				<label for="bridge_mention_original_sender">
+					<input 
+						type="checkbox" 
+						name="bridge_mention_original_sender" 
+						id="bridge_mention_original_sender" 
+						value="1" 
+						<!--tmpl_if list_settings.bridge_mention_original_sender -->checked="checked"<!--/tmpl_if-->
+					> 
+						Mention the original sender of the message at the top of the message itself
+				</label>
+			</div> 
+		</div>
+		
 	</fieldset> 
 
 	<fieldset> 
@@ -580,7 +607,7 @@
 						value="0" 
 						<!--tmpl_unless list_settings.rewrite_anounce_from_header -->checked="checked"<!--/tmpl_unless-->
 					> 
-						Rewrite From header to be on-behalf-of List Owner
+						Rewrite From header to be &quot;on behalf of&quot; List Owner
 					</label>
 				</div> 
 				
@@ -849,140 +876,148 @@
 				</div>
 
 				<div id="moderaton_params"> 
-					<div class="alert-box info radius">
-						Messages sent to your discussion list will first have to be approved by: 
-					</div>
+					<div class="row">
+						<div class="small-1 columns">
+						</div>
+						<div class="small-11 columns">
+						
+							<div class="alert-box info radius">
+								Messages sent to your discussion list will first have to be approved by: 
+							</div>
 					
 					
 	
-					<div class="row">
-						<div class="small-12 columns">	
-							<label for="moderate_discussion_lists_with_list_owner_email">
-							<input 
-								type="radio" 
-								name="moderate_discussion_lists_with" 
-								value="list_owner_email" 
-								id="moderate_discussion_lists_with_list_owner_email" 
-								<!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'list_owner_email')" -->checked="checked" <!--/tmpl_if-->
-							>
-								List Owner
-							</label>
-						</div>
-					</div>
-					<div class="row">
-						<div class="small-12 columns">	
-							<label for="moderate_discussion_lists_with_moderators">
-								<input 
-									type="radio"
-									name="moderate_discussion_lists_with"
-									value="moderators"
-									id="moderate_discussion_lists_with_moderators" 
-									<!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'moderators')" -->checked="checked"<!--/tmpl_if-->
-								>
-								List Owner or a Moderator
-							</label>
-						</div>
-					</div>
-	
-					<ul class="button-group right">
-					    <li>
-							<input type="button"  class="success view_moderators button small" value="View Moderators (<!-- tmpl_var moderators_count -->)" >
-						</li>
-						<li>
-							<input type="button" class="success add_moderators button small" value="Add Moderators">
-						</li>
-					</ul>
-
-					<div class="row">
-						<div class="small-12 columns">	
-
-							<label for="authorized_sending_no_moderation">
-							<input 
-								type="checkbox" 
-								name="authorized_sending_no_moderation" 
-								id="authorized_sending_no_moderation" 
-								value="1" 
-								<!--tmpl_if list_settings.authorized_sending_no_moderation -->checked="checked"<!--/tmpl_if-->
-								>
-									Allow Authorized Senders to send messages to your Subscribers List without moderation
-							</label>
-						</div>
-					</div>
-
-					<!-- tmpl_if list_settings.open_discussion_list -->       
-						<!-- tmpl_if list_settings.group_list --> 
 							<div class="row">
 								<div class="small-12 columns">	
-									<label for="subscriber_sending_no_moderation">
+									<label for="moderate_discussion_lists_with_list_owner_email">
+									<input 
+										type="radio" 
+										name="moderate_discussion_lists_with" 
+										value="list_owner_email" 
+										id="moderate_discussion_lists_with_list_owner_email" 
+										<!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'list_owner_email')" -->checked="checked" <!--/tmpl_if-->
+									>
+										List Owner
+									</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="small-12 columns">	
+									<label for="moderate_discussion_lists_with_moderators">
 										<input 
-											type="checkbox"
-											name="subscriber_sending_no_moderation" 
-											id="subscriber_sending_no_moderation"
-											value="1"
-											<!--tmpl_if list_settings.subscriber_sending_no_moderation -->checked="checked"<!--/tmpl_if-->
+											type="radio"
+											name="moderate_discussion_lists_with"
+											value="moderators"
+											id="moderate_discussion_lists_with_moderators" 
+											<!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'moderators')" -->checked="checked"<!--/tmpl_if-->
 										>
-										Allow Subscribers to send messages to the entire list without moderation
+										List Owner or a Moderator
+									</label>
+								</div>
+							</div>
+	
+							<ul class="button-group right">
+							    <li>
+									<input type="button"  class="success view_moderators button small" value="View Moderators (<!-- tmpl_var moderators_count -->)" >
+								</li>
+								<li>
+									<input type="button" class="success add_moderators button small" value="Add Moderators">
+								</li>
+							</ul>
+
+							<div class="row">
+								<div class="small-12 columns">	
+
+									<label for="authorized_sending_no_moderation">
+									<input 
+										type="checkbox" 
+										name="authorized_sending_no_moderation" 
+										id="authorized_sending_no_moderation" 
+										value="1" 
+										<!--tmpl_if list_settings.authorized_sending_no_moderation -->checked="checked"<!--/tmpl_if-->
+										>
+											Allow Authorized Senders to send messages to your Subscribers List without moderation
+									</label>
+								</div>
+							</div>
+
+							<!-- tmpl_if list_settings.open_discussion_list -->       
+								<!-- tmpl_if list_settings.group_list --> 
+									<div class="row">
+										<div class="small-12 columns">	
+											<label for="subscriber_sending_no_moderation">
+												<input 
+													type="checkbox"
+													name="subscriber_sending_no_moderation" 
+													id="subscriber_sending_no_moderation"
+													value="1"
+													<!--tmpl_if list_settings.subscriber_sending_no_moderation -->checked="checked"<!--/tmpl_if-->
+												>
+												Allow Subscribers to send messages to the entire list without moderation
+											</label> 
+								<!-- /tmpl_if --> 
+							<!-- /tmpl_if --> 
+
+							<div class="row">
+								<div class="small-12 columns">	
+									<label for="send_moderation_msg">
+									<input 
+										type="checkbox"
+										name="send_moderation_msg" 
+										id="send_moderation_msg"
+										value="1" 
+										<!--tmpl_if list_settings.send_moderation_msg -->checked="checked"<!--/tmpl_if-->
+									>
+										Send a &quot;Message Received, Awaiting Moderation&quot; Email Notification
+									</label>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="small-12 columns">	
+									<label for="send_moderation_accepted_msg">
+										<input 
+										type="checkbox" 
+										name="send_moderation_accepted_msg" 
+										id="send_moderation_accepted_msg"
+										value="1"
+										<!--tmpl_if list_settings.send_moderation_accepted_msg -->checked="checked"<!--/tmpl_if-->
+										>
+										Send an &quot;Acceptance&quot; Email Notification
+									</label>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="small-12 columns">	
+									<label for="send_moderation_rejection_msg">
+										<input name="send_moderation_rejection_msg" id="send_moderation_rejection_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_rejection_msg -->checked="checked"<!--/tmpl_if--> >
+										Send a &quot;Rejection&quot; Email Notification
 									</label> 
-						<!-- /tmpl_if --> 
-					<!-- /tmpl_if --> 
-
-					<div class="row">
-						<div class="small-12 columns">	
-							<label for="send_moderation_msg">
-							<input 
-								type="checkbox"
-								name="send_moderation_msg" 
-								id="send_moderation_msg"
-								value="1" 
-								<!--tmpl_if list_settings.send_moderation_msg -->checked="checked"<!--/tmpl_if-->
-							>
-								Send a &quot;Message Received, Awaiting Moderation&quot; Email Notification
-							</label>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="small-12 columns">	
-							<label for="send_moderation_accepted_msg">
-								<input 
-								type="checkbox" 
-								name="send_moderation_accepted_msg" 
-								id="send_moderation_accepted_msg"
-								value="1"
-								<!--tmpl_if list_settings.send_moderation_accepted_msg -->checked="checked"<!--/tmpl_if-->
-								>
-								Send an &quot;Acceptance&quot; Email Notification
-							</label>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="small-12 columns">	
-							<label for="send_moderation_rejection_msg">
-								<input name="send_moderation_rejection_msg" id="send_moderation_rejection_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_rejection_msg -->checked="checked"<!--/tmpl_if--> >
-								Send a &quot;Rejection&quot; Email Notification
-							</label> 
-						</div>
-					</div>
+								</div>
+							</div>
 					
-					<div class="clearfix">
-						<ul class="button-group right">
-						    <li>
-								<input 
-									type="button"  
-									class="success view_awaiting_msgs button small" 
-									value="View Messages Awaiting Moderation <!-- tmpl_if list_settings.enable_moderation -->(<!-- tmpl_var num_awaiting_msgs default="0" -->)<!-- tmpl_else -->(Disabled)<!-- /tmpl_if -->"
-									<!-- tmpl_unless list_settings.enable_moderation -->
-										disabled="disabled"
-									<!-- /tmpl_unless -->
-								>	
-							</li>
-						</ul>
-					</div>
+							<div class="clearfix">
+								<ul class="button-group right">
+								    <li>
+										<input 
+											type="button"  
+											class="success view_awaiting_msgs button small" 
+											value="View Messages Awaiting Moderation <!-- tmpl_if list_settings.enable_moderation -->(<!-- tmpl_var num_awaiting_msgs default="0" -->)<!-- tmpl_else -->(Disabled)<!-- /tmpl_if -->"
+											<!-- tmpl_unless list_settings.enable_moderation -->
+												disabled="disabled"
+											<!-- /tmpl_unless -->
+										>	
+									</li>
+								</ul>
+							</div>
 					
 					
+						</div> 
+					</div> 
 					
-				</div> 
+					
+				</div>
 			</fieldset> 
 		</div> 
 	</fieldset> 
@@ -1009,15 +1044,29 @@
 				</label>
 			</div>
 		</div>
-		<div class="clearfix">
-			<ul class="button-group right">
-			    <li>
-					<input type="button"  class="success view_authorized_senders button small" value="View Authorized Senders (<!-- tmpl_var authorized_senders_count -->)">
-				</li>
-				<li>
-					<input type="button" class="success add_authorized_senders button small" value="Add Authorized Senders">
-				</li>
-			</ul>
+		
+		<div class="row">
+			<div class="small-1 columns">
+			</div>
+			<div class="small-11 columns">
+				
+	
+		
+				<div class="clearfix">
+					<ul class="button-group right">
+					    <li>
+							<input type="button"  class="success view_authorized_senders button small" value="View Authorized Senders (<!-- tmpl_var authorized_senders_count -->)">
+						</li>
+						<li>
+							<input type="button" class="success add_authorized_senders button small" value="Add Authorized Senders">
+						</li>
+					</ul>
+				</div>
+				
+				
+				
+				
+			</div>
 		</div>
 	</fieldset>
 

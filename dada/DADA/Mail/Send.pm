@@ -849,13 +849,15 @@ sub _mail_merge_vars_from_entity {
 	    my $e = $from_tmp->address(); 
 		my ($en, $ed) = split('@', $e);
        
-	    $vars->{'sender.email'}         = $e; 
-	    $vars->{'sender.email_name'}    = $en; 
-	    $vars->{'sender.email_domain'}  = $ed; 
+	   	# I forget why this is a bad idea, but it could be a bad idea, 
+		# It may be because there will be template tags in the phrase itself, 
+		# and you're left with template tags showing up. 
+		#
+	  	#  $vars->{'sender.email_from_phrase'}    = $fm->_decode_header($from_tmp->phrase()); 
+	    $vars->{'sender.email'}                = $e; 
+	    $vars->{'sender.email_name'}           = $en; 
+	    $vars->{'sender.email_domain'}         = $ed; 
 		
-		# ? maybe not... 
-		# 		    $vars->{'original_sender.email_phrase'} = $fm->_decode_header($from_tmp->phrase()); 
-
 	    if ( $DADA::Config::PROFILE_OPTIONS->{enabled} == 1 ) {
 	        require DADA::Profile;
 	        my $dp = DADA::Profile->new( { -email => $e } );
