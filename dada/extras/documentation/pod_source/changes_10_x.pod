@@ -280,7 +280,7 @@ B<Old School> is very similar to the mass mailing layout used in Dada Mail < v10
 
 Since discussion lists rewrite the C<From:> header, it can be slightly difficult to contact the original sender, becauset their address is not as easy to get to. 
 
-Now, the origina sender will be listed a the first line of the discussion list message. You may use the following email template tag to customize this: 
+Now, the original sender will be listed a the first line of the discussion list message. You may use the following email template tag to customize this: 
 
 	<!-- tmpl_var sender.email --> 
 	
