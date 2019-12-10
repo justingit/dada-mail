@@ -42,7 +42,6 @@ Look for textbox labeled,
 
 B<Don't rewrite From header for the following domains: (one domain per line)> 
 
-
 =head4 Set the Reply-To: header
 
 The ability to set the Reply-To header to the List Owner or the original sender (or no one!) has been kept, even though the From: header need to be sent "On Behalf Of".
@@ -54,6 +53,22 @@ Similar to what you're able to do already for discussion lists, you can now set 
 B<Mention the original sender of the message at the top of the message itself>
 
 in Bridge. 
+
+Under the hood, this is implemented using Dada Mail's template tags, which you can use too, in your own custom mass mailing layout. See our docs on Dada Mail's email template tag syntax to learn more: 
+
+L<https://dadamailproject.com/d/features-email_template_syntax.pod.html>
+
+=head2 Bug Fixes 
+
+=head3  Authorized Senders do not have their addresses re-written in announce-only messages.
+Open
+
+L<https://github.com/justingit/dada-mail/issues/881>
+
+=head3  Moderation is active even if mailing list is announce-only
+
+L<https://github.com/justingit/dada-mail/issues/882>
+
 
 =head1 11.6.0
 
