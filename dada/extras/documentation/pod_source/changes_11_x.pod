@@ -1,6 +1,59 @@
+
 =pod
 
 =encoding utf-8
+
+=head1 11.7.0
+
+=head2 Features
+
+=head3 Bridge Announcement List and Authorized Senders Enhancements
+
+The Bridge plugin allows you to send messages with Dada Mail through your mail reader without having to log into Dada Mail's own list control panel. You can set up a list of Authorized Senders who are allowed to send to the mailing list. This is an easy way to allow more than just the List Owner the ability to send to your mailing list, without needing to give out your 
+mailing list's administration credentials to anyone else. 
+
+We have added several features to allow you to send more effective announce-only messages through Bridge: 
+
+=head4 Rewrite From: Header Correctly
+
+The first change we've made is actually a bug fix. One way to run your announcement list utilizing Authorized Senders is to rewrite the From: header, so all messages sent to your mailing list use the List Owner in the From: header, no matter what Authorized Sender sent the message. 
+
+Look for the radio button labeled, 
+
+B<Rewrite From header to List Owner> 
+
+in Bridge
+
+Another option available is to preserve the original From: header so that any replies go to that address, rather than the List Onwer. The issue was that the From: header wasn't correctly managed to deal with DMARC restrictions. 
+
+Say you have an Authorized Sender that's using a Gmail account, and you've set up your mailing list to send using your own SMTP server. Sending a mass mailing from your own server with (for example) a Gmail address in the From: header won't work. You'll need to instead send the message  "on behalf of" the original sender, just like we do for discussion lists. In past versions, this wasn't happening, and in v11.7- it now is. Rejoice!
+
+Look for the radio button labeled, 
+
+B<Rewrite From header to be "on behalf of" List Owner> 
+ 
+in Bridge. 
+
+=head4 Don't rewrite the From header for email addresses from certain domains
+
+We've also added an option to list domains that you would not like this rewrite to happen, just in case your mail system has already allowed certain additional domains to be sent through it.
+
+Look for textbox labeled, 
+
+B<Don't rewrite From header for the following domains: (one domain per line)> 
+
+
+=head4 Set the Reply-To: header
+
+The ability to set the Reply-To header to the List Owner or the original sender (or no one!) has been kept, even though the From: header need to be sent "On Behalf Of".
+
+=head4 Mention the original sender
+
+Similar to what you're able to do already for discussion lists, you can now set your mailing list to mention who the original authorized sender was, who sent the message. This option can be enabled (default) and disabled in Bridge for both announce-only and discussion lists. Look for the checkbox labeled: 
+
+B<Mention the original sender of the message at the top of the message itself>
+
+in Bridge. 
 
 =head1 11.6.0
 
@@ -28,7 +81,7 @@ will be printed to the error log, when a problem occurs.
 
 In Dada Mail, it's very easy to remove all list members from the, B<Membership: View> screen. 
 Although an alert box does come up when you click this button, 
-it's not eniterely clear if Global Unsubscribe is enabled for your installation. 
+it's not entirely clear if Global Unsubscribe is enabled for your installation. 
 If it is, removing all your members from one list may remove all your members from all your mailing lists, 
 which most likely is not what you want to do. 
 
@@ -36,7 +89,6 @@ To help with this issue, we've disabled this button per mailing list. You can re
 We've also put a alert box on the top of the, B<Membership: View> to remind you if you Global Unsubscribe is enabled. The alert box that comes up if you do try to remove all your members will again remind you that global unsubscribe is enabled. 
 
 All the above also applies to the Global Black List, and you'll get similar notifications in the interface if you try to remove any of the blacklisted members, and have the Global Black List enabled. 
-
 
 =head2 Bugfixes
 
