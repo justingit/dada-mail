@@ -355,6 +355,22 @@ This could print out something like:
  Hazzah!
  
  -- listowner@example.com
+ 
+=head2 Original Sender Tags
+
+If you use Bridge to send out your messages, you can use the, B<sender> tags within the mass mailing layout or in the message itself to pull in information about them. Similar to the, C<subscriber> tags, you can use the B<sender> tags. You'll see this implemented in the discussion list-specific mass mailing layout that ships with Dada Mail: 
+
+<!-- tmpl_unless list_settings.disable_discussion_sending -->
+ <!-- tmpl_if list_settings.bridge_mention_original_sender -->
+ 
+     From: <!-- tmpl_var sender.email -->
+ 
+ <!-- /tmpl_if -->
+<!-- /tmpl_unless -->
+
+In the above template code, we see if Bridge is enabled, and if this byline should be printed. If so, we print the sender's email address using the tag, 
+
+	<!-- tmpl_var sender.email -->
 
 =head2 Looping
 
