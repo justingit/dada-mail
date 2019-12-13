@@ -3322,8 +3322,16 @@ sub _mail_merge {
     $labeled_data{'list_settings.list'}      = shift @$data;
     $labeled_data{'list_settings.list_name'} = shift @$data;
     $labeled_data{message_id}                = shift @$data;
-
-
+	
+	# This makes a unique identifier, that only lives within this method, then is never used again
+	# The email address and this string are never saved together. 
+	# There shouldn't be any way to reverse the string to tie the email address to the data
+	
+	my $salted                = scalar(generate_rand_string_md5()) . $subscriber_vars->{'subscriber.email'};
+	$labeled_data{hashed_uid} = md5_checksum(\$salted); 
+	
+	warn '$labeled_data{hashed_uid}: ' . $labeled_data{hashed_uid} ;
+	
     # type is passed in, $self->list_type
     my $confirmation_token = $self->_make_token(
         {

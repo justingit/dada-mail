@@ -19,7 +19,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;    # For now, my dear.
 use Try::Tiny; 
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
 
 sub new {
 
@@ -1041,6 +1041,9 @@ sub report_by_message_index {
 }
 
 sub msg_basic_event_count { 
+
+	warn 'at msg_basic_event_count' 
+		if $t; 
 	
 	my $self    = shift; 
 	my $msg_id = shift; 
@@ -1064,11 +1067,17 @@ sub msg_basic_event_count {
         
     }
     
-	my $basic_count_query = 'SELECT msg_id, event, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? GROUP BY msg_id, event';
+	my $basic_count_query = 'SELECT msg_id, event, COUNT(*) FROM ' 
+		. $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} 
+		. ' WHERE list = ? AND msg_id = ? GROUP BY msg_id, event';
 	my $sth              = $self->{dbh}->prepare($basic_count_query);
        $sth->execute( $self->{name}, $msg_id);
     while ( my ( $m, $e, $c ) = $sth->fetchrow_array ) {
 		if($ok_events{$e}){ 
+			
+			warn '$e: ' . $e; 
+			warn '$c: ' . $c; 
+			
 			$basic_events->{$e} = $c; 
 		}
 	}
@@ -1104,6 +1113,8 @@ sub msg_basic_event_count {
 	
 	# Unique Opens
 	my $uo_query = 'SELECT msg_id, event, email, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? and event = \'open\' GROUP BY msg_id, event, email'; 
+	warn '$uo_query: ' . $uo_query
+		if $t; 
 	my $uo_count  = 0; 
 	my $sth      = $self->{dbh}->prepare($uo_query);
        $sth->execute( $self->{name}, $msg_id);
@@ -1111,7 +1122,14 @@ sub msg_basic_event_count {
 	while ( my ( $m, $e, $c ) = $sth->fetchrow_array ) {
 		$uo_count++; 
 	}
+	warn '$uo_count: ' . $uo_count
+		if $t; 
+	
 	$basic_events->{unique_open} = $uo_count; 
+	warn '$basic_events->{unique_open} ' . $basic_events->{unique_open}
+		if $t; 
+	
+	
 	$sth->finish; 
 	# /Unique Opens
 	
@@ -1122,6 +1140,8 @@ sub msg_basic_event_count {
 			$basic_events->{received}
 	);
 	# /Unique Opens Percent
+	
+	warn '$basic_events->{unique_opens_percent}: ' . $basic_events->{unique_opens_percent} ; 
 	
 	# Unique Clickthroughs
 	my $uc_query = 'SELECT msg_id, email, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? AND msg_id = ?  GROUP BY msg_id, email'; 

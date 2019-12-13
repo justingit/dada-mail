@@ -251,6 +251,8 @@ sub translate {
             # spacer_image/list/mid/spacer.png';
             # Or
             # spacer_image/list/mid/email_name/email_domain/spacer.png';
+			# Or
+			# # spacer_image/list/mid/hashed_uid/spacer.png';
 
             $q->param( 'flavor', 'm_o_c' );
 
@@ -266,6 +268,18 @@ sub translate {
             {
                 $q->param( 'email', $data[3] . '@' . $data[4] );
             }
+			elsif(
+				   $data[3]
+                && $data[4]
+                && $data[4] eq 'spacer.png' )
+            {
+				warn 'here.';
+				$q->param( 'email', $data[3] ); # not the email, the hashed uid, which is what we're going to save.
+				warn q{$q->param( 'email' )} . $q->param( 'email'); 
+			}
+			else { 
+				warn 'nope.:' . $info;
+			}
 
         }
         elsif ( $info =~ /^show_img/ ) {

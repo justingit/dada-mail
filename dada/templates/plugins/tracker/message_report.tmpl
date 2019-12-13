@@ -69,6 +69,7 @@
 	>
 </form> 
 
+<!-- tmpl_if comment -->
 <!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
 	<div class="row">
 		<div class="large-4 medium-4 columns">
@@ -96,6 +97,24 @@
 		</div>
 	</div>	
 <!-- /tmpl_if -->
+<!-- tmpl_else -->
+	<div class="row">
+		<div class="large-4 medium-4 columns">
+			<div id="the_basics_bounces" data-title="Bounces" data-label="Bounces"></div>
+			<div id="the_basics_bounces_loading"></div>
+		</div>
+		<div class="large-4 medium-4 columns">	
+			<div id="the_basics_opens" data-title="Opens" data-label="Opens"></div>
+			<div id="the_basics_opens_loading"></div>
+		</div>
+		<div class="large-4 medium-4 columns">
+				<div id="the_basics_unsubscribes" data-title="Unsubscribes" data-label="Unsubscribes"></div>
+				<div id="the_basics_unsubscribes_loading"></div>
+		</div>
+	</div>
+	
+<!-- /tmpl_if-->
+	
 		
 <table  style="width:100%">
 	<tr> 
@@ -134,6 +153,8 @@
 				<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
 					, Unique: <!-- tmpl_var unique_opens --> - <!-- tmpl_var unique_opens_percent -->%
 				<!-- /tmpl_if -->
+				
+				<code>, Unique: <!-- tmpl_var unique_opens --> - <!-- tmpl_var unique_opens_percent -->%</code>
 			</a> 
 		</td> 
 	</tr>

@@ -1023,15 +1023,25 @@ sub _add_opener_image {
     my $url =
 '<!-- tmpl_var PROGRAM_URL -->/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/spacer.png';
 
-
     if ( $self->no_list != 1 ) {
-        if (
-               $DADA::Config::PII_OPTIONS->{allow_logging_emails_in_analytics} == 1
-			&& $self->{ls}->param('tracker_track_email') == 1
-		 ) {
-            $url =
-'<!-- tmpl_var PROGRAM_URL -->/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/spacer.png';
-        }
+#        if (
+#               $DADA::Config::PII_OPTIONS->{allow_logging_emails_in_analytics} == 1
+#			&& $self->{ls}->param('tracker_track_email') == 1
+#		 ) {
+#            $url = '<!-- tmpl_var PROGRAM_URL -->/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/spacer.png';
+#        }
+	
+	
+	$url = '<!-- tmpl_var PROGRAM_URL -->'
+	       . '/spacer_image'
+		   . '/<!-- tmpl_var list_settings.list -->'
+		   . '/<!-- tmpl_var message_id -->'
+		   . '/<!-- tmpl_var hashed_uid -->'
+		   . '/spacer.png';
+	
+	warn '$url: ' . $url; 
+
+
     }
 
     my $img_opener_code =
