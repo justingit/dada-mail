@@ -1149,13 +1149,10 @@ jQuery(document).ready(function($){
 					required: false, 
 					url: true					
 				},
+
 				instagram_url: {
 					required: false, 
 					url: true					
-				},
-				whatsapp_number: {
-					required: false, 
-					digits: true
 				}
 			}			
 		});
@@ -1178,52 +1175,15 @@ jQuery(document).ready(function($){
 		event.preventDefault();
 	});
 	
-	$("body").on("click", ".confirm_global_unsub", function(event) {
-		//event.preventDefault();
-		var confirm_msg = "\n\nGlobal Unsubscribe is ENABLED:\n\n"
-	 	+ "Removing checked address(es) from this mailing list"
-		+ " will remove them from all mailing lists." 
-		if (!confirm(confirm_msg)) {
-			alert("Canceled.");
-			return false; 
-		} else {
-			//$("body").off('submit', "#membership_email_form");
-			return true;
-		}
-		
-	});
-		
-	
 	
 	$("body").on("click", ".unsubscribeAllSubscribers", function(event) {
 
 		event.preventDefault();
 		
- 	 	var type                       = $(this).data("type"); 
-		var type_title                 = $(this).data("type_title"); 
-		var global_unsubscribe_enabled = $(this).data("global_unsubscribe_enabled");
-		var global_blacklist_enabled   = $(this).data("global_blacklist_enabled");
+ 	 	var type       = $(this).data("type"); 
+		var type_title = $(this).data("type_title"); 
+
 		var confirm_msg = "Are you sure you want to remove ALL " + type_title + "?";
-		
-		if (global_unsubscribe_enabled === 1 && type == 'list'){ 
-			confirm_msg += "\n\nGlobal Unsubscribe is ENABLED:\n\n"
-		 	+ "Removing ALL " 
-			+ type_title 
-			+ " from this mailing list will remove ALL " 
-			+ type_title 
-			+ " from EVERY mailing list.";
-		}
-		
-		if (global_blacklist_enabled === 1 && type == 'black_list'){ 
-			confirm_msg += "\n\nGlobal Black List is ENABLED:\n\n"
-		 	+ "Removing ALL " 
-			+ type_title 
-			+ " from this mailing list will remove ALL " 
-			+ type_title 
-			+ " from EVERY mailing list.";
-		}
-		
-		
 		
 		if (!confirm(confirm_msg)) {
 				alert("'" + type_title + "' not removed.");
@@ -1834,7 +1794,6 @@ function admin_menu_notifications(){
 					"view_archive",    
 					"mail_sending_options",
 					"mailing_sending_mass_mailing_options",
-					"email_themes",
 					"profile_fields",
 					"bounce_handler",     
 					"tracker",            
@@ -1846,17 +1805,9 @@ function admin_menu_notifications(){
 					if ($('.admin_menu_' + target_class + '_notification').length) {
 						$('.admin_menu_' + target_class + '_notification').remove();
 					}
-					
 					content = jsondoc[target_class];
-					/*
-						console.log('target_class:' + target_class);
-						console.log('jsondoc[target_class] (content): ' + jsondoc[target_class]);
-						console.log('content.length:' + content.length);
-					*/
-					if (typeof content !== "undefined") {
-						if(content.length) {
-							$('.admin_menu_' + target_class + ' a').append('<span class="admin_menu_' + target_class + '_notification round alert label"> ' + content + '</span>');
-						}
+					if(content.length) {
+						$('.admin_menu_' + target_class + ' a').append('<span class="admin_menu_' + target_class + '_notification round alert label"> ' + content + '</span>');
 					}
 				}
 
@@ -4394,7 +4345,7 @@ function message_history_html(initial) {
 			$("#show_table_results").html(content);
 					spinner.stop(); 	
 		//});
-		google.setOnLoadCallback(drawSubscriberHistoryChart());
+		google.setOnLoadCallback(drawSubscriberHistoryChart(initial));
 	});
 }
 
@@ -4403,11 +4354,11 @@ var SubscriberHistoryChart;
 function drawSubscriberHistoryChart(initial) {
 
 	//console.log('runnning drawSubscriberHistoryChart');
-
-	if(initial == 1){ 
-		$('#subscriber_history_chart').height(480);
-	}
 	
+	if (initial == 1){ 
+		$('#subscriber_history_chart').height(400);
+	}
+		
 	var target = document.getElementById('subscriber_history_chart');
 	var spinner = new Spinner(spinner_opts).spin(target);
 	
@@ -4433,28 +4384,66 @@ function drawSubscriberHistoryChart(initial) {
 			spinner.stop(); 
 			var data = new google.visualization.DataTable(jsonData);
 			var options = {
-				chartArea: {
-					left: 60,
+				          chartArea:{
+				          	
+					left: 20,
 					top: 20,
-					width: "70%",
+					width: "90%",
 					height: "70%"
-				},
-			};
-			options['width']  = $('#subscriber_history_chart').width();
-			options['height'] = $('#subscriber_history_chart').width();
-			$('#subscriber_history_chart').height($('#subscriber_history_chart').width());
+				          },
 					
-			var SubscriberHistoryChart = new google.visualization.LineChart(document.getElementById('subscriber_history_chart'));
-			//$("#subscriber_history_chart").hide('fade');
+	  		  	seriesType: 'bars',
+	            colors: ['#247ba0', '#70c1b3', '#b2dbbf','#e9f4b5', '#ff6816' , '#ff1654'],
+				series: {
+		          0: {targetAxisIndex: 0, type: 'line'},
+		          1: {targetAxisIndex: 1},
+		          2: {targetAxisIndex: 1},
+		          3: {targetAxisIndex: 1},
+		          4: {targetAxisIndex: 1},
+		          5: {targetAxisIndex: 1},
+		          7: {targetAxisIndex: 1}  
+				},
+				
+			    hAxis: {
+					//showTextEvery: 5
+				},
+		        vAxes: {
+		          // Adds titles to each axis.
+		          0: {title: 'Subscribers', gridlines: {color: 'transparent'}},
+		          1: {title: 'Performance'}
+				}, 
+			
+				 vAxis: {
+                    viewWindow: {
+                       min: 0,
+						
+                  }
+             }
+
+
+
+			 
+			 
+				
+				
+			};
+			if (history_type == 'rate'){
+				options['vAxis']['viewWindow']['max'] = 100;
+			}
+			options['width']  = $('#subscriber_history_chart').width();
+			//options['height'] = $('#subscriber_history_chart').width();
+			//$('#subscriber_history_chart').height($('#subscriber_history_chart').width());
+					
+			var SubscriberHistoryChart = new google.visualization.ComboChart(document.getElementById('subscriber_history_chart'));
 			SubscriberHistoryChart.draw(data, options);
-			//$("#subscriber_history_chart").show('fade');
 			
 			window.onresize = function(){
 				options['width']  = $('#subscriber_history_chart').width();
-				options['height'] = $('#subscriber_history_chart').width();
-				$('#subscriber_history_chart').height($('#subscriber_history_chart').width());
+				//options['height'] = $('#subscriber_history_chart').width();
+				//$('#subscriber_history_chart').height($('#subscriber_history_chart').width());
 				SubscriberHistoryChart.draw(data, options);
 			};
+			
 		}
 	});
 }
@@ -4535,7 +4524,7 @@ function preview() {
 }
 
 function check_newest_version(ver) {
-	var check = "https://dadamailproject.com/cgi-bin/support/https://dadamailproject.com?version=" + ver;
+	var check = "http://dadamailproject.com/cgi-bin/support/version.cgi?version=" + ver;
 	window.open(check, 'version', 'width=325,height=300,top=20,left=20');
 }
 

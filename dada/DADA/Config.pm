@@ -1615,6 +1615,7 @@ $MIME_TOOLS_PARAMS //= {
     tracker_auto_parse_mailto_links                 => 0,
     tracker_track_opens_method                      => 'directly',
     tracker_track_email                             => 0,
+	tracker_track_anonymously                       => 1, 
 	tracker_show_location_data                      => 1,
 	tracker_show_maps_in_reports                    => 1,
     tracker_clean_up_reports                        => 1,

@@ -494,8 +494,13 @@ sub translate {
 
             $q->param( 'key', $pi_key )
               if $pi_key;
-            my $pi_email = $pi_email_name . '@' . $pi_email_domain
-              if $pi_email_name && $pi_email_domain;
+            my $pi_email = undef; 
+              if($pi_email_name && $pi_email_domain) { 
+			  	$pi_email = $pi_email_name . '@' . $pi_email_domain
+			  }
+			  elsif ($pi_email_name && !$pi_email_domain){ 
+			  	$pi_email = $pi_email_name;
+			  }
             $q->param( 'email', $pi_email )
               if $pi_email;
 

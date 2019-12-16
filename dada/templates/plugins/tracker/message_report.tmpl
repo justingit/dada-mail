@@ -69,8 +69,16 @@
 	>
 </form> 
 
-<!-- tmpl_if comment -->
-<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
+
+<!-- tmpl_if expr="(
+	(
+		(list_settings.tracker_track_email == 1)
+	 	&& (PII_OPTIONS_allow_logging_emails_in_analytics == 1)
+	) 
+	|| 
+	(list_settings.tracker_track_anonymously == 1)
+)" -->
+
 	<div class="row">
 		<div class="large-4 medium-4 columns">
 			<div id="the_basics_bounces" data-title="Bounces" data-label="Bounces"></div>
@@ -96,23 +104,6 @@
 				<div id="the_basics_unsubscribes_loading"></div>
 		</div>
 	</div>	
-<!-- /tmpl_if -->
-<!-- tmpl_else -->
-	<div class="row">
-		<div class="large-4 medium-4 columns">
-			<div id="the_basics_bounces" data-title="Bounces" data-label="Bounces"></div>
-			<div id="the_basics_bounces_loading"></div>
-		</div>
-		<div class="large-4 medium-4 columns">	
-			<div id="the_basics_opens" data-title="Opens" data-label="Opens"></div>
-			<div id="the_basics_opens_loading"></div>
-		</div>
-		<div class="large-4 medium-4 columns">
-				<div id="the_basics_unsubscribes" data-title="Unsubscribes" data-label="Unsubscribes"></div>
-				<div id="the_basics_unsubscribes_loading"></div>
-		</div>
-	</div>
-	
 <!-- /tmpl_if-->
 	
 		
@@ -150,11 +141,18 @@
 			<a href="#opens">
 				Total: <!-- tmpl_var opens -->
 				
-				<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
+				<!-- tmpl_if expr="(
+					(
+						(list_settings.tracker_track_email == 1)
+					 	&& (PII_OPTIONS_allow_logging_emails_in_analytics == 1)
+					) 
+					|| 
+					(list_settings.tracker_track_anonymously == 1)
+				)" -->
+
 					, Unique: <!-- tmpl_var unique_opens --> - <!-- tmpl_var unique_opens_percent -->%
 				<!-- /tmpl_if -->
 				
-				<code>, Unique: <!-- tmpl_var unique_opens --> - <!-- tmpl_var unique_opens_percent -->%</code>
 			</a> 
 		</td> 
 	</tr>
@@ -165,7 +163,14 @@
 		<td class="text-right"> 
 			<a href="#clickthroughs">
 				Total: <!-- tmpl_var clickthroughs -->
-				<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
+				<!-- tmpl_if expr="(
+					(
+						(list_settings.tracker_track_email == 1)
+					 	&& (PII_OPTIONS_allow_logging_emails_in_analytics == 1)
+					) 
+					|| 
+					(list_settings.tracker_track_anonymously == 1)
+				)" -->
 					, Unique: <!-- tmpl_var unique_clickthroughs --> - <!-- tmpl_var unique_clickthroughs_percent -->%
 				<!-- /tmpl_if -->	
 			</a>
@@ -270,13 +275,15 @@
   </dl>
 </div>
 
-<h2 data-magellan-destination="subscriber_activity">
-	Subscriber Activity
-</h2>
-<a name="subscriber_activity"></a>
+
 
 <!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
 	<!-- this one is also a strange one to show, if no email addresses are being shown -->
+	
+	<h2 data-magellan-destination="subscriber_activity">
+		Subscriber Activity
+	</h2>
+	<a name="subscriber_activity"></a>
 	<div class="row">
 		<div class="large-4 medium-4 columns">
 			<div id="message_email_activity_listing_table_loading"></div> 

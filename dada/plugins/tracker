@@ -128,10 +128,6 @@ sub default {
 
     my $q = shift;
 
-    if ( $DADA::Config::SUBSCRIBER_DB_TYPE !~ /SQL/i ) {
-        return sql_backend_only_message();
-    }
-
     require DADA::MailingList::Subscribers;
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
@@ -225,7 +221,19 @@ sub default {
             }
         );
     }
+	
+	my $tracker_tracking_mode = ''; 
+	warn q{ls->param('tracker_track_email'): } . $ls->param('tracker_track_email');
+	warn q{$ls->param('tracker_track_anonymously'): } . $ls->param('tracker_track_anonymously') ;
+	if($ls->param('tracker_track_email') == 1){ 
+		$tracker_tracking_mode = 'email_address'; 
+	}
+	elsif ($ls->param('tracker_track_anonymously') == 1){ 
+		$tracker_tracking_mode = 'anonymously'; 
+	}
 
+	warn '$tracker_tracking_mode: ' . $tracker_tracking_mode; 
+	
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -245,6 +253,9 @@ sub default {
                 can_use_auto_redirect_tag        => $can_use_auto_redirect_tag,
                 num_subscribers                  => commify( $lh->num_subscribers ),
                 field_names                      => $field_names,
+				
+				tracker_tracking_mode            => $tracker_tracking_mode, 
+				
 				PII_OPTIONS_allow_logging_emails_in_analytics 
 					=> $DADA::Config::PII_OPTIONS->{allow_logging_emails_in_analytics},
             },
@@ -258,28 +269,8 @@ sub default {
 
 }
 
-sub sql_backend_only_message {
 
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::wrap_screen(
-        {
-            -screen         => 'plugins/shared/sql_backend_only_message.tmpl',
-            -with           => 'admin',
-            -wrapper_params => {
-                -Root_Login => $root_login,
-                -List       => $ls->param('list'),
-            },
-            ,
-            -vars => {},
 
-            -list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1,
-            },
-        }
-    );
-    return ( {}, $scrn );
-}
 
 sub percent {
     my ( $num, $total ) = @_;
@@ -817,8 +808,20 @@ sub save_view_count_prefs {
 }
 
 sub edit_prefs {
+
     my $q = shift;
 	my $also_save_for_list = $ls->also_save_for_list($q);
+	
+	if($q->param('tracker_tracking_mode') eq 'email_address'){
+		$q->param('tracker_track_email', 1);
+		$q->param('tracker_track_anonymously', 0);
+		
+	}
+	if($q->param('tracker_tracking_mode') eq 'anonymously'){
+		$q->param('tracker_track_email', 0);
+		$q->param('tracker_track_anonymously', 1);
+	}
+	$q->delete('tracker_tracking_mode'); 
 	
     $ls->save_w_params(
         {
@@ -828,11 +831,11 @@ sub edit_prefs {
                 tracker_auto_parse_mailto_links                 => 0,
                 tracker_track_opens_method                      => undef,
                 tracker_track_email                             => 0,
+				tracker_track_anonymously                       => 0, 
 				tracker_show_location_data                      => 0,
 				tracker_show_maps_in_reports                    => 0, 
                 tracker_clean_up_reports                        => 0,
                 tracker_show_message_reports_in_mailing_monitor => 0,
-
                 tracker_update_profiles_w_geo_ip_data => 0,
             },
 			-also_save_for => $also_save_for_list,

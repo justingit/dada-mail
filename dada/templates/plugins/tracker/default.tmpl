@@ -67,8 +67,8 @@
 		</div>
 	</div>
 
-	<div id="show_table_results" style="position: relative;"></div>	
 
+		<div id="show_table_results" style="position: relative;"></div>	
 
 	<div id="subscriber_history_chart" style="position: relative;"></div>
     
@@ -211,9 +211,9 @@
 			</div>
 		</div>
 
-  	<div>
+  	<h5>
 		Track Message Opens:
-	</div>
+	</h5>
 	<div class="row">
 		<div class="small-12 columns ">	
 		  	<input type="radio" id="tracker_track_opens_directly" name="tracker_track_opens_method"   class="tracker_track_opens_directly"  value="directly" <!-- tmpl_if expr="(list_settings.tracker_track_opens_method eq 'directly')" -->checked="checked"<!--/tmpl_if -->>
@@ -232,32 +232,54 @@
 	</div>
 	
 	
+	
+  	<h5>
+		Tracking Data:
+	</h5>
+	
 	<div class="row">
 		<div class="small-12 columns ">				
 
-
-	    <input 
-			type="checkbox" 
-			name="tracker_track_email" 
-			id="tracker_track_email"  
-			value="1" 
-			
-			<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
-				checked="checked"
-			<!--/tmpl_if -->
-			
-			<!-- tmpl_unless PII_OPTIONS_allow_logging_emails_in_analytics --> 
-				disabled="disabled"
-			<!-- /tmpl_unless -->
+		    <input 
+				type="radio" 
+				name="tracker_tracking_mode" 
+				id="tracker_tracking_mode_email_address"  
+				value="email_address" 
 		
-		> 
-	    <label for="tracker_track_email"> 
-	     	Track with email addresses 
-			<!-- tmpl_unless PII_OPTIONS_allow_logging_emails_in_analytics -->
-				(Disabled)
-			<!-- /tmpl_unless -->
-	    </label>
+				<!-- tmpl_if expr="(tracker_tracking_mode eq 'email_address')" -->
+					checked="checked"
+				<!--/tmpl_if -->
+				<!-- tmpl_unless PII_OPTIONS_allow_logging_emails_in_analytics --> 
+					disabled="disabled"
+				<!-- /tmpl_unless -->
 	
+			> 
+		    <label for="tracker_tracking_mode_email_address"> 
+		     	Track with email addresses 
+				<!-- tmpl_unless PII_OPTIONS_allow_logging_emails_in_analytics -->
+					(Disabled)
+				<!-- /tmpl_unless -->
+		    </label>
+			
+		</div>
+	</div> 
+	<div class="row">
+		<div class="small-12 columns ">
+					
+		    <input 
+				type="radio" 
+				name="tracker_tracking_mode" 
+				id="tracker_tracking_mode_anonymously"  
+				value="anonymously" 
+		
+				<!-- tmpl_if expr="(tracker_tracking_mode eq 'anonymously')" -->
+					checked="checked"
+				<!--/tmpl_if -->
+			> 
+		    <label for="tracker_tracking_mode_anonymously"> 
+		     	Track using anonymous data
+		    </label>
+			
 		</div>
 	</div>
 	
@@ -277,8 +299,6 @@
 					<strong>Disabled.</strong> Logging email addresses for analytical purposes is not enabled.
 				</div>
 			<!-- /tmpl_if -->
-			
-			
 		</div>
 	</div>
 	
@@ -342,7 +362,9 @@
 	
 	
 	
-	
+  	<h5>
+		Reports
+	</h5>
 	
 	<div class="row">
 		<div class="small-12 columns ">				
