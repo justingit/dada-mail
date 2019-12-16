@@ -1149,10 +1149,13 @@ jQuery(document).ready(function($){
 					required: false, 
 					url: true					
 				},
-
 				instagram_url: {
 					required: false, 
 					url: true					
+				},
+				whatsapp_number: {
+					required: false, 
+					digits: true
 				}
 			}			
 		});
@@ -1175,15 +1178,52 @@ jQuery(document).ready(function($){
 		event.preventDefault();
 	});
 	
+	$("body").on("click", ".confirm_global_unsub", function(event) {
+		//event.preventDefault();
+		var confirm_msg = "\n\nGlobal Unsubscribe is ENABLED:\n\n"
+	 	+ "Removing checked address(es) from this mailing list"
+		+ " will remove them from all mailing lists." 
+		if (!confirm(confirm_msg)) {
+			alert("Canceled.");
+			return false; 
+		} else {
+			//$("body").off('submit', "#membership_email_form");
+			return true;
+		}
+		
+	});
+		
+	
 	
 	$("body").on("click", ".unsubscribeAllSubscribers", function(event) {
 
 		event.preventDefault();
 		
- 	 	var type       = $(this).data("type"); 
-		var type_title = $(this).data("type_title"); 
-
+ 	 	var type                       = $(this).data("type"); 
+		var type_title                 = $(this).data("type_title"); 
+		var global_unsubscribe_enabled = $(this).data("global_unsubscribe_enabled");
+		var global_blacklist_enabled   = $(this).data("global_blacklist_enabled");
 		var confirm_msg = "Are you sure you want to remove ALL " + type_title + "?";
+		
+		if (global_unsubscribe_enabled === 1 && type == 'list'){ 
+			confirm_msg += "\n\nGlobal Unsubscribe is ENABLED:\n\n"
+		 	+ "Removing ALL " 
+			+ type_title 
+			+ " from this mailing list will remove ALL " 
+			+ type_title 
+			+ " from EVERY mailing list.";
+		}
+		
+		if (global_blacklist_enabled === 1 && type == 'black_list'){ 
+			confirm_msg += "\n\nGlobal Black List is ENABLED:\n\n"
+		 	+ "Removing ALL " 
+			+ type_title 
+			+ " from this mailing list will remove ALL " 
+			+ type_title 
+			+ " from EVERY mailing list.";
+		}
+		
+		
 		
 		if (!confirm(confirm_msg)) {
 				alert("'" + type_title + "' not removed.");
@@ -1794,6 +1834,7 @@ function admin_menu_notifications(){
 					"view_archive",    
 					"mail_sending_options",
 					"mailing_sending_mass_mailing_options",
+					"email_themes",
 					"profile_fields",
 					"bounce_handler",     
 					"tracker",            
@@ -1805,9 +1846,17 @@ function admin_menu_notifications(){
 					if ($('.admin_menu_' + target_class + '_notification').length) {
 						$('.admin_menu_' + target_class + '_notification').remove();
 					}
+					
 					content = jsondoc[target_class];
-					if(content.length) {
-						$('.admin_menu_' + target_class + ' a').append('<span class="admin_menu_' + target_class + '_notification round alert label"> ' + content + '</span>');
+					/*
+						console.log('target_class:' + target_class);
+						console.log('jsondoc[target_class] (content): ' + jsondoc[target_class]);
+						console.log('content.length:' + content.length);
+					*/
+					if (typeof content !== "undefined") {
+						if(content.length) {
+							$('.admin_menu_' + target_class + ' a').append('<span class="admin_menu_' + target_class + '_notification round alert label"> ' + content + '</span>');
+						}
 					}
 				}
 
@@ -4524,7 +4573,7 @@ function preview() {
 }
 
 function check_newest_version(ver) {
-	var check = "http://dadamailproject.com/cgi-bin/support/version.cgi?version=" + ver;
+	var check = "https://dadamailproject.com/cgi-bin/support/https://dadamailproject.com?version=" + ver;
 	window.open(check, 'version', 'width=325,height=300,top=20,left=20');
 }
 
