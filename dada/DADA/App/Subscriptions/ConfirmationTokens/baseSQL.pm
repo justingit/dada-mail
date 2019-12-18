@@ -429,6 +429,9 @@ sub _remove_expired_tokens {
 	
 	
 	
+	#TODO - remove profiles that haven't been activated after 60 days that 
+	# ALSO fit this list. 
+	
     my $query;
     if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
         $query =

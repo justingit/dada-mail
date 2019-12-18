@@ -223,8 +223,6 @@ sub default {
     }
 	
 	my $tracker_tracking_mode = ''; 
-	warn q{ls->param('tracker_track_email'): } . $ls->param('tracker_track_email');
-	warn q{$ls->param('tracker_track_anonymously'): } . $ls->param('tracker_track_anonymously') ;
 	if($ls->param('tracker_track_email') == 1){ 
 		$tracker_tracking_mode = 'email_address'; 
 	}
@@ -540,9 +538,7 @@ sub message_history_html {
     require DADA::App::DataCache;
     my $dc = DADA::App::DataCache->new;
 
-	# Fake call or no, if the info we need is already there, 
-	# might as well show it! 
-	#if($fake != 1) {
+	if($fake != 1) {
 	    $html = $dc->retrieve(
 	        {
 	            -list    => $list,
@@ -551,7 +547,7 @@ sub message_history_html {
 	            -entries => $ls->param('tracker_record_view_count'),
 	        }
 	    );
-	#}
+	}
     if ( defined($html) ) {
         # warn 'message_history_html cached in file';
     }
@@ -593,6 +589,18 @@ sub message_history_html {
             }
         ) || [];
 
+
+		use Data::Dumper; 
+		my $report_by_message_id_dump = Dumper($report_by_message_id);
+		# COMMIFY!
+		for my $this_id(@{$report_by_message_id}){ 
+			for my $inid(keys %{$this_id}){
+				next if $inid =~ m/percent/; 
+				$this_id->{$inid . '_commified'}
+					= commify($this_id->{$inid}); 
+			}
+		}
+		
         require DADA::Template::Widgets;
         $html = DADA::Template::Widgets::screen(
             {
@@ -606,6 +614,7 @@ sub message_history_html {
                     previous_page           => $page_info->previous_page(),
                     pages_in_set            => $pages_in_set,
                     Plugin_URL              => $Plugin_Config->{Plugin_URL},
+					report_by_message_id_dump => $report_by_message_id_dump, 
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -885,7 +894,21 @@ sub message_report {
     }
 
     my $m_report = $rd->report_by_message( $q->param('mid') );
-
+	
+	$m_report->{total_bounce} = $m_report->{'soft_bounce'} + $m_report->{'hard_bounce'}; 
+	# COMMIFY!
+	for my $this_id(keys %{$m_report}){ 
+		next if $this_id =~ m/percent/; 
+		$m_report->{$this_id . '_commified'}
+			= commify($m_report->{$this_id}); 
+	}
+	
+	use Data::Dumper; 
+	
+	warn '$m_report' . Dumper($m_report);
+	
+	
+	
     # This is strange, as we have to first break it out of the data structure,
     # and stick it back in:
 
@@ -909,40 +932,11 @@ sub message_report {
         mid                  => scalar $q->param('mid')                         || '',
         subject              => find_message_subject( $q->param('mid') ) || '',
         url_report           => $s_url_report                            || [],
-        num_subscribers      => commify( $m_report->{num_subscribers} )  || 0,
-        total_recipients     => commify( $m_report->{total_recipients} ) || 0,
-        opens                => commify( $m_report->{'open'} )           || 0,
-        unique_opens         => commify( $m_report->{'unique_open'} )    || 0,
-        unique_opens_percent => $m_report->{'unique_opens_percent'}      || 0,
-        clickthroughs        => commify( $m_report->{'clickthroughs'} )  || 0,
-
-        unique_clickthroughs         => $m_report->{'unique_clickthroughs'}         || 0,
-        unique_clickthroughs_percent => $m_report->{'unique_clickthroughs_percent'} || 0,
-
-        unsubscribes                => commify( $m_report->{'unsubscribe'} )      || 0,
-        unique_unsubscribes_percent => $m_report->{'unique_unsubscribes_percent'} || 0,
-        soft_bounce                 => commify( $m_report->{'soft_bounce'} )      || 0,
-        hard_bounce                 => commify( $m_report->{'hard_bounce'} )      || 0,
-		total_bounce                => ($m_report->{'soft_bounce'} + $m_report->{'hard_bounce'} ) || 0, 
-
-        errors_sending_to         => commify( $m_report->{'errors_sending_to'} ) || 0,
-        errors_sending_to_percent => $m_report->{'errors_sending_to_percent'}    || 0,
-
-        abuse_report => commify( $m_report->{abuse_report} ) || 0,
-
-        #        abuse_report_percent        => $m_report->{abuse_report_to_percent}        || 0,
-
-        received               => commify( $m_report->{'received'} )            || 0,
-        received_percent       => $m_report->{'received_percent'}               || 0,
-        unique_bounces_percent => $m_report->{'unique_bounces_percent'}         || 0,
-        view_archive           => commify( $m_report->{'view_archive'} )        || 0,
-        forward_to_a_friend    => commify( $m_report->{'forward_to_a_friend'} ) || 0,
-        soft_bounce_report     => $m_report->{'soft_bounce_report'}             || [],
-        hard_bounce_report     => $m_report->{'hard_bounce_report'}             || [],
-
-        Plugin_URL                 => $Plugin_Url,
-        Plugin_Name                => $Plugin_Config->{Plugin_Name},
-        chrome                     => $chrome,
+        Plugin_URL           => $Plugin_Url,
+        Plugin_Name          => $Plugin_Config->{Plugin_Name},
+        chrome               => $chrome,
+		%$m_report, 
+		
 
     );
     my $scrn = '';

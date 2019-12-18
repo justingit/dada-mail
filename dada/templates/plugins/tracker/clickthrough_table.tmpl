@@ -55,10 +55,13 @@
 			</li>
 		</ul>
 	</div>
+	
+<div id="subscriber_history_chart" style="height:400px"></div>
+	
 <div style="width:100%"> 
-    <div style="height: 480px; overflow: auto; width:100%">
+    <div style="max-height: 480px; overflow: auto; width:100%">
 
-		<table  style="width:100%" class="responsive">
+		<table  style="width:100%" class="responsive dm_tighter">
 		<tr> 
 		<th> 
 			Sent
@@ -69,9 +72,11 @@
 		<th> 
 			Archive
 		</th>
+<!-- 
 		<th> 
 			Subscribers
 		</th>
+-->
 		<th> 
 			Recipients
 		</th>
@@ -81,12 +86,15 @@
 		<th> 
 			Clickthroughs
 		</th>
+
+		<th> 
+			Delivery Issues
+		</th>
+
 		<th> 
 			Unsubscribes
 		</th>
-		<th> 
-			Bounces (soft/hard)
-		</th>
+
 		<th> 
 		</th>
 		</tr> 
@@ -98,8 +106,8 @@
 
 		 <td> 
 			<!-- tmpl_if message_subject -->
-				<a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-					<!-- tmpl_var message_subject escape="HTML" -->
+				<a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->" title="<!-- tmpl_var message_subject escape="HTML" -->">
+					<!-- tmpl_var message_subject_snipped escape="HTML" -->
 				</a> 
 			<!-- tmpl_else --> 
 				<a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
@@ -115,42 +123,56 @@
 			</a> 
 			<!-- tmpl_else --> 
 		<!-- /tmpl_if --> 
+		 <!-- 
 		 <td> 
-		   <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-		    <!-- tmpl_var num_subscribers  default="-"--> 
-		   </a> 
-		 </td> 			
+		    <!-- tmpl_var num_subscribers_commified  default="-"--> 
+		 </td>
+	 -->  			
 		 <td> 
-		   <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-		    <!-- tmpl_var total_recipients  default="-"--> 
-		   </a> 
+		    <!-- tmpl_var total_recipients_commified  default="-"--> 
 		 </td>
 		 <td> 
-		   <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-		    <!-- tmpl_var open default="-"  --> 
-		   </a> 
+		    <!-- tmpl_var open_commified default="-"  -->
+			<!-- tmpl_if expr="(
+				(
+					(list_settings.tracker_track_email == 1)
+				 	&& (PII_OPTIONS_allow_logging_emails_in_analytics == 1)
+				) 
+				|| 
+				(list_settings.tracker_track_anonymously == 1)
+			)" -->
+				<!-- tmpl_if unique_opens -->
+					, Unique: <!-- tmpl_var unique_opens_commify --> - <!-- tmpl_var unique_opens_percent -->%
+				<!-- /tmpl_if -->
+			<!-- /tmpl_if -->
+			
 		 </td>
 		 <td> 
-		   <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-		    <!-- tmpl_var count  default="-"  --> 
-		   </a> 
+		    <!-- tmpl_var count_commified  default="-"  --> 
 		 </td>
+		 
 		 <td> 
-		   <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-		    <!-- tmpl_var unsubscribe  default="-"  --> 
-		   </a> 
+			 <!-- tmpl_var delivery_issues_commified  default="-"  --> 
+			 <!-- tmpl_if delivery_issues --> 
+			 	/ <!-- tmpl_var delivery_issues_percent -->%
+			 <!-- /tmpl_if -->
+
 		 </td>
+		 
 		 <td> 
-		   <a href="<!-- tmpl_var Plugin_URL -->?prm=m&mid=<!-- tmpl_var mid -->">
-		    <!-- tmpl_var soft_bounce  default="-" --> /<!-- tmpl_var hard_bounce default="-" --> 
-		   </a> 
-		 </td> 
+		    <!-- tmpl_var unsubscribe_commified  default="-"  --> 
+			 <!-- tmpl_if unsubscribe --> 
+			 	/ <!-- tmpl_var unique_unsubscribes_percent -->%
+			 <!-- /tmpl_if -->
+		 
+		 </td>
+
 		 <td>
 		     <form action="<!-- tmpl_var S_PROGRAM_URL -->">
 				<button 
 					type="button" 
 					name=""
-					class="small button alert tracker_delete_msg_id_data" 
+					class="tiny button alert tracker_delete_msg_id_data" 
 					data-mid="<!-- tmpl_var mid -->" 
 				>
 					<i class="fi-x"></i>
@@ -163,13 +185,12 @@
 	</div>
 </div>
 
-<!-- tmpl_if comment --> 	
 	<fieldset> 
 		<pre>
 		<!-- tmpl_var report_by_message_id_dump escape="HTML" --> 
 		</pre> 
 	</fieldset> 
-<!-- /tmpl_if --> 
+
 	
 <!-- tmpl_else -->
 	  <div class="alert-box info radius">

@@ -927,15 +927,19 @@ sub message_history_json {
 
             		$datatable->add_columns(
             			   { id => 'date',          label => 'Date',          type => 'string'}, 
-            		       { id => 'subscribers',   label => "Subscribers",   type => 'number'},
+            		       { id => 'delivered_to',   label => "Recipients",   type => 'number'},
             		       #{ id => 'received',         label => "Recieved",         type => 'number'},
             		       { id => 'opens',         label => "Opens",         type => 'number'},
             		       { id => 'clickthroughs', label => "Clickthroughs", type => 'number'},
-            		       { id => 'unsubscribes',  label => "Unsubscribes",  type => 'number'},
 						#   { id => 'soft_bounces',  label => "Soft Bounces",  type => 'number'},
             		    #   { id => 'hard_bounces',  label => "Hard Bounces",  type => 'number'},
-						   { id => 'bounces',  label => "Bounces",  type => 'number'},
-                           { id => 'errors_sending_to', label => "Errors", type => 'number'},
+						 #  { id => 'bounces',  label => "Bounces",  type => 'number'},
+                         #  { id => 'errors_sending_to', label => "Errors", type => 'number'},
+						 
+						   { id => 'delivery_issues', label => "Delivery Issues", type => 'number'},
+            		       { id => 'unsubscribes',    label => "Unsubscribes",    type => 'number'},
+						   
+						   
 						   
             		);
 
@@ -946,51 +950,43 @@ sub message_history_json {
             					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
             				}
 							
-							use Data::Dumper; 
-							warn 'all the info: ' . Dumper($_);
+							#use Data::Dumper; 
+							#warn 'all the info: ' . Dumper($_);
 							
 
             				my $date; 
-            				my $num_subscribers = $_->{num_subscribers}; 
+            				my $delivered_to = $_->{delivered_to};  # and that's that I guess. 
             				my $opens           = 0;
-            				my $errors          = 0; 
+            				#my $errors          = 0; 
             				my $clickthroughs   = 0;
-            				my $unsubscribes    = 0;
             				#my $soft_bounces    = 0;
             				#my $hard_bounces    = 0;  
-							
-							my $bounces = 0; 
+							#my $bounces = 0; 
+							my $delivery_issues         = 0; 
+            				my $unsubscribes    = 0;
 							
             				if(defined($_->{open})){ 
-            					
-								warn '$_->{unique_open}: ' . $_->{unique_open}; 
-								
-								if($_->{unique_open} > 0){ # set to "2" to fudge
-									$opens = $_->{unique_open};
-								}
-								else { 
+            					#if($_->{unique_open} > 2){ # set to "2" to fudge
+								#	$opens = $_->{unique_open};
+								#}
+								#else { 
 									$opens = $_->{open};
-								}
+									#}
 							}
             				
-            				if(defined($_->{errors_sending_to})){ 
-            					$errors = $_->{errors_sending_to};	
-            				}
+            				#if(defined($_->{errors_sending_to})){ 
+            				#	$errors = $_->{errors_sending_to};	
+            				#}
 
             				if(defined($_->{count})){ 
-								warn '$_->{unique_clickthroughs}: ' . $_->{unique_clickthroughs}; 
-								
-								if($_->{unique_clickthroughs} > 0){ # set to "2" to fudge
-									$clickthroughs  = $_->{unique_clickthroughs};
-								}
-								else { 
+								#if($_->{unique_clickthroughs} > 2){ # set to "2" to fudge
+								#	$clickthroughs  = $_->{unique_clickthroughs};
+								#}
+								#else { 
 									$clickthroughs = $_->{count};	
-								}
+									#}
             				}
-            				if(defined($_->{unsubscribe})){ 
-            					$unsubscribes = $_->{unsubscribe};	
-            				}
-							
+            				
 							
             				#if(defined($_->{soft_bounce})){ 
             				#	$soft_bounces = $_->{soft_bounce};	
@@ -999,14 +995,36 @@ sub message_history_json {
             				#	$hard_bounces = $_->{hard_bounce};	
             				#}
             				
-            				if(defined($_->{soft_bounce})){ 
-            					$bounces = $_->{soft_bounce};	
+            				
+            				if(defined($_->{unsubscribe})){ 
+            					$unsubscribes = $_->{unsubscribe};	
             				}
-            				if(defined($_->{hard_bounce})){ 
-            					$bounces += $_->{hard_bounce};	
+            				if(defined($_->{delivery_issues})){ 
+            					$delivery_issues = $_->{delivery_issues};	
             				}
-							
-							
+
+							use Data::Dumper; 
+							warn 'adding:' . Dumper(
+        					{
+        				        date          =>  { 
+        											v => $_->{mid}, 
+        											f => DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) 
+        											},
+        		               
+							   
+							    delivered_to       => $delivered_to,
+        		                opens             => $opens,
+        		                clickthroughs     => $clickthroughs,
+        		                
+        		                #soft_bounces      => $soft_bounces, 
+        		                #hard_bounces      => $hard_bounces,
+								#bounces            => $bounces,
+        		                #errors_sending_to => $errors,
+								delivery_issues   => $delivery_issues, 
+								unsubscribes      => $unsubscribes,
+								
+        					}
+							);
             				$datatable->add_rows(
             					{
             				        date          =>  { 
@@ -1015,14 +1033,16 @@ sub message_history_json {
             											},
             		               
 								   
-								    subscribers       => $num_subscribers,
+								    delivered_to       => $delivered_to,
             		                opens             => $opens,
             		                clickthroughs     => $clickthroughs,
-            		                unsubscribes      => $unsubscribes,
+            		                
             		                #soft_bounces      => $soft_bounces, 
             		                #hard_bounces      => $hard_bounces,
-									bounces            => $bounces,
-            		                errors_sending_to => $errors,
+									#bounces            => $bounces,
+            		                #errors_sending_to => $errors,
+									delivery_issues   => $delivery_issues, 
+									unsubscribes      => $unsubscribes,
 									
             					}
             				); 
@@ -1035,14 +1055,20 @@ sub message_history_json {
     		$datatable->add_columns(
     			   { id => 'date',          label => 'Date',          type => 'string'}, 
     		      # { id => 'subscribers',   label => "Subscribers",   type => 'number'},
-    		       { id => 'received',         label => "Recieved",         type => 'number'},
-                   { id => 'errors_sending_to', label => "Errors", type => 'number'},
-    		       { id => 'opens',         label => "Opens",         type => 'number'},
-    		       { id => 'clickthroughs', label => "Clickthroughs", type => 'number'},
-    		       { id => 'unsubscribes',  label => "Unsubscribes",  type => 'number'},
+    		       { id => 'received',         label => "% Receive",         type => 'number'},
+#                   { id => 'errors_sending_to', label => "Errors", type => 'number'},
+    		       { id => 'opens',         label => "% Opened",         type => 'number'},
+    		       { id => 'clickthroughs', label => "% Clickthrough", type => 'number'},
+				   
+				   { id => 'delivery_issues', label => "% Delivery Issue", type => 'number'},
+				   
+				   
+    		       { id => 'unsubscribes',  label => "% Unsubscribe",  type => 'number'},
 				#   { id => 'soft_bounces',  label => "Soft Bounces",  type => 'number'},
        		    #   { id => 'hard_bounces',  label => "Hard Bounces",  type => 'number'},
-				   { id => 'bounces',  label => "Bounces",  type => 'number'},
+	#			   { id => 'bounces',  label => "Bounces",  type => 'number'},
+	
+	
     		);
 	
     		for(reverse @$report_by_message_index){ 
@@ -1060,17 +1086,17 @@ sub message_history_json {
 										v => $_->{mid}, 
 										f => DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) 
 										},
-	              #  subscribers   => $num_subscribers ,
 	                
-	                received      => $_->{received_percent},
-	                errors_sending_to        => $_->{errors_sending_to_percent},
-	                opens         => $_->{unique_opens_percent},  
-	                clickthroughs => $_->{unique_clickthroughs_percent},
-	                unsubscribes  => $_->{unique_unsubscribes_percent},
-	                #soft_bounces  => $_->{unique_soft_bounces_percent},
+	                received          => $_->{received_percent},
+	                opens             => $_->{unique_opens_percent},  
+	                clickthroughs     => $_->{unique_clickthroughs_percent},
+	                delivery_issues   => $_->{delivery_issues_percent},
+					unsubscribes      => $_->{unique_unsubscribes_percent},
+  	            	  #  subscribers   => $num_subscribers ,
+	          
+					#soft_bounces  => $_->{unique_soft_bounces_percent},
 	                #hard_bounces  => $_->{unique_hard_bounces_percent},
-					
-					bounces        => ($_->{unique_soft_bounces_percent} + $_->{unique_hard_bounces_percent})
+					#bounces        => ($_->{unique_soft_bounces_percent} + $_->{unique_hard_bounces_percent})
 	            
 				}
 			); 

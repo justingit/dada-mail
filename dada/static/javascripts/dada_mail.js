@@ -4352,7 +4352,7 @@ function message_history_html(initial) {
 	//console.log('running message_history_html');
 
     if(initial == 1) { 
-		$("#show_table_results").height(480);
+		//$("#show_table_results").height(880);
 	}	
 		// put in all info, except the stuff that takes forever to load. 
 		var request = $.ajax({
@@ -4366,36 +4366,57 @@ function message_history_html(initial) {
 				page: $("#tracker_page").val(),
 				fake: 1
 			},
-			dataType: "html"
-		});
-		request.done(function(content) {
-			$("#show_table_results").html(content);
-		}); 
-
-	
-	var target = document.getElementById('show_table_results');	
-	var spinner = new Spinner(spinner_opts).spin(target);	
+			dataType: "html", 
+			success: function(content) {
+				$("#show_table_results").html(content);
+				
+				
 		
-	var request = $.ajax({
-		url: $("#s_program_url").val(),
-		type: "POST",
-		cache: false,
-		data: {
-			flavor: 'plugins',
-			plugin: 'tracker',
-			prm: 'message_history_html',
-			page: $("#tracker_page").val()
-		},
-		dataType: "html"
-	});
-	request.done(function(content) {
-		//$("#show_table_results").fadeTo(200, 0); 
-		//$("#show_table_results").fadeTo(200, 1,function() {
-			$("#show_table_results").html(content);
-					spinner.stop(); 	
-		//});
-		google.setOnLoadCallback(drawSubscriberHistoryChart(initial));
-	});
+				var target = document.getElementById('show_table_results');	
+				var spinner = new Spinner(spinner_opts).spin(target);	
+
+				var request2 = $.ajax({
+					url: $("#s_program_url").val(),
+					type: "POST",
+					cache: false,
+					data: {
+						flavor: 'plugins',
+						plugin: 'tracker',
+						prm: 'message_history_html',
+						page: $("#tracker_page").val(), 
+						fake: 0
+					},
+					dataType: "html", 
+					success: function(content) {
+				
+						//$("#show_table_results").fadeTo(200, 0); 
+						//$("#show_table_results").fadeTo(200, 1,function() {
+						$("#show_table_results").html(content);
+						spinner.stop(); 	
+						//});
+						google.setOnLoadCallback(drawSubscriberHistoryChart(initial));
+					}, 
+					error: function(xhr, ajaxOptions, thrownError) {
+						console.log('status: ' + xhr.status);
+						console.log('thrownError:' + thrownError);
+					//	alert('status: ' + xhr.status);
+					//	alert('thrownError:' + thrownError);
+					}
+
+				});
+				
+			}, 
+			error: function(xhr, ajaxOptions, thrownError) {
+				console.log('status: ' + xhr.status);
+				console.log('thrownError:' + thrownError);
+				//alert('status: ' + xhr.status);
+				//alert('thrownError:' + thrownError);
+			}
+		});
+
+		
+	
+
 }
 
 var SubscriberHistoryChart;
@@ -4432,6 +4453,7 @@ function drawSubscriberHistoryChart(initial) {
 		success: function(jsonData) {
 			spinner.stop(); 
 			var data = new google.visualization.DataTable(jsonData);
+			
 			var options = {
 				          chartArea:{
 				          	
@@ -4442,15 +4464,14 @@ function drawSubscriberHistoryChart(initial) {
 				          },
 					
 	  		  	seriesType: 'bars',
-	            colors: ['#247ba0', '#70c1b3', '#b2dbbf','#e9f4b5', '#ff6816' , '#ff1654'],
+	            colors: ['#247ba0', '#70c1b3', '#b2dbbf','#ff6816' , '#ff1654'],
 				series: {
 		          0: {targetAxisIndex: 0, type: 'line'},
 		          1: {targetAxisIndex: 1},
 		          2: {targetAxisIndex: 1},
 		          3: {targetAxisIndex: 1},
 		          4: {targetAxisIndex: 1},
-		          5: {targetAxisIndex: 1},
-		          7: {targetAxisIndex: 1}  
+		          5: {targetAxisIndex: 1}  
 				},
 				
 			    hAxis: {
@@ -4458,7 +4479,13 @@ function drawSubscriberHistoryChart(initial) {
 				},
 		        vAxes: {
 		          // Adds titles to each axis.
-		          0: {title: 'Subscribers', gridlines: {color: 'transparent'}},
+		          0: {
+					  title: '# of Recipients', 
+					  gridlines: 
+					  	{
+							color: 'transparent'
+				  	    }
+					},
 		          1: {title: 'Performance'}
 				}, 
 			
@@ -4468,16 +4495,12 @@ function drawSubscriberHistoryChart(initial) {
 						
                   }
              }
-
-
-
-			 
-			 
 				
-				
-			};
+		};
 			if (history_type == 'rate'){
 				options['vAxis']['viewWindow']['max'] = 100;
+				options['vAxes']['0']['title']        = 'Recieved';
+				
 			}
 			options['width']  = $('#subscriber_history_chart').width();
 			//options['height'] = $('#subscriber_history_chart').width();

@@ -130,7 +130,7 @@
 		</td> 
 		<td class="text-right"> 
 			Total: <!-- tmpl_var total_recipients -->, 
-			Received: <!-- tmpl_var received --> - <!-- tmpl_var received_percent -->%
+			Delivered: <!-- tmpl_var received --> - <!-- tmpl_var received_percent -->%
 		</td>
 	</tr>
 	<tr>
@@ -139,7 +139,7 @@
 		</td> 
 		<td class="text-right"> 
 			<a href="#opens">
-				Total: <!-- tmpl_var opens -->
+				Total: <!-- tmpl_var open_commified -->
 				
 				<!-- tmpl_if expr="(
 					(
@@ -149,8 +149,9 @@
 					|| 
 					(list_settings.tracker_track_anonymously == 1)
 				)" -->
-
-					, Unique: <!-- tmpl_var unique_opens --> - <!-- tmpl_var unique_opens_percent -->%
+					<!-- tmpl_if unique_open -->
+						, Unique: <!-- tmpl_var unique_open_commified --> - <!-- tmpl_var unique_opens_percent -->%
+					<!-- /tmpl_if -->
 				<!-- /tmpl_if -->
 				
 			</a> 
@@ -171,7 +172,9 @@
 					|| 
 					(list_settings.tracker_track_anonymously == 1)
 				)" -->
-					, Unique: <!-- tmpl_var unique_clickthroughs --> - <!-- tmpl_var unique_clickthroughs_percent -->%
+					<!-- tmpl_if unique_clickthroughs -->
+						, Unique: <!-- tmpl_var unique_clickthroughs_commified --> - <!-- tmpl_var unique_clickthroughs_percent -->%
+					<!-- /tmpl_if -->
 				<!-- /tmpl_if -->	
 			</a>
 		</td> 
@@ -184,10 +187,11 @@
 		</td> 
 		<td class="text-right"> 
 			<a href="#unsubscribes">
-				<!-- tmpl_var unsubscribes default="0" -->
+				<!-- tmpl_var unsubscribe default="0" -->
 				<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
-					- 
-					<!-- tmpl_var unique_unsubscribes_percent -->%
+					<!-- tmpl_if unsubscribe -->- 
+						<!-- tmpl_var unique_unsubscribe_percent -->%
+					<!-- /tmpl_if -->
 				<!-- /tmpl_if -->
 			</a>
 		</td> 
@@ -200,10 +204,14 @@
 		</td> 
 		<td class="text-right"> 
 			<a href="#bounces">
-				Soft: <!-- tmpl_var soft_bounce default="0" -->, 
-				Hard: <!-- tmpl_var hard_bounce  default="0" --> 
-				<!-- addresses that are bounces are tallied, even if we're not collecting email addresses *shrug* -->
-					- <!-- tmpl_var unique_bounces_percent -->%
+				<!-- tmpl_if total_bounce -->
+					Soft: <!-- tmpl_var soft_bounce default="0" -->, 
+					Hard: <!-- tmpl_var hard_bounce  default="0" --> 
+					<!-- addresses that are bounces are tallied, even if we're not collecting email addresses *shrug* -->
+						- <!-- tmpl_var unique_bounces_percent -->%
+				<!-- tmpl_else -->
+					0
+				<!-- /tmpl_if -->
 			</a>
 		</td> 
 	</tr>	
@@ -214,7 +222,9 @@
 		<td class="text-right"> 
 			<a href="#sending_errors">
 				<!-- tmpl_var errors_sending_to  default="0" -->
-				- <!-- tmpl_var errors_sending_to_percent -->%
+				<!-- tmpl_if errors_sending_to -->
+					- <!-- tmpl_var errors_sending_to_percent -->%
+				<!-- /tmpl_if -->
 			</a>
 		</td> 
 	</tr>
@@ -226,7 +236,7 @@
 		</td> 
 		<td class="text-right"> 
 			<a href="#archive_views">
-				<!-- tmpl_var view_archive -->
+				<!-- tmpl_var view_archive default="0"-->
 			</a> 
 		</td> 
 	</tr>
@@ -238,7 +248,7 @@
 		</td> 
 		<td class="text-right"> 
 			<a href="#forwards">
-				<!-- tmpl_var forward_to_a_friend -->
+				<!-- tmpl_var forward_to_a_friend default="0" -->
 			</a>
 		</td> 
 	</tr>

@@ -127,5 +127,15 @@ a.menu_disabled:active {
 	background-color: #ccff15;
 }
 
+.dm_tighter td { 
+	font-size: smaller;
+	padding: 4px;
+}
+
+.dm_tighter td button, .button {
+	margin: 0;
+}
+
+
 
 

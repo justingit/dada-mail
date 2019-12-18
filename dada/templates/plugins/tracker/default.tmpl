@@ -38,9 +38,11 @@
 	</form> 
 	<!-- tmpl_if expr="DATA_CACHE == 1" -->
 			<div class="clear_fix">
-			<p class="text-right">
-				Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?prm=clear_data_cache">Clear</a>
-			</p>
+				<p class="text-right">
+					<small>
+						Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?prm=clear_data_cache">Clear</a>
+					</small>
+				</p>
 		</div>
 	<!-- /tmpl_if -->
 	
@@ -68,11 +70,7 @@
 	</div>
 
 
-		<div id="show_table_results" style="position: relative;"></div>	
-
-	<div id="subscriber_history_chart" style="position: relative;"></div>
-    
-	
+<div id="show_table_results"></div>	
 
 <fieldset> 
  <legend>Export Tracker Data (.csv)</legend> 

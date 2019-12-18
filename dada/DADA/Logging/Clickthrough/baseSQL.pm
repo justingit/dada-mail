@@ -1008,6 +1008,12 @@ sub report_by_message_index {
 	        if ( $mja->check_if_entry_exists($_) ) {
 	            $report->{$_}->{message_subject} = $mja->get_archive_subject($_)
 	              || $_;
+				 if(length($report->{$_}->{message_subject}) >= 50){ 
+					$report->{$_}->{message_subject_snipped} =  substr( $report->{$_}->{message_subject}, 0, 49 ) . '...' 
+				 } 
+				 else { 
+				 	$report->{$_}->{message_subject_snipped} = $report->{$_}->{message_subject};
+				 }
 	        }
 	        else {
 	        }
@@ -1111,6 +1117,7 @@ sub msg_basic_event_count {
 	  $basic_events->{total_recipients}
     - $basic_events->{errors_sending_to};	
 	
+	
 	# Unique Opens
 	my $uo_query = 'SELECT msg_id, event, email, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? and event = \'open\' GROUP BY msg_id, event, email'; 
 	warn '$uo_query: ' . $uo_query
@@ -1202,7 +1209,20 @@ sub msg_basic_event_count {
 			$basic_events->{errors_sending_to}, 
 			$basic_events->{total_recipients}
 	); 
-
+	
+	$basic_events->{delivery_issues} =
+		int($basic_events->{soft_bounce})
+		+ int($basic_events->{hard_bounce})
+		+ int($basic_events->{errors_sending_to}) 
+		+ int($basic_events->{abuse_report}); 
+	
+	$basic_events->{delivery_issues_percent} = 
+		$self->percentage(
+			$basic_events->{delivery_issues},
+			$basic_events->{total_recipients}
+	);
+		
+	
 #	# 
 #	$basic_events->{abuse_report_percent} = 
 #		$self->percentage(
