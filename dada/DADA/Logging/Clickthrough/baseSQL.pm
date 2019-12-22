@@ -1383,7 +1383,7 @@ sub report_by_message {
     my $url_clickthroughs_query =
         'SELECT url, COUNT(url) AS count FROM '
       . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}
-      . ' where list = ? AND msg_id = ? GROUP BY url';
+      . ' where list = ? AND msg_id = ? GROUP BY url ORDER by count DESC';
     my $sth = $self->{dbh}->prepare($url_clickthroughs_query);
     $sth->execute( $self->{name}, $mid );
     my $url_report = [];
