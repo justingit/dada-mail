@@ -16,7 +16,17 @@
 			<input type="hidden" name="list" value="<!-- tmpl_var list_settings.list -->" > 
 			<input type="hidden" name="id" value="<!-- tmpl_var id -->" >
 			<input type="submit"  value="Show Public View"  class="plain button" >    
+			
+			
 		 </form> 
+	 </li>
+	 <li> 
+		<!-- tmpl_if PLUGINS_ENABLED_tracker -->
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->/plugins/tracker/?prm=m&mid=<!-- tmpl_var id -->" title="View Analytics" class="button">
+					<i class="fi-graph-pie"></i>
+					<i class="fi-graph-bar"></i>
+			</a>
+		<!-- /tmpl_if -->
 	 </li>
 
 <!--- end show_archive_msg_buttons_widget.tmpl --> 

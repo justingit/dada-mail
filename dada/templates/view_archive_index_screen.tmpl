@@ -28,11 +28,17 @@
  <input type="hidden" name="flavor" value="delete_archive" > 
 
  <table style="width:100%" class="responsive">
+ 
+ 
   <tr>
+
+	  <!-- tmpl_if PLUGINS_ENABLED_tracker -->
+		<th style="width:75px">
+ 	   </th>
+	<!-- /tmpl_if -->
 	<th width="25">
    </th>
      <th>
-
       From
    </th>
    <th>
@@ -52,6 +58,18 @@
   <!-- tmpl_loop index_list --> 
   
 	   <tr title="<!-- tmpl_var message_blurb -->">
+		   
+		<!-- tmpl_if PLUGINS_ENABLED_tracker -->
+			<td>
+				<span style="font-size: 2em; padding-bottom:0;padding-top:0" class="text-align:center">
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->/plugins/tracker/?prm=m&mid=<!-- tmpl_var id -->" title="View Analytics">
+							<i class="fi-graph-pie"></i>
+							<i class="fi-graph-bar"></i>
+					</a>
+				</span>
+			</td>
+		<!-- /tmpl_if -->
+		
 	    <td width="25">
 			<input 
 				type="checkbox" 
@@ -90,6 +108,12 @@
 
  <table style="width:100%" class="responsive">
   <tr>
+	  
+	<!-- tmpl_if PLUGINS_ENABLED_tracker -->
+		   	<td style="width:75px">
+		      </td>	
+	<!-- /tmpl_if -->	  
+	  
    	<td width="25">
 		<input 
 			type="checkbox"
