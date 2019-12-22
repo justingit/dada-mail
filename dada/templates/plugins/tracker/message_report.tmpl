@@ -48,7 +48,12 @@
 <!-- /tmpl_if --> 
 
 <form id="tracker_message_info">
-	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL_base64_encoded -->" > 
+	<input 
+		type="hidden" 
+		id="s_program_url" 
+		name="s_program_url" 
+		value="<!-- tmpl_var S_PROGRAM_URL_base64_encoded -->"
+	> 
 	<input 
 		type="hidden" 
 		id="tracker_message_id"
@@ -108,6 +113,8 @@
 	
 		
 <table  style="width:100%">
+	
+	<!-- 
 	<tr> 
 		<td>
 			<a href="#subscriber_activity">
@@ -121,7 +128,8 @@
 				???
 			<!-- /tmpl_if -->
 		</td>
-	</tr> 
+	</tr>
+--> 
 	<tr> 
 		<td>
 			<a href="#subscriber_activity">
@@ -281,11 +289,11 @@
     <dd data-magellan-arrival="opens"><a href="#opens">Opens</a></dd>
     <dd data-magellan-arrival="clickthroughs"><a href="#clickthroughs">Clickthroughs</a></dd>
     <dd data-magellan-arrival="unsubscribes"><a href="#unsubscribes">Unsubscribes</a></dd>
-    <dd data-magellan-arrival="archive_views"><a href="#archive_views">Archive Views</a></dd>
-    <dd data-magellan-arrival="forwards"><a href="#forwards">Forwards</a></dd>
     <dd data-magellan-arrival="bounces"><a href="#bounces">Bounces</a></dd>
     <dd data-magellan-arrival="sending_errors"><a href="#sending_errors">Sending Errors</a></dd>
     <dd data-magellan-arrival="abuse_reports"><a href="#abuse_reports">Abuse Reports</a></dd>
+    <dd data-magellan-arrival="archive_views"><a href="#archive_views">Archive Views</a></dd>
+    <dd data-magellan-arrival="forwards"><a href="#forwards">Forwards</a></dd>
 	<dd data-magellan-arrival="export_message_logs"><a href="#export_message_logs">Export Message Logs</a></dd>
   </dl>
 </div>
@@ -316,7 +324,7 @@
 </h2>
 <a name="opens"></a>
 
-<!-- tmpl_if opens -->
+<!-- tmpl_if open -->
 
 	<!-- tmpl_if list_settings.tracker_show_location_data -->
 		<h3>
@@ -464,7 +472,7 @@
 </h2>
 <a name="unsubscribes"></a>		
 	
-<!-- tmpl_if unsubscribes --> 
+<!-- tmpl_if unsubscribe --> 
 	<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
 	<!-- if we're not tracking this, there's no use to show a table of nothing. -->
 		<div class="row">
@@ -489,82 +497,6 @@
 		Nothing to report.
 	</div> 
 <!-- /tmpl_if -->
-				
-<h2 data-magellan-destination="archive_views">
-	Archive Views
-</h2>
-<a name="archive_views"></a>
-
-
-<!-- tmpl_if view_archive --> 
-	<!-- tmpl_if list_settings.tracker_show_location_data -->
-		<h3>
-			Archive Views by Country
-		</h3>
-		<div class="row">
-			<div class="large-4 medium-4 columns">
-				<div id="country_geoip_view_archive_table_loading"></div> 
-				<div id="country_geoip_view_archive_table"></div>
-			</div> 
-			<div class="large-8 medium-8 columns">
-				<div id="country_geoip_view_archive_map_loading"></div> 
-				<div id="country_geoip_view_archive_map"   ></div>
-			</div> 
-		</div>
-	<!-- /tmpl_if -->
-
-	<h3>
-		Archive Views Over Time
-	</h3> 
-
-	<div id="over_time_view_archive_graph_loading"></div> 
-	<div id="over_time_view_archive_graph"></div>
-
-<!-- tmpl_else --> 
-	<div class="alert-box info radius">
-		Nothing to report.
-	</div> 
-<!-- /tmpl_if -->
-
-
-
-<h2 data-magellan-destination="forwards">
-	Forwards
-</h2>
-<a name="forwards"></a>
-
-
-<!-- tmpl_if forward_to_a_friend -->
-	<!-- tmpl_if list_settings.tracker_show_location_data -->
-		<h3>
-			&quot;Forward to a Friend&quot; by Country
-		</h3>
-
-		<div class="row">
-			<div class="large-4 medium-4 columns">
-				<div id="country_geoip_forwards_table_loading"></div> 
-				<div id="country_geoip_forwards_table"></div>
-			</div> 
-			<div class="large-8 medium-8 columns">
-				<div id="country_geoip_forwards_map_loading"></div> 
-				<div id="country_geoip_forwards_map"></div>
-			</div> 
-		</div> 
-	<!-- /tmpl_if -->
-
-
-	<h3>
-		&quot;Forward to a Friend&quot; Over Time
-	</h3>
-
-	<div id="over_time_forwards_graph_loading"></div> 
-	<div id="over_time_forwards_graph"></div>
-<!-- tmpl_else --> 
-	<div class="alert-box info radius">
-		Nothing to report.
-	</div>
-<!-- /tmpl_if -->
-
 
 
 	
@@ -687,6 +619,83 @@
 		Nothing to report.
 	</div>
 <!-- /tmpl_if -->
+
+				
+<h2 data-magellan-destination="archive_views">
+	Archive Views
+</h2>
+<a name="archive_views"></a>
+
+
+<!-- tmpl_if view_archive --> 
+	<!-- tmpl_if list_settings.tracker_show_location_data -->
+		<h3>
+			Archive Views by Country
+		</h3>
+		<div class="row">
+			<div class="large-4 medium-4 columns">
+				<div id="country_geoip_view_archive_table_loading"></div> 
+				<div id="country_geoip_view_archive_table"></div>
+			</div> 
+			<div class="large-8 medium-8 columns">
+				<div id="country_geoip_view_archive_map_loading"></div> 
+				<div id="country_geoip_view_archive_map"   ></div>
+			</div> 
+		</div>
+	<!-- /tmpl_if -->
+
+	<h3>
+		Archive Views Over Time
+	</h3> 
+
+	<div id="over_time_view_archive_graph_loading"></div> 
+	<div id="over_time_view_archive_graph"></div>
+
+<!-- tmpl_else --> 
+	<div class="alert-box info radius">
+		Nothing to report.
+	</div> 
+<!-- /tmpl_if -->
+
+
+
+<h2 data-magellan-destination="forwards">
+	Forwards
+</h2>
+<a name="forwards"></a>
+
+
+<!-- tmpl_if forward_to_a_friend -->
+	<!-- tmpl_if list_settings.tracker_show_location_data -->
+		<h3>
+			&quot;Forward to a Friend&quot; by Country
+		</h3>
+
+		<div class="row">
+			<div class="large-4 medium-4 columns">
+				<div id="country_geoip_forwards_table_loading"></div> 
+				<div id="country_geoip_forwards_table"></div>
+			</div> 
+			<div class="large-8 medium-8 columns">
+				<div id="country_geoip_forwards_map_loading"></div> 
+				<div id="country_geoip_forwards_map"></div>
+			</div> 
+		</div> 
+	<!-- /tmpl_if -->
+
+
+	<h3>
+		&quot;Forward to a Friend&quot; Over Time
+	</h3>
+
+	<div id="over_time_forwards_graph_loading"></div> 
+	<div id="over_time_forwards_graph"></div>
+<!-- tmpl_else --> 
+	<div class="alert-box info radius">
+		Nothing to report.
+	</div>
+<!-- /tmpl_if -->
+
 
 
 
