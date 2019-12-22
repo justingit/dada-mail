@@ -70,7 +70,7 @@
 	</div>
 
 
-<div id="show_table_results"></div>	
+<div id="show_table_results" min-height:100px"></div>	
 
 <fieldset> 
  <legend>Export Tracker Data (.csv)</legend> 
@@ -137,9 +137,145 @@
 		<input type="hidden" name="plugin" value="tracker" >     
 		<input type="hidden" name="prm" value="edit_prefs" > 
 		
-		<div>
-			Track Message Clickthroughs:
+	  	<h5>
+			Tracking Data:
+		</h5>
+	
+	
+	<div class="row">
+		<div class="small-12 columns ">
+				
+		    <input 
+				type="radio" 
+				name="tracker_tracking_mode" 
+				id="tracker_tracking_mode_anonymously"  
+				value="anonymously" 
+	
+				<!-- tmpl_if expr="(tracker_tracking_mode eq 'anonymously')" -->
+					checked="checked"
+				<!--/tmpl_if -->
+			> 
+		    <label for="tracker_tracking_mode_anonymously"> 
+		     	Track using anonymous data
+		    </label>
+		
+		</div>
+	</div>
+	
+	
+		<div class="row">
+			<div class="small-12 columns ">				
+			    <input 
+					type="radio" 
+					name="tracker_tracking_mode" 
+					id="tracker_tracking_mode_email_address"  
+					value="email_address" 
+		
+					<!-- tmpl_if expr="(tracker_tracking_mode eq 'email_address')" -->
+						checked="checked"
+					<!--/tmpl_if -->
+					<!-- tmpl_unless PII_OPTIONS_allow_logging_emails_in_analytics --> 
+						disabled="disabled"
+					<!-- /tmpl_unless -->
+	
+				> 
+			    <label for="tracker_tracking_mode_email_address"> 
+			     	Track with email addresses 
+					<!-- tmpl_unless PII_OPTIONS_allow_logging_emails_in_analytics -->
+						(Disabled)
+					<!-- /tmpl_unless -->
+			    </label>
+			
+				<div class="row">
+					<div class="small-1 columns ">
+					</div>
+					<div class="small-11 columns ">
+	
+						<!-- tmpl_if PII_OPTIONS_allow_logging_emails_in_analytics -->
+							<div class="alert-box info radius"> 		
+								Message Clickthroughs, and Opens will also track the subscriber's email address. 
+								Tracking data with the user's email address allows
+								more refined email analytics and reports. 
+							</div>
+						<!-- tmpl_else -->
+							<div class="alert-box info radius">
+								<strong>Disabled.</strong> Logging email addresses for analytical purposes is not enabled.
+							</div>
+						<!-- /tmpl_if -->
+					</div>
+				</div>
+				
+			 	<div class="row">
+			 		<div class="small-1 columns ">
+			 		</div>
+			 		<div class="small-11 columns ">
+			 			<div id="tracker_track_email_options">   
+			 		       <fieldset> 
+			 		           <legend>Profile Updates</legend>
+			 		                 <input 
+			 						 	type="checkbox" 
+			 							name="tracker_update_profiles_w_geo_ip_data" 
+			 							id="tracker_update_profiles_w_geo_ip_data" 
+			 							value="1" 
+			 							<!-- tmpl_if list_settings.tracker_update_profiles_w_geo_ip_data -->checked="checked"<!-- /tmpl_if -->
+			 						   >
+			 		                   <label for="tracker_update_profiles_w_geo_ip_data">
+			 		                       Update Profiles, after opens/clickthroughs
+			 		                   </label> 
+
+			 				   		<div class="small-1 columns ">
+			 				   		</div>
+			 				   		<div class="small-11 columns ">
+			 				   			<div id="tracker_track_email_options">   
+						   
+			 			                   <div id="field_name_group">                
+			 			                		    <!-- tmpl_loop field_names --> 
+			 											<div class="row">
+			 												<div class="small-1 columns ">				
+			 				                                    <input type="checkbox" 
+			 				                                          id="<!-- tmpl_var name escape="HTML" -->.enabled" 
+			 				                                        name="<!-- tmpl_var name escape="HTML" -->.enabled" 
+			 				                                        class="field_checkbox" 
+			 				                                        data-target="<!-- tmpl_var name escape="HTML" -->_popup_menu" 
+			 				                                        value="1" 
+			 				                                        <!-- tmpl_if enabled -->
+			 				                                            checked="checked"
+			 				                                        <!-- /tmpl_if --> 
+			 				                                    >
+			 												</div>
+			 												<div class="small-3 columns ">				
+			 				                                    <label for="<!-- tmpl_var name escape="HTML" -->.enabled">
+			 														<!-- tmpl_var label  escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->):
+			 													</label>
+			 												</div>
+			 												<div class="small-8 columns ">				
+			 				                                    <div id="<!-- tmpl_var name escape="HTML" -->_popup_menu">
+			 				                                        <!-- tmpl_var popup_menu -->
+			 				                                    </div>
+			 												</div>
+			 											</div>
+			 									   <!-- /tmpl_loop --> 
+			 			                    </div> 
+			 							 </div> 
+			 						</div> 
+			 		       </fieldset> 
+			 		   </div> 
+			    		</div> 
+			    </div>
+				
+				
+			</div>
 		</div> 
+		
+	
+	 	
+	
+	
+		
+		
+		<h5>
+			Track Message Clickthroughs:
+		</h5> 
 	 
  		<div class="row">
  			<div class="small-12 columns ">	
@@ -148,13 +284,22 @@
 				Automatically
 			</label>
 			<!-- tmpl_unless can_use_auto_redirect_tag -->
-				<div class="alert-box info radius"> 
-					Disabled. You must have the HTML::LinkExtor and URI::Find CPAN modules installed. 
-				</div> 
+				
+				<div class="small-1 columns ">
+				</div>		
+				<div class="small-11 columns ">
+					<div class="alert-box info radius"> 
+						Disabled. You must have the HTML::LinkExtor and URI::Find CPAN modules installed. 
+					</div> 
+				</div>
 			<!-- tmpl_else -->
-				<div class="alert-box info radius"> 
-					 All message links will be parsed into redirect links and tracked. 
-				</div> 
+				<div class="small-1 columns ">
+				</div>		
+				<div class="small-11 columns ">
+					<div class="alert-box info radius"> 
+						 All message links will be parsed into redirect links and tracked. 
+					</div> 
+				</div>
 			<!-- /tmpl_unless -->
 		</div>
 	</div>
@@ -164,7 +309,7 @@
 			</div> 
 	 		<div class="small-11 columns ">	
 				<div id="tracker_auto_parse_links_info"> 
-					<fieldset>
+					
 						
 						      <input 
 							  	type="checkbox" 
@@ -174,11 +319,17 @@
 								<!-- tmpl_if list_settings.tracker_auto_parse_mailto_links -->checked="checked"<!--/tmpl_if -->
 							  >
 						      <label for="tracker_auto_parse_mailto_links">Auto Track mailto: Links</label> 
-							  <div class="alert-box info radius"> 
-							  	 Email addresses in <strong>mailto:</strong> 
-								 links will also be parsed into redirect links and tracked.
-							  </div>
-					</fieldset>
+					   		<div class="row">
+					   			<div class="small-1 columns ">	
+					  			</div> 
+					  	 		<div class="small-11 columns ">
+									
+								  <div class="alert-box info radius"> 
+								  	 Email addresses in <strong>mailto:</strong> 
+									 links will also be parsed into redirect links and tracked.
+								  </div>
+							</div> 
+						</div>
 				</div> 
 			</div> 
 		</div>
@@ -197,14 +348,12 @@
 			</div>		
 			<div class="small-11 columns ">
 				<div id="tracker_noauto_parse_links_info"> 
-					<fieldset> 
 						<div class="alert-box info radius"> 		
 							<p>Tag links you would like to track, with the special <strong>Redirect Tag</strong>. For example:</p>
 							<p><code>&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;</code></p>
 							<p>HTML Example:</p> 
 							<p><code>&lt;a href=&quot;&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;&quot;&gt;Click Here!&lt;/a&gt;</code></p>
 						</div>
-						</fieldset>
 				</div>
 			</div>
 		</div>
@@ -231,135 +380,7 @@
 	
 	
 	
-  	<h5>
-		Tracking Data:
-	</h5>
-	
-	<div class="row">
-		<div class="small-12 columns ">				
 
-		    <input 
-				type="radio" 
-				name="tracker_tracking_mode" 
-				id="tracker_tracking_mode_email_address"  
-				value="email_address" 
-		
-				<!-- tmpl_if expr="(tracker_tracking_mode eq 'email_address')" -->
-					checked="checked"
-				<!--/tmpl_if -->
-				<!-- tmpl_unless PII_OPTIONS_allow_logging_emails_in_analytics --> 
-					disabled="disabled"
-				<!-- /tmpl_unless -->
-	
-			> 
-		    <label for="tracker_tracking_mode_email_address"> 
-		     	Track with email addresses 
-				<!-- tmpl_unless PII_OPTIONS_allow_logging_emails_in_analytics -->
-					(Disabled)
-				<!-- /tmpl_unless -->
-		    </label>
-			
-		</div>
-	</div> 
-	<div class="row">
-		<div class="small-12 columns ">
-					
-		    <input 
-				type="radio" 
-				name="tracker_tracking_mode" 
-				id="tracker_tracking_mode_anonymously"  
-				value="anonymously" 
-		
-				<!-- tmpl_if expr="(tracker_tracking_mode eq 'anonymously')" -->
-					checked="checked"
-				<!--/tmpl_if -->
-			> 
-		    <label for="tracker_tracking_mode_anonymously"> 
-		     	Track using anonymous data
-		    </label>
-			
-		</div>
-	</div>
-	
-	<div class="row">
-		<div class="small-1 columns ">
-		</div>
-		<div class="small-11 columns ">
-	
-			<!-- tmpl_if PII_OPTIONS_allow_logging_emails_in_analytics -->
-				<div class="alert-box info radius"> 		
-					Message Clickthroughs, and Opens will also track the subscriber's email address. 
-					Tracking data with the user's email address allows
-					more refined email analytics and reports. 
-				</div>
-			<!-- tmpl_else -->
-				<div class="alert-box info radius">
-					<strong>Disabled.</strong> Logging email addresses for analytical purposes is not enabled.
-				</div>
-			<!-- /tmpl_if -->
-		</div>
-	</div>
-	
- 	<div class="row">
- 		<div class="small-1 columns ">
- 		</div>
- 		<div class="small-11 columns ">
- 			<div id="tracker_track_email_options">   
- 		       <fieldset> 
- 		           <legend>Profile Updates</legend>
- 		                 <input 
- 						 	type="checkbox" 
- 							name="tracker_update_profiles_w_geo_ip_data" 
- 							id="tracker_update_profiles_w_geo_ip_data" 
- 							value="1" 
- 							<!-- tmpl_if list_settings.tracker_update_profiles_w_geo_ip_data -->checked="checked"<!-- /tmpl_if -->
- 						   >
- 		                   <label for="tracker_update_profiles_w_geo_ip_data">
- 		                       Update Profiles, after opens/clickthroughs
- 		                   </label> 
-
- 				   		<div class="small-1 columns ">
- 				   		</div>
- 				   		<div class="small-11 columns ">
- 				   			<div id="tracker_track_email_options">   
-						   
- 			                   <div id="field_name_group">                
- 			                		    <!-- tmpl_loop field_names --> 
- 											<div class="row">
- 												<div class="small-1 columns ">				
- 				                                    <input type="checkbox" 
- 				                                          id="<!-- tmpl_var name escape="HTML" -->.enabled" 
- 				                                        name="<!-- tmpl_var name escape="HTML" -->.enabled" 
- 				                                        class="field_checkbox" 
- 				                                        data-target="<!-- tmpl_var name escape="HTML" -->_popup_menu" 
- 				                                        value="1" 
- 				                                        <!-- tmpl_if enabled -->
- 				                                            checked="checked"
- 				                                        <!-- /tmpl_if --> 
- 				                                    >
- 												</div>
- 												<div class="small-3 columns ">				
- 				                                    <label for="<!-- tmpl_var name escape="HTML" -->.enabled">
- 														<!-- tmpl_var label  escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->):
- 													</label>
- 												</div>
- 												<div class="small-8 columns ">				
- 				                                    <div id="<!-- tmpl_var name escape="HTML" -->_popup_menu">
- 				                                        <!-- tmpl_var popup_menu -->
- 				                                    </div>
- 												</div>
- 											</div>
- 									   <!-- /tmpl_loop --> 
- 			                    </div> 
- 							 </div> 
- 						</div> 
- 		       </fieldset> 
- 		   </div> 
-    		</div> 
-    </div>
-	
-	
-	
   	<h5>
 		Reports
 	</h5>
@@ -414,13 +435,21 @@
 						<!-- /tmpl_unless -->
 				    </label>
 		
-					<!-- tmpl_unless GOOGLE_MAPS_API_PARAMS_api_key -->
-						<div class="alert-box info radius">
-							<strong>Disabled.</strong> A Google Maps API Key is required.
+	
+					<div class="row">
+						<div class="small-1 columns ">
 						</div>
-					<!-- /tmpl_unless -->
+						<div class="small-11 columns ">
+							
+						<!-- tmpl_unless GOOGLE_MAPS_API_PARAMS_api_key -->
+							<div class="alert-box info radius">
+								<strong>Disabled.</strong> A Google Maps API Key is required.
+							</div>
+						<!-- /tmpl_unless -->
 					
-					
+							</div>
+						</div> 
+						
 					
 				</div>
 			</div> 

@@ -923,131 +923,133 @@ sub message_history_json {
 		require         Data::Google::Visualization::DataTable;
 		my $datatable = Data::Google::Visualization::DataTable->new();
 
+
+	 
+		
+
+			
         if($args->{-type} eq 'number') { 
 
-            		$datatable->add_columns(
-            			   { id => 'date',          label => 'Date',          type => 'string'}, 
-            		       { id => 'delivered_to',   label => "Recipients",   type => 'number'},
-            		       #{ id => 'received',         label => "Recieved",         type => 'number'},
-            		       { id => 'opens',         label => "Opens",         type => 'number'},
-            		       { id => 'clickthroughs', label => "Clickthroughs", type => 'number'},
-						#   { id => 'soft_bounces',  label => "Soft Bounces",  type => 'number'},
-            		    #   { id => 'hard_bounces',  label => "Hard Bounces",  type => 'number'},
-						 #  { id => 'bounces',  label => "Bounces",  type => 'number'},
-                         #  { id => 'errors_sending_to', label => "Errors", type => 'number'},
-						 
-						   { id => 'delivery_issues', label => "Delivery Issues", type => 'number'},
-            		       { id => 'unsubscribes',    label => "Unsubscribes",    type => 'number'},
+    		$datatable->add_columns(
+    			   { id => 'date',          label => 'Date',          type => 'string'}, 
+    		       { id => 'delivered_to',   label => "Recipients",   type => 'number'},
+    		       #{ id => 'received',         label => "Recieved",         type => 'number'},
+    		       { id => 'opens',         label => "Opens",         type => 'number'},
+    		       { id => 'clickthroughs', label => "Clickthroughs", type => 'number'},
+				#   { id => 'soft_bounces',  label => "Soft Bounces",  type => 'number'},
+    		    #   { id => 'hard_bounces',  label => "Hard Bounces",  type => 'number'},
+				 #  { id => 'bounces',  label => "Bounces",  type => 'number'},
+                 #  { id => 'errors_sending_to', label => "Errors", type => 'number'},
+				 
+				   { id => 'delivery_issues', label => "Delivery Issues", type => 'number'},
+    		       { id => 'unsubscribes',    label => "Unsubscribes",    type => 'number'},
+					   
+				   
+				   
+				   
+    		);
+
+		    require DADA::MailingList::Archives;
+		    my $mja = DADA::MailingList::Archives->new( { -list => $self->{name} } );
+
+    		for(reverse @$report_by_message_index){ 
+    			if($self->verified_mid($_->{mid})){
+
+    				if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
+    					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
+    				}
+					
+					my $msg_subject;
+			        if ( $mja->check_if_entry_exists($_->{mid}) ) {
+			            $msg_subject = $mja->get_archive_subject($_->{mid}) || $_->{mid};
+						 if(length($msg_subject) >= 50){ 
+							$msg_subject =  substr($msg_subject, 0, 49 ) . '...' 
+						 } 
+			        }
+			        else {
+			        }
+					
+					
+				
+					
+					
+					
+					#use Data::Dumper; 
+					#warn 'all the info: ' . Dumper($_);
+					
+
+    				my $date; 
+    				my $delivered_to = $_->{delivered_to};  # and that's that I guess. 
+    				my $opens           = 0;
+    				#my $errors          = 0; 
+    				my $clickthroughs   = 0;
+    				#my $soft_bounces    = 0;
+    				#my $hard_bounces    = 0;  
+					#my $bounces = 0; 
+					my $delivery_issues         = 0; 
+    				my $unsubscribes    = 0;
+					
+    				if(defined($_->{open})){ 
+    					#if($_->{unique_open} > 2){ # set to "2" to fudge
+						#	$opens = $_->{unique_open};
+						#}
+						#else { 
+							$opens = $_->{open};
+							#}
+					}
+    				
+    				#if(defined($_->{errors_sending_to})){ 
+    				#	$errors = $_->{errors_sending_to};	
+    				#}
+
+    				if(defined($_->{count})){ 
+						#if($_->{unique_clickthroughs} > 2){ # set to "2" to fudge
+						#	$clickthroughs  = $_->{unique_clickthroughs};
+						#}
+						#else { 
+							$clickthroughs = $_->{count};	
+							#}
+    				}
+    				
+					
+    				#if(defined($_->{soft_bounce})){ 
+    				#	$soft_bounces = $_->{soft_bounce};	
+    				#}
+    				#if(defined($_->{hard_bounce})){ 
+    				#	$hard_bounces = $_->{hard_bounce};	
+    				#}
+    				
+    				
+    				if(defined($_->{unsubscribe})){ 
+    					$unsubscribes = $_->{unsubscribe};	
+    				}
+    				if(defined($_->{delivery_issues})){ 
+    					$delivery_issues = $_->{delivery_issues};	
+    				}
+
+					
+    				$datatable->add_rows(
+    					{
+    				        date          =>  { 
+    											v => $_->{mid}, 
+    											f => $msg_subject, # . ' | ' . DADA::App::Guts::date_this( -Packed_Date => $_->{mid}), 
+    											},
+    		               
 						   
-						   
-						   
-            		);
-
-            		for(reverse @$report_by_message_index){ 
-            			if($self->verified_mid($_->{mid})){
-
-            				if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
-            					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
-            				}
-							
-							#use Data::Dumper; 
-							#warn 'all the info: ' . Dumper($_);
-							
-
-            				my $date; 
-            				my $delivered_to = $_->{delivered_to};  # and that's that I guess. 
-            				my $opens           = 0;
-            				#my $errors          = 0; 
-            				my $clickthroughs   = 0;
-            				#my $soft_bounces    = 0;
-            				#my $hard_bounces    = 0;  
-							#my $bounces = 0; 
-							my $delivery_issues         = 0; 
-            				my $unsubscribes    = 0;
-							
-            				if(defined($_->{open})){ 
-            					#if($_->{unique_open} > 2){ # set to "2" to fudge
-								#	$opens = $_->{unique_open};
-								#}
-								#else { 
-									$opens = $_->{open};
-									#}
-							}
-            				
-            				#if(defined($_->{errors_sending_to})){ 
-            				#	$errors = $_->{errors_sending_to};	
-            				#}
-
-            				if(defined($_->{count})){ 
-								#if($_->{unique_clickthroughs} > 2){ # set to "2" to fudge
-								#	$clickthroughs  = $_->{unique_clickthroughs};
-								#}
-								#else { 
-									$clickthroughs = $_->{count};	
-									#}
-            				}
-            				
-							
-            				#if(defined($_->{soft_bounce})){ 
-            				#	$soft_bounces = $_->{soft_bounce};	
-            				#}
-            				#if(defined($_->{hard_bounce})){ 
-            				#	$hard_bounces = $_->{hard_bounce};	
-            				#}
-            				
-            				
-            				if(defined($_->{unsubscribe})){ 
-            					$unsubscribes = $_->{unsubscribe};	
-            				}
-            				if(defined($_->{delivery_issues})){ 
-            					$delivery_issues = $_->{delivery_issues};	
-            				}
-
-							use Data::Dumper; 
-							warn 'adding:' . Dumper(
-        					{
-        				        date          =>  { 
-        											v => $_->{mid}, 
-        											f => DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) 
-        											},
-        		               
-							   
-							    delivered_to       => $delivered_to,
-        		                opens             => $opens,
-        		                clickthroughs     => $clickthroughs,
-        		                
-        		                #soft_bounces      => $soft_bounces, 
-        		                #hard_bounces      => $hard_bounces,
-								#bounces            => $bounces,
-        		                #errors_sending_to => $errors,
-								delivery_issues   => $delivery_issues, 
-								unsubscribes      => $unsubscribes,
-								
-        					}
-							);
-            				$datatable->add_rows(
-            					{
-            				        date          =>  { 
-            											v => $_->{mid}, 
-            											f => DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) 
-            											},
-            		               
-								   
-								    delivered_to       => $delivered_to,
-            		                opens             => $opens,
-            		                clickthroughs     => $clickthroughs,
-            		                
-            		                #soft_bounces      => $soft_bounces, 
-            		                #hard_bounces      => $hard_bounces,
-									#bounces            => $bounces,
-            		                #errors_sending_to => $errors,
-									delivery_issues   => $delivery_issues, 
-									unsubscribes      => $unsubscribes,
-									
-            					}
-            				); 
-            			}
-            		} 
+						    delivered_to       => $delivered_to,
+    		                opens             => $opens,
+    		                clickthroughs     => $clickthroughs,
+    		                
+    		                #soft_bounces      => $soft_bounces, 
+    		                #hard_bounces      => $hard_bounces,
+							#bounces            => $bounces,
+    		                #errors_sending_to => $errors,
+							delivery_issues   => $delivery_issues, 
+							unsubscribes      => $unsubscribes,
+    					}
+    				); 
+    			}
+    		} 
             
         }
         elsif($args->{-type} eq 'rate') { 
@@ -1071,6 +1073,10 @@ sub message_history_json {
 	
     		);
 	
+		    require DADA::MailingList::Archives;
+		    my $mja = DADA::MailingList::Archives->new( { -list => $self->{name} } );
+	
+	
     		for(reverse @$report_by_message_index){ 
     			if($self->verified_mid($_->{mid})){
 			
@@ -1078,13 +1084,23 @@ sub message_history_json {
     					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
     				}
 					
+					my $msg_subject;
+			        if ( $mja->check_if_entry_exists($_) ) {
+			            $msg_subject = $mja->get_archive_subject($_) || $_;
+						 if(length($msg_subject) >= 50){ 
+							$msg_subject =  substr($msg_subject, 0, 49 ) . '...' 
+						 } 
+			        }
+			        else {
+			        }
 					
-
+					
             $datatable->add_rows(
 				{
 			        date          =>  { 
 										v => $_->{mid}, 
-										f => DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) 
+										f =>  $msg_subject, # . ' | ' . DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) 
+										
 										},
 	                
 	                received          => $_->{received_percent},

@@ -56,22 +56,25 @@
 		</ul>
 	</div>
 	
-<div id="subscriber_history_chart" style="height:400px"></div>
+<div id="subscriber_history_chart" style="height:425px"></div>
 	
 <div style="width:100%"> 
     <div style="max-height: 480px; overflow: auto; width:100%">
 
-		<table  style="width:100%" class="responsive dm_tighter">
-		<tr> 
+		<table id="subscriber_history_table" style="width:100%" class="tablesorter responsive">
+		<thead> 
+		<tr>
+			<th class="sorter-false" style="width:75px"> 
+				&nbsp;
+			</th>
+			
 		<th> 
 			Sent
 		</th>			
 		<th> 
 			Subject
 		</th> 
-		<th> 
-			Archive
-		</th>
+	
 <!-- 
 		<th> 
 			Subscribers
@@ -95,44 +98,57 @@
 			Unsubscribes
 		</th>
 
-		<th> 
+		<th class="sorter-false"> 
 		</th>
 		</tr> 
+	</thead>
+	<tbody>
+	
 		<!-- tmpl_loop report_by_message_index --> 
 		<tr> 
+		
+			<td valign="middle">	
+				<span style="font-size: 2em; padding-bottom:0;padding-top:0" class="text-align:center">
+					<a href="<!-- tmpl_var Plugin_URL -->?prm=m&mid=<!-- tmpl_var mid -->" title="View Analytics">
+							<i class="fi-graph-pie"></i>
+							<i class="fi-graph-bar"></i>
+					</a>
+				</span>
+						
+			 </td>
+			 
 			<td> 
 				<!-- tmpl_var date --> 
 			</td>
 
 		 <td> 
 			<!-- tmpl_if message_subject -->
-				<a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->" title="<!-- tmpl_var message_subject escape="HTML" -->">
-					<!-- tmpl_var message_subject_snipped escape="HTML" -->
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&list=<!-- tmpl_var list -->&id=<!-- tmpl_var mid -->" target="_blank" title="View Archived Message">
+					<!-- tmpl_var message_subject_snipped -->
 				</a> 
 			<!-- tmpl_else --> 
-				<a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-					#<!-- tmpl_var mid --> (unarchived message)
-				</a>
+				#<!-- tmpl_var mid --> (unarchived message)
 			<!-- /tmpl_if --> 
-			</td> 
-		<td>
+		</td> 
+		
 	
-		<!-- tmpl_if message_subject -->
-			<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&list=<!-- tmpl_var list -->&id=<!-- tmpl_var mid -->" target="_blank">
-				View 
-			</a> 
-			<!-- tmpl_else --> 
-		<!-- /tmpl_if --> 
 		 <!-- 
-		 <td> 
-		    <!-- tmpl_var num_subscribers_commified  default="-"--> 
-		 </td>
-	 -->  			
-		 <td> 
+		 	<td> 
+		  	  <!-- tmpl_var num_subscribers_commified  default="-" --> 
+			 </td>
+	 	-->
+		
+		 <td data-text="<!-- tmpl_var total_recipients -->">
 		    <!-- tmpl_var total_recipients_commified  default="-"--> 
 		 </td>
-		 <td> 
-		    <!-- tmpl_var open_commified default="-"  -->
+	
+	 	<td 
+			 <!-- tmpl_if unique_open -->
+			 	data-text="<!-- tmpl_var unique_open -->"
+			 <!-- tmpl_else -->
+				 data-text="<!-- tmpl_var open -->"
+			 <!-- /tmpl_if -->
+		>
 			<!-- tmpl_if expr="(
 				(
 					(list_settings.tracker_track_email == 1)
@@ -141,28 +157,67 @@
 				|| 
 				(list_settings.tracker_track_anonymously == 1)
 			)" -->
-				<!-- tmpl_if unique_opens -->
-					, Unique: <!-- tmpl_var unique_opens_commify --> - <!-- tmpl_var unique_opens_percent -->%
+				<!-- tmpl_if unique_open -->
+					<strong>Unique:</strong>&nbsp;<!-- tmpl_var unique_open_commified -->/<!-- tmpl_var unique_opens_percent -->%
+					<br>
+					<strong>Total:</strong>&nbsp;<!-- tmpl_var open_commified default="-"  -->
 				<!-- /tmpl_if -->
+			<!-- tmpl_else -->
+				<strong>Total:</strong><!-- tmpl_var open_commified default="-"  -->
 			<!-- /tmpl_if -->
 			
 		 </td>
-		 <td> 
-		    <!-- tmpl_var count_commified  default="-"  --> 
-		 </td>
-		 
-		 <td> 
-			 <!-- tmpl_var delivery_issues_commified  default="-"  --> 
-			 <!-- tmpl_if delivery_issues --> 
-			 	/ <!-- tmpl_var delivery_issues_percent -->%
-			 <!-- /tmpl_if -->
 
+
+
+
+		
+		 	<td 
+				 <!-- tmpl_if unique_clickthroughs -->
+				 	data-text="<!-- tmpl_var unique_clickthroughs -->"
+				 <!-- tmpl_else -->
+					 data-text="<!-- tmpl_var count -->"
+				 <!-- /tmpl_if -->
+			> 		
+			 
+			 
+			<!-- tmpl_if expr="(
+				(
+					(list_settings.tracker_track_email == 1)
+				 	&& (PII_OPTIONS_allow_logging_emails_in_analytics == 1)
+				) 
+				|| 
+				(list_settings.tracker_track_anonymously == 1)
+			)" -->
+				<!-- tmpl_if unique_clickthroughs -->
+					<strong>Unique:</strong>&nbsp;<!-- tmpl_var unique_clickthroughs_commified -->/<!-- tmpl_var unique_clickthroughs_percent -->%
+					<br>
+					<strong>Total:</strong>&nbsp;<!-- tmpl_var count_commified  default="-"  -->	
+				<!-- /tmpl_if -->
+			<!-- tmpl_else -->
+				<strong>Total:</strong><!-- tmpl_var count_commified  default="-"  --> 
+			<!-- /tmpl_if -->
+			
+			
+			
+			
 		 </td>
 		 
-		 <td> 
-		    <!-- tmpl_var unsubscribe_commified  default="-"  --> 
+		 <td data-text="<!-- tmpl_var delivery_issues -->"> 
+			 
+			 <!-- tmpl_if delivery_issues -->
+			 	<!-- tmpl_var delivery_issues_commified  default="-"  -->/<!-- tmpl_var delivery_issues_percent -->%
+			<!-- tmpl_else -->
+				<!-- tmpl_var delivery_issues_commified  default="-"  -->
+			<!-- /tmpl_if -->
+		 </td>
+		 
+		 <td data-text="<!-- tmpl_var unsubscribe -->"> 
+		    
 			 <!-- tmpl_if unsubscribe --> 
-			 	/ <!-- tmpl_var unique_unsubscribes_percent -->%
+			 	<!-- tmpl_var unsubscribe_commified  default="-"  -->/<!-- tmpl_var unique_unsubscribes_percent -->%
+			 <!-- tmpl_else -->
+				 <!-- tmpl_var unsubscribe_commified  default="-"  -->
 			 <!-- /tmpl_if -->
 		 
 		 </td>
@@ -181,16 +236,17 @@
 		</td>
 		</tr> 
 		<!-- /tmpl_loop --> 
+	</tbody>
 		</table> 
 	</div>
 </div>
-
-	<fieldset> 
-		<pre>
-		<!-- tmpl_var report_by_message_id_dump escape="HTML" --> 
-		</pre> 
-	</fieldset> 
-
+<!-- tmpl_if comment -->
+		<fieldset> 
+			<pre>
+			<!-- tmpl_var report_by_message_id_dump escape="HTML" --> 
+			</pre> 
+		</fieldset> 
+<!-- /tmpl_if --> 	
 	
 <!-- tmpl_else -->
 	  <div class="alert-box info radius">

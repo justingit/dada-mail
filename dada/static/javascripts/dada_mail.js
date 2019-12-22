@@ -1642,9 +1642,14 @@ jQuery(document).ready(function($){
 			tracker_parse_links_setup();
 		});
 
-		$("body").on("click", '#tracker_track_email', function(event) {
+		$("body").on("click", '#tracker_tracking_mode_email_address', function(event) {
 			tracker_toggle_tracker_track_email_options();
 		});
+		$("body").on("click", '#tracker_tracking_mode_anonymously', function(event) {
+			tracker_toggle_tracker_track_email_options();
+		}); 
+		
+		
 
 
 		$("body").on("click", '.tracker_delete_msg_id_data', function(event) {
@@ -4192,6 +4197,10 @@ function tracker_the_basics_piechart(type, label, target_div) {
 			
 				$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 			
+			},
+			error: function(xhr, ajaxOptions, thrownError) {
+				console.log('status: ' + xhr.status);
+				console.log('thrownError:' + thrownError);
 			}
 		});
 		
@@ -4258,7 +4267,7 @@ function tracker_parse_links_setup() {
 }
 
 function tracker_toggle_tracker_track_email_options() {
-	if ($("#tracker_track_email").prop("checked") === true) {
+	if ($("#tracker_tracking_mode_email_address").prop("checked") === true) {
 		if ($('#tracker_track_email_options').is(':hidden')) {
 			$('#tracker_track_email_options').show('blind');
 		}
@@ -4355,6 +4364,16 @@ function message_history_html(initial) {
 		//$("#show_table_results").height(880);
 	}	
 		// put in all info, except the stuff that takes forever to load. 
+	
+		if (initial == 1) { 
+				$("#show_table_results").html(loading_str);
+		}
+	
+		var target = document.getElementById('show_table_results');	
+		var spinner = new Spinner(spinner_opts).spin(target);	
+		
+
+		
 		var request = $.ajax({
 			url: $("#s_program_url").val(),
 			type: "POST",
@@ -4368,13 +4387,14 @@ function message_history_html(initial) {
 			},
 			dataType: "html", 
 			success: function(content) {
+				
+				spinner.stop(); 	
 				$("#show_table_results").html(content);
+	
+				var target2 = document.getElementById('tracker_page');	
+				var spinner2 = new Spinner(spinner_opts).spin(target2);	
+	
 				
-				
-		
-				var target = document.getElementById('show_table_results');	
-				var spinner = new Spinner(spinner_opts).spin(target);	
-
 				var request2 = $.ajax({
 					url: $("#s_program_url").val(),
 					type: "POST",
@@ -4391,10 +4411,15 @@ function message_history_html(initial) {
 				
 						//$("#show_table_results").fadeTo(200, 0); 
 						//$("#show_table_results").fadeTo(200, 1,function() {
+						spinner2.stop(); 	
 						$("#show_table_results").html(content);
-						spinner.stop(); 	
+						
 						//});
+						// Wonder if this is a good idea? 
+						$("#subscriber_history_table").tablesorter({ theme : 'default', widgets: ["zebra"] });
+						$('#subscriber_history_table').trigger('applyWidgets');
 						google.setOnLoadCallback(drawSubscriberHistoryChart(initial));
+						
 					}, 
 					error: function(xhr, ajaxOptions, thrownError) {
 						console.log('status: ' + xhr.status);
@@ -4426,7 +4451,8 @@ function drawSubscriberHistoryChart(initial) {
 	//console.log('runnning drawSubscriberHistoryChart');
 	
 	if (initial == 1){ 
-		$('#subscriber_history_chart').height(400);
+		$('#subscriber_history_chart').height(425);
+		$("#subscriber_history_chart").html(loading_str);
 	}
 		
 	var target = document.getElementById('subscriber_history_chart');
@@ -4460,10 +4486,11 @@ function drawSubscriberHistoryChart(initial) {
 					left: 20,
 					top: 20,
 					width: "90%",
-					height: "70%"
+					height: "60%"
 				          },
 					
 	  		  	seriesType: 'bars',
+			    tooltip: {isHtml: true},
 	            colors: ['#247ba0', '#70c1b3', '#b2dbbf','#ff6816' , '#ff1654'],
 				series: {
 		          0: {targetAxisIndex: 0, type: 'line'},

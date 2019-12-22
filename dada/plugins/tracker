@@ -590,16 +590,20 @@ sub message_history_html {
         ) || [];
 
 
-		use Data::Dumper; 
-		my $report_by_message_id_dump = Dumper($report_by_message_id);
 		# COMMIFY!
 		for my $this_id(@{$report_by_message_id}){ 
+			# And uh: THIS: 
+			$this_id->{Plugin_URL} = $Plugin_Config->{Plugin_URL};
+			
 			for my $inid(keys %{$this_id}){
 				next if $inid =~ m/percent/; 
 				$this_id->{$inid . '_commified'}
 					= commify($this_id->{$inid}); 
 			}
 		}
+		use Data::Dumper; 
+		my $report_by_message_id_dump = Dumper($report_by_message_id);
+		
 		
         require DADA::Template::Widgets;
         $html = DADA::Template::Widgets::screen(
@@ -903,9 +907,8 @@ sub message_report {
 			= commify($m_report->{$this_id}); 
 	}
 	
-	use Data::Dumper; 
-	
-	warn '$m_report' . Dumper($m_report);
+	#use Data::Dumper; 
+	#warn '$m_report' . Dumper($m_report);
 	
 	
 	

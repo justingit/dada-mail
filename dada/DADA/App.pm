@@ -8186,6 +8186,7 @@ sub view_archive {
                     can_use_JSON => scalar DADA::App::Guts::can_use_JSON(),
                     screen       => 'view_archive',
                     title        => 'View Archive',
+					PLUGINS_ENABLED_tracker => $DADA::Config::PLUGINS_ENABLED->{tracker},
                     index_list   => $ht_entries,
                     list_name    => $ls->param('list_name'),
                     index_nav    => $index_nav,
@@ -8241,6 +8242,8 @@ sub view_archive {
                     can_display_message_source =>
                       $archive->can_display_message_source,
                     nav_table => $nav_table,
+					PLUGINS_ENABLED_tracker => $DADA::Config::PLUGINS_ENABLED->{tracker},
+					
                 },
                 -list_settings_vars_param => {
                     -list   => $list,

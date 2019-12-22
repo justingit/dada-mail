@@ -1610,7 +1610,7 @@ $MIME_TOOLS_PARAMS //= {
 	delivery_prefs_default     => 'individual',
 
     # Tracker
-    tracker_record_view_count                       => 10,
+    tracker_record_view_count                       => 5,
     tracker_auto_parse_links                        => 1,
     tracker_auto_parse_mailto_links                 => 0,
     tracker_track_opens_method                      => 'directly',
