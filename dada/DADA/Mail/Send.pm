@@ -3125,7 +3125,9 @@ sub _cipher_decrypt {
 
 sub _email_batched_finished_notification {
 
-	#warn 'at _email_batched_finished_notification';
+	warn 'at _email_batched_finished_notification'
+		if $t; 
+	
 	
     # Amazon SES may have a limit of 1 message/sec,
     # so we give ourselves a little space after a mass mailing
@@ -3179,16 +3181,14 @@ sub _email_batched_finished_notification {
     $args->{-msg_id} =~ s/\.(.*)$//;    # remove everything after the first dot.
 
     $m_report = $r->report_by_message( $args->{-msg_id} );
+	$m_report->{total_bounce} = $m_report->{'soft_bounce'} + $m_report->{'hard_bounce'}; 
 	# COMMIFY!
-	for my $this_id(@{$m_report}){ 
-		# And uh: THIS: 
-		# $this_id->{Plugin_URL} = $Plugin_Config->{Plugin_URL};
-		for my $inid(keys %{$this_id}){
-			next if $inid =~ m/percent/; 
-			$m_report->{$inid . '_commified'}
-				= commify($m_report->{$inid}); 
-		}
+	for my $this_id(keys %{$m_report}){ 
+		next if $this_id =~ m/percent/; 
+		$m_report->{$this_id . '_commified'}
+			= commify($m_report->{$this_id}); 
 	}
+	
 	
     require DADA::App::Messages;
     my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
