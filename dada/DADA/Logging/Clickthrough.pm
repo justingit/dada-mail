@@ -843,323 +843,318 @@ sub redirect_tagify {
 
 
 sub message_history_json {
-	
-	# warn 'message_history_json'; 
-	
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	my $page; 
-	if(!exists($args->{-page})){ 
-		$page = 1; 
-	}
-	else { 
-		$page = $args->{-page};
-	}
-	if(!exists($args->{-printout})){ 
-		$args->{-printout} = 0;
-	}
-	my $cached_data = undef; 
-	if(exists($args->{-report_by_message_index_data})) { 
-		# warn 'getting $cached_data from $args->{-report_by_message_index_data}';
-		$cached_data = $args->{-report_by_message_index_data};
-	}
-	else { 
-		# warn 'no $cached_data passed.';
-	}
-	
-	if(!exists($args->{-type})){ 
-	    $args->{-type} = 'number'; 
-	}
-	
-	
-	my $json; 
-	
-	require DADA::App::DataCache; 
-	my $dc = DADA::App::DataCache->new; 
-	
-	$json = $dc->retrieve(
-		{
-			-list    => $self->{name}, 
-			-name    => 'message_history_json.' . $args->{-type}, 
-			-page    => $page, 
-			-entries => $self->{ls}->param('tracker_record_view_count'), 
-		}
-	);
-	
-	#if( defined($json)){ 
-	#	# warn 'But! json data cached in file.'; 
-	#}
-	
-	if(! defined($json)){ 
-		my $total; 
-		my $msg_ids; 
-		
-		# We can pass the data we make in $report_by_message_index
-		# and save us this step. 
-		my $report_by_message_index; 
-		if(!$cached_data) { 
-			($total, $msg_ids) = $self->get_all_mids(
-				{ 
-					-page    => $page, 
-					-entries => $self->{ls}->param('tracker_record_view_count'),  
-				}
-			);
-		 	$report_by_message_index = $self->report_by_message_index({-all_mids => $msg_ids}) || [];		
-		}
-		else { 
-			$report_by_message_index = $cached_data;
-		}
-		#######
-		
-		my $num_subscribers = []; 
-		my $opens           = [];
-		my $clickthroughs   = [];
-		my $soft_bounces    = [];
-		my $hard_bounces    = [];
-		my $first_date      = undef;
-		my $last_date       = undef; 
 
-		require         Data::Google::Visualization::DataTable;
-		my $datatable = Data::Google::Visualization::DataTable->new();
+    # warn 'message_history_json';
 
+    my $self = shift;
+    my ($args) = @_;
 
-	 
-		
+    my $page;
+    if ( !exists( $args->{-page} ) ) {
+        $page = 1;
+    }
+    else {
+        $page = $args->{-page};
+    }
+    if ( !exists( $args->{-printout} ) ) {
+        $args->{-printout} = 0;
+    }
+    my $cached_data = undef;
+    if ( exists( $args->{-report_by_message_index_data} ) ) {
 
-			
-        if($args->{-type} eq 'number') { 
+      # warn 'getting $cached_data from $args->{-report_by_message_index_data}';
+        $cached_data = $args->{-report_by_message_index_data};
+    }
+    else {
+        # warn 'no $cached_data passed.';
+    }
 
-    		$datatable->add_columns(
-    			   { id => 'date',          label => 'Date',          type => 'string'}, 
-    		       { id => 'delivered_to',   label => "Recipients",   type => 'number'},
-    		       #{ id => 'received',         label => "Recieved",         type => 'number'},
-    		       { id => 'opens',         label => "Opens",         type => 'number'},
-    		       { id => 'clickthroughs', label => "Clickthroughs", type => 'number'},
-				#   { id => 'soft_bounces',  label => "Soft Bounces",  type => 'number'},
-    		    #   { id => 'hard_bounces',  label => "Hard Bounces",  type => 'number'},
-				 #  { id => 'bounces',  label => "Bounces",  type => 'number'},
-                 #  { id => 'errors_sending_to', label => "Errors", type => 'number'},
-				 
-				   { id => 'delivery_issues', label => "Delivery Issues", type => 'number'},
-    		       { id => 'unsubscribes',    label => "Unsubscribes",    type => 'number'},
-					   
-				   
-				   
-				   
-    		);
+    if ( !exists( $args->{-type} ) ) {
+        $args->{-type} = 'number';
+    }
 
-		    require DADA::MailingList::Archives;
-		    my $mja = DADA::MailingList::Archives->new( { -list => $self->{name} } );
+    my $json;
 
-    		for(reverse @$report_by_message_index){ 
-    			if($self->verified_mid($_->{mid})){
+    require DADA::App::DataCache;
+    my $dc = DADA::App::DataCache->new;
 
-    				if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
-    					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
-    				}
-=pod					
-					my $msg_subject;
-			        if ( $mja->check_if_entry_exists($_->{mid}) ) {
-			            $msg_subject = $mja->get_archive_subject($_->{mid}) || DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
-						 if(length($msg_subject) >= 50){ 
-							$msg_subject =  substr($msg_subject, 0, 49 ) . '...' 
-						 } 
-			        }
-			        else {
-						$msg_subject = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
-			        }
-=cut					
-					
-				
-					
-					
-					
-					#use Data::Dumper; 
-					#warn 'all the info: ' . Dumper($_);
-					
-
-    				my $date; 
-    				my $delivered_to = $_->{delivered_to};  # and that's that I guess. 
-    				my $opens           = 0;
-    				#my $errors          = 0; 
-    				my $clickthroughs   = 0;
-    				#my $soft_bounces    = 0;
-    				#my $hard_bounces    = 0;  
-					#my $bounces = 0; 
-					my $delivery_issues         = 0; 
-    				my $unsubscribes    = 0;
-					
-    				if(defined($_->{open})){ 
-    					#if($_->{unique_open} > 2){ # set to "2" to fudge
-						#	$opens = $_->{unique_open};
-						#}
-						#else { 
-							$opens = $_->{open};
-							#}
-					}
-    				
-    				#if(defined($_->{errors_sending_to})){ 
-    				#	$errors = $_->{errors_sending_to};	
-    				#}
-
-    				if(defined($_->{count})){ 
-						#if($_->{unique_clickthroughs} > 2){ # set to "2" to fudge
-						#	$clickthroughs  = $_->{unique_clickthroughs};
-						#}
-						#else { 
-							$clickthroughs = $_->{count};	
-							#}
-    				}
-    				
-					
-    				#if(defined($_->{soft_bounce})){ 
-    				#	$soft_bounces = $_->{soft_bounce};	
-    				#}
-    				#if(defined($_->{hard_bounce})){ 
-    				#	$hard_bounces = $_->{hard_bounce};	
-    				#}
-    				
-    				
-    				if(defined($_->{unsubscribe})){ 
-    					$unsubscribes = $_->{unsubscribe};	
-    				}
-    				if(defined($_->{delivery_issues})){ 
-    					$delivery_issues = $_->{delivery_issues};	
-    				}
-
-					
-    				$datatable->add_rows(
-    					{
-    				        date          =>  { 
-    											v => $_->{mid}, 
-    											f => $_->{message_subject_snipped},
-    											},
-    		               
-						   
-						    delivered_to       => $delivered_to,
-    		                opens             => $opens,
-    		                clickthroughs     => $clickthroughs,
-    		                
-    		                #soft_bounces      => $soft_bounces, 
-    		                #hard_bounces      => $hard_bounces,
-							#bounces            => $bounces,
-    		                #errors_sending_to => $errors,
-							delivery_issues   => $delivery_issues, 
-							unsubscribes      => $unsubscribes,
-    					}
-    				); 
-    			}
-    		} 
-            
+    $json = $dc->retrieve(
+        {
+            -list    => $self->{name},
+            -name    => 'message_history_json.' . $args->{-type},
+            -page    => $page,
+            -entries => $self->{ls}->param('tracker_record_view_count'),
         }
-        elsif($args->{-type} eq 'rate') { 
-            
-    		$datatable->add_columns(
-    			   { id => 'date',          label => 'Date',          type => 'string'}, 
-    		      # { id => 'subscribers',   label => "Subscribers",   type => 'number'},
-    		       { id => 'received',         label => "% Receive",         type => 'number'},
+    );
+
+    #if( defined($json)){
+    #	# warn 'But! json data cached in file.';
+    #}
+
+    if ( !defined($json) ) {
+        my $total;
+        my $msg_ids;
+
+        # We can pass the data we make in $report_by_message_index
+        # and save us this step.
+        my $report_by_message_index;
+        if ( !$cached_data ) {
+            ( $total, $msg_ids ) = $self->get_all_mids(
+                {
+                    -page    => $page,
+                    -entries => $self->{ls}->param('tracker_record_view_count'),
+                }
+            );
+            $report_by_message_index =
+              $self->report_by_message_index( { -all_mids => $msg_ids } ) || [];
+        }
+        else {
+            $report_by_message_index = $cached_data;
+        }
+        #######
+
+        my $num_subscribers = [];
+        my $opens           = [];
+        my $clickthroughs   = [];
+        my $soft_bounces    = [];
+        my $hard_bounces    = [];
+        my $first_date      = undef;
+        my $last_date       = undef;
+
+        require Data::Google::Visualization::DataTable;
+        my $datatable = Data::Google::Visualization::DataTable->new();
+
+        if ( $args->{-type} eq 'number' ) {
+
+            $datatable->add_columns(
+                { id => 'date', label => 'Date', type => 'string' },
+                {
+                    id    => 'delivered_to',
+                    label => "Recipients",
+                    type  => 'number'
+                },
+
+    #{ id => 'received',         label => "Recieved",         type => 'number'},
+                { id => 'opens', label => "Opens", type => 'number' },
+                {
+                    id    => 'clickthroughs',
+                    label => "Clickthroughs",
+                    type  => 'number'
+                },
+
+       #   { id => 'soft_bounces',  label => "Soft Bounces",  type => 'number'},
+       #   { id => 'hard_bounces',  label => "Hard Bounces",  type => 'number'},
+       #  { id => 'bounces',  label => "Bounces",  type => 'number'},
+       #  { id => 'errors_sending_to', label => "Errors", type => 'number'},
+
+                {
+                    id    => 'delivery_issues',
+                    label => "Delivery Issues",
+                    type  => 'number'
+                },
+                {
+                    id    => 'unsubscribes',
+                    label => "Unsubscribes",
+                    type  => 'number'
+                },
+
+            );
+
+            require DADA::MailingList::Archives;
+            my $mja =
+              DADA::MailingList::Archives->new( { -list => $self->{name} } );
+
+            for ( reverse @$report_by_message_index ) {
+                if ( $self->verified_mid( $_->{mid} ) ) {
+
+                    if ( $self->{ls}->param('tracker_clean_up_reports') == 1 ) {
+                        next
+                          unless exists( $_->{num_subscribers} )
+                          && $_->{num_subscribers} =~ m/^\d+$/;
+                    }
+
+                    my $date;
+                    my $delivered_to =
+                      $_->{delivered_to};    # and that's that I guess.
+                    my $opens = 0;
+
+                    #my $errors          = 0;
+                    my $clickthroughs = 0;
+
+                    #my $soft_bounces    = 0;
+                    #my $hard_bounces    = 0;
+                    #my $bounces = 0;
+                    my $delivery_issues = 0;
+                    my $unsubscribes    = 0;
+
+                    if ( defined( $_->{open} ) ) {
+
+                        #if($_->{unique_open} > 2){ # set to "2" to fudge
+                        $opens = $_->{unique_open};
+
+                        #}
+                        #else {
+                        #	$opens = $_->{open};
+                        #}
+                    }
+
+                    #if(defined($_->{errors_sending_to})){
+                    #	$errors = $_->{errors_sending_to};
+                    #}
+
+                    if ( defined( $_->{count} ) ) {
+
+                      #if($_->{unique_clickthroughs} > 2){ # set to "2" to fudge
+                        $clickthroughs = $_->{unique_clickthroughs};
+
+                        #}
+                        #else {
+                        #	$clickthroughs = $_->{count};
+                        #}
+                    }
+
+                    #if(defined($_->{soft_bounce})){
+                    #	$soft_bounces = $_->{soft_bounce};
+                    #}
+                    #if(defined($_->{hard_bounce})){
+                    #	$hard_bounces = $_->{hard_bounce};
+                    #}
+
+                    if ( defined( $_->{unsubscribe} ) ) {
+                        $unsubscribes = $_->{unsubscribe};
+                    }
+                    if ( defined( $_->{delivery_issues} ) ) {
+                        $delivery_issues = $_->{delivery_issues};
+                    }
+
+                    $datatable->add_rows(
+                        {
+                            date => {
+                                v => $_->{mid},
+                                f => $_->{message_subject_snipped},
+                            },
+
+                            delivered_to  => $delivered_to,
+                            opens         => $opens,
+                            clickthroughs => $clickthroughs,
+
+                            #soft_bounces      => $soft_bounces,
+                            #hard_bounces      => $hard_bounces,
+                            #bounces            => $bounces,
+                            #errors_sending_to => $errors,
+                            delivery_issues => $delivery_issues,
+                            unsubscribes    => $unsubscribes,
+                        }
+                    );
+                }
+            }
+
+        }
+        elsif ( $args->{-type} eq 'rate' ) {
+
+            $datatable->add_columns(
+                { id => 'date', label => 'Date', type => 'string' },
+
+         # { id => 'subscribers',   label => "Subscribers",   type => 'number'},
+                { id => 'received', label => "% Receive", type => 'number' },
+
 #                   { id => 'errors_sending_to', label => "Errors", type => 'number'},
-    		       { id => 'opens',         label => "% Opened",         type => 'number'},
-    		       { id => 'clickthroughs', label => "% Clickthrough", type => 'number'},
-				   
-				   { id => 'delivery_issues', label => "% Delivery Issue", type => 'number'},
-				   
-				   
-    		       { id => 'unsubscribes',  label => "% Unsubscribe",  type => 'number'},
-				#   { id => 'soft_bounces',  label => "Soft Bounces",  type => 'number'},
-       		    #   { id => 'hard_bounces',  label => "Hard Bounces",  type => 'number'},
-	#			   { id => 'bounces',  label => "Bounces",  type => 'number'},
-	
-	
-    		);
-	
-		    require DADA::MailingList::Archives;
-		    my $mja = DADA::MailingList::Archives->new( { -list => $self->{name} } );
-	
-	
-    		for(reverse @$report_by_message_index){ 
-    			if($self->verified_mid($_->{mid})){
-			
-    				if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
-    					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
-    				}
-=pod
-										
-					my $msg_subject;
-			        if ( $mja->check_if_entry_exists($_) ) {
-			            $msg_subject = $mja->get_archive_subject($_) || DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
-						 if(length($msg_subject) >= 50){ 
-							$msg_subject =  substr($msg_subject, 0, 49 ) . '...' 
-						 } 
-			        }
-			        else {
-						$msg_subject = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
-			        }
-=cut
-										
-					
-            $datatable->add_rows(
-				{
-			        date          =>  { 
-										v => $_->{mid}, 
-										f =>  $_->{message_subject_snipped}, 
-										
-										},
-	                
-	                received          => $_->{received_percent},
-	                opens             => $_->{unique_opens_percent},  
-	                clickthroughs     => $_->{unique_clickthroughs_percent},
-	                delivery_issues   => $_->{delivery_issues_percent},
-					unsubscribes      => $_->{unique_unsubscribes_percent},
-  	            	  #  subscribers   => $num_subscribers ,
-	          
-					#soft_bounces  => $_->{unique_soft_bounces_percent},
-	                #hard_bounces  => $_->{unique_hard_bounces_percent},
-					#bounces        => ($_->{unique_soft_bounces_percent} + $_->{unique_hard_bounces_percent})
-	            
-				}
-			); 
-			
-			
-				
-			}
-		} 
-		
- 	}
+                { id => 'opens', label => "% Opened", type => 'number' },
+                {
+                    id    => 'clickthroughs',
+                    label => "% Clickthrough",
+                    type  => 'number'
+                },
 
+                {
+                    id    => 'delivery_issues',
+                    label => "% Delivery Issue",
+                    type  => 'number'
+                },
 
-		$json = $datatable->output_javascript(
-			pretty  => 1,
-		);
-		$dc->cache(
-			{ 
-				-list    => $self->{name}, 
-				-name    => 'message_history_json.' . $args->{-type}, 
-				-page    => $page, 
-				-entries => $self->{ls}->param('tracker_record_view_count'), 
-				-data    => \$json, 
-			}
-		);
-	
-	}
+                {
+                    id    => 'unsubscribes',
+                    label => "% Unsubscribe",
+                    type  => 'number'
+                },
+
+       #   { id => 'soft_bounces',  label => "Soft Bounces",  type => 'number'},
+       #   { id => 'hard_bounces',  label => "Hard Bounces",  type => 'number'},
+       #			   { id => 'bounces',  label => "Bounces",  type => 'number'},
+
+            );
+
+            require DADA::MailingList::Archives;
+            my $mja =
+              DADA::MailingList::Archives->new( { -list => $self->{name} } );
+
+            for ( reverse @$report_by_message_index ) {
+                if ( $self->verified_mid( $_->{mid} ) ) {
+
+                    if ( $self->{ls}->param('tracker_clean_up_reports') == 1 ) {
+                        next
+                          unless exists( $_->{num_subscribers} )
+                          && $_->{num_subscribers} =~ m/^\d+$/;
+                    }
+
+                    $datatable->add_rows(
+                        {
+                            date => {
+                                v => $_->{mid},
+                                f => $_->{message_subject_snipped},
+
+                            },
+
+                            received      => $_->{received_percent},
+                            opens         => $_->{unique_opens_percent},
+                            clickthroughs => $_->{unique_clickthroughs_percent},
+                            delivery_issues => $_->{delivery_issues_percent},
+                            unsubscribes => $_->{unique_unsubscribes_percent},
+
+                            #  subscribers   => $num_subscribers ,
+
+#soft_bounces  => $_->{unique_soft_bounces_percent},
+#hard_bounces  => $_->{unique_hard_bounces_percent},
+#bounces        => ($_->{unique_soft_bounces_percent} + $_->{unique_hard_bounces_percent})
+
+                        }
+                    );
+
+                }
+            }
+
+        }
+
+        $json = $datatable->output_javascript( pretty => 1, );
+        $dc->cache(
+            {
+                -list    => $self->{name},
+                -name    => 'message_history_json.' . $args->{-type},
+                -page    => $page,
+                -entries => $self->{ls}->param('tracker_record_view_count'),
+                -data    => \$json,
+            }
+        );
+
+    }
     my $headers = {
         '-Cache-Control' => 'no-cache, must-revalidate',
-		-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
-		-type            =>  'application/json',
-		
-	}; 
-	
-	if($args->{-printout} == 1){ 
-		require CGI; 
-		my $q = CGI->new; 
-		print $q->header(%$headers);
-		print $json; 
-	}
-	else { 
-		return ($headers, $json); 
-	}
+        -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
+        -type            => 'application/json',
+
+    };
+
+    if ( $args->{-printout} == 1 ) {
+        require CGI;
+        my $q = CGI->new;
+        print $q->header(%$headers);
+        print $json;
+    }
+    else {
+        return ( $headers, $json );
+    }
 }
+
 
 
 sub percentage { 
