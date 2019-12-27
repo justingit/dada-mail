@@ -566,6 +566,16 @@ sub total_recipients_log {
     $args->{-update_fields}  = 0; 
     return $self->mass_mailing_event_log($args); 
 }
+sub subject_log {
+    my $self                 = shift;
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = 'original_subject'; 
+    $args->{-details}        = $args->{-subject};
+    $args->{-update_fields}  = 0; 
+    return $self->mass_mailing_event_log($args); 
+}
+
 sub forward_to_a_friend_log {
     my $self                 = shift;
     my ($args)               = @_;
@@ -1005,18 +1015,40 @@ sub report_by_message_index {
 	        $report->{$_}->{date}          = DADA::App::Guts::date_this( -Packed_Date => $_, );
 			$report->{$_}->{S_PROGRAM_URL} = $DADA::Config::S_PROGRAM_URL; 
 			$report->{$_}->{list}          = $self->{name}; 
-	        if ( $mja->check_if_entry_exists($_) ) {
+	        
+			
+			if ( $mja->check_if_entry_exists($_) ) {
 	            $report->{$_}->{message_subject} = $mja->get_archive_subject($_)
-	              || $_;
-				 if(length($report->{$_}->{message_subject}) >= 50){ 
-					$report->{$_}->{message_subject_snipped} =  substr( $report->{$_}->{message_subject}, 0, 49 ) . '...' 
-				 } 
-				 else { 
-				 	$report->{$_}->{message_subject_snipped} = $report->{$_}->{message_subject};
-				 }
+	              || DADA::App::Guts::date_this( -Packed_Date => $_ );
+				$report->{$_}->{archived_msg} = 1; 
 	        }
 	        else {
-	        }
+				
+				# This grabs the message subject from our activity table: 
+			 	my $original_subject_query = 
+					 'SELECT details FROM ' 
+					. $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} 
+					. ' WHERE list = ? AND msg_id = ? AND event = ?';
+				
+				$report->{$_}->{message_subject}  = $self->{dbh}->selectcol_arrayref(
+						$original_subject_query, 
+						{ 
+							MaxRows => 1 
+						}, 
+						$self->{name}, 
+						$_, 
+						'original_subject' 
+					)->[0];
+				}
+				#if(length($report->{$_}->{message_subject}) <= 0){
+				#	$report->{$_}->{message_subject} = DADA::App::Guts::date_this( -Packed_Date => $_ );
+				#}
+				if(length($report->{$_}->{message_subject}) >= 50){ 
+					$report->{$_}->{message_subject_snipped} =  substr( $report->{$_}->{message_subject}, 0, 49 ) . '...' 
+				} 
+				else { 
+					$report->{$_}->{message_subject_snipped} = $report->{$_}->{message_subject};
+				}
 
 	        push( @$sorted_report, $report->{$_} );
 	    }
@@ -1148,10 +1180,14 @@ sub msg_basic_event_count {
 	);
 	# /Unique Opens Percent
 	
-	warn '$basic_events->{unique_opens_percent}: ' . $basic_events->{unique_opens_percent} ; 
+	# warn '$basic_events->{unique_opens_percent}: ' . $basic_events->{unique_opens_percent} ; 
 	
 	# Unique Clickthroughs
-	my $uc_query = 'SELECT msg_id, email, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? AND msg_id = ?  GROUP BY msg_id, email'; 
+	my $uc_query = 
+		'SELECT msg_id, email, url, COUNT(*) FROM ' 
+	   . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} 
+	   . ' WHERE list = ? AND msg_id = ?  GROUP BY url, msg_id, email'; 
+	   
 	my $uc_count  = 0; 
 	my $sth      = $self->{dbh}->prepare($uc_query);
        $sth->execute( $self->{name}, $msg_id);

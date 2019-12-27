@@ -1553,6 +1553,7 @@ sub mass_send {
                     -msg_id               => $fields{'Message-ID'},
                     -num_subscribers      => $num_subscribers,
                     -num_total_recipients => $num_total_recipients,
+					-subject              => $fields{'Subject'},
                 }
             );
             #
@@ -3178,6 +3179,16 @@ sub _email_batched_finished_notification {
     $args->{-msg_id} =~ s/\.(.*)$//;    # remove everything after the first dot.
 
     $m_report = $r->report_by_message( $args->{-msg_id} );
+	# COMMIFY!
+	for my $this_id(@{$m_report}){ 
+		# And uh: THIS: 
+		# $this_id->{Plugin_URL} = $Plugin_Config->{Plugin_URL};
+		for my $inid(keys %{$this_id}){
+			next if $inid =~ m/percent/; 
+			$m_report->{$inid . '_commified'}
+				= commify($m_report->{$inid}); 
+		}
+	}
 	
     require DADA::App::Messages;
     my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
@@ -3616,7 +3627,8 @@ sub _log_sub_count {
 
     my $num_subscribers      = $args->{-num_subscribers};
     my $num_total_recipients = $args->{-num_total_recipients};
-
+	my $subject              = $args->{-subject}; 
+	
     warn 'logged_subscriber_count is returning, "'
       . $r->logged_subscriber_count( { -mid => $msg_id } ) . '"'
       if $t;
@@ -3654,18 +3666,19 @@ sub _log_sub_count {
                 -num => $num_subscribers
             }
         );
-        $r->num_subscribers_log(
-            {
-                -mid => $msg_id,
-                -num => $num_subscribers,
-            }
-        );
         $r->total_recipients_log(
             {
                 -mid => $msg_id,
                 -num => $num_total_recipients,
             }
         );
+        $r->subject_log(
+            {
+                -mid     => $msg_id,
+                -subject => $subject,
+            }
+        );
+		
     }
     else {
         #...

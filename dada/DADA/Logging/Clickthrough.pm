@@ -958,17 +958,18 @@ sub message_history_json {
     				if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
     					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
     				}
-					
+=pod					
 					my $msg_subject;
 			        if ( $mja->check_if_entry_exists($_->{mid}) ) {
-			            $msg_subject = $mja->get_archive_subject($_->{mid}) || $_->{mid};
+			            $msg_subject = $mja->get_archive_subject($_->{mid}) || DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
 						 if(length($msg_subject) >= 50){ 
 							$msg_subject =  substr($msg_subject, 0, 49 ) . '...' 
 						 } 
 			        }
 			        else {
+						$msg_subject = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
 			        }
-					
+=cut					
 					
 				
 					
@@ -1032,7 +1033,7 @@ sub message_history_json {
     					{
     				        date          =>  { 
     											v => $_->{mid}, 
-    											f => $msg_subject, # . ' | ' . DADA::App::Guts::date_this( -Packed_Date => $_->{mid}), 
+    											f => $_->{message_subject_snipped},
     											},
     		               
 						   
@@ -1083,23 +1084,26 @@ sub message_history_json {
     				if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
     					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
     				}
-					
+=pod
+										
 					my $msg_subject;
 			        if ( $mja->check_if_entry_exists($_) ) {
-			            $msg_subject = $mja->get_archive_subject($_) || $_;
+			            $msg_subject = $mja->get_archive_subject($_) || DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
 						 if(length($msg_subject) >= 50){ 
 							$msg_subject =  substr($msg_subject, 0, 49 ) . '...' 
 						 } 
 			        }
 			        else {
+						$msg_subject = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
 			        }
-					
+=cut
+										
 					
             $datatable->add_rows(
 				{
 			        date          =>  { 
 										v => $_->{mid}, 
-										f =>  $msg_subject, # . ' | ' . DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) 
+										f =>  $_->{message_subject_snipped}, 
 										
 										},
 	                

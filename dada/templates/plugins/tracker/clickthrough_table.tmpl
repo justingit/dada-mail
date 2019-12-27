@@ -122,13 +122,20 @@
 			</td>
 
 		 <td> 
-			<!-- tmpl_if message_subject -->
-				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&list=<!-- tmpl_var list -->&id=<!-- tmpl_var mid -->" target="_blank" title="View Archived Message">
+				<!-- tmpl_if archived_msg -->
 					<!-- tmpl_var message_subject_snipped -->
-				</a> 
-			<!-- tmpl_else --> 
-				#<!-- tmpl_var mid --> (unarchived message)
-			<!-- /tmpl_if --> 
+				<!-- tmpl_else --> 
+					<!-- tmpl_if message_subject -->
+						<!-- tmpl_var message_subject_snipped -->
+					<!-- tmpl_else --> 
+						<em>(subject not saved)</em>
+					<!-- /tmpl_if -->
+				<!-- /tmpl_if -->
+
+				<!-- tmpl_if archived_msg -->
+					&nbsp;<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&list=<!-- tmpl_var list -->&id=<!-- tmpl_var mid -->" target="_blank" title="View Archived Message"><i class="fi-share"></i></a>
+				<!-- /tmpl_if -->
+				
 		</td> 
 		
 	
@@ -139,7 +146,11 @@
 	 	-->
 		
 		 <td data-text="<!-- tmpl_var total_recipients -->">
-		    <!-- tmpl_var total_recipients_commified  default="-"--> 
+		    <!-- tmpl_if total_recipients -->
+				<!-- tmpl_var total_recipients_commified  default="-"--> 
+			<!-- tmpl_else -->
+				0
+			<!-- /tmpl_if -->
 		 </td>
 	
 	 	<td 
@@ -161,6 +172,8 @@
 					<strong>Unique:</strong>&nbsp;<!-- tmpl_var unique_open_commified -->/<!-- tmpl_var unique_opens_percent -->%
 					<br>
 					<strong>Total:</strong>&nbsp;<!-- tmpl_var open_commified default="-"  -->
+				<!-- tmpl_else -->
+					0
 				<!-- /tmpl_if -->
 			<!-- tmpl_else -->
 				<strong>Total:</strong><!-- tmpl_var open_commified default="-"  -->
@@ -192,7 +205,9 @@
 				<!-- tmpl_if unique_clickthroughs -->
 					<strong>Unique:</strong>&nbsp;<!-- tmpl_var unique_clickthroughs_commified -->/<!-- tmpl_var unique_clickthroughs_percent -->%
 					<br>
-					<strong>Total:</strong>&nbsp;<!-- tmpl_var count_commified  default="-"  -->	
+					<strong>Total:</strong>&nbsp;<!-- tmpl_var count_commified  default="-"  -->
+				<!-- tmpl_else -->
+					0	
 				<!-- /tmpl_if -->
 			<!-- tmpl_else -->
 				<strong>Total:</strong><!-- tmpl_var count_commified  default="-"  --> 
