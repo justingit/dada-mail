@@ -489,9 +489,6 @@ jQuery(document).ready(function($){
 			}
 		});
 		
-		// $("#sortable_table_drafts").tablesorter();
-		
-		
 		
 		$("body").on("click", ".show_preview", function(event) {	
 			
@@ -1597,7 +1594,13 @@ jQuery(document).ready(function($){
 				trackerc[i].chart_obj.draw(trackerc[i].chart_data, trackerc[i].chart_options);		
 			}
 		};
-	
+
+		// This table is rendered by HTML::Template, so it's either there, or it ain't: 
+		if ($("#clickthrough_url_report_table").length){
+			$("#clickthrough_url_report_table").tablesorter({ theme : 'default', widgets: ["zebra"] });
+			$('#clickthrough_url_report_table').trigger('applyWidgets');
+		}
+		
 		update_plugins_tracker_message_report();
 	}
 
@@ -1610,9 +1613,6 @@ jQuery(document).ready(function($){
 		$("body").on("change", '#tracker_record_view_count', function(event) {
 			tracker_change_record_view();
 		});
-
-
-
 
 		$("body").on("click", '.tracker_turn_page', function(event) {
 			tracker_turn_page($(this).attr("data-page"));
@@ -3706,7 +3706,8 @@ function country_geoip_table(type, label, target_div) {
 		$("#" + target_div).show('fade');
 
 		$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
-		$("#sortable_table_" + type).tablesorter();
+		$("#sortable_table_" + type).tablesorter({ theme : 'default', widgets: ["zebra"] });
+		$("#sortable_table_" + type).trigger('applyWidgets');
 	});
 }
 
@@ -4050,7 +4051,6 @@ function message_email_report_table(type, target_div) {
 			$("#" + target_div).show('fade');
 
 			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
-			//  $("#sortable_table_" + type).tablesorter();
 		});
 	}
 	else { 
@@ -4083,7 +4083,6 @@ function tracker_message_email_activity_listing_table(target_div) {
 			$("#" + target_div).show('fade');
 
 			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
-			//$("#sortable_table_" + type).tablesorter();
 			if ($('#first_for_message_email_activity_listing_table').length) {
 				message_individual_email_activity_table($('#first_for_message_email_activity_listing_table').html(), 'message_individual_email_activity_report_table');
 			}

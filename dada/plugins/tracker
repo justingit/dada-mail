@@ -223,7 +223,10 @@ sub default {
     }
 	
 	my $tracker_tracking_mode = ''; 
-	if($ls->param('tracker_track_email') == 1){ 
+	if(
+		$ls->param('tracker_track_email') == 1
+		&& $DADA::Config::PII_OPTIONS->{allow_logging_emails_in_analytics} == 1
+	){ 
 		$tracker_tracking_mode = 'email_address'; 
 	}
 	elsif ($ls->param('tracker_track_anonymously') == 1){ 
@@ -825,7 +828,8 @@ sub edit_prefs {
     my $q = shift;
 	my $also_save_for_list = $ls->also_save_for_list($q);
 	
-	if($q->param('tracker_tracking_mode') eq 'email_address'){
+	if($q->param('tracker_tracking_mode') eq 'email_address'
+		&& $DADA::Config::PII_OPTIONS->{allow_logging_emails_in_analytics} == 1){
 		$q->param('tracker_track_email', 1);
 		$q->param('tracker_track_anonymously', 0);
 		
@@ -896,52 +900,69 @@ sub message_report {
     if ( defined( $q->param('tracker_url') ) ) {
         $Plugin_Url = $q->param('tracker_url');
     }
+    
+	my $m_report = $rd->report_by_message( $q->param('mid') );
+	my %tmpl_vars = (); 
 
-    my $m_report = $rd->report_by_message( $q->param('mid') );
-	
-	$m_report->{total_bounce} = $m_report->{'soft_bounce'} + $m_report->{'hard_bounce'}; 
-	# COMMIFY!
-	for my $this_id(keys %{$m_report}){ 
-		next if $this_id =~ m/percent/; 
-		$m_report->{$this_id . '_commified'}
-			= commify($m_report->{$this_id}); 
-	}
-	
 	#use Data::Dumper; 
 	#warn '$m_report' . Dumper($m_report);
 	
+	# Hmm, a little fishy: 
+	if(
+		(! defined($m_report->{num_subscribers}) || $m_report->{num_subscribers} == 0) 
+		&&
+		(! defined($m_report->{total_recipients}) || $m_report->{total_recipients} == 0) 
+		&&
+		(! defined($m_report->{received}) || $m_report->{received} == 0) 
+	){ 		
+		$tmpl_vars{has_data} = 0; 
+	}
+	else  { 
+	
+		$m_report->{total_bounce} = $m_report->{'soft_bounce'} + $m_report->{'hard_bounce'}; 
+		# COMMIFY!
+		for my $this_id(keys %{$m_report}){ 
+			next if $this_id =~ m/percent/; 
+			$m_report->{$this_id . '_commified'}
+				= commify($m_report->{$this_id}); 
+		}
+	
+		#use Data::Dumper; 
+		#warn '$m_report' . Dumper($m_report);
 	
 	
-    # This is strange, as we have to first break it out of the data structure,
-    # and stick it back in:
+	
+	    # This is strange, as we have to first break it out of the data structure,
+	    # and stick it back in:
 
-    my $u_url_report = {};
-    foreach ( @{ $m_report->{url_report} } ) {
-        $u_url_report->{ $_->{url} } = $_->{count};
-    }
-    my $s_url_report = [];
-    foreach my $v (
-        sort { $u_url_report->{$b} <=> $u_url_report->{$a} }
-        keys %$u_url_report
-      )
-    {
-        push( @$s_url_report, { url => $v, count => $u_url_report->{$v} } );
-    }
+	    my $u_url_report = {};
+	    foreach ( @{ $m_report->{url_report} } ) {
+	        $u_url_report->{ $_->{url} } = $_->{count};
+	    }
+	    my $s_url_report = [];
+	    foreach my $v (
+	        sort { $u_url_report->{$b} <=> $u_url_report->{$a} }
+	        keys %$u_url_report
+	      )
+	    {
+	        push( @$s_url_report, { url => $v, count => $u_url_report->{$v} } );
+	    }
 
-    my %tmpl_vars = (
+	    %tmpl_vars = (
 
-        screen => 'using_tracker',
-
-        mid                  => scalar $q->param('mid')                         || '',
-        subject              => find_message_subject( $q->param('mid') ) || '',
-        url_report           => $s_url_report                            || [],
-        Plugin_URL           => $Plugin_Url,
-        Plugin_Name          => $Plugin_Config->{Plugin_Name},
-        chrome               => $chrome,
-		%$m_report, 
+	        screen => 'using_tracker',
+			has_data             => 1,
+	        mid                  => scalar $q->param('mid')                         || '',
+	        subject              => find_message_subject( $q->param('mid') ) || '',
+	        url_report           => $s_url_report                            || [],
+	        Plugin_URL           => $Plugin_Url,
+	        Plugin_Name          => $Plugin_Config->{Plugin_Name},
+	        chrome               => $chrome,
+			%$m_report, 
 		
 
-    );
+	    );
+	}
     my $scrn = '';
     require DADA::Template::Widgets;
 

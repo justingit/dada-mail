@@ -960,10 +960,7 @@ sub message_history_json {
 
             );
 
-            require DADA::MailingList::Archives;
-            my $mja =
-              DADA::MailingList::Archives->new( { -list => $self->{name} } );
-
+           
             for ( reverse @$report_by_message_index ) {
                 if ( $self->verified_mid( $_->{mid} ) ) {
 
@@ -1027,6 +1024,9 @@ sub message_history_json {
                         $delivery_issues = $_->{delivery_issues};
                     }
 
+					if(!defined($_->{message_subject_snipped})){ 
+						$_->{message_subject_snipped} = '(subject not saved)';
+					}
                     $datatable->add_rows(
                         {
                             date => {
@@ -1083,10 +1083,6 @@ sub message_history_json {
        #			   { id => 'bounces',  label => "Bounces",  type => 'number'},
 
             );
-
-            require DADA::MailingList::Archives;
-            my $mja =
-              DADA::MailingList::Archives->new( { -list => $self->{name} } );
 
             for ( reverse @$report_by_message_index ) {
                 if ( $self->verified_mid( $_->{mid} ) ) {
