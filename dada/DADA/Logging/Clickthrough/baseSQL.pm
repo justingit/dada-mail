@@ -1426,7 +1426,19 @@ sub report_by_message {
     my $row        = undef;
     $report->{clickthroughs} = 0;
     while ( $row = $sth->fetchrow_hashref ) {
-        push( @$url_report, { url => $row->{url}, count => $row->{count} } );
+		
+		my $snippet = $row->{url}; 
+		if(length($snippet) >= 100){ 
+			$snippet = substr( $snippet, 0, 97 ) . '...';
+		}
+        push( 
+			@$url_report, 
+				{ 
+					url         => $row->{url},
+					url_snipped => $snippet,
+					count       => $row->{count} 
+				} 
+			);
         $report->{clickthroughs} = $report->{clickthroughs} + $row->{count};
     }
     $sth->finish;
