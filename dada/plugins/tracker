@@ -233,7 +233,7 @@ sub default {
 		$tracker_tracking_mode = 'anonymously'; 
 	}
 
-	warn '$tracker_tracking_mode: ' . $tracker_tracking_mode; 
+	# warn '$tracker_tracking_mode: ' . $tracker_tracking_mode; 
 	
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
