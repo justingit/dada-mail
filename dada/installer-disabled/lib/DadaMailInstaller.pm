@@ -2065,26 +2065,26 @@ sub remove_old_screen_cache {
     my $ip   = $self->param('install_params');
 
     my $screen_cache_dir = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/_screen_cache';
+	my $data_cache_dir   = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/_data_cache';
+	
+	for my $cache_dir(qw($screen_cache_dir $data_cache_dir)){
+		if ( -d $cache_dir ) {
+	        my $f;
+	        opendir( CACHE, make_safer($cache_dir) )
+	          or croak "Can't open '" . $cache_dir . "' to read because: $!";
+	        while ( defined( $f = readdir CACHE ) ) {
 
-    if ( -d $screen_cache_dir ) {
-        my $f;
-        opendir( CACHE, make_safer($screen_cache_dir) )
-          or croak "Can't open '" . $screen_cache_dir . "' to read because: $!";
-        while ( defined( $f = readdir CACHE ) ) {
-
-            #don't read '.' or '..'
-            next if $f =~ /^\.\.?$/;
-            $f =~ s(^.*/)();
-            my $n = unlink( make_safer( $screen_cache_dir . '/' . $f ) );
-            carp make_safer( $screen_cache_dir . '/' . $f ) . ' didn\'t go quietly'
-              if $n == 0;
-        }
-        closedir(CACHE);
-        return 1;
+	            #don't read '.' or '..'
+	            next if $f =~ /^\.\.?$/;
+	            $f =~ s(^.*/)();
+	            my $n = unlink( make_safer( $cache_dir . '/' . $f ) );
+	            carp make_safer( $cache_dir . '/' . $f ) . ' didn\'t go quietly'
+	              if $n == 0;
+	        }
+	        closedir(CACHE);
+		}
     }
-    else {
         return 1;
-    }
 }
 
 sub remove_old_backups { 
