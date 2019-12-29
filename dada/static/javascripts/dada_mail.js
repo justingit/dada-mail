@@ -4004,7 +4004,8 @@ function data_over_time_graph(type, label, target_div) {
 						strokeWidth: 0
 					},
 					hAxis: {
-						slantedText: true
+						slantedText: true, 
+						
 					},
 					width: $("#" + target_div).width(),
 					height: ($("#" + target_div).width()/1.68).toFixed(0),
@@ -4512,13 +4513,13 @@ function drawSubscriberHistoryChart(initial) {
 							color: 'transparent'
 				  	    }
 					},
-		          1: {title: 'Performance'}
+		          1: {title: 'Performance',   format: '0'}
 				}, 
 			
 				 vAxis: {
                     viewWindow: {
                        min: 0,
-						
+					 
                   }
              }
 				
