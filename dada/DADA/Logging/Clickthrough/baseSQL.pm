@@ -1113,8 +1113,8 @@ sub msg_basic_event_count {
     while ( my ( $m, $e, $c ) = $sth->fetchrow_array ) {
 		if($ok_events{$e}){ 
 			
-			warn '$e: ' . $e; 
-			warn '$c: ' . $c; 
+			#warn '$e: ' . $e; 
+			#warn '$c: ' . $c; 
 			
 			$basic_events->{$e} = $c; 
 		}
@@ -1188,13 +1188,18 @@ sub msg_basic_event_count {
 	   . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} 
 	   . ' WHERE list = ? AND msg_id = ?  GROUP BY url, msg_id, email'; 
 	   
-	my $uc_count  = 0; 
+	my $uc_count       = 0; 
+	my $total_ct_count = 0; 
 	my $sth      = $self->{dbh}->prepare($uc_query);
        $sth->execute( $self->{name}, $msg_id);
 	# Just counting what gets returned. 
-	while ( my ( $m, $e, $c ) = $sth->fetchrow_array ) {
+	while ( my ( $m, $e, $c, $tcount ) = $sth->fetchrow_array ) {
 	    #$basic_events->{clickthroughs} += $c; 
 		$uc_count++; 
+		$total_ct_count += $tcount; 
+		#use Data::Dumper; 
+		#warn '$m, $e, $c, $tcount' . Dumper([$m, $e, $c, $tcount]);
+		
 	}
 	$basic_events->{unique_clickthroughs} = $uc_count; 
 	$sth->finish; 
@@ -1204,7 +1209,8 @@ sub msg_basic_event_count {
 	$basic_events->{unique_clickthroughs_percent}          
 		= $self->percentage(
 			$basic_events->{unique_clickthroughs}, 
-			$basic_events->{received}
+			# Should be total things clickthroughed, huh?
+			$total_ct_count, 
 	);
 	# /Unique Clickthroughs Percent
 	
