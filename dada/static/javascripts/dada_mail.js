@@ -4481,6 +4481,8 @@ function drawSubscriberHistoryChart(initial) {
 			var data = new google.visualization.DataTable(jsonData);
 			
 			var options = {
+				pointSize: 5,
+				
 				          chartArea:{
 				          	
 					left: 20,
@@ -4490,10 +4492,10 @@ function drawSubscriberHistoryChart(initial) {
 				          },
 					
 	  		  	seriesType: 'bars',
-			    tooltip: {isHtml: true},
+			    tooltip: {isHtml: false},
 	            colors: ['#247ba0', '#70c1b3', '#b2dbbf','#ff6816' , '#ff1654'],
 				series: {
-		          0: {targetAxisIndex: 0, type: 'line'},
+		          0: {targetAxisIndex: 0, type: 'line', lineWidth: 2},
 		          1: {targetAxisIndex: 1},
 		          2: {targetAxisIndex: 1},
 		          3: {targetAxisIndex: 1},
@@ -4513,21 +4515,29 @@ function drawSubscriberHistoryChart(initial) {
 							color: 'transparent'
 				  	    }
 					},
-		          1: {title: 'Performance',   format: '0'}
+		          1: {
+					   title: 'Performance',   
+					   format: '0',                     
+					   viewWindow: {
+                       		min: 0, 
+                  	 	}
+					}
 				}, 
 			
 				 vAxis: {
                     viewWindow: {
-                       min: 0,
-					 
+                       min: 0, 
                   }
              }
 				
 		};
 			if (history_type == 'rate'){
 				options['vAxis']['viewWindow']['max'] = 100;
-				options['vAxes']['0']['title']        = 'Recieved';
+				options['vAxes']['0']['title']  = 'Received %';
+				//options['vAxes']['0']['format'] = 'percent'; 
 				
+				options['vAxes']['1']['title']  = 'Performance %';
+				//options['vAxes']['1']['format'] = 'percent'; 
 			}
 			options['width']  = $('#subscriber_history_chart').width();
 			//options['height'] = $('#subscriber_history_chart').width();

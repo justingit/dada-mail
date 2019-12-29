@@ -1100,12 +1100,11 @@ sub message_history_json {
                                 f => $_->{message_subject_snipped},
 
                             },
-
-                            received      => $_->{received_percent},
-                            opens         => $_->{unique_opens_percent},
-                            clickthroughs => $_->{unique_clickthroughs_percent},
+                            received        => $_->{received_percent},
+                            opens           => $_->{unique_opens_percent},
+                            clickthroughs   => $_->{unique_clickthroughs_percent},
                             delivery_issues => $_->{delivery_issues_percent},
-                            unsubscribes => $_->{unique_unsubscribes_percent},
+                            unsubscribes    => $_->{unique_unsubscribes_percent},
 
                             #  subscribers   => $num_subscribers ,
 
