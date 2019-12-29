@@ -1044,9 +1044,8 @@ sub _add_opener_image {
 		}	
 	}
 	
-	
-	
-	warn '$url: ' . $url; 
+	warn '$url: ' . $url
+		if $t; 
 
     my $img_opener_code =
         '<!--open_img--><img src="'

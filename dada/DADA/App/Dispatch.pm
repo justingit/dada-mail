@@ -20,6 +20,7 @@ use CGI;
 
 use vars qw($AUTOLOAD);
 my %allowed = ( test => 0, );
+my $t = 0; 
 
 sub hook {
     my ( $filename, $buffer, $bytes_read, $data ) = @_;
@@ -273,12 +274,16 @@ sub translate {
                 && $data[4]
                 && $data[4] eq 'spacer.png' )
             {
-				warn 'here.';
+				warn 'anonymized opener data.'
+					if $t; 
 				$q->param( 'email', $data[3] ); # not the email, the hashed uid, which is what we're going to save.
-				warn q{$q->param( 'email' )} . $q->param( 'email'); 
+				
+				warn q{$q->param( 'email' )} . $q->param( 'email')
+					if $t; 
 			}
 			else { 
-				warn 'nope.:' . $info;
+				warn 'nope.:' . $info
+					if $t; 
 			}
 
         }
@@ -430,8 +435,6 @@ sub translate {
 			
 			
 			if(defined($q->url_param('List-Unsubscribe'))){ 
-				
-				
 				# that's not supposed to be able to be passed in a URL... 
 				$q->param('List-Unsubscribe', undef);	
 				warn q{that's not supposed to be able to be passed in a URL... } . $q->url_param('List-Unsubscribe'); 
