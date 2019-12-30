@@ -123,10 +123,10 @@
 
 		 <td> 
 				<!-- tmpl_if archived_msg -->
-					<!-- tmpl_var message_subject_snipped -->
+					<!-- tmpl_var message_subject_snipped escape="HTML" -->
 				<!-- tmpl_else --> 
 					<!-- tmpl_if message_subject -->
-						<!-- tmpl_var message_subject_snipped -->
+						<!-- tmpl_var message_subject_snipped escape="HTML" -->
 					<!-- tmpl_else --> 
 						<em>(subject not saved)</em>
 					<!-- /tmpl_if -->
