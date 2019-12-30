@@ -1819,22 +1819,61 @@ sub user_agent_json {
     
 	require Data::Google::Visualization::DataTable; 
 	my $datatable = Data::Google::Visualization::DataTable->new();
-
+	my $n_report  = {}; 
+	
 	$datatable->add_columns(
 	       { id => 'user_agent', label => "User Agent",  type => 'string',},
 	       { id => 'number',     label => "Number",      type => 'number',},
 	);
+    my $can_use_bd = 1;
+    try {
+        require HTTP::BrowserDetect;
+    }
+    catch {
+        $can_use_bd = 0;
+    };
 
-	for(keys %$report){ 
+	
+	if($can_use_bd == 1){
+		for(keys %$report){ 
+			my $ua = HTTP::BrowserDetect->new($_);
+			my $human_readable; 		
+			if($ua->browser_string) {
+				$human_readable = 
+					$ua->browser_string 
+					. ' ' 
+					. $ua->browser_version 
+					. ' on ' 
+					. $ua->os_string;
+			
+				#$if($ua->mobile()){ 
+				#	$human_readable .= ' ' . $ua->device_string() . ' (mobile)'
+				#}
+				#elsif($ua->table()){ 
+				#	$human_readable .= ' ' . $ua->device_string() . ' (tablet)'
+				#}
+			}
+			else { 
+				$human_readable = $_; 
+			}
+			if(! exists($n_report->{$human_readable})){ 
+				$n_report->{$human_readable} = 0; 
+			}
+			$n_report->{$human_readable} += $report->{$_};
+		}	
+	}
+	else { 
+		$n_report = $report; 
+	}
+	
+	for(sort { $n_report->{$a} cmp $n_report->{$b} } keys %$n_report){ 
 		$datatable->add_rows(
 	        [
-            { v => $_  },
-            { v => $report->{$_} },
+            { v => $_ },
+            { v => $n_report->{$_}},
 	       ],
 		);
 	}
-
-
 	$json = $datatable->output_javascript(
 		pretty  => 1,
 	);
