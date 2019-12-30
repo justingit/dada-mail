@@ -148,6 +148,9 @@
 		 <td data-text="<!-- tmpl_var total_recipients -->">
 		    <!-- tmpl_if total_recipients -->
 				<!-- tmpl_var total_recipients_commified  default="-"--> 
+				<!-- tmpl_if num_subscribers -->
+					of <!-- tmpl_var num_subscribers_commified  default="-" --> 
+				<!-- /tmpl_if -->
 			<!-- tmpl_else -->
 				-
 			<!-- /tmpl_if -->
@@ -169,7 +172,7 @@
 				(list_settings.tracker_track_anonymously == 1)
 			)" -->
 				<!-- tmpl_if unique_open -->
-					<strong>Unique:</strong>&nbsp;<!-- tmpl_var unique_open_commified -->/<!-- tmpl_var unique_opens_percent -->%
+					<strong>Unique:</strong>&nbsp;<!-- tmpl_var unique_open_commified --> / <!-- tmpl_var unique_opens_percent -->%
 					<br>
 					<strong>Total:</strong>&nbsp;<!-- tmpl_var open_commified default="-"  -->
 				<!-- tmpl_else -->
@@ -203,7 +206,7 @@
 				(list_settings.tracker_track_anonymously == 1)
 			)" -->
 				<!-- tmpl_if unique_clickthroughs -->
-					<strong>Unique:</strong>&nbsp;<!-- tmpl_var unique_clickthroughs_commified -->/<!-- tmpl_var unique_clickthroughs_percent -->%
+					<strong>Unique:</strong>&nbsp;<!-- tmpl_var unique_clickthroughs_commified --> / <!-- tmpl_var unique_clickthroughs_percent -->%
 					<br>
 					<strong>Total:</strong>&nbsp;<!-- tmpl_var count_commified  default="-"  -->
 				<!-- tmpl_else -->
@@ -221,7 +224,7 @@
 		 <td data-text="<!-- tmpl_var delivery_issues -->"> 
 			 
 			 <!-- tmpl_if delivery_issues -->
-			 	<!-- tmpl_var delivery_issues_commified  default="-"  -->/<!-- tmpl_var delivery_issues_percent -->%
+			 	<!-- tmpl_var delivery_issues_commified  default="-"  --> / <!-- tmpl_var delivery_issues_percent -->%
 			<!-- tmpl_else -->
 				<!-- tmpl_var delivery_issues_commified  default="-"  -->
 			<!-- /tmpl_if -->
@@ -230,7 +233,7 @@
 		 <td data-text="<!-- tmpl_var unsubscribe -->"> 
 		    
 			 <!-- tmpl_if unsubscribe --> 
-			 	<!-- tmpl_var unsubscribe_commified  default="-"  -->/<!-- tmpl_var unique_unsubscribes_percent -->%
+			 	<!-- tmpl_var unsubscribe_commified  default="-"  --> / <!-- tmpl_var unique_unsubscribes_percent -->%
 			 <!-- tmpl_else -->
 				 <!-- tmpl_var unsubscribe_commified  default="-"  -->
 			 <!-- /tmpl_if -->
