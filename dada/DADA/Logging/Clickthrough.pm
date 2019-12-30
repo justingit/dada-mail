@@ -953,8 +953,8 @@ sub message_history_json {
                     type  => 'number'
                 },
                 {
-                    id    => 'unsubscribes',
-                    label => "Unsubscribes",
+                    id    => 'unsubscriptions',
+                    label => "Unsubscriptions",
                     type  => 'number'
                 },
 
@@ -982,7 +982,7 @@ sub message_history_json {
                     #my $hard_bounces    = 0;
                     #my $bounces = 0;
                     my $delivery_issues = 0;
-                    my $unsubscribes    = 0;
+                    my $unsubscriptions    = 0;
 
                     if ( defined( $_->{open} ) ) {
 
@@ -1018,7 +1018,7 @@ sub message_history_json {
                     #}
 
                     if ( defined( $_->{unsubscribe} ) ) {
-                        $unsubscribes = $_->{unsubscribe};
+                        $unsubscriptions = $_->{unsubscribe};
                     }
                     if ( defined( $_->{delivery_issues} ) ) {
                         $delivery_issues = $_->{delivery_issues};
@@ -1043,7 +1043,7 @@ sub message_history_json {
                             #bounces            => $bounces,
                             #errors_sending_to => $errors,
                             delivery_issues => $delivery_issues,
-                            unsubscribes    => $unsubscribes,
+                            unsubscriptions    => $unsubscriptions,
                         }
                     );
                 }
@@ -1073,8 +1073,8 @@ sub message_history_json {
                 },
 
                 {
-                    id    => 'unsubscribes',
-                    label => "% Unsubscribe",
+                    id    => 'unsubscriptions',
+                    label => "% Unsubscriptions",
                     type  => 'number'
                 },
 
@@ -1104,7 +1104,7 @@ sub message_history_json {
                             opens           => $_->{unique_opens_percent},
                             clickthroughs   => $_->{unique_clickthroughs_percent},
                             delivery_issues => $_->{delivery_issues_percent},
-                            unsubscribes    => $_->{unique_unsubscribes_percent},
+                            unsubscriptions => $_->{unique_unsubscribes_percent},
 
                             #  subscribers   => $num_subscribers ,
 

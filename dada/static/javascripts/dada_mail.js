@@ -3641,15 +3641,15 @@ function update_plugins_tracker_message_report() {
 	google.setOnLoadCallback(
 		function(){	
 			tracker_the_basics_piechart('opens', 'Opens', 'the_basics_opens');
-			tracker_the_basics_piechart('unsubscribes', 'Unsubscribes', 'the_basics_unsubscribes');
+			tracker_the_basics_piechart('unsubscribes', 'Unsubscriptions', 'the_basics_unsubscribes');
 			tracker_the_basics_piechart('bounces', 'Bounces', 'the_basics_bounces');
 			data_over_time_graph('clickthroughs', 'Clickthroughs', 'over_time_clickthroughs_graph');
-			data_over_time_graph('unsubscribes', 'Unsubscribes', 'over_time_unsubscribe_graph');
+			data_over_time_graph('unsubscribes', 'Unsubscriptions', 'over_time_unsubscribe_graph');
 			data_over_time_graph('opens', 'Opens', 'over_time_opens_graph');
 			data_over_time_graph('view_archive', 'Archive Views', 'over_time_view_archive_graph');
 			data_over_time_graph('forward_to_a_friend', 'Forwards', 'over_time_forwards_graph');
 			data_over_time_graph('abuse_report', 'Abuse Reports', 'over_time_abuse_report_graph');
-			email_breakdown_chart('unsubscribe', 'Unsubscribes', 'unsubscribe_graph');
+			email_breakdown_chart('unsubscribe', 'Unsubscriptions', 'unsubscribe_graph');
 			email_breakdown_chart('soft_bounce', 'Soft Bounces', 'soft_bounce_graph');
 			email_breakdown_chart('hard_bounce', 'Hard Bounces', 'hard_bounce_graph');
 			email_breakdown_chart('errors_sending_to', 'Sending Errors', 'errors_sending_to_graph');
