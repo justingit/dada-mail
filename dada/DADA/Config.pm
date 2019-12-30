@@ -1722,8 +1722,8 @@ $ATTACHMENT_TEMPFILE //= 0;
 $MAIL_VERP_SEPARATOR //= '-';
 
 
-$VERSION = 11.7.0;
-$VER     = '11.7.0 Stable 12/10/19';
+$VERSION = 11.8.0;
+$VER     = '11.8.0 Stable 1/01/20';
 
 #
 #
@@ -1963,7 +1963,7 @@ sub _config_import {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2019 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2020 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

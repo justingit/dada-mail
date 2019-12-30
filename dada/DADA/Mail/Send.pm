@@ -4009,7 +4009,7 @@ is controlled by C<DADA::Mail::MailOut>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2019 Justin Simoni 
+Copyright (c) 1999 - 2020 Justin Simoni 
 me - justinsimoni.com
 http://justinsimoni.com 
 All rights reserved. 

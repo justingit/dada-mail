@@ -313,7 +313,7 @@ Justin Simoni - https://dadamailproject.com/contact
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 1999 - 2019 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2020 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
