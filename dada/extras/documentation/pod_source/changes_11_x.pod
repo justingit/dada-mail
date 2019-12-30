@@ -3,6 +3,33 @@
 
 =encoding utf-8
 
+=head1 11.8.0
+
+=head2 Features
+
+=head3 Unique Opens/Clickthroughs Analytics Restored! Now using anonymized data 
+
+When v11.0.0 was released, it removed the ability to collect Personally Identifiable Information, to help people running 
+mailing lists with Dada Mail conform closely to the GDPR. Not collecting this information made it difficult to create various 
+reports in the Tracker plugin. For example in v11.0.0, we could see show you how many times a message you had sent had been opened, but we couldn't tell specifically how many subscribers opened the messages. The app may have recorded, "100" opens, but that could have been 1 subscriber opening it 100 times, or 100 subscribers opening it once. 
+
+In versions that followed, we re-added the ability to save email address with the data collected to create analytic reports (by default: this is disabled), but this doesn't solve the problem if you need to run a mailing list that conforms to the GDPR. 
+
+In v11.8.0, we've added a new option (which will be the new default): data like opens/clickthroughs that are recorded can now be recorded with an anonymized UID (rather than with the subscriber's email address). Never would the app know which subscriber opened/clicked a link, but we can differentiate between one subscriber and another, allowing us to compile much better analytic reports. This anonymoized UID is never, ever saved with the email address that it corresponds to, and changes per subscriber for each mass mailing sent out. 
+
+=head3 Better Analytic Graphs/Tables in Tracker
+
+With the restoration of being able to capture and report data, we've revisted the main graphs and tables presented in the Tracker plugin, 
+and redesigned them to be easier to read, as well as more useful. 
+
+The main graph has been changed from a line to a mixed line/bar graph. The total number of recipients sent your mass mailings is represented in the line graph, allowing one to easily see the changes in your subscription size as your various campaigns are sent. 
+
+This acts likes a ceiling for the rest of the information:  Opens, Clickthroughs, Delivery Issues, and Unsubscriptions, which are shown in a group bar chart. 
+
+There are two modes to this graph: the default mode shows the unqiue amounts of all these topics; the second shows them as a percentage of the total. Usually the total is the total number of recipients that are sent your mass mailing.
+
+The table below this graph now shows data in total amounts, unique amounts and percent of the unique of the total for each mass mailing sent out. This table is also now sortable by each column presented. 
+
 =head1 11.7.0
 
 =head2 Features
