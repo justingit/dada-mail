@@ -1866,7 +1866,7 @@ sub user_agent_json {
 		$n_report = $report; 
 	}
 	
-	for(sort { $n_report->{$a} cmp $n_report->{$b} } keys %$n_report){ 
+	for(reverse sort { $n_report->{$a} <=> $n_report->{$b} } keys %$n_report){ 
 		$datatable->add_rows(
 	        [
             { v => $_ },
