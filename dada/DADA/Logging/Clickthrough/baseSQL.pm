@@ -1214,7 +1214,7 @@ sub msg_basic_event_count {
 	);
 	# /Unique Clickthroughs Percent
 	
-	# Unsubscribes 
+	# Unsubscriptions 
 	$basic_events->{unique_unsubscribes_percent} = 
 		$self->percentage(
 			$basic_events->{unsubscribe}, 
@@ -1332,7 +1332,7 @@ sub msg_basic_event_count_json {
 		elsif($args->{-type} eq 'unsubscribes') { 
 			$datatable->add_rows(
 		        [
-		               { v => 'Unsubscribes' },
+		               { v => 'Unsubscriptions' },
 		               { v => $report->{unique_unsubscribes_percent} },
 		       ],
 			);
@@ -2597,7 +2597,7 @@ sub message_email_report_table {
 			$title = 'Hard Bounces'; 
 		}
 		elsif($args->{-type} eq 'unsubscribe'){ 
-			$title = 'Unsubscribes'; 
+			$title = 'Unsubscriptions'; 
 		}
 		my $report = $self->message_email_report($args);
 		
