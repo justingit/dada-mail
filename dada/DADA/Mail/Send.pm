@@ -3341,7 +3341,7 @@ sub _mail_merge {
 	my $salted                = scalar(generate_rand_string_md5()) . $subscriber_vars->{'subscriber.email'};
 	$labeled_data{hashed_uid} = md5_checksum(\$salted); 
 	
-	warn '$labeled_data{hashed_uid}: ' . $labeled_data{hashed_uid} ;
+#	warn '$labeled_data{hashed_uid}: ' . $labeled_data{hashed_uid} ;
 	
     # type is passed in, $self->list_type
     my $confirmation_token = $self->_make_token(
