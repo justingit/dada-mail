@@ -232,6 +232,9 @@ sub default {
 	elsif ($ls->param('tracker_track_anonymously') == 1){ 
 		$tracker_tracking_mode = 'anonymously'; 
 	}
+	else { 
+		$tracker_tracking_mode = 'anonymously'; 
+	}
 
 	# warn '$tracker_tracking_mode: ' . $tracker_tracking_mode; 
 	
