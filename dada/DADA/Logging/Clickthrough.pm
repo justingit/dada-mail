@@ -1093,6 +1093,10 @@ sub message_history_json {
                           && $_->{num_subscribers} =~ m/^\d+$/;
                     }
 
+					if(!defined($_->{message_subject_snipped})){ 
+						$_->{message_subject_snipped} = '(subject not saved)';
+					}
+					
                     $datatable->add_rows(
                         {
                             date => {
