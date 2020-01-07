@@ -3,6 +3,10 @@
 
 =encoding utf-8
 
+=head1 11.8.1 
+
+This is mostly a bug-fix release for issues found in the v11.8.0 release of Dada Mail.
+
 =head1 11.8.0
 
 =head2 Features
