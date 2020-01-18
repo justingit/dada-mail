@@ -2755,8 +2755,40 @@ sub deliver {
         my $headers = $entity->stringify_header;
         $headers = safely_decode($headers);
         my %headers = $mh->return_headers($headers);
-
+		
+		# Fwaaaaah? 
         $headers{To} = $ls->param('list_owner_email');
+
+
+		#
+		#
+		#
+		
+        require DADA::App::FormatMessages;
+        my $dfm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
+		
+		
+		require DADA::App::EmailThemes;
+	    my $em = DADA::App::EmailThemes->new(
+	        {
+	            -list  => $ls->param('list'),
+				-cache => 1, 
+	        }
+	    );
+			
+		my $etp = $em->fetch(
+			$dfm->layout_choice()
+		);
+		
+		$headers{To} = $dfm->format_phrase_address(
+                    $etp->{vars}->{to_phrase},
+                    $ls->param('list_owner_email')
+                );
+		
+		#
+		#
+		#
+		
 
         $r .= "\t* Message Details: \n";
         $r .= "\t* Subject: " . $headers{Subject} . "\n";
