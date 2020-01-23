@@ -435,10 +435,34 @@ sub admin_remove_subscribers {
             }
         }
     }
+	
+	# This says, remove any unconfirmed profiles, when you remove an unconfirmed subscription 
+	# as long as that address isn't a part of any *any* other sublist throughout the system: 
+	
+	if($type eq 'sub_confirm_list') {
+		
+		require DADA::Profile; 
+		require DADA::Profile::Fields; 
+		for my $address(@$addresses){
+			my $prof1 = DADA::Profile->new({-email => $address}); 
+			my $all_subs = $prof1->subscribed_to( { -type => ':all' } );
+			if ( scalar($all_subs) <= 0 ) {			
+				my $prof = DADA::Profile->new({-email => '*' . $address}); 
+				if($prof->exists){ 
+					$prof->remove();
+				}
+				my $dpf = DADA::Profile::Fields->new({-email => '*' . $address}); 
+				if($dpf->exists){ 
+					$dpf->remove();
+				}
+			}
+		}
+	}
 
     warn '$type:' . $type
       if $t;
-    if ( $type eq 'list' ) {
+    
+	if ( $type eq 'list' ) {
         warn q{$self->{ls}->param('send_unsubscribed_by_list_owner_message')}
           . $self->{ls}->param('send_unsubscribed_by_list_owner_message')
           if $t;
