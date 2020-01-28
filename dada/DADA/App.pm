@@ -97,6 +97,9 @@ sub setup {
       $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor};
 
     $self->run_modes(
+	
+	 	"AUTOLOAD"                 => \&unknown_param,
+	 
         'plugins'                  => \&plugins,
         $sched_flavor              => \&schedules,
         'scheduled_jobs'           => \&scheduled_jobs,
@@ -457,6 +460,57 @@ ZNVlpFpYOHkw3LPNPZBuD05C1niXvmeM4Zkwt94NmrjnpRdZcFvtbv8z6F2AA/5G8jEIpBJoAAAAASU
 VORK5CYII=" style="float:left;padding:10px"/></p>
 <h1>Rate Limit Reached!</h1>
 <p>We apologize, but you have reached the limit of requests allowed. Please try again in a few minutes. 
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</div>
+
+</body> 
+</html> 
+};
+
+}
+
+sub unknown_param { 
+
+    my $self = shift;
+	my $rm   = shif; 
+	
+	warn 'unknown param called: "' 
+	. $rm 
+	. '" REMOTE HOST: ' 
+	.  $ENV{'REMOTE_HOST'} 
+	. ' REMOTE_ADDR: ' 
+	. $ENV{'REMOTE_ADDR'}; 
+	
+    sleep(30);
+	
+    $self->header_props( -status => '404' );
+	
+    return qq{
+<html>
+<head></head>
+<body>
+<div style="padding:5px;border:3px dotted #ccc; font-family:helvetica; font-size:.7em; line-height:150%; width:600px;margin-left:auto;margin-right:auto;margin-top:100px;">
+<img alt="Dada Mail" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAC
+WCAMAAAAL34HQAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAxQTFRFCAgIXV
+1dp6en/f39XG2aJgAAAqpJREFUeNrs3OGO4yAMBOB0+/7vvFWRLMtjjAkEqDT5dddyy1fJNwSH7vU+8
+rrIWsX6+15k/TTr+l6v12s6jqxlrA/oUtdEHFm7WKXOyPotltZ8CmuijKw1LCks7ZiVFGQtYOlocF8n
+63CWZAGWkbxF1uGsYGEW1mBGkPUoyw13fJesY1k6GuKyWxoQZM0I9ya6t9TIeojV3KPWsqNwydrOisP
+duKWSPn+4l/tkTWc1w702Rm+QyNrIaoZ7HB/3GkxkzWVl2rW1lgRZJ7Ay4a6Lzx1G1kZWJtx18XVth8
+oqrh+R6iffZE1hJcM9sxgj64KrTCf1R9YUVibcm9Ggb5qFheMxhsgaZwVLr2tyh5UBWiYv4mcoY8iax
+cr8nzcmd5ihaGLtB5I1yJK1sxkNGZOulQyrfAyyBll4jieYT48pk5lTlfqD6c0PWY+ycNZaN0EPKOML
+SGK9ycIP3MgtsjpTHnG1w3baoUsK+w7mmNeEOwiyOnc+meDQ9WFYZhssAl2R2Xt5snpYZv02/YKgIkv
+cByxcKrDmyJrIynTtyw/VT8Jilukc+TfcZC1hmfN2+q8Bq3yAaU9fyRpjmcR3tzqi1JVH1mks3KCaZq
+IkSNfXSMhaw9IpgEeZcQdF1oGs2taldivcdQaIrC2sN3yfGXdK+W/JkrWLFfeG+pYQss5gjVxk3WaZj
+oNOcPf15ADsYtQmImucVfvVAKYb2OwbmplqveDgOTdZt1lB8z1o6WLX3sxE1kaWbqPXWLX2vXvjRdbT
+LHcCt27co1c4mKz1rGAC8wr+Agi3EN1FAlmNpZqsuyw32bEa8EGXW4LN2sKnLGTdY8Xh7tbN1bqSrOh
+ZNVlpFpYOHkw3LPNPZBuD05C1niXvmeM4Zkwt94NmrjnpRdZcFvtbv8z6F2AA/5G8jEIpBJoAAAAASU
+VORK5CYII=" style="float:left;padding:10px"/></p>
+<h1>Unknown Flavor</h1>
+<p>We apologize, but the resource you're looking for is not available.</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
