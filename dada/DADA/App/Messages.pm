@@ -70,8 +70,6 @@ sub _init {
 	else { 
 		$self->test($args->{-test}); 
 	}
-
-	warn '$args->{-list}: ' . $args->{-list}; 
 	
     if ( exists( $args->{-list} ) ) {
         $self->list( $args->{-list} );
@@ -83,10 +81,6 @@ sub _init {
         require DADA::MailingList::Settings;
         my $ls = DADA::MailingList::Settings->new( { -list => $self->list } );
 		$self->ls($ls);
-		
-		warn 'List Name! ' . $ls->param('list_name');
-		
-		warn '$self->list ' . $self->list; 
 		
         require DADA::App::EmailThemes;
         my $em = DADA::App::EmailThemes->new(
