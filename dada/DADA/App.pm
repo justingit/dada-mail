@@ -476,7 +476,7 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 sub unknown_param { 
 
     my $self = shift;
-	my $rm   = shif; 
+	my $rm   = shift; 
 	
 	warn 'unknown param called: "' 
 	. $rm 
