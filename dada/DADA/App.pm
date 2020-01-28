@@ -11560,6 +11560,22 @@ sub new_list {
                 my $sast = DADA::Security::SimpleAuthStringState->new;
                 $auth_state = $sast->make_state;
             }
+			
+			if ( $q->param('send_new_list_welcome_email') == 1 ) {
+				try { 
+			        require DADA::App::Messages;
+			        my $dap = DADA::App::Messages->new(
+						{
+							-list => $ls->param('list'),
+						}
+					);
+			        $dap->send_new_list_created_notification(); 
+				} catch { 
+					warn 'problems sending send_new_list_created_notification: ' . $_; 
+				};
+			}
+			
+			
 
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {

@@ -8,7 +8,7 @@ use DADA::App::Guts;
 
 use vars qw($AUTOLOAD);
 use strict;
-my $t = 0;
+my $t = 0; 
 
 my %allowed = (
     list    => undef,
@@ -60,6 +60,7 @@ sub AUTOLOAD {
 }
 
 sub _init {
+
     my $self = shift;
     my ($args) = @_;
 
@@ -70,6 +71,8 @@ sub _init {
 		$self->test($args->{-test}); 
 	}
 
+	warn '$args->{-list}: ' . $args->{-list}; 
+	
     if ( exists( $args->{-list} ) ) {
         $self->list( $args->{-list} );
 
@@ -80,6 +83,10 @@ sub _init {
         require DADA::MailingList::Settings;
         my $ls = DADA::MailingList::Settings->new( { -list => $self->list } );
 		$self->ls($ls);
+		
+		warn 'List Name! ' . $ls->param('list_name');
+		
+		warn '$self->list ' . $self->list; 
 		
         require DADA::App::EmailThemes;
         my $em = DADA::App::EmailThemes->new(
@@ -318,6 +325,9 @@ sub create_multipart_email {
 # Clean up a lot of code! 
 
 sub send_multipart_email { 
+	
+	warn 'in send_multipart_email'
+		if $t; 
 	
     my $self   = shift;
     my ($args) = @_;
@@ -1243,9 +1253,61 @@ sub send_unsubscription_request_denied_message {
 
 }
 
+# This is interesting: 
 sub send_send_list_password_reset_confirmation { 
 
 }
+
+
+sub send_new_list_created_notification {
+
+	warn 'in send_new_list_created_notification'
+		if $t; 
+	
+    my $self = shift;
+    my ($args) = @_;
+	
+	# This will be sent to the list owner
+    # if ( !exists( $args->{-email} ) ) {
+    #    warn 'you MUST pass the -email param to use this method!';
+    #    return undef;
+    #}
+    #my $email = $args->{-email};
+
+
+    my $etp = $self->emt->fetch('new_list_created_message');
+
+	if($t){ 
+		require Data::Dumper; 
+		warn '$etp: ' . Data::Dumper::Dumper($etp); 
+	}
+    $self->send_multipart_email(
+        {
+            -headers => {
+                To => $self->fm->format_phrase_address(
+                    $etp->{vars}->{to_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                From => $self->fm->format_phrase_address(
+                    $etp->{vars}->{from_phrase},
+                    $self->ls->param('list_owner_email')
+                ),
+                Subject => $etp->{vars}->{subject},
+            },
+
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params    => {
+				-list_settings_vars_param => { -list => $self->list },
+                -vars => {
+					# ... 
+                },
+            },
+            -test => $self->test,
+        }
+    );
+}
+
 
 sub send_out_message {
     my $self = shift;
