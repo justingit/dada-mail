@@ -11358,7 +11358,7 @@ sub new_list {
     my $password         = $q->param('password') || undef;
     my $retype_password  = $q->param('retype_password') || undef;
 	
-	my $send_new_list_welcome_email                = $q->param('retype_password') || 0;
+	my $send_new_list_welcome_email                = $q->param('send_new_list_welcome_email') || 0;
 	my $send_new_list_welcome_email_with_list_pass = $q->param('send_new_list_welcome_email_with_list_pass') || 0;
 	
 	
@@ -11502,9 +11502,6 @@ sub new_list {
                         list_popup_menu => $list_popup_menu,
                         auth_state      => $sast->make_state
 						
-						#send_new_list_welcome_email                => $send_new_list_welcome_email,			
-						#send_new_list_welcome_email_with_list_pass => $send_new_list_welcome_email_with_list_pass, 
-
                     },
                 }
             );
@@ -11520,8 +11517,8 @@ sub new_list {
 			    $fif_q->charset($DADA::Config::HTML_CHARSET);
 			    $fif_q->delete_all;
 				
-				$fif_q->param('clone_settings',                             $q->param('clone_settings'));
-				$fif_q->param('clone_settings_from_this_list',              $q->param('clone_settings_from_this_list'));
+				$fif_q->param('clone_settings',                             scalar $q->param('clone_settings'));
+				$fif_q->param('clone_settings_from_this_list',              scalar $q->param('clone_settings_from_this_list'));
 				$fif_q->param('send_new_list_welcome_email',                $send_new_list_welcome_email);
 				$fif_q->param('send_new_list_welcome_email_with_list_pass', $send_new_list_welcome_email_with_list_pass);
 				
@@ -11658,7 +11655,7 @@ sub new_list {
 			        $dap->send_new_list_created_notification(
 						{ 
 							-vars => { 
-								send_new_list_welcome_email_with_list_pass => $q->param('send_new_list_welcome_email_with_list_pass'), 
+								send_new_list_welcome_email_with_list_pass => $send_new_list_welcome_email_with_list_pass, 
 								list_password                              => $password, 
 							}
 						}
