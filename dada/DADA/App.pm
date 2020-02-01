@@ -11357,6 +11357,12 @@ sub new_list {
     my $physical_address = $q->param('physical_address') || undef;
     my $password         = $q->param('password') || undef;
     my $retype_password  = $q->param('retype_password') || undef;
+	
+	my $send_new_list_welcome_email                = $q->param('retype_password') || 0;
+	my $send_new_list_welcome_email_with_list_pass = $q->param('send_new_list_welcome_email_with_list_pass') || 0;
+	
+	
+	
 
     if ( !$process ) {
 
@@ -11495,10 +11501,36 @@ sub new_list {
                         lists_exist     => $lists_exist,
                         list_popup_menu => $list_popup_menu,
                         auth_state      => $sast->make_state
+						
+						#send_new_list_welcome_email                => $send_new_list_welcome_email,			
+						#send_new_list_welcome_email_with_list_pass => $send_new_list_welcome_email_with_list_pass, 
 
                     },
                 }
             );
+			
+			if($errors){ 
+				
+				# This fills in the advanced options form fields. Above also fills in other fields just
+				# by setting the vars in via HTML::Template - so we have a mix of two techniques. 
+				# If there is another pass to this, it's probably best to consilidate on the below technique. 
+				
+			    require CGI;
+			    my $fif_q = CGI->new;
+			    $fif_q->charset($DADA::Config::HTML_CHARSET);
+			    $fif_q->delete_all;
+				
+				$fif_q->param('clone_settings',                             $q->param('clone_settings'));
+				$fif_q->param('clone_settings_from_this_list',              $q->param('clone_settings_from_this_list'));
+				$fif_q->param('send_new_list_welcome_email',                $send_new_list_welcome_email);
+				$fif_q->param('send_new_list_welcome_email_with_list_pass', $send_new_list_welcome_email_with_list_pass);
+				
+		        require HTML::FillInForm::Lite;
+		        my $h = HTML::FillInForm::Lite->new();
+		        $scrn = $h->fill( \$scrn, $fif_q );
+			}
+			
+			
             return $scrn;
 
         }
@@ -11623,7 +11655,14 @@ sub new_list {
 							-list => $ls->param('list'),
 						}
 					);
-			        $dap->send_new_list_created_notification(); 
+			        $dap->send_new_list_created_notification(
+						{ 
+							-vars => { 
+								send_new_list_welcome_email_with_list_pass => $q->param('send_new_list_welcome_email_with_list_pass'), 
+								list_password                              => $password, 
+							}
+						}
+			        ); 
 				} catch { 
 					warn 'problems sending send_new_list_created_notification: ' . $_; 
 				};

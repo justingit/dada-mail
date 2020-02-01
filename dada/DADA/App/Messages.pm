@@ -1261,6 +1261,11 @@ sub send_new_list_created_notification {
     my $self = shift;
     my ($args) = @_;
 	
+	my $vars = {};
+	if(exists($args->{-vars})){
+		$vars = $args->{-vars};
+	}
+	
 	# This will be sent to the list owner
     # if ( !exists( $args->{-email} ) ) {
     #    warn 'you MUST pass the -email param to use this method!';
@@ -1292,10 +1297,10 @@ sub send_new_list_created_notification {
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
             -tmpl_params    => {
-				-list_settings_vars_param => { -list => $self->list },
-                -vars => {
-					# ... 
-                },
+				-list_settings_vars_param => { 
+					-list => $self->list
+				},
+                -vars => $vars,
             },
             -test => $self->test,
         }
