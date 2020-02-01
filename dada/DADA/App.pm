@@ -11652,12 +11652,25 @@ sub new_list {
 							-list => $ls->param('list'),
 						}
 					);
+					# seems dumb to be passing this around, if we don't need to: 
+					my $send_new_list_created_notification_vars = {}; 
+					
+					if($send_new_list_welcome_email_with_list_pass == 1){ 
+						$send_new_list_created_notification_vars = { 
+							send_new_list_welcome_email_with_list_pass => 1, 
+							list_password                              => $password,
+						} 
+					}
+					else { 
+						$send_new_list_created_notification_vars = { 
+							send_new_list_welcome_email_with_list_pass => 0, 
+							list_password                              => undef,
+						} 
+					}
+					
 			        $dap->send_new_list_created_notification(
 						{ 
-							-vars => { 
-								send_new_list_welcome_email_with_list_pass => $send_new_list_welcome_email_with_list_pass, 
-								list_password                              => $password, 
-							}
+							-vars => $send_new_list_created_notification_vars
 						}
 			        ); 
 				} catch { 
