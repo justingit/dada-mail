@@ -3,6 +3,20 @@
 
 =encoding utf-8
 
+=head1 11.9.0 
+
+=head2 Features
+
+=head3 Email Notification Sent After Mailing List Creation 
+
+Basic Information about the newly created mailing list will be sent out to the List Owner right after the mailing lisk is created. 
+This is optional, and it's also optional if you would like the List Password sent as part of this email notification. 
+
+=head3 New Error Screen Thrown For Unknown Runmodes
+
+Previously, Dada Mail would just throw an errror when an unknown runmode was attempted to be accessed. Now, an actual 
+error screen will be thrown to the browser.
+
 =head1 11.8.1 
 
 This is mostly a bug-fix release for issues found in the v11.8.0 release of Dada Mail.
