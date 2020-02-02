@@ -485,7 +485,7 @@ sub unknown_param {
 	. ' REMOTE_ADDR: ' 
 	. $ENV{'REMOTE_ADDR'}; 
 	
-    sleep(30);
+    sleep(5);
 	
     $self->header_props( -status => '404' );
 	
@@ -510,7 +510,7 @@ LHcCt27co1c4mKz1rGAC8wr+Agi3EN1FAlmNpZqsuyw32bEa8EGXW4LN2sKnLGTdY8Xh7tbN1bqSrOh
 ZNVlpFpYOHkw3LPNPZBuD05C1niXvmeM4Zkwt94NmrjnpRdZcFvtbv8z6F2AA/5G8jEIpBJoAAAAASU
 VORK5CYII=" style="float:left;padding:10px"/></p>
 <h1>Unknown Flavor</h1>
-<p>We apologize, but the resource you're looking for is not available.</p>
+<p>We apologize, but the resource you're looking for does not exist.</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
