@@ -1717,7 +1717,12 @@ $TEXT_CSV_PARAMS //= {
 
 BEGIN { @AnyDBM_File::ISA = qw(DB_File GDBM_File) }
 
+
+# I don't believe this does anything, and should be removed: 
 $ATTACHMENT_TEMPFILE //= 0;
+
+
+
 
 $MAIL_VERP_SEPARATOR //= '-';
 
