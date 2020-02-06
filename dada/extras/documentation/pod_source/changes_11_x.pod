@@ -15,7 +15,7 @@ This is optional, and it's also optional if you would like the List Password sen
 =head3 New Error Screen Thrown For Unknown Runmodes
 
 Previously, Dada Mail would just throw an errror when an unknown runmode was attempted to be accessed. Now, an actual 
-error screen will be thrown to the browser.
+error screen will be thrown up in the browser. The response status code returned will be, "404", rather than, "500".
 
 =head1 11.8.1 
 
