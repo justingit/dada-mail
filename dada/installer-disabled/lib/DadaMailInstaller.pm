@@ -23,7 +23,7 @@ use lib qw(
 
 use strict;
 
-my $t = 1; 
+my $t = 0; 
 
 use Encode qw(encode decode);
 
@@ -1595,13 +1595,14 @@ sub scrn_install_dada_mail {
 
 	# This is also very awkward - we have to feed the new file/directory permissions that we may have also set! 
 	# 
-
-
+	
     my ( $log, $status, $errors ) = $self->install_dada_mail();
 
     my $sched_flavor = $q->param('scheduled_jobs_flavor') || '_schedules';
     my $curl_location = `which curl`;
 
+	
+	
     my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
         {
             -install_type                       => scalar $q->param('install_type'),
@@ -1649,7 +1650,6 @@ sub scrn_install_dada_mail {
 
     # Uh, do are darnest to get the $PROGRAM_URL stuff working correctly,
     $scrn = hack_program_url($scrn);
-
     return $scrn;
 
 }
@@ -1854,32 +1854,50 @@ sub install_dada_mail {
         eval { $self->backup_current_config_file(); };
         if ($@) {
             $log .= "* Problems backing up config file: $@\n";
+			
+			warn "* Problems backing up config file: $@\n";
+			
             $errors->{cant_backup_orig_config_file} = 1;
         }
         else {
             $log .= "* Success!\n";
-        }
+            warn "* Success!\n";
+		}
     }
 
     if ( $ip->{-if_dada_files_already_exists} eq 'skip_configure_dada_files' ) {
         $log .= "* Skipping configuration of directory creation, config file and backend options\n";
+        warn "* Skipping configuration of directory creation, config file and backend options\n";
+
     }
     else {
         $log .=
             "* Attempting to make $DADA::Config::PROGRAM_NAME Files at, "
           . $ip->{-install_dada_files_loc} . '/'
           . $Dada_Files_Dir_Name . "\n";
+		  
+          warn "* Attempting to make $DADA::Config::PROGRAM_NAME Files at, "
+            . $ip->{-install_dada_files_loc} . '/'
+            . $Dada_Files_Dir_Name . "\n";
 
         if ( $ip->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config' ) {
             $log .= "* Skipping directory creation\n";
+			
+			warn "* Skipping directory creation\n";
+			
         }
         else {
             # Making the .dada_files structure
             if ( $self->create_dada_files_dir_structure() == 1 ) {
                 $log .= "* Success!\n";
+				warn "* Success!\n";
+				
             }
             else {
                 $log .= "* Problems Creating Directory Structure! STOPPING!\n";
+				
+				warn "* Problems Creating Directory Structure! STOPPING!\n";
+				
                 $errors->{cant_create_dada_files} = 1;
                 $status = 0;
                 return ( $log, $status, $errors );
@@ -1888,12 +1906,18 @@ sub install_dada_mail {
 
         # Making the .dada_config file
         $log .= "* Attempting to create .dada_config file...\n";
+		
+		warn "* Attempting to create .dada_config file...\n";
+		 
         my $create_dada_config_file = 0; 
         eval { 
             $create_dada_config_file = $self->create_dada_config_file();
         }; 
         if ($@) {
             $log .= "* Problems creating .dada_config file: $@\n";
+			
+			warn "* Problems creating .dada_config file: $@\n";
+			
             $errors->{cant_create_dada_config} = 1;
             $status = 0;
             # $create_dada_config_file = 0;
@@ -1902,9 +1926,15 @@ sub install_dada_mail {
         else {
             if ($create_dada_config_file  == 1 ) {
                 $log .= "* Success!\n";
+				
+				warn  "* Success!\n";
+				
             }
             else {
                 $log .= "* Problems Creating .dada_config file! STOPPING!\n";
+				
+				warn "* Problems Creating .dada_config file! STOPPING!\n";
+				
                 $errors->{cant_create_dada_config} = 1;
                 $status = 0;
                 return ( $log, $status, $errors );
@@ -1914,16 +1944,28 @@ sub install_dada_mail {
 
         if ( $ip->{-skip_configure_SQL} == 1 ) {
             $log .= "* Skipping the creation of the SQL Tables...\n";
+			
+			warn"* Skipping the creation of the SQL Tables...\n";
+			
         }
         else {
 
             $log .= "* Attempting to create SQL Tables...\n";
+			
+			warn "* Attempting to create SQL Tables...\n";
+			
             my $sql_ok = $self->create_sql_tables();
             if ( $sql_ok == 1 ) {
                 $log .= "* Success!\n";
+				
+				warn "* Success!\n";
+				
             }
             else {
                 $log .= "* Problems Creating SQL Tables! STOPPING!\n";
+				
+				warn "* Problems Creating SQL Tables! STOPPING!\n";
+				
                 $errors->{cant_create_sql_tables} = 1;
                 $status = 0;
                 return ( $log, $status, $errors );
@@ -1932,12 +1974,20 @@ sub install_dada_mail {
     }
 	
 	$log .= "* Clearing Session Data...\n";
+	
+	warn "* Clearing Session Data...\n";
+	
 	my $sess_ok = $self->clear_sessions();
     if ( $sess_ok == 1 ) {
         $log .= "* Success!\n";
+		
+		warn "* Success!\n";
+		
     }
     else {
         $log .= "* Problems removing session data.\n";
+		
+	    warn "* Problems removing session data.\n";
     }
 	
 
@@ -1945,25 +1995,43 @@ sub install_dada_mail {
 
     if ( $self->test_can_read_config_dot_pm() == 1 ) {
         $log .= "* WARNING: Cannot read, $Config_LOC!\n";
+		
+		warn "* WARNING: Cannot read, $Config_LOC!\n";
+		
         $errors->{cant_read_config_dot_pm} = 1;
 
         # $status = 0; ?
     }
 
     $log .= "* Attempting to backup original $Config_LOC file...\n";
+	
+	warn "* Attempting to backup original $Config_LOC file...\n";
+	
     eval { $self->backup_config_dot_pm(); };
     if ($@) {
         $Big_Pile_Of_Errors .= $@;
         $log .= "* WARNING: Could not backup, $Config_LOC! (<code>$@</code>)\n";
+		
+		warn "* WARNING: Could not backup, $Config_LOC! (<code>$@</code>)\n";
+		
         $errors->{cant_backup_dada_dot_config} = 1;
     }
     else {
         $log .= "* Success!\n";
+		
+		warn "* Success!\n";
+		
     }
 
     $log .= "* Attempting to edit $Config_LOC file...\n";
+	
+	warn "* Attempting to edit $Config_LOC file...\n";
+	
     if ( $self->test_can_write_config_dot_pm() == 1 ) {
         $log .= "* WARNING: Cannot write to, $Config_LOC!\n";
+		
+		warn "* WARNING: Cannot write to, $Config_LOC!\n";
+		 
         $errors->{cant_edit_config_dot_pm} = 1;
 
         # $status = 0; ?
@@ -1972,93 +2040,168 @@ sub install_dada_mail {
 
         if ( $self->edit_config_dot_pm() == 1 ) {
             $log .= "* Success!\n";
+			
+			warn "* Success!\n";
+			
         }
         else {
             $log .= "* WARNING: Cannot edit $Config_LOC!\n";
+			
+			warn "* WARNING: Cannot edit $Config_LOC!\n";
+			
             $errors->{cant_edit_dada_dot_config} = 1;
         }
 
     }
     $log .= "* Setting up Support Files Directory...\n";
+	
+	warn "* Setting up Support Files Directory...\n";
+	
     eval { $self->setup_support_files_dir(); };
     if ($@) {
         $log .= "* WARNING: Couldn't set up support files directory! $@\n";
+		
+		warn "* WARNING: Couldn't set up support files directory! $@\n";
+		
         $errors->{cant_set_up_support_files_directory} = 1;
         $status = 0;
 
     }
     else {
         $log .= "* Success!\n";
+		
+		warn "* Success!\n";
+		
     }
 
     $log .= "* Installing plugins/extensions...\n";
+	
+	warn "* Installing plugins/extensions...\n";
+	
     eval { $self->edit_config_file_for_plugins(); };
     if ($@) {
         $log .= "* WARNING: Couldn't complete installing plugins/extensions! $@\n";
+		
+		warn "* WARNING: Couldn't complete installing plugins/extensions! $@\n";
+		
         $errors->{cant_install_plugins_extensions} = 1;
     }
     else {
         $log .= "* Success!\n";
+		
+        warn "* Success!\n";
+		
+		
     }
 
     if ( $ip->{-if_dada_files_already_exists} eq 'skip_configure_dada_files' ) {
         $log .= "* Skipping WYSIWYG setup...\n";
+		
+		warn "* Skipping WYSIWYG setup...\n";
+		
     }
     else {
         $log .= "* Installing WYSIWYG Editors...\n";
+		
+		warn "* Installing WYSIWYG Editors...\n";
+		
         eval { $self->install_wysiwyg_editors(); };
         if ($@) {
             $log .= "* WARNING: Couldn't complete installing WYSIWYG editors! $@\n";
+			
+			warn "* WARNING: Couldn't complete installing WYSIWYG editors! $@\n";
+			
             $errors->{cant_install_wysiwyg_editors} = 1;
         }
         else {
             $log .= "* Success!\n";
+			
+			warn "* Success!\n";
+			 
         }
     }
 
     $log .= "* Setting up CGI/FastCGI/PSGI Deployment...\n";
+	
+	warn "* Setting up CGI/FastCGI/PSGI Deployment...\n";
+	
     eval { $self->setup_deployment(); };
     if ($@) {
         $log .= "* Problems setting up CGI/FastCGI Support: $@\n";
+		
+		warn "* Problems setting up CGI/FastCGI Support: $@\n";
+		
         # $errors->{cant_setup_fast_cgi} = 1;
     }
     else {
         $log .= "* Done!\n";
+		
+		warn "* Done!\n";
     }
 
     $log .= "* Checking for needed CPAN modules to install...\n";
+	
+	warn "* Checking for needed CPAN modules to install...\n";
+	
     eval { $self->install_missing_CPAN_modules(); };
     if ($@) {
         $log .= "* Problems installing missing CPAN modules - skipping: $@\n";
+		
+		warn "* Problems installing missing CPAN modules - skipping: $@\n";
+		
 
         # $errors->{cant_install_plugins_extensions} = 1;
     }
     else {
         $log .= "* Done!\n";
+		
+		warn "* Done!\n";
+		
     }
 
     $log .= "* Removing old Screen Cache...\n";
+	
+	warn "* Removing old Screen Cache...\n";
+	
     eval { $self->remove_old_screen_cache(); };
     if ($@) {
         $log .= "* WARNING: Couldn't remove old screen cache - you may have to do this manually: $@\n";
+		
+		warn "* WARNING: Couldn't remove old screen cache - you may have to do this manually: $@\n";
+		
     }
     else {
         $log .= "* Success!\n";
+		
+		warn "* Success!\n";
+		
     }
 	
 	$log .= "* Removing Old Backups in, " . $Support_Files_Dir_Name . " dir...\n";
+	
+	warn "* Removing Old Backups in, " . $Support_Files_Dir_Name . " dir...\n";
+	
 	eval { $self->remove_old_backups(); };
 	
     if ($@) {
         $log .= "* WARNING: Couldn't remove old backups: $@\n";
+		
+		warn "* WARNING: Couldn't remove old backups: $@\n";
+		 
     }
     else {
         $log .= "* Success!\n";
+		
+		warn "* Success!\n";
+		
     }
 	
 
     # That's it.
     $log .= "* Installation and Configuration Complete!\n";
+	
+	warn "* Installation and Configuration Complete!\n";
+	
     return ( $log, $status, $errors );
 }
 
