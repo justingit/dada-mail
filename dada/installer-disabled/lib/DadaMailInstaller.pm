@@ -23,6 +23,8 @@ use lib qw(
 
 use strict;
 
+my $t = 1; 
+
 use Encode qw(encode decode);
 
 
@@ -5169,20 +5171,32 @@ sub install_write_file {
 
 sub installer_cp {
     require File::Copy;
-    my ( $to, $from ) = @_;
-    my $r = File::Copy::copy( $to, $from );    # or croak "Copy failed: $!";
+    my ( $source, $dest ) = @_;
+	
+	warn "install_cp: source: '$source', dest: '$dest'\n"
+		if $t; 
+	
+    my $r = File::Copy::copy( $source, $dest );    # or croak "Copy failed: $!";
     return $r;
 }
 
 sub installer_mv {
     require File::Copy;
-    my ( $to, $from ) = @_;
-    my $r = File::Copy::move( $to, $from ) or croak "Copy failed to:'$to', from:'$from': $!";
+    my ( $source, $dest ) = @_;
+	
+	warn "installer_mv: source: '$source', dest: '$dest'\n"
+		if $t; 
+	
+    my $r = File::Copy::move( $source, $dest ) or croak "Copy failed from:'$source', to:'$dest': $!";
     return $r;
 }
 
 sub installer_rm {
     my $file  = shift;
+	
+	warn "installer_rm: file: '$file'"
+		if $t; 
+	
     my $count = unlink($file);
     return $count;
 }
@@ -5192,12 +5206,10 @@ sub installer_chmod {
 
     my ( $octet, $file ) = @_;
 
-	warn 'installer_chmod $octet:' . $octet . ', $file:'  . $file;
-
-
-
-
-    my $r = chmod( $octet, $file );
+	warn 'installer_chmod $octet:' . $octet . ', $file:'  . $file
+		if $t; 
+	
+	my $r = chmod( $octet, $file );
     return $r;
 }
 
@@ -5207,6 +5219,10 @@ sub installer_mkdir {
 
     my ( $dir, $chmod ) = @_;
     my $r = mkdir( $dir, $chmod );
+	
+	warn "installer_mkdir, dir: '$dir'"
+		if $t; 
+
     if(!$r){ 
         warn 'mkdir didn\'t succeed at: ' . $dir . ' because:' . $!; 
     }
@@ -5216,12 +5232,23 @@ sub installer_mkdir {
 sub installer_rmdir {
     my $self = shift;
     my $dir  = shift;
+	
+	warn "installer_rmdir, dir: '$dir'"
+		if $t; 
+	
+	
     my $r    = rmdir($dir);
     return $r;
 }
 
 sub installer_dircopy {
     my ( $source, $target ) = @_;
+	
+	warn "installer_mv: source: '$source', target: '$target'\n"
+		if $t; 
+	
+	
+	
     require File::Copy::Recursive;
     File::Copy::Recursive::dircopy( $source, $target )
       or die "can't copy directory from, '$source' to, '$target' because: $!";
@@ -5229,13 +5256,19 @@ sub installer_dircopy {
 
 sub backup_dir {
     my $source = shift;
-    $source =~ s/\/$//;
+       $source =~ s/\/$//;
+	   
     my $target = undef;
 
     my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) = localtime(time);
     my $timestamp = sprintf( "%4d-%02d-%02d", $year + 1900, $mon + 1, $mday ) . '-' . time;
 
     my $target = make_safer( $source . '-backup-' . $timestamp );
+
+	warn "backup_dir: source: '$source', target: '$target'\n"
+		if $t; 
+	
+
 
     require File::Copy::Recursive;
     File::Copy::Recursive::dirmove( $source, $target )
