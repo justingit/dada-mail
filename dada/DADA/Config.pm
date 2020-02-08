@@ -55,7 +55,10 @@ $PROGRAM_ERROR_LOG = undef;
 #
 
     # Keep this next bit as-is; it's just opening the error file for writing.
-    if ($PROGRAM_ERROR_LOG) {
+    if (
+		$PROGRAM_ERROR_LOG 
+		&& (!$ENV{NO_DADA_MAIL_CONFIG_IMPORT})
+	) {
         open( STDERR, ">>$PROGRAM_ERROR_LOG" )
           || warn
 "$PROGRAM_NAME Error: Cannot redirect STDERR, it's possible that Dada Mail does not have write permissions to this file ($PROGRAM_ERROR_LOG) or it doesn't exist! If Dada Mail cannot make this file for you, create it yourself and give it enough permissions so it may write to it: $!";
