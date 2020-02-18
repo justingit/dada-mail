@@ -224,7 +224,6 @@ sub setup {
         'img'                           => \&img,
         'js'                            => \&js,
         'css'                           => \&css,
-        'captcha_img'                   => \&captcha_img,
         'ver'                           => \&ver,
         'resend_conf'                   => \&resend_conf,
         'show_error'                    => \&show_error,
@@ -14289,64 +14288,6 @@ sub css {
     }
     else {
         $self->header_props(%$headers);
-    }
-}
-
-sub captcha_img {
-
-    my $self = shift;
-    my $q    = $self->query();
-
-    my $img_str = xss_filter( scalar $q->param('img_string') );
-
-    if ( -e $DADA::Config::TMP . '/capcha_imgs/CAPTCHA-' . $img_str . '.png' ) {
-
-        my $headers = { -type => 'image/png' };
-        my $body;
-
-        open( IMG,
-                '< '
-              . $DADA::Config::TMP
-              . '/capcha_imgs/CAPTCHA-'
-              . $img_str
-              . '.png' )
-          or die $!;
-        {
-            #slurp it all in
-            local $/ = undef;
-            $body = <IMG>;
-
-        }
-        close(IMG) or die $!;
-
-        chmod(
-            $DADA::Config::FILE_CHMOD,
-            make_safer(
-                    $DADA::Config::TMP
-                  . '/capcha_imgs/CAPTCHA-'
-                  . $img_str . '.png'
-            )
-        );
-
-        my $success = unlink(
-            make_safer(
-                    $DADA::Config::TMP
-                  . '/capcha_imgs/CAPTCHA-'
-                  . $img_str . '.png'
-            )
-        );
-        warn 'Couldn\'t delete file, '
-          . $DADA::Config::TMP
-          . '/capcha_imgs/CAPTCHA-'
-          . $img_str . '.png'
-          if $success == 0;
-
-        $self->header_props(%$headers);
-        return $body;
-
-    }
-    else {
-        return $self->default();
     }
 }
 
