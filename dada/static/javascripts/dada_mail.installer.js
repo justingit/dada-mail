@@ -440,6 +440,9 @@ function test_CAPTCHA_configuration() {
 	var flavor = 'google_recaptcha'; 
 	//if(flavor == 'google_recaptcha'){ 
 		
+		// alert('$("#captcha_params_v2_public_key").val():' + $("#captcha_params_v2_public_key").val());
+		// alert('$("#captcha_params_v2_private_key").val():' + $("#captcha_params_v2_private_key").val());
+		
 		
 		var request = $.ajax({
 			url: $("#self_url").val(),
@@ -447,8 +450,8 @@ function test_CAPTCHA_configuration() {
 			cache: false,
 			data: {
 				flavor: 'cgi_test_CAPTCHA_Google_reCAPTCHA',
-				captcha_reCAPTCHA_public_key: $("#captcha_reCAPTCHA_public_key").val(),
-				captcha_reCAPTCHA_private_key: $("#captcha_reCAPTCHA_private_key").val()
+				captcha_params_v2_public_key:  $("#captcha_params_v2_public_key").val(),
+				captcha_params_v2_private_key: $("#captcha_params_v2_private_key").val()
 			},
 			dataType: "html"
 		});
@@ -458,7 +461,7 @@ function test_CAPTCHA_configuration() {
 			$("#" + target_div).html(content);
 			
 			var captchaWidgetId = grecaptcha.render( 'google_recaptcha_example', {
-			  'sitekey' : $("#captcha_reCAPTCHA_public_key").val()
+			  'sitekey' : $("#captcha_params_v2_public_key").val()
 			});
 			
 			

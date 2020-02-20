@@ -212,7 +212,7 @@ sub cgi_user_error {
         my $can_use_captcha = 0;
 
         if ( $ls->param('limit_sub_confirm_use_captcha') == 1 ) {
-            $can_use_captcha = can_use_Google_reCAPTCHA();
+            $can_use_captcha = can_use_Google_reCAPTCHA_v2();
         }
 
         if ( $can_use_captcha == 1 ) {

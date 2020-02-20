@@ -271,11 +271,19 @@ $DIR_CHMOD  = <!-- tmpl_var security_default_directory_permissions default="0755
 #---------------------------------------------------------------------#
 # CAPTCHA Options 
 
-$CAPTCHA_TYPE = 'Google_reCAPTCHA';
 $RECAPTCHA_PARAMS = {
-	on_subscribe_form =>  '<!-- tmpl_var captcha_on_subscribe_form default="0" -->',
-    public_key        =>  '<!-- tmpl_var captcha_reCAPTCHA_public_key -->',
-    private_key       =>  '<!-- tmpl_var captcha_reCAPTCHA_private_key -->',
+	
+	recaptcha_type    =>  '<!-- tmpl_var captcha_params_recaptcha_type    default="v2" -->',
+	on_subscribe_form =>  '<!-- tmpl_var captcha_params_on_subscribe_form default="0" -->',
+	
+	v2 => {
+	    public_key        =>  '<!-- tmpl_var captcha_params_v2_public_key -->',
+	    private_key       =>  '<!-- tmpl_var captcha_params_v2_private_key -->',
+	}, 
+	v3 => {
+	    public_key        =>  '<!-- tmpl_var captcha_params_v3_public_key -->',
+	    private_key       =>  '<!-- tmpl_var captcha_params_v3_private_key -->',
+	},
 };
 
 $RECAPTHCA_MAILHIDE_PARAMS = {

@@ -91,7 +91,7 @@ require Exporter;
   scrub_js
   md5_checksum
   can_use_LWP_Simple
-  can_use_Google_reCAPTCHA
+  can_use_Google_reCAPTCHA_v2
   can_use_XML_FeedPP
   can_use_JSON
   can_use_datetime
@@ -3237,7 +3237,7 @@ sub can_use_LWP_Simple {
 	return $can_use_lwp_simple;
 }
 
-sub can_use_Google_reCAPTCHA { 
+sub can_use_Google_reCAPTCHA_v2 { 
 	
 	if(exists($can_use_cache->{Google_reCAPTCHA})){ 
 		return $can_use_cache->{Google_reCAPTCHA}; 

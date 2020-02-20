@@ -874,7 +874,7 @@ sub confirm {
       if $t;
     if ( $ls->param('captcha_sub') == 1 ) {
 		
-        if ( can_use_Google_reCAPTCHA() == 1 ) {
+        if ( can_use_Google_reCAPTCHA_v2() == 1 ) {
             warn '>>>> Captcha step is enabled...'
               if $t;
             my $captcha_worked = 0;

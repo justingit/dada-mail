@@ -900,7 +900,7 @@ sub is_valid_registration {
     my $cap             = undef;
 
 	if($DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1){
-	    if ( can_use_Google_reCAPTCHA() == 1 ) {
+	    if ( can_use_Google_reCAPTCHA_v2() == 1 ) {
 									
 			my $crf = $args->{ -recaptcha_response_field }  || undef;
 		   

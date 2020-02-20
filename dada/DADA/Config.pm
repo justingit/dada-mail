@@ -460,14 +460,24 @@ $GOOGLE_MAPS_API_PARAMS //= {
 
 
 
-# Set to Either, "Default", "reCAPTCHA", of Google_reCAPTCHA;
-$CAPTCHA_TYPE = 'Google_reCAPTCHA';
+$CAPTCHA_TYPE = undef; # noop #
 
 $RECAPTCHA_PARAMS //= {
-	on_subscribe_form => 1, 
-    public_key        => undef,
-    private_key       => undef,
+
+	recaptcha_type    =>  'v2',
+	on_subscribe_form =>  1,
+	
+	v2 => {
+	    public_key        =>  undef,
+	    private_key       =>  undef,
+	}, 
+	v3 => {
+	    public_key        =>  undef,
+	    private_key       =>  undef,
+	},
 };
+
+
 $RECAPTHCA_MAILHIDE_PARAMS //= {
     public_key  => '',
     private_key => '',

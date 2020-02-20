@@ -3679,9 +3679,10 @@ sub list_options {
         $can_use_mx_lookup = 1;
     }
 
-    my $can_use_captcha       = can_use_Google_reCAPTCHA();
     my $can_use_StopForumSpam = can_use_StopForumSpam();
-	
+
+	# This has to be updated to say, "hey, are we using v2 or v3 of reCAPTCHA?"
+    my $can_use_captcha       = can_use_Google_reCAPTCHA_v2();	
 	my $using_captcha_on_initial_subscribe_form = 0; 
 	if($can_use_captcha == 1 && $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1){ 
 		$using_captcha_on_initial_subscribe_form = 1; 
@@ -3748,7 +3749,6 @@ sub list_options {
                     title                 => 'Options',
                     done                  => $done,
                     root_login            => $root_login,
-                    CAPTCHA_TYPE          => $DADA::Config::CAPTCHA_TYPE,
                     can_use_mx_lookup     => $can_use_mx_lookup,
                     can_use_captcha       => $can_use_captcha,
 					using_captcha_on_initial_subscribe_form => $using_captcha_on_initial_subscribe_form, 
@@ -8434,7 +8434,7 @@ sub archive_options {
 
     if ( !$process ) {
 
-        my $can_use_captcha = can_use_Google_reCAPTCHA();
+        my $can_use_captcha = can_use_Google_reCAPTCHA_v2();
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'archive_options_screen.tmpl',
@@ -8452,7 +8452,6 @@ sub archive_options {
                     list            => $list,
                     done            => $done,
                     can_use_captcha => $can_use_captcha,
-                    CAPTCHA_TYPE    => $DADA::Config::CAPTCHA_TYPE,
 
                 },
                 -list_settings_vars_param => {
@@ -10940,7 +10939,7 @@ sub resend_conf {
     my $can_use_captcha = 0;
 
     if ( $ls->param('limit_sub_confirm_use_captcha') == 1 ) {
-        $can_use_captcha = can_use_Google_reCAPTCHA();
+        $can_use_captcha = can_use_Google_reCAPTCHA_v2();
     }
     if ( $can_use_captcha == 1 ) {
         $self->resend_conf_captcha();
@@ -10984,6 +10983,8 @@ sub resend_conf_captcha {
 
     my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
 	
+	
+	# DEV RECAPTCHA UPDATE v2 and v3
     if ( $admin_override_enabled != 1 ) {
         if ( !$crf ) {
             $captcha_worked = 0;
@@ -11031,8 +11032,10 @@ sub resend_conf_captcha {
             $q->param( 'list',  $list );
             $q->param( 'email', $email );
             $q->delete(
-                'flavor',                    'rm',
-                'g-recaptcha-response',      'token'
+                'flavor',
+				'rm',
+                'g-recaptcha-response',
+				'token',
             );
             $q->param( 'flavor', 's' );
 			
@@ -12518,7 +12521,7 @@ sub send_archive {
     # CAPTCHA STUFF
 
     my $captcha_fail    = 0;
-    my $can_use_captcha = can_use_Google_reCAPTCHA();
+    my $can_use_captcha = can_use_Google_reCAPTCHA_v2();
 
     if ( $ls->param('captcha_archive_send_form') == 1 && $can_use_captcha == 1 )
     {
@@ -12867,7 +12870,7 @@ sub email_password {
     }
     else {
 
-        if ( can_use_Google_reCAPTCHA() ) {
+        if ( can_use_Google_reCAPTCHA_v2() ) {
             require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
             my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
 
@@ -12891,7 +12894,7 @@ sub email_password {
                 my $can_use_captcha = 0;
                 my $CAPTCHA_string  = '';
                 my $cap;
-                if ( can_use_Google_reCAPTCHA() == 1 ) {
+                if ( can_use_Google_reCAPTCHA_v2() == 1 ) {
                     require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
                     $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
                     $CAPTCHA_string = $cap->get_html();
@@ -14359,7 +14362,7 @@ sub profile_login {
             my $CAPTCHA_string  = '';
             my $cap             = undef;
             if ( $DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1 ) {
-                $can_use_captcha = can_use_Google_reCAPTCHA();
+                $can_use_captcha = can_use_Google_reCAPTCHA_v2();
             }
             if ( $can_use_captcha == 1 ) {
                 require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;

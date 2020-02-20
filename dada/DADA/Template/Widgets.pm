@@ -136,7 +136,7 @@ VER                    => $DADA::Config::VER,
 DATA_CACHE             => $DADA::Config::DATA_CACHE, 
 
 captcha_on_subscribe_form  => $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form},
-can_use_Google_reCAPTCHA   => scalar DADA::App::Guts::can_use_Google_reCAPTCHA(), 
+can_use_Google_reCAPTCHA_v2   => scalar DADA::App::Guts::can_use_Google_reCAPTCHA_v2(), 
 
 GIVE_PROPS_IN_HTML             => $DADA::Config::GIVE_PROPS_IN_HTML, 
 GIVE_PROPS_IN_SUBSCRIBE_FORM   => $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM, 
@@ -1198,7 +1198,7 @@ sub archive_send_form {
     # ?!?!
     $captcha_fail = defined $captcha_fail ? $captcha_fail : 0;
 
-    my $can_use_captcha = can_use_Google_reCAPTCHA(); 	
+    my $can_use_captcha = can_use_Google_reCAPTCHA_v2(); 	
 	$can_use_captcha = 0 
 		if length($DADA::Config::RECAPTCHA_PARAMS->{public_key}) <= 0;
 	$can_use_captcha = 0 
@@ -2728,7 +2728,7 @@ sub subscription_form {
 		           $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
 		&& length($DADA::Config::RECAPTCHA_PARAMS->{public_key}) > 1
 		&& length($DADA::Config::RECAPTCHA_PARAMS->{private_key}) > 1
-		&& can_use_Google_reCAPTCHA() == 1  
+		&& can_use_Google_reCAPTCHA_v2() == 1  
 		) {
 			require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
 			my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;

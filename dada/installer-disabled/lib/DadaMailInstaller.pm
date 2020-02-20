@@ -1353,17 +1353,41 @@ sub grab_former_config_vals {
     {
         $opt->{'configure_captcha'} = 1;
 		
-		$opt->{'captcha_type'} = 'Google_reCAPTCHA';
-
-
+		# This would only happen with v2
+		if(defined($BootstrapConfig::CAPTCHA_TYPE)){ 
+			if(!exists($BootstrapConfig::RECAPTCHA_PARAMS->{recaptcha_type})){
+				$opt->{'captcha_params_recaptcha_type'} = 'v2';
+			}
+		}
+		else { 
+			# v2 or v3
+			if(exists($BootstrapConfig::RECAPTCHA_PARAMS->{recaptcha_type})){
+				$opt->{'captcha_params_recaptcha_type'} = $BootstrapConfig::RECAPTCHA_PARAMS->{recaptcha_type};
+			}
+		}
+		
+		# This would only happen in v2
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{public_key} ) ) {
-            $opt->{'captcha_reCAPTCHA_public_key'} = $BootstrapConfig::RECAPTCHA_PARAMS->{public_key};
+            $opt->{'captcha_params_v2_public_key'} = $BootstrapConfig::RECAPTCHA_PARAMS->{public_key};
         }
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{private_key} ) ) {
-            $opt->{'captcha_reCAPTCHA_private_key'} = $BootstrapConfig::RECAPTCHA_PARAMS->{private_key};
+            $opt->{'captcha_params_v2_private_key'} = $BootstrapConfig::RECAPTCHA_PARAMS->{private_key};
         }
+		
+		# This could be v2 or v3 (or both!) post 11.10
+		for my $cap_ver (qw(v2 v3)){			
+	        if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{$cap_ver}->{public_key} ) ) {
+	            $opt->{'captcha_params_' . $cap_ver .'_public_key'} 
+					= $BootstrapConfig::RECAPTCHA_PARAMS->{$cap_ver}->{public_key};
+	        }
+	        if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{$cap_ver}->{private_key} ) ) {
+	            $opt->{'captcha_params_' . $cap_ver . '_private_key'} 
+					= $BootstrapConfig::RECAPTCHA_PARAMS->{$cap_ver}->{private_key};
+	        }
+		}
+		
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{on_subscribe_form} ) ) {
-            $opt->{'captcha_on_subscribe_form'} = $BootstrapConfig::RECAPTCHA_PARAMS->{on_subscribe_form};
+            $opt->{'captcha_params_on_subscribe_form'} = $BootstrapConfig::RECAPTCHA_PARAMS->{on_subscribe_form};
         }
 
         if ( defined( $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key} ) ) {
@@ -1772,10 +1796,15 @@ sub query_params_to_install_params {
 	  mime_tools_options_tmp_dir
 	  
       configure_captcha
-      captcha_type
-	  captcha_on_subscribe_form
-      captcha_reCAPTCHA_public_key
-      captcha_reCAPTCHA_private_key
+      captcha_params_recaptcha_type
+	  captcha_params_on_subscribe_form
+	  
+      captcha_params_v2_public_key
+      captcha_params_v2_private_key
+
+      captcha_params_v3_public_key
+      captcha_params_v3_private_key	  
+	  
       captcha_reCAPTCHA_Mailhide_public_key
       captcha_reCAPTCHA_Mailhide_private_key
 	  
@@ -2664,14 +2693,21 @@ sub create_dada_config_file {
 
     my $captcha_params = {};
     if ( $ip->{-configure_captcha} == 1 ) {
-        $captcha_params->{configure_captcha}             = 1;
-        $captcha_params->{captcha_type}                  = 'Google_reCAPTCHA';
-        $captcha_params->{captcha_on_subscribe_form}     = clean_up_var( $ip->{-captcha_on_subscribe_form} );
+        $captcha_params->{configure_captcha}                = 1;
+        $captcha_params->{captcha_params_recaptcha_type}    = $ip->{-captcha_params_recaptcha_type};
+        $captcha_params->{captcha_params_on_subscribe_form} = clean_up_var( $ip->{-captcha_params_on_subscribe_form} );
+		
+		# This isn't a thing: 
+		# $captcha_params->{captcha_reCAPTCHA_remote_addr} = clean_up_var( $ip->{-captcha_reCAPTCHA_remote_addr} );
+       
+	   
+	    $captcha_params->{captcha_params_v2_public_key}  = clean_up_var( $ip->{-captcha_params_v2_public_key} );
+        $captcha_params->{captcha_params_v2_private_key} = clean_up_var( $ip->{-captcha_params_v2_private_key} );
 
-		$captcha_params->{captcha_reCAPTCHA_remote_addr} = clean_up_var( $ip->{-captcha_reCAPTCHA_remote_addr} );
-        $captcha_params->{captcha_reCAPTCHA_public_key}  = clean_up_var( $ip->{-captcha_reCAPTCHA_public_key} );
-        $captcha_params->{captcha_reCAPTCHA_private_key} = clean_up_var( $ip->{-captcha_reCAPTCHA_private_key} );
-        $captcha_params->{captcha_reCAPTCHA_Mailhide_public_key} =
+	    $captcha_params->{captcha_params_v3_public_key}  = clean_up_var( $ip->{-captcha_params_v3_public_key} );
+        $captcha_params->{captcha_params_v3_private_key} = clean_up_var( $ip->{-captcha_params_v3_private_key} );
+		
+		$captcha_params->{captcha_reCAPTCHA_Mailhide_public_key} =
           clean_up_var( $ip->{-captcha_reCAPTCHA_Mailhide_public_key} );
         $captcha_params->{captcha_reCAPTCHA_Mailhide_private_key} =
           clean_up_var( $ip->{-captcha_reCAPTCHA_Mailhide_private_key} );
@@ -4735,8 +4771,8 @@ sub cgi_test_CAPTCHA_Google_reCAPTCHA {
     my $self = shift;
     my $q    = $self->query();
 
-    my $captcha_reCAPTCHA_public_key  = $q->param('captcha_reCAPTCHA_public_key');
-    my $captcha_reCAPTCHA_private_key = $q->param('captcha_reCAPTCHA_private_key');
+    my $public_key  = $q->param('captcha_params_v2_public_key');
+    my $private_key = $q->param('captcha_params_v2_private_key');
 
 
     my $captcha = '';
@@ -4744,11 +4780,13 @@ sub cgi_test_CAPTCHA_Google_reCAPTCHA {
     eval {
         require Google::reCAPTCHA;
         my $c = Google::reCAPTCHA->new(
-			secret => $captcha_reCAPTCHA_private_key
+			secret => $private_key
 		);
     };
     if ($@) {
-        $errors = $@;
+		#$errors .= '$public_key: '  . $public_key  . "\n";
+		#$errors .= '$private_key: ' . $private_key . "\n";
+        $errors .= $@;
     }
     my $r;
 
@@ -4761,7 +4799,7 @@ sub cgi_test_CAPTCHA_Google_reCAPTCHA {
                 errors                       => $errors,
                 Self_URL                     => $Self_URL,
                 captcha                      => $captcha,
-                captcha_reCAPTCHA_public_key => $captcha_reCAPTCHA_public_key,
+                captcha_params_v2_public_key => $public_key,
             }
         }
     );

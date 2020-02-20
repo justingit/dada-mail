@@ -2153,11 +2153,11 @@
 				<div class="panel">
 				<div class="row">
 					<div class="small-12 columns">
-						<label for="captcha_on_subscribe_form">
+						<label for="captcha_params_on_subscribe_form">
 							<input 
 								type="checkbox" 
-								name="captcha_on_subscribe_form" 
-								id="captcha_on_subscribe_form" 
+								name="captcha_params_on_subscribe_form" 
+								id="captcha_params_on_subscribe_form" 
 								value="1" 
 								checked="check" 
 							>
@@ -2194,51 +2194,110 @@
 							<!-- /tmpl_if -->
 						</ul>
 					</div> 
+					
+					<!--					<div class="alert-box info radius">
+												More Information: 
+												<a href="https://www.google.com/recaptcha" target="_blank">
+													https://www.google.com/recaptcha
+												</a>
+											</div>
+					-->
+					
+					
 		
-						<input 
-							type="hidden" 
-							name="captcha_type" 
-							id="captcha_type_google_recaptcha" 
-							value="Google_reCAPTCHA" 
+					<div> 
+						<label for="captcha_params_recaptcha_type_v2">
+							<input 
+								type="radio" 
+								name="captcha_params_recaptcha_type" 
+								id="captcha_params_recaptcha_type_v2" 
+								value="v2" 
+							>
+								reCAPTCHA v2
+							</label>
 
-						>
-						<!-- reCAPTCHA v2 (recommended) --> 
+						<div class="row">
+							<div class="small-1 columns">
+							</div>
+							
+							<div class="small-11 columns">
+								
+							<label  for="captcha_params_v2_public_key">
+								reCAPTCHA v2 Site key:
+							</label> 
+							<input type="text" name="captcha_params_v2_public_key" id="captcha_params_v2_public_key" value="">
 
-						<div class="alert-box info radius">
-						More Information: 
-							<a href="https://www.google.com/recaptcha" target="_blank">
-								https://www.google.com/recaptcha
-							</a>
+
+							<label  for="captcha_params_v2_private_key">
+								reCAPTCHA v2 Secret key:
+							</label> 
+							<input
+								type="text"
+								name="captcha_params_v2_private_key"
+								id="captcha_params_v2_private_key"
+								value=""
+							>
+						
+						
+						
+		
+								<input
+									type="button"
+									class="processing test_CAPTCHA_configuration small button expand" 
+									value="Test reCAPTCHA V2 Configuration..."
+								>
+		
+		
+								<div id="test_CAPTCHA_configuration_results"></div> 
+								<script src="https://www.google.com/recaptcha/api.js?render=explicit"></script>
+
+							</div> 
 						</div>
-
-						<label  for="captcha_reCAPTCHA_public_key">
-							reCAPTCHA Site key:
-						</label> 
-						<input type="text" name="captcha_reCAPTCHA_public_key" id="captcha_reCAPTCHA_public_key" value="">
+					</div>
 
 
-						<label  for="captcha_reCAPTCHA_private_key">
-							reCAPTCHA Secret key:
-						</label> 
-						<input
-							type="text"
-							name="captcha_reCAPTCHA_private_key"
-							id="captcha_reCAPTCHA_private_key"
-							value=""
-						>
-						
-						
-						
-		
-					<input
-						type="button"
-						class="processing test_CAPTCHA_configuration small button expand" 
-						value="Test CAPTCHA Configuration..."
-					>
-		
-		
-					<div id="test_CAPTCHA_configuration_results"></div> 
-					<script src="https://www.google.com/recaptcha/api.js?render=explicit"></script>
+
+
+		<div> 
+						<label for="captcha_params_recaptcha_type_v3">
+							<input 
+								type="radio" 
+								name="captcha_params_recaptcha_type" 
+								id="captcha_params_recaptcha_type_v3" 
+								value="v3" 
+
+							>
+							reCAPTCHA v3
+						</label>
+
+						<div class="row">
+							<div class="small-1 columns">
+							</div>
+							
+							<div class="small-11 columns">
+
+							<label  for="captcha_params_v3_public_key">
+								reCAPTCHA v3 Site key:
+							</label> 
+							<input type="text" name="captcha_params_v3_public_key" id="captcha_params_v3_public_key" value="">
+
+
+							<label  for="captcha_params_v3_private_key">
+								reCAPTCHA v3 Secret key:
+							</label> 
+							<input
+								type="text"
+								name="captcha_params_v3_private_key"
+								id="captcha_params_v3_private_key"
+								value=""
+							>
+						</div>
+					</div>
+
+</div>
+
+
+
 
 					<h4>reCAPTCHA Mailhide Settings</h4>
 

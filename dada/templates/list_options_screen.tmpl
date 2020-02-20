@@ -544,13 +544,8 @@
 						<!-- tmpl_if list_settings.captcha_sub -->checked="checked"<!--/tmpl_if--> 
 					>
                     <label for="captcha_sub" <!-- tmpl_unless can_use_captcha -->class="disabled"<!-- /tmpl_unless -->>
-                   	  Require solving a CAPTCHA
+                   	  Require passing reCAPTCHA
                     </label>
-					
-					<div class="alert-box info radius">  
-				        Before someone is allowed to subscribe, they will have to type in a random string of letters that appear in an image that they are also
-	                    presented with. This theoretically stops web-bots from subscribing themselves to your list.
-					</div>
 					
                     <!-- tmpl_unless can_use_captcha -->
                        <div class="alert-box info radius">

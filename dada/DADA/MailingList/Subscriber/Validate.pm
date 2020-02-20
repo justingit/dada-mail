@@ -144,7 +144,7 @@ sub subscription_check {
 			&& length($DADA::Config::RECAPTCHA_PARAMS->{public_key}) > 0
 			&& length($DADA::Config::RECAPTCHA_PARAMS->{private_key}) > 0
 			&& $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
-			&& can_use_Google_reCAPTCHA()
+			&& can_use_Google_reCAPTCHA_v2()
 		) {		
 			$errors->{captcha_challenge_failed} = 0; 
 	        if(!defined($args->{-captcha_params})){ 

@@ -676,7 +676,7 @@ sub enforce_admin_cgi_security {
 			        my $CAPTCHA_string  = '';
 			        my $cap; 
 		            	
-			        if ( can_use_Google_reCAPTCHA() == 1 ) {
+			        if ( can_use_Google_reCAPTCHA_v2() == 1 ) {
 			            require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
 			            $cap    = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
 			            $CAPTCHA_string = $cap->get_html();
