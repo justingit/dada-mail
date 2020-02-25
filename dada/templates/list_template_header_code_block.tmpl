@@ -30,7 +30,18 @@
 	</script>
 <!-- /tmpl_if -->
 <!-- tmpL_if can_use_Google_reCAPTCHA_v2 -->
-	   <script src='https://www.google.com/recaptcha/api.js'></script>
+   	<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+   	 <script type="text/javascript" charset="utf-8">
+   	     var onloadCallback = function() {
+   	         var recaptchas = document.querySelectorAll('div[class=g-recaptcha]');
+   	         for( i = 0; i < recaptchas.length; i++) {
+   	             grecaptcha.render( recaptchas[i].id, {
+   	             'sitekey' : '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',
+   	             });
+   	         }
+   	     }
+   	 </script>
+	   
 <!-- /tmpl_if -->
 
 

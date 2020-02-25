@@ -135,8 +135,15 @@ VER                    => $DADA::Config::VER,
 
 DATA_CACHE             => $DADA::Config::DATA_CACHE, 
 
-captcha_on_subscribe_form  => $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form},
-can_use_Google_reCAPTCHA_v2   => scalar DADA::App::Guts::can_use_Google_reCAPTCHA_v2(), 
+
+captcha_params_recaptcha_type     => $DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type},
+captcha_params_on_subscribe_form  => $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form},
+captcha_params_v2_public_key      => $DADA::Config::RECAPTCHA_PARAMS->{v2}->{public_key},
+captcha_params_v2_private_key     => $DADA::Config::RECAPTCHA_PARAMS->{v2}->{private_key},
+captcha_params_v3_public_key      => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{public_key},
+captcha_params_v3_private_key     => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key},
+
+can_use_Google_reCAPTCHA_v2       => scalar DADA::App::Guts::can_use_Google_reCAPTCHA_v2(), 
 
 GIVE_PROPS_IN_HTML             => $DADA::Config::GIVE_PROPS_IN_HTML, 
 GIVE_PROPS_IN_SUBSCRIBE_FORM   => $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM, 
@@ -1200,9 +1207,9 @@ sub archive_send_form {
 
     my $can_use_captcha = can_use_Google_reCAPTCHA_v2(); 	
 	$can_use_captcha = 0 
-		if length($DADA::Config::RECAPTCHA_PARAMS->{public_key}) <= 0;
+		if length($DADA::Config::RECAPTCHA_PARAMS->{v2}->{public_key}) <= 0;
 	$can_use_captcha = 0 
-		if length($DADA::Config::RECAPTCHA_PARAMS->{private_key}) <= 0;
+		if length($DADA::Config::RECAPTCHA_PARAMS->{v2}->{private_key}) <= 0;
 	
     if($captcha_archive_send_form == 1 && $can_use_captcha == 1){ 
             my $captcha_worked = 0; 
@@ -2662,11 +2669,6 @@ sub subscription_form {
 	if(! exists($args->{-add_recaptcha_js})) { 
 		$args->{-add_recaptcha_js} = 0;
 	}
-
-	
-	
-	
-	
     
     my @available_lists = available_lists(-Dont_Die => 1); 
     if(! $available_lists[0]){ 
@@ -2722,23 +2724,27 @@ sub subscription_form {
 		}		
     }
     		
-	my $CAPTCHA_string = undef;
-	
+
+	my $v2_captcha_string = undef;
+
+
+		
 	if(
-		           $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
-		&& length($DADA::Config::RECAPTCHA_PARAMS->{public_key}) > 1
-		&& length($DADA::Config::RECAPTCHA_PARAMS->{private_key}) > 1
+		   $DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} eq 'v2'
+		&& $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
+		&& length($DADA::Config::RECAPTCHA_PARAMS->{v2}->{public_key}) > 1
+		&& length($DADA::Config::RECAPTCHA_PARAMS->{v2}->{private_key}) > 1
 		&& can_use_Google_reCAPTCHA_v2() == 1  
 		) {
 			require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
 			my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
-		    $CAPTCHA_string = $cap->get_html();
+		    $v2_captcha_string = $cap->get_html();
 	}
-	else { 
-		if($args->{-add_recaptcha_js} == 1){ 
-			$args->{-add_recaptcha_js} = 0; 
-		}
-	}     
+	#else { 
+	#	if($args->{-add_recaptcha_js} == 1){ 
+	#		$args->{-add_recaptcha_js} = 0; 
+	#	}
+	#}     
 	
     if(
 		$list && 
@@ -2789,7 +2795,7 @@ sub subscription_form {
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
 							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
-							recaptcha_html           => $CAPTCHA_string,		
+							v2_captcha_string        => $v2_captcha_string,		
 							list_consents            => $list_consents, 					
 							
                         },
@@ -2818,7 +2824,7 @@ sub subscription_form {
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
 							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
-							recaptcha_html           => $CAPTCHA_string,							
+							v2_captcha_string        => $v2_captcha_string,		
                         }
                     });      
     }

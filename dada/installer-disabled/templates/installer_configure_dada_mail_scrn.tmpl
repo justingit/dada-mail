@@ -561,8 +561,8 @@
 							  	<option value="Pg" <!-- tmpl_unless can_use_Pg -->disabled="disabled"<!-- /tmpl_unless -->>PostgreSQL <!-- tmpl_unless can_use_Pg -->(not available)<!-- /tmpl_unless --></option> 	
 							  	<option value="SQLite" <!-- tmpl_unless can_use_SQLite -->disabled="disabled"<!-- /tmpl_unless -->>SQLite<!-- tmpl_unless can_use_SQLite -->(not available)<!-- /tmpl_unless --></option> 
 							  </select>
+							</div>
 						</div>
-					</div>
 		  
 						<div class="row">
 							<div class="large-2 medium-2 columns">
@@ -2276,22 +2276,60 @@
 							
 							<div class="small-11 columns">
 
-							<label  for="captcha_params_v3_public_key">
-								reCAPTCHA v3 Site key:
-							</label> 
-							<input type="text" name="captcha_params_v3_public_key" id="captcha_params_v3_public_key" value="">
+								<label  for="captcha_params_v3_public_key">
+									reCAPTCHA v3 Site key:
+								</label> 
+								<input type="text" name="captcha_params_v3_public_key" id="captcha_params_v3_public_key" value="">
 
 
-							<label  for="captcha_params_v3_private_key">
-								reCAPTCHA v3 Secret key:
-							</label> 
-							<input
-								type="text"
-								name="captcha_params_v3_private_key"
-								id="captcha_params_v3_private_key"
-								value=""
-							>
+								<label  for="captcha_params_v3_private_key">
+									reCAPTCHA v3 Secret key:
+								</label> 
+								<input
+									type="text"
+									name="captcha_params_v3_private_key"
+									id="captcha_params_v3_private_key"
+									value=""
+								>
+								
+								<div class="row">
+									<div class="small-6 columns">
+										
+										<!-- medium-only-text-right large-only-text-right -->
+										<label 
+											for="captcha_params_v3_score_threshold" 
+											class=""
+										>
+											Score Threshold:
+										</label>
+									
+									  <select 
+									  	name="captcha_params_v3_score_threshold" 
+										id="captcha_params_v3_score_threshold"
+									   > 
+									   <option value="1">1</option>
+									   <option value=".9">.9</option>
+									   <option value=".8">.8</option>
+									   <option value=".7">.7</option>
+									   <option value=".6">.6</option>
+									   <option value=".5" selected="selected">.5</option>
+									   <option value=".4">.4</option>
+									   <option value=".3">.3</option>
+									   <option value=".2">.2</option>
+									   <option value=".1">.1</option>
+									  </select>
+								</div> 
+								<div class="small-6 columns">
+								</div>
+							</div>
+
+								
+								
 						</div>
+						
+						
+						
+						
 					</div>
 
 </div>

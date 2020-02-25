@@ -56,6 +56,7 @@
 
 
 	if ($("#subscription_form").length) {
+
 		$("#subscription_form").validate({
 		   ignore: ".ignore",
 			debug: false,
@@ -71,7 +72,9 @@
 							 return false; 
 						 }
 						 else {
-					         if(grecaptcha.getResponse() == '') {
+							 // I don't necessarily like explicitly naming the field here, 
+							 // so this may change in the future. 
+					         if (grecaptcha.getResponse('subscription_form_gr') == '') {
 					             return true;
 					         } else {
 					             return false;

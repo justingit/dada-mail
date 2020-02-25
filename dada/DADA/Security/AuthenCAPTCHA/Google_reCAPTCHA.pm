@@ -25,7 +25,7 @@ sub _init {
 
 sub get_html { 
     my $self = shift; 
-	my $key  = shift || $DADA::Config::RECAPTCHA_PARAMS->{public_key}; 
+	my $key  = shift || $DADA::Config::RECAPTCHA_PARAMS->{v2}->{public_key}; 
     return '<div class="g-recaptcha" data-sitekey="' 
 	. $key 
 	. '"></div>';
@@ -50,7 +50,7 @@ sub check_answer {
 		try {
 			require Google::reCAPTCHA;
 			my $c = Google::reCAPTCHA->new(
-				secret =>  $DADA::Config::RECAPTCHA_PARAMS->{private_key},
+				secret =>  $DADA::Config::RECAPTCHA_PARAMS->{v2}->{private_key},
 			);
 		
 			# Verifying the user's response 

@@ -139,15 +139,19 @@ sub subscription_check {
 		$args->{-type}    eq 'list'
 		&& $args->{-mode} eq 'user'
 	){ 
-	    if (
-			!$skip{captcha_challenge_failed} 
-			&& length($DADA::Config::RECAPTCHA_PARAMS->{public_key}) > 0
-			&& length($DADA::Config::RECAPTCHA_PARAMS->{private_key}) > 0
+	    if ($skip{captcha_challenge_failed}){ 
+			#... 
+		}
+		elsif( 
+		    $DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} eq 'v2'
+			&& length($DADA::Config::RECAPTCHA_PARAMS->{v2}->{public_key}) > 0
+			&& length($DADA::Config::RECAPTCHA_PARAMS->{v2}->{private_key}) > 0
 			&& $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
 			&& can_use_Google_reCAPTCHA_v2()
 		) {		
 			$errors->{captcha_challenge_failed} = 0; 
-	        if(!defined($args->{-captcha_params})){ 
+	        
+			if(!defined($args->{-captcha_params})){ 
 				$errors->{captcha_challenge_failed} = 1; 
 			    # short circuiting. 
 	  			warn 'error, captcha_challenge_failed'
@@ -179,6 +183,64 @@ sub subscription_check {
 		        else {
 					$errors->{captcha_challenge_failed} = 1; 
 	  			 	# short circuiting. 
+		  			warn 'error, captcha_challenge_failed'
+		  				if $t;
+	                return ( 0, $errors );
+		        }
+			}
+		}
+		elsif( 
+		    $DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} eq 'v3'
+			&& length($DADA::Config::RECAPTCHA_PARAMS->{v3}->{public_key}) > 0
+			&& length($DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key}) > 0
+			&& length($DADA::Config::RECAPTCHA_PARAMS->{v3}->{score_threshold}) > 0
+			&& $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
+			# and then something about making sure v3 is supported... 
+		) {		
+			$errors->{captcha_challenge_failed} = 0; 
+			if(!defined($args->{-captcha_params})){ 
+				$errors->{captcha_challenge_failed} = 1; 
+			    # short circuiting. 
+	  			warn 'error, captcha_challenge_failed'
+	  				if $t;
+	            return ( 0, $errors );
+			}
+			elsif(
+				length($args->{-captcha_params}->{-remote_addr}) <= 0
+				||
+				length($args->{-captcha_params}->{-response}) <= 0
+			) { 
+				$errors->{captcha_challenge_failed} = 1; 
+	  			warn 'error, captcha_challenge_failed'
+	  				if $t;
+			    # short circuiting. 
+	            return ( 0, $errors );
+			}
+			else {
+				
+				require Google::reCAPTCHA::v3; 
+				my $rec = Google::reCAPTCHA::v3->new({
+					-secret => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key},
+				}); 
+				my $r = $rec->request(
+						{ 
+							-response => $args->{-captcha_params}->{-response},
+							-remoteip => $ENV{'REMOTE_ADDR'},	
+						}
+					);
+					
+				require Data::Dumper; 
+				warn 'captch v3 $r: ' . Data::Dumper::Dumper($r);
+				warn '$DADA::Config::RECAPTCHA_PARAMS: ' . Data::Dumper::Dumper($DADA::Config::RECAPTCHA_PARAMS);
+		        if ( 
+					   $r->{success} == 1 
+					&& $r->{score} >= $DADA::Config::RECAPTCHA_PARAMS->{v3}->{score_threshold}
+				) {
+					$errors->{captcha_challenge_failed} = 0; 
+					delete($errors->{captcha_challenge_failed});
+		        }
+		        else {
+					$errors->{captcha_challenge_failed} = 1; 
 		  			warn 'error, captcha_challenge_failed'
 		  				if $t;
 	                return ( 0, $errors );
@@ -375,7 +437,7 @@ sub subscription_check {
 					if (
 						$self->suspicious_activity_by_ip(
 							{
-								-ip    => $ENV{'REMOTE_ADDR'}. 
+								-ip    => $ENV{'REMOTE_ADDR'},
 								-email => $email, 
 							}
 						) == 0

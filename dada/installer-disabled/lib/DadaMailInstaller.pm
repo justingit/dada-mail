@@ -1383,8 +1383,14 @@ sub grab_former_config_vals {
 	        if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{$cap_ver}->{private_key} ) ) {
 	            $opt->{'captcha_params_' . $cap_ver . '_private_key'} 
 					= $BootstrapConfig::RECAPTCHA_PARAMS->{$cap_ver}->{private_key};
-	        }
+	        }			
 		}
+		
+		# v3 only
+        if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{score_threshold} ) ) {
+            $opt->{'captcha_params_v3_score_threshold'} 
+				= $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{score_threshold};
+        }
 		
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{on_subscribe_form} ) ) {
             $opt->{'captcha_params_on_subscribe_form'} = $BootstrapConfig::RECAPTCHA_PARAMS->{on_subscribe_form};
@@ -1797,13 +1803,15 @@ sub query_params_to_install_params {
 	  
       configure_captcha
       captcha_params_recaptcha_type
+	  
 	  captcha_params_on_subscribe_form
 	  
       captcha_params_v2_public_key
       captcha_params_v2_private_key
 
       captcha_params_v3_public_key
-      captcha_params_v3_private_key	  
+      captcha_params_v3_private_key	 
+	  captcha_params_v3_score_threshold 
 	  
       captcha_reCAPTCHA_Mailhide_public_key
       captcha_reCAPTCHA_Mailhide_private_key
@@ -2704,8 +2712,9 @@ sub create_dada_config_file {
 	    $captcha_params->{captcha_params_v2_public_key}  = clean_up_var( $ip->{-captcha_params_v2_public_key} );
         $captcha_params->{captcha_params_v2_private_key} = clean_up_var( $ip->{-captcha_params_v2_private_key} );
 
-	    $captcha_params->{captcha_params_v3_public_key}  = clean_up_var( $ip->{-captcha_params_v3_public_key} );
-        $captcha_params->{captcha_params_v3_private_key} = clean_up_var( $ip->{-captcha_params_v3_private_key} );
+	    $captcha_params->{captcha_params_v3_public_key}      = clean_up_var( $ip->{-captcha_params_v3_public_key} );
+        $captcha_params->{captcha_params_v3_private_key}     = clean_up_var( $ip->{-captcha_params_v3_private_key} );
+        $captcha_params->{captcha_params_v3_score_threshold} = clean_up_var( $ip->{-captcha_params_v3_score_threshold} );
 		
 		$captcha_params->{captcha_reCAPTCHA_Mailhide_public_key} =
           clean_up_var( $ip->{-captcha_reCAPTCHA_Mailhide_public_key} );

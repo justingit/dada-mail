@@ -407,6 +407,10 @@ sub subscribe {
     );
 
     if ( $status == 1 ) {
+		
+		# I beleive this is specific to, "$args->{-html_output} == 0", 
+		# where the user wouldn't have submitted a captcha
+		#
         if (   $ls->param('enable_closed_loop_opt_in') == 0
             && $ls->param('captcha_sub') == 1
             && $ls->param('enable_subscription_approval_step') == 0
@@ -443,12 +447,13 @@ sub subscribe {
             else {
                 return$self->fancy_data( { -data => $r } );
             }
-        }
+        } # end, $args->{-html_output} == 0
 
 
         if (   $ls->param('enable_closed_loop_opt_in') == 0 ) {
 
-            # I still have to make a confirmation token, the CAPTCHA step before
+            # I still have to make a confirmation token, 
+			# the CAPTCHA step before
             # confirmation step #1 still requires it.
             #
             # I basically have to write out this entire ruleset, so I myself don't get confused. 
