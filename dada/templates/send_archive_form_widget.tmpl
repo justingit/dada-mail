@@ -70,11 +70,28 @@
 						The letters you've submitted didn't seem to correspond to the letters in the image. Please try again:
 					</div>
 				<!-- /tmpl_if --> 
-				<!-- tmpl_if can_use_captcha --> 
+				
+				<!-- tmpl_if can_use_Google_reCAPTCHA_v2 --> 
 					<div class="form-group">
-						<div class="g-recaptcha" id="send_archive_form_gr"></div>
+						<div 
+							class="g-recaptcha" 
+							id="send_archive_form_gr"
+						></div>
 					</div>
 				<!-- /tmpl_if --> 
+				
+				<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->			
+					<input 
+						type="text"
+						id="g-recaptcha-response_saf"
+						class="g-recaptcha-response"
+						name="g-recaptcha-response"
+					>
+				<!-- /tmpl_if -->
+				
+				
+			
+			
 			</div>
 		</div>
 		

@@ -12870,6 +12870,9 @@ sub email_password {
     }
     else {
 
+		# Gotta put v3 in here - probably take it from Validate.pm
+
+
         if ( can_use_Google_reCAPTCHA_v2() ) {
             require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
             my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;

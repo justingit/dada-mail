@@ -3239,19 +3239,28 @@ sub can_use_LWP_Simple {
 
 sub can_use_Google_reCAPTCHA_v2 { 
 	
-	if(exists($can_use_cache->{Google_reCAPTCHA})){ 
-		return $can_use_cache->{Google_reCAPTCHA}; 
+	if(exists($can_use_cache->{Google_reCAPTCHA_v2})){ 
+		return $can_use_cache->{Google_reCAPTCHA_v2}; 
 	}
 	
 	my $can_use_captcha = 1; 
-	try {
-        require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
-        $can_use_captcha = 1;
-    } catch {
-        carp "CAPTCHA Not working correctly?:" . $_
+	
+	if($DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} ne 'v2'){ 
+		carp "Captcha not set to v2"
 			if $t; 
-        $can_use_captcha = 0;
-    };
+		$can_use_captcha = 0;
+	}
+
+	if($can_use_captcha == 1){
+		try {
+	        require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+	        $can_use_captcha = 1;
+	    } catch {
+	        carp "CAPTCHA v2 not working correctly?:" . $_
+				if $t; 
+	        $can_use_captcha = 0;
+	    };
+	}
 	
 	if($can_use_captcha == 1) {
 		if(
@@ -3265,10 +3274,53 @@ sub can_use_Google_reCAPTCHA_v2 {
 		}
 	}
 	
-	$can_use_cache->{Google_reCAPTCHA} = $can_use_captcha;
+	$can_use_cache->{Google_reCAPTCHA_v2} = $can_use_captcha;
 	
 	return $can_use_captcha;
 }
+
+sub can_use_Google_reCAPTCHA_v3 { 
+	
+	if(exists($can_use_cache->{Google_reCAPTCHA_v3})){ 
+		return $can_use_cache->{Google_reCAPTCHA_v3}; 
+	}
+	
+	my $can_use_captcha = 1; 
+	
+	if($DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} ne 'v3'){ 
+		carp "Captcha not set to v3"
+		if $t; 
+		$can_use_captcha = 0;
+	} 
+	
+	if($can_use_captcha == 1){
+		try {
+	        require Google::reCAPTCHA::v3;
+	        $can_use_captcha = 1;
+	    } catch {
+	        carp "CAPTCHA v3 not working correctly?:" . $_
+				if $t; 
+	        $can_use_captcha = 0;
+	    };
+	}
+	
+	if($can_use_captcha == 1) {
+		if(
+			   length($DADA::Config::RECAPTCHA_PARAMS->{v3}->{public_key})  <= 0
+			|| length($DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key}) <= 0
+		){ 
+			warn '$DADA::Config::RECAPTCHA_PARAMS are not set up correctly'
+				if $t;
+			
+			$can_use_captcha = 0; 
+		}
+	}
+	
+	$can_use_cache->{Google_reCAPTCHA_v3} = $can_use_captcha;
+	
+	return $can_use_captcha;
+}
+
 
 sub can_use_XML_FeedPP { 
 	my $can = 1; 

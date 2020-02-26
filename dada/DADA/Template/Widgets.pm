@@ -144,6 +144,8 @@ captcha_params_v3_public_key      => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{pub
 captcha_params_v3_private_key     => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key},
 
 can_use_Google_reCAPTCHA_v2       => scalar DADA::App::Guts::can_use_Google_reCAPTCHA_v2(), 
+can_use_Google_reCAPTCHA_v3       => scalar DADA::App::Guts::can_use_Google_reCAPTCHA_v3(), 
+
 
 GIVE_PROPS_IN_HTML             => $DADA::Config::GIVE_PROPS_IN_HTML, 
 GIVE_PROPS_IN_SUBSCRIBE_FORM   => $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM, 
