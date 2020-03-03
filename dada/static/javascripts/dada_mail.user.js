@@ -69,16 +69,22 @@
 				     required: function() {
 						 // is this field even there? 
 						 if($('#captcha_check').length <= 0){ 
+							 alert("nope, not there.");
 							 return false; 
 						 }
 						 else {
+							 
+							 alert("It's there!");
+							 
 							 // I don't necessarily like explicitly naming the field here, 
 							 // so this may change in the future. 
 					         if (grecaptcha.getResponse('subscription_form_gr') == '') {
-					             return true;
+					             alert('got response!');
+								 return true;
 					         } else {
 					             return false;
 					         }
+							
 						 }
 				     }
 				}

@@ -254,9 +254,19 @@
 									$(this).val(''); 
 								}
 							}
-						}); 				
+						});
+						if ($('#g-recaptcha-response_sf').length){
+							setup_recaptcha(); 				
+						} else if ($('#subscription_form_gr').length){
+							
+							setup_recaptcha();
+						}
 					}
 					else { 
+						if ($('#g-recaptcha-response_sf').length){
+							
+							setup_recaptcha(); 				
+						}
 						// Success, or Error: it may not be something we can work with:
 						//alert(data.redirect_required); 
 						window.location.href = data.redirect.url;

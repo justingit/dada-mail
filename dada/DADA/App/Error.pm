@@ -233,11 +233,12 @@ sub cgi_user_error {
                     },
                     -vars                   => {
                         %{ $args->{-vars} },
-                        rm             => $rm,
-                        CAPTCHA_string => $CAPTCHA_string,
-                        flavor         => 'resend_conf',
-                        list           => xss_filter($list),
-                        email          => $email,
+						load_captcha_js => 1, 
+						load_colorbox   => 1, 
+                        rm              => $rm,
+                        flavor          => 'resend_conf',
+                        list            => xss_filter($list),
+                        email           => $email,
                     },
                 },
             );
@@ -280,6 +281,10 @@ sub cgi_user_error {
                         PROGRAM_URL           => $DADA::Config::PROGRAM_URL,
                         S_PROGRAM_URL         => $DADA::Config::S_PROGRAM_URL,
                         error_message         => $args->{-error_message},
+						
+						load_captcha_js => 1, 
+						load_colorbox   => 1, 
+						
                     },
 
                     -list_settings_vars       => $li,
@@ -304,6 +309,10 @@ sub cgi_user_error {
                         PROGRAM_URL           => $DADA::Config::PROGRAM_URL,
                         S_PROGRAM_URL         => $DADA::Config::S_PROGRAM_URL,
                         error_message         => $args->{-error_message},
+						
+						load_captcha_js => 1, 
+						load_colorbox   => 1, 
+						
                     },
                     -list_settings_vars       => $li,
                     -list_settings_vars_param => { -dot_it => 1 },

@@ -136,6 +136,7 @@ VER                    => $DADA::Config::VER,
 DATA_CACHE             => $DADA::Config::DATA_CACHE, 
 
 
+# CAPTCHA!
 captcha_params_recaptcha_type     => $DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type},
 captcha_params_on_subscribe_form  => $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form},
 captcha_params_v2_public_key      => $DADA::Config::RECAPTCHA_PARAMS->{v2}->{public_key},
@@ -2350,7 +2351,7 @@ sub wrap_screen {
 	my $vars = { 
 		content => $tmpl, 
 	};
-	for(qw(title show_profile_widget load_wysiwyg_editor load_google_viz load_colorbox load_jquery_validate load_datetimepicker SUPPORT_FILES_URL)){ 
+	for(qw(title show_profile_widget load_wysiwyg_editor load_google_viz load_colorbox load_captcha_js load_jquery_validate load_datetimepicker SUPPORT_FILES_URL)){ 
 		if(exists($params->{$_})){ 
 			# variables within variables... 
 			$vars->{$_} = $params->{$_}; 
@@ -2458,7 +2459,11 @@ sub hack_in_tmpl_set_support {
     my @taglist = $$text_ref =~ m/$match/gi;
     while (@taglist) {
         my ( $t, $v ) = ( shift @taglist, shift @taglist );		
-        $_ht_tmpl_set_params{$t} = $v;
+		
+		warn '$t: ' . $t; 
+		warn '$v: ' . $v; 	
+        
+		$_ht_tmpl_set_params{$t} = $v;
     }
 
     $$text_ref =~ s/$match//gi;

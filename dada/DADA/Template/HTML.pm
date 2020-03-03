@@ -883,8 +883,9 @@ sub list_template {
 			-vars   => { 
 				include_jquery_lib   =>  $header_options->{include_jquery_lib},
                 include_app_user_js  =>  $header_options->{include_app_user_js},
-				# Just gunna have to add this one, huh? 
+				# I don't know why you have to all this atm
 				load_colorbox        => 1, 
+				load_captcha_js      => 1, 
                 add_app_css          =>  $header_options->{add_app_css},
 			
 			},
