@@ -3590,6 +3590,7 @@ sub commify {
     return $input;
 }
 
+# Which is this here, and not with then other ran generator in DADA::Security::Password?
 sub generate_rand_string_md5 {
 
     #warn "generate_rand_string";
