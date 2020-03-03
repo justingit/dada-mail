@@ -2172,15 +2172,28 @@
 						<ul>
 
 							
-							<!-- tmpl_if can_use_CAPTCHA_Google_reCAPTCHA --> 
+							<!-- tmpl_if can_use_CAPTCHA_Google_reCAPTCHA_v2 --> 
 								<li>
 									<strong>reCAPTCHA v2</strong> is supported.
 								</li>
 							<!-- tmpl_else --> 
 								<li>
-									The <strong>Google::reCAPTCHA</strong> CPAN module needs to be installed, for reCAPTCHA v2support. 
+									The <strong>Google::reCAPTCHA</strong> 
+									CPAN module needs to be installed, for reCAPTCHA v2 support. 
 								</li>
 							<!-- /tmpl_if -->
+							
+							<!-- tmpl_if can_use_CAPTCHA_Google_reCAPTCHA_v3 --> 
+								<li>
+									<strong>reCAPTCHA v3</strong> is supported.
+								</li>
+							<!-- tmpl_else --> 
+								<li>
+									The <strong>Google::reCAPTCHA::v3</strong> 
+									CPAN module needs to be installed, for reCAPTCHA v3 support. 
+								</li>
+							<!-- /tmpl_if -->
+							
 							
 														
 							<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA_Mailhide --> 
@@ -2307,7 +2320,6 @@
 									  	name="captcha_params_v3_score_threshold" 
 										id="captcha_params_v3_score_threshold"
 									   > 
-									   <option value="1">1</option>
 									   <option value=".9">.9</option>
 									   <option value=".8">.8</option>
 									   <option value=".7">.7</option>

@@ -92,6 +92,7 @@ require Exporter;
   md5_checksum
   can_use_LWP_Simple
   can_use_Google_reCAPTCHA_v2
+  can_use_Google_reCAPTCHA_v3
   can_use_XML_FeedPP
   can_use_JSON
   can_use_datetime

@@ -841,16 +841,17 @@ sub scrn_configure_dada_mail {
                 %$advanced_config_params,
 
                 # These are tricky....
-                SUPPORT_FILES_URL                  => $Self_URL . '?flavor=screen&screen=',
-                Self_URL                           => $Self_URL,
-                install_type                       => $install_type,
-                current_dada_files_parent_location => $current_dada_files_parent_location,
-                program_url_guess                  => scalar program_url_guess(),
-                can_use_DBI                        => scalar test_can_use_DBI(),
-                can_use_MySQL                      => scalar test_can_use_MySQL(),
-                can_use_Pg                         => scalar test_can_use_Pg(),
-                can_use_SQLite                     => scalar test_can_use_SQLite(),
-                can_use_CAPTCHA_Google_reCAPTCHA   => scalar test_can_use_CAPTCHA_Google_reCAPTCHA(),
+                SUPPORT_FILES_URL                     => $Self_URL . '?flavor=screen&screen=',
+                Self_URL                              => $Self_URL,
+                install_type                          => $install_type,
+                current_dada_files_parent_location    => $current_dada_files_parent_location,
+                program_url_guess                     => scalar program_url_guess(),
+                can_use_DBI                           => scalar test_can_use_DBI(),
+                can_use_MySQL                         => scalar test_can_use_MySQL(),
+                can_use_Pg                            => scalar test_can_use_Pg(),
+                can_use_SQLite                        => scalar test_can_use_SQLite(),
+                can_use_CAPTCHA_Google_reCAPTCHA_v2   => scalar test_can_use_CAPTCHA_Google_reCAPTCHA_v2(),
+                can_use_CAPTCHA_Google_reCAPTCHA_v3   => scalar test_can_use_CAPTCHA_Google_reCAPTCHA_v3(),
 
                 can_use_CAPTCHA_reCAPTCHA_Mailhide => scalar test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
                 can_use_Net_IMAP_Simple            => scalar test_can_use_Net_IMAP_Simple(),
@@ -4486,11 +4487,19 @@ sub test_can_use_SQLite {
     }
 }
 
-
-
-
-sub test_can_use_CAPTCHA_Google_reCAPTCHA {
+sub test_can_use_CAPTCHA_Google_reCAPTCHA_v2 {
     eval { require Google::reCAPTCHA; };
+    if ($@) {
+        carp $@;
+        $Big_Pile_Of_Errors .= $@;
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+sub test_can_use_CAPTCHA_Google_reCAPTCHA_v3 {
+    eval { require Google::reCAPTCHA::v3; };
     if ($@) {
         carp $@;
         $Big_Pile_Of_Errors .= $@;
