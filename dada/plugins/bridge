@@ -3206,13 +3206,24 @@ sub handle_errors {
             $r .= "Message being saved for moderation by List Owner.\n";
 
             my $mod = SimpleModeration->new( { -List => $ls->param('list') } );
-            $mod->save_msg( { -msg => $full_msg, -msg_id => $message_id } );
+			
+			# why is $full_msg a scalar?
+           my $ran_string = generate_rand_string_md5();
+		   # I feel '-'s are mucking things up: 
+			  $ran_string =~ s/\-|\%|\=/_/g;
+
+		   $mod->save_msg( 
+		   		{ 
+					-msg    => $full_msg, 
+					-msg_id => $ran_string 
+				}
+			);
 
             # This is only used once...
             $r .= $mod->moderation_msg(
                 {
                     -msg    => $full_msg,
-                    -msg_id => $message_id,
+                    -msg_id => $ran_string,
                     -from   => $from,
                     -parser => $parser
                 }
@@ -3222,7 +3233,7 @@ sub handle_errors {
                 $r .= "\t\t * Sending 'awaiting moderation' message!\n";
                 $mod->send_moderation_msg(
                     {
-                        -msg_id => $message_id,
+                        -msg_id => $ran_string,
                         -parser => $parser,
                     }
                 );
@@ -3504,7 +3515,7 @@ package SimpleModeration;
 use strict;
 
 use DADA::Config qw(!:DEFAULT);
-use DADA::App::Guts qw(!:DEFAULT);
+use DADA::App::Guts;
 use MIME::Entity;
 use Try::Tiny; 
 
