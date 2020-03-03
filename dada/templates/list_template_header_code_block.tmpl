@@ -35,13 +35,9 @@
 	   	<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
 	   	 <script type="text/javascript" charset="utf-8">
 			 var recaptcha_ids = []; 
-	   	 	var onloadCallback = function() {
-				var recaptchas = document.querySelectorAll('div[class=g-recaptcha]');
-				for ( i = 0; i < recaptchas.length; i++) {
-					
-					alert('putting recaptcha on: ' + recaptchas[i].id);
-					alert('site key: ' + '<!-- tmpl_var captcha_params_v2_public_key -->')
-					
+	   	 	 var onloadCallback = function() {
+				 var recaptchas = document.querySelectorAll('div[class=g-recaptcha]');
+				 for ( i = 0; i < recaptchas.length; i++) {		
 					recaptcha_ids[i] = grecaptcha.render( 
 						recaptchas[i].id, 
 						{
@@ -49,8 +45,7 @@
 						}
 					);
 				}
-			}
-						
+			}		
 			function setup_recaptcha() {					
 				for ( i = 0; i < recaptcha_ids.length; i++) {
 						grecaptcha.reset(recaptcha_ids[i].id);
