@@ -91,8 +91,10 @@ require Exporter;
   scrub_js
   md5_checksum
   can_use_LWP_Simple
+  can_use_Google_reCAPTCHA
   can_use_Google_reCAPTCHA_v2
   can_use_Google_reCAPTCHA_v3
+  validate_recaptcha
   can_use_XML_FeedPP
   can_use_JSON
   can_use_datetime
@@ -3238,6 +3240,17 @@ sub can_use_LWP_Simple {
 	return $can_use_lwp_simple;
 }
 
+sub can_use_Google_reCAPTCHA { 
+	
+	if($DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} eq 'v2'){
+		return can_use_Google_reCAPTCHA_v2(); 
+	} elsif($DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} eq 'v3'){
+		return can_use_Google_reCAPTCHA_v3(); 
+	} else { 
+		return 0;
+	}
+}
+
 sub can_use_Google_reCAPTCHA_v2 { 
 	
 	if(exists($can_use_cache->{Google_reCAPTCHA_v2})){ 
@@ -3320,6 +3333,59 @@ sub can_use_Google_reCAPTCHA_v3 {
 	$can_use_cache->{Google_reCAPTCHA_v3} = $can_use_captcha;
 	
 	return $can_use_captcha;
+}
+
+sub validate_recaptcha {
+
+    my ($args) = @_;
+    if ( !exists( $args->{-remote_addr} ) ) {
+        return 0;
+    }
+    if ( !exists( $args->{-response} ) ) {
+        return 0;
+    }
+
+    if ( $DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} eq 'v2'
+        && can_use_Google_reCAPTCHA_v2() )
+    {
+        require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
+        my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
+        my $result =
+          $cap->check_answer( $args->{-remote_addr}, $args->{-response}, );
+        if ( $result->{is_valid} == 1 ) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    elsif ($DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} eq 'v3'
+        && can_use_Google_reCAPTCHA_v3()
+        && length( $DADA::Config::RECAPTCHA_PARAMS->{v3}->{score_threshold} ) > 0 )
+    {
+        require Google::reCAPTCHA::v3;
+        my $rec = Google::reCAPTCHA::v3->new(
+            {
+                -secret => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key},
+            }
+        );
+        my $r = $rec->request(
+            {
+                -response => $args->{-response},
+                -remoteip => $args->{-remote_addr},
+            }
+        );
+
+        if (   $r->{success} == 1
+            && $r->{score} >=
+            $DADA::Config::RECAPTCHA_PARAMS->{v3}->{score_threshold} )
+        {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
 }
 
 

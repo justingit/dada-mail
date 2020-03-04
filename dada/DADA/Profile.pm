@@ -900,7 +900,7 @@ sub is_valid_registration {
     my $cap             = undef;
 
 	if($DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1){
-	    if ( can_use_Google_reCAPTCHA_v2() == 1 ) {
+	    if ( can_use_Google_reCAPTCHA() == 1 ) {
 									
 			my $crf = $args->{ -recaptcha_response_field }  || undef;
 		   
@@ -908,13 +908,16 @@ sub is_valid_registration {
 	            $errors->{captcha_failed} = 1;
 	            $status = 0;
 		    }
-		    else {				
-		        $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
-		        my $result = $cap->check_answer(
-					$ENV{'REMOTE_ADDR'}, 
-					$crf,
-		        );
-		        if ( $result->{is_valid} == 1 ) {
+		    else {	
+					
+				my $captcha_status = validate_captcha(
+					{
+						 -response    => $crf, 
+						 -remote_addr => $ENV{'REMOTE_ADDR'}, ,
+					}
+				);
+
+		        if ( $captcha_status == 1 ) {
 		            # ...
 		        }
 		        else {

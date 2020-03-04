@@ -2,6 +2,8 @@
 
 <!-- tmpl_set name="title" value="Profile Login" --> 
 <!-- tmpl_set name="show_profile_widget" value="0" --> 
+<!-- tmpl_set name="load_captcha_js" value="1" --> 
+
 <div id="profile_login_registration"></div>
 
 <!-- tmpl_if removal --> 
@@ -323,25 +325,37 @@
 										 > 
 									</div>
 								</div>
+								
 								<!-- tmpl_if can_use_captcha --> 
-									<div class="row">
-										<div class="small-12 columns">
-											<div class="alert-box info radius">
-												Please type in the string of letters that you see in 
-												the below image into the text box:
-											</div>
-											<!-- tmpl_var CAPTCHA_string --> 
-										<!-- /tmpl_if --> 
-									</div> 
-								</div> 
+									<!-- tmpl_if can_use_Google_reCAPTCHA_v2 --> 
+										<div class="form-group">
+											<div 
+												class="g-recaptcha" 
+												id="profile_login_gr"
+											></div>
+										</div>
+									<!-- /tmpl_if --> 
+				
+									<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->			
+										<input 
+											type="text"
+											id="g-recaptcha-response_profile_login"
+											class="g-recaptcha-response"
+											name="g-recaptcha-response"
+										>
+									<!-- /tmpl_if -->
+								<!-- /tmpl_if --> 
+								
 								<div class="row">
 									<div class="small-12 columns">
-										<input type="submit" class="button expand" value="Register a New Profile" > 
+										<input 
+											type="submit"
+											class="button expand"
+											value="Register a New Profile"
+										> 
 									</div>
 								</div>
 							</form> 
-
-
 
 		        </div>
 					</div>

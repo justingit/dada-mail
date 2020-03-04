@@ -212,12 +212,10 @@ sub cgi_user_error {
         my $can_use_captcha = 0;
 
         if ( $ls->param('limit_sub_confirm_use_captcha') == 1 ) {
-            $can_use_captcha = can_use_Google_reCAPTCHA_v2();
+            $can_use_captcha = can_use_Google_reCAPTCHA();
         }
 
         if ( $can_use_captcha == 1 ) {
-            my $cap            = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
-            my $CAPTCHA_string = $cap->get_html();
 
             require DADA::Template::Widgets;
             my $r = DADA::Template::Widgets::wrap_screen(

@@ -142,109 +142,23 @@ sub subscription_check {
 	    if ($skip{captcha_challenge_failed}){ 
 			#... 
 		}
-		elsif( 
-		    $DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} eq 'v2'
-			&& length($DADA::Config::RECAPTCHA_PARAMS->{v2}->{public_key}) > 0
-			&& length($DADA::Config::RECAPTCHA_PARAMS->{v2}->{private_key}) > 0
-			&& $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
-			&& can_use_Google_reCAPTCHA_v2()
-		) {		
-			$errors->{captcha_challenge_failed} = 0; 
-	        
-			if(!defined($args->{-captcha_params})){ 
-				$errors->{captcha_challenge_failed} = 1; 
-			    # short circuiting. 
-	  			warn 'error, captcha_challenge_failed'
-	  				if $t;
-	            return ( 0, $errors );
-			}
-			elsif(
-				length($args->{-captcha_params}->{-remote_addr}) <= 0
-				||
-				length($args->{-captcha_params}->{-response}) <= 0
-			) { 
-				$errors->{captcha_challenge_failed} = 1; 
-	  			warn 'error, captcha_challenge_failed'
-	  				if $t;
-			    # short circuiting. 
-	            return ( 0, $errors );
-			}
-			else {
-				require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
-				my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
-		        my $result = $cap->check_answer(
-		            $args->{-captcha_params}->{-remote_addr},
-					$args->{-captcha_params}->{-response},
-				);
-		        if ( $result->{is_valid} == 1 ) {
-					$errors->{captcha_challenge_failed} = 0; 
-					delete($errors->{captcha_challenge_failed});
-		        }
-		        else {
-					$errors->{captcha_challenge_failed} = 1; 
-	  			 	# short circuiting. 
-		  			warn 'error, captcha_challenge_failed'
-		  				if $t;
-	                return ( 0, $errors );
-		        }
-			}
+		
+		unless ($DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1){ 
+			#... 
+			
 		}
-		elsif( 
-		    $DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} eq 'v3'
-			&& length($DADA::Config::RECAPTCHA_PARAMS->{v3}->{public_key}) > 0
-			&& length($DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key}) > 0
-			&& length($DADA::Config::RECAPTCHA_PARAMS->{v3}->{score_threshold}) > 0
-			&& $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
-			# and then something about making sure v3 is supported... 
-		) {		
-			$errors->{captcha_challenge_failed} = 0; 
-			if(!defined($args->{-captcha_params})){ 
-				$errors->{captcha_challenge_failed} = 1; 
-			    # short circuiting. 
-	  			warn 'error, captcha_challenge_failed'
-	  				if $t;
-	            return ( 0, $errors );
-			}
-			elsif(
-				length($args->{-captcha_params}->{-remote_addr}) <= 0
-				||
-				length($args->{-captcha_params}->{-response}) <= 0
-			) { 
-				$errors->{captcha_challenge_failed} = 1; 
-	  			warn 'error, captcha_challenge_failed'
-	  				if $t;
-			    # short circuiting. 
-	            return ( 0, $errors );
-			}
-			else {
-				
-				require Google::reCAPTCHA::v3; 
-				my $rec = Google::reCAPTCHA::v3->new({
-					-secret => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key},
-				}); 
-				my $r = $rec->request(
-						{ 
-							-response => $args->{-captcha_params}->{-response},
-							-remoteip => $ENV{'REMOTE_ADDR'},	
-						}
-					);
-					
-				require Data::Dumper; 
-				warn 'captch v3 $r: ' . Data::Dumper::Dumper($r);
-				warn '$DADA::Config::RECAPTCHA_PARAMS: ' . Data::Dumper::Dumper($DADA::Config::RECAPTCHA_PARAMS);
-		        if ( 
-					   $r->{success} == 1 
-					&& $r->{score} >= $DADA::Config::RECAPTCHA_PARAMS->{v3}->{score_threshold}
-				) {
-					$errors->{captcha_challenge_failed} = 0; 
-					delete($errors->{captcha_challenge_failed});
-		        }
-		        else {
-					$errors->{captcha_challenge_failed} = 1; 
-		  			warn 'error, captcha_challenge_failed'
-		  				if $t;
-	                return ( 0, $errors );
-		        }
+		else { 
+			# This is where we do te things. 
+			my $captcha_status = validate_captcha(
+				{
+					 -response    => $args->{-captcha_params}->{-response}, 
+					 -remote_addr => $args->{-captcha_params}->{-remote_addr},
+				}
+			);
+			
+			if($captcha_status == 0){ 
+				$errors->{invite_only_list} = 1; 
+				return (0, $errors);
 			}
 		}
 	}
