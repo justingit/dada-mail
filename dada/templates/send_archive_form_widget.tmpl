@@ -67,7 +67,7 @@
 			<div class="large-9 medium-9 columns">			
 				<!-- tmpl_if captcha_fail --> 
 					<div class="alert-box warning radius">
-						The letters you've submitted didn't seem to correspond to the letters in the image. Please try again:
+						reCAPTCHA failed.
 					</div>
 				<!-- /tmpl_if --> 
 				
@@ -82,7 +82,7 @@
 				
 				<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->			
 					<input 
-						type="text"
+						type="hidden"
 						id="g-recaptcha-response_saf"
 						class="g-recaptcha-response"
 						name="g-recaptcha-response"

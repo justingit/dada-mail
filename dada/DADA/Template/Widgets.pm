@@ -2459,10 +2459,6 @@ sub hack_in_tmpl_set_support {
     my @taglist = $$text_ref =~ m/$match/gi;
     while (@taglist) {
         my ( $t, $v ) = ( shift @taglist, shift @taglist );		
-		
-		warn '$t: ' . $t; 
-		warn '$v: ' . $v; 	
-        
 		$_ht_tmpl_set_params{$t} = $v;
     }
 

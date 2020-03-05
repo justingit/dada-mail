@@ -93,7 +93,7 @@
 		<!-- /tmpl_if --> 
 		<!-- tmpl_if error_captcha_failed --> 
 			<li>
-				Sorry, the CAPTCHA failed. 
+				Sorry, reCAPTCHA failed. 
 			</li>
 		<!-- /tmpl_if --> 
 
@@ -338,7 +338,7 @@
 				
 									<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->			
 										<input 
-											type="text"
+											type="hidden"
 											id="g-recaptcha-response_profile_login"
 											class="g-recaptcha-response"
 											name="g-recaptcha-response"

@@ -68,7 +68,7 @@
 							<div class="small-12 columns">							 	
 							    <!-- tmpl_if invalid_captcha --> 
 						            <div class="alert-box info radius"> 
-						    			CAPTCHA failed, please try again:
+						    			reCAPTCHA failed, please try again:
 						    		</div> 
 						        <!-- /tmpl_if -->
 							</div>
@@ -85,7 +85,7 @@
 				
 						<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->			
 							<input 
-								type="text"
+								type="hidden"
 								id="g-recaptcha-response_reset_pass"
 								class="g-recaptcha-response"
 								name="g-recaptcha-response"

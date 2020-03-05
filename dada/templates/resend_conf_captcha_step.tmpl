@@ -61,30 +61,40 @@ address: </p>
  </strong> 
 </p>
 
-<h3>Resend the Confirmation Email</h3> 
+<h3>Resend the Confirmation Email Here</h3> 
 
-
-<p>
- You may resend this confirmation by solving the CAPTCHA, below: 
-</p>
 
 <fieldset> 
 
 <!-- tmpl_if expr="captcha_auth == 0" --> 
-	<div class="alert-box info radius"> 
-		<p> 
-		 CAPTCHA wasn't solved. Please try again:
-		</p>
+	<div class="alert-box warning radius"> 
+		Sorry, reCAPTCHA failed. 
 	</div>
 <!-- /tmpl_if --> 
 
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+	<!-- tmpl_if can_use_captcha --> 
+		<!-- tmpl_if can_use_Google_reCAPTCHA_v2 --> 
+			<div class="form-group">
+				<div 
+					class="g-recaptcha" 
+					id="resend_confirmation_email_gr"
+				></div>
+			</div>
+		<!-- /tmpl_if --> 
 
-
-	<!-- tmpl_var CAPTCHA_string --> 
-
-
+		<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->			
+			<input 
+				type="text"
+				id="g-recaptcha-resend_confirmation_email_gr"
+				class="g-recaptcha-response"
+				name="g-recaptcha-response"
+			>
+		<!-- /tmpl_if -->
+	<!-- /tmpl_if --> 
+	
+	
 	 <input type="hidden" name="flavor" value="<!-- tmpl_var flavor -->" > 
 	 <input type="hidden" name="list"   value="<!-- tmpl_var list -->" > 
 	 <input type="hidden" name="email"  value="<!-- tmpl_var email -->" > 

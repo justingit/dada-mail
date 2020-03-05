@@ -910,7 +910,7 @@ sub is_valid_registration {
 		    }
 		    else {	
 					
-				my $captcha_status = validate_captcha(
+				my $captcha_status = validate_recaptcha(
 					{
 						 -response    => $crf, 
 						 -remote_addr => $ENV{'REMOTE_ADDR'}, ,

@@ -209,7 +209,9 @@ sub cgi_user_error {
         require DADA::MailingList::Settings;
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
         my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
-        my $can_use_captcha = 0;
+       
+	   
+	    my $can_use_captcha = 0;
 
         if ( $ls->param('limit_sub_confirm_use_captcha') == 1 ) {
             $can_use_captcha = can_use_Google_reCAPTCHA();
@@ -233,10 +235,12 @@ sub cgi_user_error {
                         %{ $args->{-vars} },
 						load_captcha_js => 1, 
 						load_colorbox   => 1, 
+						can_use_captcha => 1, 
                         rm              => $rm,
                         flavor          => 'resend_conf',
                         list            => xss_filter($list),
                         email           => $email,
+						
                     },
                 },
             );

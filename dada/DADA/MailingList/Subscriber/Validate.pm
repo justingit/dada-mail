@@ -149,7 +149,7 @@ sub subscription_check {
 		}
 		else { 
 			# This is where we do te things. 
-			my $captcha_status = validate_captcha(
+			my $captcha_status = validate_recaptcha(
 				{
 					 -response    => $args->{-captcha_params}->{-response}, 
 					 -remote_addr => $args->{-captcha_params}->{-remote_addr},

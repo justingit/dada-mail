@@ -10981,8 +10981,6 @@ sub resend_conf_captcha {
     my $captcha_auth   = 1;
 
     my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
-	
-	
 
     if ( $admin_override_enabled != 1 ) {
         if ( !$crf ) {
@@ -10990,7 +10988,7 @@ sub resend_conf_captcha {
         }
         else {
 			
-			my $captcha_status = validate_captcha(
+			my $captcha_status = validate_recaptcha(
 				{
 					 -response    => $crf, 
 					 -remote_addr => $ENV{'REMOTE_ADDR'},
@@ -11075,12 +11073,17 @@ sub resend_conf_captcha {
         else {
             die 'unknown $rm!';
         }
+		
+		
         return user_error(
             {
                 -error => $error,
                 -list  => $list,
                 -email => $email,
-                -vars  => { captcha_auth => $captcha_auth, },
+                -vars  => { 
+					can_use_captcha => 1, 
+					captcha_auth    => $captcha_auth,
+				},
             }
         );
     }
@@ -12529,7 +12532,7 @@ sub send_archive {
 	) {
 
         my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
-		my $captcha_status = validate_captcha(
+		my $captcha_status = validate_recaptcha(
 			{
 				 -response    => $crf, 
 				 -remote_addr => $ENV{'REMOTE_ADDR'},
@@ -12871,7 +12874,7 @@ sub email_password {
         if ( can_use_Google_reCAPTCHA() ) {
             			
 	        my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
-			my $captcha_status = validate_captcha(
+			my $captcha_status = validate_recaptcha(
 				{
 					 -response    => $crf, 
 					 -remote_addr => $ENV{'REMOTE_ADDR'},
