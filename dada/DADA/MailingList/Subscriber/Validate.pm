@@ -143,9 +143,11 @@ sub subscription_check {
 			#... 
 		}
 		
-		unless ($DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1){ 
+		unless (
+			$DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
+			&& can_use_Google_reCAPTCHA() == 1
+		){ 
 			#... 
-			
 		}
 		else { 
 			# This is where we do te things. 
@@ -157,7 +159,7 @@ sub subscription_check {
 			);
 			
 			if($captcha_status == 0){ 
-				$errors->{invite_only_list} = 1; 
+				$errors->{captcha_challenge_failed} = 1; 
 				return (0, $errors);
 			}
 		}

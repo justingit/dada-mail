@@ -3521,6 +3521,27 @@ sub formatted_runtime {
     return $runtime;
 }
 
+
+
+sub pad_str {
+
+    # DEV: I'd had to rewrite this type of sub, since it's going to be buggy,
+    # and there's a million different ones, but, here goes:
+
+    my $str = shift;
+    my $padding = shift || 25;
+
+    if ( length($str) > 0 && length($str) < 25 ) {
+        $padding = $padding - length($str);
+        return $str . ' ' x $padding;
+    }
+    else {
+        return $str;
+    }
+}
+
+
+
 sub ctime_to_localtime { 
     my $ctime = shift; 
     return undef if $ctime eq undef; 
