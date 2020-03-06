@@ -571,7 +571,7 @@ sub start_time_log {
     my ($args)               = @_;
     $args->{-record_as_open} = 0; 
     $args->{-event}          = 'start_time'; 
-    $args->{-details}        = $args->{-time};
+    $args->{-details}        = $args->{-details};
     $args->{-update_fields}  = 0; 
     return $self->mass_mailing_event_log($args); 
 }
@@ -580,7 +580,7 @@ sub finish_time_log {
     my ($args)               = @_;
     $args->{-record_as_open} = 0; 
     $args->{-event}          = 'finish_time'; 
-    $args->{-details}        = $args->{-time};
+    $args->{-details}        = $args->{-details};
     $args->{-update_fields}  = 0; 
     return $self->mass_mailing_event_log($args); 
 }

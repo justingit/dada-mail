@@ -1340,8 +1340,7 @@ sub status {
 
     $status->{mailing_time} =
       $status->{last_access} - $status->{first_access};
-    $status->{mailing_time_formatted} =
-      _formatted_runtime( $status->{mailing_time} );
+    $status->{mailing_time_formatted} = formatted_runtime( $status->{mailing_time} );
 
     if ( $args->{-mail_fields} == 1 ) {
         $status->{email_fields} = $self->mail_fields_from_raw_message();
@@ -2446,6 +2445,9 @@ sub line_in_queue {
 
 }
 
+
+
+
 sub _list_name_check {
 
     my ( $self, $n ) = @_;
@@ -2455,10 +2457,15 @@ sub _list_name_check {
     return 1;
 }
 
+
+
+
 sub _list_exists {
     my ( $self, $n ) = @_;
     return DADA::App::Guts::check_if_list_exists( -List => $n );
 }
+
+
 
 sub monitor_mailout {
 
@@ -2617,12 +2624,12 @@ sub monitor_mailout {
 
             for ( sort keys %$status ) {
                 if ( $_ eq 'email_fields' ) {
-                    $r .= "\t\t" . _pad_str('* Subject: ') . $status->{$_}->{Subject} . "\n";
+                    $r .= "\t\t" . pad_str('* Subject: ') . $status->{$_}->{Subject} . "\n";
 
                 }
                 else {
 
-                    $r .= "\t\t" . _pad_str( '* ' . $_ . ' ' ) . $status->{$_} . "\n";
+                    $r .= "\t\t" . pad_str( '* ' . $_ . ' ' ) . $status->{$_} . "\n";
 
                 }
             }
@@ -2767,59 +2774,7 @@ sub monitor_mailout {
 
 }
 
-sub _pad_str {
 
-    # DEV: I'd had to rewrite this type of sub, since it's going to be buggy,
-    # and there's a million different ones, but, here goes:
-
-    my $str = shift;
-    my $padding = shift || 25;
-
-    if ( length($str) > 0 && length($str) < 25 ) {
-        $padding = $padding - length($str);
-        return $str . ' ' x $padding;
-    }
-    else {
-        return $str;
-    }
-}
-
-sub _formatted_runtime {
-
-    my $d = shift || 0;
-
-    my @int = (
-        [ 'second', 1 ],
-        [ 'minute', 60 ],
-        [ 'hour',   60 * 60 ],
-        [ 'day',    60 * 60 * 24 ],
-        [ 'week',   60 * 60 * 24 * 7 ],
-        [ 'month',  60 * 60 * 24 * 30.5 ],
-        [ 'year',   60 * 60 * 24 * 30.5 * 12 ]
-    );
-    my $i = $#int;
-    my @r;
-    while ( ( $i >= 0 ) && ($d) ) {
-        if ( $d / $int[$i]->[1] >= 1 ) {
-            push @r, sprintf "%d %s%s", $d / $int[$i]->[1],
-              $int[$i]->[0], ( sprintf "%d", $d / $int[$i]->[1] ) > 1
-              ? 's'
-              : '';
-        }
-        $d %= $int[$i]->[1];
-        $i--;
-    }
-
-    my $runtime;
-    if (@r) {
-        $runtime = join ", ", @r;
-    }
-    else {
-        $runtime = '0 seconds';
-    }
-
-    return $runtime;
-}
 
 sub DESTROY {}
 

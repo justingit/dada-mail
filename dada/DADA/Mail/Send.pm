@@ -762,8 +762,6 @@ sub send {
         my $ses_obj = undef;
         require Net::Amazon::SES;
 
-        #carp '$self->ses_obj' . $self->ses_obj;
-        #carp '$self->im_mass_sending' . $self->im_mass_sending;
         if ( defined( $self->ses_obj )
             && $self->im_mass_sending == 1 )
         {
@@ -772,7 +770,8 @@ sub send {
 
         }
         else {
-            #carp "creating a new ses_obj";
+            warn 'creating a new  Net::Amazon::SES ses_obj'
+				if $t;
             $ses_obj = Net::Amazon::SES->new($DADA::Config::AMAZON_SES_OPTIONS);
             $self->ses_obj($ses_obj);
         }
@@ -1393,7 +1392,12 @@ sub mass_send {
           . $mailout_id
           . ' queueing is enabled.'
           if $t;
+
+
         $mailout->log('Queueing is enabled.');
+		
+
+
 
         warn '['
           . $self->{list}
@@ -1556,7 +1560,7 @@ sub mass_send {
 					-subject              => $fields{'Subject'},
 					-start_time           => time, 
 					-msg_size             => $status->{msg_size},
-					-sending_mode         => $ls->param('sending_method'),
+					-sending_method       => $self->{ls}->param('sending_method'),
 				}
             );
             #
@@ -1686,7 +1690,8 @@ sub mass_send {
             # batch_params is cached in the object.
             my ( $batching_enabled, $batch_size, $batch_wait ) =
               $mailout->batch_params;
-            $mailout->log( 'Batching Enabled: '
+            
+			$mailout->log( 'Batching Enabled: '
                   . $batching_enabled
                   . ', Batch Size: '
                   . $batch_size
@@ -1694,6 +1699,21 @@ sub mass_send {
                   . $batch_wait );
 
             my $batch_start_time = time;
+			
+			my $sm = 'Sending Method: ';
+			if($self->{ls}->param('sending_method') eq 'sendmail'){ 
+				$sm .= 'sendmail command';
+			}elsif($self->{ls}->param('sending_method') eq 'smtp'){ 
+				$sm .= 'SMTP ('. $self->{ls}->param('smtp_server') .')'
+			}elsif($self->{ls}->param('sending_method') eq 'amazon_ses'){ 
+				$sm .= 'Amazon SES ('. $DADA::Config::AMAZON_SES_OPTIONS->{AWS_endpoint} .')';
+			}
+			else { 
+				$sm .= 'Unknown';
+			}
+			$mailout->log($sm); 
+			
+			
             require DADA::App::FormatMessages;
             my $fm = DADA::App::FormatMessages->new(
                 -List   => $self->{list},
@@ -2000,7 +2020,7 @@ sub mass_send {
                               . $self->{list}
                               . '] Mass Mailing:'
                               . $mailout_id
-                              . ' Bailing out of Mailing for now - last message to, '
+                              . ' Bailing out of mass mailing for now - last message to, '
                               . $nfields{To}
                               . ' was unable to be sent!';
                             warn $warning;
@@ -2263,8 +2283,16 @@ sub mass_send {
                         #
 
                         my $sleep_for_this_amount = $batch_wait;
-                        if ( $self->{ls}->param('adjust_batch_sleep_time')
-                            == 1 )
+						
+						$mailout->log(
+							"Batch took: " 
+							. (time - $batch_start_time) 
+							. ' second(s) (' 
+							. formatted_runtime((time - $batch_start_time)) 
+							.')'
+						);
+						
+                        if ( $self->{ls}->param('adjust_batch_sleep_time') == 1 )
                         {
                             my $batch_time_took = time - $batch_start_time;
                             if ( $batch_time_took > 0 ) {
@@ -2305,7 +2333,15 @@ sub mass_send {
                         #
                         # / Tweak Sleep Times
                         ##############################################
-
+						
+						$mailout->log(
+							"Waiting for: " 
+							. $sleep_for_this_amount 
+							. ' second(s) (' 
+							. formatted_runtime($sleep_for_this_amount) 
+							.')'
+						);
+						
                         my $before_sleep_time = time;
                         warn '['
                           . $self->{list}
@@ -2440,8 +2476,8 @@ sub mass_send {
             if ( defined( $self->ses_obj ) ) {
                 $self->ses_obj(undef);
             }
-            my $ending_status = $mailout->status( { -mail_fields => 0 } )
-              ;    # most likely safe to called status() as much as I'd like...
+            my $ending_status = $mailout->status( { -mail_fields => 0 } );
+				# most likely safe to called status() as much as I'd like...
 
             my $unformatted_end_time = time;
             if ( $self->{ls}->param('get_finished_notification') == 1 ) {
@@ -2492,9 +2528,10 @@ sub mass_send {
 		            -ls   => $self->{ls},
 		        }
 		    );
-			$r->finish_time_log(
+			
+			$self->_log_mass_mailing_finish(
 				{
-					-mid     => $mailout_id,
+					-msg_id  => $fields{'Message-ID'},
 					-details => time, 
 				}
 			);
@@ -3699,33 +3736,68 @@ sub _log_sub_count {
                 -subject => $subject,
             }
         );
+
 		$r->start_time_log(
 	        {
 	            -mid     => $msg_id,
 	            -details => $start_time,
 	        }
-		)
+		);
 		
 		$r->msg_size_log(
 	        {
 	            -mid      => $msg_id,
 	            -msg_size => $msg_size,
 	        }
-		)
-
+		);
 
 		$r->sending_method_log(
 	        {
 	            -mid      => $msg_id,
 	            -details => $sending_method,
 	        }
-		)
+		);
+
     }
     else {
         #...
     }
 
 }
+
+sub _log_mass_mailing_finish {
+    my $self = shift;
+    my ($args) = @_;
+
+	my $finish_time = $args->{-finish_time};
+	
+    require DADA::Logging::Clickthrough;
+    my $r = DADA::Logging::Clickthrough->new(
+        {
+            -list => $self->{list},
+            -ls   => $self->{ls},
+        }
+    );
+	
+	
+    return
+      if $self->list_type ne 'list';
+
+      my $msg_id = $args->{-msg_id};
+         $msg_id =~ s/\<|\>//g;
+         $msg_id =~ s/\.(.*)//;
+		
+	$r->finish_time_log(
+        {
+            -mid         => $msg_id,
+            -details => time,
+        }
+	);
+		
+}
+	
+
+
 
 
 sub DESTROY {
