@@ -566,6 +566,42 @@ sub total_recipients_log {
     $args->{-update_fields}  = 0; 
     return $self->mass_mailing_event_log($args); 
 }
+sub start_time_log {
+    my $self                 = shift;
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = 'start_time'; 
+    $args->{-details}        = $args->{-time};
+    $args->{-update_fields}  = 0; 
+    return $self->mass_mailing_event_log($args); 
+}
+sub finish_time_log {
+    my $self                 = shift;
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = 'finish_time'; 
+    $args->{-details}        = $args->{-time};
+    $args->{-update_fields}  = 0; 
+    return $self->mass_mailing_event_log($args); 
+}
+sub msg_size_log {
+    my $self                 = shift;
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = 'msg_size'; 
+    $args->{-details}        = $args->{-msg_size};
+    $args->{-update_fields}  = 0; 
+    return $self->mass_mailing_event_log($args); 
+}
+sub sending_method_log {
+    my $self                 = shift;
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = 'sending_method'; 
+    $args->{-details}        = $args->{-details};
+    $args->{-update_fields}  = 0; 
+    return $self->mass_mailing_event_log($args); 
+}
 sub subject_log {
     my $self                 = shift;
     my ($args)               = @_;

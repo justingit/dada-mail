@@ -1355,6 +1355,9 @@ sub status {
     $status->{is_batch_locked} = ( $self->is_batch_locked == 1 ) ? 1 : 0;
 
     $status->{paused} = $self->paused();
+	
+	my $t_msg_file = $self->dir . '/' . $file_names->{raw_message};
+	$status->{msg_size} = -s $t_msg_file; 
 
     if ( -e $self->dir . '/' . $file_names->{pid} ) {
         $status->{controlling_pid} =

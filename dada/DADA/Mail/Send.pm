@@ -1554,7 +1554,10 @@ sub mass_send {
                     -num_subscribers      => $num_subscribers,
                     -num_total_recipients => $num_total_recipients,
 					-subject              => $fields{'Subject'},
-                }
+					-start_time           => time, 
+					-msg_size             => $status->{msg_size},
+					-sending_mode         => $ls->param('sending_method'),
+				}
             );
             #
             #
@@ -2481,7 +2484,22 @@ sub mass_send {
                     $mass_mail_finished_log );
             }
             $mailout->log($mass_mail_finished_log);
-
+			
+		    require DADA::Logging::Clickthrough;
+		    my $r = DADA::Logging::Clickthrough->new(
+		        {
+		            -list => $self->{list},
+		            -ls   => $self->{ls},
+		        }
+		    );
+			$r->finish_time_log(
+				{
+					-mid     => $mailout_id,
+					-details => time, 
+				}
+			);
+			undef($r);
+			
             warn '['
               . $self->{list}
               . '] Mass Mailing:'
@@ -3628,6 +3646,9 @@ sub _log_sub_count {
     my $num_subscribers      = $args->{-num_subscribers};
     my $num_total_recipients = $args->{-num_total_recipients};
 	my $subject              = $args->{-subject}; 
+	my $start_time           = $args->{-start_time}; 
+	my $msg_size             = $args->{-msg_size},
+	my $sending_method       = $args->{-sending_method};
 	
     warn 'logged_subscriber_count is returning, "'
       . $r->logged_subscriber_count( { -mid => $msg_id } ) . '"'
@@ -3678,7 +3699,27 @@ sub _log_sub_count {
                 -subject => $subject,
             }
         );
+		$r->start_time_log(
+	        {
+	            -mid     => $msg_id,
+	            -details => $start_time,
+	        }
+		)
 		
+		$r->msg_size_log(
+	        {
+	            -mid      => $msg_id,
+	            -msg_size => $msg_size,
+	        }
+		)
+
+
+		$r->sending_method_log(
+	        {
+	            -mid      => $msg_id,
+	            -details => $sending_method,
+	        }
+		)
     }
     else {
         #...
