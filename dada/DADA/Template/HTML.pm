@@ -779,10 +779,16 @@ sub list_template {
         if ( $ls->param('get_template_data') eq "from_url"
             && DADA::App::Guts::isa_url( $ls->param('url_template') ) == 1 )
         {
-            $list_template =
-              open_template_from_url( -URL => $ls->param('url_template'), );
-              $using_default_template = 0; 
-
+			# this is pretty bad, as there's no feedback of if the URL returned  any data that's useful: 
+            $list_template = open_template_from_url( -URL => $ls->param('url_template'), );
+              
+			  # We can just go with, "is it defined, or not?"
+			  if(!defined($list_template)){
+				  $using_default_template = 1; 
+			  }
+			  else { 
+			  	 $using_default_template = 0; 
+			  }
         }
         elsif ( $ls->param('get_template_data') eq 'from_default_template' ) {
 
@@ -802,19 +808,18 @@ sub list_template {
             $using_default_template = 0; 
 
         }    # meaning, there's no list template
-        else {
+		# This also means that none of the above methods were successful: 
+       
+	   
+	   
+	    if($using_default_template == 1){
             $list_template = default_template();
         }
+
     }    # meaning, no list was passed:
     else {
         $list_template = default_template({-Use_Custom => $args{-Use_Custom}});
     }
-
-
-
-
-
-      
 
     my $prof_email         = '';
     my $is_logged_in       = 0;
