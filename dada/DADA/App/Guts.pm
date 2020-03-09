@@ -103,7 +103,7 @@ require Exporter;
   can_use_StopForumSpam
   can_use_Image_Resize
   formatted_runtime
-  pad_string
+  pad_str
   commify
   generate_rand_string_md5
   

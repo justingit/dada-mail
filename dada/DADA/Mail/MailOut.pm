@@ -1,5 +1,9 @@
 package DADA::Mail::MailOut;
 
+
+use Carp;
+$SIG{ __DIE__ } = sub { Carp::confess( @_ ) };
+
 use lib qw(../../ ../../DADA ../../perllib);
 
 use CGI::Carp qw(croak carp);
@@ -1356,10 +1360,12 @@ sub status {
     $status->{paused} = $self->paused();
 	
 	my $t_msg_file = $self->dir . '/' . $file_names->{raw_message};
-	$status->{msg_size} = -s $t_msg_file; 
+	
+	
+	$status->{msg_size} = (stat $t_msg_file)[7]; 
 
     if ( -e $self->dir . '/' . $file_names->{pid} ) {
-        $status->{controlling_pid} =
+        $status->{'controlling_pid'} =
           _poll( $self->dir . '/' . $file_names->{pid} );
     }
     else {

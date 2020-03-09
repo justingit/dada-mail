@@ -1379,6 +1379,12 @@ sub mass_send {
             $mass_mail_starting_log );
     }
     $mailout->log( 'Mass Mailing Starting: ' . $mass_mail_starting_log );
+    
+	
+	require Number::Bytes::Human;
+	my $msg_size = Number::Bytes::Human::format_bytes($status->{msg_size});
+	$mailout->log( 'Message Size: ' . $msg_size); 
+
 
     # /Log the start of this mailing.
     #-------------------------------------------------------------------------#
@@ -2505,14 +2511,27 @@ sub mass_send {
 
             my $f_l_subject = $fields{Subject};
             $f_l_subject =~ s/\r|\n//g;
+			
+			
+			
+			my $total_sending_time = ($unformatted_end_time - $ending_status->{first_access});
+			if($total_sending_time <= 0){
+				$total_sending_time = .1; 
+			}
+			my $hourly_sending = ($mass_mailing_count / $total_sending_time) * 60 * 60; 
+
+				
             my $mass_mail_finished_log = join( "\t",
                 "Message-Id: " . $mailout_id,
                 "Subject: " . $f_l_subject,
-                "Started: "
-                  . scalar( localtime( $ending_status->{first_access} ) ),
-                "Finished: " . scalar( localtime($unformatted_end_time) ),
-                "Mailing Amount: " . $mass_mailing_count,
+                "Started: " . scalar( localtime( $ending_status->{first_access} ) ),
+                 "Finished: " . scalar( localtime($unformatted_end_time) ),
+				 "Total Sending Time: " . formatted_runtime(($unformatted_end_time - $ending_status->{first_access})),
+                 "Mailing Amount: " . $mass_mailing_count, 
+				 "Mailing Speed: " . sprintf("%.2f", $hourly_sending) . ' messages/hour'
             );
+			
+			
 
             if ( $DADA::Config::LOG{mass_mailings} == 1 ) {
                 $self->{mj_log}
