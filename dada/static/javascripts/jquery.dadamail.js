@@ -256,18 +256,18 @@
 							}
 						});
 						if ($('#g-recaptcha-response_sf').length){
-							if (typeof callback === "function"){
+							if (typeof setup_recaptcha === "function"){
 								setup_recaptcha(); 	
 							}			
 						} else if ($('#subscription_form_gr').length){
-							if (typeof callback === "function"){
+							if (typeof setup_recaptcha === "function"){
 								setup_recaptcha();
 							}
 						}
 					}
 					else { 
 						if ($('#g-recaptcha-response_sf').length){
-							if (typeof callback === "function"){
+							if (typeof setup_recaptcha === "function"){
 								setup_recaptcha();
 							}		
 						}
