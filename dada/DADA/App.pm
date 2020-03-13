@@ -123,6 +123,8 @@ sub setup {
 		'manage_list_consent'      => \&manage_list_consent,
         'html_code'                => \&html_code,
         'preview_jquery_plugin_subscription_form' => \&preview_jquery_plugin_subscription_form,
+		'preview_subscription_form'               => \&preview_subscription_form, 
+		'preview_minimal_subscription_form'       => \&preview_minimal_subscription_form, 
         'admin_help'                    => \&admin_help,
         'delete_list'                   => \&delete_list,
         'view_list'                     => \&view_list,
@@ -9371,6 +9373,87 @@ sub html_code {
     return $scrn;
 
 }
+
+sub preview_subscription_form { 
+	
+    my $self = shift;
+    my $q    = $self->query();
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'html_code'
+      );
+    if ( !$checksout ) { return $error_msg; }
+
+    my $list = $admin_list;
+	
+    my $subscription_form = DADA::Template::Widgets::subscription_form(
+        { 
+			-list             => $list, 
+			-ignore_cgi       => 1, 
+			-show_fieldset    => 0, 
+			-add_recaptcha_js => 1,
+		}
+    );
+	
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -screen => 'preview_subscription_form_screen.tmpl',
+            -vars   => {
+               subscription_form => $subscription_form, 
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    return $scrn;
+}
+
+
+sub preview_minimal_subscription_form { 
+	
+    my $self = shift;
+    my $q    = $self->query();
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'html_code'
+      );
+    if ( !$checksout ) { return $error_msg; }
+
+    my $list = $admin_list;
+	
+    my $minimal_subscription_form = DADA::Template::Widgets::subscription_form(
+        { 
+			-list             => $list, 
+			-ignore_cgi       => 1, 
+			-show_fieldset    => 0, 
+			-add_recaptcha_js => 1,
+			-form_type        => 'minimal',
+		}
+    );
+	
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -screen => 'preview_minimal_subscription_form_screen.tmpl',
+            -vars   => {
+               minimal_subscription_form => $minimal_subscription_form,
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    return $scrn;
+}
+
+
+
 
 sub preview_jquery_plugin_subscription_form {
 
