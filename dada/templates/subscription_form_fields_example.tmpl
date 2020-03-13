@@ -81,13 +81,7 @@
 					<br>
 					<br>
 					<strong>Label:</strong>
-			
-			
-			
-
-				
-				            
-						   <em>
+							   <em>
 							   <!-- tmpl_var consent --> 
 						   </em>
 						</td>
@@ -100,7 +94,6 @@
 					
 					
 					
-<!-- tmpl_if recaptcha_html --> 
 
 					<tr>
 						<td>
@@ -110,21 +103,17 @@
 						</td>
 						<td>
 
-							<textarea>
-								
-					
-					
-								<!-- tmpl_var recaptcha_html -->
-								<!-- tmpl_if add_recaptcha_js -->
-								<script src='https://www.google.com/recaptcha/api.js'></script>
-								<!-- /tmpl_if -->
-								
+							<textarea cols="80" rows="20">
+
+
+									<!-- tmpl_include subscription_captcha_code_widget.tmpl -->
+
+
 							</textarea>
 						</td>
 					</tr>
 
 
-<!-- /tmpl_if -->
 
 
 

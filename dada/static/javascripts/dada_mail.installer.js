@@ -438,12 +438,6 @@ function test_CAPTCHA_configuration() {
 	}
 	
 	var flavor = 'google_recaptcha'; 
-	//if(flavor == 'google_recaptcha'){ 
-		
-		// alert('$("#captcha_params_v2_public_key").val():' + $("#captcha_params_v2_public_key").val());
-		// alert('$("#captcha_params_v2_private_key").val():' + $("#captcha_params_v2_private_key").val());
-		
-		
 		var request = $.ajax({
 			url: $("#self_url").val(),
 			type: "POST",

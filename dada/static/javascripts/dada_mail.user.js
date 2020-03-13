@@ -56,7 +56,7 @@
 
 
 	if ($("#subscription_form").length) {
-
+		
 		$("#subscription_form").validate({
 		   ignore: ".ignore",
 			debug: false,
@@ -69,17 +69,13 @@
 				     required: function() {
 						 // is this field even there? 
 						 if($('#captcha_check').length <= 0){ 
-							 alert("nope, not there.");
 							 return false; 
 						 }
 						 else {
-							 
-							 alert("It's there!");
-							 
 							 // I don't necessarily like explicitly naming the field here, 
 							 // so this may change in the future. 
-					         if (grecaptcha.getResponse('subscription_form_gr') == '') {
-					             alert('got response!');
+							 alert('$("#subscription_form_gr").attr("recaptcha_id"): ' + $("#subscription_form_gr").attr("data-recaptcha_id"));
+							 if (grecaptcha.getResponse($("#subscription_form_gr").attr("data-recaptcha_id")) == '') {
 								 return true;
 					         } else {
 					             return false;

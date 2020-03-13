@@ -7,7 +7,27 @@
 <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.dadamail.js"></script>
 
 <!-- tmpl_if captcha_params_on_subscribe_form -->
-	<script src='https://www.google.com/recaptcha/api.js'></script>
+	<!-- tmpL_if can_use_Google_reCAPTCHA_v2 -->
+	    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+	    <script type="text/javascript">
+	         var onloadCallback = function() {
+	           grecaptcha.render('subscription_form_gr', {
+	             'sitekey' : '<!-- tmpl_var captcha_params_v2_public_key -->'
+	           });
+	         };
+	       </script>
+	<!-- /tmpl_if --> 
+	<!-- tmpL_if can_use_Google_reCAPTCHA_v3 -->
+		<script src="https://www.google.com/recaptcha/api.js?render=<!-- tmpl_var captcha_params_v3_public_key -->"></script>
+		<script>
+			grecaptcha.ready(function() {
+			        grecaptcha.execute('<!-- tmpl_var captcha_params_v3_public_key -->', {action:'ddm'})
+			                  .then(function(token) {
+						document.getElementById('g-recaptcha-response_sf').value = token;
+			        });
+			    });
+		</script>
+	<!-- /tmpl_if --> 	
 <!-- /tmpl_if -->
 	
 <script type="text/javascript">

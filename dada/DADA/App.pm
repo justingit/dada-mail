@@ -750,8 +750,7 @@ sub admin {
     }
     else {
 
-        my $login_widget = $q->param('login_widget')
-          // $DADA::Config::LOGIN_WIDGET;
+        my $login_widget = $q->param('login_widget') // $DADA::Config::LOGIN_WIDGET;
 
         my $scrn = DADA::Template::Widgets::admin(
             {
@@ -3591,8 +3590,9 @@ sub delete_list {
     my $list = $admin_list;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $process = $q->param('process') || undef;
-
+    my $process          = $q->param('process')          || undef;
+	my $recaptcha_failed = $q->param('recaptcha_failed') || 0;
+	
     if ( !$process ) {
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -3604,7 +3604,10 @@ sub delete_list {
                     -List       => $list,
                 },
                 -list                     => $list,
-                -vars                     => { screen => 'delete_list', },
+                -vars                     => { 
+					screen           => 'delete_list', 
+					recaptcha_failed => $recaptcha_failed, 
+				},
                 -list_settings_vars_param => {
                     -list   => $list,
                     -dot_it => 1,
@@ -3614,17 +3617,33 @@ sub delete_list {
         return $scrn;
     }
     else {
-
+		
+		if (can_use_Google_reCAPTCHA() == 1 ) {
+	        my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
+			my $captcha_status = validate_recaptcha(
+				{
+					 -response    => $crf, 
+					 -remote_addr => $ENV{'REMOTE_ADDR'},
+				}
+			);
+			if($captcha_status == 0){ 
+	            $q->delete('process');
+				$q->param('recaptcha_failed', 1);
+				warn 'here1';
+				return $self->delete_list; 
+			}
+			else { 
+				#...
+			}
+		}
+		
         require DADA::MailingList;
         DADA::MailingList::Remove(
             {
                 -name => $list,
             }
         );
-
         $c->flush;
-
-        #  my $logout_cookie = logout( -redirect => 0 );
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -3633,15 +3652,9 @@ sub delete_list {
                 -wrapper_params => {
                     -Use_Custom => 0,
                 },
-
-       #	-list   => $list, # The list doesn't really exist anymore now, does it?
-       # -wrapper_params => { -header_params => { -COOKIE => $logout_cookie }, }
             }
         );
 
-        #my $headers = {
-        #    -COOKIE  => $logout_cookie,
-        #};
 
         require DADA::App::Session;
         my $dada_session = DADA::App::Session->new( -List => $list );
@@ -9298,8 +9311,7 @@ sub html_code {
                         -list          => $list,
                         -ignore_cgi    => 1,
                         -show_fieldset => 0,
-                        -subscription_form_id =>
-                          'dada_mail_modal_subscription_form'
+                        -subscription_form_id => 'dada_mail_modal_subscription_form'
                     }
                 )
             }
@@ -9384,7 +9396,7 @@ sub preview_jquery_plugin_subscription_form {
                         -ignore_cgi           => 1,
                         -show_fieldset        => 0,
                         -subscription_form_id => 'dada_mail_modal_subscription_form', 
-  						-add_recaptcha_js     => 1,
+  						-add_recaptcha_js     => 0,
                     }
                 )
             }
@@ -11387,6 +11399,26 @@ sub new_list {
             }
 
         }
+		
+		if (can_use_Google_reCAPTCHA() == 1 ) {
+
+	        my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
+			my $captcha_status = validate_recaptcha(
+				{
+					 -response    => $crf, 
+					 -remote_addr => $ENV{'REMOTE_ADDR'},
+				}
+			);
+			if($captcha_status == 0){ 
+	            return user_error(
+	                {
+	                    -list  => $list,
+	                    -error => 'list_cp_login_recaptcha_failed',
+	                }
+	            );
+			}
+		}
+		
 
         if ( !$DADA::Config::PROGRAM_ROOT_PASSWORD ) {
             return user_error(
@@ -12984,6 +13016,28 @@ sub login {
             );
         }
     }
+    
+	# Also, if we're to put this on the admin login form: 
+    if (can_use_Google_reCAPTCHA() == 1 ) {
+
+        my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
+		my $captcha_status = validate_recaptcha(
+			{
+				 -response    => $crf, 
+				 -remote_addr => $ENV{'REMOTE_ADDR'},
+			}
+		);
+		if($captcha_status == 0){ 
+            return user_error(
+                {
+                    -list  => $list,
+                    -error => 'list_cp_login_recaptcha_failed',
+                }
+            );
+		}
+	}
+
+
 
     my $cookie;
 
@@ -13985,7 +14039,7 @@ sub subscription_form_html {
         my $callback = xss_filter( strip( $q->url_param('callback') ) );
         require JSON;
         my $json = JSON->new->allow_nonref;
-        my $r = $json->encode( { subscription_form => $subscription_form } );
+        my $r   = $json->encode( { subscription_form => $subscription_form } );
 
         $self->header_props(%$headers);
         return $callback . '(' . $r . ');';

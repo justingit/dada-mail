@@ -33,31 +33,44 @@
 <!-- tmpl_if load_captcha_js -->
 	<!-- tmpL_if can_use_Google_reCAPTCHA_v2 -->
 	   	<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
-	   	 <script type="text/javascript" charset="utf-8">
+	   	<script type="text/javascript" charset="utf-8">
+			 
+			 // Holds the id of any recaptcha's made. This is usually only one, 
+			 // but some screens have >1
 			 var recaptcha_ids = []; 
-	   	 	 var onloadCallback = function() {
+			 var onloadCallback = function() {
 				 var recaptchas = document.querySelectorAll('div[class=g-recaptcha]');
 				 for ( i = 0; i < recaptchas.length; i++) {		
-					recaptcha_ids[i] = grecaptcha.render( 
+					var newly_created_widget = grecaptcha.render( 
 						recaptchas[i].id, 
 						{
 							'sitekey' : '<!-- tmpl_var captcha_params_v2_public_key -->'
 						}
-					);
+					);					
+					
+					// Save it here, so we can reset things, later. 
+					recaptcha_ids[i] = newly_created_widget; 
+					
+					// we'll save it the name of the id here, so we can double-check that it's 
+					// been set in our client-side form validation					
+					var g_recaptcha_id = document.getElementById(recaptchas[i].id);
+					    g_recaptcha_id.setAttribute("data-recaptcha_id", newly_created_widget);  
+
 				}
 			}		
 			function setup_recaptcha() {					
 				for ( i = 0; i < recaptcha_ids.length; i++) {
-						grecaptcha.reset(recaptcha_ids[i].id);
+						grecaptcha.reset(recaptcha_ids[i]);
 				}	
 			}
-
 	   	 </script>
 	<!-- /tmpl_if -->
 	<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->
 		<script src="https://www.google.com/recaptcha/api.js?render=<!-- tmpl_var captcha_params_v3_public_key -->"></script>
 		<script>
-			    grecaptcha.ready(function() { setup_recaptcha() }); 
+			    grecaptcha.ready(function() { 
+						setup_recaptcha() 
+				}); 
 				
 				function setup_recaptcha() {
 					grecaptcha.execute("<!-- tmpl_var captcha_params_v3_public_key -->", {
@@ -70,13 +83,9 @@
 				      ;
 				    });
 			    }
-				
 		</script>
 	<!-- /tmpl_if -->
-<!-- /tmpl_if -->	
-	
-	
-
+<!-- /tmpl_if -->
 
 <!-- tmpl_if list_settings.show_archives --> 
 	<!-- tmpl_if list_settings.publish_archives_rss --> 

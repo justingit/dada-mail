@@ -1,6 +1,10 @@
 <!-- begin delete_list_screen.tmpl -->
 
 <!-- tmpl_set name="title" value="Mailing List &#187; Delete This Mailing List" -->
+<!-- tmpl_set name="load_captcha_js" value="1" -->
+
+
+
 <div id="screen_meta" data-menu_highlight="delete_list"></div>
 <div id="delete_list_screen"></div> 
 
@@ -39,6 +43,35 @@
                 Mailing List Deletion cannot be undone.
             </p> 
         </div>
+		
+		<!-- tmpl_if recaptcha_failed -->
+			<div class="alert-box warning radius">
+				reCAPTCHA Failed.
+			</div>
+		<!-- /tmpl_if -->
+		
+		 <div class="row">
+			<div class="small-12 columns">
+				<!-- tmpl_if can_use_Google_reCAPTCHA_v2 --> 
+					<div class="form-group">
+						<div 
+							class="g-recaptcha" 
+							id="delete_list_gr"
+						></div>
+					</div>
+				<!-- /tmpl_if --> 
+
+				<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->			
+					<input 
+						type="hidden"
+						id="g-recaptcha-response_delete_list"
+						class="g-recaptcha-response"
+						name="g-recaptcha-response"
+					>
+				<!-- /tmpl_if -->
+			</div> 
+		</div>
+		
     
         <ul class="button-group right">    
             <li>

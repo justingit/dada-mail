@@ -2669,9 +2669,12 @@ sub subscription_form {
 		$args->{-subscription_form_id} = undef;
 	}
 
+	
+	
 	if(! exists($args->{-add_recaptcha_js})) { 
 		$args->{-add_recaptcha_js} = 0;
 	}
+	warn q{ $args->{-add_recaptcha_js} } . $args->{-add_recaptcha_js}; 
     
     my @available_lists = available_lists(-Dont_Die => 1); 
     if(! $available_lists[0]){ 
@@ -2775,6 +2778,7 @@ sub subscription_form {
 		my $tmpl_name = 'subscription_form_widget.tmpl'; 
 		if($args->{-form_type} eq 'minimal'){ 
  			$tmpl_name = 'minimal_subscription_form.tmpl'; 
+			warn q{ $args->{-add_recaptcha_js} #3 } . $args->{-add_recaptcha_js}; 
 		}
 		elsif($args->{-form_type} eq 'form_fields_example'){ 
  			$tmpl_name = 'subscription_form_fields_example.tmpl'; 
@@ -2783,6 +2787,8 @@ sub subscription_form {
 		require DADA::MailingList::Consents; 
 		my $con           = DADA::MailingList::Consents->new; 
 		my $list_consents = $con->give_me_all_consents($ls); 
+		
+		warn q{ $args->{-add_recaptcha_js} #2: } . $args->{-add_recaptcha_js}; 
 		
         return screen({
             -screen => $tmpl_name, 
@@ -2798,7 +2804,7 @@ sub subscription_form {
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
 							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
-							v2_captcha_string        => $v2_captcha_string,		
+#							v2_captcha_string        => $v2_captcha_string,		
 							list_consents            => $list_consents, 					
 							
                         },

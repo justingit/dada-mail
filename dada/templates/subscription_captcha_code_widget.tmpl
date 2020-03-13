@@ -1,0 +1,55 @@
+<!-- tmpl_if can_use_Google_reCAPTCHA_v2 -->
+		<div class="row">
+			<div class="large-4 medium-4 columns">
+				&nbsp;
+			</div> 
+	
+			<div class="large-8 medium-8 columns">
+
+				<div class="form-group">
+					<div 
+						class="g-recaptcha"
+						id="subscription_form_gr"
+						data-recaptcha_id="default_value"
+					></div>
+					<input 
+						 type="hidden"
+						 class="captcha_check required" 
+						 name="captcha_check" 
+						 id="captcha_check"
+						>
+				</div>
+			</div>
+		</div>
+		<!-- tmpl_if add_recaptcha_js -->
+		    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+		    <script type="text/javascript">
+		         var onloadCallback = function() {
+		           grecaptcha.render('subscription_form_gr', {
+		             'sitekey' : '<!-- tmpl_var captcha_params_v2_public_key -->'
+		           });
+		         };
+		       </script>
+		<!-- /tmpl_if --> 
+<!-- /tmpl_if -->
+
+<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->	
+	<!-- tmpl_if add_recaptcha_js -->
+		<script src="https://www.google.com/recaptcha/api.js?render=<!-- tmpl_var captcha_params_v3_public_key -->"></script>
+		<script>
+			grecaptcha.ready(function() {
+			        grecaptcha.execute('<!-- tmpl_var captcha_params_v3_public_key -->', {action:'ddm'})
+			                  .then(function(token) {
+						document.getElementById('g-recaptcha-response_msf').value = token;
+			        });
+			    });
+		</script>
+	<!-- /tmpl_if -->		
+			
+	<input 
+		type="hidden"
+		id="g-recaptcha-response_msf"
+		class="g-recaptcha-response"
+		name="g-recaptcha-response"
+	>
+<!-- /tmpl_if -->
