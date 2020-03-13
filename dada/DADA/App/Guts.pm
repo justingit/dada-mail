@@ -3377,9 +3377,10 @@ sub validate_recaptcha {
                 -remoteip => $args->{-remote_addr},
             }
         );
-
-        if (   $r->{success} == 1
-            && $r->{score} >=
+		my $success = $r->{success};
+		my $score   = $r->{score}; 
+        if (   $$success == 1
+            && $score >=
             $DADA::Config::RECAPTCHA_PARAMS->{v3}->{score_threshold} )
         {
             return 1;
