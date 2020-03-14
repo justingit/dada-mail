@@ -114,23 +114,51 @@
 	
 		
 	<table  style="width:100%">
-	
-		<!-- 
+		
+		
+		
+		
+		
 		<tr> 
 			<td>
 				<a href="#subscriber_activity">
-					<strong>Subscribers</strong>
+					<strong>Message Size</strong>
 				</a>
 			</td> 
-			<td class="text-right">
-				<!-- tmpl_if num_subscribers --> 
-					<!-- tmpl_var num_subscribers -->
-				<!-- tmpl_else --> 
-					???
-				<!-- /tmpl_if -->
+			<td class="text-right"> 
+				<!-- tmpl_var msg_size -->
 			</td>
 		</tr>
-	--> 
+		
+		<tr> 
+			<td>
+				<a href="#subscriber_activity">
+					<strong>Sending Method</strong>
+				</a>
+			</td> 
+			<td class="text-right"> 
+				<!-- tmpl_var sending_method -->
+			</td>
+		</tr>
+		
+		<tr> 
+			<td>
+				<a href="#subscriber_activity">
+					<strong>
+						Sending Speed
+					</strong>
+				</a>
+			</td> 
+			<td class="text-right"> 
+				Start: <!-- tmpl_var sending_speed_start_datetime -->, 
+				Finish: <!-- tmpl_var sending_speed_end_datetime -->, 
+				<!-- tmpl_var sending_speed -->
+			</td>
+		</tr>
+		
+		
+		
+
 		<tr> 
 			<td>
 				<a href="#subscriber_activity">
