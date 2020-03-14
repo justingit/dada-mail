@@ -461,8 +461,6 @@ function test_CAPTCHA_configuration() {
 			
 		});
 		request.error(function(xhr, ajaxOptions, thrownError) {
-			alert('status: ' + xhr.status);
-			alert('thrownError:' + thrownError);
 			console.log('status: ' + xhr.status);
 			console.log('thrownError:' + thrownError);
 		}); 
