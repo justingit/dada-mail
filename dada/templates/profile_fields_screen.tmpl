@@ -247,11 +247,16 @@
             
 				   	<ul class="button-group">
 				   		<li>
-				            <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+				            <form 
+								action="<!-- tmpl_var S_PROGRAM_URL -->" 
+								method="post" 
+								accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+								class="remove_profile_field_form"
+							>
 				             <input type="hidden" name="flavor" value="profile_fields" > 
 				             <input type="hidden" name="process" value="delete_field" > 
 				             <input type="hidden" name="field"  value="<!-- tmpl_var field -->" > 
-				            <button type="submit" class="button small alert"  onclick="return removeSubscriberField(this.form);" >
+				            <button type="submit" class="remove_profile_field button small alert">
 									<i class="fi-x"></i>
 								</button>
 				            </form> 

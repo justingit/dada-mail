@@ -71,7 +71,6 @@ jQuery(document).ready(function($){
 	// Admin Menu
 
 	if ($("#navcontainer").length) {
-		//alert('if ($("#navcontainer").length) {!');
 		
 		admin_menu_notifications(); 
 
@@ -1379,8 +1378,39 @@ jQuery(document).ready(function($){
 				}
 			}
 		});
-
 	}
+	
+	
+	
+	$("body").on("submit", ".delete_draft_form", function(event) {
+		if (confirm('Delete ' + $(this).attr('data-draft_role') + '?')) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	});
+	
+	
+	$("body").on("submit", ".remove_profile_field_form", function(event) {
+		
+		var confirm_msg = "Are you sure you want to ";
+		    confirm_msg += " permanently remove this field?";
+		    confirm_msg += " ALL saved informaton for this field for ALL subscribers"; 
+			confirm_msg += " on ALL mailing lists will also be permanently deleted.";
+			
+		if (confirm(confirm_msg)) {	
+			return true;
+		}
+		else { 
+			alert('Profile Field removal canceled.');
+			return false; 
+		}
+	}); 
+	
+	
+	
+	
 
 	// Version Check
 	$('body').on('click', '#check_version', function(event){
@@ -4849,25 +4879,6 @@ function pauseMonitoredSending() {
 	}
 
 }
-
-
-
-function removeSubscriberField(form_name) {
-
-	var confirm_msg = "Are you sure you want to ";
-	confirm_msg += " permanently remove this field?";
-	confirm_msg += " All saved informaton in the field for all subscribers will be lost.";
-
-	if (!confirm(confirm_msg)) {
-		alert('Subscriber field removal has been canceled.');
-		return false;
-	}
-
-	form_name.target = "_self";
-
-}
-
-
 
 function datetimesetupstuff() {
 	// console.log('datetimesetupstuff');
