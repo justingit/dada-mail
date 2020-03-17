@@ -60,6 +60,23 @@ The option is labeled,
 
 I<Enable Google reCAPTCHA on the initial subscription form>
 
+=head3 More Analytics Gathered for Mass Mailings
+
+Along with such things as messages opens, clickthroughs, bounces, etc, Dada Mail now tracks and reports the following to help you 
+better understand the performance of your mass mailing: 
+
+=over
+
+=item * Start Time
+
+=item * Finish Time
+
+=item * Sending method (sendmail, SMTP, Amazon SES)
+
+=back
+
+And with that information, total sending time and sending speed will also be calculated and reported. 
+
 =head2 Bugfixes
 
 =head3 Confirmation Message when deleting a profile field is not working #908 
