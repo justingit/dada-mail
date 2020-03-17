@@ -956,6 +956,7 @@ sub message_report {
 	        screen => 'using_tracker',
 			has_data             => 1,
 	        mid                  => scalar $q->param('mid')                         || '',
+			# This needs to be updated, to grab the subject from the activity table
 	        subject              => find_message_subject( $q->param('mid') ) || '',
 	        url_report           => $s_url_report                            || [],
 	        Plugin_URL           => $Plugin_Url,

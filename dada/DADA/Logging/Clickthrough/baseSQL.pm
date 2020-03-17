@@ -1171,6 +1171,45 @@ sub msg_basic_event_count {
 		$basic_events->{total_recipients} = $basic_events->{num_subscribers};
 	}
 	
+	# start_time finish_time sending_method msg_size
+	for my $misc_events(qw(msg_size start_time finish_time sending_method)){
+		my $misc_events_query = 
+			'SELECT details FROM ' 
+			. $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} 
+			.' WHERE list = ? AND msg_id = ? AND event = ?';
+		$basic_events->{$misc_events} 
+			= $self->{dbh}->selectcol_arrayref( 
+				$num_sub_query, 
+				{ MaxRows => 1 }, 
+				$self->{name}, 
+				$msg_id, 
+				$misc_events 
+			)->[0];
+	}
+	if(defined($basic_events->{msg_size})){ 
+		require Number::Bytes::Human;
+		$basic_events->{msg_size_formatted} = Number::Bytes::Human::format_bytes($basic_events->{msg_size});
+	}
+	if(defined($basic_events->{start_time}) && defined($basic_events->{finish_time})){
+		$basic_events->{sending_time} = int($basic_events->{finish_time}) - int($basic_events->{start_time});	
+		$basic_events->{sending_time_formatted} = formatted_runtime($basic_events->{sending_time}); 
+		
+		my $total_sending_time = $basic_events->{sending_time};
+		if($total_sending_time <= 0){
+			$total_sending_time = .1; 
+		}
+		
+		my $hourly_sending = ($basic_events->{total_recipients} / $total_sending_time ) * 60 * 60; 
+		$basic_events->{sending_speed_formatted} = sprintf("%.2f", $hourly_sending);
+		
+	} 
+	if(defined($basic_events->{start_time})){ 
+		$basic_events->{start_time_formatted} = ctime_to_localtime($basic_events->{start_time}); 
+	}
+	if(defined($basic_events->{finish_time})){ 
+		$basic_events->{finish_time_formatted} = ctime_to_localtime($basic_events->{finish_time}); 
+	}
+		
 	# Received: 
 	# total_recipients - soft_bounce - hard_bounce - errors_sending_to
 	$basic_events->{received} = 

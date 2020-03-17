@@ -2277,6 +2277,7 @@ sub test_Check_List_Owner_Return_Path_Header {
 }
 
 sub send_msg_too_big {
+
     my $ls           = shift;
     my $full_msg_ref = shift;
     my $size         = shift;
@@ -2290,6 +2291,10 @@ sub send_msg_too_big {
 
         my $from_address = ( Email_Address_parse( $entity->head->get( 'From', 0 ) ) )[0]->address;
 
+		require Number::Bytes::Human;
+		my $size_of_original_message = Number::Bytes::Human::format_bytes($size);
+		
+		
         require DADA::App::FormatMessages;
         my $dfm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
 
@@ -2308,7 +2313,7 @@ sub send_msg_too_big {
 		            -subscriber_vars => { 'subscriber.email' => $from_address, },
 		            -vars            => {
 		                original_subject         => $subject,
-		                size_of_original_message => sprintf( "%.1f", ( $size / 1024 ) ),
+		                size_of_original_message => $size_of_original_message,
 		            }
 		        }
 			}

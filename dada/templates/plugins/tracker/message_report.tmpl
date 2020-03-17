@@ -116,45 +116,62 @@
 	<table  style="width:100%">
 		
 		
-		
-		
-		
+	
+	
+	<!-- tmpl_if sending_method -->
+		<!-- tmpl_if comment -->
+			All these analytics were introducted at the same time, so if one's not here, they all aren't. 
+		<!-- /tmpl_if -->
+	
 		<tr> 
 			<td>
-				<a href="#subscriber_activity">
-					<strong>Message Size</strong>
-				</a>
+				<strong>
+					Sending Interval
+				</strong>
 			</td> 
 			<td class="text-right"> 
-				<!-- tmpl_var msg_size -->
+				<strong>Start:</strong> <!-- tmpl_var start_time_formatted -->, 
+				<strong>Finish:</strong> <!-- tmpl_var finish_time_formatted --> 
 			</td>
 		</tr>
 		
-		<tr> 
-			<td>
-				<a href="#subscriber_activity">
-					<strong>Sending Method</strong>
-				</a>
-			</td> 
-			<td class="text-right"> 
-				<!-- tmpl_var sending_method -->
-			</td>
-		</tr>
 		
-		<tr> 
-			<td>
-				<a href="#subscriber_activity">
+			<tr> 
+				<td>
 					<strong>
 						Sending Speed
 					</strong>
-				</a>
-			</td> 
-			<td class="text-right"> 
-				Start: <!-- tmpl_var sending_speed_start_datetime -->, 
-				Finish: <!-- tmpl_var sending_speed_end_datetime -->, 
-				<!-- tmpl_var sending_speed -->
-			</td>
-		</tr>
+				</td> 
+				<td class="text-right"> 
+					<strong>Total Time:</strong> <!-- tmpl_var sending_time_formatted -->, <!-- tmpl_var sending_speed_formatted --> messages/hour
+				</td>
+			</tr>
+		
+		
+			<tr> 
+				<td>
+					<strong>Sending Method</strong>
+				</td> 
+				<td class="text-right"> 
+					<!-- tmpl_var sending_method -->
+				</td>
+			</tr>
+			
+			<tr> 
+				<td>				
+					<strong>Message Size</strong>
+				</td> 
+				<td class="text-right"> 
+					<!-- tmpl_var msg_size_formatted -->
+				</td>
+			</tr>
+			
+	<!-- /tmpl_if -->
+		
+		
+		
+		
+		
 		
 		
 		
