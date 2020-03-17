@@ -3,6 +3,81 @@
 
 =encoding utf-8
 
+=head1 11.10.0 
+
+=head2
+
+=head3 Google reCAPTCHA v3 Support
+
+Google reCAPTCHA v3 is now fully supported in Dada Mail. 
+reCAPTCHA v2 was supported in the past, 
+and is still is supported going forward. 
+ 
+reCAPTCHA v2 and v3 can be configured with the included Dada Mail Installer, 
+and switching between either can also be done via the Installer.
+
+=head4 Additional reCAPTCHA support throughout the app
+
+Dada Mail supported reCAPTCHA in the following areas of the app: 
+
+=over
+
+=item * Initial subscription form
+
+=item * Resend Subscription confirmation form
+
+=item * After a successful subscription confirmation
+
+=item * Reset mailing list password
+
+=item * Forward to a friend form
+
+=item * Profile registration
+
+=back
+
+reCAPTCHA support has now been extended to the following: 
+
+=over
+
+=item * Logging into a mailing list
+
+=item * Creating a new mailing list 
+
+=item * Deleting a mailing list
+
+=back
+
+Furthermore, several bugs related to reCAPTCHA have been addresses (see below).
+
+=head3 reCAPTCHA setting on initial subscription form is now a per-mailing-list setting rather than global
+
+Basically this means, if you want some lists to have reCAPTCHA, and others to not, you can. Find the new setting in the list control panel under, 
+
+I<Mailing List: Options>
+
+The option is labeled, 
+
+I<Enable Google reCAPTCHA on the initial subscription form>
+
+=head2 Bugfixes
+
+=head3 Confirmation Message when deleting a profile field is not working #908 
+
+L<https://github.com/justingit/dada-mail/issues/908>
+
+=head3 List Templates fetched by URL that throws 404 still attempted to be used #907 
+
+L<https://github.com/justingit/dada-mail/issues/907>
+
+=head3 reCAPTCHA v2 breaks if > 2 forms on the same page are using reCAPTCHA #902
+
+L<https://github.com/justingit/dada-mail/issues/902>
+
+=head3 Syntax error in Atom feeds #901
+
+L<https://github.com/justingit/dada-mail/issues/901>
+
 =head1 11.9.0 
 
 =head2 Features
