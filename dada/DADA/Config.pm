@@ -1310,10 +1310,10 @@ $MIME_TOOLS_PARAMS //= {
     send_unsubscription_notice_to     => 'list_owner',
     alt_send_unsubscription_notice_to => '', 
 
-    enable_closed_loop_opt_in     => 1,    # Closed-Loop Opt-In
-
-    limit_sub_confirm             => 1,
-    limit_sub_confirm_use_captcha => 1,
+    enable_closed_loop_opt_in                => 1,    # Closed-Loop Opt-In
+	enable_captcha_on_initial_subscribe_form => 1, 
+    limit_sub_confirm                        => 1,
+    limit_sub_confirm_use_captcha            => 1,
 	
 	enable_sub_confirm_stopforumspam_protection => 1, 
 	enable_sub_confirm_suspicious_activity_by_ip_protection => 1,

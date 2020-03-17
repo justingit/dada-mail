@@ -244,16 +244,37 @@
                    Subscription Confirmation
                </legend> 
 			   
-				<!-- tmpl_if using_captcha_on_initial_subscribe_form --> 
-					<div class="row"> 
-						<div class="small-12 columns">
-							<div class="alert-box info radius">
-							Google reCAPTCHA enabled on the initial subscription form.
-							</div>
-						</div> 
-					</div>
-				<!-- /tmpl_if -->
-			
+
+						
+
+				<div class="row"> 
+					<div class="small-12 columns">           
+						<input 
+							type="checkbox" 
+							name="enable_captcha_on_initial_subscribe_form" 
+							id="enable_captcha_on_initial_subscribe_form" 
+							value="1" 
+							<!-- tmpl_if list_settings.enable_captcha_on_initial_subscribe_form -->checked="checked"<!--/tmpl_if-->
+						>
+						<label for="enable_captcha_on_initial_subscribe_form">
+							Enable Google reCAPTCHA on the initial subscription form
+						</label>
+						
+						<!-- tmpl_unless can_use_captcha -->                        
+                            <div class="alert-box info radius">
+                                <p>
+                                    <strong>
+                                        Disabled.
+                                    </strong> 
+                                    Google reCAPTCHA needs to be correctly configured.  
+                                </p>
+                            </div>
+                        <!--/tmpl_unless-->
+						
+					</div> 
+				</div>
+				
+				
 			   
 			   
                

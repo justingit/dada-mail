@@ -138,7 +138,6 @@ DATA_CACHE             => $DADA::Config::DATA_CACHE,
 
 # CAPTCHA!
 captcha_params_recaptcha_type     => $DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type},
-captcha_params_on_subscribe_form  => $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form},
 captcha_params_v2_public_key      => $DADA::Config::RECAPTCHA_PARAMS->{v2}->{public_key},
 captcha_params_v2_private_key     => $DADA::Config::RECAPTCHA_PARAMS->{v2}->{private_key},
 captcha_params_v3_public_key      => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{public_key},
@@ -1118,9 +1117,7 @@ sub login_switch_widget {
 			    }
 			); 
 	}
-#	use Data::Dumper; 
-#	warn Data::Dumper::Dumper($lists); 
-	
+
 	return DADA::Template::Widgets::screen(
 				{
 				    -screen => 'login_switch_widget.tmpl',
@@ -1662,10 +1659,6 @@ sub screen {
                          	}
 						); 
                 $args->{-list_settings_vars} = $ls->get(-dotted => 1);                
-                #foreach(keys %{$args->{-list_settings_vars}}){ 
-                #    warn $_ . ' => ' . $args->{-list_settings_vars}->{$_};
-                #}
-                
                 
                 if( !exists($args->{-list_settings_vars_param}->{-i_know_what_im_doing}) ){                     
                     # this is to get really naughty bits out: 
@@ -2628,18 +2621,12 @@ sub subscription_form {
 
    
     my ($args) = @_; 
-    
-	
-	#use Data::Dumper; 
-	#warn Dumper($args);
-	
 	
     my $list = undef; 
 	if(exists($args->{-list})){ 
 		$list = $args->{-list};
 	}
     
-	
     if(! exists($args->{-form_type})){ 
 		$args->{-form_type} = 'full';
 	}
@@ -2674,8 +2661,7 @@ sub subscription_form {
 	if(! exists($args->{-add_recaptcha_js})) { 
 		$args->{-add_recaptcha_js} = 0;
 	}
-	warn q{ $args->{-add_recaptcha_js} } . $args->{-add_recaptcha_js}; 
-    
+
     my @available_lists = available_lists(-Dont_Die => 1); 
     if(! $available_lists[0]){ 
         return ''; 
@@ -2729,37 +2715,15 @@ sub subscription_form {
 			# ... 
 		}		
     }
-    		
 
-	my $v2_captcha_string = undef;
-
-
-		
-	if(
-		   $DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} eq 'v2'
-		&& $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
-		&& length($DADA::Config::RECAPTCHA_PARAMS->{v2}->{public_key}) > 1
-		&& length($DADA::Config::RECAPTCHA_PARAMS->{v2}->{private_key}) > 1
-		&& can_use_Google_reCAPTCHA_v2() == 1  
-		) {
-			require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
-			my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
-		    $v2_captcha_string = $cap->get_html();
-	}
-	#else { 
-	#	if($args->{-add_recaptcha_js} == 1){ 
-	#		$args->{-add_recaptcha_js} = 0; 
-	#	}
-	#}     
-	
     if(
 		$list && 
 		check_if_list_exists( -List=> $list, -Dont_Die  => 1) > 0
 	){ 
+	
 		require DADA::MailingList::Settings; 
         my $ls = DADA::MailingList::Settings->new({-list => $list}); 
   
-
 		# This is so that we don't show the entire form, if we don't have to:
 		if(
 			(
@@ -2778,7 +2742,6 @@ sub subscription_form {
 		my $tmpl_name = 'subscription_form_widget.tmpl'; 
 		if($args->{-form_type} eq 'minimal'){ 
  			$tmpl_name = 'minimal_subscription_form.tmpl'; 
-			warn q{ $args->{-add_recaptcha_js} #3 } . $args->{-add_recaptcha_js}; 
 		}
 		elsif($args->{-form_type} eq 'form_fields_example'){ 
  			$tmpl_name = 'subscription_form_fields_example.tmpl'; 
@@ -2787,9 +2750,7 @@ sub subscription_form {
 		require DADA::MailingList::Consents; 
 		my $con           = DADA::MailingList::Consents->new; 
 		my $list_consents = $con->give_me_all_consents($ls); 
-		
-		warn q{ $args->{-add_recaptcha_js} #2: } . $args->{-add_recaptcha_js}; 
-		
+				
         return screen({
             -screen => $tmpl_name, 
             -vars   => {
@@ -2804,7 +2765,6 @@ sub subscription_form {
 							subscription_form_id     => $args->{-subscription_form_id}, 
 							show_fieldset            => $args->{-show_fieldset}, 
 							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
-#							v2_captcha_string        => $v2_captcha_string,		
 							list_consents            => $list_consents, 					
 							
                         },
@@ -2816,29 +2776,28 @@ sub subscription_form {
   
     }
     else { 
-
 		return screen({
             -screen => 'subscription_form_widget.tmpl', 
             -vars   => {
-                            single_list              => 0, 
-                            subscriber_fields        => $named_subscriber_fields,
-                            list                     => $list, 
-                            email                    => $args->{-email},
-                            list_popup_menu          => list_popup_menu(-disable_invite_only => 1),
-                            list_checkbox_menu       => list_popup_menu(-as_checkboxes => 1), 
-                            multiple_lists           => $args->{-multiple_lists}, 
-                            script_url               => $args->{-script_url}, 
-							show_fields              => $args->{-show_fields}, 
-							profile_logged_in        => $args->{-profile_logged_in}, 
-							subscription_form_id     => $args->{-subscription_form_id}, 
-							show_fieldset            => $args->{-show_fieldset}, 
-							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
-							v2_captcha_string        => $v2_captcha_string,		
-                        }
-                    });      
+	            single_list              => 0, 
+	            subscriber_fields        => $named_subscriber_fields,
+	            list                     => $list, 
+	            email                    => $args->{-email},
+	            list_popup_menu          => list_popup_menu(-disable_invite_only => 1),
+	            list_checkbox_menu       => list_popup_menu(-as_checkboxes => 1), 
+	            multiple_lists           => $args->{-multiple_lists}, 
+	            script_url               => $args->{-script_url}, 
+				show_fields              => $args->{-show_fields}, 
+				profile_logged_in        => $args->{-profile_logged_in}, 
+				subscription_form_id     => $args->{-subscription_form_id}, 
+				show_fieldset            => $args->{-show_fieldset}, 
+				add_recaptcha_js         => $args->{-add_recaptcha_js}, 
+			}
+    	});      
     }
 
 }
+
 
 
 sub unsubscription_form { 

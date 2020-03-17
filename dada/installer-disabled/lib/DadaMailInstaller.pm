@@ -1393,10 +1393,6 @@ sub grab_former_config_vals {
 				= $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{score_threshold};
         }
 		
-        if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{on_subscribe_form} ) ) {
-            $opt->{'captcha_params_on_subscribe_form'} = $BootstrapConfig::RECAPTCHA_PARAMS->{on_subscribe_form};
-        }
-
         if ( defined( $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key} ) ) {
             $opt->{'captcha_reCAPTCHA_Mailhide_public_key'} = $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key};
         }
@@ -1804,8 +1800,6 @@ sub query_params_to_install_params {
 	  
       configure_captcha
       captcha_params_recaptcha_type
-	  
-	  captcha_params_on_subscribe_form
 	  
       captcha_params_v2_public_key
       captcha_params_v2_private_key
@@ -2703,9 +2697,7 @@ sub create_dada_config_file {
     my $captcha_params = {};
     if ( $ip->{-configure_captcha} == 1 ) {
         $captcha_params->{configure_captcha}                = 1;
-        $captcha_params->{captcha_params_recaptcha_type}    = $ip->{-captcha_params_recaptcha_type};
-        $captcha_params->{captcha_params_on_subscribe_form} = clean_up_var( $ip->{-captcha_params_on_subscribe_form} );
-		
+        $captcha_params->{captcha_params_recaptcha_type}    = $ip->{-captcha_params_recaptcha_type};		
 		# This isn't a thing: 
 		# $captcha_params->{captcha_reCAPTCHA_remote_addr} = clean_up_var( $ip->{-captcha_reCAPTCHA_remote_addr} );
        

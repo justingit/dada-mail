@@ -3698,10 +3698,12 @@ sub list_options {
 
     my $can_use_captcha       = can_use_Google_reCAPTCHA();	
 	my $using_captcha_on_initial_subscribe_form = 0; 
-	if($can_use_captcha == 1 && $DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1){ 
+	if(
+		$can_use_captcha                                          == 1 
+		&& $ls->param('enable_captcha_on_initial_subscribe_form') == 1
+	){ 
 		$using_captcha_on_initial_subscribe_form = 1; 
 	}
-
 
     if ( !$process ) {
         require HTML::Menu::Select;
@@ -3809,6 +3811,7 @@ sub list_options {
                     get_sub_notice                                          => 0,
                     get_unsub_notice                                        => 0,
                     enable_closed_loop_opt_in                               => 0,
+					enable_captcha_on_initial_subscribe_form                => 0,
                     send_unsub_success_email                                => 0,
                     send_sub_success_email                                  => 0,
                     send_newest_archive                                     => 0,

@@ -144,7 +144,7 @@ sub subscription_check {
 		}
 		
 		unless (
-			$DADA::Config::RECAPTCHA_PARAMS->{on_subscribe_form} == 1
+			$ls->param('enable_captcha_on_initial_subscribe_form') == 1
 			&& can_use_Google_reCAPTCHA() == 1
 		){ 
 			#... 

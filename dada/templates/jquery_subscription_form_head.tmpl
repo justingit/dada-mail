@@ -6,7 +6,7 @@
 
 <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.dadamail.js"></script>
 
-<!-- tmpl_if captcha_params_on_subscribe_form -->
+<!-- tmpl_if list_settings.enable_captcha_on_initial_subscribe_form -->
 	<!-- tmpL_if can_use_Google_reCAPTCHA_v2 -->
 	    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
 	    <script type="text/javascript">
