@@ -2148,159 +2148,164 @@
 					>			
 				Configure CAPTCHA Options
 			</label>
-	
-					<div class="alert-box info radius"> 
-						<ul>
-							<!-- tmpl_if can_use_CAPTCHA_Google_reCAPTCHA_v2 --> 
-								<li>
-									<strong>reCAPTCHA v2</strong> is supported.
-								</li>
-							<!-- tmpl_else --> 
-								<li>
-									The <strong>Google::reCAPTCHA</strong> 
-									CPAN module needs to be installed, for reCAPTCHA v2 support. 
-								</li>
-							<!-- /tmpl_if -->
+				<div id="captcha_options">
+					<div class="panel">
+						
+						<div class="alert-box info radius"> 
+							<ul>
+								<!-- tmpl_if can_use_CAPTCHA_Google_reCAPTCHA_v2 --> 
+									<li>
+										<strong>reCAPTCHA v2</strong> is supported.
+									</li>
+								<!-- tmpl_else --> 
+									<li>
+										The <strong>Google::reCAPTCHA</strong> 
+										CPAN module needs to be installed, for reCAPTCHA v2 support. 
+									</li>
+								<!-- /tmpl_if -->
 							
-							<!-- tmpl_if can_use_CAPTCHA_Google_reCAPTCHA_v3 --> 
-								<li>
-									<strong>reCAPTCHA v3</strong> is supported.
-								</li>
-							<!-- tmpl_else --> 
-								<li>
-									The <strong>Google::reCAPTCHA::v3</strong> 
-									CPAN module needs to be installed, for reCAPTCHA v3 support. 
-								</li>
-							<!-- /tmpl_if -->
+								<!-- tmpl_if can_use_CAPTCHA_Google_reCAPTCHA_v3 --> 
+									<li>
+										<strong>reCAPTCHA v3</strong> is supported.
+									</li>
+								<!-- tmpl_else --> 
+									<li>
+										The <strong>Google::reCAPTCHA::v3</strong> 
+										CPAN module needs to be installed, for reCAPTCHA v3 support. 
+									</li>
+								<!-- /tmpl_if -->
 							
 							
 														
-							<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA_Mailhide --> 
-								<li> 
-									<strong>reCAPTCHA Mailhide</strong> is supported.
-								</li>
-							<!-- tmpl_else --> 
-								<li>
-									The <strong>CAPTCHA::reCAPTCHA::Mailhide</strong> CPAN module needs to be installed, for reCAPTCHA Mailhide support. 
-								</li> 
-							<!-- /tmpl_if -->
-						</ul>
-					</div> 
+								<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA_Mailhide --> 
+									<li> 
+										<strong>reCAPTCHA Mailhide</strong> is supported.
+									</li>
+								<!-- tmpl_else --> 
+									<li>
+										The <strong>CAPTCHA::reCAPTCHA::Mailhide</strong> CPAN module needs to be installed, for reCAPTCHA Mailhide support. 
+									</li> 
+								<!-- /tmpl_if -->
+							</ul>
+						</div> 
 					
-					<div> 
-						<label for="captcha_params_recaptcha_type_v2">
-							<input 
-								type="radio" 
-								name="captcha_params_recaptcha_type" 
-								id="captcha_params_recaptcha_type_v2" 
-								value="v2" 
-							>
-								reCAPTCHA v2
-							</label>
+						<div> 
+							<label for="captcha_params_recaptcha_type_v2">
+								<input 
+									type="radio" 
+									name="captcha_params_recaptcha_type" 
+									id="captcha_params_recaptcha_type_v2" 
+									value="v2" 
+								>
+									reCAPTCHA v2
+								</label>
 
-						<div class="row">
-							<div class="small-1 columns">
-							</div>
+							<div class="row">
 							
-							<div class="small-11 columns">
+								<div class="small-1 columns">
+								</div>
+							
+								<div class="small-11 columns">
 								
-							<label  for="captcha_params_v2_public_key">
-								reCAPTCHA v2 Site key:
-							</label> 
-							<input type="text" name="captcha_params_v2_public_key" id="captcha_params_v2_public_key" value="">
+									<label  for="captcha_params_v2_public_key">
+										reCAPTCHA v2 Site key:
+									</label> 
+									<input 
+										type="text" 
+										name="captcha_params_v2_public_key" 
+										id="captcha_params_v2_public_key" 
+										value=""
+									>
 
 
-							<label  for="captcha_params_v2_private_key">
-								reCAPTCHA v2 Secret key:
-							</label> 
-							<input
-								type="text"
-								name="captcha_params_v2_private_key"
-								id="captcha_params_v2_private_key"
-								value=""
-							>
+								<label  for="captcha_params_v2_private_key">
+									reCAPTCHA v2 Secret key:
+								</label> 
+							
+								<input
+									type="text"
+									name="captcha_params_v2_private_key"
+									id="captcha_params_v2_private_key"
+									value=""
+								>
 						
-						
-						
-		
 								<input
 									type="button"
 									class="processing test_CAPTCHA_configuration small button expand" 
 									value="Test reCAPTCHA V2 Configuration..."
 								>
-		
-		
+	
+	
 								<div id="test_CAPTCHA_configuration_results"></div> 
+							
 								<script src="https://www.google.com/recaptcha/api.js?render=explicit"></script>
 
 							</div> 
 						</div>
-					</div>
+			
+					
+						<div> 
+							<label for="captcha_params_recaptcha_type_v3">
+								<input 
+									type="radio" 
+									name="captcha_params_recaptcha_type" 
+									id="captcha_params_recaptcha_type_v3" 
+									value="v3" 
 
-
-
-
-					<div> 
-						<label for="captcha_params_recaptcha_type_v3">
-							<input 
-								type="radio" 
-								name="captcha_params_recaptcha_type" 
-								id="captcha_params_recaptcha_type_v3" 
-								value="v3" 
-
-							>
-							reCAPTCHA v3
-						</label>
-
-						<div class="row">
-							<div class="small-1 columns">
-							</div>
-							
-							<div class="small-11 columns">
-
-								<label  for="captcha_params_v3_public_key">
-									reCAPTCHA v3 Site key:
-								</label> 
-								<input type="text" name="captcha_params_v3_public_key" id="captcha_params_v3_public_key" value="">
-
-
-								<label  for="captcha_params_v3_private_key">
-									reCAPTCHA v3 Secret key:
-								</label> 
-								<input
-									type="text"
-									name="captcha_params_v3_private_key"
-									id="captcha_params_v3_private_key"
-									value=""
 								>
+								reCAPTCHA v3
+							</label>
+
+							<div class="row">
+								<div class="small-1 columns">
+								</div>
+							
+								<div class="small-11 columns">
+
+									<label  for="captcha_params_v3_public_key">
+										reCAPTCHA v3 Site key:
+									</label> 
+									<input type="text" name="captcha_params_v3_public_key" id="captcha_params_v3_public_key" value="">
+
+
+									<label  for="captcha_params_v3_private_key">
+										reCAPTCHA v3 Secret key:
+									</label> 
+									<input
+										type="text"
+										name="captcha_params_v3_private_key"
+										id="captcha_params_v3_private_key"
+										value=""
+									>
 								
-								<div class="row">
-									<div class="small-6 columns">
+									<div class="row">
+										<div class="small-6 columns">
 										
-										<!-- medium-only-text-right large-only-text-right -->
-										<label 
-											for="captcha_params_v3_score_threshold" 
-											class=""
-										>
-											Score Threshold:
-										</label>
+											<!-- medium-only-text-right large-only-text-right -->
+											<label 
+												for="captcha_params_v3_score_threshold" 
+												class=""
+											>
+												Score Threshold:
+											</label>
 									
-									  <select 
-									  	name="captcha_params_v3_score_threshold" 
-										id="captcha_params_v3_score_threshold"
-									   > 
-									   <option value=".9">.9</option>
-									   <option value=".8">.8</option>
-									   <option value=".7">.7</option>
-									   <option value=".6">.6</option>
-									   <option value=".5" selected="selected">.5</option>
-									   <option value=".4">.4</option>
-									   <option value=".3">.3</option>
-									   <option value=".2">.2</option>
-									   <option value=".1">.1</option>
-									  </select>
-								</div> 
-								<div class="small-6 columns">
+										  <select 
+										  	name="captcha_params_v3_score_threshold" 
+											id="captcha_params_v3_score_threshold"
+										   > 
+										   <option value=".9">.9</option>
+										   <option value=".8">.8</option>
+										   <option value=".7">.7</option>
+										   <option value=".6">.6</option>
+										   <option value=".5" selected="selected">.5</option>
+										   <option value=".4">.4</option>
+										   <option value=".3">.3</option>
+										   <option value=".2">.2</option>
+										   <option value=".1">.1</option>
+										  </select>
+									</div> 
+									<div class="small-6 columns">
+									</div>
 								</div>
 							</div>
 						</div>
@@ -2310,34 +2315,42 @@
 
 
 
+						<h4>reCAPTCHA Mailhide Settings</h4>
+						
+						<div class="row">
+							<div class="small-1 columns">
+							</div>
+						
+							<div class="small-11 columns">
+								
+								<strong>
+								More Information: 
+								</strong>
+								<a href="https://www.google.com/recaptcha/admin#mailhide" target="_blank">
+								https://www.google.com/recaptcha/admin#mailhide
+								</a>
 
-					<h4>reCAPTCHA Mailhide Settings</h4>
 
-					<strong>
-					More Information: 
-					</strong>
-					<a href="https://www.google.com/recaptcha/admin#mailhide" target="_blank">
-					https://www.google.com/recaptcha/admin#mailhide
-					</a>
+								<label  for="captcha_reCAPTCHA_Mailhide_public_key">
+									reCAPTCHA Mailhide Public Key
+								</label> 
+								<input type="text" name="captcha_reCAPTCHA_Mailhide_public_key" id="captcha_reCAPTCHA_Mailhide_public_key" value="">
 
+								<label  for="captcha_reCAPTCHA_Mailhide_private_key">
+									reCAPTCHA Mailhide Private Key
+								</label> 
+								<input type="text" name="captcha_reCAPTCHA_Mailhide_private_key" id="captcha_reCAPTCHA_Mailhide_private_key" value="">
 
-					<label  for="captcha_reCAPTCHA_Mailhide_public_key">
-						reCAPTCHA Mailhide Public Key
-					</label> 
-					<input type="text" name="captcha_reCAPTCHA_Mailhide_public_key" id="captcha_reCAPTCHA_Mailhide_public_key" value="">
-
-					<label  for="captcha_reCAPTCHA_Mailhide_private_key">
-						reCAPTCHA Mailhide Private Key
-					</label> 
-					<input type="text" name="captcha_reCAPTCHA_Mailhide_private_key" id="captcha_reCAPTCHA_Mailhide_private_key" value="">
-
-					<input type="button" class="processing test_captcha_reCAPTCHA_Mailhide_configuration small button expand" value="Test reCAPTCHA Mailhide Configuration">
+								<input type="button" class="processing test_captcha_reCAPTCHA_Mailhide_configuration small button expand" value="Test reCAPTCHA Mailhide Configuration">
 		
-					<div id="captcha_reCAPTCHA_Mailhide_configuration_results"></div> 
+								<div id="captcha_reCAPTCHA_Mailhide_configuration_results"></div> 
+							</div>
+						</div>
 		
-				</div> 
+					</div> 
+				</div>
 			</div>
-	
+		</div>
 		<!-- /tmpl_if --> 
 
 		<!-- tmpl_if show_global_mailing_list_options --> 
