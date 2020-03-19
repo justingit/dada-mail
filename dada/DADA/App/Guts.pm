@@ -1,14 +1,10 @@
 package DADA::App::Guts; 
 
-
-
-
 use lib "../../";
 use lib "../../DADA/perllib";
 
 use Carp qw(carp croak);
 use DADA::Config qw(!:DEFAULT);  
-
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Guts};
 
