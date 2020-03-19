@@ -5,7 +5,7 @@
 
 =head1 11.10.0 
 
-=head2
+=head2 Features
 
 =head3 Google reCAPTCHA v3 Support
 
