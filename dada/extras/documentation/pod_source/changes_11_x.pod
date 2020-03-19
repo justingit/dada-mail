@@ -11,9 +11,9 @@
 
 Google reCAPTCHA v3 is now fully supported in Dada Mail. 
 reCAPTCHA v2 was supported in the past, 
-and is still is supported going forward. 
+and will still be supported going forward. 
  
-reCAPTCHA v2 and v3 can be configured with the included Dada Mail Installer, 
+reCAPTCHA v2 and v3 can be configured within the included Dada Mail Installer, 
 and switching between either can also be done via the Installer.
 
 =head4 Additional reCAPTCHA support throughout the app
@@ -52,7 +52,7 @@ Furthermore, several bugs related to reCAPTCHA have been addresses (see below).
 
 =head3 reCAPTCHA setting on initial subscription form is now a per-mailing-list setting rather than global
 
-Basically this means, if you want some lists to have reCAPTCHA, and others to not, you can. Find the new setting in the list control panel under, 
+If you would like some mailing lists to have reCAPTCHA on their subscription forms, and others to not: you can. Find the new setting in the list control panel under, 
 
 I<Mailing List: Options>
 
@@ -62,8 +62,7 @@ I<Enable Google reCAPTCHA on the initial subscription form>
 
 =head3 More Analytics Gathered for Mass Mailings
 
-Along with such things as messages opens, clickthroughs, bounces, etc, Dada Mail now tracks and reports the following to help you 
-better understand the performance of your mass mailing: 
+Along with such things as messages opens, clickthroughs, bounces, etc, Dada Mail now tracks and reports the following to help you better understand the performance of your mass mailing: 
 
 =over
 
