@@ -576,29 +576,46 @@ Related to showing information via map charts, Dada Mail, by default anonymized 
 
 =head2 Configure CAPTCHA Options
 
-Dada Mail uses CAPTCHA challenge-response tests optionally for many things: for the initial signup form, as an additional step to confirm a subscription, the Forward a Friend form, and other places. Dada Mail only supports Google's reCAPTCHA v2. 
+Dada Mail uses CAPTCHA challenge-response tests optionally for many things: for the initial signup form, as an additional step to confirm a subscription, the Forward a Friend form, and other places. 
+Dada Mail supports Google's reCAPTCHA v2 and v3. 
 
-Dada Mail also supports Mailhide, which uses the reCAPTCHA system to easily protect email addresses shown in Dada Mail's public archives. 
+Dada Mail also supports Mailhide, which uses the reCAPTCHA system to easily protect email addresses shown in Dada Mail's public archives.
 
 B<More Information:> L<https://dadamailproject.com/d/features-CAPTCHA.pod.html>
 
-In this section, we can configure the CAPTCHA options in Dada Mail: 
+In this section, we can configure the CAPTCHA options in Dada Mail. 
 
-=head3 Add CAPTCHA on all subscription forms 
+=head3 reCAPTCHA v2 
 
-Select this option (B<default>) to add a CAPTCHA to all the subscription forms used by Dada Mail, including the subscrption form for all available mailings on Dada Mail's default screen. 
+Select this radio button if you would like to use reCAPTCHA v2
 
-=head3 reCAPTCHA Site key: 
+=head4 reCAPTCHA Site key: 
 
-Plug in your reCAPTCHA Site key here. 
+Plug in your reCAPTCHA v2 Site key here. 
 
-=head3 reCAPTCHA Secret key: 
+=head4 reCAPTCHA Secret key: 
 
-Plug in your reCAPTCHA Secret key here. 
+Plug in your reCAPTCHA v2 Secret key here. 
 
 =head4 Test CAPTCHA Configuration
 
-Once you've made your selection of what type of CAPTCHA system to use, and inputted any necessary information, you may use the, B<Test CAPTCHA Configuration> button to make sure the CAPTCHA system is working. Results should be shown below the button, as well as an example of the CAPTCHA widget. If the widget does not show, double-check that the information you've added is correct. 
+Once you've made your selection of what type of CAPTCHA system to use, and inputed any necessary information, you may use the, B<Test CAPTCHA Configuration> button to make sure the CAPTCHA system is working. Results should be shown below the button, as well as an example of the CAPTCHA widget. If the widget does not show, double-check that the information you've added is correct. 
+
+=head3 reCAPTCHA v3 
+
+Select this radio button if you would like to use reCAPTCHA v3
+
+=head4 reCAPTCHA Site key: 
+
+Plug in your reCAPTCHA v3 Site key here. 
+
+=head4 reCAPTCHA Secret key: 
+
+Plug in your reCAPTCHA v3 Secret key here. 
+
+=head4 Score Threshold
+
+reCAPTCHA v3 returns a score (1.0 is very likely a good interaction, 0.0 is very likely a bot). Depending on how strict you'd like the reCAPTCHA check to be, you may customize the score threshold, here. The default is, C<.5>. 
 
 =head3 reCAPTCHA Mailhide
 
