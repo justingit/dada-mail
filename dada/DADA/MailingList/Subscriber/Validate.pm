@@ -142,25 +142,27 @@ sub subscription_check {
 	    if ($skip{captcha_challenge_failed}){ 
 			#... 
 		}
-		
-		unless (
-			$ls->param('enable_captcha_on_initial_subscribe_form') == 1
-			&& can_use_Google_reCAPTCHA() == 1
-		){ 
-			#... 
-		}
 		else { 
-			# This is where we do te things. 
-			my $captcha_status = validate_recaptcha(
-				{
-					 -response    => $args->{-captcha_params}->{-response}, 
-					 -remote_addr => $args->{-captcha_params}->{-remote_addr},
-				}
-			);
+		
+			unless (
+				$ls->param('enable_captcha_on_initial_subscribe_form') == 1
+				&& can_use_Google_reCAPTCHA() == 1
+			){ 
+				#... 
+			}
+			else { 
+				# This is where we do te things. 
+				my $captcha_status = validate_recaptcha(
+					{
+						 -response    => $args->{-captcha_params}->{-response}, 
+						 -remote_addr => $args->{-captcha_params}->{-remote_addr},
+					}
+				);
 			
-			if($captcha_status == 0){ 
-				$errors->{captcha_challenge_failed} = 1; 
-				return (0, $errors);
+				if($captcha_status == 0){ 
+					$errors->{captcha_challenge_failed} = 1; 
+					return (0, $errors);
+				}
 			}
 		}
 	}
