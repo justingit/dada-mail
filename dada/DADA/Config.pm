@@ -1740,8 +1740,8 @@ $ATTACHMENT_TEMPFILE //= 0;
 $MAIL_VERP_SEPARATOR //= '-';
 
 
-$VERSION = 11.10.0;
-$VER     = '11.10.0 Stable 2/18/20';
+$VERSION = 11.10.1;
+$VER     = '11.10.1 Stable 2/24/20';
 
 #
 #

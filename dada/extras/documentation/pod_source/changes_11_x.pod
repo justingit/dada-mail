@@ -3,6 +3,20 @@
 
 =encoding utf-8
 
+=head1 11.10.1
+
+This is mostly a bug-fix release for issues found in the v11.10.0 release of Dada Mail.
+
+=head2 Bugfixes
+
+=head3 Subscription confirmation fails if reCAPTCHA on initial subscription form is activated #911 
+
+L<https://github.com/justingit/dada-mail/issues/911>
+
+=head3 Javascript Alert Box Debug Code Showing #910 
+
+L<https://github.com/justingit/dada-mail/issues/910>
+
 =head1 11.10.0 
 
 =head2 Features
