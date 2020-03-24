@@ -74,8 +74,7 @@
 						 else {
 							 // I don't necessarily like explicitly naming the field here, 
 							 // so this may change in the future. 
-							 alert('$("#subscription_form_gr").attr("recaptcha_id"): ' + $("#subscription_form_gr").attr("data-recaptcha_id"));
-							 if (grecaptcha.getResponse($("#subscription_form_gr").attr("data-recaptcha_id")) == '') {
+							 if (grecaptcha.getResponse($("#subscription_form_gr").attr("data-recaptcha_id")) === '') {
 								 return true;
 					         } else {
 					             return false;
