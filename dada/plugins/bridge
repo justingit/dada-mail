@@ -1350,9 +1350,12 @@ sub inject_msg {
     if ( $status == 0 ) {
         return $error_msg;
     }
-    require File::Slurp;
-    my $msg = File::Slurp::read_file($filename, binmode => ':encoding(' . $DADA::Config::HTML_CHARSET . ')');
-
+    require File::Slurper;	 
+	 my $msg = File::Slurper::read_text(
+	 	$filename, 
+		$DADA::Config::HTML_CHARSET
+	);
+	
     try { 
         $msg = decode( 'UTF-8', $msg );
     } catch {
