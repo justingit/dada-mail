@@ -671,6 +671,24 @@
 					</label>
 				</div>
 			</div> 
+
+
+			<div class="row">
+				<div class="small-12 columns">
+					<label for="bridge_announce_reply_to_list_email">
+					<input 
+						type="radio" 
+						name="bridge_announce_reply_to" 
+						id="bridge_announce_reply_to_list_email" 
+						value="list_email" 
+						<!-- tmpl_if expr="(list_settings.bridge_announce_reply_to eq 'list_email')" -->checked="checked"<!--/tmpl_if-->
+					>
+						To the List Email (<!-- tmpl_var list_settings.discussion_pop_email ESCAPE="HTML" -->)
+					</label>
+				</div>
+			</div> 
+
+
 			<div class="row">
 				<div class="small-12 columns">
 					<label for="bridge_announce_reply_to_og_sender">

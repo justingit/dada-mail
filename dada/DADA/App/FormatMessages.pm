@@ -1417,7 +1417,16 @@ sub _format_headers {
             $entity->head->add( 'Reply-To',
                 $self->{ls}->param('list_owner_email') );
         }
-        elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'og_sender' )
+		elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'list_email' ) {
+            if ( $entity->head->count('Reply-To') ) {
+                $entity->head->delete('Reply-To');
+            }
+            warn q{$entity->head->add( 'Reply-To', $self->{ls}->param('discussion_pop_email') );}
+              if $t;
+            $entity->head->add( 'Reply-To',
+                $self->{ls}->param('discussion_pop_email') );
+		}
+		elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'og_sender' )
         {
             warn q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
               if $t;
@@ -1433,18 +1442,19 @@ sub _format_headers {
             else {
                 warn q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}
                   if $t;
-                
-				if ($self->{ls}->param('enable_authorized_sending') == 1){
-					$entity->head->add( 'Reply-To',
-	                    $entity->head->get( 'X-Original-From', 0 ) );
-				}
-				else {	
-					$entity->head->add( 'Reply-To',
-	                    $entity->head->get( 'From', 0 ) );
-				}
+
+                if ( $self->{ls}->param('enable_authorized_sending') == 1 ) {
+                    $entity->head->add( 'Reply-To',
+                        $entity->head->get( 'X-Original-From', 0 ) );
+                }
+                else {
+                    $entity->head->add( 'Reply-To',
+                        $entity->head->get( 'From', 0 ) );
+                }
             }
         }
         elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'none' ) {
+
             #...
         }
     }
