@@ -14,8 +14,6 @@ use HTML::LinkExtor;
 use URI::file;
 use URI;
 
-# Need to ship with:
-use File::Slurp;
 use DADA::Security::Password;
 use DADA::App::Guts;
 
@@ -187,6 +185,7 @@ sub switcheroo {
         return if $tag ne 'img';    # we only look closer at <a ...>
         my $src = $attr{src};
 
+		# wtf? 
         my $filemanager = 'kcfinder';
         if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
             # ...
@@ -194,9 +193,13 @@ sub switcheroo {
         elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
             $filemanager = 'core5_filemanager';
         }
+        elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ) {
+            $filemanager = 'rich_filemanager';
+		}
 
 
         if ( $src =~ m/^data/ ) {
+			
             my $uri = URI->new($src);
             my $type;
             my $data;
@@ -247,9 +250,9 @@ sub switcheroo {
             }
 
             open my $img, '>', $full_path or die $!;
-            print $img $uri->data();
-            close $img;
-
+            print $img $uri->data() or die $!;
+            close $img or die $!;
+			
             my $src2 = $src;
 
             my $search_src = quotemeta($src);
@@ -259,6 +262,8 @@ sub switcheroo {
             my $search_src2 = quotemeta($src2);
 
             my $full_url = $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_url} . '/images/' . $filename;
+			
+			
             $msg =~ s/$search_src/$full_url/;
             $msg =~ s/$search_src2/$full_url/;
 

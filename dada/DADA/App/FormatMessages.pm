@@ -470,9 +470,9 @@ sub format_mlm {
         # Change inlined images into separate files we'll link
         # (and hopefully embed later down the chain)
         if (   $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1
-            || $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}
-            ->{enabled} == 1 )
-        {
+            || $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1
+            || $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 
+			){
             try {
                 require
                   DADA::App::FormatMessages::Filters::InlineEmbeddedImages;

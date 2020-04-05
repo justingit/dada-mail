@@ -241,42 +241,54 @@ sub absUrl($$) {
 sub pattern_image_cid {
 	my $sel = shift;
 	
-	if($t){
-		warn 'pattern_image_cid';
-		warn '$_[0]:' . $_[0]; 
-		warn '$_[1]:' . $_[1];
-		warn '$_[2]:' . $_[2]; 
-		warn '$_[3]:' . $_[3]; 	
-	}
+	
+	my $img_src          = $_[1]; 
 	my $image_part_added = $_[3]; 
+	
 	my $r; 
+	
 	if(exists($image_part_added->{$_[1]})){ 
-		
-		if($image_part_added->{$_[1]} == 1){ 
-			
+
+		if($image_part_added->{$_[1]} == 1){ 		
 			$r = '<img ' . $_[0] . 'src="cid:' . $sel->cid( absUrl( $_[1], $_[2] ) ) . '"';
 		}
 		else { 
-			
 			# same as pattern_image... 
 			# should just call pattern_image...
 			 $r = '<img ' . $_[0] . 'src="' . absUrl( $_[1], $_[2] ) . '"';
 		}
 	}
 	else { 
-	
 		# welp, guess it's OK:
-		$r = '<img ' . $_[0] . 'src="cid:' . $sel->cid( absUrl( $_[1], $_[2] ) ) . '"';
+		
+		if($img_src =~ m/^data\:/){
+			# I just don't understand (yet) how this gets in $image_part_added
+			$r = '<img ' . $_[0] . 'src="' . $img_src . '"';
+		}
+		else {
+			$r = '<img ' . $_[0] . 'src="cid:' . $sel->cid( absUrl( $img_src, $_[2] ) ) . '"';
+		}
 	}
+	
 	warn '$r: ' . $r
 		if $t; 
+		
 	return $r; 
+
 }
 
 
 # Replace relative url for image with absolute
 sub pattern_image {
-    return '<img ' . $_[0] . 'src="' . absUrl( $_[1], $_[2] ) . '"';
+	my $url = $_[1];
+	my $base =  $_[2]; 
+	
+	if($url =~ m/data\:/){ 
+		return '<img ' . $_[0] . 'src="' . $_[1] . '"';
+	}
+	else {
+		return '<img ' . $_[0] . 'src="' . absUrl( $_[1], $_[2] ) . '"';
+	}
 }
 
 sub pattern_href {
@@ -380,6 +392,7 @@ sub parse {
     for my $url (@l) {
         my $urlAbs = absUrl( $$url[2], $rootPage );
         chomp $urlAbs;    # Sometime a strange cr/lf occur
+			
 				
         # Replace relative href found to absolute one
         if (
@@ -484,13 +497,16 @@ sub parse {
         # Exit with extern configuration, don't include image
 		
 		# "  && ( ( lc( $$url[0] ) eq 'img' ) || ( lc( $$url[0] ) eq 'src' ) )" <-- recently added?
-        elsif (( $self->{_include} ne 'extern' )
+        
+		elsif (
+			   ( $self->{_include} ne 'extern' )
             && ( ( lc( $$url[0] ) eq 'img' ) || ( lc( $$url[0] ) eq 'src' ) )
-            && ( !$images_read{$urlAbs} ) )
+            && ( !$images_read{$urlAbs} ) 
+			&& ( $$url[2] !~ m/^data\:/ ) 
+			)
         {
-			
+				
             $images_read{$urlAbs} = 1;
-			
 			my $img_part = $self->create_image_part($urlAbs);
 			
 			if(defined($img_part)){
@@ -501,6 +517,9 @@ sub parse {
 				$image_part_added->{$urlAbs} = 0; 	
 			}
         }
+		else { 
+		
+		}
     }
 
     # Replace in HTML link with image with cid:key
