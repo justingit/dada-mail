@@ -754,6 +754,9 @@ sub rel_to_abs {
     return $parsed;
 }
 
+
+
+
 sub crop_html {
 
     my $self   = shift;
@@ -1412,35 +1415,41 @@ sub _format_headers {
             if ( $entity->head->count('Reply-To') ) {
                 $entity->head->delete('Reply-To');
             }
-            warn q{$entity->head->add( 'Reply-To', $self->{ls}->param('list_owner_email') );}
+            warn
+q{$entity->head->add( 'Reply-To', $self->{ls}->param('list_owner_email') );}
               if $t;
             $entity->head->add( 'Reply-To',
                 $self->{ls}->param('list_owner_email') );
         }
-		elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'list_email' ) {
+        elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'list_email' )
+        {
             if ( $entity->head->count('Reply-To') ) {
                 $entity->head->delete('Reply-To');
             }
-            warn q{$entity->head->add( 'Reply-To', $self->{ls}->param('discussion_pop_email') );}
+            warn
+q{$entity->head->add( 'Reply-To', $self->{ls}->param('discussion_pop_email') );}
               if $t;
             $entity->head->add( 'Reply-To',
                 $self->{ls}->param('discussion_pop_email') );
-		}
-		elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'og_sender' )
+        }
+        elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'og_sender' )
         {
-            warn q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
+            warn
+q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
               if $t;
             if ( $entity->head->count('Reply-To') ) {
                 $entity->head->delete('Reply-To');
             }
             if ( $entity->head->count('Sender') ) {
-                warn q{ $entity->head->add( 'Reply-To',  $entity->head->get('Sender', 0) );}
+                warn
+q{ $entity->head->add( 'Reply-To',  $entity->head->get('Sender', 0) );}
                   if $t;
                 $entity->head->add( 'Reply-To',
                     $entity->head->get( 'Sender', 0 ) );
             }
             else {
-                warn q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}
+                warn
+q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}
                   if $t;
 
                 if ( $self->{ls}->param('enable_authorized_sending') == 1 ) {
@@ -1453,11 +1462,45 @@ sub _format_headers {
                 }
             }
         }
+        elsif ( $self->{ls}->param('bridge_announce_reply_to') eq
+            'custom_email_address' )
+        {
+            if ( $entity->head->count('Reply-To') ) {
+                $entity->head->delete('Reply-To');
+            }
+            warn
+q{$entity->head->add( 'Reply-To', $self->{ls}->param('discussion_pop_email') );}
+              if $t;
+            warn
+q{$entity->head->add( 'Reply-To', $self->{ls}->param('bridge_announce_reply_to_custom_email_address') );}
+              if $t;
+
+            if (
+                check_for_valid_email(
+                    $self->{ls}
+                      ->param('bridge_announce_reply_to_custom_email_address')
+                ) == 1
+              )
+            {
+                # .... (invalid, don't use!)
+                warn
+'bridge_announce_reply_to_custom_email_address set to an invalid address: '
+                  . $self->{ls}
+                  ->param('bridge_announce_reply_to_custom_email_address');
+            }
+            else {
+                $entity->head->add( 'Reply-To',
+                    $self->{ls}
+                      ->param('bridge_announce_reply_to_custom_email_address')
+                );
+            }
+        }
         elsif ( $self->{ls}->param('bridge_announce_reply_to') eq 'none' ) {
 
             #...
         }
     }
+
 
     if ( $self->{ls}->param('group_list') == 1 ) {
         $entity->head->delete('Return-Path');
