@@ -143,7 +143,7 @@ then merge the existing Dada Mail default theme project.
 
 Starting a new Foundation for Emails project is covered here: 
 
-L<http://foundation.zurb.com/emails/docs/sass-guide.html>
+L<https://get.foundation/emails/docs/sass-guide.html>
 
 In a B<separate> directory, you'll want to download the existing Dada Mail default theme from github: 
 
@@ -167,7 +167,7 @@ You're now all set to develop your own theme.
 The Dada Mail default theme download only contains the source files (in, C<src>), 
 which you will want to compile to create the B<dist> directory by running the server:  
 
-L<http://foundation.zurb.com/emails/docs/sass-guide.html#running-the-server> 
+L<https://get.foundation/emails/docs/sass-guide.html#running-the-server> 
 
 we use the following to compile: 
 
