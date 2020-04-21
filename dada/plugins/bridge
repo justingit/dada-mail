@@ -2365,14 +2365,20 @@ sub notify_of_delivery {
 		};
     }
 
-    my $original_subject = $entity->head->get( 'Subject', 0 );
-    chomp($original_subject);
+	
+    require DADA::App::FormatMessages;
+    my $dfm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
 
+	my $original_subject = $entity->head->get( 'Subject', 0 );
+	chomp($original_subject);
+	$original_subject =~ s/\n//g;
+	$original_subject = $dfm->_decode_header($original_subject);
+	
+	
 	require DADA::App::EmailThemes; 
 	my $em = DADA::App::EmailThemes->new(
 		{ 
-			-list      => $ls->param('list'),
-			
+			-list      => $ls->param('list'),		
 			
 		}
 	);
