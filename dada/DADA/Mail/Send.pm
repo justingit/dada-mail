@@ -2680,66 +2680,54 @@ sub _clarify_dbi_stuff {
     #   copy will still be around.
     ##################################################################
 
-    if (   $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
-        || $DADA::Config::ARCHIVE_DB_TYPE =~ m/SQL/
-        || $DADA::Config::SETTINGS_DB_TYPE =~ m/SQL/ )
-    {
-
-        require DBI;
-        if ( $DBI::VERSION >= 1.49 ) {
-            my %drivers = DBI->installed_drivers;
-            for my $drh ( values %drivers ) {
-                map { $drh->{InactiveDestroy} = 1 } @{ $drh->{ChildHandles} };
-            }
+    require DBI;
+    if ( $DBI::VERSION >= 1.49 ) {
+        my %drivers = DBI->installed_drivers;
+        for my $drh ( values %drivers ) {
+            map { $drh->{InactiveDestroy} = 1 } @{ $drh->{ChildHandles} };
         }
-
-        # Our own DBI handle:
-        require DADA::App::DBIHandle;
-        my $dbih = DADA::App::DBIHandle->new;
-        my $dbh  = $dbih->dbh_obj;
-
-        # Let's get rid of the ones that are known:
-        # DADA::MailingList::Settings
-        $self->{ls}->{dbh}->{InactiveDestroy} = 1;
-        $self->{ls}->{dbh}                    = undef;
-        $self->{ls}->{dbh}                    = $dbh;
-
-        my $pass_id   = $mailout->_internal_message_id;
-        my $pass_type = $mailout->mailout_type;
-
-        # DADA::Mail::MailOut uses DADA::MailingList::Settings and
-        # DADA::MailingList::Subscribers
-        # The only way to figure this out totally is to get rid of the
-        # current DADA::Mail::MailOut object and re-make it. Weird, huh?
-
-        $mailout = undef;
-        $mailout = DADA::Mail::MailOut->new(
-            {
-                -list   => $self->{list},
-                -ls_obj => $self->{ls}
-            }
-        );
-
-        $mailout->associate( $pass_id, $pass_type );
-
-        require DADA::App::Subscriptions::ConfirmationTokens;
-        $self->child_ct_obj(
-            DADA::App::Subscriptions::ConfirmationTokens->new() );
-        $self->child_ct_obj->{dbh} = $dbh;
-
-        ## And many, many more,
-        ## We'd probably have to undef and make a new object for
-        ## DADA::Mail::MailOut....
-        ## And what else?
-        ## DADA::Mail::MailOut needs a way to pass the shared database (now new)
-        ## Handle...
-
     }
-    else {
-        require DADA::App::Subscriptions::ConfirmationTokens;
-        $self->child_ct_obj(
-            DADA::App::Subscriptions::ConfirmationTokens->new() );
-    }
+
+    # Our own DBI handle:
+    require DADA::App::DBIHandle;
+    my $dbih = DADA::App::DBIHandle->new;
+    my $dbh  = $dbih->dbh_obj;
+
+    # Let's get rid of the ones that are known:
+    # DADA::MailingList::Settings
+    $self->{ls}->{dbh}->{InactiveDestroy} = 1;
+    $self->{ls}->{dbh}                    = undef;
+    $self->{ls}->{dbh}                    = $dbh;
+
+    my $pass_id   = $mailout->_internal_message_id;
+    my $pass_type = $mailout->mailout_type;
+
+    # DADA::Mail::MailOut uses DADA::MailingList::Settings and
+    # DADA::MailingList::Subscribers
+    # The only way to figure this out totally is to get rid of the
+    # current DADA::Mail::MailOut object and re-make it. Weird, huh?
+
+    $mailout = undef;
+    $mailout = DADA::Mail::MailOut->new(
+        {
+            -list   => $self->{list},
+            -ls_obj => $self->{ls}
+        }
+    );
+
+    $mailout->associate( $pass_id, $pass_type );
+
+    require DADA::App::Subscriptions::ConfirmationTokens;
+    $self->child_ct_obj(
+        DADA::App::Subscriptions::ConfirmationTokens->new() );
+    $self->child_ct_obj->{dbh} = $dbh;
+
+    ## And many, many more,
+    ## We'd probably have to undef and make a new object for
+    ## DADA::Mail::MailOut....
+    ## And what else?
+    ## DADA::Mail::MailOut needs a way to pass the shared database (now new)
+    ## Handle...
 
     return $mailout;
 

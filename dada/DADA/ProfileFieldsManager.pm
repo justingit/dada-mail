@@ -5,16 +5,14 @@ my $type;
 use DADA::Config qw(!:DEFAULT);
 
 BEGIN {
-    $type = $DADA::Config::SUBSCRIBER_DB_TYPE;
-    if ( $type =~ m/sql/i ) {
-        if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
-            $type = 'SQLite';
-        }
-        else {
-            $type = 'baseSQL';
-        }
+    if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
+        $type = 'SQLite';
+    }
+    else {
+        $type = 'baseSQL';
     }
 }
+
 use base "DADA::ProfileFieldsManager::$type";
 use strict;
 
@@ -67,11 +65,9 @@ sub _init {
     $self->{'log'} = new DADA::Logging::Usage;
 
     $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
-    if ( $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ ) {
-        require DADA::App::DBIHandle;
-        $dbi_obj = DADA::App::DBIHandle->new;
-        $self->{dbh} = $dbi_obj->dbh_obj;
-    }
+    require DADA::App::DBIHandle;
+    $dbi_obj = DADA::App::DBIHandle->new;
+    $self->{dbh} = $dbi_obj->dbh_obj;
 
 	# Init?
 	#$self->{cache}->{fields}  = $self->fields; 

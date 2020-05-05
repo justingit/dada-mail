@@ -1185,9 +1185,7 @@ sub confirm {
                     }
                 );
 
-                if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1
-                    && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ )
-                {
+                if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1) {
                     # Make a profile, if needed,
                     require DADA::Profile;
                     my $prof = DADA::Profile->new( { -email => $email } );
@@ -2647,8 +2645,7 @@ sub subscription_requests {
 
             my $new_pass    = '';
             my $new_profile = 0;
-            if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1
-                && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ )
+            if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1)
             {
                 # Make a profile, if needed,
                 require DADA::Profile;

@@ -44,14 +44,8 @@ sub new {
 	
 	
 	if (
-		(
-			$args->{-override_profile_enable_check} != 1
-		)
-		&&
-		(
-			$DADA::Config::PROFILE_OPTIONS->{enabled} != 1  
-		 || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ 
-		 )
+		   $args->{-override_profile_enable_check}   != 1
+		&& $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
 	) {
         return undef;
     }
@@ -74,12 +68,8 @@ sub _init {
 	
 	if (
 		$self->{override_profile_enable_check} != 1 
-		&&
-		(
-			$DADA::Config::PROFILE_OPTIONS->{enabled} != 1  
-		 || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ 
-		 )
-	) {
+		&& $DADA::Config::PROFILE_OPTIONS->{enabled} != 1  
+ 	) {
 	    # not enabled... 
 	}
 	else { 
@@ -780,14 +770,8 @@ sub allowed_to_view_archives {
     }
  
 	if (
-		(
-			$self->{override_profile_enable_check} != 1 
-		)
-		&&
-		(
-			$DADA::Config::PROFILE_OPTIONS->{enabled} != 1  
-		 || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ 
-		 )
+		$self->{override_profile_enable_check} != 1 
+		&& $DADA::Config::PROFILE_OPTIONS->{enabled} != 1  
 	) {
         return 1;
     }

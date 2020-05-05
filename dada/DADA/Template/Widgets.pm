@@ -1737,7 +1737,7 @@ sub screen {
     
 	###
 
-	if($DADA::Config::PROFILE_OPTIONS->{enabled} == 1 && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
+	if($DADA::Config::PROFILE_OPTIONS->{enabled} == 1){ 
 		if(
 		     exists($args->{-profile_vars})       || 
 		     exists($args->{-profile_vars_param})

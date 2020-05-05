@@ -5443,9 +5443,7 @@ sub subscription_requests {
 
             my $new_pass    = '';
             my $new_profile = 0;
-            if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1
-                && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ )
-            {
+            if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1) {
 
                 # Make a profile, if needed,
                 require DADA::Profile;
@@ -14440,9 +14438,7 @@ sub profile_login {
         }
     }
 
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
-        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
-    {
+    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1) {
         return $self->default();
 
     }
@@ -14595,9 +14591,7 @@ sub profile_register {
     my $self = shift;
     my $q    = $self->query();
 
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
-        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
-    {
+    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1 ) {
         return $self->default();
     }
 
@@ -14667,9 +14661,7 @@ sub profile_activate {
     my $self = shift;
     my $q    = $self->query();
 
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
-        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
-    {
+    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1) {
         return $self->default();
     }
 
@@ -14726,11 +14718,8 @@ sub profile {
         }
     }
 
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
-        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
-    {
+    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1) {
         return $self->default();
-
     }
 
     require DADA::Profile::Session;
@@ -15108,9 +15097,7 @@ sub profile_logout {
     my $self = shift;
     my $q    = $self->query();
 
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
-        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
-    {
+    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1) {
         return $self->default();
     }
 
@@ -15146,9 +15133,7 @@ sub profile_reset_password {
     my $q     = $self->query();
     my $email = $q->param('email');
 
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
-        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
-    {
+    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1) {
         return $self->default();
     }
 

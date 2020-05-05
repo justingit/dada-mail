@@ -9,7 +9,6 @@ use DADA::Config;
 
 use dada_test_config;
 
-#diag('$DADA::Config::SUBSCRIBER_DB_TYPE ' . $DADA::Config::SUBSCRIBER_DB_TYPE);
 
 use strict;
 

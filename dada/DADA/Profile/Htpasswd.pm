@@ -47,17 +47,10 @@ sub _init {
 sub _sql_init {
 
     my $self = shift;
-   $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
-    if ( $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ ) {
-        require DADA::App::DBIHandle;
-        $dbi_obj = DADA::App::DBIHandle->new;
-        $self->{dbh} = $dbi_obj->dbh_obj;
-    }
-	else { 
-		croak "SQL Backend only!"; 
-	}
-	
-	
+    $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
+    require DADA::App::DBIHandle;
+    $dbi_obj = DADA::App::DBIHandle->new;
+    $self->{dbh} = $dbi_obj->dbh_obj;	
 }
 
 

@@ -14,24 +14,14 @@ use DADA::Config qw(!:DEFAULT);
 my $t = 0;
 
 BEGIN {
-    $type = $DADA::Config::SUBSCRIBER_DB_TYPE;
-    if ( $type eq 'SQL' ) {
-        if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
-            $backend = 'MySQL';
-        }
-        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
-            $backend = 'PostgreSQL';
-        }
-        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
-            $backend = 'SQLite';
-        }
+    if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
+        $backend = 'MySQL';
     }
-    elsif ( $type eq 'PlainText' ) {
-        $backend = 'PlainText';
+    elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
+        $backend = 'PostgreSQL';
     }
-    else {
-        die
-"Unknown \$SUBSCRIBER_DB_TYPE: '$type' Supported types: 'PlainText', 'SQL'";
+    elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
+        $backend = 'SQLite';
     }
 }
 
@@ -84,12 +74,10 @@ sub _init {
 
     $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
 
-    if ( $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ ) {
 
-        require DADA::App::DBIHandle;
-        my $dbi_obj = DADA::App::DBIHandle->new;
-        $self->{dbh} = $dbi_obj->dbh_obj;
-    }
+    require DADA::App::DBIHandle;
+    my $dbi_obj = DADA::App::DBIHandle->new;
+    $self->{dbh} = $dbi_obj->dbh_obj;
 
     if ( exists( $args->{-dpfm_obj} ) ) {
         $self->{fields} = DADA::Profile::Fields->new(
@@ -266,8 +254,7 @@ sub add_subscribers {
 	 
     }
 
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1
-        && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ )
+    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1 )
     {
         eval {
             require DADA::Profile::Htpasswd;

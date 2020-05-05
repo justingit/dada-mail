@@ -110,11 +110,6 @@ sub test_sub {
 sub cgi_default { 
 	
 	my $q = shift; 
-	if($DADA::Config::SUBSCRIBER_DB_TYPE !~ /SQL/i){ 
-		return ({}, sql_backend_only_message($q)); 
-	}
-	
-	
     require DADA::Template::Widgets;
 	require DADA::MailingList::Settings; 
 	
