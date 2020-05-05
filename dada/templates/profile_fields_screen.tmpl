@@ -330,7 +330,19 @@
 				</label> 
 			</div>
 	        <div class="large-9 medium-9 columns">
-	                <input 
+	              
+			 	<!-- tmpl_if expr="((using_SQLite == 1) && (edit_field == 1))" -->
+				    <input 
+						type="text" 
+						name="not_field"  
+						id="not_field" 
+						placeholder="field_name"
+						value="<!-- tmpl_var field escape="HTML"  -->"
+						disabled="disabled"
+					>
+					<input type="hidden" name="field" value="<!-- tmpl_var field escape="HTML"  -->">
+				<!-- tmpl_else -->	
+				    <input 
 						type="text" 
 						name="field"  
 						id="field" 
@@ -342,6 +354,8 @@
 								<!-- /tmpl_if -->
 							<!-- /tmpl_if --> 
 						>
+				<!-- /tmpl_if -->
+						
 		 			</div> 
 			 </div>
 

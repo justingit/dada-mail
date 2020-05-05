@@ -10595,9 +10595,7 @@ sub profile_fields {
                 HIDDEN_SUBSCRIBER_FIELDS_PREFIX =>
                   $DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX,
 
-                using_SQLite => $DADA::Config::SUBSCRIBER_DB_TYPE eq 'SQLite'
-                ? 1
-                : 0,
+                using_SQLite => $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ? 1 : 0,
                 field_changes =>
                   xss_filter( scalar $q->param('field_changes') ),
                 working_field =>
