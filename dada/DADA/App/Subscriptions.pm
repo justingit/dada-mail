@@ -879,7 +879,7 @@ sub confirm {
       if $t;
     if ( $ls->param('captcha_sub') == 1 ) {
 		
-        if ( can_use_Google_reCAPTCHA_v2() == 1 ) {
+        if ( can_use_Google_reCAPTCHA() == 1 ) {
             warn '>>>> Captcha step is enabled...'
               if $t;
             my $captcha_worked = 0;
@@ -890,13 +890,17 @@ sub confirm {
                 $captcha_worked = 0;
             }
             else {
-                require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
-                my $cap    = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
-                my $result = $cap->check_answer(
-					$ENV{'REMOTE_ADDR'}, 
-                    $crf,
-                );
-                if ( $result->{is_valid} == 1 ) {
+				
+		        my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
+				my $captcha_status = validate_recaptcha(
+					{
+						 -response    => $crf, 
+						 -remote_addr => $ENV{'REMOTE_ADDR'},
+					}
+				);
+						
+                if ( $captcha_status == 1 ) {
+
                     $captcha_auth   = 1;
                     $captcha_worked = 1;
 					
@@ -922,22 +926,23 @@ sub confirm {
                 }
                 warn '>>>> >>>> Showing confirm_captcha_step_screen screen'
                   if $t;
-                my $cap            = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
-                my $CAPTCHA_string = $cap->get_html();
-                require DADA::Template::Widgets;
+                
+				require DADA::Template::Widgets;
                 my $r = DADA::Template::Widgets::wrap_screen(
                     {
                         -screen                   => 'confirm_captcha_step_screen.tmpl',
                         -with                     => 'list',
-                        -list_settings_vars_param => { -list => $ls->param('list') },
+                        -list_settings_vars_param => { 
+							-list   => $ls->param('list'), 
+			                -dot_it => 1,
+						},
                         -subscriber_vars_param    => {
                             -list  => $ls->param('list'),
                             -email => $email,
                             -type  => 'sub_confirm_list'
                         },
                         -vars                   => {
-                            CAPTCHA_string => $CAPTCHA_string,
-                            flavor         => 't',
+                             flavor         => 't',
                             list           => xss_filter( scalar $q->param('list') ),
                             email          => lc_email( strip( xss_filter( scalar $q->param('email') ) ) ),
                             token          => xss_filter( scalar $q->param('token') ),
