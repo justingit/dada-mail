@@ -669,21 +669,6 @@ sub enforce_admin_cgi_security {
 				$add_vars->{query_string}    = $ENV{QUERY_STRING}; 
 				$add_vars->{path_info}       = $ENV{PATH_INFO}; 
 				
-				
-				
-				if($_ eq 'invalid_password'){ 
-			        my $can_use_captcha = 0;
-			        my $CAPTCHA_string  = '';
-			        my $cap; 
-		            	
-			        if ( can_use_Google_reCAPTCHA_v2() == 1 ) {
-			            require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
-			            $cap    = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
-			            $CAPTCHA_string = $cap->get_html();
-			            $add_vars->{captcha_string}  = $CAPTCHA_string;
-			            $add_vars->{can_use_captcha} = 1;
-			        }
-				}
 				require DADA::Template::Widgets; 
 				my $error_msg = DADA::Template::Widgets::admin(
 					{ 
