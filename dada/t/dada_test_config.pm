@@ -44,7 +44,7 @@ $DADA::Config::PROGRAM_USAGE_LOG        = $DADA::Config::FILES . '/dada.txt';
 use __Test_Config_Vars; 
 
 use lib "$Bin/../DADA/perllib";
-use Params::Validate ':all';
+
 
 use DADA::MailingList; 
 
@@ -109,15 +109,25 @@ sub test_list_vars {
 
 
 sub create_test_list { 
+	
+	my %args = @_; 
+	 
     my $local_test_list_vars = test_list_vars(); 
     delete($local_test_list_vars->{retype_password});
 
-    my %args = validate(@_,{
-        '-name'                     => { default => $local_test_list_vars->{list} },
-        '-list_name'                     => { default => $local_test_list_vars->{list_name} },
-        '-remove_existing_list'     => { default => 0 },
-        '-remove_subscriber_fields' => { default => 0 },
-    });
+	if(!exists($args{-name})){ 
+		$args{-name} = $local_test_list_vars->{list};
+	}
+	if(!exists($args{-name})){ 
+		$args{-list_name} = $local_test_list_vars->{list_name};
+	}
+	if(!exists($args{-remove_existing_list})){ 
+		$args{-remove_existing_list} = 0;
+	}
+	if(!exists($args{-remove_subscriber_fields})){ 
+		$args{-remove_subscriber_fields} = 0;
+	}
+	
 
     my $list_name = $args{-name};
 

@@ -9,7 +9,6 @@ use DADA::Config qw(!:DEFAULT);
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Guts};
 
 use Encode qw(encode decode);
-use Params::Validate ':all';
 use Try::Tiny; 
 
 use Fcntl qw(
@@ -765,14 +764,28 @@ Using all these parameters at once would look something like this:
 
 my $cache = {};
 sub available_lists {
-    my %args = validate(@_, {
-        '-As_Ref'          => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
-        '-In_Order'        => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
-        '-In_Random_Order' => { regex => qr/\A[01]\z/,   optional => 1, default => 0 }, 
-        '-Dont_Die'        => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
-        '-clear_cache'     => { regex => qr/\A[01]\z/,   optional => 1, default => 0 }, 
-    }); 
+    my %args = @_; 
 
+	if(!exists($args{-As_Ref})){ 
+		$args{-As_Ref} = 0; 
+	}
+	
+	if(!exists($args{-In_Order})){ 
+		$args{-In_Order} = 0; 
+	}
+	
+	if(!exists($args{-In_Random_Order})){ 
+		$args{-In_Random_Order} = 0; 
+	}
+	 
+	if(!exists($args{-Dont_Die})){ 
+		$args{-Dont_Die} = 0; 
+	}
+	
+	if(!exists($args{-clear_cache})){ 
+		$args{-clear_cache} = 0; 
+	}
+	
     my $in_order        = $args{-In_Order};
     my $want_ref        = $args{-As_Ref};
     my @dbs             = ();
