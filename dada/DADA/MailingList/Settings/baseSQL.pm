@@ -79,8 +79,8 @@ sub save {
 	
     my ( $self, $args ) = @_;
 
-	my $new_settings  = {%{$args->{-settings}}};
-	my $orig_settings = {%{$args->{-settings}}};
+	my $new_settings  = $args->{-settings};
+	my $orig_settings = $args->{-settings};
 	
 	my $also_save_for = [];
 	if(exists($args->{-also_save_for})) {
