@@ -110,37 +110,37 @@ sub test_list_vars {
 
 sub create_test_list { 
 	
-	my %args = @_; 
+	my ($args) = @_; 
 	 
     my $local_test_list_vars = test_list_vars(); 
     delete($local_test_list_vars->{retype_password});
 
-	if(!exists($args{-name})){ 
-		$args{-name} = $local_test_list_vars->{list};
+	if(!exists($args->{-name})){ 
+		$args->{-name} = $local_test_list_vars->{list};
 	}
-	if(!exists($args{-name})){ 
-		$args{-list_name} = $local_test_list_vars->{list_name};
+	if(!exists($args->{-list_name})){ 
+		$args->{-list_name} = $local_test_list_vars->{list_name};
 	}
-	if(!exists($args{-remove_existing_list})){ 
-		$args{-remove_existing_list} = 0;
+	if(!exists($args->{-remove_existing_list})){ 
+		$args->{-remove_existing_list} = 0;
 	}
-	if(!exists($args{-remove_subscriber_fields})){ 
-		$args{-remove_subscriber_fields} = 0;
+	if(!exists($args->{-remove_subscriber_fields})){ 
+		$args->{-remove_subscriber_fields} = 0;
 	}
 	
 
-    my $list_name = $args{-name};
+    my $list_name = $args->{-name};
 
-	$local_test_list_vars->{list_name} = $args{-list_name};
+	$local_test_list_vars->{list_name} = $args->{-list_name};
 	
-    if($args{-remove_existing_list} == 1){ 
+    if($args->{-remove_existing_list} == 1){ 
         require DADA::App::Guts; 
         if(DADA::App::Guts::check_if_list_exists(-List => $list_name) == 1){ 
-            #carp 'list: ' . $local_test_list_vars->{list} . ' already exists. Removing...';
+            carp 'list: ' . $local_test_list_vars->{list} . ' already exists. Removing...';
             remove_test_list({-name => $list_name}); 
         }
     }
-    
+	    
     my $ls = DADA::MailingList::Create(
 		{
 			-list     => $list_name,
@@ -149,7 +149,7 @@ sub create_test_list {
 		}
 	); 
    
-    if($args{-remove_subscriber_fields} == 1){ 
+    if($args->{-remove_subscriber_fields} == 1){ 
         #carp 'Removing extraneous Profile Fields....'; 
         require DADA::MailingList::Subscribers; 
         my $lh = DADA::MailingList::Subscribers->new({-list => $list_name}); 

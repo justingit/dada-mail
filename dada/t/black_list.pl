@@ -41,12 +41,12 @@ SKIP: {
         }
 	);
      
-    ok(defined($count)); 
+    ok(defined($count), 'count is defined'); 
     undef $count; 
     
     ####
     # Global Black List Stuff....
-    
+	
     my $ls2 = DADA::MailingList::Settings->new({-list => $list2}); 
     
        $ls2->save({black_list => 1}); 

@@ -21,7 +21,7 @@ use Test::More qw(no_plan);
 use HTML::Entities::Numbered::Table; 
 
 
-my $list = dada_test_config::create_test_list( -remove_existing_list=>1 );
+my $list = dada_test_config::create_test_list({ -remove_existing_list=>1 });
 
 use DADA::App::Guts; 
 

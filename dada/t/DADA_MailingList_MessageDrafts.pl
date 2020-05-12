@@ -103,14 +103,19 @@ ok(
 undef($new_q);
 
 my $di = $d->draft_index;
+
+
 ok( $di->[0]->{Subject}  eq $vals2->{Subject} );
-ok( $di->[0]->{'screen'} eq 'send_email' );
+
+# No, "screen" anymore
+#ok( $di->[0]->{'screen'} eq 'send_email' );
 ok( $di->[0]->{'id'} == 2 );
 ok( $di->[0]->{'role'} eq 'draft' );
 ok( $di->[0]->{'list'} eq $list );
 
 ok( $di->[1]->{Subject}  eq $vals->{Subject} );
-ok( $di->[1]->{'screen'} eq 'send_email' );
+# No, "screen" anymore
+#ok( $di->[1]->{'screen'} eq 'send_email' );
 ok( $di->[1]->{'id'} == 1 );
 ok( $di->[1]->{'role'} eq 'draft' );
 ok( $di->[1]->{'list'} eq $list );

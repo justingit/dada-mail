@@ -27,8 +27,8 @@ my $ls  = DADA::MailingList::Settings->new({-list => $list});
 
 is_deeply(available_lists(), ($list));
 
-my $list2 = dada_test_config::create_test_list(-name => 'two', -list_name => 'A Very Nice List');
-my $list3 = dada_test_config::create_test_list(-name => 'three', -list_name => 'Zap! A Better List'); 
+my $list2 = dada_test_config::create_test_list({-name => 'two', -list_name => 'A Very Nice List'});
+my $list3 = dada_test_config::create_test_list({-name => 'three', -list_name => 'Zap! A Better List'}); 
 
 # three lists
 is_deeply([sort(available_lists())], [sort($list, $list3, $list2)]); #sort is used, so that the sorting is the same - 
