@@ -81,15 +81,14 @@ sub _init {
 	# fields() is cached when new() is called... 
 	#$self->{fields_order} = $self->{manager}->fields || []; 
 	
-	
 	if(!exists($args->{-email})){ 
 		#croak "You need to pass, -email in the email thingy.";
 	}
 	else { 
-		$self->{email} = $args->{-email};
+		$self->{email} = cased(
+			$args->{ -email }
+		);
 	}
-	
-
 }
 
 1;

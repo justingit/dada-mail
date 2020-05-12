@@ -166,6 +166,9 @@ sub logout_cookie {
 sub validate_profile_login {
     my $self = shift;
     my ($args) = @_;
+	
+	$args->{ -email } = cased($args->{ -email });
+	
     my $status = 1;
     my $errors = {
         unknown_user   => 0,
@@ -173,7 +176,11 @@ sub validate_profile_login {
     };
 
     require DADA::Profile;
-    my $prof = DADA::Profile->new( { -email => cased($args->{ -email }) } );
+    my $prof = DADA::Profile->new(
+		{ 
+			-email => $args->{ -email } 
+		} 
+	);
     
     
 	if ( $prof->exists == 1 ) {

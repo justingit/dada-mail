@@ -112,15 +112,20 @@ sub _init {
         croak "you must pass an email address in, '-email'";
     }
     else {
-        $self->{email} = cased($args->{ -email });
+        $self->{email} = cased(
+			$args->{ -email }
+		);
     }
 
 	if(exists($self->{email})){ 
 		require DADA::Profile::Fields; 
-		$self->{fields} = DADA::Profile::Fields->new({-email => $self->{email}});
+		$self->{fields} = DADA::Profile::Fields->new(
+			{
+				-email => $self->{email}
+			}
+		);
 	}
 }
-
 
 
 
@@ -165,6 +170,11 @@ sub create {
 	
 	if(!exists($args->{-email})){ 
 		croak "You must pass an email in the, -email parameter!"; 
+	}
+	else { 
+		$args->{-email} = cased(
+			$args->{-email}
+		);
 	}
 	my $p = DADA::Profile->new(
 		{
@@ -256,13 +266,20 @@ sub insert {
 		$args->{ -update_email } = undef; 
 		
     }
+	else { 
+		$args->{ -update_email } = cased(
+			$args->{ -update_email }
+		);
+	}
 
 	my $email; 
 	if(!exists($args->{-email})){ 
 		$email = $self->{email};
 	}
 	else { 
-		$email = $args->{-email}; 
+		$email = cased(
+			$args->{-email}
+		); 
 	}
 
 	
@@ -320,7 +337,8 @@ sub get {
 
     my $self = shift;
     my ($args) = @_;
-
+	
+	# exists shouldn't be taking a paramater, here:
 	if(!$self->exists({-email => $args->{-email}})){ 
 		return undef; 
 	}
@@ -644,6 +662,10 @@ sub update_email {
 
     # Probably some check here, just to be thorough...
 
+	$info->{update_email} = cased(
+		$info->{update_email}
+	);
+	
     # This updates the profile
     $self->update(
         {
@@ -968,7 +990,11 @@ sub is_valid_update_profile_activation {
 	
 	my $profile = $self->get;
 	
-	my $new_prof = DADA::Profile->new({-email => $profile->{ update_email }}); 
+	my $new_prof = DADA::Profile->new(
+		{
+			-email => $profile->{ update_email }
+		}
+	); 
     if ( $new_prof->exists == 1 ) {
         $errors->{profile_exists} = 1;
         $status = 0;

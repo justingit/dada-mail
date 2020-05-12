@@ -265,6 +265,9 @@ sub r_log {
     if ( !exists( $args->{-email} ) ) {
         $args->{-email} = '';
     }
+	else { 
+		$args->{-email} = cased($args->{-email});
+	}
 
     if(!exists($args->{-update_fields} )) { 
         $args->{-update_fields}; 
@@ -391,6 +394,9 @@ sub _update_profile_fields {
         return undef;
     } 
     else { 
+		$args->{-email} = cased(
+			$args->{-email}
+		);
         if ( DADA::App::Guts::check_for_valid_email($args->{-email}) == 0 ) {
     
         }
@@ -703,6 +709,9 @@ sub mass_mailing_event_log {
     if ( !exists( $args->{-email} ) ) {
         $args->{-email} = '';
     }
+	else { 
+		$args->{-email} = cased($args->{-email});
+	}
     
     #event
     if ( !exists( $args->{-event} ) ) {
