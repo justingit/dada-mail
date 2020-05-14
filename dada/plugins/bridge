@@ -1793,7 +1793,8 @@ sub validate_msg {
 	}
 			
     if ( defined $x_been_there_header ) {
-        if ( lc_email($x_been_there_header) eq lc_email( $ls->param('discussion_pop_email') ) ) {
+
+       if ( lc_email($x_been_there_header) eq lc_email( $ls->param('discussion_pop_email') ) ) {
             $r .= "\t* Message is from myself (the, X-BeenThere header has been set), message should be ignored...\n";
             $errors->{x_been_there_header_found} = 1;
         }
@@ -1804,6 +1805,28 @@ sub validate_msg {
         else {
             $errors->{x_been_there_header_found} = 0;
         }
+		
+		ALL_LIST_EMAILS: for my $tmp_list(available_lists(-Dont_Die   => 1)){ 
+			
+			my $tmp_ls = DADA::MailingList::Settings->new({-list => $tmp_list}); 
+			
+			next if lc_email($tmp_ls->param('discussion_pop_email')) eq lc_email( $ls->param('discussion_pop_email'));
+			
+	        if ( lc_email($x_been_there_header) eq lc_email( $tmp_ls->param('discussion_pop_email') ) ) {
+	        
+			     $r .= "\t* Message is from another mailing list's List Email: '" 
+				 . $x_been_there_header 
+				 . "' (the, X-BeenThere header has been set), message should be ignored...\n";
+	        
+			     $errors->{x_been_there_header_found} = 1;
+			
+				 undef $tmp_ls; 
+				 last ALL_LIST_EMAILS;
+	         }
+			 
+			undef $tmp_ls; 
+		}
+		
 
     }
 
@@ -2141,7 +2164,7 @@ sub validate_msg {
             last;
         }
     }
-
+ 
     return ( $status, $errors, $r );
 }
 
