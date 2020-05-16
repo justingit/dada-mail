@@ -3,6 +3,50 @@
 
 =encoding utf-8
 
+=head1 11.10.2
+
+This is mostly a bug-fix release for issues found in the v11.10.1 release of Dada Mail.
+
+=head2 Bugfixes
+
+=head3 Bridge: discussion lists may receive and accept confirmation email messages sent to other List Emails
+
+L<https://github.com/justingit/dada-mail/issues/937>
+
+=head3 Reconsider using Params::Validate
+
+L<https://github.com/justingit/dada-mail/issues/933>
+
+=head3 Config variable, "SUBSCRIBER_DB_TYPE" is essentially a noop, as it's always set to, "SQL", but is used to test which specific SQL backend is to be used 
+
+L<https://github.com/justingit/dada-mail/issues/928>
+
+=head3 Error editing Profile Fields NAME value
+
+L<https://github.com/justingit/dada-mail/issues/924>
+
+=head3 reCAPTCHA after subscription confirmation broken
+
+L<https://github.com/justingit/dada-mail/issues/922>
+
+=head3 Broken link in Email Themes Documenation
+
+L<https://github.com/justingit/dada-mail/issues/921>
+
+=head3 "Message Received" email notification messages doesn't correctly unescape original subject
+
+L<https://github.com/justingit/dada-mail/issues/919>
+
+=head3 Plugin: Bridge - Utilizing File::Slurp is not support in Perl 5.30 (and maybe lower)
+
+L<https://github.com/justingit/dada-mail/issues/913>
+
+=head3 Database Error on Insert to Profile_fields record on occasion 
+
+L<https://github.com/justingit/dada-mail/issues/912>
+
+=head3 
+
 =head1 11.10.1
 
 This is mostly a bug-fix release for issues found in the v11.10.0 release of Dada Mail.
