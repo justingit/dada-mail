@@ -645,57 +645,57 @@ sub edit {
     
 	
     my %bridge_settings_defaults = (
-        disable_discussion_sending                 => 0,
-        msg_soft_size_limit                        => undef, 
-        msg_hard_size_limit                        => undef,
-        group_list                                 => 0,
-        group_list_pp_mode_from_phrase             => undef,
-        prefix_list_name_to_subject                => 0,
-        no_prefix_list_name_to_subject_in_archives => 0,
-        discussion_pop_email                       => undef,
-        bridge_list_email_type                     => 'pop3_account',
-        discussion_pop_server                      => undef,
-		discussion_pop_port                        => 'AUTO',
-        discussion_pop_username                    => undef,
-		discussion_pop_password                    => undef, 
-        discussion_pop_auth_mode                   => undef,
-        discussion_pop_use_ssl                     => 0,
-		discussion_pop_starttls                    =>  0,
-		discussion_pop_ssl_verify_mode             => 0, 
-        prefix_discussion_list_subjects_with       => '',
-		bridge_mention_original_sender             => 0, 
-        enable_moderation                          => 0,
-        moderate_discussion_lists_with             => 'list_owner_email',
-        send_moderation_msg                        => 0,
-        send_moderation_accepted_msg               => 0,
-        send_moderation_rejection_msg              => 0,
-        enable_authorized_sending                  => 0,
-        authorized_sending_no_moderation           => 0,
-        subscriber_sending_no_moderation           => 0,
-        send_received_msg                          => 0,
-        send_msgs_to_list                          => 0,
-        send_msg_copy_to                           => 0,
-        send_msg_copy_address                      => '',
-        send_not_allowed_to_post_msg               => 0,
-        send_invalid_msgs_to_owner                 => 0,
-        mail_discussion_message_to_poster          => 0,
-        strip_file_attachments                     => 0,
-        file_attachments_to_strip                  => '',
-        ignore_spam_messages                       => 0,
-        ignore_spam_messages_with_status_of        => 0,
-        rejected_spam_messages                     => 0,
-        set_to_header_to_list_address              => 0,
-        find_spam_assassin_score_by                => undef,
-        open_discussion_list                       => 0,
-        rewrite_anounce_from_header                => 0,
-		announce_from_header_allowed_domains       => '',
-        discussion_template_defang                 => 0,
-        digest_enable                              => 0,
-        digest_schedule                            => 86400,
-		delivery_prefs_set_default                 => undef, 
-		delivery_prefs_default                     => undef, 
-		
-        bridge_announce_reply_to => 'none', 
+        disable_discussion_sending                    => 0,
+        msg_soft_size_limit                           => undef, 
+        msg_hard_size_limit                           => undef,
+        group_list                                    => 0,
+        group_list_pp_mode_from_phrase                => undef,
+        prefix_list_name_to_subject                   => 0,
+        no_prefix_list_name_to_subject_in_archives    => 0,
+        discussion_pop_email                          => undef,
+        bridge_list_email_type                        => 'pop3_account',
+        discussion_pop_server                         => undef,
+		discussion_pop_port                           => 'AUTO',
+        discussion_pop_username                       => undef,
+		discussion_pop_password                       => undef, 
+        discussion_pop_auth_mode                      => undef,
+        discussion_pop_use_ssl                        => 0,
+		discussion_pop_starttls                       =>  0,
+		discussion_pop_ssl_verify_mode                => 0, 
+        prefix_discussion_list_subjects_with          => '',
+		bridge_mention_original_sender                => 0, 
+        enable_moderation                             => 0,
+        moderate_discussion_lists_with                => 'list_owner_email',
+        send_moderation_msg                           => 0,
+        send_moderation_accepted_msg                  => 0,
+        send_moderation_rejection_msg                 => 0,
+        enable_authorized_sending                     => 0,
+        authorized_sending_no_moderation              => 0,
+        subscriber_sending_no_moderation              => 0,
+        send_received_msg                             => 0,
+        send_msgs_to_list                             => 0,
+        send_msg_copy_to                              => 0,
+        send_msg_copy_address                         => '',
+        send_not_allowed_to_post_msg                  => 0,
+        send_invalid_msgs_to_owner                    => 0,
+        mail_discussion_message_to_poster             => 0,
+        strip_file_attachments                        => 0,
+        file_attachments_to_strip                     => '',
+        ignore_spam_messages                          => 0,
+        ignore_spam_messages_with_status_of           => 0,
+        rejected_spam_messages                        => 0,
+        set_to_header_to_list_address                 => 0,
+        find_spam_assassin_score_by                   => undef,
+        open_discussion_list                          => 0,
+        rewrite_anounce_from_header                   => 0,
+		announce_from_header_allowed_domains          => '',
+        discussion_template_defang                    => 0,
+        digest_enable                                 => 0,
+        digest_schedule                               => 86400,
+		delivery_prefs_set_default                    => undef, 
+		delivery_prefs_default                        => undef, 
+        bridge_announce_reply_to                      => 'none', 
+		bridge_announce_reply_to_custom_email_address => undef, 
         
     );
 
@@ -2942,11 +2942,25 @@ sub send_msg_not_from_subscriber {
    
    
     my $rough_from = $entity->head->get( 'From', 0 );
-    my $from_address;
+    my $from_address    = undef;
+	my $is_a_subscriber = undef;
     if ( defined($rough_from) ) {
-        ;
+        require DADA::MailingList::Subscribers; 
+		my $lh = DADA::MailingList::Subscribers->new( { -list => $ls->param('list') } );
+		
+		
         try { 
-			$from_address = ( Email_Address_parse($rough_from) )[0]->address; 
+			
+			$from_address    = ( Email_Address_parse($rough_from) )[0]->address; 
+			my $member_of = $lh->member_of({
+				-email => $from_address,
+	            -types => ['list']
+			}); 
+			if(scalar(@$member_of) >= 1){ 
+				if($member_of->[0] eq 'list'){ 
+					$is_a_subscriber = 1;
+				}
+			}
 		} catch { 
 			warn $_; 
 		};
@@ -2976,6 +2990,7 @@ sub send_msg_not_from_subscriber {
 		                },
 		                -vars => {
 		                     original_subject => $original_subject, 
+							 is_a_subscriber  => $is_a_subscriber,
 		                }
 					}
 	            }
@@ -3062,6 +3077,19 @@ sub send_invalid_msgs_to_owner {
     if ( $from_address && $from_address ne '' ) {
 
 		my $original_subject = $entity->head->get('Subject',0);
+		my $is_a_subscriber = 0; 
+		
+        require DADA::MailingList::Subscribers; 
+		my $lh = DADA::MailingList::Subscribers->new( { -list => $ls->param('list') } );
+		my $member_of = $lh->member_of({
+			-email => $from_address,
+            -types => ['list']
+		}); 
+		if(scalar(@$member_of) >= 1){ 
+			if($member_of->[0] eq 'list'){ 
+				$is_a_subscriber = 1;
+			}
+		}
 		
 		require DADA::App::Messages;
 	    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
@@ -3071,13 +3099,15 @@ sub send_invalid_msgs_to_owner {
 				-email   => $ls->param('list_owner_email'),
                 -tmpl_params => {
                     -list_settings_vars       => $ls->params,
-                    -list_settings_vars_param => { -dot_it => 1, },
-
+                    -list_settings_vars_param => { 
+							-dot_it => 1,
+					},
                     -subscriber_vars => { 
                         'subscriber.email' => $from_address, 
                     },
                     -vars => { 
                         original_subject => $original_subject, 
+						is_a_subscriber  => $is_a_subscriber, 
                     },
                 },
 			}
@@ -3226,13 +3256,13 @@ sub handle_errors {
 
             if ( $ls->param('send_not_allowed_to_post_msg') == 1 ) {
 
-                $r .= "\t Sending out, 'Not Allowed to Post' message to poster\n";
+                $r .= "\t Sending out, 'Not Allowed to Post' email notification to poster\n";
                 send_msg_not_from_subscriber( $ls, $full_msg );
 
             }
 
             if ( $ls->param('send_invalid_msgs_to_owner') == 1 ) {
-                $r .= "\t Sending out, 'Not a Subscriber' message to List Owner\n";
+                $r .= "\t Sending out, 'Not Allowed to Post' email notification to List Owner\n";
                 send_invalid_msgs_to_owner( $ls, $full_msg );
 
             }

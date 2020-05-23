@@ -630,35 +630,33 @@ sub remove {
 }
 
 sub member_of {
-	
-    my $self = shift;	
-	my ($args) = @_;
-	
+
+    my $self = shift;
+    my ($args) = @_;
+
     my $query =
         'SELECT list_type FROM '
       . $self->{sql_params}->{subscriber_table}
       . ' WHERE email = ? AND  list = ? AND list_status = ?';
-    my $list_types = $self->{dbh}->selectcol_arrayref( $query, {},
-        ( $self->email,  $self->{list}, 1 ) );
+    my $list_types = $self->{dbh}
+      ->selectcol_arrayref( $query, {}, ( $self->email, $self->{list}, 1 ) );
 
-	if(exists($args->{-types})){ 
-		my $lt = {}; 
-		foreach(@{$args->{-types}}){ 
-			$lt->{$_} = 1; 
-		}
-		my $filtered_list_types = []; 
-		foreach(@$list_types){ 
-			if($lt->{$_} == 1){ 
-				push(@$filtered_list_types, $_); 
-			}
-		}
-		return $filtered_list_types; 
-	}
-	else { 
-		return $list_types; 
-	}
-
-
+    if ( exists( $args->{-types} ) ) {
+        my $lt = {};
+        foreach ( @{ $args->{-types} } ) {
+            $lt->{$_} = 1;
+        }
+        my $filtered_list_types = [];
+        foreach (@$list_types) {
+            if ( $lt->{$_} == 1 ) {
+                push( @$filtered_list_types, $_ );
+            }
+        }
+        return $filtered_list_types;
+    }
+    else {
+        return $list_types;
+    }
 }
 
 1;

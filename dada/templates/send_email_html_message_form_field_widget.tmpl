@@ -54,6 +54,13 @@
 					Advanced Options
 				</legend>
 
+				<!-- tmpl_unless can_use_HTML_Tree --> 
+					<div class="alert-box warning radius">
+						<strong>Advanced Options are Disabled</strong>. The following CPAN Perl module will need to be installed: 
+						<code>HTML::Tree</code>. 
+					</div>
+				<!-- /tmpl_unless -->
+				
 				<div class="row">
 					<div class="small-12 columns">
 						<input 
@@ -69,11 +76,6 @@
 				</div>
 				<div class="row">
 					<div class="small-12 columns">
-						<!-- tmpl_unless can_use_HTML_Tree --> 
-							<div class="alert-box alert radius">
-								Disabled. The following CPAN Perl module will need to be installed: HTML::Tree. 
-							</div>
-						<!-- /tmpl_unless --> 
 						<input 
 							type="checkbox" 
 							name="crop_html_content" 
@@ -136,7 +138,7 @@
 	<div class="row panel">
 		
 		<!-- tmpl_unless can_use_XML_FeedPP -->
-			<div class="alert-box alert radius">
+			<div class="alert-box warning radius">
 				Disabled. The following CPAN Perl module will need to be installed: XML::FeedPP. 
 			</div>
 		<!-- /tmpl_unless -->

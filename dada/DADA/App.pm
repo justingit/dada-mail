@@ -7524,9 +7524,10 @@ sub add_email {
             }
 
             if (
-                scalar( @$not_members < 1 )
-                && ( scalar(@$black_listed) < 1
-                    && $ls->param('allow_admin_to_subscribe_blacklisted') == 1 )
+                     scalar( @$not_members  ) < 1 
+                && ( 
+				scalar( @$black_listed ) < 1
+                && $ls->param('allow_admin_to_subscribe_blacklisted') == 1 )
                 && scalar(@$subscribed) > 1
                 && (   $root_login == 1
                     || $ls->param('allow_profile_editing') == 1 )
