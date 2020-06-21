@@ -31,6 +31,7 @@ use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
 use Encode qw(encode);
 use XML::LibXML; 
+use AWS::Signature4;
 
 #use Time::HiRes qw(gettimeofday);
 
@@ -606,7 +607,17 @@ sub sign_http_request {
 
     my $self    = shift;
     my $request = shift;
-
+    # Add the signature.
+    my $signer = AWS::Signature4->new(-access_key => $self->AWSAccessKeyId,
+                                      -secret_key => $self->AWSSecretKey);
+	  $signer->sign($request);
+	  
+	 return $request; 
+	  
+	#  my $response = $ua->request($request);
+     						  
+=pod
+	
     my $data = '';
     $data .= 'POST';
     $data .= "\n";
@@ -628,8 +639,11 @@ sub sign_http_request {
     $signature .= "Signature=$sig, ";
     $signature .= 'Algorithm=HmacSHA256, ';
     $signature .= 'SignedHeaders=Date;Host';
-
-    return $signature;
+	
+	 return $signature;
+=cut
+	
+   
 }
 
 # Compute HTTPS signature.
@@ -660,22 +674,25 @@ sub sign_http {
 
     my $request = shift;
 
-    my $endpoint_name = $self->AWS_endpoint;
-    $endpoint_name =~ s!^https?://(.*?)/?$!$1!;
+ #   my $endpoint_name = $self->AWS_endpoint;
+  #    $endpoint_name =~ s!^https?://(.*?)/?$!$1!;
 
-    $request->date(time);
-    $request->header( 'Host', $endpoint_name );
+  #  $request->date(time);
+#   $request->header( 'Host', $endpoint_name );
 
-    my $signature;
-    my $use_https = $self->AWS_endpoint =~ m!^https://!;
-    if ($use_https) {
-        $signature = $self->sign_https_request($request);
-    }
-    else {
-        $signature = $self->sign_http_request($request);
-    }
-
-    $request->header( 'x-amzn-authorization', $signature );
+  #  my $signature;
+    #my $use_https = $self->AWS_endpoint =~ m!^https://!;
+    #if ($use_https) {
+    #    $signature = $self->sign_https_request($request);
+    #}
+    #else {
+     $request = $self->sign_http_request($request);
+		#}
+		#
+    #$request->header( 'x-amzn-authorization', $signature );
+	
+	return $request; 
+	
 }
 
 # Build the service call payload.
@@ -744,12 +761,12 @@ sub call_ses {
     }
 
     my $request = new HTTP::Request 'POST', $self->AWS_endpoint;
-    $request->header( "If-SSL-Cert-Subject" => "/CN=$endpoint_name" );
+   # $request->header( "If-SSL-Cert-Subject" => "/CN=$endpoint_name" );
     $request->content($payload);
     $request->content_type('application/x-www-form-urlencoded');
-    if ( $signature_version eq 'HTTP' ) {
-        $self->sign_http($request);
-    }
+   # if ( $signature_version eq 'HTTP' ) {
+     $request =  $self->sign_http($request);
+  #  }
     my $response = $browser->request($request);
 
     if ( $self->trace ) {
