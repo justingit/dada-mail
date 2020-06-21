@@ -541,159 +541,6 @@ sub prepare_aws_params {
     $params{'Version'} = $service_version;
 }
 
-# Compute the V1 AWS request signature.
-# (see http://developer.amazonwebservices.com/connect/entry.jspa?externalID=1928#HTTP)
-sub get_signature_v1 {
-
-    my $self = shift;
-
-    $params{'SignatureMethod'}  = 'HmacSHA1';
-    $params{'SignatureVersion'} = '1';
-
-    my $data = '';
-    for my $key ( sort { lc($a) cmp lc($b) } keys %params ) {
-        my $value = $params{$key};
-        $data .= $key . $value;
-    }
-
-    return hmac_sha1_base64( $data, $self->AWSSecretKey ) . '=';
-}
-
-# Compute the V2 AWS request signature.
-# (see http://developer.amazonwebservices.com/connect/entry.jspa?externalID=1928#HTTP)
-sub get_signature_v2 {
-
-    my $self = shift;
-
-    $params{'SignatureMethod'}  = 'HmacSHA256';
-    $params{'SignatureVersion'} = '2';
-
-    my $endpoint_name = $self->AWS_endpoint;
-    $endpoint_name =~ s!^https?://(.*?)/?$!$1!;
-
-    my $data = '';
-    $data .= 'POST';
-    $data .= "\n";
-    $data .= $endpoint_name;
-    $data .= "\n";
-    $data .= '/';
-    $data .= "\n";
-
-    my @params = ();
-    for my $key ( sort keys %params ) {
-        my $evalue = uri_escape_utf8( $params{$key}, $unsafe_characters );
-        push @params, "$key=$evalue";
-    }
-    my $query_string = join '&', @params;
-    $data .= $query_string;
-
-    return hmac_sha256_base64( $data, $self->AWSSecretKey ) . '=';
-}
-
-# Add the V1 signature to service call parameters.
-sub sign_v1 {
-    my $self = shift;
-    $params{'Signature'} = $self->get_signature_v1;
-}
-
-# Add the V2 signature to service call parameters.
-sub sign_v2 {
-    my $self = shift;
-    $params{'Signature'} = $self->get_signature_v2;
-}
-
-# Compute HTTP signature.
-sub sign_http_request {
-
-    my $self    = shift;
-    my $request = shift;
-    # Add the signature.
-    my $signer = AWS::Signature4->new(-access_key => $self->AWSAccessKeyId,
-                                      -secret_key => $self->AWSSecretKey);
-	  $signer->sign($request);
-	  
-	 return $request; 
-	  
-	#  my $response = $ua->request($request);
-     						  
-=pod
-	
-    my $data = '';
-    $data .= 'POST';
-    $data .= "\n";
-    $data .= '/';
-    $data .= "\n";
-    $data .= $request->content();
-    $data .= "\n";
-    $data .= 'date:' . $request->header('Date');
-    $data .= "\n";
-    $data .= 'host:' . $request->header('Host');
-    $data .= "\n";
-    $data .= "\n";
-
-    my $sig = hmac_sha256_base64( sha256($data), $self->AWSSecretKey ) . '=';
-
-    my $signature = '';
-    $signature .= 'AWS3 ';
-    $signature .= "AWSAccessKeyId=$params{'AWSAccessKeyId'}, ";
-    $signature .= "Signature=$sig, ";
-    $signature .= 'Algorithm=HmacSHA256, ';
-    $signature .= 'SignedHeaders=Date;Host';
-	
-	 return $signature;
-=cut
-	
-   
-}
-
-# Compute HTTPS signature.
-sub sign_https_request {
-
-    my $self = shift;
-
-    my $request = shift;
-
-    my $data = '';
-    $data .= $request->header('Date');
-
-    my $sig = hmac_sha256_base64( $data, $self->AWSSecretKey ) . '=';
-
-    my $signature = '';
-    $signature .= 'AWS3-HTTPS ';
-    $signature .= "AWSAccessKeyId=$params{'AWSAccessKeyId'}, ";
-    $signature .= "Signature=$sig, ";
-    $signature .= 'Algorithm=HmacSHA256';
-
-    return $signature;
-}
-
-# Sign the HTTP request.
-sub sign_http {
-
-    my $self = shift;
-
-    my $request = shift;
-
- #   my $endpoint_name = $self->AWS_endpoint;
-  #    $endpoint_name =~ s!^https?://(.*?)/?$!$1!;
-
-  #  $request->date(time);
-#   $request->header( 'Host', $endpoint_name );
-
-  #  my $signature;
-    #my $use_https = $self->AWS_endpoint =~ m!^https://!;
-    #if ($use_https) {
-    #    $signature = $self->sign_https_request($request);
-    #}
-    #else {
-     $request = $self->sign_http_request($request);
-		#}
-		#
-    #$request->header( 'x-amzn-authorization', $signature );
-	
-	return $request; 
-	
-}
 
 # Build the service call payload.
 sub build_payload {
@@ -737,18 +584,7 @@ sub call_ses {
 	}
 	
     $self->prepare_aws_params;
-
-    if($signature_version eq 'V1') {
-         $self->sign_v1; 
-    }elsif($signature_version eq 'V2') { 
-        $self->sign_v2; 
-    }elsif($signature_version eq 'HTTP') { 
-        # ... 
-    }
-    else {
-        die "Unrecognized signature version <$signature_version>.";
-    }
-
+	
     my $payload = $self->build_payload;
 
     my $browser = $self->browser;
@@ -764,9 +600,11 @@ sub call_ses {
    # $request->header( "If-SSL-Cert-Subject" => "/CN=$endpoint_name" );
     $request->content($payload);
     $request->content_type('application/x-www-form-urlencoded');
-   # if ( $signature_version eq 'HTTP' ) {
-     $request =  $self->sign_http($request);
-  #  }
+  
+     my $signer = AWS::Signature4->new(-access_key => $self->AWSAccessKeyId,
+                                       -secret_key => $self->AWSSecretKey);
+ 	    $signer->sign($request);
+
     my $response = $browser->request($request);
 
     if ( $self->trace ) {
