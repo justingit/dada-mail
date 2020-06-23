@@ -6216,6 +6216,7 @@ sub validate_update_email {
                             'stop_forum_spam_check_failed',
                             'suspicious_activity_by_ip_check_failed',
 							'captcha_challenge_failed',
+							'list_consent_check',
                             (
                                 $ls->param(
                                     'allow_admin_to_subscribe_blacklisted') == 1
