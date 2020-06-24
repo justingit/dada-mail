@@ -1304,13 +1304,14 @@ sub profile_widget {
 sub amazon_ses_requirements_widget { 
 	
 	my $amazon_ses_required_modules = [ 
-		{module => 'Cwd', installed => 1}, 
-		{module => 'Digest::SHA', installed => 1}, 
-		{module => 'URI::Escape', installed => 1}, 
-		{module => 'MIME::Base64', installed => 1}, 	
-		{module => 'Crypt::SSLeay', installed => 1}, 	
-		{module => 'XML::LibXML', installed => 1},
-		{module => 'LWP',         installed => 1}, 
+		{module => 'Cwd',             installed => 1}, 
+		{module => 'Digest::SHA',     installed => 1}, 
+		{module => 'URI::Escape',     installed => 1}, 
+		{module => 'MIME::Base64',    installed => 1}, 	
+		{module => 'Crypt::SSLeay',   installed => 1}, 	
+		{module => 'XML::LibXML',     installed => 1},
+		{module => 'LWP',             installed => 1}, 
+		{module => 'AWS::Signature4', installed => 1},
 #		{module => 'Some::Unknown::Module',       installed => 1}, 
 	];
 
@@ -1357,6 +1358,13 @@ sub amazon_ses_requirements_widget {
 		$amazon_ses_required_modules->[6]->{installed}           = 0;
 		$amazon_ses_has_needed_cpan_modules = 0; 
 	}
+	
+	try {
+		require AWS::Signature4;
+	} catch { 
+		$amazon_ses_required_modules->[7]->{installed}           = 0;
+		$amazon_ses_has_needed_cpan_modules = 0;
+	};
 	
 #	try {
 #		require Some::Unknown::Module;
