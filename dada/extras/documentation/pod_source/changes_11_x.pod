@@ -3,6 +3,55 @@
 
 =encoding utf-8
 
+=head1 11.10.3
+
+This is mostly a bug-fix release for issues found in the v11.10.2 release of Dada Mail. The biggest change is the support for v4 AWS Signatures - if you're using Amazon SES to send out messages, be sure to read on for some important information. 
+
+=head2 Changes 
+
+=head3 AWS Signature Version 4 Support
+
+Dada Mail has accessed the SES service using Version 3 Authentication, but according to Amazon AWS, support for Version 3 will be deprecated after September 30th, 2020. 
+
+v11.10.3 adds support for AWS Signature Version 4, and removes support for any previous Signature Version.
+
+If you are using Dada Mail and sending email using Amazon SES, you have a few options: 
+
+=over
+
+=item * Upgrade to v11.10.3 (or later) of Dada Mail. 
+
+This is the BEST idea.
+
+=item * Use the SMTP gateway for Amazon SES
+
+This circumvents needing to use the SES API altogether, as you just connect to the SES service through the SMTP gateway. Works, 
+but you won't be able to do things such as verify senders, or see what you're sending limitations are. This may be a good suggestion, if you don't want to do the hack below, or are running a very old version of Dada Mail you won't be upgrading anytime soon. 
+
+=item * Manually move the updated files to your older copy of Dada Mail
+
+This isn't something we necessarily suggest (it's a hack! Alert!), as there's a chance things won't work as intended and we just can't test every older version of Dada Mail. But, the following SHOULD work for all versions of Dada Mail v9 and later: 
+
+First, downlod the latest version of Dada Mail.
+ 
+Uncompress the distribution somewhere that's separate from your running copy and take the following files: 
+
+    /dada/DADA/perllib/AWS/Signature4.pm
+    /dada/DADA/perllib/Net/Amazon/SES.pm 
+
+and move them to your working copy of Dada Mail, in the same file structure/location
+Any version below v11.10.3 of Dada Mail will not have a copy of C<Signature4.pm>; C<SES.pm> will exist, and the old version will need to be replaced with the new version. 
+
+You can download the newest copies of these files separetely, using the following links: 
+
+L<https://raw.githubusercontent.com/justingit/dada-mail/master/dada/DADA/perllib/Net/Amazon/SES.pm>
+
+L<https://raw.githubusercontent.com/justingit/dada-mail/master/dada/DADA/perllib/AWS/Signature4.pm>
+
+As a better alternative for, C<Signature4.pm>, you can install it via your favorite CPAN module installer under it's proper name, C<AWS::Signature4>. C<Net::Amazon::SES> is specific to Dada Mail. 
+
+=back
+
 =head1 11.10.2
 
 This is mostly a bug-fix release for issues found in the v11.10.1 release of Dada Mail.
