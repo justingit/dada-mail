@@ -528,20 +528,6 @@ sub read_credentials {
     close(FILE);
 }
 
-# Prepares AWS-specific service call parameters.
-sub prepare_aws_params {
-    my $self = shift;
-
-    $params{'AWSAccessKeyId'} = $self->AWSAccessKeyId; #dumb. 
-    $params{'Timestamp'}      = sprintf(
-        "%04d-%02d-%02dT%02d:%02d:%02d.000Z",
-        sub { ( $_[5] + 1900, $_[4] + 1, $_[3], $_[2], $_[1], $_[0] ) }
-          ->( gmtime(time) )
-    );
-    $params{'Version'} = $service_version;
-}
-
-
 # Build the service call payload.
 sub build_payload {
 
@@ -583,7 +569,6 @@ sub call_ses {
 		$self->read_credentials;
 	}
 	
-    $self->prepare_aws_params;
 	
     my $payload = $self->build_payload;
 
