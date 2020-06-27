@@ -5,7 +5,9 @@
 
 =head1 11.10.3
 
-This is mostly a bug-fix release for issues found in the v11.10.2 release of Dada Mail. The biggest change is the support for v4 AWS Signatures - if you're using Amazon SES to send out messages, be sure to read on for some important information. 
+This is mostly a bug-fix release for issues found in the v11.10.2 release of Dada Mail. 
+
+The biggest change is the support for AWS Signature Version 4 - if you're using Amazon SES to send out messages, be sure to read on for some important information. 
 
 =head2 Changes 
 
@@ -49,6 +51,12 @@ L<https://raw.githubusercontent.com/justingit/dada-mail/master/dada/DADA/perllib
 L<https://raw.githubusercontent.com/justingit/dada-mail/master/dada/DADA/perllib/AWS/Signature4.pm>
 
 As a better alternative for, C<Signature4.pm>, you can install it via your favorite CPAN module installer under it's proper name, C<AWS::Signature4>. C<Net::Amazon::SES> is specific to Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 Update Addresses does not work in list control panel
+
+L<https://github.com/justingit/dada-mail/issues/942>
 
 =back
 
