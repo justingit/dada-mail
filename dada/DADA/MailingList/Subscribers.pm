@@ -859,6 +859,8 @@ sub allowed_list_types {
 
     my $named_list_types = $self->get_list_types;
 
+	use Data::Dumper; 
+	warn Dumper($named_list_types);
     if ( exists( $named_list_types->{$type} ) ) {
         return 1;
     }

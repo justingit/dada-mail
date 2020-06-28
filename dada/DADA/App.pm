@@ -5080,6 +5080,11 @@ sub view_list {
                     moderators_num => scalar commify(
                         $lh->num_subscribers( { -type => 'moderators' } )
                     ),
+					
+                    requires_moderation_num => scalar commify(
+                        $lh->num_subscribers( { -type => 'requires_moderation' } )
+                    ),
+					
                     sub_request_list_subscribers_num => scalar commify(
                         $lh->num_subscribers( { -type => 'sub_request_list' } )
                     ),
@@ -5995,7 +6000,7 @@ sub membership {
 
         foreach (%$subscribed_to_lt) {
             if ( $_ =~
-m/^(list|test_list|black_list|white_list|authorized_senders|moderators|bounced_list|ignore_bounces_list|sub_confirm_list)$/
+m/^(list|test_list|black_list|white_list|authorized_senders|moderators|requires_moderation|bounced_list|ignore_bounces_list|sub_confirm_list)$/
               )
             {
                 push( @$member_of,
@@ -6193,7 +6198,7 @@ sub validate_update_email {
                         {
                             -email => $email,
                             -types => [
-                                qw(list black_list test_list white_list authorized_senders moderators ignore_bounces_list)
+                                qw(list black_list test_list white_list authorized_senders moderators requires_moderation ignore_bounces_list)
                             ],
                         }
                     )
@@ -6396,7 +6401,16 @@ sub validate_remove_email {
                 {
                     -email => $email,
                     -types => [
-                        qw(list black_list white_list authorized_senders moderators sub_confirm_list ignore_bounces_list)
+                        qw(
+							list 
+							black_list 
+							white_list 
+							authorized_senders 
+							moderators 
+							requires_moderation 
+							sub_confirm_list 
+							ignore_bounces_list
+						)
                     ],
                 }
             );
@@ -6406,6 +6420,8 @@ sub validate_remove_email {
         my $subscribed_lists = [];
 
         my $list_types = DADA::App::Guts::list_types();
+
+	
 
         foreach my $tmp_list (@lists) {
             my $tmp_ls =
@@ -6420,7 +6436,7 @@ sub validate_remove_email {
                         {
                             -email => $email,
                             -types => [
-                                qw(list black_list white_list authorized_senders moderators  sub_confirm_list ignore_bounces_list)
+                                qw(list black_list white_list authorized_senders moderators requires_moderation  sub_confirm_list ignore_bounces_list)
                             ],
                         }
                     )
@@ -7121,9 +7137,14 @@ sub add {
 					authorized_senders_num =>
                       scalar $lh->num_subscribers( { -type => 'authorized_senders' } ),
                     
-					moderators_num =>
-                      scalar $lh->num_subscribers( { -type => 'moderators' } ),
-                    
+                  moderators_num => scalar commify(
+                      $lh->num_subscribers( { -type => 'moderators' } )
+                  ),
+				
+					requires_moderation_num => scalar commify(
+						$lh->num_subscribers( { -type => 'requires_moderation' } )
+					),
+					  
 					bounced_list_num =>
                       scalar $lh->num_subscribers( { -type => 'bounced_list' } ),
 					
@@ -7807,8 +7828,15 @@ sub delete_email {
                       $lh->num_subscribers( { -type => 'white_list' } ),
                     authorized_senders_num =>
                       $lh->num_subscribers( { -type => 'authorized_senders' } ),
-                    moderators_num =>
-                      $lh->num_subscribers( { -type => 'moderators' } ),
+					  
+                      moderators_num => scalar commify(
+                          $lh->num_subscribers( { -type => 'moderators' } )
+                      ),
+					
+					  
+                      requires_moderation_num => scalar commify(
+                          $lh->num_subscribers( { -type => 'requires_moderation' } )
+                      ),
                 },
                 -list_settings_vars_param => {
                     -list   => $list,

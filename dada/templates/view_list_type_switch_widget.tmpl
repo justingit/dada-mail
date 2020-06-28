@@ -112,6 +112,23 @@
 			   </a>
 				</li>
 			<!-- /tmpl_if -->
+			
+				
+				
+				
+				<li  class="tab-title <!-- tmpl_if EXPR="(type eq 'requires_moderation')" -->active<!-- /tmpl_if -->">
+				<!-- tmpl_if flavor_is_view_list --> 
+				  	<a href="#" class="change_type" data-type="requires_moderation">
+				<!-- tmpl_else --> 
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var flavor -->;type=requires_moderation">
+				<!-- /tmpl_if -->
+				   <span>
+					Needs Moderation (<!-- tmpl_var requires_moderation_num -->)
+			   	  </span>
+			   </a>
+				</li>
+
+			
 
 			
 			<!-- tmpl_if flavor_is_view_list --> 
