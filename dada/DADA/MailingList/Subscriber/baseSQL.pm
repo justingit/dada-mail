@@ -130,7 +130,7 @@ sub add {
 	) or croak "cannot do statement (at add_subscriber)! $DBI::errstr\n";
     $sth->finish;
 
-    if ( $args->{-type} eq 'list' || $args->{-type} eq 'sub_confirm_list' ) { # Erm, invitelist, as well?
+    if ( $args->{-type} eq 'list' || $args->{-type} eq 'sub_confirm_list' ) { # Erm, invite_list, as well?
     
 
         # So, confirmed would e set to, "0", rather than take the default (1)

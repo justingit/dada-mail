@@ -406,17 +406,31 @@ $MASS_MAIL_SETTINGS //= "|$MAILPROG -t";
 
 
 $LIST_TYPES //= {
-	sub_confirm_list    => 'Unconfirmed Subscribers',
+	
     list                => 'Subscribers',
     black_list          => 'Black Listed',
     white_list          => 'White Listed',     
-    authorized_senders  => 'Authorized Senders',
+    
+	authorized_senders  => 'Authorized Senders',
     moderators          => 'Moderators',
-    sub_request_list    => 'Subscription Requests',
+	requires_moderation => 'Requires Moderation',
+	
+	
+	sub_request_list    => 'Subscription Requests',
     unsub_request_list  => 'Unsubscription Requests',
-    bounced_list        => 'Bouncing Addresses',
+    
+	bounced_list        => 'Bouncing Addresses',
 	ignore_bounces_list => 'Ignore Bounces',
+	
+	
+	sub_confirm_list    => 'Unconfirmed Subscribers',
+	unsub_confirm_list  => 'Unconfirmed Removals',
+	
+	invite_list         => 'Invitees',
+	invited_list		=> 'Invited',
+	
 	test_list           => 'Testers',
+	
 };
 
 $AMAZON_SES_OPTIONS //= { 

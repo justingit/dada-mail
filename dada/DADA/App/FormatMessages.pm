@@ -82,7 +82,7 @@ my %allowed = (
     override_validation_type => undef,
 );
 
-# list_type: # list, invitelist, just_subscribed, just_unsubscribed...
+# list_type: # list, invite_list, just_subscribed, just_unsubscribed...
 
 =pod
 
@@ -568,7 +568,7 @@ sub format_mlm {
 
             # ... well, nothing, really.
         }
-        elsif ( $self->list_type eq 'invitelist' ) {
+        elsif ( $self->list_type eq 'invite_list' ) {
             $content =
               $self->subscription_confirmationation( { -str => $content, } );
         }

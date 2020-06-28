@@ -346,7 +346,7 @@ eval {
 		{
 			-fields    => $test_msg_fields, 
 			-mh_obj    => $mh, 
-			-list_type => 'invitelist' 
+			-list_type => 'invite_list' 
 		}
 	);
 };
@@ -357,7 +357,7 @@ ok(!$@, "Passing  a correct DADA::Mail::Send object does not create an error!");
  
 ok($imo == 1, " create() returns 1!"); 
 my $invite_mailout_status = $invite_mailout->status;
-ok($invite_mailout->status->{type} eq 'invitelist', "type of mailing is correct set to, 'invitelist'");
+ok($invite_mailout->status->{type} eq 'invite_list', "type of mailing is correct set to, 'invite_list'");
 
 
 # Now, let's try to reload it...
@@ -369,7 +369,7 @@ $invite_mailout->unlock_batch_lock;
 # let's kill our mailout..
 undef $invite_mailout; 
 
-ok(DADA::Mail::MailOut::mailout_exists($list, $invite_mailout_status->{id}, 'invitelist') == 1, "Yeah, our mailout better exist..."); 
+ok(DADA::Mail::MailOut::mailout_exists($list, $invite_mailout_status->{id}, 'invite_list') == 1, "Yeah, our mailout better exist..."); 
 
 
 my $invite_mailout_r = DADA::Mail::MailOut->new({ -list => $list }); 

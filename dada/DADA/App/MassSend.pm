@@ -1879,7 +1879,7 @@ sub list_invite {
                 {
                     -email => $info->{email},
                     # -fields => $info->{fields},
-                    -type => 'invitelist',
+                    -type => 'invite_list',
                 }
             );
 
@@ -1995,7 +1995,7 @@ sub list_invite {
 		); 	
         $fm->mass_mailing(1);
         $fm->use_email_templates(0);
-        $fm->list_type('invitelist');
+        $fm->list_type('invite_list');
 
 	    $entity = $fm->format_message(
 	        {
@@ -2032,7 +2032,7 @@ sub list_invite {
 				
             }
         );
-		$mh->list_type('invitelist'); 
+		$mh->list_type('invite_list'); 
 		
         if ( exists( $args->{-Ext_Request} ) ) {
             $mh->Ext_Request( $args->{-Ext_Request} );
@@ -2047,7 +2047,7 @@ sub list_invite {
 				custom_invite_message_html => scalar markdown_to_html( { -str => $custom_invite_message } ), 
 			}
 		});
-        my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=invitelist&id=' . $message_id;
+        my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=invite_list&id=' . $message_id;
         return ( { -redirect_uri => $uri }, undef );
 
     }

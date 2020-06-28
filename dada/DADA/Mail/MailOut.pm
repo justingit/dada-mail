@@ -632,7 +632,7 @@ sub associate {
         croak "Why is mailout_type already set?!";
     }
     if ( !$type ) {
-        croak "You didn't supply a list mailing type (list, black_list invitelist, etc)";
+        croak "You didn't supply a list mailing type (list, black_list invite_list, etc)";
     }
 
     # BUGFIX:
@@ -807,7 +807,7 @@ sub create_subscriber_list {
         -Type                => $self->mailout_type,
         -Save_At             => $self->dir . '/' . $file_names->{tmp_subscriber_list},
         -Ban                 => $args->{-mh_obj}->{do_not_send_to},
-        -Create_Tokens => ( $args->{-mh_obj}->list_type eq 'invitelist' || $args->{-mh_obj}->list_type eq 'list' )
+        -Create_Tokens => ( $args->{-mh_obj}->list_type eq 'invite_list' || $args->{-mh_obj}->list_type eq 'list' )
         ? 1
         : 0,
 
@@ -2981,7 +2981,7 @@ This is a fairly odd format to have everything in, but it's sort of native to DA
 
 =item * -list_type
 
-List Type holds which subscription sublist you're sending to. Most likely, this is going to be, B<list>. There are times where it may be, B<black_list>, or, B<invitelist>, etc. 
+List Type holds which subscription sublist you're sending to. Most likely, this is going to be, B<list>. There are times where it may be, B<black_list>, or, B<invite_list>, etc. 
 
 =item * -mh_obj
 
@@ -3104,7 +3104,7 @@ Itself holds a hashref of the actual message you're sending out. Good for making
 
 =item * type
 
-The type of message you're sending (list, black_list, invitelist, etc)
+The type of message you're sending (list, black_list, invite_list, etc)
 
 =item * is_batch_locked
 

@@ -28,7 +28,7 @@ Holds the listshortname the email address is subscribed to
 
 =item * list_type
 
-Holds either, I<list>, I<black_list> or <invitelist> (see the PlainText docs above)
+Holds either, I<list>, I<black_list> or <invite_list> (see the PlainText docs above)
 
 =item * list_status     
 

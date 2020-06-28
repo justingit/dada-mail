@@ -498,17 +498,7 @@ sub subscribed_to {
 
 		if($args->{-type} eq ':all'){ 
 			
-			my %list_types = (
-							  list               => 'Subscribers',
-			                  black_list         => 'Black Listed',
-			                  white_list         => 'White Listed', # White listed isn't working, no?
-			                  authorized_senders => 'Authorized Senders',
-			                  moderators         => 'Moderators',
-			                  sub_request_list   => 'Subscription Requests',
-#			                  unsub_request_list => 'Unsubscription Requests',
-							  bounced_list       => 'Bouncing Addresses',
-							  test_list          => 'Testers'
-			);
+			my %list_types = %$DADA::Config::LIST_TYPES; 
 			
 			ALL_TYPES: for my $s_type(keys %list_types){
 				if ($lh->check_for_double_email(

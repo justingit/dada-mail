@@ -1468,7 +1468,7 @@ sub create_mass_sending_file {
 	elsif($type =~ m/_tmp\-just_subscribed\-|_tmp\-just_unsubscribed\-|_tmp\-just_subed_archive\-/){ 
 		$have_first_recipient = 0; 		
 	}
-	elsif($type =~ m/invitelist/){ 
+	elsif($type =~ m/invite_list/){ 
 		$have_first_recipient = 0; 			
 	}
 

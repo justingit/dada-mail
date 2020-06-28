@@ -453,7 +453,7 @@ sub send {
                 else {
            # Uh, unless it's a list invitation we're sending - why would we want
            # replies from a non-subscriber posting to the list?
-                    if ( $self->list_type ne 'invitelist' ) {
+                    if ( $self->list_type ne 'invite_list' ) {
                         # This goes against RFC
                         $fields{'Reply-To'} = $formatted_disc_email;
                     }
@@ -1333,7 +1333,7 @@ sub mass_send {
     }
 
     # This is so awkwardly placed...
-    if ( $self->list_type eq 'invitelist' || $self->list_type =~ m/tmp/ ) {
+    if ( $self->list_type eq 'invite_list' || $self->list_type =~ m/tmp/ ) {
         $lh->remove_this_listtype( { -type => $self->list_type } );
     }
 
@@ -2970,7 +2970,7 @@ sub _make_general_headers {
 
     if ( $self->im_mass_sending == 1 ) {
 
-        if ( $self->list_type eq 'invitelist' ) {
+        if ( $self->list_type eq 'invite_list' ) {
 			
 		    my $etp = $self->email_themes_obj->fetch('invite_message');
             $from_phrase  = $etp->{vars}->{from_phrase}; 
@@ -3452,7 +3452,7 @@ sub _mail_merge {
 	# recevied by mass_send. 
 	# 
     my $To_header = undef;
-    if ( $self->list_type eq 'invitelist' ) {
+    if ( $self->list_type eq 'invite_list' ) {
 			    
 		my $etp = $self->email_themes_obj->fetch('invite_message');
         $To_header = $args->{-fm_obj}->format_phrase_address(
@@ -3586,7 +3586,7 @@ sub _make_token {
     my ($args) = @_;
     my $token;
 
-    if ( $self->list_type eq 'invitelist' ) {
+    if ( $self->list_type eq 'invite_list' ) {
 		return undef; 
         ## this is to confirm a subscription
         #$token = $self->child_ct_obj->save(

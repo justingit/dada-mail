@@ -845,24 +845,11 @@ sub get_all_field_attributes {
 sub get_list_types {
 
     my $self = shift;
-    return {
-        list                => 1,
-        black_list          => 1,
-        authorized_senders  => 1,
-        moderators          => 1,
-        testers             => 1,
-        white_list          => 1,
-        sub_confirm_list    => 1,
-        unsub_confirm_list  => 1,
-        invitelist          => 1,
-        invited_list        => 1,
-        sub_request_list    => 1,
-        unsub_request_list  => 1,
-        bounced_list        => 1,
-		ignore_bounces_list => 1, 
-		test_list           => 1,
-    };
-
+	my $list_types =  {};
+    for(keys %{$DADA::Config::LIST_TYPES}){ 
+		$list_types->{$_} = 1; 
+	}
+	return $list_types; 
 }
 
 sub allowed_list_types {
@@ -1551,7 +1538,7 @@ This is the sublist that keeps unsubscription information on potential unsubscri
 when they've asked to leave a list, but have not yet been verified via an email 
 confirmation to unsubscribe.
 
-=item * invitelist
+=item * invite_list
 
 This is a sublist of temporary subscribers, who've been invited to join a mailing list. 
 It's only used internally and is removed shortly after sending out a list invitation has begun. 
@@ -1956,7 +1943,7 @@ The current list of allowed sublist types are:
 
 =item * unsub_confirm_list
 
-=item * invitelist
+=item * invite_list
 
 =back
 

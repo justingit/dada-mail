@@ -224,17 +224,7 @@ sub log_line_report {
 	
     my ( $date, $list, $ip, $action, $email ) = split( /\t/, $args->{-line}, 5 );
 
- my %list_types = (
-        list               => 'Subscribers',
-        black_list         => 'Black Listed',
-        authorized_senders => 'Authorized Senders',
-        moderators         => 'Moderators',
-        white_list         => 'White Listed',
-        sub_request_list   => 'Subscription Requests',
-        unsub_request_list => 'Unsubscription Requests',
-        bounced_list       => 'Bouncing Addresses',
-		invitelist         => 'List Invitations', 
-    );
+	my %list_types = %$DADA::Config::LIST_TYPES; 
 
 #	if(exists($args->{-list})) { 
 #		warn "log_line_report: args list exists."; 
