@@ -665,6 +665,7 @@ sub edit {
         prefix_discussion_list_subjects_with          => '',
 		bridge_mention_original_sender                => 0, 
         enable_moderation                             => 0,
+		bridge_use_moderation_for                     => undef,
         moderate_discussion_lists_with                => 'list_owner_email',
         send_moderation_msg                           => 0,
         send_moderation_accepted_msg                  => 0,
@@ -750,6 +751,8 @@ sub edit {
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my $auth_senders_count = $lh->num_subscribers( { -type => 'authorized_senders' } );
     my $moderators_count   = $lh->num_subscribers( { -type => 'moderators' } );
+    my $requires_moderation_count   = $lh->num_subscribers( { -type => 'requires_moderation' } );
+
 
     my $has_discussion_pop_password = 0;
     if ( defined( $ls->param('discussion_pop_password') ) ) {
@@ -903,6 +906,7 @@ sub edit {
                 done                           => $done,
                 authorized_senders_count       => $auth_senders_count,
                 moderators_count               => $moderators_count,
+				requires_moderation_count      => $requires_moderation_count, 
 				num_awaiting_msgs              => $num_awaiting_msgs, 
                 has_discussion_pop_password    => $has_discussion_pop_password,
                 discussion_pop_auth_mode_popup => $discussion_pop_auth_mode_popup,

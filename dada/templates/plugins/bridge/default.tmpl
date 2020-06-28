@@ -924,19 +924,22 @@
 				</div>
 
 				<div id="moderaton_params"> 
+					
 					<div class="row">
+						
 						<div class="small-1 columns">
-						</div>
+						</div> 
+						
 						<div class="small-11 columns">
 						
-							<div class="alert-box info radius">
-								Messages sent to your discussion list will first have to be approved by: 
-							</div>
-					
-					
-	
+							<h5>
+								Messages sent to your discussion list will first have to be approved by:
+							</h5>
 							<div class="row">
-								<div class="small-12 columns">	
+						
+								<div class="small-1 columns">	
+								</div>
+								<div class="small-11 columns">	
 									<label for="moderate_discussion_lists_with_list_owner_email">
 									<input 
 										type="radio" 
@@ -949,8 +952,13 @@
 									</label>
 								</div>
 							</div>
+
+							
 							<div class="row">
-								<div class="small-12 columns">	
+								<div class="small-1 columns">	
+								</div>
+								
+								<div class="small-11 columns">
 									<label for="moderate_discussion_lists_with_moderators">
 										<input 
 											type="radio"
@@ -963,7 +971,7 @@
 									</label>
 								</div>
 							</div>
-	
+							
 							<ul class="button-group right">
 							    <li>
 									<input type="button"  class="success view_moderators button small" value="View Moderators (<!-- tmpl_var moderators_count -->)" >
@@ -972,7 +980,68 @@
 									<input type="button" class="success add_moderators button small" value="Add Moderators">
 								</li>
 							</ul>
+							
+						</div> 
+					</div>
+						
+					<div class="row">
+						
+						<div class="small-1 columns">
+						</div> 
+						
+						<div class="small-11 columns">
+										
+							<h5>
+									Moderate messages received from:
+							</h5>
+									
+							<div class="row">
+								<div class="small-1 columns"></div>
+								<div class="small-11 columns">
+									<label for="bridge_use_moderation_for_everyone">
+										<input 
+											type="radio" 
+											id="bridge_use_moderation_for_everyone" 
+											name="bridge_use_moderation_for" 
+											value="everyone" 
+											<!-- tmpl_if expr="(list_settings.bridge_use_moderation_for eq 'everyone')" -->
+												checked="checked"
+											<!--/tmpl_if-->
+										>
+										Everyone
+									</label> 
+								</div>
+							</div>
 
+							<div class="row">
+								<div class="small-1 columns"></div>
+								<div class="small-11 columns">
+									<label for="bridge_use_moderation_for_requires_moderation_sublist">
+										<input 
+											type="radio" 
+											id="bridge_use_moderation_for_requires_moderation_sublist" 
+											name="bridge_use_moderation_for" 
+											value="requires_moderation_sublist" 
+											<!-- tmpl_if expr="(list_settings.bridge_use_moderation_for eq 'requires_moderation_sublist')" -->
+												checked="checked"
+											<!--/tmpl_if-->
+										>
+										&quot;Requires Moderation&quot; sublist
+									</label>
+
+								</div>
+							</div>
+			
+							<ul class="button-group right">
+							    <li>
+									<input type="button"  class="success view_requires_moderation button small" value="View Requires Moderation (<!-- tmpl_var requires_moderation_count -->)" >
+								</li>
+								<li>
+									<input type="button" class="success add_requires_moderation button small" value="Add to Requires Moderation">
+								</li>
+							</ul>
+							
+							
 							<div class="row">
 								<div class="small-12 columns">	
 

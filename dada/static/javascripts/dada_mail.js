@@ -1537,6 +1537,8 @@ jQuery(document).ready(function($){
 			event.preventDefault();
 			window.location.href = $("#s_program_url").val() + '?flavor=view_list&type=moderators';
 		});
+		
+		
 		$("body").on("click", ".add_moderators", function(event) {
 			event.preventDefault();
 			window.location.href = $("#s_program_url").val() + '?flavor=add&type=moderators';
@@ -1546,6 +1548,17 @@ jQuery(document).ready(function($){
 			window.location.href = $("#s_program_url").val() + '/plugins/bridge?prm=awaiting_msgs';
 		});
 
+		
+		$("body").on("click", ".view_requires_moderation", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '?flavor=view_list&type=requires_moderation';
+		});
+		
+		$("body").on("click", ".add_requires_moderation", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '?flavor=add&type=requires_moderation';
+		});
+		
 
 
 
