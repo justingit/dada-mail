@@ -1,5 +1,63 @@
 <!-- begin view_list_viewport_widget.tmpl -->
 
+
+		<!-- tmpl_if expr="(type eq 'moderators')" -->
+			<div class="alert-box info radius">
+				<p>
+					<strong>
+						Moderators
+					</strong> 
+					are a list of addresses able to approve/deny messages sent to a discussion list's 
+					<strong>
+						List Email. 	
+					</strong>
+				</p>
+				<p>
+					<ul>
+						<!-- tmpl_if list_settings.enable_moderation --> 
+							<li>Moderation is enabled.</li>
+						<!-- tmpl_else -->
+							<li>Moderation is disabled.</li>
+						<!--/tmpl_if -->
+					</ul>
+				</p>
+			</div>
+		<!--/tmpl_if-->
+		
+		<!-- tmpl_if expr="(type eq 'requires_moderation')" -->
+			<div class="alert-box info radius">
+				<p>
+					<strong>
+						Requires Moderation
+					</strong> 
+					are a list of addresses who specifically need to have messages that they send to the <strong>List Email</strong> in a 
+					discussion list moderated. All other subscribers may send to a discussion list without moderation. 
+					
+					
+				</p>
+				<p>
+					<ul>
+						<!-- tmpl_if list_settings.enable_moderation --> 
+							<li>Moderation is enabled.</li>
+						<!-- tmpl_else -->
+							<li>Moderation is disabled.</li>
+						<!--/tmpl_if -->
+						
+						<!-- tmpl_if expr="(list_settings.bridge_use_moderation_for eq 'requires_moderation_sublist')" --> 
+							<li>Using the, <strong>Requires Moderation</strong> sublist is enabled.</li>
+						<!-- tmpl_else -->
+							<li>Using the, <strong>Requires Moderation</strong> sublist is disabled.</li>
+						<!--/tmpl_if -->
+						
+						
+					</ul>
+				</p>
+			</div>
+		<!--/tmpl_if-->
+		
+		
+		
+		
 		<!-- tmpl_if expr="(type eq 'authorized_senders')" -->
         	<div class="alert-box info radius">
                <p>
