@@ -296,6 +296,6 @@ L<https://dadamailproject.com/support/documentation-6_8_1/features-amazon_ses_su
 
 If you're running a group of hosting accounts powered by B<WHM>, here are the docs on changing the email limit settings for each account: 
 
-L<http://docs.cpanel.net/twiki/bin/view/AllDocumentation/WHMDocs/MailLimitingFeatures>
+L<https://docs.cpanel.net/knowledge-base/email/how-to-set-email-send-limits/>
 
 =cut
