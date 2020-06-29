@@ -1870,8 +1870,32 @@ sub validate_msg {
 
 	        if ( $ls->param('enable_moderation') ) {
 	            $r .= "\t* Moderation enabled.\n";
-	            $errors->{needs_moderation} = 1;
-	        }
+	          
+				if($ls->param('bridge_use_moderation_for') eq 'everyone'){
+					$errors->{needs_moderation} = 1;
+	        	}
+				elsif($ls->param('bridge_use_moderation_for') eq 'requires_moderation_sublist'){ 
+					
+					 $r .= "\t\t* Checking From: address with, 'Requires Moderation' sublist...\n";
+		            if (
+		                $lh->check_for_double_email(
+		                    -Email => lc_email($from_address),
+		                    -Type  => 'requires_moderation',
+		                ) == 1
+		              ) { 
+						$r .= "\t\t* Moderation required for, " . lc_email($from_address) . "\n";
+					  	$errors->{needs_moderation} = 1;
+					  }
+					  else { 
+					  	$r .= "\t\t* No moderation required.\n";
+					  }
+					  
+				}
+				else { 
+					$errors->{needs_moderation} = 1;
+				}
+			
+			}
 	        else {
 	            $r .= "\t* Moderation disabled.\n";
 	        }
