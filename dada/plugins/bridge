@@ -49,7 +49,6 @@ use Try::Tiny;
 my $Plugin_Config = {
 	Plugin_Name                         => 'Bridge',
 	MessagesAtOnce                      => 1,
-	Allow_Open_Discussion_List          => 0,
 	Room_For_One_More_Check             => 1,
 	Enable_POP3_File_Locking            => 1,
 	Check_List_Owner_Return_Path_Header => 0,
@@ -707,10 +706,6 @@ sub edit {
 
     if ( $q->param('process') == 1 ) {
 
-        if ( $Plugin_Config->{Allow_Open_Discussion_List} == 0 ) {
-            $q->param( 'open_discussion_list', 0 );
-        }
-		
 	    if ( ! defined( $q->param('discussion_pop_password') )
 		 || length($q->param('discussion_pop_password')) <= 0
 		 
@@ -899,7 +894,6 @@ sub edit {
                 screen                         => 'using_bridge',
                 Plugin_URL                     => $Plugin_Config->{Plugin_URL},
                 Plugin_Name                    => $Plugin_Config->{Plugin_Name},
-                Allow_Open_Discussion_List     => $Plugin_Config->{Allow_Open_Discussion_List},
                 Allow_Manual_Run               => $Plugin_Config->{Allow_Manual_Run},
                 Manual_Run_Passcode            => $Plugin_Config->{Manual_Run_Passcode},
                 can_use_ssl                    => $can_use_ssl,
@@ -1925,8 +1919,7 @@ sub validate_msg {
             else {
                 $r .= "\t\t* From Subscriber: No.\n";
 
-                if (   $ls->param('open_discussion_list') == 1
-                    && $Plugin_Config->{Allow_Open_Discussion_List} == 1 )
+                if (   $ls->param('open_discussion_list') == 1 )
                 {
                     $r .= "\t\t* Postings from non-Subscribers is enabled.\n";
                     $errors->{msg_not_from_list_owner} = 0;
@@ -4318,7 +4311,6 @@ You can then configure the plugin variables on these lines:
 	
 		Plugin_Name                         => undef,
 		MessagesAtOnce                      => undef,
-		Allow_Open_Discussion_List          => undef,
 		Room_For_One_More_Check             => undef,
 		Enable_POP3_File_Locking            => undef,
 		Check_List_Owner_Return_Path_Header => undef,
@@ -4333,10 +4325,6 @@ The name of the plugin. By default, B<Bridge>.
 =head2 MessagesAtOnce
 
 You can specify how many messages you want to have the program actually handle per execution of the script by changing the, C<MessagesAtOnce> variable. By default, it's set conservatively to, C<1>.
-
-=head2 Allow_Open_Discussion_List
-
-If set to, C<1> a new option will be available in Bridge's list control panel to allow you to have a discussion list that anyone can send messages to. 
 
 =head2 Room_For_One_More_Check
 

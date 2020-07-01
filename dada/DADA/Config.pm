@@ -324,7 +324,6 @@ $PLUGIN_CONFIGS //= {
 		Allow_Manual_Run                    => undef,
 		Manual_Run_Passcode                 => undef,
 		MessagesAtOnce                      => undef,
-		Allow_Open_Discussion_List          => undef,
 		Room_For_One_More_Check             => undef,
 		Enable_POP3_File_Locking            => undef,
 		Check_List_Owner_Return_Path_Header => undef,
