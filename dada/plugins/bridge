@@ -665,6 +665,7 @@ sub edit {
 		bridge_mention_original_sender                => 0, 
         enable_moderation                             => 0,
 		bridge_use_moderation_for                     => undef,
+		bridge_recently_added_subscribers_timeframe   => undef, 
         moderate_discussion_lists_with                => 'list_owner_email',
         send_moderation_msg                           => 0,
         send_moderation_accepted_msg                  => 0,
@@ -1884,6 +1885,30 @@ sub validate_msg {
 					  	$r .= "\t\t* No moderation required.\n";
 					  }
 					  
+				}
+				# This only works if the person is subscribed (think open discussion lists):
+				elsif(
+	                   $lh->check_for_double_email(-Email => lc_email($from_address), -Type  => 'list') == 1
+					&& $ls->param('bridge_use_moderation_for') eq 'recently_added_subscribers'
+				){
+					$r .= "\t\t* Checking is subscriber has been subscribed long enough to not require moderation...\n";
+					
+					my $timestamp = $lh->get_subscriber_timestamp({-email => $from_address, -type => 'list'});
+					
+					require Time::Piece;
+					require Time::Piece::MySQL;
+					
+					my $tp = Time::Piece->from_mysql_timestamp( $timestamp );
+					my $epoch = $tp->epoch; 
+					my $padded = int($epoch) + (int($ls->param('bridge_recently_added_subscribers_timeframe')) * 86400); 
+					
+					if($padded <= time){ 
+						$r .= "\t\t* No moderation required.\n";
+					}
+					else { 
+						$errors->{needs_moderation} = 1;
+						$r .= "\t\t* Moderation required for, " . lc_email($from_address) . "\n";
+					}
 				}
 				else { 
 					$errors->{needs_moderation} = 1;

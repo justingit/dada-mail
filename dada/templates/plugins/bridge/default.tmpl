@@ -162,9 +162,9 @@
 
 		<div class="row">
 			<div class="small-12 columns">
-				<h4>
+				<h5>
 					Setup As:
-				</h4>
+				</h5>
 			</div>
 		</div>
 		
@@ -303,7 +303,7 @@
 																<a href="#" class="cancel_change_pop3_password"> 
 																	or cancel
 																</a>
-															</a>
+															</span>
 														</div>
 													</div> 
 												</div>
@@ -447,7 +447,7 @@
 			General
 		</legend> 
 		
-		<h4>Enable/Disable</h4>
+		<h5>Enable/Disable</h5>
 		
 		<div class="row">
 			<div class="small-12 columns">
@@ -463,7 +463,7 @@
 			</div>
 		</div>
 
-		<h4>Subject</h4>
+		<h5>Subject</h5>
 
 		<div class="row">
 			<div class="small-12 columns">
@@ -505,7 +505,7 @@
 			</div> 
 		</div>
 	
-		<h4>Message Size</h4>
+		<h5>Message Size</h5>
 
 		<div class="alert-box warning radius"> 
 			<strong>Warning:</strong> Setting the Soft and/or Hard Max Sizes too high will 
@@ -527,7 +527,7 @@
 			</div> 
 		</div>
 		
-		<h4>Original Sender</h4>
+		<h5>Original Sender</h5>
 		<div class="row">
 			<div class="small-12 columns">
 				
@@ -580,9 +580,9 @@
 				<div class="small-12 columns">
 					
 					
-					<h4>
+					<h5>
 						From header
-					</h4>
+					</h5>
 					
 					
 					<label for="rewrite_anounce_from_header">
@@ -637,9 +637,9 @@
 
 			<div class="row">
 				<div class="small-12 columns">
-					<h4>
+					<h5>
 						Reply-To header
-					</h4>
+					</h5>
 				</div>
 			</div> 
 
@@ -756,6 +756,9 @@
 			</div>
 		</div>
 
+		
+
+
 		<div class="alert-box info radius">
 			Your List Owner (
 			<a href="mailto:<!-- tmpl_var list_settings.list_owner_email ESCAPE="URL" -->">
@@ -772,8 +775,38 @@
 			<!-- /tmpl_if --> 
 			which will then be sent to all your Subscribers. 
 		</div>
-
+		
 		<div id="discussion_list_params">
+			
+			
+			<div class="row">
+				<div class="small-12 columns">	
+					<label for="open_discussion_list">
+						<input 
+							name="open_discussion_list" 
+							id="open_discussion_list" 
+							type="checkbox" 
+							value="1"
+							<!--tmpl_if list_settings.open_discussion_list -->checked="checked"<!--/tmpl_if-->
+						>
+						Open discussion list (messages are accepted from any email address)      
+					</label>
+					<div class="row">
+						<div class="small-1 columns">
+						</div>
+						<div class="small-11 columns">
+							<div class="alert-box warning radius">
+								This can open up your mailing list to possible abuse, unless moderated.
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			
+			
+			
+			
 			<div class="row">
 				<div class="small-12 columns">
 					<label for="mail_discussion_message_to_poster">
@@ -788,6 +821,8 @@
 					</label>
 				</div> 
 			</div>
+			
+			
 	
 			<div class="row">
 				<div class="small-12 columns">
@@ -801,10 +836,20 @@
 					>
 						DON'T parse templates in discussion messages
 					</label>
-					<div class="alert-box warning radius">
-						Parsing Template Tags could create formatting problems. 
-						It's suggested you keep this option <strong>checked</strong>.  
-					</div> 
+					
+					<div class="row">
+						<div class="small-1 columns">
+						</div>
+						<div class="small-11 columns">
+							
+					
+							<div class="alert-box warning radius">
+								Parsing Template Tags could create formatting problems. 
+								It's suggested you keep this option <strong>checked</strong>.  
+							</div> 
+						</div> 
+					</div>
+					
 				</div> 
 			</div>
 			
@@ -830,30 +875,37 @@
 				Discussion List messages are sent using the List Owner's email address, on behalf of List Members. 
 			</div>
 			
-			<div class="row">
-				<div class="small-12 columns">
-					<label for="group_list_pp_mode_from_phrase">
+			
+			<div class="row collapse">
+				<div class="large-2 medium-2 columns">
+					<label 
+						class="prefix"
+						for="group_list_pp_mode_from_phrase">
 						From: header phrase:
 					</label>
+				</div>
+				<div class="large-10 medium-10 columns">
 					<input 
 						type="text"
 						name="group_list_pp_mode_from_phrase"
 						id="group_list_pp_mode_from_phrase" 
 						value="<!-- tmpl_var list_settings.group_list_pp_mode_from_phrase escape="HTML" -->"
 					>
-				</div> 
+				</div>
 			</div>
 	
 			<div class="row">
 				<div class="small-12 columns">	
-					<h4>
+					<h5>
 						Replies to messages should:
-					</h4>
+					</h5>
 				</div> 
 			</div>
 
 			<div class="row">
-				<div class="small-12 columns">	
+				<div class="small-1 columns"></div> 
+				<div class="small-11 columns">	
+				
 					<label for="set_to_header_to_list_address_1">
 						<input 
 							type="radio" 
@@ -868,7 +920,8 @@
 			</div>
 	
 			<div class="row">
-				<div class="small-12 columns">	
+				<div class="small-1 columns"></div> 
+				<div class="small-11 columns">	
 					<label for="set_to_header_to_list_address_0">	
 						<input 
 							type="radio" 
@@ -882,23 +935,7 @@
 				</div>
 			</div>
 
-				<div class="row">
-					<div class="small-12 columns">	
-						<label for="open_discussion_list">
-							<input 
-								name="open_discussion_list" 
-								id="open_discussion_list" 
-								type="checkbox" 
-								value="1"
-								<!--tmpl_if list_settings.open_discussion_list -->checked="checked"<!--/tmpl_if-->
-							>
-							Allow messages to also be posted to the list from non-subscribers.         
-						</label>
-						<div class="alert-box alert radius">
-							This opens up your mailing list to possible abuse, unless moderated)</span>
-						</div>
-					</div>
-				</div>
+				
 
 
 			<fieldset> 
@@ -934,8 +971,9 @@
 							<h5>
 								Messages sent to your discussion list will first have to be approved by:
 							</h5>
+							
+							
 							<div class="row">
-						
 								<div class="small-1 columns">	
 								</div>
 								<div class="small-11 columns">	
@@ -1011,6 +1049,55 @@
 									</label> 
 								</div>
 							</div>
+							
+							<div class="row">
+								<div class="small-1 columns"></div>
+								<div class="small-11 columns">
+									<label for="bridge_use_moderation_for_recently_added_subscribers">
+										<input 
+											type="radio" 
+											id="bridge_use_moderation_for_recently_added_subscribers" 
+											name="bridge_use_moderation_for" 
+											value="recently_added_subscribers" 
+											<!-- tmpl_if expr="(list_settings.bridge_use_moderation_for eq 'recently_added_subscribers')" -->
+												checked="checked"
+											<!--/tmpl_if-->
+										>
+										Subscribers that have been subscribed in the last: 
+										<select 
+											name="bridge_recently_added_subscribers_timeframe" 
+											id="bridge_recently_added_subscribers_timeframe"
+										>
+											<option 
+												value="1"
+												<!-- tmpl_if expr="(list_settings.bridge_recently_added_subscribers_timeframe eq '1')" -->
+													selected="selected"
+												<!-- /tmpl_if -->
+												>
+												day
+											</option>
+											<option 
+												value="7"
+												<!-- tmpl_if expr="(list_settings.bridge_recently_added_subscribers_timeframe eq '7')" -->
+													selected="selected"
+												<!-- /tmpl_if -->
+												>
+												week
+											</option>
+											<option 
+												value="30"
+											
+												<!-- tmpl_if expr="(list_settings.bridge_recently_added_subscribers_timeframe eq '30')" -->
+													selected="selected"
+												<!-- /tmpl_if -->
+											>
+												month
+											</option>
+										</select> 
+									</label>
+								</div>
+							</div>
+							
 
 							<div class="row">
 								<div class="small-1 columns"></div>
@@ -1027,7 +1114,6 @@
 										>
 										&quot;Requires Moderation&quot; sublist
 									</label>
-
 								</div>
 							</div>
 			
@@ -1191,7 +1277,7 @@
 		<legend> 
 			Message Delivery
 		</legend>
-		<h4>
+		<h5>
 			When allowed messages are received:
 		</h4>
 		
@@ -1257,9 +1343,9 @@
 		
 		<div class="row">
 			<div class="small-12 columns">		
-				<h4>
+				<h5>
 					When disallowed messages are received:
-				</h4>
+				</h5>
 			</div> 
 		</div> 
 		

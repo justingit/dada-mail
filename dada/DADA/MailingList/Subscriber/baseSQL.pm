@@ -311,6 +311,23 @@ sub get {
 	return $r; 
 }
 
+sub timestamp { 
+    my $self   = shift;
+   	my $query =
+	    'SELECT timestamp FROM '
+	  . $self->{sql_params}->{subscriber_table}
+	  . ' WHERE email = ? AND  list = ? AND list_type = ? LIMIT 1';
+	  
+      my $timestamp = $self->{dbh}->selectrow_array( 
+		  	$query, 
+			undef, 
+			$self->email, 
+			$self->{list}, 
+			$self->type 
+		);
+	return $timestamp; 
+}
+
 sub move {
 
     my $self = shift;

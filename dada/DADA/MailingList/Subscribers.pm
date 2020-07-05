@@ -282,6 +282,14 @@ sub get_subscriber {
 
 }
 
+sub get_subscriber_timestamp { 
+	my $self = shift; 
+	my ($args) = @_;
+	$args->{-list} = $self->{list};
+	my $dmls = DADA::MailingList::Subscriber->new($args);
+	return $dmls->timestamp();
+}
+
 sub move_subscriber {
     my $self = shift;
     my ($args) = @_;

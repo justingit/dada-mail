@@ -1595,6 +1595,7 @@ $MIME_TOOLS_PARAMS //= {
     enable_moderation              => 0,
     moderate_discussion_lists_with => 'list_owner_email',
 	bridge_use_moderation_for      => 'everyone',
+	bridge_recently_added_subscribers_timeframe => '1',
     send_moderation_msg            => 0,
     send_moderation_accepted_msg   => 0,
     send_moderation_rejection_msg  => 0,
