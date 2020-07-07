@@ -107,6 +107,7 @@ sub setup {
         'subscribe'                => \&subscribe,
         'restful_subscribe'        => \&restful_subscribe,
 		'subscribe_landing'        => \&subscribe_landing, 
+		'modal_subscribe_landing'  => \&modal_subscribe_landing, 
         'api'                      => \&api,
         'token'                    => \&token,
         'unsubscribe'              => \&unsubscribe,
@@ -3904,6 +3905,63 @@ sub subscribe_landing {
 			-vars           => {
 				can_use_JSON      => scalar DADA::App::Guts::can_use_JSON(),
 				subscription_form => $subscription_form,
+			},
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    return $scrn;
+	
+
+}
+
+
+sub modal_subscribe_landing { 
+
+	 #how does this work for private and/or hidding lists? 
+	
+    my $self = shift;
+    my $q    = $self->query();
+	
+    if ( DADA::App::Guts::check_setup() == 0 ) {
+        return user_error( { -error => 'bad_setup' } );
+    }
+
+    if ( check_if_list_exists( -List => scalar $q->param('list') ) == 0 ) {
+        $q->delete('list');
+        return $self->default();
+    }
+	my $list  = $q->param('list')  || undef; 
+	my $email = $q->param('email') || undef; 
+	
+    my $subscription_form = DADA::Template::Widgets::subscription_form(
+        {
+            -list                 => $list,
+			-email                => $email, 
+			-form_target          => '_blank',
+        }
+    );
+	
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -screen         => 'modal_subscribe_landing.tmpl',
+            -expr           => 1,
+           # -with           => 'list',
+			-vars           => {
+				can_use_JSON      => scalar DADA::App::Guts::can_use_JSON(),
+				subscription_form => $subscription_form,
+				load_captcha_js => 1, 
+				load_colorbox => 1, 
+				
+				include_jquery_lib   =>  1,
+                include_app_user_js  => 1,
+				# I don't know why you have to all this atm
+
+                add_app_css          =>  1,
+				
+				
 			},
             -list_settings_vars_param => {
                 -list   => $list,

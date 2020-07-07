@@ -458,7 +458,7 @@ sub translate {
               if $pi_list;
         }
 
-        elsif ( $info =~ /^subscribe_landing/ ) {
+        elsif ( $info =~ /^subscribe_landing|^modal_subscribe_landing/ ) {
 
             my ( $pi_flavor, $pi_list, $pi_email_name, $pi_email_domain, ) = split( '/', $info, 4 );
 			

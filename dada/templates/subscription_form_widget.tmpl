@@ -6,6 +6,9 @@
 		method="post" 
 		accept-charset="<!-- tmpl_var HTML_CHARSET -->" 
 		id="<!-- tmpl_var subscription_form_id default="subscription_form" -->"
+		<!-- tmpl_if form_target -->
+			target="<!-- tmpl_var form_target escape="HTML" -->"
+		<!-- /tmpl_if -->
 	>
 
 	<input type="hidden" name="flavor" id="ddm_flavor" value="subscribe" >

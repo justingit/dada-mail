@@ -283,7 +283,14 @@ sub subscribe {
     my $fh = $args->{-fh};
 
     my $q = $args->{-cgi_obj};
-
+	
+	#$args->{-chrome} = 
+	#	(defined($q->param('chrome')) 
+	#	? (xss_filter( scalar $q->param('chrome') )) 
+	#	: (1)); 
+	# not fully sold on this idea... 
+	$args->{-chrome} = 1; 
+	
     if ( $t == 1 ) {
         warn 'sent over Vars:';
         require Data::Dumper;
@@ -786,7 +793,7 @@ sub subscribe {
                     {
                         -list   => $list,
                         -email  => $email,
-                        -chrome => 1,
+                        -chrome => $args->{-chrome},
                     }
                 );
                 return ({}, $s)

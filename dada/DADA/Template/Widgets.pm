@@ -2663,12 +2663,14 @@ sub subscription_form {
 	if(! exists($args->{-subscription_form_id})) { 
 		$args->{-subscription_form_id} = undef;
 	}
-
-	
 	
 	if(! exists($args->{-add_recaptcha_js})) { 
 		$args->{-add_recaptcha_js} = 0;
 	}
+	
+	if(! exists($args->{-form_target})) { 
+		$args->{-form_target} = '_self';
+	}	
 
     my @available_lists = available_lists(-Dont_Die => 1); 
     if(! $available_lists[0]){ 
@@ -2762,6 +2764,7 @@ sub subscription_form {
         return screen({
             -screen => $tmpl_name, 
             -vars   => {
+							form_target              => $args->{-form_target},  
 							can_use_JSON             => scalar DADA::App::Guts::can_use_JSON(), 
                             single_list              => 1, 
                             subscriber_fields        => $named_subscriber_fields,
@@ -2787,6 +2790,7 @@ sub subscription_form {
 		return screen({
             -screen => 'subscription_form_widget.tmpl', 
             -vars   => {
+				form_target              => $args->{-form_target},  
 	            single_list              => 0, 
 	            subscriber_fields        => $named_subscriber_fields,
 	            list                     => $list, 
