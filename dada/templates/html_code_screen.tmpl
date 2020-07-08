@@ -29,20 +29,29 @@
 <ul class="tabs" data-tab>
 	
 	<li class="tab-title active">
+		<a href="#landing_page">
+			Landing Page
+		</a>
+	</li>
+	
+	<li class="tab-title">
 		<a href="#minimal">
-			Minimal Subscription Form
+			Minimal
 		</a>
 	</li>
 	<li class="tab-title">
 		<a href="#full">
-			Full Subscription Form
+			Full
 		</a>
 	</li>
 	<li class="tab-title">
 		<a href="#modal_menu">
-			Modal Window Subscription Form
+			Modal Window
 		</a>
 	</li>
+	
+	
+	
 	
 	<li class="tab-title">
 		<a href="#form_fields">
@@ -54,8 +63,84 @@
 	
 	
 	<div class="tabs-content">
+		
+		<div class="content active" id="landing_page"> 
+
+			<div class="alert-box info radius">
+				Share/embed a link to the subscription form itself
+			</div>
+		
+			<h5>Full Page:</h5>
+			<blockquote> 
+				<p>
+					<strong>
+						<a href="<!-- tmpl_var S_PROGRAM_URL -->/subscribe_landing/<!-- tmpl_var list_settings.list -->/"  target="_blank">
+							<!-- tmpl_var S_PROGRAM_URL -->/subscribe_landing/<!-- tmpl_var list_settings.list -->/
+						</a>
+					</strong>
+				</p>
+			</blockquote>
+					
+			<h5>Just The Subscription Form:</h5>
+			<blockquote> 
+				<p>
+					<strong>
+						<a href="<!-- tmpl_var S_PROGRAM_URL -->/modal_subscribe_landing/<!-- tmpl_var list_settings.list -->/" target="_blank">
+							<!-- tmpl_var S_PROGRAM_URL -->/modal_subscribe_landing/<!-- tmpl_var list_settings.list -->/
+						</a>
+					</strong>
+				</p>
+			</blockquote> 
+		
+			<p>
+				Use this screen in a modal window to popup the subscription form on your own site. <strong>Example:</strong>
+			</p>
+		
+		
+				<div class="row">
+					<div class="small-12 columns">
+						<button 
+							type="button" 
+							class="copy_button expand" 						
+							data-clipboard-target="#modal_subscribe_landing_code"
+							>
+								Copy
+						</button>
+					</div>
+				</div>
+				<div class="row">
+					<div class="small-12 columns">
+						<textarea 
+							readonly 
+							id="modal_subscribe_landing_code" 
+							name="modal_subscribe_landing_code" 
+							cols="50"
+							rows="12"
+						><!-- tmpl_include modal_subscribe_landing_code_widget.tmpl --></textarea>
+					</div>
+				</div> 
+		
+	  	 		<div class="row">
+	  	   		  <div class="small-6 small-centered columns">
+				      <link href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/lity/lity.min.css" rel="stylesheet">
+				      <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/lity/lity.min.js"></script>
 	
-		<div class="content active" id="minimal"> 
+				  	</head>
+				  	<body>  
+	  	 				 <a 
+	  	 				 	href="<!-- tmpl_var S_PROGRAM_URL -->/modal_subscribe_landing/<!-- tmpl_var list_settings.list -->" 
+							data-lity
+	  	 					class="button success expand"
+	  	 					target="_blank"
+	  	 				>
+	  	 					 	Click Here to Subscribe
+	  	  				</a>
+	  	   		  </div>
+	  	 	  </div>
+			</div>
+			
+	
+		<div class="content" id="minimal"> 
 			<p>
 				Copy the code in the text box and add it to any page on your site.
 			</p>
@@ -178,11 +263,15 @@
  				</a>
   		  </div>
 	  </div>
-	  
-	  
+	</div>
+	
+	
+	
+	
 
 	
-	</div>
+	
+	
 	
 	<div class="content" id="form_fields"> 
 		
@@ -195,4 +284,7 @@
 	</div>
 	
 </div> 
+
+</div>
+	
 <!-- end html_code_screen.tmpl -->
