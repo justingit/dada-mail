@@ -1198,6 +1198,55 @@
 									</label> 
 								</div>
 							</div>
+							
+							<div class="row">
+								<div class="small-12 columns">	
+									<label for="bridge_auto_reject_awaiting_moderation_messages">
+										<input n
+											name="bridge_auto_reject_awaiting_moderation_messages" 
+											id="bridge_auto_reject_awaiting_moderation_messages" 
+											type="checkbox" 
+											value="1" 
+											<!--tmpl_if list_settings.bridge_auto_reject_awaiting_moderation_messages -->checked="checked"<!--/tmpl_if--> 
+										>
+											Auto-Reject messages that have been waiting to be moderated for:
+										</label> 
+										<select 
+											name="bridge_auto_reject_awaiting_moderation_messages_timeframe" 
+											id="bridge_auto_reject_awaiting_moderation_messages_timeframe"
+										>
+											<option 
+												value="1"
+												<!-- tmpl_if expr="(list_settings.bridge_auto_reject_awaiting_moderation_messages_timeframe eq '1')" -->
+													selected="selected"
+												<!-- /tmpl_if -->
+												>
+												one day
+											</option>
+											<option 
+												value="3"
+												<!-- tmpl_if expr="(list_settings.bridge_auto_reject_awaiting_moderation_messages_timeframe eq '3')" -->
+													selected="selected"
+												<!-- /tmpl_if -->
+												>
+												three days
+											</option>
+											<option 
+												value="7"
+											
+												<!-- tmpl_if expr="(list_settings.bridge_auto_reject_awaiting_moderation_messages_timeframe eq '7')" -->
+													selected="selected"
+												<!-- /tmpl_if -->
+											>
+												seven days
+											</option>
+										</select>
+										
+									
+								</div>
+							</div>
+							
+							
 					
 							<div class="clearfix">
 								<ul class="button-group right">

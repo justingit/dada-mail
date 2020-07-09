@@ -1599,7 +1599,12 @@ $MIME_TOOLS_PARAMS //= {
     send_moderation_msg            => 0,
     send_moderation_accepted_msg   => 0,
     send_moderation_rejection_msg  => 0,
+	bridge_auto_reject_awaiting_moderation_messages           => 1, 
+	bridge_auto_reject_awaiting_moderation_messages_timeframe => 1, 
+
+
     send_msg_copy_address          => '',
+
 
     enable_authorized_sending        => 0,
 
