@@ -156,6 +156,28 @@ sub clean_out_mime_cache {
 
 }
 
+sub remove_old_archive_messages { 
+	my $self = shift;
+    my $list = shift; 
+    my $r; 
+    
+    my @lists = (); 
+    if($list eq '_all') { 
+        @lists = available_lists(-In_Random_Order => 1)
+    }
+    else { 
+        push(@lists, $list); 
+    }
+    
+    require DADA::MailingList::Archives; 
+    foreach my $l (@lists){ 			
+		my $la = DADA::MailingList::Archives->new({-list => $l}); 
+		$r .= $la->remove_old_archive_messages();     
+    }
+    return $r; 
+
+}
+
 sub lock_file {
 
     my $self = shift;

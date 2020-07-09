@@ -1476,6 +1476,9 @@ $MIME_TOOLS_PARAMS //= {
     display_attachments                   => 1,
     add_subscribe_form_to_feeds           => 1,
     add_social_bookmarking_badges         => 1,
+	
+	archive_auto_remove                   => 0,
+	archive_auto_remove_after_timespan    => '1y', 
 
     # Can be set to, "none","break", "spam_me_not", or, "recaptcha_mailhide"
     archive_protect_email => 'break',

@@ -2110,11 +2110,11 @@ returns an id, based on the date.
 =cut
 
 sub message_id { 
-
     my $ctime = shift || time; 
 	my ($sec, $min, $hour, $day, $month, $year) = (localtime($ctime))[0,1,2,3,4,5];
 	my $message_id = sprintf("%02d%02d%02d%02d%02d%02d", $year+1900, $month+1, $day,  $hour, $min, $sec);
 	return $message_id; 
+
 
 }
 

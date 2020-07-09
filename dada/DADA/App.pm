@@ -8627,6 +8627,53 @@ sub adv_archive_options {
                 value => [@index_this],
             }
         );
+		
+		
+		my $remove_after_timespan_vals = [
+		'1m',
+		'2m',
+		'3m',
+		'4m',
+		'5m',
+		'6m',
+		'7m',
+		'8m',
+		'9m',
+		'10m',
+		'11m',
+		'1y',
+		'2y',
+		'3y',
+		'4y',
+		'5y'];
+	
+		my $remove_after_timespan_ops = { 
+			'1m'  => '1 month',
+			'2m'  => '2 months',
+			'3m'  => '3 months',
+			'4m'  => '4 months',
+			'5m'  => '5 months',
+			'6m'  => '6 months',
+			'7m'  => '7 months',
+			'8m'  => '8 months',
+			'9m'  => '9 months',
+			'10m' => '10 months',
+			'11m' => '11 months',
+			'1y'  => '1 year',
+			'2y'  => '2 years',
+			'3y'  => '3 years',
+			'4y'  => '4 years',
+			'5y'  => '5 years',
+		};
+		my $archive_auto_remove_after_timespan_menu = HTML::Menu::Select::popup_menu(
+            {
+                name  => 'archive_auto_remove_after_timespan',
+                id    => 'archive_auto_remove_after_timespan',
+                values => $remove_after_timespan_vals,
+				labels => $remove_after_timespan_ops, 
+				default => $ls->param('archive_auto_remove_after_timespan'), 
+			}
+        );
 
         my $ping_sites = [];
         for (@DADA::Config::PING_URLS) {
@@ -8708,19 +8755,20 @@ sub adv_archive_options {
                     -List       => $list,
                 },
                 -vars => {
-                    screen                     => 'adv_archive_options',
-                    title                      => 'Advanced Options',
-                    root_login                 => $root_login,
-                    done                       => $done,
-                    archive_index_count_menu   => $archive_index_count_menu,
-                    list                       => $list,
-                    ping_sites                 => $ping_sites,
-                    can_use_xml_rpc            => $can_use_xml_rpc,
-                    can_use_html_scrubber      => $can_use_html_scrubber,
-                    can_display_attachments    => $la->can_display_attachments,
-                    can_use_recaptcha_mailhide => $can_use_recaptcha_mailhide,
-                    can_use_gravatar_url       => $can_use_gravatar_url,
-                    gravatar_img_url           => $gravatar_img_url,
+                    screen                                  => 'adv_archive_options',
+                    title                                   => 'Advanced Options',
+                    root_login                              => $root_login,
+                    done                                    => $done,
+                    archive_index_count_menu                => $archive_index_count_menu,
+                    list                                    => $list,
+                    ping_sites                              => $ping_sites,
+                    can_use_xml_rpc                         => $can_use_xml_rpc,
+                    can_use_html_scrubber                   => $can_use_html_scrubber,
+                    can_display_attachments                 => $la->can_display_attachments,
+                    can_use_recaptcha_mailhide              => $can_use_recaptcha_mailhide,
+                    can_use_gravatar_url                    => $can_use_gravatar_url,
+                    gravatar_img_url                        => $gravatar_img_url,
+					archive_auto_remove_after_timespan_menu => $archive_auto_remove_after_timespan_menu, 
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -8737,24 +8785,26 @@ sub adv_archive_options {
             {
                 -associate => $q,
                 -settings  => {
-                    sort_archives_in_reverse      => 0,
-                    archive_show_year             => 0,
-                    archive_show_month            => 0,
-                    archive_show_day              => 0,
-                    archive_show_hour_and_minute  => 0,
-                    archive_show_second           => 0,
-                    archive_index_count           => 10,
-                    publish_archives_rss          => 0,
-                    ping_archives_rss             => 0,
-                    html_archives_in_iframe       => 0,
-                    disable_archive_js            => 0,
-                    style_quoted_archive_text     => 0,
-                    display_attachments           => 0,
-                    add_subscribe_form_to_feeds   => 0,
-                    add_social_bookmarking_badges => 0,
-                    archive_protect_email         => undef,
-                    enable_gravatars              => 0,
-                    default_gravatar_url          => '',
+                    sort_archives_in_reverse           => 0,
+                    archive_show_year                  => 0,
+                    archive_show_month                 => 0,
+                    archive_show_day                   => 0,
+                    archive_show_hour_and_minute       => 0,
+                    archive_show_second                => 0,
+                    archive_index_count                => 10,
+                    publish_archives_rss               => 0,
+                    ping_archives_rss                  => 0,
+                    html_archives_in_iframe            => 0,
+                    disable_archive_js                 => 0,
+                    style_quoted_archive_text          => 0,
+                    display_attachments                => 0,
+                    add_subscribe_form_to_feeds        => 0,
+                    add_social_bookmarking_badges      => 0,
+                    archive_protect_email              => undef,
+                    enable_gravatars                   => 0,
+                    default_gravatar_url               => '',
+					archive_auto_remove                => 0,
+					archive_auto_remove_after_timespan => 0, 
                 },
                 -also_save_for => $also_save_for_list,
             }
@@ -16007,6 +16057,14 @@ sub schedules {
 	        catch {
 	            $r .= "* Error: $_\n";
 	        };
+			
+	        $r .= "\nRemoving old archive messages:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->remove_old_archive_messages($list);
+	        }
+	        catch {
+	            $r .= "* Error: $_\n";
+	        };
 
 	      
 
@@ -16051,6 +16109,15 @@ sub schedules {
 	        $r .= "Cleaning Out MIME Cache:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->clean_out_mime_cache();
+	        }
+	        catch {
+	            $r .= "* Error: $_\n";
+	        };
+	    }
+	    elsif ( $schedule eq 'remove_old_archive_messages' ) {
+	        $r .= "Removing out old archive messages:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->remove_old_archive_messages($list);
 	        }
 	        catch {
 	            $r .= "* Error: $_\n";
