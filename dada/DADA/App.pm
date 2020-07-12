@@ -138,7 +138,6 @@ sub setup {
         'subscription_requests'         => \&subscription_requests,
         'unsubscription_requests'       => \&unsubscription_requests,
         'remove_all_subscribers'        => \&remove_all_subscribers,
-        'view_list_options'             => \&list_cp_options,
         'membership'                    => \&membership,
         'also_member_of'                => \&also_member_of,
         'admin_change_profile_password' => \&admin_change_profile_password,
@@ -210,7 +209,6 @@ sub setup {
         'mass_mailing_options'          => \&mass_mailing_options,
         'pass_gen'                      => \&pass_gen,
         'feature_set'                   => \&feature_set,
-        'list_cp_options'               => \&list_cp_options,
         'profile_fields'                => \&profile_fields,
         'mail_sending_options_test'     => \&mail_sending_options_test,
         'author'                        => \&author,
@@ -10406,81 +10404,7 @@ sub feature_set {
     }
 }
 
-sub list_cp_options {
 
-    my $self    = shift;
-    my $q       = $self->query();
-    my $process = $q->param('process') || undef;
-
-    my ( $admin_list, $root_login, $checksout, $error_msg ) =
-      check_list_security(
-        -cgi_obj  => $q,
-        -Function => 'list_cp_options'
-      );
-    if ( !$checksout ) { return $error_msg; }
-
-    my $list = $admin_list;
-
-    require DADA::MailingList::Settings;
-
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-
-    if ( !$process ) {
-
-        my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);
-
-        my $scrn = DADA::Template::Widgets::wrap_screen(
-            {
-                -screen         => 'list_cp_options_screen.tmpl',
-                -with           => 'admin',
-                -wrapper_params => {
-                    -Root_Login => $root_login,
-                    -List       => $list,
-                },
-                -expr => 1,
-                -list => $list,
-                -vars => {
-                    screen => 'list_cp_options',
-                    done   => xss_filter( scalar $q->param('done') ),
-
-                    ckeditor_enabled =>
-                      $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}
-                      ->{enabled},
-                    ckeditor_url =>
-                      $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url},
-
-                    tiny_mce_enabled =>
-                      $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}
-                      ->{enabled},
-                    tiny_mce_url =>
-                      $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{url},
-                    %wysiwyg_vars,
-
-                },
-                -list_settings_vars       => $ls->get,
-                -list_settings_vars_param => { -dot_it => 1 },
-            }
-        );
-
-        return $scrn;
-    }
-    else {
-
-        $ls->save_w_params(
-            {
-                -associate => $q,
-                -settings  => {
-                    use_wysiwyg_editor => 'none',
-                }
-            }
-        );
-
-        $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
-              . '?flavor=list_cp_options&done=1' );
-
-    }
-}
 
 sub profile_fields {
 
