@@ -34,6 +34,123 @@
     <input type="hidden" name="process" value="1" >
     <input type="hidden" name="flavor"  value="mass_mailing_options" >
     
+	
+<fieldset> 
+	<legend>
+		WYSIWYG Editor Options
+	</legend> 
+
+	<!-- tmpl_if expr="((using_no_wysiwyg_editor == 1) && (list_settings.use_wysiwyg_editor ne 'none'))" --> 
+		<div class="alert-box warning radius">
+			<strong>Warning!</strong> You're currently selected WYSIWYG editor is currently 
+			not being used, because of a misconfiguration.</p>
+		</div>
+	<!-- /tmpl_if --> 
+
+
+
+	<!-- tmpl_if ckeditor_enabled --> 
+		<!-- tmpl_if ckeditor_url --> 
+			<div class="row">
+				<div class="small-12 columns">
+					<label for="use_wysiwyg_editor_ckeditor">
+						<input 
+							type="radio" 
+							name="use_wysiwyg_editor" 
+							id="use_wysiwyg_editor_ckeditor"
+							value="ckeditor"
+							<!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'ckeditor')" -->checked="checked"<!--/tmpl_if -->
+						>
+						Use CKeditor
+					</label>	
+				</div>
+			</div>
+		<!-- /tmpl_if -->
+	<!-- /tmpl_if --> 
+
+	<!-- tmpl_if tiny_mce_enabled --> 
+		<!-- tmpl_if tiny_mce_url -->
+			<div class="row">
+				<div class="small-12 columns">
+					<label for="use_wysiwyg_editor_tiny_mce">
+						<input 
+							type="radio" 
+							name="use_wysiwyg_editor" 
+							id="use_wysiwyg_editor_tiny_mce" 
+							value="tiny_mce"
+							<!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'tiny_mce')" -->checked="checked"<!--/tmpl_if -->
+						>
+							Use Tiny MCE
+					</label>
+				</div>
+			</div>
+		<!-- /tmpl_if -->
+	<!-- /tmpl_if --> 
+	<div class="row">
+		<div class="small-12 columns">
+			<label for="use_wysiwyg_editor_none">
+				<input 
+					type="radio" 
+					name="use_wysiwyg_editor" 
+					id="use_wysiwyg_editor_none" 
+					value="none" 
+					<!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'none')" -->checked="checked"<!--/tmpl_if -->
+				>
+					Don't use a WYSIWYG Editor
+			</label>
+		</div>
+	</div>
+</fieldset> 
+
+
+<fieldset> 
+	<legend>
+		Authoring
+	</legend> 
+	
+	 <div class="row">
+		<div class="small-12 columns">
+			<p>
+				<label>
+					Show message previews in: 
+				</label>
+			</p>
+		</div> 
+	</div> 
+	
+	 <div class="row">
+		<div class="small-1 columns">
+		</div>
+		<div class="small-11 columns">
+			<label for="mass_mailing_show_previews_in_modal_window">
+				<input 
+					type="radio"
+					name="mass_mailing_show_previews_in"
+					id="mass_mailing_show_previews_in_modal_window"
+					value="modal_window"
+					<!-- tmpl_if expr="(list_settings.mass_mailing_show_previews_in eq 'modal_window')" -->
+						checked="checked"
+					<!-- /tmpl_if -->
+					>
+					Modal window
+			</label>
+		
+			<label for="mass_mailing_show_previews_in_new_window">
+				<input 
+					type="radio"
+					name="mass_mailing_show_previews_in"
+					id="mass_mailing_show_previews_in_new_window"
+					value="new_window"
+					<!-- tmpl_if expr="(list_settings.mass_mailing_show_previews_in eq 'new_window')" -->
+						checked="checked"
+					<!-- /tmpl_if -->
+					>
+					New window
+			</label>
+		</div>
+	</div>		
+</fieldset>
+
 <fieldset>
     <legend>Formatting</legend>
 	

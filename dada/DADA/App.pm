@@ -3027,6 +3027,9 @@ sub mass_mailing_options {
 				$currently_selected_layout = 'default'; 
 			}
 		}
+		
+        my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);
+		
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -3038,11 +3041,24 @@ sub mass_mailing_options {
                     -List       => $list,
                 },
                 -vars => {
+                    root_login                => $root_login,
                     done                      => $done,
                     can_use_css_inliner       => $can_use_css_inliner,
 					can_use_Image_Resize      => scalar can_use_Image_Resize(),
 					currently_selected_layout => $currently_selected_layout, 
-                    root_login                => $root_login,
+					
+                    ckeditor_enabled =>
+                      $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}
+                      ->{enabled},
+                    ckeditor_url =>
+                      $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url},
+
+                    tiny_mce_enabled =>
+                      $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}
+                      ->{enabled},
+                    tiny_mce_url =>
+                      $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{url},
+                    %wysiwyg_vars,
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -3067,6 +3083,8 @@ sub mass_mailing_options {
                 	mass_mailing_default_layout                 => undef, 
 					mass_mailing_save_sent_drafts_as_stationery => 0, 
 					mass_mailing_show_by_default_type           => undef, 
+                    use_wysiwyg_editor                          => 'none',
+					mass_mailing_show_previews_in               => undef,
 				},
                 -also_save_for => $also_save_for_list,
             }

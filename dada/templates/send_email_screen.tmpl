@@ -46,8 +46,15 @@
 </form> 
 
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
-	<input type="hidden" id="list"               name="list"                  value="<!-- tmpl_var list_settings.list -->" >
-	<input type="hidden" id="sched_flavor"       name="sched_flavor"          value="<!-- tmpl_var sched_flavor -->" >
+	<input type="hidden" id="list"                          name="list"                          value="<!-- tmpl_var list_settings.list -->" >
+	<input type="hidden" id="sched_flavor"                  name="sched_flavor"                  value="<!-- tmpl_var sched_flavor -->" >
+	<input 
+		type="hidden"
+		id="mass_mailing_show_previews_in"
+		name="mass_mailing_show_previews_in"
+		value="<!-- tmpl_var list_settings.mass_mailing_show_previews_in -->"
+	>
+
 
 	<input type="hidden" name="flavor"            id="flavor"            value="send_email" >
 	<input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" >

@@ -321,27 +321,38 @@ jQuery(document).ready(function($){
 									width: '95%',
 									height: '95%'					
 								});
+								$(window).resize(function(){
+								    $.colorbox.resize({
+								      width:  window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+								      height: responsive_options.height
+								    });		
+								});
+								return true; 
 						}
 						else {					
-						
-							$.colorbox({
-								iframe: true,
-								fastIframe: false,
-								href: $("#s_program_url").val() + '?flavor=email_message_preview&id=' + content.id,
-								opacity: 0.50,
-								maxWidth: '640px',
-								width: '95%',
-								height: '95%'					
-							});
+							if ( $("#mass_mailing_show_previews_in").val() == 'new_window' ){
+								window.open($("#s_program_url").val() + '?flavor=email_message_preview&id=' + content.id, "_blank"); 
+							}
+							else {						
+								$.colorbox({
+									iframe: true,
+									fastIframe: false,
+									href: $("#s_program_url").val() + '?flavor=email_message_preview&id=' + content.id,
+									opacity: 0.50,
+									maxWidth: '640px',
+									width: '95%',
+									height: '95%'					
+								});
+								$(window).resize(function(){
+								    $.colorbox.resize({
+								      width:  window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+								      height: responsive_options.height
+								    });		
+								});
+								return true; 
+							}
+					
 						}
-						
-						$(window).resize(function(){
-						    $.colorbox.resize({
-						      width:  window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
-						      height: responsive_options.height
-						    });		
-						});
-						return true; 
 					},
 					error: function(xhr, ajaxOptions, thrownError) {
 						console.log('status: ' + xhr.status);

@@ -1298,6 +1298,8 @@ $MIME_TOOLS_PARAMS //= {
 	mass_mailing_show_by_default_type           => 'html',
 	mass_mailing_use_list_unsubscribe_headers   => 1, 
 	
+	mass_mailing_show_previews_in               => 'modal_window',
+	
     #quotas
     use_subscription_quota => 0,
     subscription_quota     => 0,
