@@ -182,8 +182,6 @@ jQuery(document).ready(function($){
 			}
 	    });
 
-	
-
 		$("body").on("click", ".scheduled_type", function(event) {
 			toggle_schedule_options();
 		});
@@ -1138,38 +1136,75 @@ jQuery(document).ready(function($){
 				},
 				logo_image_url: { 
 					required: false, 
-					url: true					
+					url: true,	
+			        remote: {
+			          url: $( "#s_program_url" ).val(),
+			          type: "post",
+			          data: {
+			            check_url: function() { return $( "#logo_image_url" ).val() },
+						flavor: 'is_valid_url'
+			          }
+			        }						
 				},
 				website_url: {
 					required: false, 
 					url: true, 
 			        remote: {
-			          url: "http://dancing-indigo-child.local/cgi-bin/dada/mail.cgi",
+			          url: $( "#s_program_url" ).val(),
 			          type: "post",
 			          data: {
-			            check_url: function() {
-			              return $( "#website_url" ).val();
-			            }, 
-						flavor: 'is_valid_url', 
-						field_name: 'website_url'
+			            check_url: function() { return $( "#website_url" ).val() },
+						flavor: 'is_valid_url' 
 			          }
 			        }		
 				},
 				facebook_page_url: {
 					required: false, 
-					url: true					
+					url: true, 
+			        remote: {
+			          url: $( "#s_program_url" ).val(),
+			          type: "post",
+			          data: {
+			            check_url: function() { return $( "#facebook_page_url" ).val() },
+						flavor: 'is_valid_url' 
+			          }
+			        }						
 				},
 				youtube_url: {
 					required: false, 
-					url: true					
+					url: true, 
+			        remote: {
+			          url: $( "#s_program_url" ).val(),
+			          type: "post",
+			          data: {
+			            check_url: function() { return $( "#youtube_url" ).val() },
+						flavor: 'is_valid_url'
+			          }
+			        }						
 				},
 				twitter_url: {
 					required: false, 
-					url: true					
+					url: true, 
+			        remote: {
+			          url: $( "#s_program_url" ).val(),
+			          type: "post",
+			          data: {
+			            check_url: function() { return $( "#twitter_url" ).val() },
+						flavor: 'is_valid_url'
+			          }
+			        }						
 				},
 				instagram_url: {
 					required: false, 
-					url: true					
+					url: true, 
+			        remote: {
+			          url: $( "#s_program_url" ).val(),
+			          type: "post",
+			          data: {
+			            check_url: function() { return $( "#instagram_url" ).val() },
+						flavor: 'is_valid_url'
+			          }
+			        }						
 				},
 				whatsapp_number: {
 					required: false, 
@@ -1177,11 +1212,31 @@ jQuery(document).ready(function($){
 				}
 			},
 			messages: {
+		        logo_image_url: {
+		            url: "Please enter a valid URL",
+					remote: "Could not fetch URL"
+		        },
 		        website_url: {
 		            url: "Please enter a valid URL",
-					remote: "Please enter a valid URL"
+					remote: "Could not fetch URL"
+		        },
+		        facebook_page_url: {
+		            url: "Please enter a valid URL",
+					remote: "Could not fetch URL"
+		        },
+		        youtube_url: {
+		            url: "Please enter a valid URL",
+					remote: "Could not fetch URL"
+		        },
+		        twitter_url: {
+		            url: "Please enter a valid URL",
+					remote: "Could not fetch URL"
+		        },
+		        instagram_url: {
+		            url: "Please enter a valid URL",
+					remote: "Could not fetch URL"
 		        }
-		    }	
+		    } 
 		});
 	}
 

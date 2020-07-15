@@ -3121,6 +3121,7 @@ sub is_valid_url {
 		return "true";
 	}
 	else { 
+		#return $res->message;
 		return "false";
 	}
   	
