@@ -120,6 +120,7 @@ sub setup {
         'change_login'             => \&change_login,
         'new_list'                 => \&new_list,
         'change_info'              => \&change_info,
+		'is_valid_url'             => \&is_valid_url, 
 		'manage_privacy_policy'    => \&manage_privacy_policy, 
 		'manage_list_consent'      => \&manage_list_consent,
         'html_code'                => \&html_code,
@@ -3091,6 +3092,38 @@ sub mass_mailing_options {
         $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
               . '?flavor=mass_mailing_options&done=1' );
     }
+
+}
+
+
+sub is_valid_url { 
+
+    my $self    = shift;
+    my $q       = $self->query();
+    my $process = $q->param('process') || undef;
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'change_info'
+      );
+    if ( !$checksout ) { return $error_msg; }
+
+    my $list = $admin_list;
+	
+	my $url = $q->param('check_url');
+
+    my ( $content, $res, $md5 ) = grab_url( { -url => $url } );
+    
+  	$self->header_props( -type => 'text/plain' );
+   
+	if ( $res->is_success ) {
+		return "true";
+	}
+	else { 
+		return "false";
+	}
+  	
 
 }
 

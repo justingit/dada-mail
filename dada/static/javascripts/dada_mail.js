@@ -1142,7 +1142,18 @@ jQuery(document).ready(function($){
 				},
 				website_url: {
 					required: false, 
-					url: true					
+					url: true, 
+			        remote: {
+			          url: "http://dancing-indigo-child.local/cgi-bin/dada/mail.cgi",
+			          type: "post",
+			          data: {
+			            check_url: function() {
+			              return $( "#website_url" ).val();
+			            }, 
+						flavor: 'is_valid_url', 
+						field_name: 'website_url'
+			          }
+			        }		
 				},
 				facebook_page_url: {
 					required: false, 
@@ -1164,7 +1175,13 @@ jQuery(document).ready(function($){
 					required: false, 
 					digits: true
 				}
-			}			
+			},
+			messages: {
+		        website_url: {
+		            url: "Please enter a valid URL",
+					remote: "Please enter a valid URL"
+		        }
+		    }	
 		});
 	}
 
