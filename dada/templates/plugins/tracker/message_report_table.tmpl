@@ -1,0 +1,206 @@
+	<table style="width:100%">
+		<!-- tmpl_if sending_method -->
+			<!-- tmpl_if comment -->
+				All these analytics were introducted at the same time, so if one's not here, they all aren't. 
+			<!-- /tmpl_if -->
+	
+		<tr> 
+			<td>
+				<strong>
+					Sending Interval
+				</strong>
+			</td> 
+			<td class="text-right"> 
+				<!-- tmpl_if start_time -->
+					<strong>Start:</strong> <!-- tmpl_var start_time_formatted -->,
+				<!-- /tmpl_if --> 
+				<!-- tmpl_if finish_time -->
+					<strong>Finish:</strong> <!-- tmpl_var finish_time_formatted --> 
+				<!-- /tmpl_if --> 
+			</td>
+		</tr>
+		
+			<!-- tmpl_if sending_time -->
+				<tr> 
+					<td>
+						<strong>
+							Sending Speed
+						</strong>
+					</td> 
+					<td class="text-right"> 
+						<strong>Total Time:</strong> <!-- tmpl_var sending_time_formatted -->, <!-- tmpl_var sending_speed_formatted --> messages/hour
+					</td>
+				</tr>
+			<!-- /tmpl_if -->
+		
+			<!-- tmpl_if sending_method -->
+				<tr> 
+					<td>
+						<strong>Sending Method</strong>
+					</td> 
+					<td class="text-right"> 
+						<!-- tmpl_var sending_method -->
+					</td>
+				</tr>
+			<!-- /tmpl_if -->
+			
+			<!-- tmpl_if msg_size -->
+				<tr> 
+					<td>				
+						<strong>Message Size</strong>
+					</td> 
+					<td class="text-right"> 
+						<!-- tmpl_var msg_size_formatted -->
+					</td>
+				</tr>
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if -->	
+
+		<tr> 
+			<td>
+				<a href="#subscriber_activity">
+					<strong>Message Recipients</strong>
+				</a>
+			</td> 
+			<td class="text-right"> 
+				Total: <!-- tmpl_var total_recipients_commified default="0" -->, 
+				Delivered: <!-- tmpl_var received_commified default="0" --> - <!-- tmpl_var received_percent default="0" -->%
+			</td>
+		</tr>
+		<tr>
+			<td> 
+				<strong><a href="#opens">Opens</a></strong>
+			</td> 
+			<td class="text-right"> 
+				<a href="#opens">
+					Total: <!-- tmpl_var open_commified default="0" -->
+				
+					<!-- tmpl_if expr="(
+						(
+							(list_settings.tracker_track_email == 1)
+						 	&& (PII_OPTIONS_allow_logging_emails_in_analytics == 1)
+						) 
+						|| 
+						(list_settings.tracker_track_anonymously == 1)
+					)" -->
+						<!-- tmpl_if unique_open -->
+							, Unique: <!-- tmpl_var unique_open_commified default="0" --> - <!-- tmpl_var unique_opens_percent default="0" -->%
+						<!-- /tmpl_if -->
+					<!-- /tmpl_if -->
+				
+				</a> 
+			</td> 
+		</tr>
+		<tr>
+			<td> 
+				<strong><a href="#clickthroughs">Clickthroughs</a></strong>
+			</td> 
+			<td class="text-right"> 
+				<a href="#clickthroughs">
+					Total: <!-- tmpl_var clickthroughs_commified default="0" -->
+					<!-- tmpl_if expr="(
+						(
+							(list_settings.tracker_track_email == 1)
+						 	&& (PII_OPTIONS_allow_logging_emails_in_analytics == 1)
+						) 
+						|| 
+						(list_settings.tracker_track_anonymously == 1)
+					)" -->
+						<!-- tmpl_if unique_clickthroughs -->
+							, Unique: <!-- tmpl_var unique_clickthroughs_commified default="0" --> - <!-- tmpl_var unique_clickthroughs_percent default="0" -->%
+						<!-- /tmpl_if -->
+					<!-- /tmpl_if -->	
+				</a>
+			</td> 
+		</tr>
+		<tr>
+			<td> 
+				<strong><a href="#unsubscribes">
+								Unsubscriptions
+							</a></strong>
+			</td> 
+			<td class="text-right"> 
+				<a href="#unsubscribes">
+					<!-- tmpl_var unsubscribe default="0" -->
+					<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
+						<!-- tmpl_if unsubscribe -->- 
+							<!-- tmpl_var unique_unsubscribe_percent default="0"  -->%
+						<!-- /tmpl_if -->
+					<!-- /tmpl_if -->
+				</a>
+			</td> 
+		</tr>
+		<tr>
+			<td> 
+				<strong><a href="#bounces">
+								Bounces
+							</a></strong>
+			</td> 
+			<td class="text-right"> 
+				<a href="#bounces">
+					<!-- tmpl_if total_bounce -->
+						Soft: <!-- tmpl_var soft_bounce default="0" -->, 
+						Hard: <!-- tmpl_var hard_bounce  default="0" --> 
+						<!-- addresses that are bounces are tallied, even if we're not collecting email addresses *shrug* -->
+							- <!-- tmpl_var unique_bounces_percent default="0" -->%
+					<!-- tmpl_else -->
+						0
+					<!-- /tmpl_if -->
+				</a>
+			</td> 
+		</tr>	
+	
+	
+		<tr>
+			<td> 
+				<strong><a href="#sending_errors">Sending Errors</a></strong>
+			</td> 
+			<td class="text-right"> 
+				<a href="#sending_errors">
+					<!-- tmpl_var errors_sending_to_commified default="0" -->
+					<!-- tmpl_if errors_sending_to -->
+						- <!-- tmpl_var errors_sending_to_percent default="0" -->%
+					<!-- /tmpl_if -->
+				</a>
+			</td> 
+		</tr>
+	
+		<tr>
+			<td> 
+				<strong><a href="#abuse_reports">
+								Abuse Reports
+							</a></strong>
+			</td> 
+			<td class="text-right"> 
+				<a href="#abuse_reports">
+					<!-- tmpl_var abuse_report_commified default="0" --> 
+				</a>
+			</td> 
+		</tr>
+	
+		<tr>
+			<td> 
+				<strong><a href="#archive_views">
+								Archive Views
+							</a></strong>
+			</td> 
+			<td class="text-right"> 
+				<a href="#archive_views">
+					<!-- tmpl_var view_archive_commified default="0"-->
+				</a> 
+			</td> 
+		</tr>
+		<tr>
+			<td> 
+				<strong><a href="#forwards">
+								Forwards
+							</a></strong>
+			</td> 
+			<td class="text-right"> 
+				<a href="#forwards">
+					<!-- tmpl_var forward_to_a_friend_commified default="0" -->
+				</a>
+			</td> 
+		</tr>
+		
+	</table>
