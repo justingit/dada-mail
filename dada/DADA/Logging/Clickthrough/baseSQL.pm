@@ -1024,7 +1024,6 @@ sub report_by_message_index {
 		if(!exists($args->{-fake})){ 
 			$args->{-fake} = 0; 
 		}
-		
 
 	    require DADA::MailingList::Archives;
 	    my $mja = DADA::MailingList::Archives->new( { -list => $self->{name} } );
@@ -1084,20 +1083,25 @@ sub report_by_message_index {
 						$_, 
 						'original_subject' 
 					)->[0];
-				}
-				#if(length($report->{$_}->{message_subject}) <= 0){
-				#	$report->{$_}->{message_subject} = DADA::App::Guts::date_this( -Packed_Date => $_ );
-				#}
-				if(length($report->{$_}->{message_subject}) >= 50){ 
-					$report->{$_}->{message_subject_snipped} =  substr( $report->{$_}->{message_subject}, 0, 49 ) . '...' 
-				} 
-				else { 
-					$report->{$_}->{message_subject_snipped} = $report->{$_}->{message_subject};
-				}
-
+			}
+			if(length($report->{$_}->{message_subject}) >= 50){ 
+				$report->{$_}->{message_subject_snipped} =  substr( $report->{$_}->{message_subject}, 0, 49 ) . '...' 
+			} 
+			else { 
+				$report->{$_}->{message_subject_snipped} = $report->{$_}->{message_subject};
+			}
 	        push( @$sorted_report, $report->{$_} );
 	    }
-	
+		
+		# dum, I guess this does the thing: 
+		for my $this_id(@$sorted_report){ 				
+			for my $inid(keys %{$this_id}){
+				next if $inid =~ m/percent/; 
+				$this_id->{$inid . '_commified'}
+					= commify($this_id->{$inid}); 
+			}
+		}
+		
 		if($args->{-fake} != 1) {
 			# The idea is if we've already calculated all this, no 
 			# reason to do it twice, if the table and graph are shown together. 
@@ -1515,8 +1519,7 @@ sub report_by_message {
     my $url_report = [];
     my $row        = undef;
     $report->{clickthroughs} = 0;
-    while ( $row = $sth->fetchrow_hashref ) {
-		
+    while ( $row = $sth->fetchrow_hashref ) {	
 		my $snippet = $row->{url}; 
 		if(length($snippet) >= 100){ 
 			$snippet = substr( $snippet, 0, 97 ) . '...';
@@ -1536,6 +1539,13 @@ sub report_by_message {
     $report->{url_report} = $url_report;
 
 	$m_report = $report; 
+	
+	for my $this_id(keys %{$m_report}){ 
+		next if $this_id =~ m/percent/; 
+		$m_report->{$this_id . '_commified'}
+			= commify($m_report->{$this_id}); 
+	}
+	
     return $m_report;
 }
 
