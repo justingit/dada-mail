@@ -297,11 +297,11 @@ DNSBL: L<http://sfs.dnsbl.st>
 
 =head1 AUTHOR
 
-GÃ¼nter Grodotzki, E<lt>guenter@perlhipster.comE<gt>
+Günter Grodotzki, E<lt>guenter@perlhipster.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2014 by GÃ¼nter Grodotzki
+Copyright (C) 2014 by Günter Grodotzki
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.
