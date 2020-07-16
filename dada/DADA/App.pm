@@ -10777,26 +10777,25 @@ sub restful_subscribe {
 
     my $using_jsonp = 0;
 
-
-	if ($q->param('_method') eq 'GET' && $q->url_param('callback')) {
+    if ( $q->param('_method') eq 'GET' && $q->url_param('callback') ) {
 
         # that's OK - it's a jsonp call.
         $using_jsonp = 1;
 
     }
-	elsif(
-		   $DADA::Config::S_PROGRAM_URL =~ m/\?$/
-		&& $q->param('_method') eq 'GET'
-		&& $q->param('callback')
-	) {
+    elsif ($DADA::Config::S_PROGRAM_URL =~ m/\?$/
+        && $q->param('_method') eq 'GET'
+        && $q->param('callback') )
+    {
 
-		# this is a messy workaround. 
-		# If $S_PROGRAM_URL has a trailing, "?", it means something a little weird, 
-		# as the PATH_INFO is read from the QUERY_STRING, then parsed. 
-		# url_param()'s don't work like that, so we have to read it from param()
-		$using_jsonp = 1;
+     # this is a messy workaround.
+     # If $S_PROGRAM_URL has a trailing, "?", it means something a little weird,
+     # as the PATH_INFO is read from the QUERY_STRING, then parsed.
+     # url_param()'s don't work like that, so we have to read it from param()
+        $using_jsonp = 1;
 
-	} elsif ( $q->content_type =~ m/application\/json/ ) {
+    }
+    elsif ( $q->content_type =~ m/application\/json/ ) {
 
         # That's OK too - we support getting the params you send us in POST
 
@@ -10814,7 +10813,7 @@ sub restful_subscribe {
 
     }
     else {
-		
+
         die '425';
 
     }
@@ -10864,15 +10863,15 @@ sub restful_subscribe {
 
     my $callback = undef;
     if ($using_jsonp) {
-		
-		# Messy workaround again: 
-		if($DADA::Config::S_PROGRAM_URL =~ m/\?$/){
-			$callback = xss_filter( strip( $q->param('callback') ) );	
-		}
-		else { 
-			$callback = xss_filter( strip( $q->url_param('callback') ) );
-		}
-	}
+
+        # Messy workaround again:
+        if ( $DADA::Config::S_PROGRAM_URL =~ m/\?$/ ) {
+            $callback = xss_filter( strip( $q->param('callback') ) );
+        }
+        else {
+            $callback = xss_filter( strip( $q->url_param('callback') ) );
+        }
+    }
 
     my $headers = {};
     if ($using_jsonp) {
