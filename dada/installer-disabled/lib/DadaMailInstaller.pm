@@ -4628,10 +4628,10 @@ sub cgi_test_sql_connection {
     my ( $status, $details ) = $self->test_sql_connection( $dbtype, $dbserver, $port, $database, $user, $pass, );
 
     if ( $status == 1 ) {
-        $r .= '<p>Connection Successful!</p>';
+        $r .= '<p>SQL connection successful.</p>';
     }
     else {
-        $r .= '<p>Connection is NOT Successful. Details:</p>';
+        $r .= '<p>SQL connection is NOT successful, details:</p>';
         $r .= '<code>' . $details . '</code>';
     }
     return $r;

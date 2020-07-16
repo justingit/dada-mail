@@ -15,7 +15,7 @@ jQuery(document).ready(function($){
 		});
 	}
 	if ($("#installer_configure_dada_mail").length) {
-				
+			
 		$("body").on("click", '.radiochangeDisplayState', function(event) {
 			changeDisplayState($(this).attr("data-target"), $(this).attr("data-state"));
 		});
@@ -191,9 +191,34 @@ jQuery(document).ready(function($){
 		$.each(hiding, function(index, value) {
 			$("#" + value).hide(); 
 		}); 
-		if($("#install_type").val() != "upgrade"){ 
+		if ($("#install_type").val() != "upgrade"){ 
 			$("#advanced_options").hide(); 
 		}
+		
+		
+		if ($("#install_type").val() == "upgrade"){ 
+			
+			installer_test_sql_connection();
+			
+			if ($("#install_bounce_handler").prop("checked") === true){ 
+				installer_test_pop3_connection();
+			}
+			if ($("#configure_captcha").prop("checked") === true){ 
+				if ($("#captcha_params_recaptcha_type_v2").prop("checked") === true){ 
+					test_CAPTCHA_configuration();
+				}	
+				if ($("#captcha_reCAPTCHA_Mailhide_public_key").prop("checked") === true){ 
+					if ($("#captcha_reCAPTCHA_Mailhide_private_key").prop("checked") === true){ 
+						test_captcha_reCAPTCHA_Mailhide_configuration();
+					}
+				}
+			}
+			if ($("#configure_amazon_ses").prop("checked") === true){ 
+				test_amazon_ses_configuration(); 
+			}
+		}
+		
+		
 
 	}
 	if ($("#installer_install_dada_mail").length) {		
