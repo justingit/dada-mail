@@ -3,22 +3,12 @@ package WWW::StopForumSpam;
 use 5.010;
 use strict;
 use warnings;
-#use autodie;
-use Carp qw(carp croak);
+use autodie;
+use Carp qw(croak);
 use URI::Escape;
 use Digest::MD5 qw(md5_hex);
 use Socket;
-
-use Try::Tiny; 
-use CGI qw(:oldstyle_urls);
-use LWP;
-use LWP::UserAgent;
-use HTTP::Request;
-use HTTP::Request::Common;
-use HTTP::Message;
-use Encode qw(encode decode);
-
-
+use WWW::Curl::Easy;
 use JSON qw(decode_json);
 
 our $VERSION = '0.02';
@@ -55,40 +45,30 @@ sub new {
 }
 
 sub check {
-	
     my $self = shift;
     my @request_params = ();
-    
-	my $query = {}; 
-	
+     
     while(@_) {
         my $attr = shift;
-        my $value = shift;		
+        my $value = shift;
+        
         if ($attr eq "ip" or $attr eq "email" or $attr eq "username") {
-			$query->{$attr} = $value; 
+            push(@request_params, $attr . "=" . uri_escape($value));
         }
     }
     
     # add default params
-	$query->{f} = 'json';
+    push(@request_params, "f=json");
     
-    my ($r, $res) = $self->_query_api($query);
+    my ($http_code, $buffer) = $self->_query_api(join("&", @request_params));
     
     # if the api is not working, we don't want to allow potential spammers
     # signing up, so rather force the developers to check their logs...
-    if (not defined $r) {
+    if (not defined $buffer) {
         return 1;
     }
     
-	# warn '$r' . $r; 
-	
-    my $decoded_json = decode_json($r);
-	
-	#use Data::Dumper; 
-	#warn Dumper($decoded_json);
-	
-	
-	
+    my $decoded_json = decode_json($buffer);
     if(not defined $decoded_json->{'success'}) {
         warn "unable to read json";
         return 1;
@@ -142,183 +122,77 @@ sub dns_check {
 }
 
 sub report {
-	
     my $self = shift;
     my @request_params = ();
-	my $query = {};
-	
+    
     if(not defined $self->{api_key}) {
         croak "apikey required.";
     }
     
-	
     while(@_) {
         my $attr = shift;
         my $value = shift;
         
         if ($attr eq "username" or $attr eq "ip_addr" or $attr eq "evidence" or $attr eq "email") {
             if (length($value) > 0) {
-				$query->{$attr} = $value; 
+                push(@request_params, $attr . "=" . uri_escape($value));
             }
         }
     }
     
     # add default params
-    $query->{api_key} = $self->{api_key};
-	
-    my ($r, $res) = $self->_query_api($query, 1);
+    push(@request_params, "api_key=" . $self->{api_key});
     
-    if (not defined $r) {
+    my ($http_code, $buffer) = $self->_query_api(join("&", @request_params), 1);
+    
+    if (not defined $buffer) {
         return 0;
     }
     
-    if ($res->status_line == 200) {
+    if ($http_code == 200) {
         return 1;
     } else {
-        warn $self->_strip_tags($r);
+        warn $self->_strip_tags($buffer);
         return 0;
     }
 }
 
 sub _query_api {
-
-    my ($self, $query, $is_submit) = @_;
+    my ($self, $data, $is_submit) = @_;
     
     if (not defined $is_submit) {
         $is_submit = 0;
     }
-
-	my $url = $self->{api_url};
-	
+    
+    my $buffer = "";
+    my $curl = WWW::Curl::Easy->new();
+    
     if ($is_submit) {
-		# ... 
-	}
-	else {
-		 $url .= "?" . $self->the_query_string($query); 
-	}
-	 
-    my $ua = LWP::UserAgent->new;
-       $ua->agent( 'Mozilla/5.0 (compatible; WWW::StopForumSpam/0.1; +http://www.perlhipster.com/bot.html)');
-
-	   # warn 'URL:' . $url; 
-	   
-    if ( $self->can_use_compress_zlib() == 1 ) {
-        my $can_accept = HTTP::Message::decodable();
-		my $res = undef; 
-		
-	    if ($is_submit) {
-	        $res = $ua->get(
-				$url, 
-				'Accept-Encoding' => $can_accept);
-		}
-		else {
-        	$res = $ua->request( 
-				POST 
-				$url, 
-				content => $query
-			);
-		}
-	
-		if ($res->is_success) {
-            if(wantarray){
-                my $dc = $res->decoded_content;  
-                return ($dc, $res); 
-            }
-            else { 
-                return $res->decoded_content;
-            }
-    	}
-    	else { 
-    	    carp "Problem fetching url, '$url':" . $res->status_line;
-    		if(wantarray){ 
-                return (undef, $res); 
-            }
-            else { 
-    		    return undef; 
-    	    }
-    	}
+        $curl->setopt(CURLOPT_URL, "http://www.stopforumspam.com/add.php");
+        $curl->setopt(CURLOPT_POST, 1);
+        $curl->setopt(CURLOPT_POSTFIELDS, $data);
+    } else {
+        $curl->setopt(CURLOPT_URL, $self->{api_url} . "?" . $data);
     }
-    else {
-		my $res; 
-	    if ($is_submit) {
-	        $res = $ua->get(
-				$url, 
-				); 
-		}
-		else {
-        	$res = $ua->request( 
-				POST 
-				$url, 
-				content => $query
-			);
-		}
-	
-        if ($res->is_success) {
-            if(wantarray){ 
-                my $dc = safely_decode( $res->content );      
-                return ($dc, $res); 
-            }
-    		else { 
-    		    return safely_decode( $res->content ); 
-    		}
-        }
-    	else { 
-    	    carp "Problem fetching url, '$url':" . $res->status_line;
-    		if(wantarray){ 
-                return (undef, $res); 
-            }
-            else { 
-    		    return undef; 
-    	    }
-    	}
+    
+    $curl->setopt(CURLOPT_USERAGENT, "Mozilla/5.0 (compatible; WWW::StopForumSpam/0.1; +http://www.perlhipster.com/bot.html)");
+    $curl->setopt(CURLOPT_ENCODING, "");
+    $curl->setopt(CURLOPT_NOPROGRESS, 1);
+    $curl->setopt(CURLOPT_FAILONERROR, 0);
+    $curl->setopt(CURLOPT_TIMEOUT, $self->{timeout});
+    $curl->setopt(CURLOPT_WRITEFUNCTION, sub {
+        $buffer .= $_[0];
+        return length($_[0]);
+    });
+    
+    my $retcode = $curl->perform();
+    
+    if($retcode != 0) {
+        warn $curl->errbuf;
+        return;
     }
-}
-
-
-sub can_use_compress_zlib { 
-	my $can_use_compress_zlib = 1; 
-	try { 
-		require Compress::Zlib ;
-	}
-	catch { 
-		$can_use_compress_zlib = 0; 	
-	};
-	return $can_use_compress_zlib;
-}
-
-
-sub safely_decode { 
-	
-	my $str   = shift; 
-	my $force = shift || 0; 
-
-	
-	if(utf8::is_utf8($str) == 1 && $force == 0){ 
-	#	warn 'utf8::is_utf8 is returning 1 - not decoding.'; 
-	}
-	else { 
-		eval { 
-			$str = Encode::decode('UTF-8', $str); 
-		};
-		
-		if($@){ 
-			warn 'Problems: with: (' . $str . '): '. $@; 
-		} 
-	}
-	#warn 'decoding was safely done.';
-	return $str;
-}
-
-sub the_query_string {
-    my $self         = shift;
-    my $query_params = shift;
-    my $new_q        = CGI->new;
-	$new_q->delete_all(); 
-    for ( sort { lc $a cmp lc $b } ( keys %$query_params ) ) {
-        $new_q->param( $_, $query_params->{$_} );
-    }
-    my $qs = $new_q->query_string();
-    return $qs;
+    
+    return ($curl->getinfo(CURLINFO_HTTP_CODE), $buffer);
 }
 
 sub _get_avg_confidence {
@@ -423,11 +297,11 @@ DNSBL: L<http://sfs.dnsbl.st>
 
 =head1 AUTHOR
 
-Günter Grodotzki, E<lt>guenter@perlhipster.comE<gt>
+GÃ¼nter Grodotzki, E<lt>guenter@perlhipster.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2014 by Günter Grodotzki
+Copyright (C) 2014 by GÃ¼nter Grodotzki
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.
