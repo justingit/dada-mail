@@ -5,16 +5,17 @@
 			<!-- /tmpl_if -->
 	
 		<tr> 
-			<td>
+			<td valign="top">
 				<strong>
 					Sending Interval
 				</strong>
 			</td> 
-			<td class="text-right"> 
+			<td class="text-right"  valign="top"> 
 				<!-- tmpl_if start_time -->
 					<strong>Start:</strong> <!-- tmpl_var start_time_formatted -->,
 				<!-- /tmpl_if --> 
 				<!-- tmpl_if finish_time -->
+					<br>
 					<strong>Finish:</strong> <!-- tmpl_var finish_time_formatted --> 
 				<!-- /tmpl_if --> 
 			</td>
@@ -22,23 +23,25 @@
 		
 			<!-- tmpl_if sending_time -->
 				<tr> 
-					<td>
+					<td  valign="top">
 						<strong>
 							Sending Speed
 						</strong>
 					</td> 
-					<td class="text-right"> 
-						<strong>Total Time:</strong> <!-- tmpl_var sending_time_formatted -->, <!-- tmpl_var sending_speed_formatted --> messages/hour
+					<td class="text-right"  valign="top"> 
+						<strong>Total Time:</strong> <!-- tmpl_var sending_time_formatted -->, 
+						<br>
+						<!-- tmpl_var sending_speed_formatted --> messages/hour
 					</td>
 				</tr>
 			<!-- /tmpl_if -->
 		
 			<!-- tmpl_if sending_method -->
 				<tr> 
-					<td>
+					<td valign="top">
 						<strong>Sending Method</strong>
 					</td> 
-					<td class="text-right"> 
+					<td class="text-right"  valign="top"> 
 						<!-- tmpl_var sending_method -->
 					</td>
 				</tr>
@@ -46,10 +49,10 @@
 			
 			<!-- tmpl_if msg_size -->
 				<tr> 
-					<td>				
+					<td  valign="top">				
 						<strong>Message Size</strong>
 					</td> 
-					<td class="text-right"> 
+					<td class="text-right" valign="top"> 
 						<!-- tmpl_var msg_size_formatted -->
 					</td>
 				</tr>
@@ -57,22 +60,39 @@
 		<!-- /tmpl_if -->	
 
 		<tr> 
-			<td>
-				<a href="#subscriber_activity">
+			<td valign="top">
+				<!-- tmpl_if a_in_t -->
+					<a href="#subscriber_activity">
+				<!--/tmpl_if -->
 					<strong>Message Recipients</strong>
-				</a>
+				<!-- tmpl_if a_in_t -->
+					</a>
+				<!-- /tmpl_if -->
 			</td> 
-			<td class="text-right"> 
+			<td class="text-right" valign="top"> 
 				Total: <!-- tmpl_var total_recipients_commified default="0" -->, 
+				<br>
 				Delivered: <!-- tmpl_var received_commified default="0" --> - <!-- tmpl_var received_percent default="0" -->%
 			</td>
 		</tr>
 		<tr>
-			<td> 
-				<strong><a href="#opens">Opens</a></strong>
+			<td valign="top"> 
+				<strong>
+					<!-- tmpl_if a_in_t -->
+						<a href="#opens">
+					<!-- /tmpl_if --> 
+					Opens
+				
+				<!-- tmpl_if a_in_t -->
+					</a>
+				<!-- /tmpl_if -->
+			
+			</strong>
 			</td> 
-			<td class="text-right"> 
-				<a href="#opens">
+			<td class="text-right" valign="top"> 
+				<!-- tmpl_if a_in_t -->
+					<a href="#opens">
+				<!-- /tmpl_if -->
 					Total: <!-- tmpl_var open_commified default="0" -->
 				
 					<!-- tmpl_if expr="(
@@ -88,15 +108,29 @@
 						<!-- /tmpl_if -->
 					<!-- /tmpl_if -->
 				
-				</a> 
+				<!-- tmpl_if a_in_t -->
+					</a>
+				<!-- /tmpl_if -->
 			</td> 
 		</tr>
 		<tr>
-			<td> 
-				<strong><a href="#clickthroughs">Clickthroughs</a></strong>
+			<td valign="top"> 
+				<strong>
+					<!-- tmpl_if a_in_t -->
+						<a href="#clickthroughs">
+					<!-- /tmpl_if -->	
+						Clickthroughs
+					<!-- tmpl_if a_in_t -->
+						</a>
+					<!-- /tmpl_if -->	
+				</strong>
 			</td> 
-			<td class="text-right"> 
-				<a href="#clickthroughs">
+			<td class="text-right" valign="top"> 
+				<!-- tmpl_if a_in_t -->
+					<a href="#clickthroughs">
+				<!-- /tmpl_if -->
+					
+					
 					Total: <!-- tmpl_var clickthroughs_commified default="0" -->
 					<!-- tmpl_if expr="(
 						(
@@ -110,34 +144,64 @@
 							, Unique: <!-- tmpl_var unique_clickthroughs_commified default="0" --> - <!-- tmpl_var unique_clickthroughs_percent default="0" -->%
 						<!-- /tmpl_if -->
 					<!-- /tmpl_if -->	
-				</a>
+				
+				<!-- tmpl_if a_in_t -->
+					</a>
+				<!-- /tmpl_if -->
+				
 			</td> 
 		</tr>
 		<tr>
-			<td> 
-				<strong><a href="#unsubscribes">
+			<td valign="top"> 
+				<strong>
+					<!-- tmpl_if a_in_t -->
+						<a href="#unsubscribes">
+					<!-- /tmpl_if -->	
+						
 								Unsubscriptions
-							</a></strong>
+						
+						
+					<!-- tmpl_if a_in_t -->
+						</a>
+					<!-- /tmpl_if -->
+						
+						
+						</strong>
 			</td> 
-			<td class="text-right"> 
-				<a href="#unsubscribes">
+			<td class="text-right" valign="top"> 
+				<!-- tmpl_if a_in_t -->
+					<a href="#unsubscribes">
+				<!-- /tmpl_if -->
+				
 					<!-- tmpl_var unsubscribe default="0" -->
 					<!-- tmpl_if expr="((list_settings.tracker_track_email == 1) && (PII_OPTIONS_allow_logging_emails_in_analytics == 1))" -->
 						<!-- tmpl_if unsubscribe -->- 
 							<!-- tmpl_var unique_unsubscribe_percent default="0"  -->%
 						<!-- /tmpl_if -->
 					<!-- /tmpl_if -->
-				</a>
+				<!-- tmpl_if a_in_t -->
+					</a>
+				<!-- /tmpl_if -->
 			</td> 
 		</tr>
 		<tr>
-			<td> 
-				<strong><a href="#bounces">
+			<td valign="top"> 
+				<strong>
+					<!-- tmpl_if a_in_t -->
+						<a href="#bounces">
+					<!-- /tmpl_if -->	
+						
 								Bounces
-							</a></strong>
+					<!-- tmpl_if a_in_t -->
+						</a>
+					<!-- /tmpl_if -->
+						
+						</strong>
 			</td> 
-			<td class="text-right"> 
-				<a href="#bounces">
+			<td class="text-right" valign="top"> 
+				<!-- tmpl_if a_in_t -->
+					<a href="#bounces">
+				<!-- /tmpl_if -->
 					<!-- tmpl_if total_bounce -->
 						Soft: <!-- tmpl_var soft_bounce default="0" -->, 
 						Hard: <!-- tmpl_var hard_bounce  default="0" --> 
@@ -146,60 +210,134 @@
 					<!-- tmpl_else -->
 						0
 					<!-- /tmpl_if -->
-				</a>
+				<!-- tmpl_if a_in_t -->
+					</a>
+				<!-- /tmpl_if -->
 			</td> 
 		</tr>	
 	
 	
 		<tr>
-			<td> 
-				<strong><a href="#sending_errors">Sending Errors</a></strong>
+			<td valign="top"> 
+				<strong>
+					<!-- tmpl_if a_in_t -->
+						<a href="#sending_errors">
+					<!-- /tmpl_if -->	
+						Sending Errors
+					
+					<!-- tmpl_if a_in_t -->
+						</a>
+					<!-- /tmpl_if -->
+				
+				</strong>
 			</td> 
-			<td class="text-right"> 
-				<a href="#sending_errors">
+			<td class="text-right" valign="top"> 
+				<!-- tmpl_if a_in_t -->
+					<a href="#sending_errors">
+				<!-- /tmpl_if -->		
 					<!-- tmpl_var errors_sending_to_commified default="0" -->
 					<!-- tmpl_if errors_sending_to -->
 						- <!-- tmpl_var errors_sending_to_percent default="0" -->%
 					<!-- /tmpl_if -->
-				</a>
+				<!-- tmpl_if a_in_t -->
+					</a>
+				<!-- /tmpl_if -->
 			</td> 
 		</tr>
 	
 		<tr>
-			<td> 
-				<strong><a href="#abuse_reports">
+			<td valign="top"> 
+				<strong>
+					<!-- tmpl_if a_in_t -->
+						<a href="#abuse_reports">
+					<!-- /tmpl_if -->			
+								
 								Abuse Reports
-							</a></strong>
+								
+								
+					<!-- tmpl_if a_in_t -->
+						</a>
+					<!-- /tmpl_if -->
+					
+						
+						</strong>
 			</td> 
-			<td class="text-right"> 
-				<a href="#abuse_reports">
+			<td class="text-right" valign="top"> 
+				<!-- tmpl_if a_in_t -->
+					<a href="#abuse_reports">
+				<!-- /tmpl_if -->	
+				
 					<!-- tmpl_var abuse_report_commified default="0" --> 
+				
+			<!-- tmpl_if a_in_t -->
 				</a>
+			<!-- /tmpl_if -->
+			
+			
 			</td> 
 		</tr>
 	
 		<tr>
-			<td> 
-				<strong><a href="#archive_views">
+			<td valign="top"> 
+				<strong>
+					<!-- tmpl_if a_in_t -->	
+						<a href="#archive_views">
+					<!-- /tmpl_if -->
+					
 								Archive Views
-							</a></strong>
+					
+					
+						<!-- tmpl_if a_in_t -->
+							</a>
+						<!-- /tmpl_if -->
+						
+						</strong>
 			</td> 
-			<td class="text-right"> 
-				<a href="#archive_views">
+			<td class="text-right" valign="top"> 
+				
+				<!-- tmpl_if a_in_t -->
+					<a href="#archive_views">
+				<!-- /tmpl_if -->
+				
 					<!-- tmpl_var view_archive_commified default="0"-->
-				</a> 
+			
+			
+				<!-- tmpl_if a_in_t -->
+					</a>
+				<!-- /tmpl_if -->
+			
+			
 			</td> 
 		</tr>
 		<tr>
-			<td> 
-				<strong><a href="#forwards">
+			<td valign="top"> 
+				<strong>
+					<!-- tmpl_if a_in_t -->
+						<a href="#forwards">
+					<!-- /tmpl_if -->		
+							
 								Forwards
-							</a></strong>
+						
+						
+					<!-- tmpl_if a_in_t -->
+						</a>
+					<!-- /tmpl_if -->
+						
+						</strong>
 			</td> 
-			<td class="text-right"> 
-				<a href="#forwards">
+			<td class="text-right" valign="top"> 
+				<!-- tmpl_if a_in_t -->
+					<a href="#forwards">
+				<!-- /tmpl_if -->	
+					
 					<!-- tmpl_var forward_to_a_friend_commified default="0" -->
-				</a>
+				
+				
+				<!-- tmpl_if a_in_t -->
+					</a>
+				<!-- /tmpl_if -->
+			
+			
 			</td> 
 		</tr>
 		
