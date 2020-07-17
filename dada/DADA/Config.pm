@@ -1323,7 +1323,7 @@ $MIME_TOOLS_PARAMS //= {
     limit_sub_confirm                        => 1,
     limit_sub_confirm_use_captcha            => 1,
 	
-	enable_sub_confirm_stopforumspam_protection => 1, 
+	enable_sub_confirm_stopforumspam_protection => 0, 
 	enable_sub_confirm_suspicious_activity_by_ip_protection => 1,
 
     use_alt_url_sub_confirm_success                  => 0,
