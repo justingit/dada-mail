@@ -2,6 +2,9 @@
 package tracker;
 use strict;
 
+use Carp; 
+$Carp::Verbose = 1; 
+
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
@@ -87,6 +90,7 @@ sub run {
     my %Mode = (
         'default'                               => \&default,
         'm'                                     => \&message_report,
+		'test_email_message_report'             => \&test_email_message_report, 
         'edit_prefs'                            => \&edit_prefs,
         'save_view_count_prefs'                 => \&save_view_count_prefs,
         'download_logs'                         => \&download_logs,
@@ -880,6 +884,84 @@ sub edit_prefs {
     my $dc = DADA::App::DataCache->new;
     $dc->flush( { -list => $list } );
     return ( { -redirect_uri => $Plugin_Config->{Plugin_URL} . '?done=1' }, undef );
+}
+
+sub test_email_message_report { 
+
+	my $q   = shift;
+	
+	
+    my ( $total, $msg_ids ) = $rd->get_all_mids(
+        {
+            -entries => 1,
+        }
+    );
+	my $m_report = $rd->report_by_message( $msg_ids->[0] );
+	
+	
+	
+	
+    require DADA::Template::Widgets;
+
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -screen => 'plugins/tracker/message_report_table.tmpl',
+            -expr   => 1,
+            -vars   => {
+				a_in_t => 0,
+				%$m_report,
+			}
+        },
+        -list_settings_vars_param => {
+            -list   => $list,
+            -dot_it => 1,
+        },
+       
+    );
+	
+  
+	
+    require DADA::App::EmailThemes;
+    my $em = DADA::App::EmailThemes->new(
+        {
+            -list      => $list,
+        }
+    );
+	
+    my $etp = $em->fetch('tracker_email_analytics');
+	
+	# mass_mailing_analytics_table
+	
+    require DADA::App::Messages;
+    my $dam = DADA::App::Messages->new( { -list => $list } );
+	
+    $dam->send_multipart_email(
+        {
+	        -headers => {
+	            To      => $ls->param('list_owner_email'),
+	            From      => $ls->param('list_owner_email'),
+	            Subject => "hey! your analytics!",
+	        },
+		    -plaintext_body => $etp->{plaintext},
+		    -html_body      => $etp->{html},
+			#-html_body => 'test',
+			# -test => $self->test,
+	        -tmpl_params    => {
+	            -list_settings_vars_param => { 
+					-list => $list 
+				},
+	            -vars => {
+	                mass_mailing_analytics_table => $scrn,
+					message_id                   => $msg_ids->[0],
+	            },	
+			}
+        }
+    );
+	
+	
+	#use Data::Dumper; 
+	return ( {}, $scrn );
+
 }
 
 sub message_report {
