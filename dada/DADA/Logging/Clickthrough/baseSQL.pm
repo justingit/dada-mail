@@ -563,6 +563,16 @@ sub num_subscribers_log {
     $args->{-update_fields}  = 0; 
     return $self->mass_mailing_event_log($args); 
 }
+sub sent_analytics_log {
+    my $self                 = shift;
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = 'sent_analytics'; 
+    $args->{-details}        = 0;
+    $args->{-update_fields}  = 0; 
+    return $self->mass_mailing_event_log($args); 
+}
+
 sub total_recipients_log {
     my $self                 = shift;
     my ($args)               = @_;
@@ -977,18 +987,15 @@ sub get_all_mids {
 			  . $self->{dbh}->quote('sent_analytics')
 			  . ' AND details = '
 			  . $self->{dbh}->quote('0')
-			  .	' AND msg_id > ' 
-			  . $self->{dbh}->quote($two_days_ago_msg_id)
-			  . ' AND msg_id < ' 
-			  . $self->{dbh}->quote($three_days_ago_msg_id) 
 		      . ' GROUP BY msg_id ORDER BY msg_id DESC;';
-		  	  warn '$query: ' . $query; 
-		  
-		  }
-		  
-		  
-		  
-		  
+
+ 			 # .	' AND msg_id > ' 
+ 			 # . $self->{dbh}->quote($two_days_ago_msg_id)
+ 			 # . ' AND msg_id < ' 
+ 			 # . $self->{dbh}->quote($three_days_ago_msg_id) 
+
+			 warn '$query: ' . $query; 		  
+		 }
     }
     else {
 
@@ -1024,6 +1031,38 @@ sub get_all_mids {
     return ( $total, $msg_id1 );
 
 }
+
+sub update_sent_analytics { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	
+	if(!exists($args->{-msg_id})){ 
+		die "need a msg_id";
+	}
+	if(!exists($args->{-val})){ 
+		$args->{-val} = 1; 
+	}
+	
+    my $query = 'UPDATE '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} 
+      . ' SET details    = ? '
+      . ' WHERE event    = ? '
+	  . ' AND msg_id   = ? '
+	  . ' AND list     = ? '; 	  
+	  
+	my $sth = $self->{dbh}->prepare($query);
+	$sth->execute( 
+		$args->{-val}, 
+		'sent_analytics', 
+		$args->{-msg_id},
+		$self->{name},
+	) 
+	or croak "cannot do statement '$query'! $DBI::errstr\n";
+    
+	$sth->finish;	
+}
+
 
 
 
