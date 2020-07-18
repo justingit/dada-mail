@@ -941,6 +941,10 @@ sub get_all_mids {
     if ( !exists( $args->{-entries} ) ) {
         $args->{-entries} = 10;
     }
+	
+    if ( !exists( $args->{-for_analytics_email} ) ) {
+		$args->{-for_analytics_email} = 0; 
+	}
 
 # postgres: $query .= ' SELECT DISTINCT ON(' . $subscriber_table . '.email) ';
 # This query could probably be made into one, if I could simple use a join, or something
@@ -950,11 +954,41 @@ sub get_all_mids {
 
     my $query = '';
     if ( $self->{ls}->param('tracker_clean_up_reports') == 1 ) {
-
-        $query =
-            'SELECT msg_id FROM '
-          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-          . ' WHERE list = ? AND event = \'num_subscribers\' GROUP BY msg_id ORDER BY msg_id DESC;';
+        if($args->{-for_analytics_email} == 0){ 		
+			$query =
+	            'SELECT msg_id FROM '
+	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+	          . ' WHERE list = ? AND event = \'num_subscribers\' GROUP BY msg_id ORDER BY msg_id DESC;';
+		  }
+		  else { 
+			  
+			  # I also want the msg_id to be between 2 and 3 days
+			  my $epoch = time; 
+			  my $two_days_ago   = time - int(86400 * 2);
+			  my $three_days_ago = time - int(86400 * 3);
+			  my $two_days_ago_msg_id   = message_id($two_days_ago);
+			  my $three_days_ago_msg_id = message_id($three_days_ago);
+			   
+  			$query =
+  	            'SELECT msg_id FROM '
+  	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+  	          . ' WHERE list = ? '
+			  . ' AND event = ' 
+			  . $self->{dbh}->quote('sent_analytics')
+			  . ' AND details = '
+			  . $self->{dbh}->quote('0')
+			  .	' AND msg_id > ' 
+			  . $self->{dbh}->quote($two_days_ago_msg_id)
+			  . ' AND msg_id < ' 
+			  . $self->{dbh}->quote($three_days_ago_msg_id) 
+		      . ' GROUP BY msg_id ORDER BY msg_id DESC;';
+		  	  warn '$query: ' . $query; 
+		  
+		  }
+		  
+		  
+		  
+		  
     }
     else {
 

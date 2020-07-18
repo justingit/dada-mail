@@ -893,9 +893,16 @@ sub test_email_message_report {
 	
     my ( $total, $msg_ids ) = $rd->get_all_mids(
         {
-            -entries => 1,
+            -entries             => 1,
+			-for_analytics_email => 1,
         }
     );
+	
+	use Data::Dumper; 
+	
+	if(scalar(@$msg_ids) == 0){ 
+		return ( {}, Dumper($msg_ids) );
+	}
 	my $m_report = $rd->report_by_message( $msg_ids->[0] );
 	
 	
