@@ -1216,7 +1216,6 @@ sub start {
 				if($ls->param('bridge_auto_reject_awaiting_moderation_messages') == 1){ 
 					
 					my $epoch = $_->{date}; 
-					require Time::Piece;
 					my $padded = int($epoch) + (int($ls->param('bridge_auto_reject_awaiting_moderation_messages_timeframe')) * 86400); 
 				
 					if($padded <= time){ 
