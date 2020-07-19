@@ -987,14 +987,11 @@ sub get_all_mids {
 			  . $self->{dbh}->quote('sent_analytics')
 			  . ' AND details = '
 			  . $self->{dbh}->quote('0')
+ 			  .	' AND msg_id > ' 
+ 			  . $self->{dbh}->quote($two_days_ago_msg_id)
+ 			  . ' AND msg_id < ' 
+ 			  . $self->{dbh}->quote($three_days_ago_msg_id) 
 		      . ' GROUP BY msg_id ORDER BY msg_id DESC;';
-
- 			 # .	' AND msg_id > ' 
- 			 # . $self->{dbh}->quote($two_days_ago_msg_id)
- 			 # . ' AND msg_id < ' 
- 			 # . $self->{dbh}->quote($three_days_ago_msg_id) 
-
-			 warn '$query: ' . $query; 		  
 		 }
     }
     else {
@@ -1870,7 +1867,7 @@ sub user_agent_data {
 	my ($args) = @_; 
 
 
-    require Data::Dumper; 
+    # require Data::Dumper; 
     #warn 'args: ' . Data::Dumper::Dumper($args); 
     
 	if(!exists($args->{-mid})){ 
@@ -1970,7 +1967,7 @@ sub user_agent_data {
 	
 	
 	
-    require Data::Dumper; 
+   # require Data::Dumper; 
    # warn '$final ' . Data::Dumper::Dumper($final); 
     return $final; 
 
@@ -3495,6 +3492,105 @@ sub fip_to_state_names {
 
 
 }
+
+sub send_analytics_email_notification {
+
+    my $self = shift;
+	my $r    = ''; 
+	
+
+    $r .=
+        "Mailing List: "
+      . $self->{ls}->param('list_name') . " ("
+      . $self->{ls}->param('list') . ")\n"
+      . '-' x 72 . "\n";
+	
+	if($self->{ls}->param('tracker_send_analytics_email_notification') != 1){ 
+		$r .= "Disabled.\n\n";
+		return $r; 
+	}
+    my ( $total, $msg_ids ) = $self->get_all_mids(
+        {
+            -entries             => 100,
+            -for_analytics_email => 1,
+        }
+    );
+
+    if ( scalar(@$msg_ids) == 0 ) {
+		$r .= "No messages to send analytics for\n\n"; 
+        return $r;
+    }
+
+	
+    my $m_report = $self->report_by_message( $msg_ids->[-1] );
+
+	$r .= "Sending out analytics report for " . 'FIX ME' .  " (msg_id: " . $msg_ids->[-1] . ")\n\n";
+	
+	
+    require DADA::Template::Widgets;
+
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -screen => 'plugins/tracker/message_report_table.tmpl',
+            -expr   => 1,
+            -vars   => {
+                a_in_t => 0,
+                %$m_report,
+            }
+        },
+        -list_settings_vars_param => {
+            -list   => $self->{name},
+            -dot_it => 1,
+        },
+
+    );
+
+    require DADA::App::EmailThemes;
+    my $em = DADA::App::EmailThemes->new(
+        {
+            -list => $self->{name},
+        }
+    );
+	my $etp = $em->fetch('tracker_email_analytics');
+    
+	require DADA::App::Messages;
+    my $dam = DADA::App::Messages->new( { -list => $self->{name} } );
+
+    $dam->send_multipart_email(
+        {
+            -headers => {
+                To      => $self->{ls}->param('list_owner_email'),
+                From    => $self->{ls}->param('list_owner_email'),
+                Subject => "Analytics for message, 'FIX ME'",
+            },
+            -plaintext_body => $etp->{plaintext},
+            -html_body      => $etp->{html},
+            -tmpl_params => {
+                -list_settings_vars_param => {
+                    -list => $self->{name}
+                },
+                -vars => {
+                    mass_mailing_analytics_table => $scrn,
+                    message_id                   => $msg_ids->[-1],
+					message_report               => $m_report, 
+                },
+            }
+        }
+    );
+
+    $self->update_sent_analytics(
+        {
+            -msg_id => $msg_ids->[-1],
+            -val    => 1,
+        }
+    );
+	
+    # return ( {}, $scrn );
+	return $r; 
+
+}
+
+
 
 
 1;

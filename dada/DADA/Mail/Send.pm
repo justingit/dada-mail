@@ -3764,12 +3764,6 @@ sub _log_sub_count {
 	            -details => $sending_method,
 	        }
 		);
-		$r->sent_analytics_log(
-	        {
-	            -mid      => $msg_id,
-	            -details => 1,
-	        }			
-		);
 
     }
     else {
@@ -3806,6 +3800,14 @@ sub _log_mass_mailing_finish {
             -details => time,
         }
 	);
+	
+	$r->sent_analytics_log(
+        {
+            -mid      => $msg_id,
+            -details => 1,
+        }			
+	);
+	
 		
 }
 	

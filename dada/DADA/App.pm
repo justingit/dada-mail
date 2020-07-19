@@ -16027,44 +16027,44 @@ sub schedules {
 	        $r .= "\nMonitor:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->mass_mailing_monitor($list);
-	        }
-	        catch {
+	        } catch {
 	            $r .= "* Error: $_\n";
 	        };
 
 	        $r .= "Mass Mailing Schedules:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->scheduled_mass_mailings($list);
-	        }
-	        catch {
+	        } catch {
 	            $r .= "* Error: $_\n";
 	        };
 
 	        $r .= "Rate Limits:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->expire_rate_limit_checks($list);
-	        }
-	        catch {
+	        } catch {
 	            $r .= "* Error: $_\n";
 	        };
 		
 	        $r .= "Cleaning Out MIME Cache:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->clean_out_mime_cache();
-	        }
-	        catch {
+	        } catch {
 	            $r .= "* Error: $_\n";
 	        };
 			
 	        $r .= "\nRemoving old archive messages:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->remove_old_archive_messages($list);
-	        }
-	        catch {
+	        } catch {
 	            $r .= "* Error: $_\n";
 	        };
 
-	      
+	        $r .= "\nSending Analytics Email Notification:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->send_analytics_email_notification($list);
+	        } catch {
+	            $r .= "* Error: $_\n";
+	        };		  
 
 	        for my $plugin ( keys %$DADA::Config::PLUGINS_ENABLED ) {
 	            if ( exists( $DADA::Config::PLUGINS_ENABLED->{$plugin} ) ) {
@@ -16116,6 +16116,15 @@ sub schedules {
 	        $r .= "Removing out old archive messages:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->remove_old_archive_messages($list);
+	        }
+	        catch {
+	            $r .= "* Error: $_\n";
+	        };
+	    }
+	    elsif ( $schedule eq 'send_analytics_email_notification' ) {
+	        $r .= "Sending Analytics Email Notification:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->send_analytics_email_notification($list);
 	        }
 	        catch {
 	            $r .= "* Error: $_\n";

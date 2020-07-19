@@ -1656,6 +1656,7 @@ $MIME_TOOLS_PARAMS //= {
     tracker_update_profiles_w_geo_ip_data            => 0,
     tracker_update_profile_fields_ip_dada_meta       => undef, 
 
+	tracker_send_analytics_email_notification        => 1, 
 
     #	tracker_enable_data_cache                           => 1,
     #	tracker_dada_cache_expires                          => 1, # in hours

@@ -90,7 +90,6 @@ sub run {
     my %Mode = (
         'default'                               => \&default,
         'm'                                     => \&message_report,
-		'test_email_message_report'             => \&test_email_message_report, 
         'edit_prefs'                            => \&edit_prefs,
         'save_view_count_prefs'                 => \&save_view_count_prefs,
         'download_logs'                         => \&download_logs,
@@ -854,7 +853,8 @@ sub edit_prefs {
 				tracker_show_maps_in_reports                    => 0, 
                 tracker_clean_up_reports                        => 0,
                 tracker_show_message_reports_in_mailing_monitor => 0,
-                tracker_update_profiles_w_geo_ip_data => 0,
+                tracker_update_profiles_w_geo_ip_data           => 0,
+				tracker_send_analytics_email_notification       => 0, 
             },
 			-also_save_for => $also_save_for_list,
         }
@@ -884,84 +884,6 @@ sub edit_prefs {
     my $dc = DADA::App::DataCache->new;
     $dc->flush( { -list => $list } );
     return ( { -redirect_uri => $Plugin_Config->{Plugin_URL} . '?done=1' }, undef );
-}
-
-sub test_email_message_report { 
-
-	my $q   = shift;
-    my ( $total, $msg_ids ) = $rd->get_all_mids(
-        {
-            -entries             => 10,
-			-for_analytics_email => 1,
-        }
-    );
-	
-	if(scalar(@$msg_ids) == 0){ 
-		# return ( {}, Dumper($msg_ids) );
-	}
-
-	my $m_report = $rd->report_by_message( $msg_ids->[-1] );	
-    require DADA::Template::Widgets;
-
-    my $scrn = DADA::Template::Widgets::screen(
-        {
-            -screen => 'plugins/tracker/message_report_table.tmpl',
-            -expr   => 1,
-            -vars   => {
-				a_in_t => 0,
-				%$m_report,
-			}
-        },
-        -list_settings_vars_param => {
-            -list   => $list,
-            -dot_it => 1,
-        },
-       
-    );
-	
-    require DADA::App::EmailThemes;
-    my $em = DADA::App::EmailThemes->new(
-        {
-            -list      => $list,
-        }
-    );
-	
-    my $etp = $em->fetch('tracker_email_analytics');	
-    require DADA::App::Messages;
-    my $dam = DADA::App::Messages->new( { -list => $list } );
-	
-    $dam->send_multipart_email(
-        {
-	        -headers => {
-	            To      => $ls->param('list_owner_email'),
-	            From      => $ls->param('list_owner_email'),
-	            Subject => "hey! your analytics!",
-	        },
-		    -plaintext_body => $etp->{plaintext},
-		    -html_body      => $etp->{html},
-			#-html_body => 'test',
-			# -test => $self->test,
-	        -tmpl_params    => {
-	            -list_settings_vars_param => { 
-					-list => $list 
-				},
-	            -vars => {
-	                mass_mailing_analytics_table => $scrn,
-					message_id                   => $msg_ids->[-1],
-	            },	
-			}
-        }
-    );
-	
-	$rd->update_sent_analytics(
-		{
-			-msg_id => $msg_ids->[-1], 
-			-val    => 1, 
-		}
-	); 
-	
-	return ( {}, $scrn );
-
 }
 
 sub message_report {
@@ -1027,6 +949,7 @@ sub message_report {
 	        Plugin_URL           => $Plugin_Url,
 	        Plugin_Name          => $Plugin_Config->{Plugin_Name},
 	        chrome               => $chrome,
+			a_in_t               => 1, 
 			%$m_report, 
 		
 

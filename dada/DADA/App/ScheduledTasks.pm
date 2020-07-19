@@ -178,6 +178,29 @@ sub remove_old_archive_messages {
 
 }
 
+sub send_analytics_email_notification { 
+	my $self = shift;
+    my $list = shift; 
+    my $r; 
+    
+    my @lists = (); 
+    if($list eq '_all') { 
+        @lists = available_lists(-In_Random_Order => 1)
+    }
+    else { 
+        push(@lists, $list); 
+    }
+    
+    require DADA::Logging::Clickthrough; 
+    foreach my $l (@lists){ 			
+		my $la = DADA::Logging::Clickthrough->new({-list => $l}); 
+		$r .= $la->send_analytics_email_notification();     
+    }
+    return $r; 
+
+}
+
+
 sub lock_file {
 
     my $self = shift;
