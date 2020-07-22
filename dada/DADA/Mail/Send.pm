@@ -2486,34 +2486,10 @@ sub mass_send {
 				# most likely safe to called status() as much as I'd like...
 
             my $unformatted_end_time = time;
-            if ( $self->{ls}->param('get_finished_notification') == 1 ) {
-
-                warn '['
-                  . $self->{list}
-                  . '] Mass Mailing:'
-                  . $mailout_id
-                  . ' sending finished notification'
-                  if $t;
-
-                $self->_email_batched_finished_notification(
-                    { 
-						-start_time  => $ending_status->{first_access},
-	                    -end_time    => $unformatted_end_time,
-	                    -emails_sent => $ending_status->{total_sent_out},
-	                    -last_email  => $stop_email,
-	                    -msg_id      => $mailout->_internal_message_id,
-	                    -fields      => \%fields,
-						-message_id  => $mailout_id,
-					}
-                );
-
-            }
-
+            
             my $f_l_subject = $fields{Subject};
             $f_l_subject =~ s/\r|\n//g;
-			
-			
-			
+
 			my $total_sending_time = ($unformatted_end_time - $ending_status->{first_access});
 			if($total_sending_time <= 0){
 				$total_sending_time = .1; 
@@ -2555,6 +2531,29 @@ sub mass_send {
 				}
 			);
 			undef($r);
+			
+			if ( $self->{ls}->param('get_finished_notification') == 1 ) {
+
+                warn '['
+                  . $self->{list}
+                  . '] Mass Mailing:'
+                  . $mailout_id
+                  . ' sending finished notification'
+                  if $t;
+
+                $self->_email_batched_finished_notification(
+                    { 
+						-start_time  => $ending_status->{first_access},
+	                    -end_time    => $unformatted_end_time,
+	                    -emails_sent => $ending_status->{total_sent_out},
+	                    -last_email  => $stop_email,
+	                    -message_id  => $mailout->_internal_message_id,
+	                    -fields      => \%fields, # includes, "Subject"
+						#-message_id      => $mailout_id,
+					}
+                );
+
+            }
 			
             warn '['
               . $self->{list}
@@ -3197,8 +3196,13 @@ sub _email_batched_finished_notification {
 
     my $self = shift;
     my ($args) = @_;
+	
+	 my $message_id = $args->{-message_id};
+	    $message_id =~ s/\<|\>//; 
+	    $message_id =~ s/\.(.*?)$//; 
+	    $message_id =~ s/\/$//; 
 
-    require DADA::App::FormatMessages;
+	require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new(
         -List   => $self->{list},
         -ls_obj => $self->{ls},
@@ -3209,7 +3213,6 @@ sub _email_batched_finished_notification {
     my $formatted_end_time   = '';
 
     if ( exists( $args->{-start_time} ) ) {
-
         my ( $s_sec, $s_min, $s_hour, $s_day, $s_month, $s_year ) =
           ( localtime( $args->{-start_time} ) )[ 0, 1, 2, 3, 4, 5 ];
         $formatted_start_time = sprintf(
@@ -3239,60 +3242,58 @@ sub _email_batched_finished_notification {
     my $m_report = {};
     require DADA::Logging::Clickthrough;
     my $r = DADA::Logging::Clickthrough->new( { -list => $self->{list} } );
+    $m_report = $r->report_by_message( $message_id );
 
-    $args->{-msg_id} =~ s/\.(.*)$//;    # remove everything after the first dot.
-
-    $m_report = $r->report_by_message( $args->{-msg_id} );
-	$m_report->{total_bounce} = $m_report->{'soft_bounce'} + $m_report->{'hard_bounce'}; 
-	# COMMIFY!
-	for my $this_id(keys %{$m_report}){ 
-		next if $this_id =~ m/percent/; 
-		$m_report->{$this_id . '_commified'}
-			= commify($m_report->{$this_id}); 
-	}
-	
-	
     require DADA::App::Messages;
     my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
 
-	# Not quite sure why this requires encoding before, we decode, 
-	# so this line is suspicious. 
+#	# Not quite sure why this requires encoding before, we decode, 
+#	# so this line is suspicious. 
 	$fields->{Subject} = safely_encode($fields->{Subject}); 
-
-	my $message_subject = $fm->_decode_header( $fields->{Subject} ); 
 	
-	# This decode is also supsicious... 
+	my $message_subject = $fm->_decode_header( $fields->{Subject} ); 	
+#	
+#	# This decode is also suspicious... 
 	   $message_subject = safely_decode($message_subject); 
-
-	
-	 my $message_id = $args->{-message_id};
-	 $message_id =~ s/\<|\>//; 
-	 $message_id =~ s/\.(.*?)$//; 
-	 $message_id =~ s/\/$//; 
-	
-	
+#
+#	
 	require DADA::Template::Widgets;
-        my $message_subject = DADA::Template::Widgets::screen(
-            {
-                -data => \$message_subject,
-			    -list_settings_vars_param => { -list => $self->{list} },
-				-vars    => {
-					mass_test           => scalar $self->mass_test(),
-					message_id          => $message_id,
-			        addresses_sent_to   => $args->{-emails_sent},
-			        mailing_start_time  => $formatted_start_time,
-			        mailing_finish_time => $formatted_end_time,
-			        total_mailing_time  => $total_time,
-			        last_email_send_to  => $args->{-last_email},
-			        message_subject     => $message_subject,
-			        %$m_report,
-			    }
-			}
-        );
+    my $n_message_subject = DADA::Template::Widgets::screen(
+        {
+            -data => \$message_subject,
+		    -list_settings_vars_param => { -list => $self->{list} },
+			-vars    => {
+				mass_test           => scalar $self->mass_test(),
+                addresses_sent_to   => $args->{-emails_sent},
+                mailing_start_time  => $formatted_start_time,
+                mailing_finish_time => $formatted_end_time,
+                total_mailing_time  => $total_time,
+                last_email_send_to  => $args->{-last_email},
+				message_id                   => $message_id,
+                %$m_report,
+				# we override this, esp. for test messages
+				message_subject              => $message_subject,
+		    }
+		}
+   );
+   
+    require DADA::Template::Widgets;
+    my $mrt_scrn = DADA::Template::Widgets::screen(
+        {
+            -screen => 'plugins/tracker/message_report_table.tmpl',
+            -expr   => 1,
+            -vars   => {
+                a_in_t => 0,
+                %$m_report,
+            }
+        },
+        -list_settings_vars_param => {
+            -list   => $self->{name},
+            -dot_it => 1,
+        },
 
-	#	warn 'subject after:' . $message_subject;
-		
-		
+    );
+			
     $dap->send_out_message(
         {
             -message => 'mass_mailing_finished_notification',
@@ -3301,14 +3302,16 @@ sub _email_batched_finished_notification {
                 -list_settings_vars_param => { -list => $self->{list} },
 				-vars    => {
 					mass_test           => scalar $self->mass_test(),
-					message_id          => $message_id,
 	                addresses_sent_to   => $args->{-emails_sent},
 	                mailing_start_time  => $formatted_start_time,
 	                mailing_finish_time => $formatted_end_time,
 	                total_mailing_time  => $total_time,
 	                last_email_send_to  => $args->{-last_email},
-	                message_subject => $message_subject,
+                    mass_mailing_analytics_table => $mrt_scrn,
+					message_id                   => $message_id,
 	                %$m_report,
+					# we override this, esp. for test messages
+					message_subject              => $n_message_subject,
 	            }
 			}
         }
