@@ -944,7 +944,7 @@ sub message_report {
 			has_data             => 1,
 	        mid                  => scalar $q->param('mid')                         || '',
 			# This needs to be updated, to grab the subject from the activity table
-	        subject              => find_message_subject( $q->param('mid') ) || '',
+	        subject              => $rd->fetch_message_subject( $q->param('mid') )  || '',
 	        url_report           => $s_url_report                            || [],
 	        Plugin_URL           => $Plugin_Url,
 	        Plugin_Name          => $Plugin_Config->{Plugin_Name},
@@ -1131,15 +1131,8 @@ sub individual_country_geoip_report_table {
     );
 }
 
-sub find_message_subject {
-    my $mid = shift;
-    if ( $mja->check_if_entry_exists($mid) ) {
-        return $mja->get_archive_subject($mid) || '#' . $mid;
-    }
-    else {
-        return '#' . $mid;
-    }
-}
+
+
 
 sub commify {
     local $_ = shift;

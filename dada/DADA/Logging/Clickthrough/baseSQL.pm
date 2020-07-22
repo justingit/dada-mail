@@ -983,14 +983,14 @@ sub get_all_mids {
   	            'SELECT msg_id FROM '
   	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
   	          . ' WHERE list = ? '
-			  . ' AND event = ' 
-			  . $self->{dbh}->quote('sent_analytics')
-			  . ' AND details = '
-			  . $self->{dbh}->quote('0')
- 			  .	' AND msg_id > ' 
- 			  . $self->{dbh}->quote($two_days_ago_msg_id)
- 			  . ' AND msg_id < ' 
- 			  . $self->{dbh}->quote($three_days_ago_msg_id) 
+			  #. ' AND event = ' 
+			  #. $self->{dbh}->quote('sent_analytics')
+			  #. ' AND details = '
+			  #. $self->{dbh}->quote('0')
+ 			  #.	' AND msg_id > ' 
+ 			  #. $self->{dbh}->quote($two_days_ago_msg_id)
+ 			  #. ' AND msg_id < ' 
+ 			  #. $self->{dbh}->quote($three_days_ago_msg_id) 
 		      . ' GROUP BY msg_id ORDER BY msg_id DESC;';
 		 }
     }
@@ -1095,9 +1095,6 @@ sub report_by_message_index {
 			$args->{-fake} = 0; 
 		}
 
-	    require DADA::MailingList::Archives;
-	    my $mja = DADA::MailingList::Archives->new( { -list => $self->{name} } );
-
 		my $real = 0; 
 
 		    for my $msg_id (@$msg_id1) {
@@ -1121,6 +1118,19 @@ sub report_by_message_index {
 						$report->{$msg_id}->{$_} = $basic_event_counts->{$_};
 					}
 				}
+				
+				$report->{$msg_id}->{message_subject} = $self->fetch_message_subject($msg_id); 	
+				if ( $self->{ah}->check_if_entry_exists($msg_id) ) {
+					$report->{$msg_id}->{archived_msg} = 1;
+				}
+				if(length($report->{$msg_id}->{message_subject}) >= 50){ 
+					$report->{$msg_id}->{message_subject_snipped} =  substr( $report->{$msg_id}->{message_subject}, 0, 49 ) . '...' 
+				} 
+				else { 
+					$report->{$msg_id}->{message_subject_snipped} = $report->{$msg_id}->{message_subject};
+				}
+				
+				
 	    }
 
 	    # Now, sorted:
@@ -1130,36 +1140,6 @@ sub report_by_message_index {
 			$report->{$_}->{S_PROGRAM_URL} = $DADA::Config::S_PROGRAM_URL; 
 			$report->{$_}->{list}          = $self->{name}; 
 	        
-			
-			if ( $mja->check_if_entry_exists($_) ) {
-	            $report->{$_}->{message_subject} = $mja->get_archive_subject($_)
-	              || DADA::App::Guts::date_this( -Packed_Date => $_ );
-				$report->{$_}->{archived_msg} = 1; 
-	        }
-	        else {
-				
-				# This grabs the message subject from our activity table: 
-			 	my $original_subject_query = 
-					 'SELECT details FROM ' 
-					. $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} 
-					. ' WHERE list = ? AND msg_id = ? AND event = ?';
-				
-				$report->{$_}->{message_subject}  = $self->{dbh}->selectcol_arrayref(
-						$original_subject_query, 
-						{ 
-							MaxRows => 1 
-						}, 
-						$self->{name}, 
-						$_, 
-						'original_subject' 
-					)->[0];
-			}
-			if(length($report->{$_}->{message_subject}) >= 50){ 
-				$report->{$_}->{message_subject_snipped} =  substr( $report->{$_}->{message_subject}, 0, 49 ) . '...' 
-			} 
-			else { 
-				$report->{$_}->{message_subject_snipped} = $report->{$_}->{message_subject};
-			}
 	        push( @$sorted_report, $report->{$_} );
 	    }
 		
@@ -1196,6 +1176,45 @@ sub report_by_message_index {
 	
     return $sorted_report;
 }
+
+
+sub fetch_message_subject {
+    my $self    = shift;
+    my $msg_id  = shift;
+    my $subject = undef;
+
+    if ( $self->{ah}->check_if_entry_exists($msg_id) ) {
+
+        $subject = $self->{ah}->get_archive_subject($msg_id);
+    }
+    else {
+
+        # This grabs the message subject from our activity table:
+        my $original_subject_query =
+            'SELECT details FROM '
+          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+          . ' WHERE list = ? AND msg_id = ? AND event = ?';
+
+        $subject = $self->{dbh}->selectcol_arrayref(
+            $original_subject_query,
+            {
+                MaxRows => 1
+            },
+            $self->{name},
+            $msg_id,
+            'original_subject'
+        )->[0];
+    }
+
+    if ( !defined($subject) ) {
+        $subject = DADA::App::Guts::date_this( -Packed_Date => $msg_id );
+    }
+
+    return $subject;
+
+}
+
+
 
 sub msg_basic_event_count { 
 
@@ -1614,6 +1633,19 @@ sub report_by_message {
 		next if $this_id =~ m/percent/; 
 		$m_report->{$this_id . '_commified'}
 			= commify($m_report->{$this_id}); 
+	}
+	
+
+	
+	$report->{message_subject} = $self->fetch_message_subject($mid); 	
+	if ( $self->{ah}->check_if_entry_exists($mid) ) {
+		$report->{archived_msg} = 1;
+	}
+	if(length($report->{message_subject}) >= 50){ 
+		$report->{message_subject_snipped} =  substr( $report->{message_subject}, 0, 49 ) . '...' 
+	} 
+	else { 
+		$report->{message_subject_snipped} = $report->{message_subject};
 	}
 	
     return $m_report;
@@ -3497,7 +3529,6 @@ sub send_analytics_email_notification {
 
     my $self = shift;
 	my $r    = ''; 
-	
 
     $r .=
         "Mailing List: "
@@ -3511,7 +3542,7 @@ sub send_analytics_email_notification {
 	}
     my ( $total, $msg_ids ) = $self->get_all_mids(
         {
-            -entries             => 100,
+            -entries             => 10,
             -for_analytics_email => 1,
         }
     );
@@ -3520,11 +3551,17 @@ sub send_analytics_email_notification {
 		$r .= "No messages to send analytics for\n\n"; 
         return $r;
     }
-
 	
-    my $m_report = $self->report_by_message( $msg_ids->[-1] );
+	my $msg_id_to_send; 
+	for(reverse @$msg_ids){ 
+		if(defined($_)){ 
+			$msg_id_to_send = $_; 
+			last; 
+		}
+	}
+    my $m_report = $self->report_by_message( $msg_id_to_send );
 
-	$r .= "Sending out analytics report for " . 'FIX ME' .  " (msg_id: " . $msg_ids->[-1] . ")\n\n";
+	$r .= "Sending out analytics report for: " . $m_report->{message_subject} .  " (msg_id: " . $msg_id_to_send . ")\n\n";
 	
 	
     require DADA::Template::Widgets;
@@ -3552,16 +3589,28 @@ sub send_analytics_email_notification {
         }
     );
 	my $etp = $em->fetch('tracker_email_analytics');
+
     
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new( -List => $self->{name} );
+	
 	require DADA::App::Messages;
     my $dam = DADA::App::Messages->new( { -list => $self->{name} } );
+
 
     $dam->send_multipart_email(
         {
             -headers => {
-                To      => $self->{ls}->param('list_owner_email'),
-                From    => $self->{ls}->param('list_owner_email'),
-                Subject => "Analytics for message, 'FIX ME'",
+                From => $fm->format_phrase_address(
+                    $etp->{vars}->{from_phrase},
+                    $self->{ls}->param('list_owner_email')
+                ),
+                To => $fm->format_phrase_address(
+                    $etp->{vars}->{to_phrase},
+					$self->{ls}->param('list_owner_email')
+                ),
+                Subject       => $etp->{vars}->{subject},
+				
             },
             -plaintext_body => $etp->{plaintext},
             -html_body      => $etp->{html},
@@ -3571,8 +3620,8 @@ sub send_analytics_email_notification {
                 },
                 -vars => {
                     mass_mailing_analytics_table => $scrn,
-                    message_id                   => $msg_ids->[-1],
-					message_report               => $m_report, 
+                    message_id                   => $msg_id_to_send,
+					%$m_report, 
                 },
             }
         }

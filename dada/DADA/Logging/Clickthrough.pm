@@ -8,19 +8,7 @@ use DADA::App::Guts;
 use Try::Tiny; 
 
 my $type;  
-
-
-BEGIN {
-    $type = $DADA::Config::CLICKTHROUGH_DB_TYPE;
-    if ( $type =~ m/sql/i ) {
-        $type = 'baseSQL';
-    }
-    else {
-        $type = 'Db';
-    }
-}
-use base "DADA::Logging::Clickthrough::$type";
-
+use base "DADA::Logging::Clickthrough::baseSQL";
 
 use Fcntl qw(LOCK_SH);
 use Carp qw(croak carp); 
@@ -47,6 +35,10 @@ sub _init {
 	else { 
 		$self->{ls} = $args->{-ls}; 
 	}	
+
+	require DADA::MailingList::Archives; 
+	$self->{ah} = DADA::MailingList::Archives->new({-list => $self->{name}}); 
+
 		
 	return $self;
 
