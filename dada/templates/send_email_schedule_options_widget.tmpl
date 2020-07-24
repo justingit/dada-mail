@@ -4,10 +4,28 @@
     <div style="display:none">
 <!-- /tmpl_if -->
 
+<div class="panel">
 <fieldset>
     <legend>
 		Scheduling Options
-	</legend>    
+	</legend> 
+	
+	   
+	   <div class="alert-box info radius"> 
+	       <div id="mass_mailing_schedules_preview_results"><p>&nbsp;</p></div>
+	   	<ul class="button-group right">
+	   		<li>
+	   			<input 
+	   				type="button" 
+	   				class="small button success manually_run_all_scheduled_mass_mailings" 
+	   				value="Manually Run All Scheduled Mass Mailings"
+	   			>
+	   		</li>
+	   	</ul>
+	   	<p>&nbsp;</p>
+	   </div>
+	   
+	   
     <input
 		 type="hidden" 
 		 name="schedule_html_body_checksum" 
@@ -28,7 +46,8 @@
 				type="checkbox" 
 				name="schedule_activated" 
 				id="schedule_activated" 
-				value="1" class="schedule_field"
+				value="1" 
+				class="schedule_field"
 			>
             <label for="schedule_activated">
                 Activate
@@ -65,6 +84,7 @@
 					name="schedule_single_displaydatetime" 
 					id="schedule_single_displaydatetime" 
 					class="schedule_field"
+					value=""
 				>
 			</div>
 		</div>
@@ -91,7 +111,7 @@
 		</div>
 	</div>
 	
-    <div id="schedule_type_recurring_options">
+    <div id="schedule_type_recurring_options" class="pane">
 		<div class="row">
 			<div class="small-1 columns">
 			</div>
@@ -155,19 +175,40 @@
 					</div> 
 					<div class="large-2 columns">		                
 						 <label for="tue">
-							<input type="checkbox" name="schedule_recurring_days" id="tue" value="2" class="schedule_field" checked="checked"  >
+							<input 
+								type="checkbox" 
+								name="schedule_recurring_days" 
+								id="tue" 
+								value="2" 
+								class="schedule_field" 
+								checked="checked"
+							>
 				 		 	Tuesday
 					  	 </label> 
 					</div> 
 					<div class="large-2 columns">
 		                <label for="wed">
-							<input type="checkbox" name="schedule_recurring_days" id="wed" value="3" class="schedule_field" checked="checked">
+							<input 
+								type="checkbox"
+								name="schedule_recurring_days"
+								id="wed"
+								value="3"
+								class="schedule_field"
+								checked="checked"
+							>
 							Wednesday
 						</label>
 					</div> 
 					<div class="large-2 columns">
 		                 <label for="thu">
-							 <input type="checkbox" name="schedule_recurring_days" id="thu" value="4" class="schedule_field" checked="checked">
+							 <input 
+							 	type="checkbox" 
+								name="schedule_recurring_days" 
+								id="thu"
+								value="4"
+								class="schedule_field"
+								checked="checked"
+							>
 							 Thursday
 						 </label> 
 					</div> 
@@ -177,19 +218,40 @@
 				<div class="row">
 					<div class="large-2 columns">
 		                <label for="fri">
-							<input type="checkbox" name="schedule_recurring_days" id="fri" value="5" class="schedule_field" checked="checked">
+							<input
+								type="checkbox"
+								name="schedule_recurring_days"
+								id="fri"
+								value="5"
+								class="schedule_field"
+								checked="checked"
+							>
 							Friday
 						</label> 
 					</div> 
 					<div class="large-2 columns">
 		                <label for="sat">
-							<input type="checkbox" name="schedule_recurring_days" id="sat" value="6" class="schedule_field" checked="checked"  >
+							<input
+								type="checkbox"
+								name="schedule_recurring_days"
+								id="sat"
+								value="6"
+								class="schedule_field"
+								checked="checked"
+							>
 							Saturday
 						</label> 
 					</div> 
 					<div class="large-2 columns">
 		                 <label for="sun">
-							 <input type="checkbox" name="schedule_recurring_days" id="sun" value="7" class="schedule_field" checked="checked" >
+							 <input 
+							 	type="checkbox"
+								name="schedule_recurring_days"
+								id="sun"
+								value="7"
+								class="schedule_field"
+								checked="checked"
+							>
 						 	Sunday
 						</label>
 					</div> 
@@ -207,28 +269,44 @@
 						checked="checked"
 					>
                     <label for="schedule_recurring_only_mass_mail_if_primary_diff">
-                        Only send the next scheduled mass mailing, if the primary content differs from the previous scheduled  mass mailing
+                        Only send the next scheduled mass mailing if the primary content differs from the previous scheduled mass mailing
                     </label>
 				</div> 
 			</div>
 	    </div>
 	</div>
 </div>	
-<div class="alert-box info radius"> 
-    <div id="mass_mailing_schedules_preview_results"><p>&nbsp;</p></div>
-	<ul class="button-group right">
-		<li>
+
+	<div class="row">
+		<div class="small-12 columns">
 			<input 
-				type="button" 
-				class="small button success manually_run_all_scheduled_mass_mailings" 
-				value="Manually Run All Scheduled Mass Mailings"
+				type="checkbox" 
+				name="schedule_send_email_notification_on_success" 
+				id="schedule_send_email_notification_on_success" 
+				value="1"
 			>
-		</li>
-	</ul>
-	<p>&nbsp;</p>
-</div> 
+            <label for="schedule_send_email_notification_on_success">
+            	Send email notification to List Owner when scheduled mailing goes out
+            </label>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="small-12 columns">
+			<input 
+				type="checkbox" 
+				name="schedule_send_email_notification_on_failure" 
+				id="schedule_send_email_notification_on_failure" 
+				value="1"
+			>
+            <label for="schedule_send_email_notification_on_failure">
+            	Send email notification to List Owner if a problem occurs
+            </label>
+		</div>
+	</div>
 
 </fieldset> 
+</div> 
 
 <!-- tmpl_if expr="(draft_role ne 'schedule')" -->
     </div>

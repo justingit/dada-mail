@@ -2030,7 +2030,6 @@ function setup_schedule_fields() {
 		$('#schedule_single_displaydatetime').datetimepicker(
 			{
 				minDate: 0,
-				//minTime: 0,
 				inline:false,
 				format:'Y-m-d H:i:s',
 				onChangeDateTime:function(dp,$input){
@@ -2039,8 +2038,9 @@ function setup_schedule_fields() {
 			}
 		);
 	}
+
 	// Recurring
-	if($('#schedule_recurring_display_hms').length) {
+	if ($('#schedule_recurring_display_hms').length) {
 		$('#schedule_recurring_display_hms').datetimepicker(
 			{
 		  		format:'H:i:s',
@@ -2052,36 +2052,25 @@ function setup_schedule_fields() {
 		 	}
 		);
 	}
-	if($('#schedule_recurring_displaydatetime_start').length) {
+	if ($('#schedule_recurring_displaydatetime_start').length) {
 		 $('#schedule_recurring_displaydatetime_start').datetimepicker({
-		  format:'Y-m-d',
-		  timepicker:false,
-		  onShow:function( ct ){
-		   this.setOptions({
-		    maxDate:$('#schedule_recurring_displaydatetime_end').val()?$('#schedule_recurring_displaydatetime_end').val():false
-		   })
-		  },
-		onChangeDateTime:function(dp,$input){
-			mass_mailing_schedules_preview();
-		}
+		    minDate: 0,
+			format:'Y-m-d',
+			timepicker:false,
+			onChangeDateTime:function(dp,$input){
+				mass_mailing_schedules_preview();
+			}
 		});
 	}
-	if($('#schedule_recurring_displaydatetime_end').length) {
-		 $('#schedule_recurring_displaydatetime_end').datetimepicker(
-			{
-				format:'Y-m-d',
-				timepicker:false,
-				onShow:function( ct ){
-					this.setOptions({
-		    			minDate:$('#schedule_recurring_displaydatetime_start').val()?$('#schedule_recurring_displaydatetime_start').val():false
-		   			})
-		  		},
-				onChangeDateTime:function(dp,$input){
-				 	mass_mailing_schedules_preview();
-				}
-
-		 	}
-		);
+	if ($('#schedule_recurring_displaydatetime_end').length) {
+		 $('#schedule_recurring_displaydatetime_end').datetimepicker({
+			minDate: 0,
+			format:'Y-m-d',
+			timepicker:false,  
+			onChangeDateTime:function(dp,$input){
+				mass_mailing_schedules_preview();
+			}
+		 });
 	}
 }
 

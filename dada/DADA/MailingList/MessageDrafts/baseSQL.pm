@@ -444,7 +444,14 @@ sub fill_in_schedule_options {
     if(!defined($q->param('schedule_recurring_only_mass_mail_if_primary_diff'))) { 
         $q->param('schedule_recurring_only_mass_mail_if_primary_diff', 0);
     }
-    
+
+    if(!defined($q->param('schedule_send_email_notification_on_success'))) { 
+        $q->param('schedule_send_email_notification_on_success', 0);
+    }
+	
+    if(!defined($q->param('schedule_send_email_notification_on_failure'))) { 
+        $q->param('schedule_send_email_notification_on_failure', 0);
+    }
     
     
     return $q;     
@@ -774,7 +781,10 @@ sub draft_index {
 			
             schedule_recurring_only_mass_mail_if_primary_diff => scalar $q->param('schedule_recurring_only_mass_mail_if_primary_diff'), 
             
-        };
+        	schedule_send_email_notification_on_success => scalar $q->param('schedule_send_email_notification_on_success'), 
+			schedule_send_email_notification_on_failure => scalar $q->param('schedule_send_email_notification_on_failure'), 
+		
+		};
 
         # This sort of gets around the problem of having subject fetched from the webpage's <title>:
         if(scalar $q->param('subject_from') eq 'title_tag') { 
@@ -941,6 +951,9 @@ sub params_to_save {
         schedule_html_body_checksum    => 1,
         
         schedule_recurring_only_mass_mail_if_primary_diff => 1, 
+		
+		schedule_send_email_notification_on_success => 1, 
+		schedule_send_email_notification_on_failure => 1, 
 		
 		layout                         => 1,
 		

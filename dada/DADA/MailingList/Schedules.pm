@@ -115,7 +115,24 @@ sub run_schedules {
             next SCHEDULES; 
         }
         elsif($sched->{schedule_type} eq 'recurring' && $can_use_datetime == 1){ 
-            
+			
+			# This is weird validation buuuuuuut
+			if(
+				   length($sched->{schedule_recurring_ctime_start}) == 0
+				|| length($sched->{schedule_recurring_ctime_end}) == 0
+				|| length($sched->{schedule_recurring_display_hms}) == 0
+				|| length($sched->{schedule_recurring_days}) == 0
+			){ 
+				$r .= "\t*DateTime information is missing from this schedule\n";
+                $r .= "SKIPPING...\n"; 
+				
+				
+				# Send a failure notification
+				
+				
+				next SCHEDULES;
+			}
+							
             my $d_lt = {
                 7 => 'Sunday',
                 1 => 'Monday',
@@ -128,7 +145,8 @@ sub run_schedules {
             my $days_str = undef; 
             # use Data::Dumper; 
             # die Dumper($sched->{schedule_recurring_days}); 
-            for(@{$sched->{schedule_recurring_days}}){ 
+            
+			for(@{$sched->{schedule_recurring_days}}){ 
                 $days_str .= $d_lt->{$_} . ', '; 
             }
 
@@ -150,8 +168,12 @@ sub run_schedules {
             ); 
             if($status == 0){ 
                 $r .= "Problems calculating recurring schedules - skipping schedule: " . $errors . "\n"; 
+				
+				# Send a failure notification
+				
                 next SCHEDULES; 
             }
+			
            # require Data::Dumper; 
            # $r .=   Data::Dumper::Dumper($recurring_scheds); 
             
@@ -180,21 +202,39 @@ sub run_schedules {
         
         SPECIFIC_SCHEDULES: for my $specific_time(@$schedule_times) { 
 
+			my $ss_r = ''; 
+			
             my $end_time; 
+			
+			# This is sort of awkwardly placed validation... 
             if($sched->{schedule_type} eq 'recurring'){ 
-                $end_time = $sched->{schedule_recurring_ctime_end}
+				$end_time = $sched->{schedule_recurring_ctime_end};
             }
             else { 
-                $end_time = $specific_time; 
+				if(length($specific_time) == 0){ 
+					$ss_r .= "\t* Date and Time is blank for this schedule\n";
+	                $ss_r .= "SKIPPING\n"; 
+					
+					# Send a failure notification
+					
+					$r .= $ss_r; 
+					next SPECIFIC_SCHEDULES;
+				}
+				else { 
+					$end_time = $specific_time; 
+				}				
             }
             
 			# was this supposed to be sent a day ago? 
             if($end_time < ($time - 86400)) { 
-                $r .= "\t* Schedule is too late to run - should have ran " 
+                $ss_r .= "\t* Schedule is too late to run - should have ran " 
 				. formatted_runtime($time - $end_time)
 				. ' ago.' 
 				. "\n"; 
-                $r .= "Deactivating Schedule...\n"; 
+                $ss_r .= "Deactivating Schedule...\n"; 
+				
+				# Send a failure notification
+				
                 $self->deactivate_schedule(
                     {
                         -id     => $sched->{id},
@@ -202,20 +242,26 @@ sub run_schedules {
                         -screen => $sched->{screen},
                     }
                 );
+				
+				$r .= $ss_r; 
+				
                 next SPECIFIC_SCHEDULES;
             }
             else {     
-                $r .= "\t* Schedule runs at: " . scalar localtime($specific_time) . "\n"; 
+                $ss_r .= "\t* Schedule runs at: " . scalar localtime($specific_time) . "\n"; 
             }
         
             my $last_checked = $self->{ls_obj}->param('schedule_last_checked_time'); 
                 
             if($specific_time > $time){ 
-                $r .= "\t\t(" . formatted_runtime($specific_time - $time);
+                $ss_r .= "\t\t(" . formatted_runtime($specific_time - $time);
                 if($sched->{schedule_type} eq 'recurring'){ 
-                    $r .= " from now"; 
+                    $ss_r .= " from now"; 
                 }
-				$r .= ")\n";
+				$ss_r .= ")\n";
+				
+				$r .= $ss_r; 
+				
                 next SPECIFIC_SCHEDULES; 
             }
         
@@ -226,7 +272,7 @@ sub run_schedules {
                     $sched->{schedule_type}                                  eq 'recurring'
                  && $sched->{schedule_recurring_only_mass_mail_if_primary_diff} == 1
                 ){ 
-                    $r .= "\t* Checking message content...\n";
+                    $ss_r .= "\t* Checking message content...\n";
                     my $c_r = $self->{ms_obj}->construct_and_send(
                          {
                              -draft_id   => $sched->{id},
@@ -239,8 +285,11 @@ sub run_schedules {
 					 
 					 my $is_feed = 0; 
 					 
-				    if($sched->{screen} eq 'send_url_email' && $sched->{content_from} eq 'feed_url'){ 
-							$is_feed = 1; 
+				    if(
+						    $sched->{screen} eq 'send_url_email' 
+					    && $sched->{content_from} eq 'feed_url'){ 
+						
+						$is_feed = 1; 
 					}
 					 
 					 #warn '$sched->{screen}'                     . $sched->{screen}; 
@@ -251,15 +300,15 @@ sub run_schedules {
 					 
 					 if($is_feed == 1) {
 						 
-						 $r .= "\t\tMessage is created from an RSS/Atom Feed.\n";
-						 $r .= "\t\tLooking for entries in the feed that are newer than was previously sent,\n"; 
-						 $r .= "rather than comparing checksums.\n\n";
+						 $ss_r .= "\t\tMessage is created from an RSS/Atom Feed.\n";
+						 $ss_r .= "\t\tLooking for entries in the feed that are newer than was previously sent,\n"; 
+						 $ss_r .= "rather than comparing checksums.\n\n";
 						 
 						 if(
-						 length($sched->{feed_url_most_recent_entry}) >= 1
-						 && $sched->{feed_url_most_recent_entry} >= $c_r->{vars}->{most_recent_entry}
+							     length($sched->{feed_url_most_recent_entry}) >= 1
+							 && $sched->{feed_url_most_recent_entry} >= $c_r->{vars}->{most_recent_entry}
 						 ){ 
-	                         $r .= "\t\t* No newer feed entries avalable, most recent entry sent published on, " 
+	                         $ss_r .= "\t\t* No newer feed entries avalable, most recent entry sent published on, " 
 							 	. scalar localtime($sched->{feed_url_most_recent_entry})
 							    .".\n";
 								
@@ -272,11 +321,13 @@ sub run_schedules {
 	                         warn "No newer feed entries avalable, most recent entry sent published on, " 
 							 	. scalar localtime($sched->{feed_url_most_recent_entry}) if $t; 
 							undef($c_r);
-	                         next SPECIFIC_SCHEDULES;      
+							
+							$r .= $ss_r; 
+	                     	next SPECIFIC_SCHEDULES;      
 	
 						 }
 						 else{ 
-							 $r .= "\t* Primary content's most recent entry ("
+							 $ss_r .= "\t* Primary content's most recent entry ("
 							 	.  scalar localtime($c_r->{vars}->{most_recent_entry})
 								. ")  is newer  than the last message that has been sent ("
 								. scalar localtime($sched->{feed_url_most_recent_entry})
@@ -291,9 +342,12 @@ sub run_schedules {
 	                         && $c_r->{md5} eq $sched->{schedule_html_body_checksum}
 
 	                    ) { 
-	                            $r .= "\t\t* Primary Content same as previously sent scheduled mass mailing.\n";
-	                            $r .= "\t\t* Skipping sending scheduled mass mailing.\n\n"; 
+	                            $ss_r .= "\t\t* Primary Content same as previously sent scheduled mass mailing.\n";
+	                            $ss_r .= "\t\t* Skipping sending scheduled mass mailing.\n\n"; 
 								undef($c_r);
+								
+								$r .= $ss_r; 
+								
 	                            next SPECIFIC_SCHEDULES;      
 	                     }
 	                     else { 
@@ -306,7 +360,7 @@ sub run_schedules {
       		
 				 }
 				 
-               $r .= "\t\t* Running schedule now!\n";
+               $ss_r .= "\t\t* Running schedule now!\n";
 
 			   my $c_r = $self->{ms_obj}->construct_and_send(
                     {
@@ -317,7 +371,7 @@ sub run_schedules {
                     }
                 );
                if($sched->{schedule_type} eq 'recurring') { 
-                   $r .= $self->update_schedule(
+                   $ss_r .= $self->update_schedule(
                         {
                             -id     => $sched->{id},
                             -role   => $sched->{role},
@@ -330,17 +384,30 @@ sub run_schedules {
                     );
                 }
                 
+				# oh, there it is. 
                 if($c_r->{status} == 1){ 
                     my $escaped_mid = $c_r->{mid}; 
                        $escaped_mid =~ s/\>|\<//g; 
-                    $r .= "\t* Scheduled Mass Mailing added to the Queue, Message ID: $escaped_mid\n"; 
+                    $ss_r .= "\t* Scheduled Mass Mailing added to the queue, Message ID: $escaped_mid\n"; 
+					
+					$self->send_schedule_success_notification(
+						{ 
+							-draft_id   => $sched->{id},
+							-mid        => $escaped_mid, 
+							-details    => $ss_r,
+						}
+					);
+					
                 }
                 else { 
-                    $r .= "\t* Scheduled Mass Mailing not sent, reasons:\n" . $c_r->{errors} . "\n";
+					
+					# Send a failure notification
+					
+                    $ss_r .= "\t* Scheduled Mass Mailing not sent, reasons:\n" . $c_r->{errors} . "\n";
                     warn      "Scheduled Mass Mailing not sent, reasons:\n" . $c_r->{errors} . "\n";
                 }
                 if($sched->{schedule_type} ne 'recurring'){ 
-                    $r .= "\t* Deactivating Schedule...\n"; 
+                    $ss_r .= "\t* Deactivating Schedule...\n"; 
                     $self->deactivate_schedule(
                         {
                             -id     => $sched->{id},
@@ -355,16 +422,22 @@ sub run_schedules {
 					$c_r->{status} == 1 
 				 && $sched->{schedule_type} eq 'recurring'
 				 ){ 
+					 
+					 $r .= $ss_r; 
+					 
 					next SCHEDULES;
 				}
             }
             
             if($sched->{schedule_type} ne 'recurring'){ 
                 if($specific_time < $self->{ls_obj}->param('schedule_last_checked_time')){ 
-                    $r .= "\t* Schedule SHOULD have been sent, but wasn't\n";
-                    $r .= "\t* Deactivating Schedule...\n"; 
+                    $ss_r .= "\t* Schedule SHOULD have been sent, but wasn't\n";
+                    $ss_r .= "\t* Deactivating Schedule...\n"; 
+					
+					# Send a failure notification
+					
              
-                    $r .= $self->deactivate_schedule(
+                    $ss_r .= $self->deactivate_schedule(
                         {
                             -id     => $sched->{id},
                             -role   => $sched->{role},
@@ -373,8 +446,10 @@ sub run_schedules {
                     );
                 }
             }
+			
+			$r .= $ss_r;
         }
-    }
+	}
     
     $self->{ls_obj}->save(
 		{
@@ -391,6 +466,36 @@ sub run_schedules {
     }
     return $r; 
     
+}
+
+sub send_schedule_success_notification { 
+	my $self = shift; 
+	my ($args) = @_; 
+	
+	# -draft_id   => $sched->{id},
+    # -mid        => $escaped_mid, 
+	# -details    => $ss_r,
+
+	
+	require DADA::App::Messages;
+    my $dap = DADA::App::Messages->new(
+		{
+			-list => $self->{ls_obj}->param('list'),
+		}
+	);
+	$dap->send_out_message(
+		{
+			-message => 'schedule_success',
+			-email   => $self->{ls_obj}->param('list_owner_email'), 
+            -tmpl_params => {
+                -list_settings_vars       => $self->{ls_obj}->params,
+                -list_settings_vars_param => { -dot_it => 1, },
+                -vars                     => {
+					details => $args->{-details},
+                }
+            }
+		}	
+	);
 }
 
 sub recurring_schedule_times {
