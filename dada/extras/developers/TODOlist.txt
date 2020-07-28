@@ -89,7 +89,7 @@ Core5Filemanager replacement:
 	https://github.com/servocoder/RichFilemanager
 
 
-* Make using Email::MIME::CreateHTML an option if available - and maybe the dfault, unless NOT avalable, 
+* Make using Email::MIME::CreateHTML an option if available - and maybe the dfault, unless NOT available, 
 	* make slight tweak so that LWP resolver doesn't die with unfound resource 
 		- just a warning is just fine... 
 
@@ -133,7 +133,7 @@ Send a Webpage ourselves
 
 
 * So mailing list mssage content: 
-Inject stylesheet into start of <head>, or right before body, or if there's o body, well, you gotta make one ,inlinify (removing stylesheet) - if CSS::Inliner isk avalable, then add to already inlined template.
+Inject stylesheet into start of <head>, or right before body, or if there's o body, well, you gotta make one ,inlinify (removing stylesheet) - if CSS::Inliner isk available, then add to already inlined template.
 
 Sigh! 
 Guess we'll have to figure out a policy on what to do with the full HTML document, if we're just taking what's in the body tag?
