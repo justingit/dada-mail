@@ -452,6 +452,13 @@ sub fill_in_schedule_options {
     if(!defined($q->param('schedule_send_email_notification_on_failure'))) { 
         $q->param('schedule_send_email_notification_on_failure', 0);
     }
+	
+    if(!defined($q->param('schedule_test_mode'))) { 
+        $q->param('schedule_test_mode', 0);
+    }
+	
+	
+	
     
     
     return $q;     
@@ -783,7 +790,13 @@ sub draft_index {
             
         	schedule_send_email_notification_on_success => scalar $q->param('schedule_send_email_notification_on_success'), 
 			schedule_send_email_notification_on_failure => scalar $q->param('schedule_send_email_notification_on_failure'), 
-		
+
+
+			schedule_test_mode                          => scalar $q->param('schedule_test_mode'), 
+
+
+			
+			
 		};
 
         # This sort of gets around the problem of having subject fetched from the webpage's <title>:
@@ -954,7 +967,8 @@ sub params_to_save {
 		
 		schedule_send_email_notification_on_success => 1, 
 		schedule_send_email_notification_on_failure => 1, 
-		
+		schedule_test_mode                          => 1, 
+	
 		layout                         => 1,
 		
 		mass_mailing_utm_params_add    => 1, 
