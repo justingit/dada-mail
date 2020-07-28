@@ -59,12 +59,14 @@
 		<div class="content tab-title active" id="drafts">		
 	   
 	    <div class="alert-box info radius">
-            <strong>
-            Drafts
-            </strong> 
-            are unfinished messages that haven't been sent out. 
-            Once a drafted message is sent out as a mass mailing, the draft message will also
-            be removed.
+            <p>
+				<strong>
+	            Drafts
+	            </strong> 
+	            are unfinished messages that haven't been sent out. 
+	            Once a drafted message is sent out as a mass mailing, the draft message will also
+	            be removed.
+			</p>
 		</div>
 
         <!-- tmpl_if draft_index --> 
@@ -200,23 +202,7 @@
              	</tr>
              </table>
         </form>
-            
-        <!-- tmpl_else -->
-        	<div class="alert-box info radius">
-				
-				<em>No Saved Drafts.</em>
-				<br>
-				<br>	
-					<a 
-						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=draft"
-						class="large button expand"
-					>
-						<i class="fi-plus"></i> New Draft
-					</a>
-
-        	</div> 
-        <!-- /tmpl_if --> 
-        
+		
 		<div class="clearfix">
 			<div class="clearfix">
 				<ul class="button-group right">
@@ -231,6 +217,21 @@
 				</ul>
 			</div>
 		</div>
+            
+        <!-- tmpl_else -->
+        	<div class="alert-box info radius">
+				
+					<a 
+						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=draft"
+						class="large button expand"
+					>
+						<i class="fi-plus"></i> New Draft
+					</a>
+
+        	</div> 
+        <!-- /tmpl_if --> 
+        
+		
 			
 		
 	</div> 
@@ -253,6 +254,21 @@
 		
         <!-- tmpl_if stationery_index --> 
 
+		<div class="clearfix">
+			<div class="clearfix">
+				<ul class="button-group right">
+				    <li>
+						<a 
+							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=stationery"
+							class="small button"
+						>
+							<i class="fi-plus"></i> New Stationery
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		
         <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
             <input type="hidden" name="flavor" value="delete_drafts" > 
         
@@ -386,18 +402,70 @@
             </table>
         	
         	</form>
+			
+			
+			<div class="clearfix">
+				<div class="clearfix">
+					<ul class="button-group right">
+					    <li>
+							<a 
+								href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=stationery"
+								class="small button"
+							>
+								<i class="fi-plus"></i> New Stationery
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			
         
         <!-- tmpl_else -->
-        	<div class="alert-box info radius">
-        			There are currently no saved stationery. 
-        	</div> 
+
+			<div class="alert-box info radius">
+					<a 
+						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=stationery"
+						class="large button expand"
+					>
+						<i class="fi-plus"></i> New Stationery
+					</a>
+				</div>
+				
         <!-- /tmpl_if --> 
+		
+
+		
 	</div>
 	
 	<div class="content tab-title" id="schedules">
-
+		
+		
+	    <div class="alert-box info radius">
+            <p>
+				<strong>
+	            Schedules
+	            </strong> 
+	            are messages that will be sent out in the future, either on a one-time or recurring basis. 
+			</p>
+		</div>
+		
         <!-- tmpl_if expr="(num_schedules > 0)" --> 
-	
+		
+		<div class="clearfix">
+			<div class="clearfix">
+				<ul class="button-group right">
+				    <li>
+						<a 
+							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=schedule"
+							class="small button"
+						>
+							<i class="fi-plus"></i> New Schedule
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		
         	<!-- tmpl_if active_schedule_index -->
 
                 <h3>Active Schedules</h3> 
@@ -699,15 +767,42 @@
                     </table>
                 </form>
                 
+				
+				<div class="clearfix">
+					<div class="clearfix">
+						<ul class="button-group right">
+						    <li>
+								<a 
+									href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=schedule"
+									class="small button"
+								>
+									<i class="fi-plus"></i> New Schedule
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				
             <!-- /tmpl_if --> 
 
+
+
         <!-- tmpl_else -->
-        	<div class="alert-box info radius">
-        		<p>
-        			There are currently no saved message Schedules. 
-        		</p>
-        	</div> 
+		
+			<div class="alert-box info radius">
+			
+					<a 
+						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&draft_role=schedule"
+						class="large button expand"
+					>
+						<i class="fi-plus"></i> New Schedule
+					</a>
+			</div>
+				
         <!-- /tmpl_if --> 
+		
+		
+		
 	</div> 
 </div> 
 
