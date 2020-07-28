@@ -1710,7 +1710,6 @@ sub plaintext_to_html {
 		require HTML::FromText;
 		$args->{-str} = encode_html_entities($args->{-str}, "\200-\377"); 
 	    $r = HTML::FromText::text2html($args->{-str}, 
-			metachars => 1, 
 			urls      => 1, 
 			email     => 1,
 			paras     => 1, 
@@ -1734,7 +1733,8 @@ sub plaintext_to_html {
 		my $conv = HTML::TextToHTML->new; 
 		   $conv->args(
 				%{$DADA::Config::HTML_TEXTTOHTML_OPTIONS},
-		   		escape_HTML_chars => 0
+		   		escape_HTML_chars => 0,
+				#%{$args->{-conversion_override_args}} # Not implemented. 
 			); 
 		   $r = $conv->process_chunk($args->{-str}); 
 		   undef $conv; 
