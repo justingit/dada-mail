@@ -3,6 +3,251 @@
 
 =encoding utf-8
 
+=head1 11.11.0
+
+=head2 Features
+
+
+
+=head3 Scheduled Mailings 
+
+Scheduled mailings allow you to write a draft message, then have it ready to be sent in the future.
+Recurring mass mailings can also be set up, and you can grab the content of a message from a URL, 
+so that the message content is dynamic. 
+
+=head4 Email notifications when schedules go out
+
+To help make sure messages are sent out correctly, a new option is available allowing you to send an email notification 
+to the list owner, when a scheduled mass mailing goes out. 
+
+Find this option where you edit your scheduled mass mailing labeled, 
+
+B<[x] Send email notification to List Owner when the scheduled mailing goes out>
+
+This option is disabled by default. 
+
+=head4 Email notifications if there's a problem with sending a schedule
+
+Conversely, an email notification can be sent out if there was a probelm that was encountered with sending out a scheduled mass mailing. 
+For example, if you're sending out a mass mailing, whose message content is grabbed from a URL, and that URL throws a 404,  
+that's a problem with the scheduled mass mailing. 
+The mass mailing won't go out and this email notification will, with details on what may be the problem. 
+
+Find this option where you edit your scheduled mass mailing labeled, 
+
+B<[x] Send email notification to List Owner if a problem occurs>
+
+This option is disabled by default. 
+
+=head4 Test Mode
+
+Test Mode allows you to send a scheduled mass mailing on its schedule, 
+but only to your test recipients (either to your test sublist, or to a custom list of addresses - whatever you configured).
+
+A test of a scheduled mass mailing could be sent before, 
+but only by manual intervention by the user (clicking the, Send Test button in the list control panel).
+Test Mode will allow you to basically make sure your schedule is sending correctly. 
+
+Find this option where you edit your scheduled mass mailing labeled, 
+
+B<[x] Test Mode: only send scheduled mailing to test recipients >
+
+This option is B<disabled> by default. 
+
+
+
+
+=head3 List Control Panel 
+
+=head4 Mailing List: List Settings screen, URL validation
+
+Many options in this list control panel screen want URLs as values, but it's also very easy to enter a URL incorrectly. 
+Front-end validation is now done on this options, 
+both to check the URL looks valid, as well as seeing if the URL can be actually fetched. 
+
+
+=head4 Control Panel Settings: Options screen removed
+
+This control panel only had one option to set - which WYSIWYG editor to use (or to not use one, at all!). 
+This option wasn't removed, but now now can be found under, 
+
+B<Mass Mailing: Options>
+
+
+
+
+=head3 Message Drafts
+
+=head4 Preview a draft message in a modal window, or new window
+
+Draft messages can be previewed from within the browser you're working with Dada Mail in. 
+This has been done in a modal window that pops up within the UI. 
+For various reasons, it may be more advantageous to see the preview of the mass mailing message in its own browser window - 
+one advantage is that you can resize the new window to see how it may look when viewed in various sizes 
+(or use the web developer features built into the browser to see mobile views).
+
+This option can be changed in the, B<Mass Mailing: Options> list control panel screen. Look for: 
+
+B<Show message previews in:>
+
+Then select either, B<Modal window> or, B<New window> 
+
+
+=head3 Archives
+
+=head4 Auto-remove old archived messages
+
+Set a limit on how old archived messages can be. This is useful if you have a busy discussion list and the archive grows large, quickly. 
+Find this option under, B<Archives: Advanced Options> and check the option labeled, 
+
+B<[x] Auto-remove archived messages older than:> 
+
+Then select a time span (between one month, to five years).
+
+
+
+=head3 Installer
+
+=head4 Pre-running credential tests when upgrading
+
+When upgrading using the Dada Mail Installer, it usually a good idea to check if credentials are still working. 
+Items like your *SQL, Bounce Handler, Amazon SES, Google reCAPTCHA credentials. This is now done for you, automatically. 
+
+
+
+=head3 Bridge
+
+Bridge plugin improvements have focused on moderation. 
+
+=head4 Auto-reject messages that are too old in the moderation queue
+
+To keep the moderation queue at a reasonable size, messages that are older than a certain time (one, three, or seven days) are simply auto-rejected. 
+
+Find this option in the Bridge plugin's control panel, labeled, 
+
+B<Auto-Reject messages that have been waiting to be moderated for:>
+
+And select a time. 
+
+=head4 Moderate messages based on how long a subscriber has been a member of the mailing list
+
+This new option allows you use the age of a subscriber to determine if a message should be moderated or not. 
+
+Find this option in the Bridge plugin's list control panel under, 
+
+B<Discussion List Options: Moderation Options: Moderate messages received from:>
+
+Select, 
+
+B<Subscribers that have been subscribed in the last:>
+
+Then, select a time (a day, a week, a month)
+
+=head4 Moderate messages based on a new, "Requires Moderation" sublist
+
+This new option allows you to moderate a subscriber based on if they're also a member of the new, "Neeeds Moderation" sublist.
+If (and only if) they're on that sublist, they'll need to be moderated. 
+
+Find this option in the Bridge plugin's list control panel under, 
+
+B<Discussion List Options: Moderation Options: Moderate messages received from:>
+
+Select, 
+
+B<"Requires Moderation" sublist>
+
+Administrating this sublist can be done like any other of Dada Mail's sublists by accessing the sublist in the, B<Membership: View> screen. 
+Buttons, (labeled, B<View Requires Moderation> and, B<Add to Requires Moderation>) are also available near the option itself. 
+
+=head4 Support for Open Discussion Lists now always available
+
+Open discussion lists allows anyone - even someone who is not a subscriber, to send a message to a discussion list. 
+In past versions, this required one to enable the option to show up to be enabled/disabled in the gloval config. 
+This global config step has been removed, 
+and the option to enable/disable this option will now always show up in the 
+plugin's list control panel screen. 
+
+Foind this option in the Bridge plugin's list control panel labeled,  
+
+B<[x] Open discussion list (messages are accepted from any email address)> 
+
+This option is disabled by default.
+
+
+
+=head3 Tracker/Analytics
+
+=head4 Email Notification of Mass Mailing Analytics
+
+Now get updated mass mailing email analytics sent to you a few days after a mass mailing has finished sending out. 
+This ermail notification can remind you to look at these analytics, and see how your mass mailing is doing. 
+
+This option can be enabled/disabled (default: B<enabled>) from the Tracker plugin's list control panel. 
+Look for the option labeled, 
+
+B<[x] Send message tracker analytics report a few days after a mass mailing was sent>
+
+=head4 Expanded table of analytics in the, "Mass Mailing Complete" email notification 
+
+Dada Mail has the option to send an email notification to the list owner once a mass mailing has finished sending. This
+email notification contains some useful analytics. 
+We've expanded what gets reported to be the same table you'll see in the Tracker plugin's individual message report. 
+
+
+
+=head3 Mailing List Subscription Form
+
+=head4 New Option: mailing list subscription form for modal windows
+
+
+
+This needs its own blog entry. 
+
+
+
+
+=head3 Amazon SES
+
+The following AWS regions can now be set in Dada Mail to use with Amazon SES: 
+
+=over
+
+=item * US East (Ohio) us-east-2
+
+=item * Asia Pacific (Mumbai) ap-south-1
+
+=item * Asia Pacific (Seoul) ap-northeast-2
+
+=item * Asia Pacific (Singapore) ap-southeast-1
+
+=item * Asia Pacific (Sydney) ap-southeast-2
+
+=item * Asia Pacific (Tokyo) ap-northeast-1
+
+=item * Canada (Central) ca-central-1
+
+=item * Europe (Frankfurt) eu-central-1
+
+=item * Europe (London) eu-west-2
+
+=item * outh America (São Paulo) (sa-east-1)
+
+=back
+
+This list has been added to us-east-1, us-west-2, and eu-west-1. 
+
+
+=head2 Changes
+
+=head3 StopForumSpam disabled by default
+
+B<StopForumSpam> has been broken in Dada Mail for quite some time. 
+It's now fixed (see bug fixes, below), but is set to disabled by default. 
+
+
+
+
+
 =head1 11.10.3
 
 This is mostly a bug-fix release for issues found in the v11.10.2 release of Dada Mail. 
