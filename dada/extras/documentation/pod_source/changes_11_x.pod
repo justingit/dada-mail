@@ -5,9 +5,11 @@
 
 =head1 11.11.0
 
+=head2 Focus
+
+This is a major feature release of the app. 
+
 =head2 Features
-
-
 
 =head3 Scheduled Mailings 
 
@@ -18,7 +20,7 @@ so that the message content is dynamic.
 =head4 Email notifications when schedules go out
 
 To help make sure messages are sent out correctly, a new option is available allowing you to send an email notification 
-to the list owner, when a scheduled mass mailing goes out. 
+to the list owner when a scheduled mass mailing goes out. 
 
 Find this option where you edit your scheduled mass mailing labeled, 
 
@@ -28,7 +30,7 @@ This option is disabled by default.
 
 =head4 Email notifications if there's a problem with sending a schedule
 
-Conversely, an email notification can be sent out if there was a probelm that was encountered with sending out a scheduled mass mailing. 
+Conversely, an email notification can be sent out if there was a problem that was encountered with sending out a scheduled mass mailing. 
 For example, if you're sending out a mass mailing, whose message content is grabbed from a URL, and that URL throws a 404,  
 that's a problem with the scheduled mass mailing. 
 The mass mailing won't go out and this email notification will, with details on what may be the problem. 
@@ -42,7 +44,7 @@ This option is disabled by default.
 =head4 Test Mode
 
 Test Mode allows you to send a scheduled mass mailing on its schedule, 
-but only to your test recipients (either to your test sublist, or to a custom list of addresses - whatever you configured).
+but only to your test recipients (either to your test sublist, or to a custom list of addresses - whatever you've configured).
 
 A test of a scheduled mass mailing could be sent before, 
 but only by manual intervention by the user (clicking the, Send Test button in the list control panel).
@@ -61,7 +63,7 @@ This option is B<disabled> by default.
 
 =head4 Mailing List: List Settings screen, URL validation
 
-Many options in this list control panel screen want URLs as values, but it's also very easy to enter a URL incorrectly. 
+Many options in this list control panel screen require URLs as values, but it's also very easy to enter a URL incorrectly. 
 Front-end validation is now done on this options, 
 both to check the URL looks valid, as well as seeing if the URL can be actually fetched. 
 
@@ -93,6 +95,7 @@ B<Show message previews in:>
 Then select either, B<Modal window> or, B<New window> 
 
 
+
 =head3 Archives
 
 =head4 Auto-remove old archived messages
@@ -102,7 +105,7 @@ Find this option under, B<Archives: Advanced Options> and check the option label
 
 B<[x] Auto-remove archived messages older than:> 
 
-Then select a time span (between one month, to five years).
+Then select a time span (between: one month to five years).
 
 
 
@@ -121,9 +124,10 @@ Bridge plugin improvements have focused on moderation.
 
 =head4 Auto-reject messages that are too old in the moderation queue
 
-To keep the moderation queue at a reasonable size, messages that are older than a certain time (one, three, or seven days) are simply auto-rejected. 
+To keep the moderation queue at a reasonable size, messages that are older than a certain time 
+(one, three, or seven days) are simply auto-rejected. 
 
-Find this option in the Bridge plugin's control panel, labeled, 
+Find this option in the Bridge plugin's control panel labeled, 
 
 B<Auto-Reject messages that have been waiting to be moderated for:>
 
@@ -159,7 +163,7 @@ B<"Requires Moderation" sublist>
 Administrating this sublist can be done like any other of Dada Mail's sublists by accessing the sublist in the, B<Membership: View> screen. 
 Buttons, (labeled, B<View Requires Moderation> and, B<Add to Requires Moderation>) are also available near the option itself. 
 
-=head4 Support for Open Discussion Lists now always available
+=head4 Support for Open Discussion Lists is now always available
 
 Open discussion lists allows anyone - even someone who is not a subscriber, to send a message to a discussion list. 
 In past versions, this required one to enable the option to show up to be enabled/disabled in the gloval config. 
@@ -167,7 +171,7 @@ This global config step has been removed,
 and the option to enable/disable this option will now always show up in the 
 plugin's list control panel screen. 
 
-Foind this option in the Bridge plugin's list control panel labeled,  
+Find this option in the Bridge plugin's list control panel labeled,  
 
 B<[x] Open discussion list (messages are accepted from any email address)> 
 
@@ -191,7 +195,7 @@ B<[x] Send message tracker analytics report a few days after a mass mailing was 
 
 Dada Mail has the option to send an email notification to the list owner once a mass mailing has finished sending. This
 email notification contains some useful analytics. 
-We've expanded what gets reported to be the same table you'll see in the Tracker plugin's individual message report. 
+We've expanded what gets reported - it's now very similar to the table you'll see in the Tracker plugin's individual message report. 
 
 
 
