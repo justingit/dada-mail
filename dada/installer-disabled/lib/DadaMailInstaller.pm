@@ -4628,11 +4628,16 @@ sub cgi_test_sql_connection {
     my ( $status, $details ) = $self->test_sql_connection( $dbtype, $dbserver, $port, $database, $user, $pass, );
 
     if ( $status == 1 ) {
+		$r .= '<div class="alert-box info radius">';
         $r .= '<p>SQL connection successful.</p>';
+		$r .= '</div>';
     }
     else {
+		$r .= '<div class="alert-box warning radius">';
         $r .= '<p>SQL connection is NOT successful, details:</p>';
         $r .= '<code>' . $details . '</code>';
+		$r .= '</div>';
+		
     }
     return $r;
 }
@@ -4681,12 +4686,18 @@ sub cgi_test_pop3_connection {
     my $r;
 
     if ( $imail_status == 1 ) {
+		$r .= '<div class="alert-box info radius">';
         $r .= '<p>Connection is Successful!</p>';
+		$r .= '<pre>' . $imail_log . '</pre>';
+		$r .= '</div>';
     }
     else {
+		$r .= '<div class="alert-box warning radius">';
         $r .= '<p>Connection is NOT Successful.</p>';
+	    $r .= '<pre>' . $imail_log . '</pre>';
+		$r .= '</div>';
     }
-    $r .= '<pre>' . $imail_log . '</pre>';
+   
 
     return $r;
 
