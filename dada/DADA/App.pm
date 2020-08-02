@@ -127,6 +127,7 @@ sub setup {
         'preview_jquery_plugin_subscription_form' => \&preview_jquery_plugin_subscription_form,
 		'preview_subscription_form'               => \&preview_subscription_form, 
 		'preview_minimal_subscription_form'       => \&preview_minimal_subscription_form, 
+		'preview_modal_subscribe_landing_code'    => \&preview_modal_subscribe_landing_code,
         'admin_help'                    => \&admin_help,
         'delete_list'                   => \&delete_list,
         'view_list'                     => \&view_list,
@@ -9600,6 +9601,35 @@ sub preview_subscription_form {
     );
     return $scrn;
 }
+
+
+sub preview_modal_subscribe_landing_code { 
+	
+    my $self = shift;
+    my $q    = $self->query();
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'html_code'
+      );
+    if ( !$checksout ) { return $error_msg; }
+
+    my $list = $admin_list;
+
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -screen => 'preview_modal_subscribe_landing_code_screen.tmpl',
+            -vars   => {},
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    return $scrn;
+}
+
 
 
 sub preview_minimal_subscription_form { 
