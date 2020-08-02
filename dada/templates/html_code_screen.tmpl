@@ -96,7 +96,7 @@
 				Use this screen in a modal window to popup the subscription form on your own site. <strong>Example:</strong>
 			</p>
 		
-		
+			<fieldset>
 				<div class="row">
 					<div class="small-12 columns">
 						<button 
@@ -119,7 +119,7 @@
 						><!-- tmpl_include modal_subscribe_landing_code_widget.tmpl --></textarea>
 					</div>
 				</div> 
-		
+		</fieldset>
 	  	 		
 				
 				<div class="row">
@@ -143,6 +143,7 @@
 				Copy the code in the text box and add it to any page on your site.
 			</p>
 		
+		<fieldset>
 			<div class="row">
 				<div class="small-12 columns">
 					<button 
@@ -159,7 +160,7 @@
 					<textarea readonly id="minimal_subscription_form" name="minimal_subscription_form" cols="50" rows="12"><!-- tmpl_var minimal_subscription_form --></textarea>
 				</div>
 			</div> 
-		
+		</fieldset>
 				<div class="row">
 					<div class="small-12 columns">
 	  	 				 <a 
@@ -178,22 +179,25 @@
 				Copy the code in the text box and add it to any page on your site.
 			</p>
 		
-			<div class="row">
-				<div class="small-12 columns">
-					<button 
-						type="button" 
-						class="copy_button expand" 						
-						data-clipboard-target="#full_subscription_form"
-						>
-							Copy
-					</button>
+			<fieldset>
+				<div class="row">
+					<div class="small-12 columns">
+						<button 
+							type="button" 
+							class="copy_button expand" 						
+							data-clipboard-target="#full_subscription_form"
+							>
+								Copy
+						</button>
+					</div>
+				</div>
+				<div class="row">
+					<div class="small-12 columns">
+						<textarea readonly id="full_subscription_form" name="full_subscription_form" cols="50" rows="12"><!-- tmpl_var subscription_form escape="HTML" --> </textarea>
 				</div>
 			</div>
-			<div class="row">
-				<div class="small-12 columns">
-					<textarea readonly id="full_subscription_form" name="full_subscription_form" cols="50" rows="12"><!-- tmpl_var subscription_form escape="HTML" --> </textarea>
-			</div>
-		</div>
+		</fieldset>
+			
 			<div class="row">
 				<div class="small-12 columns">
 	 				 <a 
@@ -209,47 +213,51 @@
 	
 		<div class="content tab-title" id="modal_menu"> 
 			Place the following in the &lt;head&gt; of your page:
-			<div class="row">
-				<div class="small-12 columns">
-					<button 
-						type="button" 
-						class="copy_button expand" 
-						data-clipboard-target="#modal_menu_subscription_form_head"
-						>
-							Copy
-					</button>
-				</div>
-			</div> 
-			<div class="row">
-				<div class="small-12 columns">
-					<textarea 
-						id="modal_menu_subscription_form_head"
-						rows="12" 
-						readonly><!-- tmpl_var jquery_head_code escape="HTML" --></textarea>
-				</div>
-			</div> 
+			
+			
+			<fieldset>
+				<div class="row">
+					<div class="small-12 columns">
+						<button 
+							type="button" 
+							class="copy_button expand" 
+							data-clipboard-target="#modal_menu_subscription_form_head"
+							>
+								Copy
+						</button>
+					</div>
+				</div> 
+				<div class="row">
+					<div class="small-12 columns">
+						<textarea 
+							id="modal_menu_subscription_form_head"
+							rows="12" 
+							readonly><!-- tmpl_var jquery_head_code escape="HTML" --></textarea>
+					</div>
+				</div> 
 			  
-			<p>Place the following in the body of your page:</p> 
-			<div class="row">
-				<div class="small-12 columns">
-					<button 
-						type="button" 
-						class="copy_button expand" 
-						data-clipboard-target="#modal_menu_subscription_form_body"
-						>
-							Copy
-					</button>
+				<p>Place the following in the body of your page:</p> 
+				<div class="row">
+					<div class="small-12 columns">
+						<button 
+							type="button" 
+							class="copy_button expand" 
+							data-clipboard-target="#modal_menu_subscription_form_body"
+							>
+								Copy
+						</button>
+					</div>
 				</div>
-			</div>
-			<div class="row">
-				<div class="small-12 columns">
-					<textarea 
-						readonly
-						rows="12"
-						id="modal_menu_subscription_form_body"
-						><!-- tmpl_var jquery_body_code escape="HTML" --></textarea>
+				<div class="row">
+					<div class="small-12 columns">
+						<textarea 
+							readonly
+							rows="12"
+							id="modal_menu_subscription_form_body"
+							><!-- tmpl_var jquery_body_code escape="HTML" --></textarea>
+					</div>
 				</div>
-			</div>
+			</fieldset>
 		<div class="row">
 			<div class="small-12 columns">
 				 <a 
