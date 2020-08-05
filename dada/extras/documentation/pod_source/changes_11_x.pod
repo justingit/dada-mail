@@ -203,12 +203,18 @@ We've expanded what gets reported - it's now very similar to the table you'll se
 
 =head4 New Option: mailing list subscription form for modal windows
 
+There's a lot of options in adding a subscription form to your website. These are usually very flexible, but require you to copy/paste HTML and perhaps even Javascript (for some options), which can make it difficult to get right, 
+and keep updated. 
 
+One of the problems is that the subscription form itself is not a simple thing! These days there are captchas, profile fields that need to be filled out, consent checkboxes, etc that are a part of the subscription form. 
 
-This needs its own blog entry. 
+Dada Mail has two ways to I<just> show you the subscription form. One is by using a landing screen, the other is to just print out the subscription form itself. The latter is what's new in this version. 
 
+With having the ability to just see the subscription form, you now have the ability to add that form to anything you would like. Something as simple as directly linking to the subscription form is now possible. Or, you can use the URL of the screen that has the subscription form, and place it in a modal window. If your site runs WordPress, there's already a ton of plugins that allow you to do just that, with varying amounts of bells and whistles. Dada Mail itself comes with a very small modal window plugin for jQuery that it uses for its example. That example is also something you can use yourself on your own website. 
 
+Look for this in the list control panel under, B<Appearance: Subscription Form HTML> 
 
+Once on that screen, look under the, B<Landing Page> tab, for both the, B<Full Page> and B<Just The Subscription Form> URL, as well as an example of how to put the, B<Just The Subscription Form> in a modal window. A working preview is also provided. 
 
 =head3 Amazon SES
 
