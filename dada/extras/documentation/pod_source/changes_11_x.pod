@@ -307,13 +307,13 @@ L<https://raw.githubusercontent.com/justingit/dada-mail/master/dada/DADA/perllib
 
 As a better alternative for, C<Signature4.pm>, you can install it via your favorite CPAN module installer under it's proper name, C<AWS::Signature4>. C<Net::Amazon::SES> is specific to Dada Mail. 
 
+=back
+
 =head2 Bugfixes
 
 =head3 Update Addresses does not work in list control panel
 
 L<https://github.com/justingit/dada-mail/issues/942>
-
-=back
 
 =head1 11.10.2
 
