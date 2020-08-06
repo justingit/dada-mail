@@ -3629,7 +3629,7 @@ sub send_analytics_email_notification {
 
     $self->update_sent_analytics(
         {
-            -msg_id => $msg_ids->[-1],
+            -msg_id => $msg_id_to_send,
             -val    => 1,
         }
     );
