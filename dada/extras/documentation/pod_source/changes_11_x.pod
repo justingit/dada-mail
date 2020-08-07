@@ -239,6 +239,21 @@ This list has been added to us-east-1, us-west-2, and eu-west-1.
 B<StopForumSpam> has been broken in Dada Mail for quite some time. 
 It's now fixed (see bug fixes, below), but is set to disabled by default. 
 
+=head2 Bugfixes
+
+=head3 Stop Forum Spam integration broken
+
+L<https://github.com/justingit/dada-mail/issues/947>
+
+=head3 Subscription Form doesn't work on List Screen (etc) if $S_PROGRAM_URL includes a, "?"
+
+L<https://github.com/justingit/dada-mail/issues/946>
+
+=head3 "Open Discussion List" option doesn't survive upgrade
+
+L<https://github.com/justingit/dada-mail/issues/943>
+
+
 =head1 11.10.3
 
 This is mostly a bug-fix release for issues found in the v11.10.2 release of Dada Mail. 
