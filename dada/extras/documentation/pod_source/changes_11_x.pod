@@ -13,14 +13,14 @@ This is a major feature release of the app.
 
 =head3 Scheduled Mailings 
 
-Scheduled mailings allow you to write a draft message, then have it ready to be sent in the future.
+Scheduled mailings allow you to write a draft message, 
+then have it ready to be sent sometime in the future.
 Recurring mass mailings can also be set up, and you can grab the content of a message from a URL, 
 so that the message content is dynamic. 
 
 =head4 Email notifications when schedules go out
 
-To help make sure messages are sent out correctly, a new option is available allowing you to send an email notification 
-to the list owner when a scheduled mass mailing goes out. 
+To help make sure messages are sent out correctly, a new option is available allowing the List Owner to receive an email notification  when a scheduled mass mailing goes out successfully.  
 
 Find this option where you edit your scheduled mass mailing labeled, 
 
@@ -30,10 +30,10 @@ This option is disabled by default.
 
 =head4 Email notifications if there's a problem with sending a schedule
 
-Conversely, an email notification can be sent out if there was a problem that was encountered with sending out a scheduled mass mailing. 
-For example, if you're sending out a mass mailing, whose message content is grabbed from a URL, and that URL throws a 404,  
-that's a problem with the scheduled mass mailing. 
-The mass mailing won't go out and this email notification will, with details on what may be the problem. 
+Conversely, an email notification can be sent out if there was a problem encountered with sending out a scheduled mass mailing. 
+For example, if you're sending out a mass mailing, whose message content is grabbed from a URL, but that URL throws a 404,  
+that's an example of a problem with the scheduled mass mailing. 
+The mass mailing won't go out and this email notification will to the List Owner, with details on what may be the problem. 
 
 Find this option where you edit your scheduled mass mailing labeled, 
 
@@ -50,22 +50,21 @@ A test of a scheduled mass mailing could be sent before,
 but only by manual intervention by the user (clicking the, Send Test button in the list control panel).
 Test Mode will allow you to basically make sure your schedule is sending correctly. 
 
+This can help test that schedules are going out correctly, as well as double-check the formatting of the message on various email accounts/platforms. 
+
 Find this option where you edit your scheduled mass mailing labeled, 
 
 B<[x] Test Mode: only send scheduled mailing to test recipients >
 
 This option is B<disabled> by default. 
 
-
-
-
 =head3 List Control Panel 
 
 =head4 Mailing List: List Settings screen, URL validation
 
 Many options in this list control panel screen require URLs as values, but it's also very easy to enter a URL incorrectly. 
-Front-end validation is now done on this options, 
-both to check the URL looks valid, as well as seeing if the URL can be actually fetched. 
+Front-end validation is now done on these options, 
+both to double check that the URL looks valid in form, as well as seeing if the URL can actually be fetched. 
 
 
 =head4 Control Panel Settings: Options screen removed
@@ -74,9 +73,6 @@ This control panel only had one option to set - which WYSIWYG editor to use (or 
 This option wasn't removed, but now now can be found under, 
 
 B<Mass Mailing: Options>
-
-
-
 
 =head3 Message Drafts
 
@@ -94,8 +90,6 @@ B<Show message previews in:>
 
 Then select either, B<Modal window> or, B<New window> 
 
-
-
 =head3 Archives
 
 =head4 Auto-remove old archived messages
@@ -107,16 +101,12 @@ B<[x] Auto-remove archived messages older than:>
 
 Then select a time span (between: one month to five years).
 
-
-
 =head3 Installer
 
 =head4 Pre-running credential tests when upgrading
 
 When upgrading using the Dada Mail Installer, it usually a good idea to check if credentials are still working. 
 Items like your *SQL, Bounce Handler, Amazon SES, Google reCAPTCHA credentials. This is now done for you, automatically. 
-
-
 
 =head3 Bridge
 
@@ -177,8 +167,6 @@ B<[x] Open discussion list (messages are accepted from any email address)>
 
 This option is disabled by default.
 
-
-
 =head3 Tracker/Analytics
 
 =head4 Email Notification of Mass Mailing Analytics
@@ -196,8 +184,6 @@ B<[x] Send message tracker analytics report a few days after a mass mailing was 
 Dada Mail has the option to send an email notification to the list owner once a mass mailing has finished sending. This
 email notification contains some useful analytics. 
 We've expanded what gets reported - it's now very similar to the table you'll see in the Tracker plugin's individual message report. 
-
-
 
 =head3 Mailing List Subscription Form
 
@@ -246,17 +232,12 @@ The following AWS regions can now be set in Dada Mail to use with Amazon SES:
 
 This list has been added to us-east-1, us-west-2, and eu-west-1. 
 
-
 =head2 Changes
 
 =head3 StopForumSpam disabled by default
 
 B<StopForumSpam> has been broken in Dada Mail for quite some time. 
 It's now fixed (see bug fixes, below), but is set to disabled by default. 
-
-
-
-
 
 =head1 11.10.3
 
