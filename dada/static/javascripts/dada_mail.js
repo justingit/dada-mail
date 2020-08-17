@@ -640,8 +640,14 @@ jQuery(document).ready(function($){
 
 	// Membership >> List Activity
 	if ($("#list_activity").length) {
-		google.setOnLoadCallback(sub_unsub_trend_chart());
+		google.setOnLoadCallback(	
+			function(){
+				sub_unsub_trend_chart();			
+			}
+		);
 	}
+	
+	
 	// Membership >> user@example.com
 
 	if($("#membership").length) {
@@ -2752,6 +2758,8 @@ function selectHandler(event) {
 // Membership >> List Activity
 
 function sub_unsub_trend_chart() {
+	
+	
 	$("#amount").on("change", function(event) {
 		draw_sub_unsub_trend_chart();
 	});
@@ -2784,6 +2792,7 @@ backgroundColor: {
 	var sub_unsub_trend_c = new google.visualization.AreaChart(document.getElementById('sub_unsub_trends'));
 
 	function draw_sub_unsub_trend_chart() {
+		
 		$("#amount").prop('disabled', true);
 		google.visualization.events.addListener(sub_unsub_trend_c, 'ready', function() {
 			$("#amount").prop('disabled', false);
@@ -2799,6 +2808,8 @@ backgroundColor: {
 			dataType: "json",
 			async: true,
 			success: function(jsonData) {
+				
+				
 				data = new google.visualization.DataTable(jsonData);
 
 				var options = {
@@ -2824,6 +2835,8 @@ backgroundColor: {
 		});
 	}
 
+	//google.charts.setOnLoadCallback(draw_sub_unsub_trend_chart());
+	
 	draw_sub_unsub_trend_chart();
 }
 
@@ -4127,6 +4140,8 @@ function data_over_time_graph(type, label, target_div) {
 					target_div: target_div
 				};
 				var chart = new google.visualization.AreaChart(document.getElementById(target_div));
+				
+				
 				chart.draw(data, options);
 				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
 				$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
