@@ -76,6 +76,17 @@ tinymce.init({
     ],
 
     toolbar1 : "undo redo  | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | styleselect | bullist numlist outdent indent | link image",
-    toolbar2 : "preview | forecolor backcolor emoticons code fullpage"
+    toolbar2 : "preview | forecolor backcolor emoticons code fullpage", 
+	
+	setup: function(editor) {
+	  editor.on('PreInit', function() {
+	    editor.parser.addNodeFilter('#cdata', function(nodes) {
+	      for (var i = 0; i < nodes.length; i++) {
+	        nodes[i].remove();
+	      }
+	    });
+	  });
+	}
+	
     
  });
