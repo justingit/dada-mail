@@ -226,7 +226,7 @@ The following AWS regions can now be set in Dada Mail to use with Amazon SES:
 
 =item * Europe (London) eu-west-2
 
-=item * outh America (São Paulo) (sa-east-1)
+=item * South America (São Paulo) (sa-east-1)
 
 =back
 
