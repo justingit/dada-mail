@@ -981,9 +981,9 @@ sub get_all_mids {
           . $self->{dbh}->quote('sent_analytics')
           . ' AND details = '
           . $self->{dbh}->quote('0')
-          . ' AND msg_id > '
-          . $self->{dbh}->quote($two_days_ago_msg_id)
           . ' AND msg_id < '
+          . $self->{dbh}->quote($two_days_ago_msg_id)
+          . ' AND msg_id > '
           . $self->{dbh}->quote($three_days_ago_msg_id)
           . ' GROUP BY msg_id ORDER BY msg_id DESC;';
 
