@@ -23,7 +23,7 @@ use lib qw(
 
 use strict;
 
-my $t = 0; 
+my $t = 1; 
 
 use Encode qw(encode decode);
 
@@ -2266,8 +2266,6 @@ sub remove_old_screen_cache {
 
 sub remove_old_backups { 
 	
-	
-	
     my $self = shift;
     my $ip   = $self->param('install_params');
 
@@ -2311,9 +2309,73 @@ sub remove_old_backups {
 				
 
 				warn "removing $name\n";
+				# I feel we need to make sure the parent dir needs lax permissions first, 
+				# since we lock it down now: 
+
+			    installer_chmod( $DADA::Config::DIR_CHMOD,  make_safer($dmsf_dir . '/' . $name) );
 				File::Path::remove_tree( make_safer($dmsf_dir . '/' . $name) );
 			}
+			
+			foreach my $name (sort { $dir_list->{$b} <=> $dir_list->{$a} } keys %$dir_list) {
+				# this doesn't remove anything, but changes permissions - 
+				# somewhat of a bodge, as we now do this when we do the actual backup
+				# but historically, we did not: 
+				
+				# remember, we just removed a bunch of stuff (potentially):
+				if(-d make_safer($dmsf_dir . '/' . $name) ){ 
+			    	installer_chmod( $DADA::Config::FILE_CHMOD,  make_safer($dmsf_dir . '/' . $name) );
+				}
+				
+			}
+			
 		}
+		
+		
+		# This doesn't remove, but changes permissions on wysiwyg editors and file managers that may be 
+		# up there, but aren't used: 
+		
+		unless($ip->{-wysiwyg_editor_install_ckeditor} == 1){ 
+			if(-d make_safer($dmsf_dir . '/' . 'ckeditor') ){
+				installer_chmod( $DADA::Config::FILE_CHMOD,  make_safer($dmsf_dir . '/' . 'ckeditor') );
+			}
+		}
+		
+		unless($ip->{-wysiwyg_editor_install_tiny_mce} == 1){ 
+			if(-d make_safer($dmsf_dir . '/' . 'tinymce')){
+				installer_chmod( $DADA::Config::FILE_CHMOD,  make_safer($dmsf_dir . '/' . 'tinymce') );
+			}
+		}
+		
+		my @fm_to_change_perms = (); 
+		if($ip->{-install_file_browser} eq 'kcfinder'){ 
+			push(@fm_to_change_perms, 'RichFilemanager'); 
+			push(@fm_to_change_perms, 'core5_filemanager'); 			
+		}
+		elsif($ip->{-install_file_browser} eq 'core5_filemanager'){ 
+			push(@fm_to_change_perms, 'RichFilemanager'); 
+			push(@fm_to_change_perms, 'kcfinder'); 
+		}
+		elsif($ip->{-install_file_browser} eq 'rich_filemanager'){ 
+			push(@fm_to_change_perms, 'core5_filemanager'); 
+			push(@fm_to_change_perms, 'kcfinder'); 		
+		}
+		else { 
+			push(@fm_to_change_perms, 'RichFilemanager'); 
+			push(@fm_to_change_perms, 'core5_filemanager'); 
+			push(@fm_to_change_perms, 'kcfinder'); 				
+		}
+		# NO. Just, no: 
+		push(@fm_to_change_perms, 'fckeditor'); 
+		
+		
+		for my $fm(@fm_to_change_perms) {
+			if(-d make_safer($dmsf_dir . '/' . $fm)){				
+				installer_chmod( $DADA::Config::FILE_CHMOD,  make_safer($dmsf_dir . '/' . $fm) );
+			}
+		}
+		
+		#/end
+		
     }
     else {
 		croak "couldn't find, $dmsf_dir";
@@ -3779,7 +3841,7 @@ sub install_and_configure_rich_filemanager {
     my $install_path   = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name;
     my $source_package = make_safer('../extras/packages/RichFilemanager');
     my $target_loc     = make_safer( $install_path . '/RichFilemanager' );
-    if ( -d $target_loc ) {
+    if ( -d $target_loc ) {		
         backup_dir($target_loc);
     }
     installer_dircopy( $source_package, $target_loc );
@@ -5469,12 +5531,17 @@ sub backup_dir {
 
 	warn "backup_dir: source: '$source', target: '$target'\n"
 		if $t; 
-	
-
+			
+	if(-d $source) {
+		installer_chmod( $DADA::Config::DIR_CHMOD, $source );
+	}
 
     require File::Copy::Recursive;
     File::Copy::Recursive::dirmove( $source, $target )
       or die $!;
+	  
+    installer_chmod( $DADA::Config::FILE_CHMOD, $target );
+	  
 }
 
 sub auto_dada_files_dir {
