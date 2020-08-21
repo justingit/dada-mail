@@ -127,6 +127,9 @@ $FILE_BROWSER_OPTIONS //= {
 		upload_url   => '',
 		connector    => '', 
 	},
+	none => { 
+		enabled      => 1,
+	}
 };
 
 

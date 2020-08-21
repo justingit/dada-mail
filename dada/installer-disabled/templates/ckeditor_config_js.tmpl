@@ -18,7 +18,11 @@ CKEDITOR.editorConfig = function(config) {
    config.filebrowserImageUploadUrl = null;
    config.filebrowserFlashUploadUrl = null;
    config.removeDialogTabs = 'link:upload;image:Link;image:Upload';
-   <!-- /tmpl_if --> 
+   <!-- tmpl_else -->
+   config.filebrowserBrowseUrl      = '';
+   config.filebrowserImageBrowseUrl = '';
+   config.filebrowserFlashBrowseUrl = '';
+   <!-- /tmpl_if -->                
    
    config.height                    = '30em';
 

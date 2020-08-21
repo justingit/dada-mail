@@ -1128,6 +1128,9 @@ sub grab_former_config_vals {
     elsif ( $BootstrapConfig::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ) {
         $opt->{'install_file_browser'} = 'rich_filemanager';
 	}
+    elsif ( $BootstrapConfig::FILE_BROWSER_OPTIONS->{none}->{enabled} == 1 ) {
+        $opt->{'install_file_browser'} = 'none';
+	}
 
     if ( defined($BootstrapConfig::MAILOUT_STALE_AFTER) 
 	||   defined($BootstrapConfig::MAILOUT_AT_ONCE_LIMIT)) { 
@@ -3698,6 +3701,12 @@ sub install_wysiwyg_editors {
             $self->installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
         }
     }
+    elsif ( $ip->{-install_file_browser} eq 'none' ) {
+        $tmpl_vars{i_none_enabled} = 1;
+	}
+	else { 
+		warn 'may want to pass some sort of file manager/browser, even if it is "none"'; 
+	}
 	
 	
 	
