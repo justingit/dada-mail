@@ -14,8 +14,8 @@ There's also places we've tightened up some potential security exploits regardin
 
 =head3 Directories managed in the, "dada_mail_support_files" directory will now have their permissions changed when not in use
 
-Files and directories in the, B<dada_mail_support_files> directory are files and directories that are served directly by the webserver. 
-Things like images, javascript files, etc, are found here. 
+Files and directories in the, B<dada_mail_support_files> directory are ones that are served directly by the webserver. 
+Items like images, javascript files, etc, are found here. 
 The file managers/uploaders that are shipped with Dada Mail are installed here too.
 These are third-party apps in of themselves, and we don't have complete control over their development. 
 Historically, security issues crop up in these apps, either in current or in past versions - it happens, 
@@ -26,6 +26,12 @@ To keep the attack surface as small as possible,
 Dada Mail will now always change the permissions of directories that are not in use
 to, C<0644>, rather than the more open, C<0755>. 
 This will disallow access to the directory via something like a web browser. 
+
+=head3 Option to install no file manager uploader
+
+Dada Mail has the option to install one of three bundled file managers: KCFinder, Rich FileManager, and Core 5 Filemanager. 
+But it never had the option to install no file manager at all. 
+This version adds the ability to select "Don't Install a File Browser/Uploader"
 
 =head2 Bugfixes
 
