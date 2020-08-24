@@ -10,9 +10,36 @@
 This is mostly a bug-fix release for issues found in the v11.11.0 release of Dada Mail. 
 There's also places we've tightened up some potential security exploits regarding the file browser/uploaders we ship with Dada Mail. 
 
+=head2 Changes
+
+=head3 Directories managed in the, "dada_mail_support_files" directory will now have their permissions changed when not in use
+
+Files and directories in the, B<dada_mail_support_files> directory are files and directories that are served directly by the webserver. 
+Things like images, javascript files, etc, are found here. 
+The file managers/uploaders that are shipped with Dada Mail are installed here too.
+These are third-party apps in of themselves, and we don't have complete control over their development. 
+Historically, security issues crop up in these apps, either in current or in past versions - it happens, 
+and since their job is to upload files onto the web server, 
+this can really cause chaos on a web hosting account. 
+
+To keep the attack surface as small as possible,
+Dada Mail will now always change the permissions of directories that are not in use
+to, C<0644>, rather than the more open, C<0755>. 
+This will disallow access to the directory via something like a web browser. 
+
 =head2 Bugfixes
 
-=head3 
+=head3 "Send message tracker analytics report a few days after a mass mailing was sent " doesn't work - query is incorrect
+
+L<https://github.com/justingit/dada-mail/issues/956>
+
+=head3 TinyMCE Vulnerability should be fixed in Dada Mail 
+
+L<https://github.com/justingit/dada-mail/issues/955>
+
+=head3 "Recent Activity" chart not loading 
+
+L<https://github.com/justingit/dada-mail/issues/954>
 
 =head1 11.11.0
 
