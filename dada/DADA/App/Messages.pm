@@ -367,41 +367,50 @@ sub send_abuse_report {
     if ( !exists( $args->{-mid} ) ) {
         $args->{-mid} = '00000000000000';
     }
+	
+	if ( !exists( $args->{-subscribed} ) ) {
+		$args->{-subscribed} = 0; 
+	}
 
     my $etp = $self->emt->fetch('list_abuse_report_message');
 
     require DADA::MailingList::Subscribers;
     my $lh = DADA::MailingList::Subscribers->new( { -list => $self->list } );
-
-    my $worked = $lh->add_subscriber(
-        {
-            -email      => $email,
-            -list       => $self->list,
-            -type       => 'unsub_request_list',
-            -dupe_check => {
-                -enable  => 1,
-                -on_dupe => 'ignore_add',
-            },
-        }
-    );
-
-    require DADA::App::Subscriptions::ConfirmationTokens;
-    my $ct            = DADA::App::Subscriptions::ConfirmationTokens->new();
-    my $approve_token = $ct->save(
-        {
-            -email => $email,
-            -data  => {
-                list        => $self->list,
-                type        => 'list',
-                mid         => $args->{-mid},
-                flavor      => 'unsub_request_approve',
-                remote_addr => ip_address_logging_filter($ENV{REMOTE_ADDR}),
-            },
-            -remove_previous => 0,
-        }
-    );
-
-    $self->send_multipart_email(
+	
+	my $approve_token = undef; 
+	
+	if($args->{-subscribed} == 1){
+	
+	    my $worked = $lh->add_subscriber(
+	        {
+	            -email      => $email,
+	            -list       => $self->list,
+	            -type       => 'unsub_request_list',
+	            -dupe_check => {
+	                -enable  => 1,
+	                -on_dupe => 'ignore_add',
+	            },
+	        }
+	    );
+	
+	    require DADA::App::Subscriptions::ConfirmationTokens;
+	    my $ct            = DADA::App::Subscriptions::ConfirmationTokens->new();
+	    $approve_token = $ct->save(
+	        {
+	            -email => $email,
+	            -data  => {
+	                list        => $self->list,
+	                type        => 'list',
+	                mid         => $args->{-mid},
+	                flavor      => 'unsub_request_approve',
+	                remote_addr => ip_address_logging_filter($ENV{REMOTE_ADDR}),
+	            },
+	            -remove_previous => 0,
+	        }
+	    );
+	}
+    
+	$self->send_multipart_email(
         {
             -headers => {
                 To => $self->fm->format_phrase_address(
@@ -425,10 +434,9 @@ sub send_abuse_report {
                     -type  => 'list'
                 },
                 -vars => {
-                    abuse_report_details => $abuse_report_details,
-                    list_unsubscribe_request_approve_link =>
-                      $DADA::Config::S_PROGRAM_URL . '/t/'
-                      . $approve_token . '/',
+                    abuse_report_details                  => $abuse_report_details,
+                    list_unsubscribe_request_approve_link => $DADA::Config::S_PROGRAM_URL . '/t/' . $approve_token . '/',
+					subscribed                            => $args->{-subscribed}, 
                 },
             },
             -test => $self->test,

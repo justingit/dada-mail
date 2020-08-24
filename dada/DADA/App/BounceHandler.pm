@@ -818,7 +818,12 @@ sub parse_bounce {
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $found_list } );
     
-	if ( $lh->check_for_double_email( -Email => $email ) != 1 ) {
+	
+	
+	#
+	if ( 
+		$lh->check_for_double_email( -Email => $email ) != 1 
+		&& $rule ne 'amazon_ses_abuse_report') {
         $msg_report .= "Bounced Message is from an email address that isn't subscribed to: $found_list. Ignorning.\n";
         return ( $found_list, 1, $msg_report, '', $diagnostics );
     }
@@ -1367,13 +1372,21 @@ sub abuse_report {
         $abuse_report_details .= $_ . ": " . $diagnostics->{$_} . "\n";
     }
 	
-    require DADA::App::Messages;
+   my $subscribed = 0; 
+
+	my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+	if($lh->check_for_double_email( -Email => $email ) == 1 ){ 
+		$subscribed = 1; 
+	}	
+	
+	require DADA::App::Messages;
     my $dap = DADA::App::Messages->new( { -list => $list} );
-    $dap->send_abuse_report(
+       $dap->send_abuse_report(
         {
             -email                => $email,
             -abuse_report_details => $abuse_report_details,
             -mid                  => $diagnostics->{'Simplified-Message-Id'},
+			-subscribed           => $subscribed, 
         }
     );
 
