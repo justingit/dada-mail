@@ -3,6 +3,17 @@
 
 =encoding utf-8
 
+=head1 11.11.1
+
+=head2 Focus
+
+This is mostly a bug-fix release for issues found in the v11.11.0 release of Dada Mail. 
+There's also places we've tightened up some potential security exploits regarding the file browser/uploaders we ship with Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 
+
 =head1 11.11.0
 
 =head2 Focus
