@@ -408,40 +408,74 @@ sub send_abuse_report {
 	            -remove_previous => 0,
 	        }
 	    );
+		
+		$self->send_multipart_email(
+	        {
+	            -headers => {
+	                To => $self->fm->format_phrase_address(
+	                    $etp->{vars}->{to_phrase},
+	                    $self->ls->param('list_owner_email')
+	                ),
+	                From => $self->fm->format_phrase_address(
+	                    $etp->{vars}->{from_phrase},
+	                    $self->ls->param('list_owner_email')
+	                ),
+	                Subject => $etp->{vars}->{subject},
+	            },
+
+	            -plaintext_body => $etp->{plaintext},
+	            -html_body      => $etp->{html},
+	            -tmpl_params    => {
+	                -list_settings_vars_param => { -list => $self->list },
+	                -subscriber_vars_param    => {
+	                    -list  => $self->list,
+	                    -email => $email,
+	                    -type  => 'list'
+	                },
+	                -vars => {
+	                    abuse_report_details                  => $abuse_report_details,
+	                    list_unsubscribe_request_approve_link => $DADA::Config::S_PROGRAM_URL . '/t/' . $approve_token . '/',
+						subscribed                            => 1, 
+	                },
+	            },
+	            -test => $self->test,
+	        }
+	    );
+		
+	}
+	else { 
+		
+		$self->send_multipart_email(
+	        {
+	            -headers => {
+	                To => $self->fm->format_phrase_address(
+	                    $etp->{vars}->{to_phrase},
+	                    $self->ls->param('list_owner_email')
+	                ),
+	                From => $self->fm->format_phrase_address(
+	                    $etp->{vars}->{from_phrase},
+	                    $self->ls->param('list_owner_email')
+	                ),
+	                Subject => $etp->{vars}->{subject},
+	            },
+
+	            -plaintext_body => $etp->{plaintext},
+	            -html_body      => $etp->{html},
+	            -tmpl_params    => {
+	                -list_settings_vars_param => { -list => $self->list },
+	                -vars => {
+	                    abuse_report_details                  => $abuse_report_details,
+						subscribed                            => 0, 
+						'subscriber.email'                    => $email,
+	                },
+	            },
+	            -test => $self->test,
+	        }
+	    );
+		
 	}
     
-	$self->send_multipart_email(
-        {
-            -headers => {
-                To => $self->fm->format_phrase_address(
-                    $etp->{vars}->{to_phrase},
-                    $self->ls->param('list_owner_email')
-                ),
-                From => $self->fm->format_phrase_address(
-                    $etp->{vars}->{from_phrase},
-                    $self->ls->param('list_owner_email')
-                ),
-                Subject => $etp->{vars}->{subject},
-            },
 
-            -plaintext_body => $etp->{plaintext},
-            -html_body      => $etp->{html},
-            -tmpl_params    => {
-                -list_settings_vars_param => { -list => $self->list },
-                -subscriber_vars_param    => {
-                    -list  => $self->list,
-                    -email => $email,
-                    -type  => 'list'
-                },
-                -vars => {
-                    abuse_report_details                  => $abuse_report_details,
-                    list_unsubscribe_request_approve_link => $DADA::Config::S_PROGRAM_URL . '/t/' . $approve_token . '/',
-					subscribed                            => $args->{-subscribed}, 
-                },
-            },
-            -test => $self->test,
-        }
-    );
 }
 
 sub send_confirmation_message {
