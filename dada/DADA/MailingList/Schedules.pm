@@ -684,6 +684,15 @@ sub send_schedule_notification {
 	
 	my $sched = $args->{-sched};
 	my $type  = $args->{-type};
+
+	# Do we need to do this?
+	if($type eq 'failure' &&  $sched->{schedule_send_email_notification_on_failure} != 1){ 
+		return; 
+	}
+	elsif($type eq 'success' &&  $sched->{schedule_send_email_notification_on_failure} != 1){ 
+		return; 
+	}
+		
 	my $template_name = 'schedule_success';
 	if($type eq 'failure'){ 
 		$template_name = 'schedule_failure'; 
