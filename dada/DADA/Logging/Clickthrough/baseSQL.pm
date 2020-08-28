@@ -1626,7 +1626,8 @@ sub report_by_message {
     $sth->finish;
     undef $sth;
     $report->{url_report} = $url_report;
-
+	$report->{total_bounce} = int($report->{'soft_bounce'}) + int($report->{'hard_bounce'}); 
+	
 	$m_report = $report; 
 	
 	for my $this_id(keys %{$m_report}){ 
@@ -3560,7 +3561,9 @@ sub send_analytics_email_notification {
 		}
 	}
     my $m_report = $self->report_by_message( $msg_id_to_send );
-
+	   
+	
+	
 	$r .= "Sending out analytics report for: " . $m_report->{message_subject} .  " (msg_id: " . $msg_id_to_send . ")\n\n";
 	
 	

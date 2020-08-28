@@ -920,8 +920,6 @@ sub message_report {
 	}
 	else  { 
 	
-		$m_report->{total_bounce} = $m_report->{'soft_bounce'} + $m_report->{'hard_bounce'}; 
-	
 	    # This is strange, as we have to first break it out of the data structure,
 	    # and stick it back in:
 
