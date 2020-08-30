@@ -3,6 +3,22 @@
 
 =encoding utf-8
 
+=head1 11.11.2
+
+=head2 Focus
+
+This is mostly a bug-fix release for issues found in the v11.11.1 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 Correct stats for, "bounces" not show in the followup mass mailing analytics email (and probably the mass mailing finished notification email)
+
+L<https://github.com/justingit/dada-mail/issues/966>
+
+=head3 Scheduled mailing list notifications for success/failure always go out, no matter selected preference
+
+L<https://github.com/justingit/dada-mail/issues/965>
+
 =head1 11.11.1
 
 =head2 Focus
