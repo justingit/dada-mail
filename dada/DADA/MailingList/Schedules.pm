@@ -182,7 +182,32 @@ sub run_schedules {
               . $days_str . "\n"
               . "\t\t* at: "
               . $sched->{schedule_recurring_display_hms} . "\n";
+			
+			  # this should never happen, but it happens: 
+			if($sched->{schedule_recurring_ctime_start} > $sched->{schedule_recurring_ctime_end}){ 
+				
+				$rb .= "\t\t\t * Problem: Cannot have a start time that's older than the end time.\n";
+				$rb .= "Deactivating Schedule...\n";
+				$self->send_schedule_notification(
+					{
+						-type    => 'failure',
+						-details =>  $rb ,
+						-sched   => $sched,
+					}
+				);
 
+				$self->deactivate_schedule(
+					{
+						-id     => $sched->{id},
+						-role   => $sched->{role},
+						-screen => $sched->{screen},
+					}
+				);
+				next SCHEDULES;
+
+			}
+		
+			
             my ( $status, $errors, $recurring_scheds ) =
               $self->recurring_schedule_times(
                 {
