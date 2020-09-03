@@ -494,11 +494,15 @@ sub construct_from_url {
 		if(can_use_XML_FeedPP()) {
 			my $feed_r = $self->content_from_feed_url(
 					{ 
-						-feed_url        => scalar $draft_q->param('feed_url'), 
-						-max_entries     => scalar $draft_q->param('feed_url_max_entries'), 
-						-content_type    => scalar $draft_q->param('feed_url_content_type'), 
-						-pre_html        => scalar $draft_q->param('feed_url_pre_html'), 
-						-post_html       => scalar $draft_q->param('feed_url_post_html'), 
+						-feed_url                           => scalar $draft_q->param('feed_url'), 
+						-max_entries                        => scalar $draft_q->param('feed_url_max_entries'), 
+						-content_type                       => scalar $draft_q->param('feed_url_content_type'), 
+						-pre_html                           => scalar $draft_q->param('feed_url_pre_html'), 
+						-post_html                          => scalar $draft_q->param('feed_url_post_html'), 
+						-remove_rss_content                 => scalar $draft_q->param('remove_rss_content'), 
+						-remove_rss_content_selector_type   => scalar $draft_q->param('remove_rss_content_selector_type'), 
+						-remove_rss_content_selector_label  => scalar $draft_q->param('remove_rss_content_selector_label'), 
+						
 						
 						(($pass_last_read_entry == 1) ?(
 							-last_read_entry => scalar $draft_q->param('feed_url_most_recent_entry'),
@@ -902,6 +906,7 @@ sub content_from_feed_url {
 	my $self = shift;
     my ($args) = @_;
 
+	
 	my $feed_url        = $args->{-feed_url}        || undef; 
 	my $max_entries     = $args->{-max_entries}     || undef; 
 	my $content_type    = $args->{-content_type}    || undef; 	
@@ -911,6 +916,10 @@ sub content_from_feed_url {
 	
 	my $status = 1; 
 	my $error  = {};
+	
+	
+	use Data::Dumper; 
+	warn '$args: ' . Dumper($args);
 	
 	my ( $rtc, $res, $md5, $e_m ) = grab_url({-url => $feed_url });
 	
@@ -933,8 +942,6 @@ sub content_from_feed_url {
 			vars   => {},
 		};
 	}
-	
-	
 	
 	my $tmpl_vars = {};
 	
@@ -981,6 +988,23 @@ sub content_from_feed_url {
 		if(!defined($content)){ 
 			$content = $description; 
 		}
+		
+		if($args->{-remove_rss_content} == 1){
+			my ($n_status, $n_content, $n_errors) = $self->redact_html({ 
+				-html                              => $content, 
+				-remove_rss_content_selector_type  => $args->{-remove_rss_content_selector_type}, 
+				-remove_rss_content_selector_label => $args->{-remove_rss_content_selector_label}, 
+			}); 
+			if($n_status == 1){ 
+				$content = $n_content; 
+			}
+			else { 
+				carp $n_errors;
+			}
+			undef $n_status;
+			undef $n_content; 
+			undef $n_errors;
+		}
 	
 		if(!defined($description)){ 
 			$description = $content; 
@@ -994,7 +1018,24 @@ sub content_from_feed_url {
 			$description =  xss_filter(substr($description, 0, $take));
 	
 		}
-	
+		
+		if($args->{-remove_rss_content} == 1){
+			my ($n_status, $n_content, $n_errors) = $self->redact_html({ 
+				-html                              => $description, 
+				-remove_rss_content_selector_type  => $args->{-remove_rss_content_selector_type}, 
+				-remove_rss_content_selector_label => $args->{-remove_rss_content_selector_label}, 
+			}); 
+			if($n_status == 1){ 
+				$description = $n_content; 
+			}
+			else { 
+				carp $n_errors;
+			}
+			undef $n_status;
+			undef $n_content; 
+			undef $n_errors;
+		}
+		
 		my $entry = { 
 			link          => $item->link(), 	
 			title         => $item->title(),
@@ -1051,6 +1092,64 @@ sub content_from_feed_url {
 		md5    => $md5, 
 		vars   => $tmpl_vars
 	};
+}
+
+sub redact_html { 
+	
+	
+    my $self   = shift;
+    my ($args) = @_;
+	
+    my $html   = $args->{-html};
+	my @r = (); 
+    my $root; 
+	my $r; 
+	
+	try {
+        require HTML::Tree;
+        require HTML::Element;
+        require HTML::TreeBuilder;
+
+        $root = HTML::TreeBuilder->new(
+            ignore_unknown      => 0,
+            no_space_compacting => 1,
+            store_comments      => 1,
+        );
+
+        $root->parse($html);
+        $root->eof();
+        $root->elementify();
+        my $replace_tag = undef;
+        my $crop        = undef;
+		my $continue    = 0; 
+		
+        if ( $args->{-remove_rss_content_selector_type} eq 'id' ) {
+			foreach my $e ($root->look_down( "id", $args->{-remove_rss_content_selector_label})) {
+				$e->delete();
+			}
+        }
+        elsif ( $args->{-remove_rss_content_selector_type} eq 'class' ) {
+			foreach my $e ($root->look_down("class", $args->{-remove_rss_content_selector_label})){
+               $e->delete();
+            }
+        }
+		$r = $root->as_HTML;
+		$root = $root->delete; 
+
+		$r =~ s!^.*?<body>(.*)</body>.*!$1!s;
+    }
+    catch {
+        my $e = 'cannot redact html: ' . substr($_, 0, 100) . '...';
+        @r = (0, undef, $e);
+		return @r; 
+    };
+	
+	
+
+	@r = (1, $r, undef); 
+	
+
+	return @r; 
 }
 
 sub send_email {
