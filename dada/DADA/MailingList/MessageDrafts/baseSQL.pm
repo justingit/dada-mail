@@ -1028,6 +1028,10 @@ sub params_to_save {
     $params->{crop_html_content_selector_type}  = 1;
     $params->{crop_html_content_selector_label} = 1;
 
+	$params->{remove_rss_content}                = 1;
+	$params->{remove_rss_content_selector_type}  = 1;
+	$params->{remove_rss_content_selector_label} = 1;
+	
 
     # use Data::Dumper;
     # warn 'params_to_save:' . Dumper($params);
