@@ -3030,7 +3030,18 @@ sub mass_mailing_options {
 		
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);
 		
-
+		
+		require HTML::Menu::Select;
+		my $email_image_width_limit_pop_menu = HTML::Menu::Select::popup_menu(
+          {
+              name    => 'email_image_width_limit_pop_menu',
+              id      => 'email_image_width_limit_pop_menu',
+              default => $ls->param('email_image_width_limit'),
+              values => [qw(240 320 480 640 800 1024)],
+          }
+        );
+		
+		
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'mass_mailing_options_screen.tmpl',
@@ -3058,7 +3069,13 @@ sub mass_mailing_options {
                       ->{enabled},
                     tiny_mce_url =>
                       $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{url},
-                    %wysiwyg_vars,
+                    
+					email_image_width_limit_pop_menu => 
+						$email_image_width_limit_pop_menu, 
+					
+					%wysiwyg_vars,
+					
+					
                 },
                 -list_settings_vars_param => {
                     -list   => $list,

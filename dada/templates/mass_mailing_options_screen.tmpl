@@ -246,10 +246,58 @@
 	                value="1" 
 	                <!-- tmpl_if list_settings.email_embed_images_as_attachments -->checked="checked"<!-- /tmpl_if --> 
 	             >
-                Embed images in HTML Messages as attachments
+                Embed images within HTML Messages
             </label>
         </div>
     </div>
+	
+    <div class="row">
+        <div class="small-1 columns">
+		</div>
+		
+        <div class="small-11 columns">
+			<label for="email_resize_embedded_images">  
+	            <input type="checkbox" 
+	                name="email_resize_embedded_images" 
+	                id="email_resize_embedded_images" 
+	                value="1" 
+	                <!-- tmpl_if list_settings.email_resize_embedded_images -->checked="checked"<!-- /tmpl_if --> 
+	             >
+                Resize embedded images
+            </label>
+        </div>
+    </div>
+	
+	<div class="row">
+		<div class="small-1 columns">
+		</div>
+		<div class="small-11 columns">
+			
+			 <!-- tmpl_if can_use_Image_Resize -->			 
+				 <div class="alert-box info radius">
+					 Images wider than the limit will be resized to the limit.
+				 </div>
+			<!-- tmpl_else -->	
+				<div class="alert-box warning radius">
+					The <code>Image::Resize</code> Perl CPAN module will need to be installed for this 
+					option to function.
+				</div>
+			<!-- /tmpl_if -->
+				 
+				
+			</div>
+		</div>
+		
+		
+    <div class="row">
+        <div class="small-2 columns">
+		</div>
+		<div class="small-10 columns">
+        <label>Image Width Limit: <!-- tmpl_var email_image_width_limit_pop_menu -->
+	    </div> 
+    </div>
+	
+	
 
     <div class="row">
         <div class="small-12 columns">
@@ -267,24 +315,7 @@
         </div>
     </div>
 
-<div class="row">
-	<div class="small-1 columns">
-	</div>
-	<div class="small-11 columns">
-			 <div class="alert-box info radius">
-				 Images wider than 640px will be resized
-				 
-  			   <!-- tmpl_unless can_use_Image_Resize -->
-  			   		<br>
-  					<br> 
-  					The, <code>Image::Resize</code> Perl CPAN module will need to be installed for this 
-  					option to work. 
-  			   <!-- /tmpl_unless -->
-				 
-				 
-			</div>
-		</div>
-	</div>
+
 </fieldset> 
 
 
