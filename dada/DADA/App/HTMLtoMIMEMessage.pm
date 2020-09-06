@@ -204,6 +204,15 @@ sub new {
     #    my $m = $self->parse($url);
     #    $m->send;
     #}
+	
+	
+	
+    my $image_upload_dir =
+      make_safer( $DADA::Config::SUPPORT_FILES->{dir} . '/'
+          . 'file_uploads' . '/'
+          . 'images' );
+	
+	$self->{image_upload_dir} = $image_upload_dir; 
 
     return $self;
 }
@@ -707,8 +716,9 @@ sub _build_html_part {
 	my ($args) = @_; 
 	if(!exists($args->{-html_str})){ 
 		croak "Pass HTML String in, -html_str!";
-		
 	}
+	
+	$args->{-html_str} = $self->tweak_image_size_attrs($args->{-html_str}); 
 	
 	
 	my $entity = MIME::Entity->build(
@@ -721,8 +731,71 @@ sub _build_html_part {
 	
 }
 
+sub tweak_image_size_attrs { 
+	
+	warn 'in tweak_image_size_attrs';
+	
+	my $self     = shift; 
+	my $html     = shift; 
+	
+	my $new_html; 
+	
+	try { 
+		use HTML::TreeBuilder; 
 
+		my $root = HTML::TreeBuilder->new(
+		    ignore_unknown      => 0,
+		    no_space_compacting => 1,
+		    store_comments      => 1,
+		);
 
+		$root->parse($html);
+		$root->eof();
+		$root->elementify();
+
+		my @largeimages = $root->look_down(
+		    sub {
+		         $_[0]->tag() eq 'img'   
+				 and $_[0]->attr('width') > 640
+		    }
+		);
+
+		foreach my $img(@largeimages){ 
+			
+			my $w   = $img->attr('width'); 
+			my $h   = $img->attr('height'); 
+			
+			warn '$w: ' . $w; 
+			warn '$h: ' . $h;
+			
+			# I don't know why this would hit, 
+			# as we're already filtering based on width being > 640
+			next 
+				unless length($w) > 0 && length($h) > 0; 
+			next 
+				unless $w > 0 && $h > 0; 	
+				
+	        my $n_w = 640;
+	        my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
+		    my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
+			
+			warn '$n_w: ' . $n_w; 
+			warn '$n_h: ' . $n_h; 
+			
+			$img->attr('width', $n_w);
+		    $img->attr('height', $n_h);
+		}
+		
+  		$new_html = $root->as_HTML;
+		$root = $root->delete; 			
+		
+	} catch { 
+		warn 'problems: ' . $_; 
+		$new_html = $html; 
+	};
+
+	return $new_html; 
+}
 
 sub _build_txt_part { 
 	
@@ -919,8 +992,7 @@ sub input_image(\%$$) {
 #------------------------------------------------------------------------------
 sub create_image_part {
 	
-	warn 'create_image_part'
-		if $t; 
+	warn 'in create_image_part'; #if $t; 
 	
     my ( $self, $ur, $typ ) = @_;
     my ( $type, $buff1 );
@@ -989,11 +1061,23 @@ sub create_image_part {
 			$buff1 = $res2->decoded_content;
 		}
     }
+	
+	warn 'here.';
 
+	
+	$self->create_dir($self->{image_upload_dir});
+	
+	my $filename = $self->filename_from_url($ur);
+	my $n_fp     = $self->new_image_file_path($filename); 
+	
+	$self->simple_printout_file($n_fp, \$buff1);
+	
+	warn 'here.';
+	my $rfp = $self->resize_image($n_fp); 
 	
     # Create part
 	my %entity_args = (
-		Data        => $buff1, 
+		Path          => $rfp,
 		Encoding    => 'base64',
 		Disposition => "inline",
 		Type        => $type, 	
@@ -1012,6 +1096,171 @@ sub create_image_part {
       if $entity->head->get( 'X-Mailer', 0 );
 	  
     return $entity;
+}
+
+sub filename_from_path { 
+	my $self = shift; 
+	my $fp   = shift; 
+	
+	my ($n) = $fp =~ /\/([^\/]+)$/;
+	
+	return $n;
+
+}
+sub filename_from_url {
+
+	my $self = shift; 
+	my $url  = shift; 
+	
+	warn 'in filename_from_url';
+	warn '$url: ' . $url; 
+	
+	my ($filename) = $url =~ /\/([^\/]*?)(?:\?|$)/;
+	
+	warn '$filename: ' . $filename; 
+	
+	return $filename; 
+	
+}
+
+sub simple_printout_file { 
+	
+	warn 'in simple_printout_file';
+
+	my $self = shift; 
+	my $fp   = shift; 
+	my $ref  = shift; 
+
+	warn '$fp: ' . $fp; 
+	
+    open( OUTFILE, '>', $fp ) or die( "can't write to " . $fp . ": $!" );
+	print OUTFILE $$ref or die $!;
+	close(OUTFILE) or die $!;
+    chmod( $DADA::Config::FILE_CHMOD, $fp );
+}
+
+sub new_image_file_path {
+	
+	warn 'in new_image_file_path';
+	
+	my $self = shift; 
+	my $fn   = shift; 
+	
+	warn '$fn: ' . $fn; 
+	
+	my $n_fp = undef; 
+	
+	my $found_unique = 0; 
+	my $limit        = 100; 
+	my $tries        = 0; 
+	
+	while($found_unique == 0){ 
+		
+		$tries++; 
+		if($tries >= $limit){ 
+			die "can't create a new file name for, $fn"; 
+		}
+	    my $try_n_fp = undef; 
+		
+		my $rand_string = generate_rand_string_md5();
+	   
+	    my $new_fn    = $rand_string . '-' . 'tmp-' . $fn;
+	       $try_n_fp  = make_safer( 
+		   	$self->{image_upload_dir} . '/' . $new_fn 
+		);
+		
+		if (-e $try_n_fp ) {
+			# rats. 
+			next;
+		}
+		else { 
+			$n_fp = $try_n_fp; 
+			$found_unique = 1; 
+			last;
+		}
+	}
+	warn '$n_fp: ' . $n_fp; 
+	
+	return $n_fp; 
+}
+
+sub create_dir { 
+	
+	warn 'in create_dir';
+	
+	my $self = shift; 
+	my $dir  = shift; 
+	
+    if ( !-d $dir ) {
+        if ( mkdir( $dir, $DADA::Config::DIR_CHMOD ) ) {
+            if ( -d $dir ) {
+                chmod( $DADA::Config::DIR_CHMOD, $dir );
+            }
+        }
+    }
+	return 1; 	
+}
+
+sub resize_image { 
+	
+	warn 'in resize_image';
+
+	my $self = shift; 
+	my $fp   = shift; 
+	
+	warn '$fp: ' . $fp; 
+	
+    $self->create_dir($self->{image_upload_dir}); 
+	
+	my $fn = $self->filename_from_path($fp);
+	
+	warn '$fn: ' . $fn; 
+	
+    my $r_fn = 'resized-' . $fn;
+		
+	warn '$r_fn: ' . $r_fn; 
+	
+    my $r_outfile = make_safer( $self->{image_upload_dir} . '/' . $r_fn );
+	
+	warn '$r_outfile: ' . $r_outfile; 
+	
+	try {
+		
+		
+	    require Image::Resize;
+	    my $ir = Image::Resize->new($fp);
+
+	    my $w = $ir->width;
+	    if ( $w > 640 ) {
+	        my $h   = $ir->height;
+	        my $n_w = 640;
+	        my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
+
+	        my $gd = $ir->resize( $n_w, $n_h );
+    
+	        open FH, '>', $r_outfile or die $!;
+
+	        if ( $r_fn =~ m/\.(jpg|jpeg)$/ ) {
+	            print FH $gd->jpeg() or die $!;
+	        }
+	        elsif ( $r_fn =~ m/\.(gif)$/ ) {
+	            print FH $gd->gif() or die $!;
+	        }
+	        elsif ( $r_fn =~ m/\.(png)$/ ) {
+	            print FH $gd->png() or die $!;
+	        }
+	        close(FH) or die $!;
+		}
+	} catch { 
+		warn $_; 
+		return $fn;
+	};
+	
+		
+	warn '$r_outfile: ' . $r_outfile; 
+	
+	return $r_outfile; 
+
 }
 
 #------------------------------------------------------------------------------
