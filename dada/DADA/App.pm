@@ -1403,10 +1403,11 @@ sub drag_and_drop_file_upload {
 
 	                #warn '$ir->width' . $ir->width;
 
+					my $width_limit = $ls->param('email_image_width_limit_pop_menu'); 
 	                my $w = $ir->width;
-	                if ( $w > 640 ) {
+	                if ( $w > $width_limit ) {
 	                    my $h   = $ir->height;
-	                    my $n_w = 640;
+	                    my $n_w = $width_limit;
 	                    my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
 
 	                    #warn '$n_h' . $n_h;
@@ -3040,12 +3041,11 @@ sub mass_mailing_options {
 		
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);
 		
-		
 		require HTML::Menu::Select;
 		my $email_image_width_limit_pop_menu = HTML::Menu::Select::popup_menu(
           {
-              name    => 'email_image_width_limit_pop_menu',
-              id      => 'email_image_width_limit_pop_menu',
+              name    => 'email_image_width_limit',
+              id      => 'email_image_width_limit',
               default => $ls->param('email_image_width_limit'),
               values => [qw(240 320 480 640 800 1024)],
           }
@@ -3105,6 +3105,8 @@ sub mass_mailing_options {
                     mass_mailing_block_css_to_inline_css        => 0,
 					email_embed_images_as_attachments           => 0,
 					resize_drag_and_drop_images                 => 0, 
+					email_resize_embedded_images                => 0,
+					email_image_width_limit                     => 0, 
 					mass_mailing_use_list_unsubscribe_headers   => 0,
 					mass_mailing_remove_javascript              => 0, 
                 	mass_mailing_default_layout                 => undef, 

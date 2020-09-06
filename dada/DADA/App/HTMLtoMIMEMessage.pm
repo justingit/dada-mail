@@ -211,8 +211,18 @@ sub new {
       make_safer( $DADA::Config::SUPPORT_FILES->{dir} . '/'
           . 'file_uploads' . '/'
           . 'images' );
-	
+	$self->{tmp_images_to_delete} = [];
+		  
 	$self->{image_upload_dir} = $image_upload_dir; 
+	
+	if(exists($param{list})){ 
+		require DADA::MailingList::Settings; 
+		$self->{ls} = DADA::MailingList::Settings->new(
+			{
+				-list => $param{list}
+			}
+		); 
+	}
 
     return $self;
 }
@@ -718,8 +728,9 @@ sub _build_html_part {
 		croak "Pass HTML String in, -html_str!";
 	}
 	
-	$args->{-html_str} = $self->tweak_image_size_attrs($args->{-html_str}); 
-	
+	if($self->{ls}->param('email_resize_embedded_images') == 1){
+		$args->{-html_str} = $self->tweak_image_size_attrs($args->{-html_str}); 
+	}
 	
 	my $entity = MIME::Entity->build(
         'Type'     => 'text/html',
@@ -740,6 +751,8 @@ sub tweak_image_size_attrs {
 	
 	my $new_html; 
 	
+	my $width_limit = $self->{ls}->param('email_image_width_limit'); 
+	
 	try { 
 		use HTML::TreeBuilder; 
 
@@ -756,7 +769,7 @@ sub tweak_image_size_attrs {
 		my @largeimages = $root->look_down(
 		    sub {
 		         $_[0]->tag() eq 'img'   
-				 and $_[0]->attr('width') > 640
+				 and $_[0]->attr('width') > $width_limit
 		    }
 		);
 
@@ -769,13 +782,13 @@ sub tweak_image_size_attrs {
 			warn '$h: ' . $h;
 			
 			# I don't know why this would hit, 
-			# as we're already filtering based on width being > 640
+			# as we're already filtering based on width being > $width_limit
 			next 
 				unless length($w) > 0 && length($h) > 0; 
 			next 
 				unless $w > 0 && $h > 0; 	
 				
-	        my $n_w = 640;
+	        my $n_w = $width_limit;
 	        my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
 		    my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
 			
@@ -1062,26 +1075,50 @@ sub create_image_part {
 		}
     }
 	
-	warn 'here.';
+	my %entity_args = (); 
+	
+	if($self->{ls}->param('email_resize_embedded_images') == 1){
+		
+		# This all only happens if we're resizing, 
+		# it's a lot, it can be slow, so let's not do it, if we don't have to do it. 
+		#  if not, we can just pass the $buff1 to the entity via Data	
+	    # These tmp images probably should be deleted
+		# But we would need to do this after the entity is really truly all set, 
+		# so... on... DESTROY? 
+		
+		
+		$self->create_dir($self->{image_upload_dir});
+		my $filename = $self->filename_from_url($ur);
+		my $n_fp     = $self->new_image_file_path($filename); 
+		$self->simple_printout_file($n_fp, \$buff1);
+		my $rfp = $self->resize_image($n_fp); 
 
+		push(
+			@{$self->{tmp_images_to_delete}}, 
+			$n_fp
+		); 
+		push(
+			@{$self->{tmp_images_to_delete}}, 
+			$rfp
+		); 
+		%entity_args = (
+			Path          => $rfp,
+			Encoding    => 'base64',
+			Disposition => "inline",
+			Type        => $type, 	
+		);
+	}
+	else { 
+		
+		%entity_args = (
+			Data        => $buff1,
+			Encoding    => 'base64',
+			Disposition => "inline",
+			Type        => $type, 	
+		);
+
+	}
 	
-	$self->create_dir($self->{image_upload_dir});
-	
-	my $filename = $self->filename_from_url($ur);
-	my $n_fp     = $self->new_image_file_path($filename); 
-	
-	$self->simple_printout_file($n_fp, \$buff1);
-	
-	warn 'here.';
-	my $rfp = $self->resize_image($n_fp); 
-	
-    # Create part
-	my %entity_args = (
-		Path          => $rfp,
-		Encoding    => 'base64',
-		Disposition => "inline",
-		Type        => $type, 	
-	);
     if ( $self->{_include} eq 'cid' ) {
         $entity_args{Id} = '<' . $self->cid($ur) . '>';
 	}
@@ -1191,6 +1228,8 @@ sub create_dir {
 	my $self = shift; 
 	my $dir  = shift; 
 	
+	warn '$dir: ' . $dir; 
+	
     if ( !-d $dir ) {
         if ( mkdir( $dir, $DADA::Config::DIR_CHMOD ) ) {
             if ( -d $dir ) {
@@ -1198,6 +1237,13 @@ sub create_dir {
             }
         }
     }
+	
+	if(-d $dir){ 
+		warn '$dir exists: ' . $dir; 
+	}
+	else { 
+		warn '$dir DOES NOT exist: ' . $dir; 
+	}
 	return 1; 	
 }
 
@@ -1224,6 +1270,8 @@ sub resize_image {
 	
 	warn '$r_outfile: ' . $r_outfile; 
 	
+	my $width_limit = $self->{ls}->param('email_image_width_limit'); 
+	
 	try {
 		
 		
@@ -1231,9 +1279,9 @@ sub resize_image {
 	    my $ir = Image::Resize->new($fp);
 
 	    my $w = $ir->width;
-	    if ( $w > 640 ) {
+	    if ( $w > $width_limit ) {
 	        my $h   = $ir->height;
-	        my $n_w = 640;
+	        my $n_w = $width_limit;
 	        my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
 
 	        my $gd = $ir->resize( $n_w, $n_h );
@@ -1373,6 +1421,16 @@ sub errstr {
     my ($self) = @_;
     return @{ $self->{_ERRORS} } if ( $self->{_ERRORS} );
     return ();
+}
+
+sub DESTROY { 
+	my $self = shift; 
+	
+	for(@{$self->{tmp_images_to_delete}}){ 
+		warn 'unlinking: ' . $_;
+		unlink($_);
+	}
+	
 }
 
 1;

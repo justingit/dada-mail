@@ -224,14 +224,14 @@ sub create_multipart_email {
 	
     require DADA::App::HTMLtoMIMEMessage;
     my $mailHTML = new DADA::App::HTMLtoMIMEMessage(
-        remove_jscript =>
-          scalar $self->ls->param('mass_mailing_remove_javascript'),
-        'IncludeType' => $url_options,
-        'TextCharset' => scalar $self->ls->param('charset_value'),
-        'HTMLCharset' => scalar $self->ls->param('charset_value'),
-        HTMLEncoding  => scalar $self->ls->param('html_encoding'),
-        TextEncoding  => scalar $self->ls->param('plaintext_encoding'),
-        headers => $args->{-headers},
+		list                  => $self->list,                
+        remove_jscript        => scalar $self->ls->param('mass_mailing_remove_javascript'),
+        'IncludeType'         => $url_options,
+        'TextCharset'         => scalar $self->ls->param('charset_value'),
+        'HTMLCharset'         => scalar $self->ls->param('charset_value'),
+        HTMLEncoding          => scalar $self->ls->param('html_encoding'),
+        TextEncoding          => scalar $self->ls->param('plaintext_encoding'),
+        headers               => $args->{-headers},
     );
 
     my ( $status, $errors, $MIME_Entity, $md5 );
