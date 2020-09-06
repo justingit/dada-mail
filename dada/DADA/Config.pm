@@ -1289,6 +1289,7 @@ $MIME_TOOLS_PARAMS //= {
 	email_embed_images_as_attachments           => 1, 
 	email_image_width_limit                     => 640,
 	resize_drag_and_drop_images                 => 1, 
+	email_resize_embedded_images                => 0,
 	mass_mailing_remove_javascript              => 1, 
 	mass_mailing_save_sent_drafts_as_stationery => 0, 
 	mass_mailing_default_layout                 => undef, 

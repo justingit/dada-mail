@@ -2677,6 +2677,8 @@ sub strip_file_attachments {
     return ( \$un, $r );
 }
 
+
+
 sub process_stripping_file_attachments {
 
     my $entity = shift;

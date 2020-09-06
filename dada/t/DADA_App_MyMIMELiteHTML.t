@@ -38,7 +38,7 @@ EOF
 ; 
 
 # This test is to make sure tags embedded in links still work. 
-my $mailHTML = new DADA::App::HTMLtoMIMEMessage();
+my $mailHTML = new DADA::App::HTMLtoMIMEMessage(list => $list);
 my $MIME_Entity = $mailHTML->parse($html_msg);
 my $msg = $MIME_Entity->as_string;
 

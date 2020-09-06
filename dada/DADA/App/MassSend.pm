@@ -425,7 +425,8 @@ sub construct_from_url {
 	require DADA::App::HTMLtoMIMEMessage; 
     my $mailHTML = new DADA::App::HTMLtoMIMEMessage(
 	#	%headers, # I'd rather not send the headers to this module, but I'm honestly confused on how headers are set! MYSTERY! 
-        remove_jscript                   => scalar $self->{ls_obj}->param('mass_mailing_remove_javascript'),
+		list                             => $self->{list},                      
+		remove_jscript                   => scalar $self->{ls_obj}->param('mass_mailing_remove_javascript'),
 	    'IncludeType'                    => $url_options,
    	    'TextCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
         'HTMLCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
@@ -2041,11 +2042,12 @@ sub list_invite {
 	    try { 
 			require DADA::App::HTMLtoMIMEMessage;
 		    $mailHTML = new DADA::App::HTMLtoMIMEMessage(
-		        'IncludeType'                    => $url_options,
-		        'TextCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
-		        'HTMLCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
-		        HTMLEncoding                     => scalar $self->{ls_obj}->param('html_encoding'),
-		        TextEncoding                     => scalar $self->{ls_obj}->param('plaintext_encoding'),
+				list          => $self->{list},                      
+		        'IncludeType' => $url_options,
+		        'TextCharset' => scalar $self->{ls_obj}->param('charset_value'),
+		        'HTMLCharset' => scalar $self->{ls_obj}->param('charset_value'),
+		        HTMLEncoding  => scalar $self->{ls_obj}->param('html_encoding'),
+		        TextEncoding  => scalar $self->{ls_obj}->param('plaintext_encoding'),
 		    );
 	        ($mlo_status, $mlo_errors, $MIME_Entity, $md5) 
 				= $mailHTML->parse(
