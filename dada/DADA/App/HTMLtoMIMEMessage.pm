@@ -754,7 +754,7 @@ sub tweak_image_size_attrs {
 	my $width_limit = $self->{ls}->param('email_image_width_limit'); 
 	
 	try { 
-		use HTML::TreeBuilder; 
+		require HTML::TreeBuilder; 
 
 		my $root = HTML::TreeBuilder->new(
 		    ignore_unknown      => 0,
@@ -797,6 +797,10 @@ sub tweak_image_size_attrs {
 			
 			$img->attr('width', $n_w);
 		    $img->attr('height', $n_h);
+			$img->attr('sizes',  undef);
+			$img->attr('srcset', undef);
+			
+			
 		}
 		
   		$new_html = $root->as_HTML;
