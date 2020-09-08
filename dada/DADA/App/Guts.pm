@@ -2461,7 +2461,7 @@ sub upgrade_tables {
 			) { 
 				my $query =  'ALTER TABLE '
 				. $DADA::Config::SQL_PARAMS{message_drafts_table}
-				. " MODIFY COLUMN last_modified_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,";
+				. " MODIFY COLUMN last_modified_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
 				my $sth = $dbh->do($query)
 					or croak $dbh->errstr;
 				undef $query;
