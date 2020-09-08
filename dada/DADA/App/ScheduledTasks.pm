@@ -211,7 +211,10 @@ sub lock_file {
 
 	if(-f $self->lockfile){ 
 		if(-M $self->lockfile > 1){ 
+			warn "PID: $$" . ' Semaphore file at, ' . $self->lockfile . ' more than a day old. Removing.';
+			#$self->remove_lockfile({-too_old => 1}); 
 			$self->remove_lockfile(); 
+			sleep(1);
 		}
 	}
 	
@@ -239,7 +242,12 @@ sub lock_file {
 }
 
 sub remove_lockfile { 
-	my $self = shift; 
+	my $self = shift;
+	#my ($args) = @_; 
+	#if(! exists($args->{-too_old})){ 
+	#	$args->{-too_old} = 0; 
+	#} 
+	
 	# warn "PID: $$ deleting file: " . $self->lockfile;
 	if(-f $self->lockfile){
 	    my $unlink_check = unlink($self->lockfile);
