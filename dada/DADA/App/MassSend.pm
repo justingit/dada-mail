@@ -1106,6 +1106,7 @@ sub redact_html {
     my $root; 
 	my $r; 
 	
+	
 	try {
         require HTML::Tree;
         require HTML::Element;
@@ -1124,16 +1125,43 @@ sub redact_html {
         my $crop        = undef;
 		my $continue    = 0; 
 		
-        if ( $args->{-remove_rss_content_selector_type} eq 'id' ) {
-			foreach my $e ($root->look_down( "id", $args->{-remove_rss_content_selector_label})) {
-				$e->delete();
-			}
-        }
-        elsif ( $args->{-remove_rss_content_selector_type} eq 'class' ) {
-			foreach my $e ($root->look_down("class", $args->{-remove_rss_content_selector_label})){
-               $e->delete();
+		my $labels = []; 
+		
+		use Data::Dumper; 
+		
+		warn q{$args->{-remove_rss_content_selector_label}} . $args->{-remove_rss_content_selector_label}; 
+		
+		if($args->{-remove_rss_content_selector_label} =~ m/\"/){ 
+			
+            require Text::CSV;
+            my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+            if ( $csv->parse($args->{-remove_rss_content_selector_label}) ) {
+              	 my @csv_fields = $csv->fields;
+				 warn '@csv_fields: ' . Dumper([@csv_fields]);
+				 for(@csv_fields){ 
+					 push(@$labels, $_); 
+				 }
             }
-        }
+		}
+		else { 
+			$labels->[0] = $args->{-remove_rss_content_selector_label}; 
+		}
+		
+		warn '$labels: ' . Dumper($labels); 
+		
+		for my $label(@$labels){
+	        if ( $args->{-remove_rss_content_selector_type} eq 'id' ) {
+				foreach my $e ($root->look_down( "id", $label)) {
+					$e->delete();
+				}
+	        }
+	        elsif ( $args->{-remove_rss_content_selector_type} eq 'class' ) {
+				foreach my $e ($root->look_down("class", $label)){
+	               $e->delete();
+	            }
+	        }
+		}
+		
 		$r = $root->as_HTML;
 		$root = $root->delete; 
 
