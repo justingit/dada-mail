@@ -776,7 +776,11 @@ sub draft_index {
             schedule_activated             => scalar $q->param('schedule_activated'),
             schedule_type                  => scalar $q->param('schedule_type'),
             schedule_single_ctime          => scalar $q->param('schedule_single_ctime'),
+
             schedule_recurring_days        => [$q->multi_param('schedule_recurring_days')],
+			schedule_recurring_weeks        => [$q->multi_param('schedule_recurring_weeks')],
+			
+			
             schedule_recurring_ctime_start => scalar $q->param('schedule_recurring_ctime_start'),
             schedule_recurring_ctime_end   => scalar $q->param('schedule_recurring_ctime_end'),
             schedule_recurring_hms         => scalar $q->param('schedule_recurring_hms'),
@@ -957,6 +961,7 @@ sub params_to_save {
         # schedule_datetime            => 1, # No longer used, schedule_single_ctime is used instead. 
         schedule_single_ctime          => 1,
         schedule_recurring_days        => 1,
+		schedule_recurring_weeks       => 1,
         schedule_recurring_ctime_start => 1,
         schedule_recurring_ctime_end   => 1,
         schedule_recurring_hms         => 1,

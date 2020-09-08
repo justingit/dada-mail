@@ -163,14 +163,34 @@ sub run_schedules {
                 5 => 'Friday',
                 6 => 'Saturday',
             };
-            my $days_str = undef;
-
+           
             # use Data::Dumper;
             # die Dumper($sched->{schedule_recurring_days});
-
-            for ( @{ $sched->{schedule_recurring_days} } ) {
-                $days_str .= $d_lt->{$_} . ', ';
-            }
+			
+			my $days_str = 'every day of the week';
+			if(scalar(@{$sched->{schedule_recurring_days}}) < 7){ 
+				my @day_vals = (); 
+	            for ( @{ $sched->{schedule_recurring_days} } ) {
+	               push(@day_vals, $d_lt->{$_});
+	            }
+				$days_str = join(', ', @day_vals);
+			}
+			
+            my $w_lt = {
+                1 => 'First',
+                2 => 'Second',
+                3 => 'Third',
+                4 => 'Fourth',
+                5 => 'Fifth',
+            };
+			my $week_str = 'every';
+			if(scalar(@{$sched->{schedule_recurring_weeks}}) < 5){ 
+				my @weeks_vals = (); 
+	            for ( @{ $sched->{schedule_recurring_weeks} } ) {
+	                push(@weeks_vals, $w_lt->{$_} ); 
+	            }
+				$week_str = join(', ', @weeks_vals);
+			}
 
             $rb .=
                 "\t* This is a *Recurring* mass mailing,\n"
@@ -178,6 +198,8 @@ sub run_schedules {
               . $sched->{schedule_recurring_displaydatetime_start} . " "
               . " and: "
               . $sched->{schedule_recurring_displaydatetime_end} . "\n"
+              . "\t\t* on: "
+			  . $week_str . " week of the month\n"
               . "\t\t* on: "
               . $days_str . "\n"
               . "\t\t* at: "
@@ -212,6 +234,7 @@ sub run_schedules {
               $self->recurring_schedule_times(
                 {
                     -recurring_time => $sched->{schedule_recurring_display_hms},
+					-weeks          => $sched->{schedule_recurring_weeks},
                     -days           => $sched->{schedule_recurring_days},
                     -start          => $sched->{schedule_recurring_ctime_start},
                     -end            => $sched->{schedule_recurring_ctime_end},
@@ -759,10 +782,11 @@ sub recurring_schedule_times {
     my $times = [];
     
     # require Data::Dumper; 
-    # $r .= "args:" . Data::Dumper::Dumper($args); 
+    # warn "args:" . Data::Dumper::Dumper($args); 
     
     my $recurring_time = $args->{-recurring_time};
     my $days           = $args->{-days};
+    my $weeks          = $args->{-weeks};
     my $start          = $args->{-start};
     my $end            = $args->{-end};
 
@@ -780,7 +804,8 @@ sub recurring_schedule_times {
         my $day_set = undef;
         my $dates   = [];
 
-        $day_set = DateTime::Event::Recurrence->weekly(
+        $day_set = DateTime::Event::Recurrence->monthly(
+			weeks   => $weeks,
             days    => $days,
             hours   => $hours,
             minutes => $minutes
