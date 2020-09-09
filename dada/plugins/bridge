@@ -4138,6 +4138,7 @@ sub send_accept_msg {
 		. "\n\tSubject: "      . $subject
 		. "\n\tMessage-ID: "   . $args->{-msg_id}
 		. "\n\tBy Moderator: " . $args->{-acting_email_address}
+		. "\n\tUser Agent:   " . $ENV{HTTP_USER_AGENT}
 	;
 	
 	
@@ -4209,6 +4210,7 @@ sub send_reject_msg {
 		. "\n\tSubject: "      . $subject
 		. "\n\tMessage-ID: "   . $args->{-msg_id}
 		. "\n\tBy Moderator: " . $args->{-acting_email_address}
+		. "\n\tUser Agent:   " . $ENV{HTTP_USER_AGENT}
 	;
 
 	require DADA::App::Messages;
