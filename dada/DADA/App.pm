@@ -5715,14 +5715,23 @@ sub unsubscription_requests {
                     -type  => 'unsub_request_list',
                 }
             );
-
+			
             require DADA::App::Messages;
             my $dap = DADA::App::Messages->new( { -list => $list } );
-  		    $dap->send_unsubscribed_message(
-                {
-                    -email  => $email,
-                }
-            );
+			
+			
+			if($ls->param('send_unsubscribed_by_list_owner_message') == 1){
+				
+				# warn 'sending send_unsubscribed_message'; 
+				$dap->send_unsubscribed_message(
+	                {
+	                    -email  => $email,
+	                }
+	            );
+			}
+			else { 
+				#warn 'SKIPPING sending send_unsubscribed_by_list_owner_message'; 
+			}
         }
 
         $count = int($count) + int($d_count);

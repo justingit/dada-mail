@@ -2092,6 +2092,8 @@ sub complete_unsubscription {
 
 	    require DADA::App::Messages;
 	    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+		warn 'send_owner_happenings for unsubscribed'
+		if $t; 
 	    $dap->send_owner_happenings(
             {
                 -email => $email,
@@ -2103,11 +2105,16 @@ sub complete_unsubscription {
 
             # I guess I don't have to send this, either!
             if ( $ls->param('private_list') == 1 ) {
+				
+				warn "private lists don't get sent the, send_unsubscribed_message"
+					if $t; 
                 # ... 
             }
             else {
   	  		    require DADA::App::Messages;
   	  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+				warn 'sending send_unsubscribed_message'
+					if $t;  
   	  		    $dap->send_unsubscribed_message(
                     {
                         -email  => $email,
@@ -2359,6 +2366,9 @@ sub pl_unsubscription_request {
 
 sub complete_pl_unsubscription_request {
 
+	warn 'in: complete_pl_unsubscription_request'
+		if $t; 
+		
     # pl == private list 
     #
     
@@ -2386,6 +2396,8 @@ sub complete_pl_unsubscription_request {
     my $q  = $args->{-cgi_obj};
 
     if ( !defined( $q->param('token') ) ) {
+		warn 'no token'
+			if $t; 
         return $self->error_token_undefined(
             {
                 -orig_flavor => 'unsub_request',
@@ -2399,6 +2411,8 @@ sub complete_pl_unsubscription_request {
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
     if ( !$ct->exists($token) ) {
+		warn 'token_problem'
+			if $t;
         return ({}, user_error(
             {
                 -error => 'token_problem',
@@ -2417,6 +2431,9 @@ sub complete_pl_unsubscription_request {
     if (   $data->{data}->{flavor} ne 'unsub_request_approve'
         && $data->{data}->{flavor} ne 'unsub_request_deny' )
     {
+		warn 'token_problem'
+			if $t;
+		
         return ({}, user_error(
             {
                 -error => 'token_problem',
@@ -2475,15 +2492,24 @@ sub complete_pl_unsubscription_request {
 
             my $count = 1;
 
-  		    require DADA::App::Messages;
-  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
-  		    $dap->send_unsubscribed_message(
-                {
-                    -email  => $data->{email},
-                }
-            );
-            
-            warn 'showing unsubscription_request_results.tmpl' if $t; 
+			if($ls->param('send_unsub_success_email') == 1){
+				warn 'sending send_unsub_success_email'
+					if $t; 
+	  		    require DADA::App::Messages;
+	  		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+	  		    $dap->send_unsubscribed_message(
+	                {
+	                    -email  => $data->{email},
+	                }
+	            );
+			}
+			else { 
+				warn 'SKIPPING sending send_unsub_success_email'
+					if $t; 
+			}
+			
+            warn 'showing unsubscription_request_results.tmpl' 
+				if $t; 
             require DADA::Template::Widgets;
             my $r = DADA::Template::Widgets::wrap_screen(
                 {
@@ -2517,6 +2543,8 @@ sub complete_pl_unsubscription_request {
             require DADA::App::Messages;
   		    require DADA::App::Messages;
   		    my $dap = DADA::App::Messages->new( { -list => $ls->param('list') } );
+			warn 'sending, send_unsubscription_request_denied_message'
+				if $t; 
   		    $dap->send_unsubscription_request_denied_message(
                 {
                     -email  => $data->{email},
