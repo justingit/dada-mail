@@ -35,6 +35,7 @@ sub new {
 
 
 sub _init {
+
     my $self = shift;
     my ($args) = @_;
 
@@ -805,10 +806,11 @@ sub recurring_schedule_times {
         my $dates   = [];
 
         $day_set = DateTime::Event::Recurrence->monthly(
-			weeks   => $weeks,
-            days    => $days,
-            hours   => $hours,
-            minutes => $minutes
+			week_start_day => '1su',
+			weeks          => $weeks,
+            days           => $days,
+            hours          => $hours,
+            minutes        => $minutes
         );
         my $it = $day_set->iterator(
             start  => $start_dt,
@@ -830,8 +832,29 @@ sub recurring_schedule_times {
         $status = 0; 
         $errors = $_; 
     };
-
     return ($status, $errors, $times);
+}
+
+
+sub recurring_schedule_times_json { 
+	
+    my $self = shift;
+    my ($args) = @_;
+    my ( $status, $errors, $recurring_scheds ) =
+      $self->recurring_schedule_times($args);
+	require JSON; 
+	my $json = JSON->new->allow_nonref;
+
+	my $r = []; 
+	require POSIX;
+	foreach(@$recurring_scheds){ 
+		my $to_convert = $_->{ctime};
+		my $displaytime = POSIX::strftime('%Y/%-m/%-d', localtime $to_convert);
+		push(@$r, {date => $displaytime, label => 'blah blah blah'});
+	}
+
+	return $json->encode( $r );
+	
 }
 
 sub T_datetime_to_ctime {

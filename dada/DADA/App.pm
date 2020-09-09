@@ -162,6 +162,8 @@ sub setup {
         'email_message_preview'          => \&email_message_preview,
         'send_email_button_widget'        => \&send_email_button_widget,
         'mass_mailing_schedules_preview'  => \&mass_mailing_schedules_preview,
+		'mass_mailing_schedules_preview_calendar' => \&mass_mailing_schedules_preview_calendar,
+		'mass_mailing_schedules_preview_calendar_json' => \&mass_mailing_schedules_preview_calendar_json, 
         'draft_message_values'            => \&draft_message_values,
         'ckeditor_template_tag_list'      => \&ckeditor_template_tag_list,
         'draft_saved_notification'        => \&draft_saved_notification,
@@ -1859,6 +1861,76 @@ sub mass_mailing_schedules_preview {
     );
     return $scrn;
 
+}
+
+sub mass_mailing_schedules_preview_calendar {
+
+    my $self = shift;
+    my $q    = $self->query();
+
+	my $draft_id = $q->param('draft_id');
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_email'
+      );
+    if ( !$checksout ) { return $error_msg; }
+	
+    my $list = $admin_list;
+	
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -screen => 'mass_mailing_schedules_preview_calendar.tmpl',
+            -expr   => 1,
+            -vars   => {
+                draft_id => $draft_id,
+            }
+        }
+    );
+    return $scrn;
+}
+
+sub mass_mailing_schedules_preview_calendar_json {
+	
+    my $self = shift;
+    my $q    = $self->query();
+
+	my $draft_id = $q->param('draft_id');
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_email'
+      );
+    if ( !$checksout ) { return $error_msg; }
+	
+    my $list = $admin_list;
+	
+
+	
+	require DADA::MailingList::MessageDrafts; 
+	my $dmlmd = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
+    my $q_draft = $dmlmd->fetch(
+        {
+            -id     => $draft_id,
+            -role   => 'schedule',
+        }
+    );
+	
+	
+	require DADA::MailingList::Schedules; 
+	my $dmls = DADA::MailingList::Schedules->new({-lists => $list});
+	my $json = $dmls->recurring_schedule_times_json({ 	
+	    -recurring_time => $q_draft->param('schedule_recurring_display_hms'),
+		-weeks          => [$q_draft->multi_param('schedule_recurring_weeks')],
+	    -days           => [$q_draft->multi_param('schedule_recurring_days')],
+	    -start          => $q_draft->param('schedule_recurring_ctime_start'),
+	    -end            => $q_draft->param('schedule_recurring_ctime_end'),
+	}); 
+	
+    my $headers = { -type => 'application/json', };
+	$self->header_props(%$headers);
+	return $json; 
+	
 }
 
 sub draft_message_values {

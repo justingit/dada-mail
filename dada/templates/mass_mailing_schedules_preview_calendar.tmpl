@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jQuery UI Datepicker - Default functionality</title>
+  
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <style>
+	  .highlight a{
+	    background-color: #29f274 !important;
+	    color: #ffffff !important;
+	  }
+	  </style> 
+	  
+  <script>
+	  jQuery(function($) {
+		  var dates = {}; 
+		var request = $.ajax({
+			url: $("#s_program_url").val(),
+			type: "POST",
+			data: { 
+				flavor: 'mass_mailing_schedules_calendar_preview_json',
+				draft_id: $("#draft_id").val()
+			}
+			cache: false,
+			dataType: "json"
+		});
+		request.done(function(data) {	
+			$.each(data, function(i, field){
+				dates[field.date] = field.label;
+			}); 
+			
+		    $('#datepicker').datepicker({ numberOfMonths: [3,4], 
+			showOtherMonths: true,
+            selectOtherMonths: true,
+				
+		      beforeShowDay: function(date) {
+		        var search = date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate();
+		        if (search in dates) {
+		          return [true, 'highlight', (dates[search] || '')];	        	
+				}
+		        return [false, '', ''];
+		      }
+		    });
+		}); 
+	  });
+  </script>
+</head>
+<body>
+<form>
+	<input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->">
+	<input type="hidden" name="draft_id"      id="draft_id"      value="<!-- tmpl_var draft_id -->">
+	
+</form>
+<div id="datepicker">
+</body>
+</html>
+

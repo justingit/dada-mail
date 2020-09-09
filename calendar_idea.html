@@ -18,10 +18,39 @@
 	  
   <script>
 	  jQuery(function($) {
-	    var dates = {
-	      '2020/9/11': 'some description',
-	      '2020/9/10': 'some other description'
+	    
+		/*
+		
+		var dates = {
+           '2020/10/02': 'blah blah blah',
+           '2020/10/06': 'blah blah blah',
+           '2020/10/07': 'blah blah blah',
+           '2020/10/09': 'blah blah blah',
+           '2020/10/10': 'blah blah blah',
+           '2020/10/11': 'blah blah blah',
+           '2020/10/12': 'blah blah blah',
+           '2020/10/17': 'blah blah blah',
+           '2020/10/18': 'blah blah blah',
+           '2020/10/19': 'blah blah blah',
+           '2020/10/20': 'blah blah blah',
+           '2020/10/21': 'blah blah blah',
+           '2020/10/27': 'blah blah blah',
+           '2020/10/28': 'blah blah blah',
+           '2020/10/29': 'blah blah blah',
+           '2020/10/30': 'blah blah blah',
+           '2020/10/31': 'blah blah blah'
 	    };
+		  
+		 */
+		  
+		var dates = []; 
+		$.getJSON( "http://dancing-indigo-child.local/dm/test.json", function( data ) {
+			$.each(data, function(i, field){
+				alert(field.date);
+				//alert(field.label) 
+			});	
+		});
+		
 
 	    $('#datepicker').datepicker({ numberOfMonths: [3,4], 
 	      beforeShowDay: function(date) {
