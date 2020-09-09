@@ -115,6 +115,12 @@ sub send_generic_email {
     my $self = shift;
     my ($args) = @_;
 	
+	my $r = undef; 
+	
+	#use Data::Dumper; 
+	#$r .=  'send_generic_email $args: ' . $args; 
+	
+	
     $self->fm->use_header_info(1);
     $self->fm->use_email_templates(0);
 	
@@ -170,7 +176,7 @@ sub send_generic_email {
 	        }
 	    );
 
-	    $email_str = safely_decode($email_str);
+	   $email_str = safely_decode($email_str);
 
 	   $entity = $self->fm->email_template(
 	        {
@@ -182,6 +188,9 @@ sub send_generic_email {
 	}
 
     my $msg = $entity->as_string;
+	
+	#$r .=  'send_generic_email $msg: ' . $msg; 
+	
     my ( $header_str, $body_str ) = split( "\n\n", $msg, 2 );
     my $header_str = safely_decode( $entity->head->as_string );
     my $body_str   = safely_decode( $entity->body_as_string );
@@ -192,6 +201,10 @@ sub send_generic_email {
 
     $self->mh->send( $self->mh->return_headers($header_str),
         Body => $body_str, );
+		
+	undef($entity);
+	
+	#return $r; 
 
 }
 
