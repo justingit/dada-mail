@@ -652,7 +652,7 @@ sub create_tmp_test_list {
     require DADA::App::MassSend;
     my $ms = DADA::App::MassSend->new( { -list => $self->{ls_obj}->param('list') } );
 	
-	if($local_q->param('test_recipient_type') eq 'from_text_list'){	
+	if($local_q->param('test_recipient_type') eq 'from_test_list'){	
         $lh->copy_all_subscribers(
             {
                 -from => 'test_list',

@@ -1380,7 +1380,7 @@ sub send_email {
 			require DADA::MailingList::Settings;
 			my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 			
-			if($test_recipient_type eq 'from_text_list'){
+			if($test_recipient_type eq 'from_test_list'){
 				
 	            $self->{lh_obj}->copy_all_subscribers(
 	                {
