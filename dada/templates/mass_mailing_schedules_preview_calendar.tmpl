@@ -6,7 +6,6 @@
   <title>jQuery UI Datepicker - Default functionality</title>
   
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <link rel="stylesheet" href="/resources/demos/style.css">
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <style>
@@ -23,9 +22,9 @@
 			url: $("#s_program_url").val(),
 			type: "POST",
 			data: { 
-				flavor: 'mass_mailing_schedules_calendar_preview_json',
+				flavor: 'mass_mailing_schedules_preview_calendar_json',
 				draft_id: $("#draft_id").val()
-			}
+			},
 			cache: false,
 			dataType: "json"
 		});

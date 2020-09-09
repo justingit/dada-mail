@@ -1894,11 +1894,11 @@ sub mass_mailing_schedules_preview_calendar_json {
     if ( !$checksout ) { return $error_msg; }
 	
     my $list = $admin_list;
-	
+	#warn '$list: ' .  $list; 
 
 	
 	require DADA::MailingList::MessageDrafts; 
-	my $dmlmd = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
+	my $dmlmd = DADA::MailingList::MessageDrafts->new( { -list => $list } );
     my $q_draft = $dmlmd->fetch(
         {
             -id     => $draft_id,
@@ -1906,9 +1906,8 @@ sub mass_mailing_schedules_preview_calendar_json {
         }
     );
 	
-	
 	require DADA::MailingList::Schedules; 
-	my $dmls = DADA::MailingList::Schedules->new({-lists => $list});
+	my $dmls = DADA::MailingList::Schedules->new({-list => $list});
 	my $json = $dmls->recurring_schedule_times_json({ 	
 	    -recurring_time => $q_draft->param('schedule_recurring_display_hms'),
 		-weeks          => [$q_draft->multi_param('schedule_recurring_weeks')],

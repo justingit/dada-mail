@@ -194,6 +194,23 @@ jQuery(document).ready(function($){
 				mrasmm.add(manually_run_all_scheduled_mass_mailings());
 				mrasmm.fire();
 		});
+		
+		$("body").on("click", ".preview_calendar", function(event) {
+			
+			event.preventDefault();
+			
+			// alert("preview_calendar");
+		
+			var mrasmm = $.Callbacks();
+				mrasmm.add(save_msg(false));
+				mrasmm.add(
+					function(){ 
+						window.open($("#s_program_url").val() + '?flavor=mass_mailing_schedules_preview_calendar&draft_id' + $("#draft_id").val()); 
+						return true;
+					});
+				mrasmm.fire();
+		});	
+			
 
 		$("body").on("click", ".remove_attachment", function(event) {
 			if(confirm("Remove Attachment?")) {
@@ -2063,6 +2080,8 @@ function setup_schedule_fields() {
 		    minDate: 0,
 			format:'Y-m-d',
 			timepicker:false,
+			 scrollMonth : false,
+			 scrollInput : false,
 			onChangeDateTime:function(dp,$input){
 				mass_mailing_schedules_preview();
 			}
@@ -2073,6 +2092,8 @@ function setup_schedule_fields() {
 			minDate: 0,
 			format:'Y-m-d',
 			timepicker:false,  
+			 scrollMonth : false,
+			 scrollInput : false,
 			onChangeDateTime:function(dp,$input){
 				mass_mailing_schedules_preview();
 			}
@@ -2225,8 +2246,6 @@ function save_msg(async) {
 			tinyMCE.triggerSave();
 		}
 	}
-	
-	
 
 		$('#draft_notice .alert').text('auto-saving...');
 
