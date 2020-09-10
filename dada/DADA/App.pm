@@ -374,18 +374,26 @@ sub run_pseudo_cron {
     my $ls = DADA::MailingList::Settings->new( { -list => $lists[0] } );
 
     my $scheduled_jobs_last_ran = $ls->param('scheduled_jobs_last_ran') || 0;
-    my $time = time;
-
-    if ( int($time) > ( int($scheduled_jobs_last_ran) + ( 7.5 * 60 ) )
-        || $scheduled_jobs_last_ran == 0 )
-    {
-        warn 'running scheduled jobs at teardown @ ' . scalar( localtime() );
+    my $time                    = time;
+	my $seven_and_a_half        = int($scheduled_jobs_last_ran) + (( 7.5 * 60 )); 
+	my $hour                    = int($scheduled_jobs_last_ran) + (( 60 * 60 )); 
+    if ( (int($time) > $seven_and_a_half) || $scheduled_jobs_last_ran == 0 ) {
+        # warn 'running scheduled jobs at teardown @ ' . scalar( localtime() );
+		
+		if(int($time) > $hour )) { 
+			warn 'scheduled jobs haven\'t run in over an hour (double-check cronjob is set!) - running now: ' . scalar( localtime() );
+		}
+		
         $self->schedules({-at_teardown => 1});
     }
     else {
         #...
+		# warn 'no.';
     }
 }
+
+
+
 
 sub yikes {
 
