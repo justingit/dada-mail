@@ -421,6 +421,7 @@ sub mod {
     # We'll use the list that's passed to us.
     $list = $q->param('list');
 
+	my $acting_email_address = $q->param('acting_email_address') || '(via list control panel)'; 
     if ($checksout) {
         $r .= admin_template_header(
             -Title      => "Moderation",
@@ -463,10 +464,19 @@ sub mod {
             $r .= "<li>Message has been sent!</li>";
             if ( $ls->param('send_moderation_accepted_msg') == 1 ) {
                 $r .= "<li>Sending acceptance message</li>";
-                $mod->send_accept_msg( { -msg_id => $msg_id, -parser => $parser } );
+                $mod->send_accept_msg(
+					 { 
+						 -msg_id              => $msg_id, 
+						 -parser              => $parser, 
+ 						-acting_email_address => $acting_email_address, 
+					  } 
+				);
             }
 
             $mod->remove_msg( { -msg_id => $msg_id } );
+			
+			warn "moderated message ($msg_id) acted upon (confirm) by, " . $acting_email_address; 
+			
 
         }
         elsif ( $q->param('process') eq 'deny' ) {
@@ -479,17 +489,25 @@ sub mod {
                     {
                         -msg_id => $msg_id,
                         -parser => $parser,
+						-acting_email_address => $acting_email_address, 
                     }
                 );
 
             }
             #gotta do this, after, since removing it will not make the send rejection message thing to work.
             $mod->remove_msg( { -msg_id => $msg_id } );
+			
+			warn "moderated message ($msg_id) acted upon (deny) by, " . $acting_email_address; 
+			
+			
         }
         elsif ( $q->param('process') eq 'delete' ) {
 			
             $mod->remove_msg( { -msg_id => $msg_id } );
             $r .= "<li>Message has been removed</li>";
+			
+			warn "moderated message ($msg_id) acted upon (delete) by, " . $acting_email_address; 
+			
        
 	    }
         elsif ( $q->param('process') eq 'resend' ) {
@@ -501,6 +519,9 @@ sub mod {
 			my $entity = $parser->parse_data(safely_encode($full_msg)); 
 	        my $from = $entity->head->get( 'From', 0 );
 	           $from =~ s/\n//g;
+			
+   			warn "moderated message ($msg_id) acted upon (resend) by, " . $acting_email_address; 
+			
 			
            $mod->moderation_msg(
                 {
@@ -514,6 +535,11 @@ sub mod {
         }
         else {
             $r .= "<li>Invalid action</li>";
+			
+   			warn "moderated message ($msg_id) acted upon (invalod_action) by, " . $acting_email_address; 
+			warn 'invalid action: ' . $q->param('process'); 
+			
+			
         }
 
     }
@@ -2677,6 +2703,8 @@ sub strip_file_attachments {
     return ( \$un, $r );
 }
 
+
+
 sub process_stripping_file_attachments {
 
     my $entity = shift;
@@ -3833,20 +3861,6 @@ sub moderation_msg {
     $subject =~ s/\n//g;
     $subject = $dfm->_decode_header($subject);
 
-    my $confirmation_link =
-        $DADA::Config::S_PROGRAM_URL
-      . '?flavor=plugins&plugin=bridge&prm=mod&list='
-      . DADA::App::Guts::uriescape( $self->{list} )
-      . '&process=confirm&msg_id='
-      . DADA::App::Guts::uriescape( $args->{-msg_id} );
-    my $deny_link =
-        $DADA::Config::S_PROGRAM_URL
-      . '?flavor=plugins&plugin=bridge&prm=mod&list='
-      . DADA::App::Guts::uriescape( $self->{list} )
-      . '&process=deny&msg_id='
-      . DADA::App::Guts::uriescape( $args->{-msg_id} );
-    
-
     #  create an array of recepients
     my @moderators;
     if ( $ls->param('moderate_discussion_lists_with') eq 'moderators' ) {
@@ -3883,25 +3897,60 @@ sub moderation_msg {
 	);
 	my $etp = $em->fetch('moderation_msg');
 	
-	my $msg_entity = MIME::Entity->build(
-    	Type    => "multipart/alternative",
-		Charset => $ls->param('charset_value'),
-	); 
-    $msg_entity->attach(
-        Type     => 'text/plain',
-        Encoding => $ls->param('plaintext_encoding'),
-        Data     => $etp->{plaintext},
-    );
-    $msg_entity->attach(
-        Type     => 'text/html',
-        Encoding => $ls->param('html_encoding'),
-        Data     => $etp->{html},
-    );
+
 	
-	my $r_entity;
 
 	for my $to_address (@moderators) {                      # recepient loop
+		
+		sleep(1); 
+		
+		my $msg_entity = MIME::Entity->build(
+	    	Type    => "multipart/alternative",
+			Charset => $ls->param('charset_value'),
+		); 
+	    $msg_entity->attach(
+	        Type     => 'text/plain',
+	        Encoding => $ls->param('plaintext_encoding'),
+	        Data     => $etp->{plaintext},
+	    );
+	    $msg_entity->attach(
+	        Type     => 'text/html',
+	        Encoding => $ls->param('html_encoding'),
+	        Data     => $etp->{html},
+	    );
+		
+		my $r_entity = undef;
+		
+        my $rand_string = generate_rand_string_md5();
+		
+		#$r .= '$rand_string: ' . $rand_string . "\n"; 
+		#$r .= '$to_address here is1: ' . $to_address . "\n"; 
+		
+	    my $confirmation_link =
+	        $DADA::Config::S_PROGRAM_URL
+	      . '?flavor=plugins&plugin=bridge&prm=mod&list='
+	      . DADA::App::Guts::uriescape( $self->{list} )
+	      . '&process=confirm&msg_id='
+	      . DADA::App::Guts::uriescape( $args->{-msg_id} )
+		  . '&acting_email_address='
+		  . uriescape($to_address)
+		  . '&rand_string=' 
+		  . uriescape($rand_string)
+		; 
 
+  		#$r .= '$to_address here is2: ' . $to_address . "\n"; 
+	    my $deny_link =
+	        $DADA::Config::S_PROGRAM_URL
+	      . '?flavor=plugins&plugin=bridge&prm=mod&list='
+	      . DADA::App::Guts::uriescape( $self->{list} )
+	      . '&process=deny&msg_id='
+	      . DADA::App::Guts::uriescape( $args->{-msg_id} )
+		  . '&acting_email_address='
+		  . uriescape($to_address)
+		  . '&rand_string=' 
+		  . uriescape($rand_string)
+		;  
+		  
 	    $r_entity = MIME::Entity->build(
 	        Type    => "multipart/mixed",
 	        Subject => $etp->{vars}->{subject},
@@ -3915,8 +3964,9 @@ sub moderation_msg {
 						),
 
 	    );
-	    $r .= "\t* Sent moderation request to $to_address\n";
-	
+		
+		#$r .= '$to_address here is3: ' . $to_address . "\n"; 
+		
 		$r_entity->add_part($msg_entity);
 	    $r_entity->attach(
 	        Type        => 'message/rfc822',
@@ -3924,9 +3974,15 @@ sub moderation_msg {
 	        Data        => DADA::App::Guts::safely_decode( DADA::App::Guts::safely_encode( $entity->as_string ) ),
 	    );
 
-        require DADA::App::Messages;
-		 my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
-         $dap->send_generic_email(
+  		#$r .= '$to_address here is4: ' . $to_address . "\n"; 
+		#$r .= '$confirmation_link: ' . $confirmation_link . "\n";  
+		#$r .= '$deny_link: ' . $deny_link . "\n";  	
+		
+	    require DADA::App::Messages;
+		my $dap = DADA::App::Messages->new( { -list => $self->{list} } );
+		
+		
+        $dap->send_generic_email(
             {
 				-entity      => $r_entity, 
                 -tmpl_params => {
@@ -3938,10 +3994,23 @@ sub moderation_msg {
                         message_subject              => $subject,
                         msg_id                       => $args->{-msg_id},
                         'subscriber.email'           => $args->{-from},
-                    }
+                    },
                 },
-            }
+            },
         );
+		
+	    $r .= "\t* Sent moderation request to $to_address\n";
+		
+		
+		undef($confirmation_link); 
+		undef($deny_link);
+		undef($to_address);
+		$r_entity->purge;
+		undef($r_entity);
+		undef($dap);
+		$msg_entity->purge; 
+		undef($msg_entity); 
+		
     }
 	
 	$entity->purge;
@@ -4062,6 +4131,17 @@ sub send_accept_msg {
 	
 	require DADA::App::Messages;
     my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
+	
+    warn "Bridge moderated message has been ACCEPTED:"
+		. "\n\tList: "         . $self->{list}
+		. "\n\tFrom: "         . $from
+		. "\n\tSubject: "      . $subject
+		. "\n\tMessage-ID: "   . $args->{-msg_id}
+		. "\n\tBy Moderator: " . $args->{-acting_email_address}
+		. "\n\tUser Agent:   " . $ENV{HTTP_USER_AGENT}
+	;
+	
+	
 	$dap->send_out_message(
 		{
 			-message => 'accept_message',
@@ -4110,6 +4190,8 @@ sub send_reject_msg {
         warn "no entity found! $_";
     };
 
+
+	
     require DADA::App::FormatMessages;
     my $dfm = DADA::App::FormatMessages->new( -List => $self->{list} );
     my $subject = $entity->head->get( 'Subject', 0 );
@@ -4122,9 +4204,15 @@ sub send_reject_msg {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 	
-	
-	
-	
+    warn "Bridge moderated message has been REJECTED:"
+		. "\n\tList: "         . $self->{list}
+		. "\n\tFrom: "         .  $from
+		. "\n\tSubject: "      . $subject
+		. "\n\tMessage-ID: "   . $args->{-msg_id}
+		. "\n\tBy Moderator: " . $args->{-acting_email_address}
+		. "\n\tUser Agent:   " . $ENV{HTTP_USER_AGENT}
+	;
+
 	require DADA::App::Messages;
     my $dap = DADA::App::Messages->new(
 		{
