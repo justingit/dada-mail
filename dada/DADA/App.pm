@@ -378,10 +378,12 @@ sub run_pseudo_cron {
 	my $seven_and_a_half        = int($scheduled_jobs_last_ran) + (( 7.5 * 60 )); 
 	my $hour                    = int($scheduled_jobs_last_ran) + (( 60 * 60 )); 
     if ( (int($time) > $seven_and_a_half) || $scheduled_jobs_last_ran == 0 ) {
-        # warn 'running scheduled jobs at teardown @ ' . scalar( localtime() );
+        
+		# This gets a little crazy in the logs: 
+		# warn 'running scheduled jobs at teardown @ ' . scalar( localtime() );
 		
 		if(int($time) > $hour )) { 
-			warn 'scheduled jobs haven\'t run in over an hour (double-check cronjob is set!) - running now: ' . scalar( localtime() );
+			warn 'scheduled jobs haven\'t run in over an hour (double-check that the cronjob is set!) - running now: ' . scalar( localtime() );
 		}
 		
         $self->schedules({-at_teardown => 1});
