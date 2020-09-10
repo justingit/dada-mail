@@ -382,7 +382,7 @@ sub run_pseudo_cron {
 		# This gets a little crazy in the logs: 
 		# warn 'running scheduled jobs at teardown @ ' . scalar( localtime() );
 		
-		if(int($time) > $hour )) { 
+		if(int($time) > $hour ) { 
 			warn 'scheduled jobs haven\'t run in over an hour (double-check that the cronjob is set!) - running now: ' . scalar( localtime() );
 		}
 		
