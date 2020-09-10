@@ -17,7 +17,6 @@ use DADA::App::MassSend;
 use DADA::App::Guts; 
 use Try::Tiny; 
 
-
 sub new {
 
     my $class = shift;
@@ -850,7 +849,12 @@ sub recurring_schedule_times_json {
 	foreach(@$recurring_scheds){ 
 		my $to_convert = $_->{ctime};
 		my $displaytime = POSIX::strftime('%Y/%-m/%-d', localtime $to_convert);
-		push(@$r, {date => $displaytime, label => 'blah blah blah'});
+		push(@$r, 
+			{
+				date  => $displaytime, 
+				label => 'runs at, ' . $args->{-recurring_time}
+			}
+		);
 	}
 
 	return $json->encode( $r );
