@@ -3,6 +3,30 @@
 
 =encoding utf-8
 
+=head1 11.11.3
+
+=head2 Focus
+
+This is mostly a bug-fix release for issues found in the v11.11.2 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3  Former subscriber always receives, "unsubscription successful" email notifications when unsubscriptions are approved
+
+L<https://github.com/justingit/dada-mail/issues/974>
+
+=head3 Selecting, "Send to Testers sublist (n address(es)) " for Drafts, etc does not ever work - tests only go to List Owner
+
+L<https://github.com/justingit/dada-mail/issues/973>
+
+=head3 Comma on the end of line 2462 of Guts.pm is a SQL syntax error
+
+L<https://github.com/justingit/dada-mail/issues/970>
+
+=head3 Saving Settings w/password for multiple lists at once breaks the password
+
+L<https://github.com/justingit/dada-mail/issues/968>
+
 =head1 11.11.2
 
 =head2 Focus
