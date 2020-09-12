@@ -178,8 +178,9 @@ sub subscription_form {
                 f                 => $flavor,
                 subscription_form => DADA::Template::Widgets::subscription_form(
                     {
-                        -multiple_lists => 1,
-                        -script_url     => $q->url(),
+                        -multiple_lists   => 1,
+                        -script_url       => $q->url(),
+						-add_recaptcha_js => 1, 
                     }
                 ),
                 error_invalid_email => scalar $q->param('invalid_email'),

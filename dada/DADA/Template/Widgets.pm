@@ -2787,6 +2787,22 @@ sub subscription_form {
   
     }
     else { 
+		
+		my $enable_captcha_on_initial_subscribe_form = 0; 
+		
+		# Eek, this is a hack, kinda: 
+		if($args->{-multiple_lists} == 1){ 
+			require DADA::MailingList::Settings; 
+			my @lists = available_lists(-Dont_Die => 1); 
+			foreach my $mlist(@lists){ 
+				my $mls = DADA::MailingList::Settings->new({-list => $mlist}); 
+				if($mls->param('enable_captcha_on_initial_subscribe_form') == 1){
+					 $enable_captcha_on_initial_subscribe_form = 1; 
+				}
+				last; 
+			}
+		}
+		
 		return screen({
             -screen => 'subscription_form_widget.tmpl', 
             -vars   => {
@@ -2804,6 +2820,8 @@ sub subscription_form {
 				subscription_form_id     => $args->{-subscription_form_id}, 
 				show_fieldset            => $args->{-show_fieldset}, 
 				add_recaptcha_js         => $args->{-add_recaptcha_js}, 
+				'list_settings.enable_captcha_on_initial_subscribe_form' 
+					=> $enable_captcha_on_initial_subscribe_form, 
 			}
     	});      
     }
