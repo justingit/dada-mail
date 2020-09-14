@@ -16,6 +16,7 @@ use DADA::MailingList::Settings;
 use DADA::App::MassSend; 
 use DADA::App::Guts; 
 use Try::Tiny; 
+use POSIX; 
 
 sub new {
 
@@ -73,19 +74,28 @@ sub run_schedules {
     if ( !exists( $args->{-verbose} ) ) {
         $args->{-verbose} = 0;
     }
+	
+	
     my $time = time;
-
-    my $r =
+    my $tz = strftime("%Z", localtime()); 
+	
+	my $r =
         "Running Schedules for, "
       . $self->{ls_obj}->param('list_name') . " ("
       . $self->{list} . ")\n";
     $r .= '-' x 72 . "\n";
     $r .=
-      "Current Server Time:              " . scalar( localtime($time) ) . "\n";
+      "Current Server Time:              " . scalar( localtime($time) ) . ' ' . $tz . "\n";
     $r .=
       "Scheduled Mass Mailings Last Ran: "
       . scalar(
-        localtime( $self->{ls_obj}->param('schedule_last_checked_time') ) );
+	  		localtime( 
+				$self->{ls_obj}->param('schedule_last_checked_time') 
+			) 
+		)
+		. ' ' 
+		. $tz; 
+		
     $r .= " ("
       . formatted_runtime(
         $time - $self->{ls_obj}->param('schedule_last_checked_time') )
@@ -203,7 +213,10 @@ sub run_schedules {
               . "\t\t* on: "
               . $days_str . "\n"
               . "\t\t* at: "
-              . $sched->{schedule_recurring_display_hms} . "\n";
+              . $sched->{schedule_recurring_display_hms} 
+			  . ' ' 
+			  . $tz
+			  . "\n";
 			
 			  # this should never happen, but it happens: 
 			if($sched->{schedule_recurring_ctime_start} > $sched->{schedule_recurring_ctime_end}){ 
@@ -226,7 +239,6 @@ sub run_schedules {
 					}
 				);
 				next SCHEDULES;
-
 			}
 		
 			
@@ -336,7 +348,7 @@ sub run_schedules {
             }
             else {
 				$rc .= "\t* Schedule runs at: "
-                  . scalar localtime($specific_time) . "\n";
+                  . scalar localtime($specific_time) . ' ' . $tz . "\n";
             }
 			
 			
@@ -845,7 +857,7 @@ sub recurring_schedule_times_json {
 	my $json = JSON->new->allow_nonref;
 
 	my $r = []; 
-	require POSIX;
+	
 	foreach(@$recurring_scheds){ 
 		my $to_convert = $_->{ctime};
 		my $displaytime = POSIX::strftime('%Y/%-m/%-d', localtime $to_convert);

@@ -9,7 +9,7 @@
 
 <ul> 
     <li>
-        Current Server Time: <strong><!-- tmpl_var date --></strong>
+        Current Server Time: <strong><!-- tmpl_var date --> <!-- tmpl_var date.timezone --></strong>
     </li>
     <!-- tmpl_if list_settings.schedule_last_checked_time -->
         <li>Scheduled Mass Mailings Last Checked: <strong>
@@ -94,7 +94,7 @@
                 <!-- /tmpl_if --> 
                 
                  at:
-                <strong><!-- tmpl_var schedule_recurring_display_hms --></strong>
+                <strong><!-- tmpl_var schedule_recurring_display_hms --> <!-- tmpl_var date.timezone --></strong>
 
                 </p>
 
