@@ -8,7 +8,7 @@ use CGI::Application::Plugin::RateLimit;
 
 use strict;
 
-use Encode qw(encode decode);
+
 
 BEGIN {
     if ( $] > 5.008 ) {
@@ -21,6 +21,9 @@ use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../../";
 use lib "$FindBin::Bin/../../../";
 use lib "$FindBin::Bin/../DADA/perllib";
+
+use Encode qw(encode decode);
+use POSIX; 
 
 BEGIN {
     my $b__dir = ( getpwuid($>) )[7] . '/perl';
@@ -16104,6 +16107,8 @@ sub schedules {
     my $q    = $self->query;
 
     my $t = time;
+    my $tz = strftime("%Z", localtime()); 
+
 
     my $list         = $q->param('list')         || '_all';
     my $schedule     = $q->param('schedule')     || '_all';
@@ -16111,7 +16116,7 @@ sub schedules {
     my $for_colorbox = $q->param('for_colorbox') || 0;
 
     my $r;
-    $r .= "Started: " . scalar localtime($t) . "\n";
+    $r .= "Started: " . scalar localtime($t) . ' ' . $tz ."\n";
 	
 	$r .= 'PID: ' . "$$\n";
 		
@@ -16293,7 +16298,7 @@ sub schedules {
 	
     my $end_t   = time;
     my $total_t = $end_t - $t;
-    $r .= "Finished: " . scalar localtime($end_t) . "\n";
+    $r .= "Finished: " . scalar localtime($end_t) . ' ' . $tz . "\n";
     $r .= "Total processing time: " . formatted_runtime($total_t) . "\n";
 
     if ( $DADA::Config::SCHEDULED_JOBS_OPTIONS->{'log'} == 1 ) {

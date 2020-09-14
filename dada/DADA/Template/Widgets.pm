@@ -2223,6 +2223,7 @@ sub date_params {
     $params{'date.year'}                 = $year += 1900;
     $params{'date.abbr_year'}            = sprintf( "%02d", $year % 100 );
 	$params{'date.24_time'}              = sprintf("%02d:%02d:%02d", $hour, $min, $sec);
+	$params{'date.timezone'}             = POSIX::strftime("%Z", localtime()); 
 	
 	return %params;
 	
