@@ -2,21 +2,21 @@
 
 <!-- tmpl_set name="title" value="Problems Found in Email Message" -->
 
-<h3>Problems With Mass Mailing:</h3> 
+<h1>Problems With Mass Mailing</h1> 
+
+<p>Your message has <em>not</em> been sent:</p>
 
 
 <div class="alert-box warning radius">
-	Your message has <em>not</em> been sent.
+	<!-- tmpl_var errors -->
 </div>
 
-
-<p>
- Additional information is below:
-</p>
-
-<pre> 
-<!-- tmpl_var errors escape="HTML" -->
-</pre>
-
+<!-- tmpl_if wrap -->
+	<p>
+		<a href="<!-- tmpl_var s_program_url -->?flavor=send_email&draft_id=<!-- tmpl_var draft_id -->&draft_role=<!-- tmpl_var draft_role -->" class="button">
+			&lt;&lt; Return to Editing Draft
+		</a>
+	</p>
+<!-- /tmpl_if -->
+	
 <!-- end report_mass_mailing_errors_screen.tmpl -->
-

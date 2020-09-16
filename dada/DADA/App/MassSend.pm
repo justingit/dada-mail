@@ -182,6 +182,20 @@ sub construct_and_send {
 		};
     };
 
+	
+	if($self->{ls_obj}->param('email_limit_message_size') == 1) {
+		my ($filesize_status, $filesize) = $self->message_size_check($con->{entity});	
+		if($filesize_status == 0){ 
+			return { 
+				status => 0, 
+				errors => 'Message size: ' . $filesize
+				. ' is larger than the limit set: ' 
+				. $self->{ls_obj}->param('email_message_size_limit')
+				. 'M',
+			};
+		}
+	}
+	
     my $final_header = safely_decode( $con->{entity}->head->as_string );
     my $final_body   = safely_decode( $con->{entity}->body_as_string );
 
@@ -1580,8 +1594,10 @@ sub send_email {
 		
         if ( $construct_r->{status} == 0 ) {
             return $self->report_mass_mail_errors({
-				-errors     => $construct_r->{errors}, 
-				-root_login => $root_login
+				-errors      => $construct_r->{errors}, 
+				-root_login  => $root_login, 
+                -draft_id    => $draft_id,
+                -draft_role  => $draft_role,
 			});
         }
 		
@@ -2584,6 +2600,50 @@ sub message_tag_check {
 	
 }
 
+sub message_size_check { 
+
+	my $self   = shift; 
+	my $entity = shift; 
+	
+	my $tmp_file = make_safer( 
+		$DADA::Config::TMP 
+		. '/'
+		. generate_rand_string_md5()
+		. '.tmp'
+	);
+	
+	#  $self->{ls_obj}; 
+	
+    open( OUTFILE, '>', $tmp_file ) or die( "can't write to " . $tmp_file . ": $!" );
+	$entity->print(\*OUTFILE);	
+	close(OUTFILE) or die $!;
+	
+	my $size = (stat $tmp_file)[7];
+	
+	
+	
+	require Number::Bytes::Human; 
+	my $human = Number::Bytes::Human->new(
+		round_style => 'round', 
+		precision   => 2, 
+		bs          => 1024,
+	);
+	my $human_size = $human->format($size);
+	
+	
+	unlink($tmp_file);
+	
+	if($size > (int($self->{ls_obj}->param('email_message_size_limit')) * 1_048_576)) {
+	    return (0, $human_size);
+	}
+	else { 
+		return (1, $human_size); 
+	}
+}
+
+
+
+
 sub valid_template_markup_check { 
     my $self   = shift;
 	my $str    = shift; 
@@ -2690,7 +2750,12 @@ sub report_mass_mail_errors {
 	                -List       => $self->{list},
 	            },
 	            -screen => 'report_mass_mailing_errors_screen.tmpl',
-	            -vars   => { errors => $errors }
+	            -vars   => {
+					 errors     => plaintext_to_html({-str => $errors}), 
+	                 draft_id   => $args->{-draft_id},
+	                 draft_role => $args->{-draft_role},
+					 wrap       => 1, 
+				 }
 	        }
 	    );
 	}
@@ -2698,7 +2763,11 @@ sub report_mass_mail_errors {
 	    $scrn = DADA::Template::Widgets::screen(
 	        {
 	            -screen => 'report_mass_mailing_errors_screen.tmpl',
-	            -vars   => { errors => $errors }
+	            -vars   => {
+						 errors     => $errors, 
+   	                	 draft_id   => $args->{-draft_id},
+   	            		 draft_role => $args->{-draft_role},
+				 }
 	        }
 	    );
 	}

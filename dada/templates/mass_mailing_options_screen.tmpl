@@ -235,7 +235,9 @@
 	
 	
 	<fieldset> 
-	<legend>Images and Attachments</legend>
+		<legend>
+			Images and Attachments
+		</legend>
 	
     <div class="row">
         <div class="small-12 columns">
@@ -293,7 +295,7 @@
         <div class="small-2 columns">
 		</div>
 		<div class="small-10 columns">
-        <label>Image Width Limit: <!-- tmpl_var email_image_width_limit_pop_menu -->
+        <label>Image Width Limit (pixels): <!-- tmpl_var email_image_width_limit_pop_menu -->
 	    </div> 
     </div>
 	
@@ -318,6 +320,41 @@
 
 </fieldset> 
 
+
+<fieldset> 
+	<legend>
+		Message Size
+	</legend>
+	
+    <div class="row">
+        <div class="small-1 columns">
+		</div>
+		
+        <div class="small-11 columns">
+			<label for="email_limit_message_size">  
+	            <input type="checkbox" 
+	                name="email_limit_message_size" 
+	                id="email_limit_message_size" 
+	                value="1" 
+	                <!-- tmpl_if list_settings.email_limit_message_size -->checked="checked"<!-- /tmpl_if --> 
+	             >
+                Limit Mass Mailing Message Size
+            </label>
+        </div>
+    </div>
+	
+    <div class="row">
+        <div class="small-2 columns">
+		</div>
+		<div class="small-10 columns">
+       	 	<label>Message Size Limit (megabytes): <!-- tmpl_var email_message_size_limit_popup_menu -->
+	    </div> 
+
+    </div>
+	
+	
+
+</fieldset>
 
 
 <fieldset> 
