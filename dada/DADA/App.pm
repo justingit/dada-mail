@@ -3125,6 +3125,15 @@ sub mass_mailing_options {
           }
         );
 		
+		my $email_message_size_limit_popup_menu = HTML::Menu::Select::popup_menu(
+        {
+            name    => 'email_message_size_limit',
+            id      => 'email_message_size_limit',
+            default => $ls->param('email_message_size_limit'),
+            values => [qw(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 25 30 35 40 50)],
+        }
+      );
+		
 		
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -3156,6 +3165,9 @@ sub mass_mailing_options {
                     
 					email_image_width_limit_pop_menu => 
 						$email_image_width_limit_pop_menu, 
+						
+					email_message_size_limit_popup_menu => 
+						$email_message_size_limit_popup_menu,
 					
 					%wysiwyg_vars,
 					
@@ -3180,7 +3192,11 @@ sub mass_mailing_options {
 					email_embed_images_as_attachments           => 0,
 					resize_drag_and_drop_images                 => 0, 
 					email_resize_embedded_images                => 0,
-					email_image_width_limit                     => 0, 
+					email_image_width_limit                     => 0,
+					
+					email_limit_message_size                    => 0, 
+					email_message_size_limit                    => 0, 
+					
 					mass_mailing_use_list_unsubscribe_headers   => 0,
 					mass_mailing_remove_javascript              => 0, 
                 	mass_mailing_default_layout                 => undef, 
