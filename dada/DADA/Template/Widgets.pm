@@ -13,7 +13,7 @@ use DADA::Config qw(!:DEFAULT);
 use constant HAS_HTML_TEMPLATE_PRO => eval { require HTML::Template::Pro; 1; }; 
 
 my $TMP_TIME = undef; 
-
+use POSIX; 
 
 BEGIN {
    if($] > 5.008){
@@ -2223,7 +2223,7 @@ sub date_params {
     $params{'date.year'}                 = $year += 1900;
     $params{'date.abbr_year'}            = sprintf( "%02d", $year % 100 );
 	$params{'date.24_time'}              = sprintf("%02d:%02d:%02d", $hour, $min, $sec);
-	$params{'date.timezone'}             = POSIX::strftime("%Z", localtime()); 
+	$params{'date.timezone'}             = strftime("%Z", localtime()); 
 	
 	return %params;
 	
