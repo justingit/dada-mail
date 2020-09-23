@@ -205,7 +205,7 @@ jQuery(document).ready(function($){
 				mrasmm.add(save_msg(false));
 				mrasmm.add(
 					function(){ 
-						window.open($("#s_program_url").val() + '?flavor=mass_mailing_schedules_preview_calendar&draft_id' + $("#draft_id").val()); 
+						window.open($("#s_program_url").val() + '?flavor=mass_mailing_schedules_preview_calendar&draft_id=' + $("#draft_id").val()); 
 						return true;
 					});
 				mrasmm.fire();
