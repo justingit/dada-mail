@@ -217,6 +217,7 @@ sub run_schedules {
 			  . ' ' 
 			  . $tz
 			  . "\n";
+
 			
 			  # this should never happen, but it happens: 
 			if($sched->{schedule_recurring_ctime_start} > $sched->{schedule_recurring_ctime_end}){ 
@@ -241,7 +242,7 @@ sub run_schedules {
 				next SCHEDULES;
 			}
 		
-			
+
             my ( $status, $errors, $recurring_scheds ) =
               $self->recurring_schedule_times(
                 {
