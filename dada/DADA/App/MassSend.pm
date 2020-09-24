@@ -186,12 +186,24 @@ sub construct_and_send {
 	if($self->{ls_obj}->param('email_limit_message_size') == 1) {
 		my ($filesize_status, $filesize) = $self->message_size_check($con->{entity});	
 		if($filesize_status == 0){ 
+			
+			my $diff = $filesize - (int($self->{ls_obj}->param('email_message_size_limit')) * 1_048_576); 		
+			
+			# my $tmp_string = q{};
+			# open my ($str_fh), '>', \$tmp_string;			
+			# $con->{entity}->dump_skeleton($str_fh, 2);	
+			# close($str_fh);
+			
 			return { 
 				status => 0, 
-				errors => 'Message size: ' . $filesize
-				. ' is larger than the limit set: ' 
+				errors => 'Message size: ' . human_readable_filesize($filesize)
+				. ', is larger than the limit set of ' 
 				. $self->{ls_obj}->param('email_message_size_limit')
-				. 'M',
+				. 'M'
+				. ' by: '
+				. human_readable_filesize($diff)
+				# . "\n"
+				# . $tmp_string
 			};
 		}
 	}
@@ -2620,24 +2632,13 @@ sub message_size_check {
 	
 	my $size = (stat $tmp_file)[7];
 	
-	
-	
-	require Number::Bytes::Human; 
-	my $human = Number::Bytes::Human->new(
-		round_style => 'round', 
-		precision   => 2, 
-		bs          => 1024,
-	);
-	my $human_size = $human->format($size);
-	
-	
 	unlink($tmp_file);
 	
 	if($size > (int($self->{ls_obj}->param('email_message_size_limit')) * 1_048_576)) {
-	    return (0, $human_size);
+	    return (0, $size);
 	}
 	else { 
-		return (1, $human_size); 
+		return (1, $size); 
 	}
 }
 

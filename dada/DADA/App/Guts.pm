@@ -114,6 +114,8 @@ require Exporter;
   anonymize_ip
   
   Email_Address_parse
+  
+  human_readable_filesize
  
   
   
@@ -3726,15 +3728,23 @@ sub Email_Address_parse {
 }
 
 
-
-
-
-
-
-
-
-
+sub human_readable_filesize { 
+	my $fs = shift; 
 	
+	require Number::Bytes::Human; 
+	my $human = Number::Bytes::Human->new(
+		round_style => 'round', 
+		precision   => 2, 
+		bs          => 1024,
+	);
+	my $human_size = $human->format($fs);
+	
+	return $human_size;
+}
+
+
+
+
 =pod
 
 =head1 COPYRIGHT

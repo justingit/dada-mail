@@ -1349,12 +1349,11 @@ sub soft_max_msg_test {
 			my $msg_ref = $args->{-msg_ref};
 			try { 
 				
-				require Number::Bytes::Human;
 				
 				$e_msg = "\t* Warning! Message size ( "
-				          . Number::Bytes::Human::format_bytes($size) 
+				          . human_readable_filesize($size) 
 				          . " ) is larger than the soft maximum size allowed ( "
-				          . Number::Bytes::Human::format_bytes($ls->param('msg_soft_size_limit'))   . " )\n";
+				          . human_readable_filesize($ls->param('msg_soft_size_limit'))   . " )\n";
 				
 	  			$e_msg .= "\t\tMailing List: " . $ls->param('list_name') .            "\n";
 				
@@ -2435,9 +2434,7 @@ sub send_msg_too_big {
         }
 
         my $from_address = ( Email_Address_parse( $entity->head->get( 'From', 0 ) ) )[0]->address;
-
-		require Number::Bytes::Human;
-		my $size_of_original_message = Number::Bytes::Human::format_bytes($size);
+		my $size_of_original_message = human_readable_filesize($size);
 		
 		
         require DADA::App::FormatMessages;

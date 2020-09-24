@@ -1289,8 +1289,8 @@ sub msg_basic_event_count {
 			)->[0];
 	}
 	if(defined($basic_events->{msg_size})){ 
-		require Number::Bytes::Human;
-		$basic_events->{msg_size_formatted} = Number::Bytes::Human::format_bytes($basic_events->{msg_size});
+		
+		$basic_events->{msg_size_formatted} = human_readable_filesize($basic_events->{msg_size});
 	}
 	if(defined($basic_events->{start_time}) && defined($basic_events->{finish_time})){
 		$basic_events->{sending_time} = int($basic_events->{finish_time}) - int($basic_events->{start_time});	

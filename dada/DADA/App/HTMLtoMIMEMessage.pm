@@ -1153,12 +1153,15 @@ sub filename_from_url {
 	my $self = shift; 
 	my $url  = shift; 
 	
-	warn 'in filename_from_url';
-	warn '$url: ' . $url; 
+	warn 'in filename_from_url'
+		if $t; 
+	warn '$url: ' . $url
+		if $t; 		
 	
 	my ($filename) = $url =~ /\/([^\/]*?)(?:\?|$)/;
 	
-	warn '$filename: ' . $filename; 
+	warn '$filename: ' . $filename
+		if $t; 
 	
 	return $filename; 
 	
@@ -1166,23 +1169,24 @@ sub filename_from_url {
 
 sub simple_printout_file { 
 	
-	warn 'in simple_printout_file';
+	warn 'in simple_printout_file'
+		if $t; 
 
 	my $self = shift; 
 	my $fp   = shift; 
 	my $ref  = shift; 
-
-	#warn '$fp: ' . $fp; 
 	
     open( OUTFILE, '>', $fp ) or die( "can't write to " . $fp . ": $!" );
 	print OUTFILE $$ref or die $!;
 	close(OUTFILE) or die $!;
     chmod( $DADA::Config::FILE_CHMOD, $fp );
+	
 }
 
 sub new_image_file_path {
 	
-	warn 'in new_image_file_path';
+	warn 'in new_image_file_path'
+		if $t; 
 	
 	my $self = shift; 
 	my $fn   = shift; 
@@ -1220,19 +1224,22 @@ sub new_image_file_path {
 			last;
 		}
 	}
-	warn '$n_fp: ' . $n_fp; 
+	warn '$n_fp: ' . $n_fp
+		if $t; 
 	
 	return $n_fp; 
 }
 
 sub create_dir { 
 	
-	warn 'in create_dir';
+	warn 'in create_dir'
+		if $t; 
 	
 	my $self = shift; 
 	my $dir  = shift; 
 	
-	warn '$dir: ' . $dir; 
+	warn '$dir: ' . $dir
+		if $t;  
 	
     if ( !-d $dir ) {
         if ( mkdir( $dir, $DADA::Config::DIR_CHMOD ) ) {
@@ -1243,76 +1250,89 @@ sub create_dir {
     }
 	
 	if(-d $dir){ 
-		warn '$dir exists: ' . $dir; 
+		warn '$dir exists: ' . $dir
+			if $t; 
 	}
 	else { 
-		warn '$dir DOES NOT exist: ' . $dir; 
+		warn '$dir DOES NOT exist: ' . $dir
+			if $t;  
 	}
 	return 1; 	
 }
 
 sub resize_image { 
 	
-	warn 'in resize_image';
+	warn 'in resize_image'
+		if $t; 
 
 	my $self = shift; 
 	my $fp   = shift; 
 	
-	warn '$fp: ' . $fp; 
+	warn '$fp: ' . $fp
+		 if $t; 
 	
     $self->create_dir($self->{image_upload_dir}); 
 	
 	my $fn = $self->filename_from_path($fp);
 	
-	warn '$fn: ' . $fn; 
+	warn '$fn: ' . $fn
+		if $t; 
 	
-    my $r_fn = 'resized-' . $fn;
+    my $r_fn = 'resized-' . $fn
+		if $t; 
 		
-	warn '$r_fn: ' . $r_fn; 
+	warn '$r_fn: ' . $r_fn
+		if $t; 
 	
     my $r_outfile = make_safer( $self->{image_upload_dir} . '/' . $r_fn );
 	
-	warn '$r_outfile: ' . $r_outfile; 
+	warn '$r_outfile: ' . $r_outfile
+		 if $t; 
 	
 	my $width_limit = $self->{ls}->param('email_image_width_limit'); 
 	
-	try {
-		
-		
-	    require Image::Resize;
-	    my $ir = Image::Resize->new($fp);
-
-	    my $w = $ir->width;
-	    if ( $w > $width_limit ) {
-	        my $h   = $ir->height;
-	        my $n_w = $width_limit;
-	        my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
-
-	        my $gd = $ir->resize( $n_w, $n_h );
-    
-	        open FH, '>', $r_outfile or die $!;
-
-	        if ( $r_fn =~ m/\.(jpg|jpeg)$/ ) {
-	            print FH $gd->jpeg() or die $!;
-	        }
-	        elsif ( $r_fn =~ m/\.(gif)$/ ) {
-	            print FH $gd->gif() or die $!;
-	        }
-	        elsif ( $r_fn =~ m/\.(png)$/ ) {
-	            print FH $gd->png() or die $!;
-	        }
-	        close(FH) or die $!;
-		}
-	} catch { 
-		warn $_; 
-		return $fn;
-	};
 	
-		
-	warn '$r_outfile: ' . $r_outfile; 
+	if ( can_use_Image_Resize() != 1 ) {
+		return $fn; 
+	}
+	else {
 	
-	return $r_outfile; 
+		try {	
+		    require Image::Resize;
+		    my $ir = Image::Resize->new($fp);
 
+		    my $w = $ir->width;
+		    if ( $w > $width_limit ) {
+		        my $h   = $ir->height;
+		        my $n_w = $width_limit;
+		        my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
+
+		        my $gd = $ir->resize( $n_w, $n_h );
+
+		        open FH, '>', $r_outfile or die $!;
+
+		        if ( $r_fn =~ m/\.(jpg|jpeg)$/ ) {
+		            print FH $gd->jpeg() or die $!;
+		        }
+		        elsif ( $r_fn =~ m/\.(gif)$/ ) {
+		            print FH $gd->gif() or die $!;
+		        }
+		        elsif ( $r_fn =~ m/\.(png)$/ ) {
+		            print FH $gd->png() or die $!;
+		        }
+		        close(FH) or die $!;
+			}
+
+		} catch { 
+			warn $_; 
+			return $fn;
+		};
+		
+		warn '$r_outfile: ' . $r_outfile
+			if $t; 
+	
+		return $r_outfile; 
+	}
 }
 
 #------------------------------------------------------------------------------
@@ -1382,25 +1402,6 @@ sub link_form {
     return $gabarit;
 }
 
-#------------------------------------------------------------------------------
-# fill_template
-#------------------------------------------------------------------------------
-#sub fill_template {
-#    my ( $self, $masque, $vars ) = @_;
-#    return unless $masque;
-#    my @buf = split( /\n/, $masque );
-#    my $i = 0;
-#    while ( my ( $n, $v ) = each(%$vars) ) {
-#        if ($v) {
-#            map { s/<\?\s\$$n\s\?>/$v/gm } @buf;
-#        }
-#        else {
-#            map { s/<\?\s\$$n\s\?>//gm } @buf;
-#        }
-#        $i++;
-#    }
-#    return join( "\n", @buf );
-#}
 
 #------------------------------------------------------------------------------
 # set_err

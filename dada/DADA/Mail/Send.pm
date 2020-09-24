@@ -1380,9 +1380,7 @@ sub mass_send {
     }
     $mailout->log( 'Mass Mailing Starting: ' . $mass_mail_starting_log );
     
-	
-	require Number::Bytes::Human;
-	my $msg_size = Number::Bytes::Human::format_bytes($status->{msg_size});
+	my $msg_size = human_readable_filesize($status->{msg_size});
 	$mailout->log( 'Message Size: ' . $msg_size); 
 
 
