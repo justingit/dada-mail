@@ -18,7 +18,7 @@ use Carp qw(croak carp);
 
 use vars qw($AUTOLOAD);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
 
 =pod
 
@@ -80,6 +80,7 @@ my %allowed = (
     no_list             => 0,
 
     override_validation_type => undef,
+	
 );
 
 # list_type: # list, invite_list, just_subscribed, just_unsubscribed...
@@ -178,6 +179,9 @@ sub _init {
     }
 
     $self->use_email_templates(1);
+	
+	$self->{tmp_files_to_delete} = []; 
+	
 
 }
 
@@ -268,6 +272,12 @@ sub format_headers_and_body {
         die "you must pass either a -msg or an -entity";
     }
 	
+	
+	if ( ! exists( $args->{-bridge} ) ) {
+		$args->{-bridge} = 0 ;
+	}
+		 
+		 
 	# This is a bugfix to bad MIME creators, 
 	# to stop horrible things from happening: 
 	# "type" should not be an attribute in "Content-Type"
@@ -276,9 +286,6 @@ sub format_headers_and_body {
 			$entity->head->mime_attr("Content-Type.type" => undef);
 		}
 	}
-	
-	
-	
 
     if ( !exists( $args->{-format_body} ) ) {
         $args->{-format_body} = 1;
@@ -327,6 +334,20 @@ sub format_headers_and_body {
       if $entity->head->get( 'X-Mailer', 0 );
 
     # or how about, count?
+
+
+	#if($args->{-bridge} == 1){
+		warn 'special bridge stuff' if $t; 
+		if($self->{ls}->param('email_resize_embedded_images') == 1){
+			warn 'resizing images' if $t; 
+			$entity = $self->resize_images($entity); 
+		}
+		else { 
+			warn 'NOT resizing images' if $t; 
+		}
+		#}
+
+
 
     if ( exists( $args->{-entity} ) ) {
         return $entity;
@@ -3338,16 +3359,128 @@ sub body_content_only {
     };
 		
 	return $html; 
+}
+
+
+sub resize_images { 
+	my $self = shift; 
 	
+	warn 'in replace_images' if $t;
+	
+	my $entity = shift; 
+	
+	if($entity->head->mime_type eq 'multipart/alternative'){ 
+	
+		warn "multipart/alt" if $t;
+		
+		my @parts = $entity->parts; 
+		my @new_parts = (); 
+	
+		for my $s_e(0 .. $#parts){
+
+			my $new_entity = $parts[$s_e];
+
+			if($new_entity->head->mime_type eq 'multipart/related'){ 
+				
+				warn 'multipart/related' if $t; 
+				
+				$new_entity = $self->resize_images_loop($new_entity); 
+			}
+			push(@new_parts, $new_entity);
+		}
+		$entity->parts(\@new_parts); 
+	}
+	return $entity; 
+} 
+
+sub resize_images_loop { 
+	my $self = shift; 
+	my $entity = shift; 
+	
+	my @parts  = $entity->parts; 
+    
+    if(@parts){
+        my $i; 
+        foreach $i (0 .. $#parts) {
+            $parts[$i] = $self->replace_images($parts[$i]);    
+        }
+        
+		$entity->sync_headers('Length'      =>  'COMPUTE',
+                              'Nonstandard' =>  'ERASE');
+		$entity->parts( \@parts );
+    }
+	else { 
+		
+		# This will need to be expanded to things like jpg, png, etc. 
+        if($entity->head->mime_type eq 'image/gif'){ 
+			my $new_entity = $self->resized_image_entity($entity); 
+			$entity = $new_entity;
+        }
+        return $entity; 
+    }
+    return $entity; 
+}
+
+sub resized_image_entity { 
+	
+	my $self   = shift; 
+	my $entity = shift; 
+	
+	my $type = $entity->mime_type;
+ 	my $og_fn = $entity->head->mime_attr("content-disposition.filename"); 
+	my $image_upload_dir = make_safer( $DADA::Config::SUPPORT_FILES->{dir} . '/'  . 'file_uploads' . '/' . 'images' );
+	 
+	app_create_dir($image_upload_dir);
+	 
+
+	my $og_saved_fn  = new_image_file_path($og_fn, $image_upload_dir); 	
+	my $new_saved_fn = new_image_file_path('new-' . $og_fn, $image_upload_dir); 	
+	
+	if (defined $entity->bodyhandle) {
+	    open(my $OUTFILE, ">", $og_saved_fn) or die $!;
+	    binmode($OUTFILE);
+		print $OUTFILE $entity->bodyhandle->as_string;
+	    close($OUTFILE);
+	}
+
+	resize_image(
+		{ 
+			-width          => $self->{ls}->param('email_image_width_limit'), 
+			-file_path      => $og_saved_fn, 
+			-save_file_path => $new_saved_fn, 
+		}	
+	);
+	
+    my $n_entity = new MIME::Entity->build(
+ 
+		Path          => $new_saved_fn, 
+		Encoding      => 'base64',
+		Disposition   => "inline",
+		Type          => $type, 	
+		Filename      => $og_fn,  
+    );
+
+	push(@{$self->{tmp_files_to_delete}}, $og_saved_fn);
+	push(@{$self->{tmp_files_to_delete}}, $new_saved_fn);
+	
+	return $n_entity; 
 	
 }
+
+
 
 sub DESTROY {
 
     #my $self = shift;
     #$self->{parser}->filer->purge
     #	if $self->{parser};
-}
+	
+	my $self = shift; 
+	
+	for(@{$self->{tmp_files_to_delete}}){ 
+		warn 'would delete: ' . $_; 
+	}
+}	
 
 1;
 

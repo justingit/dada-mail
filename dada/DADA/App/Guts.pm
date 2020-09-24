@@ -116,7 +116,10 @@ require Exporter;
   Email_Address_parse
   
   human_readable_filesize
- 
+
+	app_create_dir
+	filename_from_url
+	simple_printout_file
   
   
 );
@@ -3741,6 +3744,121 @@ sub human_readable_filesize {
 	
 	return $human_size;
 }
+
+sub create_dir { 
+	
+	my $dir = shift; 
+	
+	warn 'in create_dir'
+		if $t; 
+	
+	warn '$dir: ' . $dir
+		if $t;  
+	
+    if ( !-d $dir ) {
+        if ( mkdir( $dir, $DADA::Config::DIR_CHMOD ) ) {
+            if ( -d $dir ) {
+                chmod( $DADA::Config::DIR_CHMOD, $dir );
+            }
+        }
+    }
+	
+	if(-d $dir){ 
+		warn '$dir exists: ' . $dir
+			if $t; 
+	}
+	else { 
+		warn '$dir DOES NOT exist: ' . $dir
+			if $t;  
+	}
+	return 1; 	
+}
+
+
+
+
+sub filename_from_url {
+	my $url  = shift; 
+	
+	warn 'in filename_from_url'
+		if $t; 
+	warn '$url: ' . $url
+		if $t; 		
+	
+	my ($filename) = $url =~ /\/([^\/]*?)(?:\?|$)/;
+	
+	warn '$filename: ' . $filename
+		if $t; 
+	
+	return $filename; 
+	
+}
+
+
+
+sub simple_printout_file { 
+	
+	warn 'in simple_printout_file'
+		if $t; 
+
+	my $fp   = shift; 
+	my $ref  = shift; 
+	
+    open( OUTFILE, '>', $fp ) or die( "can't write to " . $fp . ": $!" );
+	print OUTFILE $$ref or die $!;
+	close(OUTFILE) or die $!;
+    chmod( $DADA::Config::FILE_CHMOD, $fp );
+	
+}
+
+
+sub new_image_file_path {
+	
+	warn 'in new_image_file_path'
+		if $t; 
+	
+	my $fn   = shift; 
+	my $path = shift; 
+	
+	warn '$fn: ' . $fn; 
+	
+	my $n_fp = undef; 
+	
+	my $found_unique = 0; 
+	my $limit        = 100; 
+	my $tries        = 0; 
+	
+	while($found_unique == 0){ 
+		
+		$tries++; 
+		if($tries >= $limit){ 
+			die "can't create a new file name for, $fn"; 
+		}
+	    my $try_n_fp = undef; 
+		
+		my $rand_string = generate_rand_string_md5();
+	   
+	    my $new_fn    = $rand_string . '-' . 'tmp-' . $fn;
+	       $try_n_fp  = make_safer( 
+		   	$path . '/' . $new_fn 
+		);
+		
+		if (-e $try_n_fp ) {
+			# rats. 
+			next;
+		}
+		else { 
+			$n_fp = $try_n_fp; 
+			$found_unique = 1; 
+			last;
+		}
+	}
+	warn '$n_fp: ' . $n_fp
+		if $t; 
+	
+	return $n_fp; 
+}
+
 
 
 

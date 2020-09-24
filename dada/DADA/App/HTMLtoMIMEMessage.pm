@@ -51,7 +51,7 @@ package DADA::App::HTMLtoMIMEMessage;
 #
 # See Changes files for older changes
 
-my $t = 0; 
+my $t = 1; 
 
 use lib qw(../../); 
 
@@ -744,7 +744,8 @@ sub _build_html_part {
 
 sub tweak_image_size_attrs { 
 	
-	warn 'in tweak_image_size_attrs';
+	warn 'in tweak_image_size_attrs'
+		if $t; 
 	
 	my $self     = shift; 
 	my $html     = shift; 
@@ -755,7 +756,10 @@ sub tweak_image_size_attrs {
 	
 	try { 
 		require HTML::TreeBuilder; 
-
+		
+		warn 'HTML::TreeBuilder available' 
+			if $t; 
+			
 		my $root = HTML::TreeBuilder->new(
 		    ignore_unknown      => 0,
 		    no_space_compacting => 1,
@@ -775,14 +779,22 @@ sub tweak_image_size_attrs {
 
 		foreach my $img(@largeimages){ 
 			
+			#if($t){ 
+				#require Data::Dumper; 
+				#warn '$img: ' . Data::Dumper::Dumper($img);
+			#}
+			
 			my $w   = $img->attr('width'); 
 			my $h   = $img->attr('height'); 
 			
-			warn '$w: ' . $w; 
-			warn '$h: ' . $h;
+			warn '$w: ' . $w
+				if $t; 
+			warn '$h: ' . $h
+				if $t; 
 			
 			# I don't know why this would hit, 
 			# as we're already filtering based on width being > $width_limit
+			# (because the attr would be different than what image is now)
 			next 
 				unless length($w) > 0 && length($h) > 0; 
 			next 
@@ -792,14 +804,15 @@ sub tweak_image_size_attrs {
 	        my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
 		    my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
 			
-			warn '$n_w: ' . $n_w; 
-			warn '$n_h: ' . $n_h; 
+			warn '$n_w: ' . $n_w
+				if $t; 
+			warn '$n_h: ' . $n_h
+				if $t; 
 			
 			$img->attr('width', $n_w);
 		    $img->attr('height', $n_h);
 			$img->attr('sizes',  undef);
 			$img->attr('srcset', undef);
-			
 			
 		}
 		
@@ -1009,7 +1022,8 @@ sub input_image(\%$$) {
 #------------------------------------------------------------------------------
 sub create_image_part {
 	
-	warn 'in create_image_part'; #if $t; 
+	warn 'in create_image_part'
+		if $t; 
 	
     my ( $self, $ur, $typ ) = @_;
     my ( $type, $buff1 );
@@ -1081,7 +1095,11 @@ sub create_image_part {
 	
 	my %entity_args = (); 
 	
-	if($self->{ls}->param('email_resize_embedded_images') == 1){
+	#if($self->{ls}->param('email_resize_embedded_images') == 1){
+	if(1 == 0){
+			
+		warn 'we are email_resize_embedded_images' 
+			if $t; 
 		
 		# This all only happens if we're resizing, 
 		# it's a lot, it can be slow, so let's not do it, if we don't have to do it. 
@@ -1091,10 +1109,16 @@ sub create_image_part {
 		# so... on... DESTROY? 
 		
 		
-		$self->create_dir($self->{image_upload_dir});
-		my $filename = $self->filename_from_url($ur);
-		my $n_fp     = $self->new_image_file_path($filename); 
-		$self->simple_printout_file($n_fp, \$buff1);
+		create_dir($self->{image_upload_dir});
+		
+		my $filename = filename_from_url($ur);
+		
+		my $n_fp     = new_image_file_path($filename, $self->{image_upload_dir}); 
+		
+		simple_printout_file($n_fp, \$buff1);
+		
+		warn 'going to resize_image'
+			if $t; 
 		my $rfp = $self->resize_image($n_fp); 
 
 		push(
@@ -1110,10 +1134,13 @@ sub create_image_part {
 			Encoding    => 'base64',
 			Disposition => "inline",
 			Type        => $type, 	
+			Filename    => $filename,  
 		);
 	}
 	else { 
 		
+		warn  'we are not resizing images here.'
+			if $t; 
 		%entity_args = (
 			Data        => $buff1,
 			Encoding    => 'base64',
@@ -1148,117 +1175,7 @@ sub filename_from_path {
 	return $n;
 
 }
-sub filename_from_url {
 
-	my $self = shift; 
-	my $url  = shift; 
-	
-	warn 'in filename_from_url'
-		if $t; 
-	warn '$url: ' . $url
-		if $t; 		
-	
-	my ($filename) = $url =~ /\/([^\/]*?)(?:\?|$)/;
-	
-	warn '$filename: ' . $filename
-		if $t; 
-	
-	return $filename; 
-	
-}
-
-sub simple_printout_file { 
-	
-	warn 'in simple_printout_file'
-		if $t; 
-
-	my $self = shift; 
-	my $fp   = shift; 
-	my $ref  = shift; 
-	
-    open( OUTFILE, '>', $fp ) or die( "can't write to " . $fp . ": $!" );
-	print OUTFILE $$ref or die $!;
-	close(OUTFILE) or die $!;
-    chmod( $DADA::Config::FILE_CHMOD, $fp );
-	
-}
-
-sub new_image_file_path {
-	
-	warn 'in new_image_file_path'
-		if $t; 
-	
-	my $self = shift; 
-	my $fn   = shift; 
-	
-	warn '$fn: ' . $fn; 
-	
-	my $n_fp = undef; 
-	
-	my $found_unique = 0; 
-	my $limit        = 100; 
-	my $tries        = 0; 
-	
-	while($found_unique == 0){ 
-		
-		$tries++; 
-		if($tries >= $limit){ 
-			die "can't create a new file name for, $fn"; 
-		}
-	    my $try_n_fp = undef; 
-		
-		my $rand_string = generate_rand_string_md5();
-	   
-	    my $new_fn    = $rand_string . '-' . 'tmp-' . $fn;
-	       $try_n_fp  = make_safer( 
-		   	$self->{image_upload_dir} . '/' . $new_fn 
-		);
-		
-		if (-e $try_n_fp ) {
-			# rats. 
-			next;
-		}
-		else { 
-			$n_fp = $try_n_fp; 
-			$found_unique = 1; 
-			last;
-		}
-	}
-	warn '$n_fp: ' . $n_fp
-		if $t; 
-	
-	return $n_fp; 
-}
-
-sub create_dir { 
-	
-	warn 'in create_dir'
-		if $t; 
-	
-	my $self = shift; 
-	my $dir  = shift; 
-	
-	warn '$dir: ' . $dir
-		if $t;  
-	
-    if ( !-d $dir ) {
-        if ( mkdir( $dir, $DADA::Config::DIR_CHMOD ) ) {
-            if ( -d $dir ) {
-                chmod( $DADA::Config::DIR_CHMOD, $dir );
-            }
-        }
-    }
-	
-	if(-d $dir){ 
-		warn '$dir exists: ' . $dir
-			if $t; 
-	}
-	else { 
-		warn '$dir DOES NOT exist: ' . $dir
-			if $t;  
-	}
-	return 1; 	
-}
 
 sub resize_image { 
 	
@@ -1270,8 +1187,7 @@ sub resize_image {
 	
 	warn '$fp: ' . $fp
 		 if $t; 
-	
-    $self->create_dir($self->{image_upload_dir}); 
+ 
 	
 	my $fn = $self->filename_from_path($fp);
 	
@@ -1291,48 +1207,35 @@ sub resize_image {
 	
 	my $width_limit = $self->{ls}->param('email_image_width_limit'); 
 	
+	#if ( can_use_Image_Resize() != 1 ) {
+	#	return $fp; 
+	#}
+	#else {
 	
-	if ( can_use_Image_Resize() != 1 ) {
-		return $fn; 
-	}
-	else {
-	
+		my $resized_image_filepath; 
+
 		try {	
-		    require Image::Resize;
-		    my $ir = Image::Resize->new($fp);
-
-		    my $w = $ir->width;
-		    if ( $w > $width_limit ) {
-		        my $h   = $ir->height;
-		        my $n_w = $width_limit;
-		        my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
-
-		        my $gd = $ir->resize( $n_w, $n_h );
-
-		        open FH, '>', $r_outfile or die $!;
-
-		        if ( $r_fn =~ m/\.(jpg|jpeg)$/ ) {
-		            print FH $gd->jpeg() or die $!;
-		        }
-		        elsif ( $r_fn =~ m/\.(gif)$/ ) {
-		            print FH $gd->gif() or die $!;
-		        }
-		        elsif ( $r_fn =~ m/\.(png)$/ ) {
-		            print FH $gd->png() or die $!;
-		        }
-		        close(FH) or die $!;
-			}
-
+		    require DADA::App::ResizeImages; 
+			$resized_image_filepath = DADA::App::ResizeImages::resize_image(
+				{ 
+					-file_path       => $fp, 
+					-save_file_path  => $r_outfile, 
+					-width           => $width_limit, 	
+				}
+			);
+			
 		} catch { 
-			warn $_; 
-			return $fn;
+			warn 'DADA::App::ResizeImages->resize_image did not work: ' . $_; 
+			return $fp;
 		};
 		
-		warn '$r_outfile: ' . $r_outfile
+		warn '$resized_image_filepath: ' . $resized_image_filepath
 			if $t; 
 	
+		warn '$r_outfile: ' . $r_outfile
+			if $t; 
 		return $r_outfile; 
-	}
+		#}
 }
 
 #------------------------------------------------------------------------------
