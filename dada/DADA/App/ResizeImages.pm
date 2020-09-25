@@ -14,7 +14,7 @@ use strict;
 use vars qw(@EXPORT); 
 @EXPORT = qw(); 
 
-use Image::Scale;
+
 
 my $t = 0; 
 
@@ -27,7 +27,45 @@ sub resize_image {
 		require Data::Dumper; 
 		warn 'args: ' . Data::Dumper::Dumper($args);
 	}
+	
+	my $can_use_Image_Scale = 0; 
+	my $img_scale_obj       = undef; 
+	my $img_scale_error     = undef; 
+	try { 
+		
+		# We do it this way, as Image::Scale may be available,
+		# but not built for say, .gif (WTF?)
+		#
+		
+		require Image::Scale;
+		$img_scale_obj = Image::Scale->new($args->{-file_path}) 
+			|| die "Invalid file: " . $args->{-file_path};
+		$can_use_Image_Scale = 1; 
+	} catch { 
+		# ... 
+		warn $_; 
+	};
+	
+	if($can_use_Image_Scale == 1){ 
+		$args->{image_scale_obj} = $img_scale_obj;
+		return resize_image_via_Image_Scale($args);
+	}
+	else {
+		return (0, $args->{-file_path}, undef, undef); 
+	}
+}
+	
+sub resize_image_via_Image_Scale { 	
 
+	my ($args) = @_; 
+	my $img = undef; 
+	if(!exists($args->{image_scale_obj})){ 
+		croak "you need to pass the image_scale_obj!";
+	}
+	else { 
+		$img = $args->{image_scale_obj};
+	}
+	
 	if(!exists($args->{-file_path})){ 
 		croak "you need to pass, -fn";
 	}
@@ -45,7 +83,7 @@ sub resize_image {
 	#}
 	
 	try { 
-		my $img = Image::Scale->new($args->{-file_path}) || die "Invalid file: " . $args->{-file_path};
+		# my $img = Image::Scale->new($args->{-file_path}) || die "Invalid file: " . $args->{-file_path};
 		my $w = $img->width; 
 	
 		my $r_fn = filename_from_url($args->{-file_path}); 
