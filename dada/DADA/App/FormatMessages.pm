@@ -334,18 +334,17 @@ sub format_headers_and_body {
       if $entity->head->get( 'X-Mailer', 0 );
 
     # or how about, count?
-
-
-	#if($args->{-bridge} == 1){
-		warn 'special bridge stuff' if $t; 
+	
+	if($self->mass_mailing == 1) {
+	
 		if($self->{ls}->param('email_resize_embedded_images') == 1){
-			warn 'resizing images' if $t; 
 			$entity = $self->resize_images($entity); 
+			$entity = $self->tweak_image_size_attrs($entity); 
 		}
 		else { 
 			warn 'NOT resizing images' if $t; 
 		}
-		#}
+	}
 
 
 
@@ -3394,6 +3393,8 @@ sub resize_images {
 } 
 
 sub resize_images_loop { 
+	
+	warn 'in resize_images_loop' if $t; 
 	my $self = shift; 
 	my $entity = shift; 
 	
@@ -3402,54 +3403,97 @@ sub resize_images_loop {
     if(@parts){
         my $i; 
         foreach $i (0 .. $#parts) {
-            $parts[$i] = $self->replace_images($parts[$i]);    
+			
+			warn 'for part ' . $i if $t; 
+			
+            $parts[$i] = $self->resize_images_loop($parts[$i]);    
         }
         
 		$entity->sync_headers('Length'      =>  'COMPUTE',
                               'Nonstandard' =>  'ERASE');
 		$entity->parts( \@parts );
+		
+		return $entity; 
     }
 	else { 
 		
 		# This will need to be expanded to things like jpg, png, etc. 
-        if($entity->head->mime_type eq 'image/gif'){ 
+		my $type = $entity->head->mime_type; 
+        if($type eq 'image/gif' || $type eq 'image/jpg' || $type eq 'image/png' ){ 
 			my $new_entity = $self->resized_image_entity($entity); 
-			$entity = $new_entity;
+			return $new_entity; 
         }
-        return $entity; 
+		else { 
+			return $entity;
+		}
+        
     }
-    return $entity; 
+   
 }
 
 sub resized_image_entity { 
+	
+	warn 'in resized_image_entity' if $t; 
 	
 	my $self   = shift; 
 	my $entity = shift; 
 	
 	my $type = $entity->mime_type;
+	
+	warn '$type: ' . $type; 
+	
+	
  	my $og_fn = $entity->head->mime_attr("content-disposition.filename"); 
+	warn '$og_fn: ' . $og_fn if $t; 
+	
+	if(!$og_fn){ 
+		warn 'no $og_fn' if $t; 
+		$og_fn = $entity->head->get('content-id');
+		warn q{ $entity->head->get('content-id'):} . $entity->head->get('content-id') if $t; 
+	}
+	
+	if(!$og_fn){ 
+		warn 'wtf' if $t; 
+		$og_fn = 'wtf.steam';
+	}
+		
 	my $image_upload_dir = make_safer( $DADA::Config::SUPPORT_FILES->{dir} . '/'  . 'file_uploads' . '/' . 'images' );
 	 
-	app_create_dir($image_upload_dir);
+	create_dir($image_upload_dir);
 	 
+	warn '$image_upload_dir: ' . $image_upload_dir; 
 
 	my $og_saved_fn  = new_image_file_path($og_fn, $image_upload_dir); 	
 	my $new_saved_fn = new_image_file_path('new-' . $og_fn, $image_upload_dir); 	
 	
+	warn '$og_saved_fn ' . $og_saved_fn if $t;  
+	warn '$new_saved_fn: ' . $new_saved_fn if $t; 
+	
 	if (defined $entity->bodyhandle) {
+		warn '$entity->bodyhandle defined' if $t; 
 	    open(my $OUTFILE, ">", $og_saved_fn) or die $!;
 	    binmode($OUTFILE);
 		print $OUTFILE $entity->bodyhandle->as_string;
 	    close($OUTFILE);
 	}
+	else { 
+		
+		warn '$entity->bodyhandle NOT defined' if $t; 
+	
+	}
 
-	resize_image(
+	require DADA::App::ResizeImages; 
+	my ($rs_status, $rs_path, $rs_width, $rs_height) = DADA::App::ResizeImages::resize_image(
 		{ 
 			-width          => $self->{ls}->param('email_image_width_limit'), 
 			-file_path      => $og_saved_fn, 
 			-save_file_path => $new_saved_fn, 
 		}	
 	);
+	
+	warn '$rs_status: ' . $rs_status if $t; 
+	warn '$rs_path: ' . $rs_path if $t;  
+	warn '$new_saved_fn' . $new_saved_fn if $t; 
 	
     my $n_entity = new MIME::Entity->build(
  
@@ -3458,6 +3502,7 @@ sub resized_image_entity {
 		Disposition   => "inline",
 		Type          => $type, 	
 		Filename      => $og_fn,  
+		Id            => $entity->head->get('content-id'), 
     );
 
 	push(@{$self->{tmp_files_to_delete}}, $og_saved_fn);
@@ -3465,6 +3510,155 @@ sub resized_image_entity {
 	
 	return $n_entity; 
 	
+}
+
+sub tweak_image_size_attrs {
+	my $self   = shift; 
+	my $entity = shift; 
+	
+	
+	my $entity = shift; 
+	
+	if($entity->head->mime_type eq 'multipart/alternative'){ 
+	
+		warn "multipart/alt" if $t;
+		
+		my @ma_parts = $entity->parts; 	
+		for my $ma_e(0 .. $#ma_parts){
+			my $ma_entity = $ma_parts[$ma_e];
+
+			if($ma_entity->head->mime_type eq 'multipart/related'){ 
+				
+				warn 'multipart/related' if $t; 
+				my @mr_parts = $ma_entity->parts; 
+				
+				for my $mr_e(0 .. $#mr_parts){
+					
+					my $mr_entity = $mr_parts[$mr_e];
+					
+					if($mr_entity->head->mime_type eq 'text/html'){ 
+						
+						warn 'found text/html' if $t; 
+						#oh, there it is. 
+						
+						my $body    = $mr_entity->bodyhandle;
+						 
+				        my $content = $body->as_string;
+				           $content = safely_decode($content);
+						   $content = $self->tweak_image_size_attrs_in_html($content);
+						   
+		               my $io = $body->open('w');
+		               $content = safely_encode($content);
+		               $io->print($content);
+		               $io->close;
+		               $mr_entity->sync_headers(
+		                   'Length'      => 'COMPUTE',
+		                   'Nonstandard' => 'ERASE'
+		               );
+					}
+					
+					$mr_parts[$mr_e] = $mr_entity; 
+
+				}
+				
+				
+				$ma_entity->parts( \@mr_parts );
+				
+			}
+			
+			$ma_parts[$ma_e] = $ma_entity; 
+		}
+		
+		$entity->parts( \@ma_parts );
+	}
+	return $entity; 
+	
+	
+	
+}
+
+sub tweak_image_size_attrs_in_html { 
+	warn 'in tweak_image_size_attrs_in_html'
+		if $t; 
+	
+	my $self     = shift; 
+	my $html     = shift; 
+	
+	my $new_html; 
+	
+	my $width_limit = $self->{ls}->param('email_image_width_limit'); 
+	
+	try { 
+		require HTML::TreeBuilder; 
+		
+		warn 'HTML::TreeBuilder available' 
+			if $t; 
+			
+		my $root = HTML::TreeBuilder->new(
+		    ignore_unknown      => 0,
+		    no_space_compacting => 1,
+		    store_comments      => 1,
+		);
+
+		$root->parse($html);
+		$root->eof();
+		$root->elementify();
+
+		my @largeimages = $root->look_down(
+		    sub {
+		         $_[0]->tag() eq 'img'   
+				 and $_[0]->attr('width') > $width_limit
+		    }
+		);
+
+		foreach my $img(@largeimages){ 
+			
+			#if($t){ 
+				#require Data::Dumper; 
+				#warn '$img: ' . Data::Dumper::Dumper($img);
+			#}
+			
+			my $w   = $img->attr('width'); 
+			my $h   = $img->attr('height'); 
+			
+			warn '$w: ' . $w
+				if $t; 
+			warn '$h: ' . $h
+				if $t; 
+			
+			# I don't know why this would hit, 
+			# as we're already filtering based on width being > $width_limit
+			# (because the attr would be different than what image is now)
+			next 
+				unless length($w) > 0 && length($h) > 0; 
+			next 
+				unless $w > 0 && $h > 0; 	
+				
+	        my $n_w = $width_limit;
+	        my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
+		    my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
+			
+			warn '$n_w: ' . $n_w
+				if $t; 
+			warn '$n_h: ' . $n_h
+				if $t; 
+			
+			$img->attr('width', $n_w);
+		    $img->attr('height', $n_h);
+			$img->attr('sizes',  undef);
+			$img->attr('srcset', undef);
+			
+		}
+		
+  		$new_html = $root->as_HTML;
+		$root = $root->delete; 			
+		
+	} catch { 
+		warn 'problems: ' . $_; 
+		$new_html = 'this is new ' . $html; 
+	};
+
+	return $new_html; 
 }
 
 
