@@ -117,10 +117,11 @@ require Exporter;
   
   human_readable_filesize
 
-	app_create_dir
+	create_dir
 	filename_from_url
+	filename_from_path
 	simple_printout_file
-  
+  new_image_file_path
   
 );
 
@@ -3792,6 +3793,17 @@ sub filename_from_url {
 	
 	return $filename; 
 	
+}
+
+
+sub filename_from_path { 
+
+	my $fp   = shift; 
+	
+	my ($n) = $fp =~ /\/([^\/]+)$/;
+	
+	return $n;
+
 }
 
 
