@@ -1323,18 +1323,34 @@ sub drag_and_drop_file_upload {
 	my $list = shift; 
     my $q    = $self->query();
 
-    my $fh = $q->upload('imagefilename');
+    my $fh = $q->upload('drag_and_dropped_image');
+	
+	
+	
+	
+
 	
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     my $message = undef;
 
-    my $filename = $q->param('imagefilename');
+    my $filename = $q->param('drag_and_dropped_image');
 	
 	$filename = $filename; 
 	
     $filename =~ s!^.*(\\|\/)!!;
     
+	
+	#use Data::Dumper; 
+	#my %headers = map { $_ => $q->http($_) } $q->http();
+	#for my $header ( keys %headers ) {
+	#    warn "$header: $headers{$header}";
+	#}
+	#warn '$fh: ' . Dumper($fh);
+	#warn 'uploadInfo' . Dumper($q->uploadInfo($fh)); 
+	#warn '$q' . Dumper($q);
+	#warn '$filename: ' . $filename; 
+		
     if ( !$filename ) {
         return ( 0, 'Invalid Filename!', undef, undef, undef );
     }
@@ -1402,13 +1418,40 @@ sub drag_and_drop_file_upload {
             #warn '$filename is:' . $filename;
             #warn 'can_use_Image_Resize' . can_use_Image_Resize();
 			if($ls->param('resize_drag_and_drop_images') == 1){
-	            if ( can_use_Image_Resize() == 1 ) {
+	            
+				
+                my $r_fn = 'resized-' . $filename;
+				my $r_outfile = make_safer( $upload_dir . '/' . $r_fn );
+				
+				
+				require DADA::App::ResizeImages; 				
+				my ($rs_status, $rs_path, $rs_width, $rs_height) = DADA::App::ResizeImages::resize_image(
+					{ 
+						-width          => $ls->param('email_image_width_limit'), 
+						-file_path      => $outfile, 
+						-save_file_path => $r_outfile, 
+					}	
+				);
+				
+                $message = 'Image resized and saved at, ' . $filename;
+				
+				my $new_filename = filename_from_path($rs_path);				
+				$new_filename = uriescape($new_filename);
+				
+                return ( 1, $message, $new_filename, $rs_width, $rs_height );	
+				
+				
+				
+				
+=pod
+								
+				if ( can_use_Image_Resize() == 1 ) {
 	                require Image::Resize;
 	                my $ir = Image::Resize->new($outfile);
 
 	                #warn '$ir->width' . $ir->width;
 
-					my $width_limit = $ls->param('email_image_width_limit_pop_menu'); 
+					my $width_limit = $ls->param('email_image_width_limit'); 
 	                my $w = $ir->width;
 	                if ( $w > $width_limit ) {
 	                    my $h   = $ir->height;
@@ -1449,10 +1492,10 @@ sub drag_and_drop_file_upload {
 						
 						$filename = uriescape($filename);
 						
-	                    return ( 1, $message, $filename, $n_w, $n_h );
-
+	                    return ( 1, $message, $filename, $n_w, $n_h );			
 	                }
 	            }
+=cut
 			}
         }
 		
@@ -7496,11 +7539,25 @@ sub _upload_that_file {
     #DEV: move
     my $fh = $q->upload('new_email_file');
 
+
+
+#	my %headers = map { $_ => $q->http($_) } $q->http();
+#	for my $header ( keys %headers ) {
+#	    warn "$header: $headers{$header}";
+#	}	
+#	use Data::Dumper; 
+#	warn '$fh: ' . Dumper($fh);
+#	warn 'uploadInfo' . Dumper($q->uploadInfo($fh)); 
+#	warn '$q' . Dumper($q);
+
     my $filename = $q->param('new_email_file');
     $filename =~ s!^.*(\\|\/)!!;
 
     $filename = uriescape($filename);
 
+
+	# warn '$filename: ' . $filename; 
+	
     # warn '$filename ' . $filename;
 
     # warn '$q->param(\'rand_string\') '    . $q->param('rand_string');
