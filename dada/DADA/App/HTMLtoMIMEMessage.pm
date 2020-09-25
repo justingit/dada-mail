@@ -51,7 +51,7 @@ package DADA::App::HTMLtoMIMEMessage;
 #
 # See Changes files for older changes
 
-my $t = 1; 
+my $t = 0; 
 
 use lib qw(../../); 
 
@@ -728,9 +728,9 @@ sub _build_html_part {
 		croak "Pass HTML String in, -html_str!";
 	}
 	
-	if($self->{ls}->param('email_resize_embedded_images') == 1){
-		$args->{-html_str} = $self->tweak_image_size_attrs($args->{-html_str}); 
-	}
+	#if($self->{ls}->param('email_resize_embedded_images') == 1){
+	#	$args->{-html_str} = $self->tweak_image_size_attrs($args->{-html_str}); 
+	#}
 	
 	my $entity = MIME::Entity->build(
         'Type'     => 'text/html',
@@ -742,6 +742,7 @@ sub _build_html_part {
 	
 }
 
+=pid
 sub tweak_image_size_attrs { 
 	
 	warn 'in tweak_image_size_attrs'
@@ -826,6 +827,8 @@ sub tweak_image_size_attrs {
 
 	return $new_html; 
 }
+=cut
+
 
 sub _build_txt_part { 
 	
@@ -1094,9 +1097,10 @@ sub create_image_part {
     }
 	
 	my %entity_args = (); 
-	
-	#if($self->{ls}->param('email_resize_embedded_images') == 1){
-	if(1 == 0){
+
+=pod
+		
+	if($self->{ls}->param('email_resize_embedded_images') == 1){
 			
 		warn 'we are email_resize_embedded_images' 
 			if $t; 
@@ -1138,17 +1142,19 @@ sub create_image_part {
 		);
 	}
 	else { 
+=cut
+						
+		my $filename = filename_from_url($ur);
 		
-		warn  'we are not resizing images here.'
-			if $t; 
 		%entity_args = (
 			Data        => $buff1,
 			Encoding    => 'base64',
 			Disposition => "inline",
 			Type        => $type, 	
+			Filename    => $filename,  
 		);
 
-	}
+#	}
 	
     if ( $self->{_include} eq 'cid' ) {
         $entity_args{Id} = '<' . $self->cid($ur) . '>';
@@ -1176,6 +1182,7 @@ sub filename_from_path {
 
 }
 
+=pod
 
 sub resize_image { 
 	
@@ -1216,7 +1223,8 @@ sub resize_image {
 
 		try {	
 		    require DADA::App::ResizeImages; 
-			$resized_image_filepath = DADA::App::ResizeImages::resize_image(
+			
+			my ($rs_status, $rs_path, $rs_width, $rs_height) = DADA::App::ResizeImages::resize_image(
 				{ 
 					-file_path       => $fp, 
 					-save_file_path  => $r_outfile, 
@@ -1229,7 +1237,7 @@ sub resize_image {
 			return $fp;
 		};
 		
-		warn '$resized_image_filepath: ' . $resized_image_filepath
+		warn '$rs_path: ' . $rs_path
 			if $t; 
 	
 		warn '$r_outfile: ' . $r_outfile
@@ -1237,6 +1245,9 @@ sub resize_image {
 		return $r_outfile; 
 		#}
 }
+
+=cut
+
 
 #------------------------------------------------------------------------------
 # cid
