@@ -2508,8 +2508,8 @@ sub find_attachment_type {
         $a_type = 'AUTO';
     }
 
-	warn '$a_type' . $a_type; 
-
+	warn '$a_type' . $a_type 
+		if $t; 
 
     return $a_type;
 }
