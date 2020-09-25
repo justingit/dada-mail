@@ -424,10 +424,17 @@ jQuery(document).ready(function($){
 				customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js' + '?' + rand_string(), 
 				toolbar: 'DadaMail_Admin'
 			}).on( 'fileUploadRequest', function( evt ) {
-				evt.data.requestData.flavor = 'image_drag_and_drop';
-								
-			});
-
+				
+			
+				
+			evt.data.requestData.flavor = 'image_drag_and_drop';
+			
+		 // Copy contents of 'upload' image field to a new field with 'drag_and_dropped_image'
+		    var requestDataObject = evt.data.requestData;
+		    requestDataObject['drag_and_dropped_image']=requestDataObject['upload'];
+		    delete requestDataObject['upload'];
+		}); 
+		
 			CKEDITOR.on('dialogDefinition', function (event) {
 	            var editor = event.editor;
 	            var dialogDefinition = event.data.definition;
