@@ -3,6 +3,7 @@ package DADA::App::ResizeImages;
 use lib qw(../../ ../../DADA/perllib); 
 
 use DADA::Config qw(!:DEFAULT);  
+use DADA::App::Guts; 
 use Carp qw(carp croak);
 use Try::Tiny; 
 
@@ -15,7 +16,7 @@ use vars qw(@EXPORT);
 
 use Image::Scale;
 
-my $t = 1; 
+my $t = 0; 
 
 
 sub resize_image { 
@@ -51,9 +52,9 @@ sub resize_image {
 	
 	    if ($w > $args->{-width} ) {
        
-			#my $h   = $img->height;
+			my $h   = $img->height;
 	        my $n_w = $args->{-width};
-	        #my $n_h = int( ( int($n_w) * int($h) ) / int($w) ); # not needing for this module. 
+	        my $n_h = int( ( int($n_w) * int($h) ) / int($w) ); # not needing for this module. 
 
 	        $img->resize_gd( 
 				{ 
@@ -72,15 +73,15 @@ sub resize_image {
 	        	$img->save_png($args->{-save_file_path});
 	        }
 		
-			return (1, $args->{-save_file_path}); 
+			return (1, $args->{-save_file_path}, $n_w, $n_h); 
 		
 		}
 		else {
-			return(0, $args->{-file_path});
+			return(0, $args->{-file_path}, $img->width, $img->height);
 		}
 	} catch { 
 		warn $_; 
-		return (0, $args->{-file_path}); 
+		return (0, $args->{-file_path}, undef, undef); 
 	};	
 	
 }
