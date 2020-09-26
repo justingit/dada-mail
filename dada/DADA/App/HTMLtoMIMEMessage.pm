@@ -1172,16 +1172,6 @@ sub create_image_part {
     return $entity;
 }
 
-sub filename_from_path { 
-	my $self = shift; 
-	my $fp   = shift; 
-	
-	my ($n) = $fp =~ /\/([^\/]+)$/;
-	
-	return $n;
-
-}
-
 =pod
 
 sub resize_image { 
