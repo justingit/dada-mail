@@ -945,8 +945,6 @@ sub content_from_feed_url {
 	my $error  = {};
 	
 	
-	use Data::Dumper; 
-	warn '$args: ' . Dumper($args);
 	
 	my ( $rtc, $res, $md5, $e_m ) = grab_url({-url => $feed_url });
 	
@@ -1123,6 +1121,8 @@ sub content_from_feed_url {
 
 sub redact_html { 
 	
+	warn 'in redact_html'
+		if $t; 
 	
     my $self   = shift;
     my ($args) = @_;
@@ -1131,6 +1131,11 @@ sub redact_html {
 	my @r = (); 
     my $root; 
 	my $r; 
+		
+	my $og_html = $html; 
+	
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
 	
 	
 	try {
@@ -1143,7 +1148,8 @@ sub redact_html {
             no_space_compacting => 1,
             store_comments      => 1,
         );
-
+		
+		my $html = $fm->shield_tags_in_hrefs($html); 
         $root->parse($html);
         $root->eof();
         $root->elementify();
@@ -1153,17 +1159,14 @@ sub redact_html {
 		
 		my $labels = []; 
 		
-		use Data::Dumper; 
-		
-		warn q{$args->{-remove_rss_content_selector_label}} . $args->{-remove_rss_content_selector_label}; 
-		
+				
 		if($args->{-remove_rss_content_selector_label} =~ m/\"/){ 
 			
             require Text::CSV;
             my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
             if ( $csv->parse($args->{-remove_rss_content_selector_label}) ) {
               	 my @csv_fields = $csv->fields;
-				 warn '@csv_fields: ' . Dumper([@csv_fields]);
+				 # warn '@csv_fields: ' . Dumper([@csv_fields]);
 				 for(@csv_fields){ 
 					 push(@$labels, $_); 
 				 }
@@ -1189,18 +1192,18 @@ sub redact_html {
 		}
 		
 		$r = $root->as_HTML;
-		$root = $root->delete; 
+		$r = $fm->unshield_tags_in_hrefs($r); 
 
 		$r =~ s!^.*?<body>(.*)</body>.*!$1!s;
-    }
-    catch {
+		
+		$root = $root->delete; 
+		
+    } catch {
         my $e = 'cannot redact html: ' . substr($_, 0, 100) . '...';
         @r = (0, undef, $e);
 		return @r; 
     };
 	
-	
-
 	@r = (1, $r, undef); 
 	
 
@@ -1467,6 +1470,9 @@ sub send_email {
 				-preview  => 1, 
             }
         );
+		
+		# shows the problems here
+		warn '$construct_r->{html_message}: ' . $construct_r->{html_message}; 
 		
         if($t) { 
             carp '$construct_r->{mid} ' . $construct_r->{mid};
