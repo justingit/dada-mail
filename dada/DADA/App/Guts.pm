@@ -119,7 +119,7 @@ require Exporter;
 
 	create_dir
 	filename_from_url
-	filename_from_path
+	path_and_file
 	simple_printout_file
   new_image_file_path
   
@@ -3750,6 +3750,8 @@ sub create_dir {
 	
 	my $dir = shift; 
 	
+	$dir = make_safer($dir);
+	
 	warn 'in create_dir'
 		if $t; 
 	
@@ -3796,14 +3798,15 @@ sub filename_from_url {
 }
 
 
-sub filename_from_path { 
+sub path_and_file { 
 
-	my $fp   = shift; 
+	my $path   = shift; 
+	require File::Basename; 
 	
-	my ($n) = $fp =~ /\/([^\/]+)$/;
+	my($filename, $directories, $suffix) = File::Basename::fileparse($path);
 	
-	return $n;
-
+	return($directories, $filename); 
+	
 }
 
 
@@ -3832,7 +3835,8 @@ sub new_image_file_path {
 	my $fn   = shift; 
 	my $path = shift; 
 	
-	warn '$fn: ' . $fn; 
+	warn '$fn: ' . $fn
+		if $t; 
 	
 	my $n_fp = undef; 
 	
@@ -3840,29 +3844,39 @@ sub new_image_file_path {
 	my $limit        = 100; 
 	my $tries        = 0; 
 	
-	while($found_unique == 0){ 
+	
+	if (! -e $path . '/' . $fn ) {
 		
-		$tries++; 
-		if($tries >= $limit){ 
-			die "can't create a new file name for, $fn"; 
-		}
-	    my $try_n_fp = undef; 
+		# It's unique already!
+		return $path . '/' . $fn;
+	
+	} 
+	else { 
+	
+		while($found_unique == 0){ 
 		
-		my $rand_string = generate_rand_string_md5();
+			$tries++; 
+			if($tries >= $limit){ 
+				die "can't create a new file name for, $fn"; 
+			}
+		    my $try_n_fp = undef; 
+		
+			my $rand_string = generate_rand_string_md5();
 	   
-	    my $new_fn    = $rand_string . '-' . 'tmp-' . $fn;
-	       $try_n_fp  = make_safer( 
-		   	$path . '/' . $new_fn 
-		);
+		    my $new_fn    = $rand_string . '-' . $fn;
+		       $try_n_fp  = make_safer( 
+			   	$path . '/' . $new_fn 
+			);
 		
-		if (-e $try_n_fp ) {
-			# rats. 
-			next;
-		}
-		else { 
-			$n_fp = $try_n_fp; 
-			$found_unique = 1; 
-			last;
+			if (-e $try_n_fp ) {
+				# rats. 
+				next;
+			}
+			else { 
+				$n_fp = $try_n_fp; 
+				$found_unique = 1; 
+				last;
+			}
 		}
 	}
 	warn '$n_fp: ' . $n_fp
