@@ -1,6 +1,8 @@
 package DADA::App::FormatMessages::Filters::BodyContentOnly;
 use strict;
 
+# TODO Look for multiple body tags and raise an error, as this thing will start destorying that sorta content 
+
 use lib qw(
   ../../../../
   ../../../../DADA/perllib
