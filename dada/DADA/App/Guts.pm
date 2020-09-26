@@ -96,7 +96,9 @@ require Exporter;
   can_use_datetime
   can_use_HTML_Tree
   can_use_StopForumSpam
+  can_use_Image_Scale
   can_use_Image_Resize
+  can_use_Image_Magick
   formatted_runtime
   pad_str
   commify
@@ -3476,6 +3478,18 @@ sub can_use_StopForumSpam {
     return $can_use_StopForumSpam;
 }
 
+sub can_use_Image_Scale { 
+    my $can_use_Image_Scale = 1; 
+    try { 
+        require Image::Scale     
+    } catch { 
+		warn 'Image::Scale is not supported:' . $_
+			if $t;
+        $can_use_Image_Scale = 0;
+    };
+    return $can_use_Image_Scale;
+}
+
 sub can_use_Image_Resize { 
     my $can_use_Image_Resize = 1; 
     try { 
@@ -3487,6 +3501,21 @@ sub can_use_Image_Resize {
     };
     return $can_use_Image_Resize;
 }
+
+sub can_use_Image_Magick { 
+    my $can_use_Image_Magick = 1; 
+    try { 
+        require Image::Magick;        
+    } catch { 
+		warn 'Image::Resize is not supported:' . $_
+			if $t;
+        $can_use_Image_Magick = 0;
+    };
+    return $can_use_Image_Magick;
+}
+
+
+
 
 sub can_use_IO_Socket_SSL { 
     my $can_use_IO_Socket_SSL = 1; 

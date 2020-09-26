@@ -1420,69 +1420,6 @@ sub drag_and_drop_file_upload {
 
 
 
-=pod
-								
-				if ( can_use_Image_Resize() == 1 ) {
-	                require Image::Resize;
-	                my $ir = Image::Resize->new($outfile);
-
-	                #warn '$ir->width' . $ir->width;
-
-					my $width_limit = $ls->param('email_image_width_limit'); 
-	                my $w = $ir->width;
-	                if ( $w > $width_limit ) {
-	                    my $h   = $ir->height;
-	                    my $n_w = $width_limit;
-	                    my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
-
-	                    #warn '$n_h' . $n_h;
-
-	                    my $gd = $ir->resize( $n_w, $n_h );
-
-	                    my $r_fn = 'resized-' . $filename;
-
-	                    #warn '$r_fn' . $r_fn;
-
-	                    my $r_outfile = make_safer( $upload_dir . '/' . $r_fn );
-
-	                    #warn '$r_outfile' . $r_outfile;
-
-	                    open FH, '>', $r_outfile or die $!;
-
-	                    if ( $r_fn =~ m/\.(jpg|jpeg)$/ ) {
-	                        print FH $gd->jpeg() or die $!;
-	                    }
-	                    elsif ( $r_fn =~ m/\.(gif)$/ ) {
-	                        print FH $gd->gif() or die $!;
-	                    }
-	                    elsif ( $r_fn =~ m/\.(png)$/ ) {
-	                        print FH $gd->png() or die $!;
-	                    }
-	                    close(FH) or die $!;
-	                    $filename = $r_fn;
-
-	                    #warn '$filename' . $filename;
-
-	                    $message = 'Image resized and saved at, ' . $filename;
-
-	                    #warn '$message' . $message;
-						
-						$filename = uriescape($filename);
-						
-	                    return ( 1, $message, $filename, $n_w, $n_h );			
-	                }
-	            }
-=cut
-
-# }
-# catch {
-#  	# And that didn't work. 
-#	return ( 0, "Problems with the upload $_", undef, undef, undef );
- #};
-
-
-
-
 
 sub no_draft_available { 
 	
@@ -3164,7 +3101,11 @@ sub mass_mailing_options {
                     root_login                => $root_login,
                     done                      => $done,
                     can_use_css_inliner       => $can_use_css_inliner,
+					
+					can_use_Image_Scale       => scalar can_use_Image_Scale(),
 					can_use_Image_Resize      => scalar can_use_Image_Resize(),
+					can_use_Image_Magick      => scalar can_use_Image_Magick(),
+					
 					currently_selected_layout => $currently_selected_layout, 
 					
                     ckeditor_enabled =>

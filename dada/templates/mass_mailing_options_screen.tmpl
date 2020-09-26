@@ -275,15 +275,20 @@
 		</div>
 		<div class="small-11 columns">
 			
-			 <!-- tmpl_if can_use_Image_Resize -->			 
-				 <div class="alert-box info radius">
-					 Images wider than the limit will be resized to the limit.
-				 </div>
-			<!-- tmpl_else -->	
+			
+			 <div class="alert-box info radius">
+				 Images wider than the limit will be resized to the limit.
+			 </div>	 
+		 
+			<!-- tmpl_if expr="((can_use_Image_Scale == 0) && (can_use_Image_Resize == 0) && (can_use_Image_Magick == 0))" -->
+			
 				<div class="alert-box warning radius">
-					The <code>Image::Resize</code> Perl CPAN module will need to be installed for this 
-					option to function.
+					One of the following CPAN Perl modules will need to be installed to 
+					allow image resizing to work: 
+					
+					<code>Image::Scale</code>, <code>Image::Resize</code>, <code>Image::Magick</code>
 				</div>
+			
 			<!-- /tmpl_if -->
 				 
 				
