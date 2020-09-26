@@ -2538,19 +2538,21 @@ sub mass_send {
                   . $mailout_id
                   . ' sending finished notification'
                   if $t;
-
-                $self->_email_batched_finished_notification(
-                    { 
-						-start_time  => $ending_status->{first_access},
-	                    -end_time    => $unformatted_end_time,
-	                    -emails_sent => $ending_status->{total_sent_out},
-	                    -last_email  => $stop_email,
-	                    -message_id  => $mailout->_internal_message_id,
-	                    -fields      => \%fields, # includes, "Subject"
-						#-message_id      => $mailout_id,
-					}
-                );
-
+				try {
+	                $self->_email_batched_finished_notification(
+	                    { 
+							-start_time  => $ending_status->{first_access},
+		                    -end_time    => $unformatted_end_time,
+		                    -emails_sent => $ending_status->{total_sent_out},
+		                    -last_email  => $stop_email,
+		                    -message_id  => $mailout->_internal_message_id,
+		                    -fields      => \%fields, # includes, "Subject"
+							#-message_id      => $mailout_id,
+						}
+	                );
+				} catch { 
+					carp 'something wrong with sending out _email_batched_finished_notification' . $_; 
+				};
             }
 			
             warn '['
