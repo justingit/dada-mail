@@ -3074,7 +3074,7 @@ sub mass_mailing_options {
               name    => 'email_image_width_limit',
               id      => 'email_image_width_limit',
               default => $ls->param('email_image_width_limit'),
-              values => [qw(240 320 480 640 800 1024)],
+              values => [qw(240 320 480 580 640 800 1024)],
           }
         );
 		
