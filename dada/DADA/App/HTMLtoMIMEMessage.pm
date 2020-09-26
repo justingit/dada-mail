@@ -422,7 +422,7 @@ sub parse {
                 ( $$url[2] !~ m!^http://! ) &&    # un lien non absolu
                 ( $$url[2] !~ m!^mailto:! ) &&    # pas les mailto
                 ( $$url[2] !~ m!^\#! )      &&    # ni les ancres
-                ( $$url[2] !~ m!^\<! )      &&    # ni les tags du "Dada Mail"
+                ( $$url[2] !~ m!\<! )      &&    # ni les tags du "Dada Mail"
                 ( $$url[2] !~ m!^\[! )
             )
             &&                                    # Hmm. meme chose.
