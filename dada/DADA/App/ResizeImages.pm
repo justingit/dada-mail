@@ -14,7 +14,7 @@ use strict;
 use vars qw(@EXPORT);
 @EXPORT = qw();
 
-my $t = 1;
+my $t = 0;
 
 sub resize_image {
 
