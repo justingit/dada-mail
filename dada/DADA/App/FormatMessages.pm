@@ -779,10 +779,16 @@ sub rel_to_abs {
 
 sub crop_html {
 
+	warn 'in crop_html'
+		if $t; 
+	
     my $self   = shift;
     my ($args) = @_;
 	
     my $html   = $args->{-html};
+	my $og_html = $html; 
+	
+	
 	my @r = (); 
     try {
         require HTML::Tree;
@@ -794,7 +800,7 @@ sub crop_html {
             no_space_compacting => 1,
             store_comments      => 1,
         );
-
+		$html = $self->shield_tags_in_hrefs($html); 
         $root->parse($html);
         $root->eof();
         $root->elementify();
@@ -844,6 +850,9 @@ sub crop_html {
 	            )
 	        );
 	        my $n_html = $root->as_HTML( undef, '  ');
+			
+			$n_html = $self->unshield_tags_in_hrefs($n_html);
+			
 			@r = (1, $n_html, undef); 
 			undef $root;
 		}
@@ -3536,15 +3545,23 @@ sub resized_image_entity {
 }
 
 sub tweak_image_size_attrs {
-
+	warn 'in tweak_image_size_attrs' 
+		if $t; 
+	
+	
     my $self   = shift;
-    my $entity = shift;
+	my $entity = shift;
 
-    my $entity = shift;
-
+	warn '$entity->head->mime_type: ' . $entity->head->mime_type
+		if $t; 
+	warn 'skeleton: '; 
+	$entity->dump_skeleton(\*STDERR);
+	
+	
     if ( $entity->head->mime_type eq 'multipart/alternative' ) {
 
-        warn "multipart/alt" if $t;
+        warn "multipart/alt" 
+			if $t;
 
         my @ma_parts = $entity->parts;
         for my $ma_e ( 0 .. $#ma_parts ) {
@@ -3552,7 +3569,8 @@ sub tweak_image_size_attrs {
 
             if ( $ma_entity->head->mime_type eq 'multipart/related' ) {
 
-                warn 'multipart/related' if $t;
+                warn 'multipart/related' 
+					if $t;
                 my @mr_parts = $ma_entity->parts;
 
                 for my $mr_e ( 0 .. $#mr_parts ) {
@@ -3561,7 +3579,8 @@ sub tweak_image_size_attrs {
 
                     if ( $mr_entity->head->mime_type eq 'text/html' ) {
 
-                        warn 'found text/html' if $t;
+                        warn 'found text/html' 
+							if $t;
 
                         #oh, there it is.
 
@@ -3595,17 +3614,23 @@ sub tweak_image_size_attrs {
 
         $entity->parts( \@ma_parts );
     }
-    return $entity;
+	return $entity;
 
 }
 
 sub tweak_image_size_attrs_in_html {
 
-    warn 'in tweak_image_size_attrs_in_html'
+	warn 'in tweak_image_size_attrs_in_html'
       if $t;
 
     my $self = shift;
     my $html = shift;
+	
+	my $og_html = $html; 
+	
+	my $problems = 0; 
+	
+	$html = $self->shield_tags_in_hrefs($html);
 
     my $new_html;
 
@@ -3633,9 +3658,19 @@ sub tweak_image_size_attrs_in_html {
                   and $_[0]->attr('width') > $width_limit;
             }
         );
+		
+	
 
+		if(scalar @largeimages <= 0){ 
+			warn 'less than 0!';
+			return $og_html; 
+		}
+		
+		
         foreach my $img (@largeimages) {
-
+			
+			#warn 'large image!'; 
+			
             #if($t){
             #require Data::Dumper;
             #warn '$img: ' . Data::Dumper::Dumper($img);
@@ -3670,20 +3705,69 @@ sub tweak_image_size_attrs_in_html {
             $img->attr( 'height', $n_h );
             $img->attr( 'sizes',  undef );
             $img->attr( 'srcset', undef );
-
         }
 
         $new_html = $root->as_HTML;
+		$new_html = $self->unshield_tags_in_hrefs($new_html);
+		
         $root     = $root->delete;
-
-    }
-    catch {
+		
+    } catch {
         warn 'problems: ' . $_;
         $new_html = 'this is new ' . $html;
+		$problems = 1; 
     };
-
-    return $new_html;
+	
+	if($problems){ 
+		return $og_html; 
+	}
+	else { 
+		return $new_html;
+	}
+	
+	
+	
+   
 }
+
+
+sub shield_tags_in_hrefs {
+    my $self = shift;
+    my $str  = shift;
+
+    my $b1 = quotemeta('<!--');
+    my $e1 = quotemeta('-->');
+
+    my $b2 = quotemeta('<');
+    my $e2 = quotemeta('>');
+
+# The other option is to parse ALL "<", ">" and, "[", "]" and deal with all that, later,
+
+    $str =~
+s{$b1(\s*tmpl_(.*?)\s*)($e1|$e2)}{____DDM_OPENING_TEMPLATE_CHAR____!-- tmpl_$2 \-\-____DDM_CLOSING_TEMPLATE_CHAR____}gi;
+    $str =~
+s{$b2(\s*tmpl_(.*?)\s*)($e1|$e2)}{____DDM_OPENING_TEMPLATE_CHAR____tmpl_$2____DDM_CLOSING_TEMPLATE_CHAR____}gi;
+
+    $str =~
+s{$b1(\s*/tmpl_(.*?)\s*)($e1|$e2)}{____DDM_OPENING_TEMPLATE_CHAR____!-- /tmpl_$2\-\-____DDM_CLOSING_TEMPLATE_CHAR____}gi;
+    $str =~
+s{$b2(\s*/tmpl_(.*?)\s*)($e1|$e2)}{____DDM_OPENING_TEMPLATE_CHAR____/tmpl_$2____DDM_CLOSING_TEMPLATE_CHAR____}gi;
+
+    return $str;
+}
+
+sub unshield_tags_in_hrefs {
+    my $self = shift;
+    my $str  = shift;
+
+    $str =~ s/____DDM_OPENING_TEMPLATE_CHAR____/\</gi;
+    $str =~ s/____DDM_CLOSING_TEMPLATE_CHAR____/\>/gi;
+    return $str;
+}
+
+
+ 
+ 
 
 sub DESTROY {
 
