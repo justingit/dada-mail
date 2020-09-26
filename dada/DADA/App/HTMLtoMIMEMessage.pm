@@ -728,10 +728,6 @@ sub _build_html_part {
 		croak "Pass HTML String in, -html_str!";
 	}
 	
-	#if($self->{ls}->param('email_resize_embedded_images') == 1){
-	#	$args->{-html_str} = $self->tweak_image_size_attrs($args->{-html_str}); 
-	#}
-	
 	my $entity = MIME::Entity->build(
         'Type'     => 'text/html',
         'Encoding' => $self->{_htmlencoding},
@@ -742,92 +738,6 @@ sub _build_html_part {
 	
 }
 
-=pid
-sub tweak_image_size_attrs { 
-	
-	warn 'in tweak_image_size_attrs'
-		if $t; 
-	
-	my $self     = shift; 
-	my $html     = shift; 
-	
-	my $new_html; 
-	
-	my $width_limit = $self->{ls}->param('email_image_width_limit'); 
-	
-	try { 
-		require HTML::TreeBuilder; 
-		
-		warn 'HTML::TreeBuilder available' 
-			if $t; 
-			
-		my $root = HTML::TreeBuilder->new(
-		    ignore_unknown      => 0,
-		    no_space_compacting => 1,
-		    store_comments      => 1,
-		);
-
-		$root->parse($html);
-		$root->eof();
-		$root->elementify();
-
-		my @largeimages = $root->look_down(
-		    sub {
-		         $_[0]->tag() eq 'img'   
-				 and $_[0]->attr('width') > $width_limit
-		    }
-		);
-
-		foreach my $img(@largeimages){ 
-			
-			#if($t){ 
-				#require Data::Dumper; 
-				#warn '$img: ' . Data::Dumper::Dumper($img);
-			#}
-			
-			my $w   = $img->attr('width'); 
-			my $h   = $img->attr('height'); 
-			
-			warn '$w: ' . $w
-				if $t; 
-			warn '$h: ' . $h
-				if $t; 
-			
-			# I don't know why this would hit, 
-			# as we're already filtering based on width being > $width_limit
-			# (because the attr would be different than what image is now)
-			next 
-				unless length($w) > 0 && length($h) > 0; 
-			next 
-				unless $w > 0 && $h > 0; 	
-				
-	        my $n_w = $width_limit;
-	        my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
-		    my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
-			
-			warn '$n_w: ' . $n_w
-				if $t; 
-			warn '$n_h: ' . $n_h
-				if $t; 
-			
-			$img->attr('width', $n_w);
-		    $img->attr('height', $n_h);
-			$img->attr('sizes',  undef);
-			$img->attr('srcset', undef);
-			
-		}
-		
-  		$new_html = $root->as_HTML;
-		$root = $root->delete; 			
-		
-	} catch { 
-		warn 'problems: ' . $_; 
-		$new_html = $html; 
-	};
-
-	return $new_html; 
-}
-=cut
 
 
 sub _build_txt_part { 
