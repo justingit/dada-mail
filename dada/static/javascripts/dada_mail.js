@@ -431,7 +431,7 @@ jQuery(document).ready(function($){
 			
 		 // Copy contents of 'upload' image field to a new field with 'drag_and_dropped_image'
 		    var requestDataObject = evt.data.requestData;
-		    requestDataObject['drag_and_dropped_image']=requestDataObject['upload'];
+		    requestDataObject['file_were_uploading']=requestDataObject['upload'];
 		    delete requestDataObject['upload'];
 		}); 
 		
