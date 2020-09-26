@@ -1323,22 +1323,15 @@ sub drag_and_drop_file_upload {
 	my $list = shift; 
     my $q    = $self->query();
 
-    my $fh = $q->upload('drag_and_dropped_image');
-	
-	
-	
-	
-
+    my $fh = $q->upload('file_were_uploading');
 	
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     my $message = undef;
 
-    my $filename = $q->param('drag_and_dropped_image');
-	
-	$filename = $filename; 
-	
-    $filename =~ s!^.*(\\|\/)!!;
+    my $filename = $q->param('file_were_uploading');
+	   $filename = $filename;  #?
+	   $filename =~ s!^.*(\\|\/)!!;
     
 	
 	#use Data::Dumper; 
@@ -1352,7 +1345,7 @@ sub drag_and_drop_file_upload {
 	#warn '$filename: ' . $filename; 
 		
     if ( !$filename ) {
-        return ( 0, 'Invalid Filename!', undef, undef, undef );
+        return ( 0, 'No file name passed?', undef, undef, undef );
     }
 		
 	# Bad Hombres:
@@ -1375,74 +1368,58 @@ sub drag_and_drop_file_upload {
     if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/ ) {
         $subfolder = 'images';
     }
+	
+	create_dir($DADA::Config::SUPPORT_FILES->{dir} . '/' . 'file_uploads');
+	my $upload_dir = make_safer($DADA::Config::SUPPORT_FILES->{dir} . '/' . 'file_uploads' . '/' . $subfolder);
+	create_dir($upload_dir);
 
-    my $upload_dir =
-      make_safer( $DADA::Config::SUPPORT_FILES->{dir} . '/'
-          . 'file_uploads' . '/'
-          . $subfolder );
+	my $save_fp = new_image_file_path($filename, $upload_dir);
+	
+	
+    open( OUTFILE, '>', $save_fp )
+      or die( "can't write to " . $save_fp . ": $!" );
 
-    try {
+    while ( my $bytesread = read( $fh, my $buffer, 1024 ) ) {
+        print OUTFILE $buffer 
+			or die $!;
+    }
+    close(OUTFILE) 
+		or die $!;
+    chmod( $DADA::Config::FILE_CHMOD, $save_fp );
 
-        if ( !-d $upload_dir ) {
-            if ( mkdir( $upload_dir, $DADA::Config::DIR_CHMOD ) ) {
-                if ( -d $upload_dir ) {
-                    chmod( $DADA::Config::DIR_CHMOD, $upload_dir );
-                }
-            }
-        }
+    if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/ ) {
+		if($ls->param('resize_drag_and_drop_images') == 1){
+			require DADA::App::ResizeImages; 				
+			my ($rs_status, $rs_path, $rs_width, $rs_height) = DADA::App::ResizeImages::resize_image(
+				{ 
+					-width          => $ls->param('email_image_width_limit'), 
+					-file_path      => $save_fp, 
+				}	
+			);
 
-        my $outfile = make_safer( $upload_dir . '/' . $filename );
+            $message = 'Image resized and saved at, ' . $rs_path;
+			
+			my ($n_filepath, $n_filename) = path_and_file($rs_path);				
+			
+			$n_filename = uriescape($n_filename);
+			
+            return ( 1, $message, $n_filename, $rs_width, $rs_height );	
+        } 
+		else { 
+		
+			# No Resize
+			$filename = uriescape($filename);
+	        return ( 1, $message, $filename );
+		}
+	}
+	else { 
+		$filename = uriescape($filename);
+        return ( 0, 'Problems with the upload: unsupported file type', undef, undef, undef );
+	}
+}
 
-        if ( -e $outfile ) {
-            my $rand_string = generate_rand_string_md5();
-            $filename = $rand_string . '-' . $filename;
-            $outfile  = make_safer( $upload_dir . '/' . $filename );
 
-            $message = 'File renamed to, ' . $filename;
 
-            #warn '$message' . $message;
-
-        }
-
-        open( OUTFILE, '>', $outfile )
-          or die( "can't write to " . $outfile . ": $!" );
-
-        while ( my $bytesread = read( $fh, my $buffer, 1024 ) ) {
-            print OUTFILE $buffer or die $!;
-        }
-        close(OUTFILE) or die $!;
-        chmod( $DADA::Config::FILE_CHMOD, $outfile );
-
-        if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/ ) {
-
-            #warn '$filename is:' . $filename;
-            #warn 'can_use_Image_Resize' . can_use_Image_Resize();
-			if($ls->param('resize_drag_and_drop_images') == 1){
-	            
-				
-                my $r_fn = 'resized-' . $filename;
-				my $r_outfile = make_safer( $upload_dir . '/' . $r_fn );
-				
-				
-				require DADA::App::ResizeImages; 				
-				my ($rs_status, $rs_path, $rs_width, $rs_height) = DADA::App::ResizeImages::resize_image(
-					{ 
-						-width          => $ls->param('email_image_width_limit'), 
-						-file_path      => $outfile, 
-						-save_file_path => $r_outfile, 
-					}	
-				);
-				
-                $message = 'Image resized and saved at, ' . $filename;
-				
-				my $new_filename = filename_from_path($rs_path);				
-				$new_filename = uriescape($new_filename);
-				
-                return ( 1, $message, $new_filename, $rs_width, $rs_height );	
-				
-				
-				
-				
 =pod
 								
 				if ( can_use_Image_Resize() == 1 ) {
@@ -1496,17 +1473,13 @@ sub drag_and_drop_file_upload {
 	                }
 	            }
 =cut
-			}
-        }
-		
-		$filename = uriescape($filename);
-        return ( 1, $message, $filename );
-    }
-    catch {
-        return ( 0, "Problems with the upload $_", undef, undef, undef );
-    };
 
-}
+# }
+# catch {
+#  	# And that didn't work. 
+#	return ( 0, "Problems with the upload $_", undef, undef, undef );
+ #};
+
 
 
 
