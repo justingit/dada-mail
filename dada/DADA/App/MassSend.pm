@@ -2623,7 +2623,7 @@ sub message_size_check {
 	my $tmp_file = make_safer( 
 		$DADA::Config::TMP 
 		. '/'
-		. generate_rand_string_md5()
+		. 'message_size_check-' . generate_rand_string_md5()
 		. '.tmp'
 	);
 	
