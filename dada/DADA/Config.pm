@@ -1640,8 +1640,8 @@ $MIME_TOOLS_PARAMS //= {
     rewrite_anounce_from_header                   => 1,
 	announce_from_header_allowed_domains          => '',
 
-    msg_soft_size_limit      => 2621440, 
-    msg_hard_size_limit      => 5242880, 
+    msg_soft_size_limit      => 5242880, 
+    msg_hard_size_limit      => 7340032, 
 
     digest_enable               => 0, 
     digest_schedule             => 86400, 
