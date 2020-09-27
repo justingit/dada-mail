@@ -85,6 +85,23 @@ B<Remove content found between the following id/class: >
 
 Then select either a class or id to look for, and the name of those id's or classes. 
 
+=head3 Moderation Ehancements
+
+Discussion messages in Dada Mail can be optionally moderated by a sublist of moderators. 
+In this version, the moderator who took action towards the message, either approve the message, or deny the message is noted in the logs. 
+This can help answer the question of, "who confirmed/denied this message?!" 
+and hopefully stop any fires that started if the decision was critical to some of the other moderators. 
+
+=head2 Changes
+
+=head3 CKEditor Upgraded to, v4.15
+
+=head3 Timezone show in the UI
+
+Setting a time zone shown in the list control panel will be added in a future releae, but for now, the server's time zone is now exposed to the user via the UI to help them understand what time of day the app is running (and how that compares to local time)
+
+=head2 Bugfixes
+
 =head1 11.11.3
 
 =head2 Focus
