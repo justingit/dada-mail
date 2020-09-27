@@ -926,7 +926,7 @@ sub message_history_json {
                     type  => 'number'
                 },
 
-    #{ id => 'received',         label => "Recieved",         type => 'number'},
+    #{ id => 'received',         label => "Received",         type => 'number'},
                 { id => 'opens', label => "Opens", type => 'number' },
                 {
                     id    => 'clickthroughs',
