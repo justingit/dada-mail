@@ -382,6 +382,7 @@ sub run_pseudo_cron {
     my $time                    = time;
 	my $seven_and_a_half        = int($scheduled_jobs_last_ran) + (( 7.5 * 60 )); 
 	my $hour                    = int($scheduled_jobs_last_ran) + (( 60 * 60 )); 
+	
     if ( (int($time) > $seven_and_a_half) || $scheduled_jobs_last_ran == 0 ) {
         
 		# This gets a little crazy in the logs: 

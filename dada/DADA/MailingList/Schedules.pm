@@ -859,7 +859,13 @@ sub recurring_schedule_times_json {
 
 	my $r = []; 
 	
+	if(!exists($args->{-limit})){ 
+		$args->{-limit} = 365; 
+	}
+	
+	my $c = 0; 
 	foreach(@$recurring_scheds){ 
+		$c++; 
 		my $to_convert = $_->{ctime};
 		my $displaytime = POSIX::strftime('%Y/%-m/%-d', localtime $to_convert);
 		push(@$r, 
@@ -868,6 +874,9 @@ sub recurring_schedule_times_json {
 				label => 'runs at, ' . $args->{-recurring_time}
 			}
 		);
+		if($c >= int($args->{-limit})){ 
+			last; 
+		}
 	}
 
 	return $json->encode( $r );
