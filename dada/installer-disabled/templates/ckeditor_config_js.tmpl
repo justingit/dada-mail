@@ -27,15 +27,24 @@ CKEDITOR.editorConfig = function(config) {
    config.height                    = '30em';
 
    config.fullPage                  = true;
+   config.startupOutlineBlocks      = true;  
+
+
+
    config.allowedContent            = true;
 
-   config.startupOutlineBlocks      = true;  
+   config.disallowedContent         = 'img{width,height}';
+   config.extraAllowedContent       = 'img[alt,border,width,height,align,vspace,hspace,!src];';
+   
     
    config.strinsert_button_label    = 'Tags';
    config.strinsert_button_title    = 'Tags';
    config.strinsert_button_voice    = 'Tags';
-   config.extraPlugins              = 'strinsert';
-
+   
+   config.extraPlugins              = 'strinsert,image2,uploadimage';
+   config.removePlugins             = 'image,exportpdf'; 
+   
+   
    config.toolbar_DadaMail_Admin    =
     [
         { name: 'basicstyles',    items : [ 'strinsert', 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
