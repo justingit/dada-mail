@@ -271,11 +271,6 @@ sub format_headers_and_body {
     else {
         die "you must pass either a -msg or an -entity";
     }
-	
-	
-	if ( ! exists( $args->{-bridge} ) ) {
-		$args->{-bridge} = 0 ;
-	}
 		 
 		 
 	# This is a bugfix to bad MIME creators, 
