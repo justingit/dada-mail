@@ -1095,7 +1095,7 @@ sub start {
             $local_msg_viewed++;
 
             $r .= "\n";
-            $r .= "Message Size: " . $msgsize . "\n";
+            $r .= "Message Size: " . human_readable_filesize($msgsize) . "\n";
             
             my ($mmt_status, $mmt_r) = max_msg_test( 
                 { 
@@ -1154,14 +1154,7 @@ sub start {
                 $r .= $validate_r; 
                 
                 if ($status) {
-                    if ( $ls->param('send_received_msg') == 1 ) {
-                        notify_of_delivery(
-                            {
-                                -ls  => $ls,
-                                -msg => \$full_msg,
-                            }
-                        );
-                    }
+
                     $r .= process(
                         {
                             -ls  => $ls,
@@ -1320,7 +1313,7 @@ sub max_msg_test {
         return ( 0, $r );
     }
     else {
-        $r .= "\t Message is below maximum size allowed.\n";
+        $r .= "\t Received message is below maximum size allowed.\n";
         return ( 1, $r );
     }
 
@@ -1378,8 +1371,8 @@ sub soft_max_msg_test {
         return ( 0, $r );
     }
     else {
-        $r .= "\t Message is below maximum soft size allowed.\n";
-        return ( 1, $r );
+        $r .= "\t Received message is below maximum soft size allowed.\n";
+		return ( 1, $r );
     }
 
 }
@@ -2573,50 +2566,97 @@ sub process {
 
     $r .= "\t* Processing Message...\n";
 
-    if ( $ls->param('send_msgs_to_list') == 1 ) {
-
-        my ( $n_msg, $dm_format_r ) = dm_format(
-            {
-                -ls  => $ls,
-                -msg => $msg,    #scalarref
-            }
-        );
-        $r .= $dm_format_r;
-        $r .= "\t* Message being delivered! \n";
-
-        my ( $msg_id, $saved_message, $d_r ) = deliver(
-            {
-                -ls        => $ls,
-                -msg       => $n_msg,
-                -test_mail => $test_mail,
-            }
-        );
-        $r .= $d_r;
-        archive(
-            {
-                -ls        => $ls,
-                -msg       => $n_msg,
-                -msg_id    => $msg_id,
-                -saved_msg => $saved_message
-            }
-        );
-    }
-	else { 
-		 $r .= "\t* NOTE: Message is NOT being sent to Subscribers.\n";
+    my ( $n_msg, $dm_format_r ) = dm_format(
+        {
+            -ls  => $ls,
+            -msg => $msg,    #scalarref
+        }
+    );
+    $r .= $dm_format_r;
+	
+	
+	my $msg_size_check = 1; 
+	my $msg_size_r     = undef; 
+	
+	if($ls->param('email_limit_message_size') == 1) {
+		$r .= "\t\t* Message Size check enabled. Limit: " . $ls->param('email_message_size_limit') . "M\n";
+		my ($ms_status, $ms_filesize) = message_size_check(
+			{ 
+				-msg    => $n_msg, 
+				-ls_obj => $ls, 
+			}
+		);
+	
+		if($ms_status == 0){ 
+			$msg_size_check = 0; 
+			my $diff = $ms_filesize - (int($ls->param('email_message_size_limit')) * 1_048_576); 		
+			$msg_size_r = "\n"
+				. "\t\t* "
+				. 'Message size: ' . human_readable_filesize($ms_filesize)
+				. ', is larger than the limit set of ' 
+				. $ls->param('email_message_size_limit')
+				. 'M'
+				. ' by: '
+				. human_readable_filesize($diff)
+				. "\n"
+			;		
+		}
 	}
+	
+	if($msg_size_check == 0){ 
+		$r .= $msg_size_r; 
+	    $r .= "\t* Message NOT being delivered.  \n";
+	}
+	else {	
+		
+        if ( $ls->param('send_received_msg') == 1 ) {
+			# warn 'notify_of_delivery'; 
+            notify_of_delivery(
+                {
+                    -ls        => $ls,
+                    -msg       => $msg,
+                    -test_mail => $test_mail,
+                }
+            );
+        }
+	
+	    if ( $ls->param('send_msgs_to_list') == 1 ) {
+	        $r .= "\t* Message being delivered! \n";
 
-    if (   $ls->param('send_msg_copy_to')
-        && $ls->param('send_msg_copy_address') )
-    {
-        $r .= "\t* Sending a copy of the message to: " . $ls->param('send_msg_copy_address') . "\n";
+	        my ( $msg_id, $saved_message, $d_r ) = deliver(
+	            {
+	                -ls        => $ls,
+	                -msg       => $n_msg,
+	                -test_mail => $test_mail,
+	            }
+	        );
+	        $r .= $d_r;
+	        archive(
+	            {
+	                -ls        => $ls,
+	                -msg       => $n_msg,
+	                -msg_id    => $msg_id,
+	                -saved_msg => $saved_message
+	            }
+	        );
+	    }
+		else { 
+			 $r .= "\t* NOTE: Message is NOT being sent to Subscribers.\n";
+		}
+	
+	    if (   $ls->param('send_msg_copy_to')
+	        && $ls->param('send_msg_copy_address') )
+	    {
+	        $r .= "\t* Sending a copy of the message to: " . $ls->param('send_msg_copy_address') . "\n";
 
-        deliver_copy(
-            {
-                -ls  => $ls,
-                -msg => $msg,
-            }
-        );
-    }
+	        deliver_copy(
+	            {
+	                -ls  => $ls,
+	                -msg => $msg,
+	            }
+	        );
+	    }
+	}
 
     $r .= "\t* Finished Processing Message.\n\n";
 
@@ -2967,7 +3007,7 @@ sub deliver {
 				};
             }
         }
-
+		
         my $msg_id = $mh->mass_send(
             {            
                 -msg => {
@@ -3607,17 +3647,6 @@ sub inject {
 		try { 
             
             if ($status == 1) {
-                if ( $ls->param('send_received_msg') == 1 ) {
-					# warn 'notify_of_delivery'; 
-                    notify_of_delivery(
-                        {
-                            -ls        => $ls,
-                            -msg       => \$msg,
-                            -test_mail => $test_mail,
-                        }
-                    );
-                }
-				# warn 'process';
                 $r .= process(
                     {
                         -ls        => $ls,
@@ -3684,6 +3713,39 @@ $r = inject_msg(
  return ( {}, $r );
   
 }
+
+sub message_size_check { 
+
+	my ($args) = @_; 
+	
+	my $msg    = $args->{-msg};
+	my $ls     = $args->{-ls_obj};
+	 
+	
+	my $tmp_file = make_safer( 
+		$DADA::Config::TMP 
+		. '/'
+		. 'message_size_check-' . generate_rand_string_md5()
+		. '.tmp'
+	);
+		
+    open( OUTFILE, '>', $tmp_file ) or die( "can't write to " . $tmp_file . ": $!" );
+	print OUTFILE $msg; 
+	close(OUTFILE) or die $!;
+	
+	my $size = (stat $tmp_file)[7];
+	
+	unlink($tmp_file); 
+	
+	if($size > (int($ls->param('email_message_size_limit')) * 1_048_576)) {
+	    return (0, $size);
+	}
+	else { 
+		return (1, $size); 
+	}
+}
+
+
 
 
 END {
