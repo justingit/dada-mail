@@ -505,12 +505,26 @@
 			</div> 
 		</div>
 	
-		<h5>Message Size</h5>
+		<h5>Received Message Size</h5>
 
+		<!-- tmpl_if list_settings.email_limit_message_size --> 
+			<div class="alert-box warning radius"> 
+				A limit of: 
+					<strong>
+						<!-- tmpl_var list_settings.email_message_size_limit --> Megabyte(s)
+					</strong>
+				is set for all mailing list messages for this mailing list.
+			</div>
+		<!-- /tmpl_if -->
+		
 		<div class="alert-box warning radius"> 
-			<strong>Warning:</strong> Setting the Soft and/or Hard Max Sizes too high will 
+			<strong>Warning:</strong> Setting the Soft and/or Hard Max sizes too high will 
 			cause disruptions in processing email messages.
 		</div>
+		
+
+		
+		
 
 		<div class="row">
 			<div class="large-6 columns">
