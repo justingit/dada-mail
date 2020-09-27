@@ -1147,6 +1147,7 @@ sub redact_html {
             ignore_unknown      => 0,
             no_space_compacting => 1,
             store_comments      => 1,
+			no_expand_entities  => 1, 
         );
 		
 		my $html = $fm->shield_tags_in_hrefs($html); 
@@ -1175,8 +1176,7 @@ sub redact_html {
 		else { 
 			$labels->[0] = $args->{-remove_rss_content_selector_label}; 
 		}
-		
-		warn '$labels: ' . Dumper($labels); 
+
 		
 		for my $label(@$labels){
 	        if ( $args->{-remove_rss_content_selector_type} eq 'id' ) {
@@ -1470,9 +1470,6 @@ sub send_email {
 				-preview  => 1, 
             }
         );
-		
-		# shows the problems here
-		warn '$construct_r->{html_message}: ' . $construct_r->{html_message}; 
 		
         if($t) { 
             carp '$construct_r->{mid} ' . $construct_r->{mid};

@@ -1140,7 +1140,7 @@ sub restart_mass_send {
     # Why the close?
     $self->{mj_log}->close_log if $DADA::Config::LOG{mass_mailings};
 
-    warn 'restart_with set to: ' . $id;
+    warn 'restart_with set to: ' . $id if $t; 
     $self->restart_with($id);
     $self->mass_send();
 

@@ -799,6 +799,8 @@ sub crop_html {
             ignore_unknown      => 0,
             no_space_compacting => 1,
             store_comments      => 1,
+			no_expand_entities  => 1, 
+			
         );
 		$html = $self->shield_tags_in_hrefs($html); 
         $root->parse($html);
@@ -3548,15 +3550,12 @@ sub tweak_image_size_attrs {
 	warn 'in tweak_image_size_attrs' 
 		if $t; 
 	
-	
+		
     my $self   = shift;
 	my $entity = shift;
 
 	warn '$entity->head->mime_type: ' . $entity->head->mime_type
-		if $t; 
-	warn 'skeleton: '; 
-	$entity->dump_skeleton(\*STDERR);
-	
+		if $t; 	
 	
     if ( $entity->head->mime_type eq 'multipart/alternative' ) {
 
@@ -3626,6 +3625,9 @@ sub tweak_image_size_attrs_in_html {
     my $self = shift;
     my $html = shift;
 	
+	
+	# warn 'before $html: ' . $html; 
+	
 	my $og_html = $html; 
 	
 	my $problems = 0; 
@@ -3646,6 +3648,7 @@ sub tweak_image_size_attrs_in_html {
             ignore_unknown      => 0,
             no_space_compacting => 1,
             store_comments      => 1,
+			no_expand_entities  => 1, 
         );
 
         $root->parse($html);
@@ -3708,6 +3711,11 @@ sub tweak_image_size_attrs_in_html {
         }
 
         $new_html = $root->as_HTML;
+		
+#		warn 'during $new_html: ' . $new_html; 
+		
+		
+		
 		$new_html = $self->unshield_tags_in_hrefs($new_html);
 		
         $root     = $root->delete;
