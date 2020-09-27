@@ -1006,65 +1006,18 @@ sub create_image_part {
 		}
     }
 	
-	my %entity_args = (); 
+	my %entity_args = (); 						
+	my $filename = filename_from_url($ur);
+	
+	%entity_args = (
+		Data        => $buff1,
+		Encoding    => 'base64',
+		Disposition => "inline",
+		Type        => $type, 	
+		Filename    => $filename,  
+	);
 
-=pod
-		
-	if($self->{ls}->param('email_resize_embedded_images') == 1){
-			
-		warn 'we are email_resize_embedded_images' 
-			if $t; 
-		
-		# This all only happens if we're resizing, 
-		# it's a lot, it can be slow, so let's not do it, if we don't have to do it. 
-		#  if not, we can just pass the $buff1 to the entity via Data	
-	    # These tmp images probably should be deleted
-		# But we would need to do this after the entity is really truly all set, 
-		# so... on... DESTROY? 
-		
-		
-		create_dir($self->{image_upload_dir});
-		
-		my $filename = filename_from_url($ur);
-		
-		my $n_fp     = new_image_file_path($filename, $self->{image_upload_dir}); 
-		
-		simple_printout_file($n_fp, \$buff1);
-		
-		warn 'going to resize_image'
-			if $t; 
-		my $rfp = $self->resize_image($n_fp); 
 
-		push(
-			@{$self->{tmp_images_to_delete}}, 
-			$n_fp
-		); 
-		push(
-			@{$self->{tmp_images_to_delete}}, 
-			$rfp
-		); 
-		%entity_args = (
-			Path          => $rfp,
-			Encoding    => 'base64',
-			Disposition => "inline",
-			Type        => $type, 	
-			Filename    => $filename,  
-		);
-	}
-	else { 
-=cut
-						
-		my $filename = filename_from_url($ur);
-		
-		%entity_args = (
-			Data        => $buff1,
-			Encoding    => 'base64',
-			Disposition => "inline",
-			Type        => $type, 	
-			Filename    => $filename,  
-		);
-
-#	}
 	
     if ( $self->{_include} eq 'cid' ) {
         $entity_args{Id} = '<' . $self->cid($ur) . '>';
@@ -1082,71 +1035,7 @@ sub create_image_part {
     return $entity;
 }
 
-=pod
 
-sub resize_image { 
-	
-	warn 'in resize_image'
-		if $t; 
-
-	my $self = shift; 
-	my $fp   = shift; 
-	
-	warn '$fp: ' . $fp
-		 if $t; 
- 
-	
-	my $fn = $self->filename_from_path($fp);
-	
-	warn '$fn: ' . $fn
-		if $t; 
-	
-    my $r_fn = 'resized-' . $fn
-		if $t; 
-		
-	warn '$r_fn: ' . $r_fn
-		if $t; 
-	
-    my $r_outfile = make_safer( $self->{image_upload_dir} . '/' . $r_fn );
-	
-	warn '$r_outfile: ' . $r_outfile
-		 if $t; 
-	
-	my $width_limit = $self->{ls}->param('email_image_width_limit'); 
-	
-	#if ( can_use_Image_Resize() != 1 ) {
-	#	return $fp; 
-	#}
-	#else {
-	
-		my $resized_image_filepath; 
-
-		try {	
-		    require DADA::App::ResizeImages; 
-			
-			my ($rs_status, $rs_path, $rs_width, $rs_height) = DADA::App::ResizeImages::resize_image(
-				{ 
-					-file_path       => $fp, 
-					-save_file_path  => $r_outfile, 
-					-width           => $width_limit, 	
-				}
-			);
-			
-		} catch { 
-			warn 'DADA::App::ResizeImages->resize_image did not work: ' . $_; 
-			return $fp;
-		};
-		
-		warn '$rs_path: ' . $rs_path
-			if $t; 
-	
-		warn '$r_outfile: ' . $r_outfile
-			if $t; 
-		return $r_outfile; 
-		#}
-}
-
-=cut
 
 
 #------------------------------------------------------------------------------
