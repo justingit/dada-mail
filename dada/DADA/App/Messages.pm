@@ -1216,6 +1216,19 @@ sub send_newest_archive {
 			# warn 'testing!';
             $self->mh->test(1);
         }
+		
+		
+	    require DADA::App::Subscriptions::Unsub;
+	    my $dasu = DADA::App::Subscriptions::Unsub->new( { -list => $self->list } );
+
+	    my $unsub_link = $dasu->unsub_link(
+	        {
+	            -email  => $email,
+	            -mid    => '00000000000000', 
+				-source => 'from sending newest archive entry'
+	        }
+	    );
+		
 
 		# warn 'calling send_generic_email';
         $self->send_generic_email(
@@ -1239,6 +1252,10 @@ sub send_newest_archive {
                         -email => $email,
                         -type  => 'list'
                     },
+					-vars => { 
+						message_id            => $newest_entry,
+						list_unsubscribe_link => $unsub_link,
+					}
                 },
                 -test => $self->test,
             }
