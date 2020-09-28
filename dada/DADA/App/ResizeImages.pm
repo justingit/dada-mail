@@ -18,6 +18,7 @@ my $t = 0;
 
 sub resize_image {
 
+	
     my ($args) = @_;
 
     if ($t) {
@@ -114,6 +115,9 @@ sub resize_image {
 }
 
 sub resize_image_via_Image_Scale {
+	
+	warn 'resizing via Image::Scale'
+		if $t; 
 
     my ($args) = @_;
     my $img = undef;
@@ -139,7 +143,7 @@ sub resize_image_via_Image_Scale {
 
             my ( $u_path, $u_filename ) = path_and_file( $args->{-file_path} );
             my $new_file_path =
-              new_image_file_path( $u_path . '/' . 'resized-' . $u_filename );
+              new_image_file_path('resized-' . $u_filename,  $u_path );
             make_safer($new_file_path);
 
             my $h   = $img->height;
@@ -207,7 +211,8 @@ sub resize_image_via_Image_Resize {
 
             my ( $u_path, $u_filename ) = path_and_file( $args->{-file_path} );
             my $new_file_path =
-              new_image_file_path( $u_path . '/' . 'resized-' . $u_filename );
+              new_image_file_path('resized-' . $u_filename,  $u_path );
+			  
             make_safer($new_file_path);
 
             my $h   = $img->height;
@@ -286,8 +291,10 @@ sub resize_image_via_Image_Magick {
 		if ( $w > $args->{-width} ) {
 
             my ( $u_path, $u_filename ) = path_and_file( $args->{-file_path} );
-            my $new_file_path = new_image_file_path( $u_path . '/' . 'resized-' . $u_filename );
-            make_safer($new_file_path);
+            my $new_file_path = 
+            new_image_file_path('resized-' . $u_filename,  $u_path );
+
+			make_safer($new_file_path);
 			
 			my $error = $img->Read($args->{-file_path}); 
 			die $error if $error;
