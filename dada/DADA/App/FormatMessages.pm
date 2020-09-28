@@ -332,7 +332,11 @@ sub format_headers_and_body {
 	
 	if($self->mass_mailing == 1) {
 	
-		if($self->{ls}->param('email_resize_embedded_images') == 1){
+		
+		if(
+		    	$self->{ls}->param('email_embed_images_as_attachments') == 1
+	     && 	 $self->{ls}->param('email_resize_embedded_images') == 1
+			){
 			$entity = $self->resize_images($entity); 
 			$entity = $self->tweak_image_size_attrs($entity); 			
 		}
@@ -3369,53 +3373,7 @@ sub body_content_only {
 
 sub resize_images {
 
-	# I feel like I'm just blindly looking for things. Hmm. 
-	# it MAY be better/easier to loop through the entire entity tree
-	# and look for images of gif/jpg/png that are inline.  
-	
-    my $self = shift;
-
     warn 'in replace_images'
-      if $t;
-
-    my $entity = shift;
-
-	warn '$entity->head->mime_type 1: ' . $entity->head->mime_type; 
-    if ( $entity->head->mime_type eq 'multipart/alternative' 
-	  || $entity->head->mime_type eq 'multipart/mixed'
-	 ) {
-		
-
-        warn "in here, alt or mixed"
-          if $t;
-
-        my @parts     = $entity->parts;
-        my @new_parts = ();
-
-        for my $s_e ( 0 .. $#parts ) {
-
-            my $new_entity = $parts[$s_e];
-
-			warn '$entity->head->mime_type 2: ' . $entity->head->mime_type; 
-			
-            if ( $new_entity->head->mime_type eq 'multipart/related'
-			|| $new_entity->head->mime_type eq 'multipart/alternative' ) {
-
-                warn 'multipart alternative or related'
-                  if $t;
-
-                $new_entity = $self->resize_images_loop($new_entity);
-            }
-            push( @new_parts, $new_entity );
-        }
-        $entity->parts( \@new_parts );
-    }
-	return $entity;
-}
-
-sub resize_images_loop {
-
-    warn 'in resize_images_loop'
       if $t;
 
     my $self   = shift;
@@ -3424,52 +3382,55 @@ sub resize_images_loop {
     my @parts = $entity->parts;
 
     if (@parts) {
+
         my $i;
-        foreach $i ( 0 .. $#parts ) {
+        for $i ( 0 .. $#parts ) {
+            my $n_entity = undef;
+            $n_entity = $self->resize_images( $parts[$i] );
 
-            warn 'for part ' . $i if $t;
-
-            $parts[$i] = $self->resize_images_loop( $parts[$i] );
+            if ($n_entity) {
+                $parts[$i] = $n_entity;
+            }
+            else {
+                warn 'no $n_entity returned?!'
+                  if $t;
+            }
         }
-
+        $entity->parts( \@parts );
         $entity->sync_headers(
             'Length'      => 'COMPUTE',
             'Nonstandard' => 'ERASE'
         );
-        $entity->parts( \@parts );
 
         return $entity;
     }
     else {
-
-        # This will need to be expanded to things like jpg, png, etc.
         my $type = $entity->head->mime_type;
         if (   $type eq 'image/gif'
             || $type eq 'image/jpg'
+            || $type eq 'image/jpeg'
             || $type eq 'image/png' )
         {
-			
-			if($entity->head->mime_attr('content-disposition') ne 'inline') { 
-				warn 'skipping entity - not inline: "' . $entity->head->mime_attr('content-disposition') . '"';
-				return $entity;
-				
-			}
-			else { 
-	            my $new_entity = $self->resized_image_entity($entity);
-	            return $new_entity;
-			}
-        }
-        else {
-			return $entity;
-        }
-	}
+            if ( $entity->head->mime_attr('content-disposition') eq 'inline'
+                || !defined( $entity->head->mime_attr('content-disposition') ) )
+            {
+                my $new_entity = $self->resized_image_entity($entity);
 
+               # warn '$new_entity size now: ' . length($new_entity->as_string);
 
+                return $new_entity;
+            }
+            else {
+                #warn 'skipping entity - not inline: "'
+                #  . $entity->head->mime_attr('content-disposition') . '"';
+                return $entity;
+            }
+        }
+    }
 }
 
 sub resized_image_entity {
-	
-	
+
     warn 'in resized_image_entity' if $t;
 
     my $self   = shift;
@@ -3505,12 +3466,15 @@ sub resized_image_entity {
         $DADA::Config::SUPPORT_FILES->{dir} . '/'
       . 'file_uploads' . '/'
       . 'images';
+
     create_dir($image_upload_dir);
 
     my $resized_image_upload_dir = $image_upload_dir . '/' . 'tmp_resized';
+
     create_dir($resized_image_upload_dir);
 
-    my $og_saved_fn = new_image_file_path( $og_fn, $resized_image_upload_dir );
+    my $og_saved_fn =
+      new_image_file_path( uriescape($og_fn), $resized_image_upload_dir );
 
     warn '$og_saved_fn ' . $og_saved_fn
       if $t;
@@ -3544,124 +3508,111 @@ sub resized_image_entity {
       if $t;
     warn '$rs_path: ' . $rs_path
       if $t;
+    warn '$rs_width: ' . $rs_width
+      if $t;
+    warn '$rs_height: ' . $rs_height
+      if $t;
 
     my $n_entity = new MIME::Entity->build(
         Path        => $rs_path,
         Encoding    => 'base64',
         Disposition => "inline",
         Type        => $type,
-        Filename    => $og_fn,
+        Filename    => uriescape($og_fn),
         Id          => $entity->head->get('content-id'),
     );
 
     push( @{ $self->{tmp_files_to_delete} }, $og_saved_fn );
     push( @{ $self->{tmp_files_to_delete} }, $rs_path );
 
-	return $n_entity;
+    return $n_entity;
 
 }
 
 sub tweak_image_size_attrs {
-	
-	# I feel like I'm just blindly looking for things. Hmm. 
-	# it MAY be better/easier to loop through the entire entity tree
-	# and look for html parts that are inline. 
-	#
-	
-	
-	warn 'in tweak_image_size_attrs' 
-		if $t; 
-	
-		
+
+    warn 'in tweak_image_size_attrs'
+      if $t;
+
     my $self   = shift;
-	my $entity = shift;
+    my $entity = shift;
 
-	warn '$entity->head->mime_type: ' . $entity->head->mime_type
-		if $t; 	
-	
-    if ( $entity->head->mime_type eq 'multipart/alternative' 
-		|| 
-		$entity->head->mime_type eq 'multipart/mixed'
-	) {
+    my @parts = $entity->parts;
 
-        warn "multipart/alt" 
-			if $t;
+    if (@parts) {
+		my $i;
+        for $i ( 0 .. $#parts ) {
+            my $n_entity = undef;
+            $n_entity = $self->tweak_image_size_attrs( $parts[$i] );
 
-        my @ma_parts = $entity->parts;
-        for my $ma_e ( 0 .. $#ma_parts ) {
-            my $ma_entity = $ma_parts[$ma_e];
-
-            if ( $ma_entity->head->mime_type eq 'multipart/related' 
-				||
-				$ma_entity->head->mime_type eq 'multipart/alternative'  
-			) {
-                warn 'multipart/related or alternative' 
-					if $t;
-                my @mr_parts = $ma_entity->parts;
-
-                for my $mr_e ( 0 .. $#mr_parts ) {
-
-                    my $mr_entity = $mr_parts[$mr_e];
-
-                    if ( $mr_entity->head->mime_type eq 'text/html' ) {
-						
-						if($mr_entity->head->mime_attr('content-disposition') ne 'inline') { 
-							warn 'attached HTML file? ' if $t; 
-							$mr_parts[$mr_e] = $mr_entity;
-						}	
-						else { 
-	                        warn 'found text/html' 
-								if $t;
-
-	                        #oh, there it is.
-
-	                        my $body = $mr_entity->bodyhandle;
-
-	                        my $content = $body->as_string;
-	                        $content = safely_decode($content);
-	                        $content = $self->tweak_image_size_attrs_in_html($content);
-	                        my $io = $body->open('w');
-	                        $content = safely_encode($content);
-	                        $io->print($content);
-	                        $io->close;
-	                        $mr_entity->sync_headers(
-	                            'Length'      => 'COMPUTE',
-	                            'Nonstandard' => 'ERASE'
-	                        );
-	                    }
-
-	                    $mr_parts[$mr_e] = $mr_entity;
-					}
-                }
-
-                $ma_entity->parts( \@mr_parts );
-
+            if ($n_entity) {
+                $parts[$i] = $n_entity;
             }
-
-            $ma_parts[$ma_e] = $ma_entity;
+            else {
+                warn 'no $n_entity returned?!'
+                  if $t;
+            }
         }
+        $entity->parts( \@parts );
+        $entity->sync_headers(
+            'Length'      => 'COMPUTE',
+            'Nonstandard' => 'ERASE'
+        );
 
-        $entity->parts( \@ma_parts );
+        return $entity;
     }
-	
-	return $entity;
+    else {
 
+        if ( $entity->head->mime_type eq 'text/html' ) {
+
+            if (
+                $entity->head->mime_attr('content-disposition') eq 'inline'
+                || !defined( $entity->head->mime_attr('content-disposition') )
+
+              )
+            {
+                warn 'found text/html'
+                  if $t;
+
+                my $body = $entity->bodyhandle;
+
+                my $content = $body->as_string;
+                $content = safely_decode($content);
+                $content = $self->tweak_image_size_attrs_in_html($content);
+                my $io = $body->open('w');
+                $content = safely_encode($content);
+                $io->print($content);
+                $io->close;
+                $entity->sync_headers(
+                    'Length'      => 'COMPUTE',
+                    'Nonstandard' => 'ERASE'
+                );
+                return $entity;
+            }
+            else {
+                return $entity;
+            }
+        }
+        else {
+            return $entity;
+        }
+    }
 }
 
 sub tweak_image_size_attrs_in_html {
 
-	warn 'in tweak_image_size_attrs_in_html'
+    warn 'in tweak_image_size_attrs_in_html'
       if $t;
 
     my $self = shift;
     my $html = shift;
-	
-	my $og_html = $html; 
-	
-	my $problems = 0; 
-	
-	$html = $self->shield_tags_in_hrefs($html);
-	
+
+    my $og_html = $html;
+
+    my $problems = 0;
+
+    $html = $self->shield_tags_in_hrefs($html);
+
     my $new_html;
 
     my $width_limit = $self->{ls}->param('email_image_width_limit');
@@ -3676,7 +3627,7 @@ sub tweak_image_size_attrs_in_html {
             ignore_unknown      => 0,
             no_space_compacting => 1,
             store_comments      => 1,
-			no_expand_entities  => 1, 
+            no_expand_entities  => 1,
         );
 
         $root->parse($html);
@@ -3689,65 +3640,67 @@ sub tweak_image_size_attrs_in_html {
                   and $_[0]->attr('width') > $width_limit;
             }
         );
-		if(scalar @largeimages <= 0){ 
-			# Not really a problem, but this will return the og html
-			$problems = 1;  
-			# This won't actually do the thing. 
-			return $og_html; 
-		}
-		else {
-	        foreach my $img (@largeimages) {
-			
-	            my $w = $img->attr('width');
-	            my $h = $img->attr('height');
+        if ( scalar @largeimages <= 0 ) {
 
-	            warn '$w: ' . $w
-	              if $t;
-	            warn '$h: ' . $h
-	              if $t;
+            # Not really a problem, but this will return the og html
+            $problems = 1;
 
-	            # I don't know why this would hit,
-	            # as we're already filtering based on width being > $width_limit
-	            # (because the attr would be different than what image is now)
-	            next
-	              unless length($w) > 0 && length($h) > 0;
-	            next
-	              unless $w > 0 && $h > 0;
+            # This won't actually do the thing.
+            return $og_html;
+        }
+        else {
+            foreach my $img (@largeimages) {
 
-	            my $n_w = $width_limit;
-	            my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
-	            my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
+                my $w = $img->attr('width');
+                my $h = $img->attr('height');
 
-	            warn '$n_w: ' . $n_w
-	              if $t;
-	            warn '$n_h: ' . $n_h
-	              if $t;
+                warn '$w: ' . $w
+                  if $t;
+                warn '$h: ' . $h
+                  if $t;
 
-	            $img->attr( 'width',  $n_w );
-	            $img->attr( 'height', $n_h );
-	            $img->attr( 'sizes',  undef );
-	            $img->attr( 'srcset', undef );
-	        }
+                # I don't know why this would hit,
+                # as we're already filtering based on width being > $width_limit
+                # (because the attr would be different than what image is now)
+                next
+                  unless length($w) > 0 && length($h) > 0;
+                next
+                  unless $w > 0 && $h > 0;
 
-	        $new_html = $root->as_HTML;
-			$new_html = $self->unshield_tags_in_hrefs($new_html);
-	        $root     = $root->delete;
-		}
-    } catch {
+                my $n_w = $width_limit;
+                my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
+                my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
+
+                warn '$n_w: ' . $n_w
+                  if $t;
+                warn '$n_h: ' . $n_h
+                  if $t;
+
+                $img->attr( 'width',  $n_w );
+                $img->attr( 'height', $n_h );
+                $img->attr( 'sizes',  undef );
+                $img->attr( 'srcset', undef );
+            }
+
+            $new_html = $root->as_HTML;
+            $new_html = $self->unshield_tags_in_hrefs($new_html);
+            $root     = $root->delete;
+        }
+    }
+    catch {
         warn 'problems: ' . $_;
         $new_html = 'this is new ' . $html;
-		$problems = 1; 
+        $problems = 1;
     };
-	
-	if($problems){ 
-		return $og_html; 
-	}
-	else { 
-		return $new_html;
-	}
-   
-}
 
+    if ($problems) {
+        return $og_html;
+    }
+    else {
+        return $new_html;
+    }
+
+}
 
 sub shield_tags_in_hrefs {
     my $self = shift;
@@ -3782,10 +3735,6 @@ sub unshield_tags_in_hrefs {
     $str =~ s/____DDM_CLOSING_TEMPLATE_CHAR____/\>/gi;
     return $str;
 }
-
-
- 
- 
 
 sub DESTROY {
 
