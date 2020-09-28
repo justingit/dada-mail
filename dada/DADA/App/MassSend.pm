@@ -2425,18 +2425,14 @@ sub make_attachment {
       if $t;
 
     $filename =~ s!^.*(\\|\/)!!; # what's this for? 
-  #  $filename =~ s/\s/%20/g;
-
+	
     my %mime_args = (
-        Type        => $a_type,
-       # Disposition => $self->make_a_disposition($a_type),
-	   Disposition => 'attachment',
-        #  Datestamp         => 0,
-       # Id                 => $filename,
-       # Filename           => $filename,
-      #  'Content-Location' => $filename,
-	    Filename => $fm->_encode_header('just_phrase', $filename),
-        Path               => $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $name,
+        Type                 => $a_type,
+  	    Disposition          => 'attachment',
+        'Id'                 => uriescape($filename),
+		'X-Attachment-Id'    => uriescape($filename), 
+	    Filename             => $fm->_encode_header('just_phrase', $filename),
+        Path                 => $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $name,
     );
 
     if ($t) {
