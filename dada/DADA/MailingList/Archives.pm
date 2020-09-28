@@ -1157,7 +1157,11 @@ sub find_attachment_list {
 		my $name = $entity->head->mime_attr("content-type.name") || 
 				   $entity->head->mime_attr("content-disposition.filename");
 		
-		if($name){ 			
+		if($name){ 		
+			
+			# Inline are images. 
+			next if($entity->head->get('content-disposition') =~ m/inline/i); 
+			 	
 			push(
 				@$attachment_list, 
 				{
