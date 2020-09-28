@@ -3369,6 +3369,10 @@ sub body_content_only {
 
 sub resize_images {
 
+	# I feel like I'm just blindly looking for things. Hmm. 
+	# it MAY be better/easier to loop through the entire entity tree
+	# and look for images of gif/jpg/png that are inline.  
+	
     my $self = shift;
 
     warn 'in replace_images'
@@ -3376,9 +3380,13 @@ sub resize_images {
 
     my $entity = shift;
 
-    if ( $entity->head->mime_type eq 'multipart/alternative' ) {
+	warn '$entity->head->mime_type 1: ' . $entity->head->mime_type; 
+    if ( $entity->head->mime_type eq 'multipart/alternative' 
+	  || $entity->head->mime_type eq 'multipart/mixed'
+	 ) {
+		
 
-        warn "multipart/alt"
+        warn "in here, alt or mixed"
           if $t;
 
         my @parts     = $entity->parts;
@@ -3388,9 +3396,12 @@ sub resize_images {
 
             my $new_entity = $parts[$s_e];
 
-            if ( $new_entity->head->mime_type eq 'multipart/related' ) {
+			warn '$entity->head->mime_type 2: ' . $entity->head->mime_type; 
+			
+            if ( $new_entity->head->mime_type eq 'multipart/related'
+			|| $new_entity->head->mime_type eq 'multipart/alternative' ) {
 
-                warn 'multipart/related'
+                warn 'multipart alternative or related'
                   if $t;
 
                 $new_entity = $self->resize_images_loop($new_entity);
@@ -3399,7 +3410,7 @@ sub resize_images {
         }
         $entity->parts( \@new_parts );
     }
-    return $entity;
+	return $entity;
 }
 
 sub resize_images_loop {
@@ -3437,19 +3448,28 @@ sub resize_images_loop {
             || $type eq 'image/jpg'
             || $type eq 'image/png' )
         {
-            my $new_entity = $self->resized_image_entity($entity);
-            return $new_entity;
+			
+			if($entity->head->mime_attr('content-disposition') ne 'inline') { 
+				warn 'skipping entity - not inline: "' . $entity->head->mime_attr('content-disposition') . '"';
+				return $entity;
+				
+			}
+			else { 
+	            my $new_entity = $self->resized_image_entity($entity);
+	            return $new_entity;
+			}
         }
         else {
-            return $entity;
+			return $entity;
         }
+	}
 
-    }
 
 }
 
 sub resized_image_entity {
-
+	
+	
     warn 'in resized_image_entity' if $t;
 
     my $self   = shift;
@@ -3537,11 +3557,17 @@ sub resized_image_entity {
     push( @{ $self->{tmp_files_to_delete} }, $og_saved_fn );
     push( @{ $self->{tmp_files_to_delete} }, $rs_path );
 
-    return $n_entity;
+	return $n_entity;
 
 }
 
 sub tweak_image_size_attrs {
+	
+	# I feel like I'm just blindly looking for things. Hmm. 
+	# it MAY be better/easier to loop through the entire entity tree
+	# and look for html parts that are inline. 
+	#
+	
 	
 	warn 'in tweak_image_size_attrs' 
 		if $t; 
@@ -3553,7 +3579,10 @@ sub tweak_image_size_attrs {
 	warn '$entity->head->mime_type: ' . $entity->head->mime_type
 		if $t; 	
 	
-    if ( $entity->head->mime_type eq 'multipart/alternative' ) {
+    if ( $entity->head->mime_type eq 'multipart/alternative' 
+		|| 
+		$entity->head->mime_type eq 'multipart/mixed'
+	) {
 
         warn "multipart/alt" 
 			if $t;
@@ -3562,9 +3591,11 @@ sub tweak_image_size_attrs {
         for my $ma_e ( 0 .. $#ma_parts ) {
             my $ma_entity = $ma_parts[$ma_e];
 
-            if ( $ma_entity->head->mime_type eq 'multipart/related' ) {
-
-                warn 'multipart/related' 
+            if ( $ma_entity->head->mime_type eq 'multipart/related' 
+				||
+				$ma_entity->head->mime_type eq 'multipart/alternative'  
+			) {
+                warn 'multipart/related or alternative' 
 					if $t;
                 my @mr_parts = $ma_entity->parts;
 
@@ -3573,29 +3604,34 @@ sub tweak_image_size_attrs {
                     my $mr_entity = $mr_parts[$mr_e];
 
                     if ( $mr_entity->head->mime_type eq 'text/html' ) {
+						
+						if($mr_entity->head->mime_attr('content-disposition') ne 'inline') { 
+							warn 'attached HTML file? ' if $t; 
+							$mr_parts[$mr_e] = $mr_entity;
+						}	
+						else { 
+	                        warn 'found text/html' 
+								if $t;
 
-                        warn 'found text/html' 
-							if $t;
+	                        #oh, there it is.
 
-                        #oh, there it is.
+	                        my $body = $mr_entity->bodyhandle;
 
-                        my $body = $mr_entity->bodyhandle;
+	                        my $content = $body->as_string;
+	                        $content = safely_decode($content);
+	                        $content = $self->tweak_image_size_attrs_in_html($content);
+	                        my $io = $body->open('w');
+	                        $content = safely_encode($content);
+	                        $io->print($content);
+	                        $io->close;
+	                        $mr_entity->sync_headers(
+	                            'Length'      => 'COMPUTE',
+	                            'Nonstandard' => 'ERASE'
+	                        );
+	                    }
 
-                        my $content = $body->as_string;
-                        $content = safely_decode($content);
-                        $content = $self->tweak_image_size_attrs_in_html($content);
-                        my $io = $body->open('w');
-                        $content = safely_encode($content);
-                        $io->print($content);
-                        $io->close;
-                        $mr_entity->sync_headers(
-                            'Length'      => 'COMPUTE',
-                            'Nonstandard' => 'ERASE'
-                        );
-                    }
-
-                    $mr_parts[$mr_e] = $mr_entity;
-
+	                    $mr_parts[$mr_e] = $mr_entity;
+					}
                 }
 
                 $ma_entity->parts( \@mr_parts );
