@@ -620,36 +620,35 @@ sub build_mime_object {
 		warn 'text and html'
 			if $t; 
 	
-		#multipart alternative with a multipart related HTML Version. 		
-		my $html_part = undef; 
-
-		if(scalar(@$ref_mail) > 0){		
-			
-			# HTML part + Attachments. 	
-			$html_part = MIME::Entity->build(
-				Type => 'multipart/related', 			
-			); 
-			$html_part->add_part($html_entity);
-	        foreach (@$ref_mail) { 
-				$html_part->add_part($_); 
-			}
-		}
-		else { 
-			$html_part = $html_entity; 
-		}
-		my $multipart_entity = MIME::Entity->build(
+		my $multipart_alternative_entity = MIME::Entity->build(
 			Type => 'multipart/alternative', 			
 		);
-		$multipart_entity->add_part($text_entity);
-		$multipart_entity->add_part($html_part);
-		$final_entity = $multipart_entity; 
+
+		$multipart_alternative_entity->add_part($text_entity);
+		$multipart_alternative_entity->add_part($html_entity);
+		
+		if(scalar(@$ref_mail) > 0){	
+			my $multipart_related_entity = MIME::Entity->build(
+				Type => 'multipart/related', 	
+			); 
+			$multipart_related_entity->add_part($multipart_alternative_entity);
+	        foreach (@$ref_mail) { #images
+				$multipart_related_entity->add_part($_); 
+			}
+			$final_entity = $multipart_related_entity;
+			$final_entity->dump_skeleton(\*STDERR);
+		}
+		else { 
+			
+			$final_entity = $multipart_alternative_entity;
+			$final_entity->dump_skeleton(\*STDERR);
+		}
 	}
 	elsif(
 		   defined($html_entity) 
 		&& ! defined($text_entity)
 	){ 
 				
-
 		my $html_part = undef; 
 		
 		if(scalar(@$ref_mail) > 0){		
