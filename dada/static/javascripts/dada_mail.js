@@ -5108,12 +5108,14 @@ function SetUrl(url, width, height, alt) {
 	
 	var re = new RegExp(x_filemanager_upload_url, 'g');
 	var path_wo_url_re = escapeRegExp('/dada_mail_support_files/file_uploads/'); 	
-	var re2 = new RegExp(path_wo_url_re, 'g');
+	
+	var re2 = new RegExp('^(.*?)\/dada_mail_support_files\/file_uploads\/', 'g');
 
 	var new_val = url.replace(re, '');
+	//alert('new_val' + new_val); 
 	
-	    new_val = new_val.replace(re2, '');
-	
+	new_val = new_val.replace(re2, '');
+	//	alert('new_val' + new_val); 
 	// console.log('new_val: ' + new_val);
 	var field = urlobj;
 
