@@ -334,7 +334,7 @@ sub format_headers_and_body {
 	
 		if($self->{ls}->param('email_resize_embedded_images') == 1){
 			$entity = $self->resize_images($entity); 
-			$entity = $self->tweak_image_size_attrs($entity); 
+			$entity = $self->tweak_image_size_attrs($entity); 			
 		}
 		else { 
 			warn 'NOT resizing images' if $t; 
@@ -3542,6 +3542,7 @@ sub resized_image_entity {
 }
 
 sub tweak_image_size_attrs {
+	
 	warn 'in tweak_image_size_attrs' 
 		if $t; 
 	
@@ -3582,9 +3583,7 @@ sub tweak_image_size_attrs {
 
                         my $content = $body->as_string;
                         $content = safely_decode($content);
-                        $content =
-                          $self->tweak_image_size_attrs_in_html($content);
-
+                        $content = $self->tweak_image_size_attrs_in_html($content);
                         my $io = $body->open('w');
                         $content = safely_encode($content);
                         $io->print($content);
@@ -3608,6 +3607,7 @@ sub tweak_image_size_attrs {
 
         $entity->parts( \@ma_parts );
     }
+	
 	return $entity;
 
 }
@@ -3620,15 +3620,12 @@ sub tweak_image_size_attrs_in_html {
     my $self = shift;
     my $html = shift;
 	
-	
-	# warn 'before $html: ' . $html; 
-	
 	my $og_html = $html; 
 	
 	my $problems = 0; 
 	
 	$html = $self->shield_tags_in_hrefs($html);
-
+	
     my $new_html;
 
     my $width_limit = $self->{ls}->param('email_image_width_limit');
@@ -3656,65 +3653,50 @@ sub tweak_image_size_attrs_in_html {
                   and $_[0]->attr('width') > $width_limit;
             }
         );
-		
-	
-
 		if(scalar @largeimages <= 0){ 
-			warn 'less than 0!';
+			# Not really a problem, but this will return the og html
+			$problems = 1;  
+			# This won't actually do the thing. 
 			return $og_html; 
 		}
-		
-		
-        foreach my $img (@largeimages) {
+		else {
+	        foreach my $img (@largeimages) {
 			
-			#warn 'large image!'; 
-			
-            #if($t){
-            #require Data::Dumper;
-            #warn '$img: ' . Data::Dumper::Dumper($img);
-            #}
+	            my $w = $img->attr('width');
+	            my $h = $img->attr('height');
 
-            my $w = $img->attr('width');
-            my $h = $img->attr('height');
+	            warn '$w: ' . $w
+	              if $t;
+	            warn '$h: ' . $h
+	              if $t;
 
-            warn '$w: ' . $w
-              if $t;
-            warn '$h: ' . $h
-              if $t;
+	            # I don't know why this would hit,
+	            # as we're already filtering based on width being > $width_limit
+	            # (because the attr would be different than what image is now)
+	            next
+	              unless length($w) > 0 && length($h) > 0;
+	            next
+	              unless $w > 0 && $h > 0;
 
-            # I don't know why this would hit,
-            # as we're already filtering based on width being > $width_limit
-            # (because the attr would be different than what image is now)
-            next
-              unless length($w) > 0 && length($h) > 0;
-            next
-              unless $w > 0 && $h > 0;
+	            my $n_w = $width_limit;
+	            my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
+	            my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
 
-            my $n_w = $width_limit;
-            my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
-            my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
+	            warn '$n_w: ' . $n_w
+	              if $t;
+	            warn '$n_h: ' . $n_h
+	              if $t;
 
-            warn '$n_w: ' . $n_w
-              if $t;
-            warn '$n_h: ' . $n_h
-              if $t;
+	            $img->attr( 'width',  $n_w );
+	            $img->attr( 'height', $n_h );
+	            $img->attr( 'sizes',  undef );
+	            $img->attr( 'srcset', undef );
+	        }
 
-            $img->attr( 'width',  $n_w );
-            $img->attr( 'height', $n_h );
-            $img->attr( 'sizes',  undef );
-            $img->attr( 'srcset', undef );
-        }
-
-        $new_html = $root->as_HTML;
-		
-#		warn 'during $new_html: ' . $new_html; 
-		
-		
-		
-		$new_html = $self->unshield_tags_in_hrefs($new_html);
-		
-        $root     = $root->delete;
-		
+	        $new_html = $root->as_HTML;
+			$new_html = $self->unshield_tags_in_hrefs($new_html);
+	        $root     = $root->delete;
+		}
     } catch {
         warn 'problems: ' . $_;
         $new_html = 'this is new ' . $html;
@@ -3727,9 +3709,6 @@ sub tweak_image_size_attrs_in_html {
 	else { 
 		return $new_html;
 	}
-	
-	
-	
    
 }
 
