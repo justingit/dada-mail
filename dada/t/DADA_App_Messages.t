@@ -96,9 +96,9 @@ my $entity = $parser->parse_data(safely_encode($msg));
 
 diag $entity->dump_skeleton; 
 
-my $pt_body    = safely_decode($entity->parts(0)->bodyhandle->as_string); 
+my $pt_body    = safely_decode($entity->parts(0)->parts(0)->bodyhandle->as_string); 
 
-my $html_body = safely_decode($entity->parts(1)->parts(0)->bodyhandle->as_string);
+my $html_body = safely_decode($entity->parts(0)->parts(1)->bodyhandle->as_string);
 
 diag q{$entity->head->get('From', 0)} . decode_header($entity->head->get('From', 0)); 
 
@@ -184,7 +184,7 @@ $dap->send_subscribed_message(
 
 my $msg = slurp($mh->test_send_file); 
 my $entity = $parser->parse_data(safely_encode($msg)); 
-my $msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
+my $msg_str = safely_decode($entity->parts(0)->parts(0)->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('From', 0))
@@ -234,7 +234,7 @@ $dap->send_owner_happenings(
 
 $msg = slurp($mh->test_send_file); 
 $entity = $parser->parse_data(safely_encode($msg)); 
-$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
+$msg_str = safely_decode($entity->parts(0)->parts(0)->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('From', 0))
@@ -290,7 +290,7 @@ $entity = $parser->parse_data(safely_encode($msg));
 
 $entity->dump_skeleton; 
 
-$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
+$msg_str = safely_decode($entity->parts(0)->parts(0)->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('From', 0))
@@ -362,7 +362,7 @@ $entity  = $parser->parse_data(safely_encode($msg));
 
 diag "here."; 
 
-$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
+$msg_str = safely_decode($entity->parts(0)->parts(0)->bodyhandle->as_string);
 
 
 
@@ -422,7 +422,7 @@ $dap->send_owner_happenings(
 
 $msg     = slurp($mh->test_send_file); 
 $entity  = $parser->parse_data(safely_encode($msg)); 
-$msg_str = safely_decode($entity->parts(0)->bodyhandle->as_string);
+$msg_str = safely_decode($entity->parts(0)->parts(0)->bodyhandle->as_string);
 
 
 ok(
