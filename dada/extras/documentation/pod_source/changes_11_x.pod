@@ -113,7 +113,7 @@ and hopefully stop any fires that started if the decision was critical to some o
 
 =head3 Timezone show in the UI
 
-Setting a time zone shown in the list control panel will be added in a future release, but for now, the server's time zone is now exposed to the user via the UI to help them understand what time of day the app is running (and help the user compare that time to local time)
+Setting a time zone shown in the list control panel will be added in a future release, but for now, the server's time zone is now exposed to the user via the UI to help them understand what time of day the app is running (and help the user compare that tim to local time)
 
 =head2 Bugfixes
 
