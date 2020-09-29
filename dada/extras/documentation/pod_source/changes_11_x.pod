@@ -11,30 +11,45 @@ This is a major feature release.
 
 =head1 Features
 
-Image Resizing now available for all mailing list messages 
+=head2 Auto-Image Resizing now available for all mailing list messages 
 
-Email resizing was available in Dada Mail, but only for images that were dragged and dropped into the rich text editor.
+Resizing images automatically allows you to skip the step of optimizing images for email. 
+You may have on hand a high resolution image, 
+but that image is most likely going to be too large in both file size and image dimensions to be realistic to be used in an email message. 
+Sending it will no doubt blow out any layout/design you have,
+and force your subscribers to endure downloading such a large image. 
+Sending out an message with large images will also take longer than you most likely would prefer as well. 
 
-Now, all images that are embedded in mailing list messages can now be resized. This includes messages sent to a mailing list via Bridge. 
-Look for related options in the list control panel under, B<Mass Mailing: Options: Images and Attachments>: 
+Email resizing has been available in Dada Mail, but only for images that were dragged and dropped into the rich text editor, limiting it's utility. 
+For example, what if you have a discussion list using the Bridge plugin, and users are sending messages with too-large images that way? 
+What if you're grabbing the content of your mass mailing from a URL or a blog's feed? 
+
+Starting with this release, all images that are embedded in a mailing list message will now be resized. 
+Look for this and related options in the list control panel under, B<Mass Mailing: Options: Images and Attachments>: 
 
 =head2 Embed images within HTML Messages 
 
 Check this option to embed images (default: checked). Embedded images have a better chance to be shown to your subscribers in their mail reader, 
-rather than merely linking to the images. The problem is that the more images you embed, the larger the total size of your message. 
+rather than merely linking to the images - linked images are often times blocked to be shown by your mail reader. 
+The more images you embed, the larger the total size of your message. 
 Large messages will take longer to send, and longer for your subscribers to to download/view. 
+
+Enter auto-resizing these embedded images: 
 
 =head3  Resize embedded images 
 
-Check this option to resize embdedded images (default: checked). Resizing images can help keep message size low. There's no reason to embed a two meg image, but it's not always obvious how large an image is to some users. Let Dada Mail deal with that. 
+Check this option to resize embdedded images (default: B<checked>). Resizing images can help keep message size low. There's no reason to embed a two meg image, but it's not always obvious how large an image is to some users (nor should it be). 
+Dada Mail can now handle this chore for you. 
 
 =head4 Image Width Limit (pixels): 
 
-This is where you can set the image width limit. The default is, B<580 pixels>, which is how wide the including mass mailing layouts are that come with Dada Mail. Any image wider will just be responsively shrunk anyways, so there's just no reason to use an image that's wider. 
+This is where you can set the image width limit. The default is, B<580 pixels>, which is how wide the main area for your message content is in the included mass mailing layouts are that come with Dada Mail. 
+Any image wider will just be responsively shrunk anyways (well, sometimes the results looks way funky),
+so there's just no reason to use an image that's wider. 
 
 =head3 Resize drag-and-drop images 
 
-(default: checked). Check this option to resize drag and dropped images, as soon as they're uploaded. Images added to your message in any other way will be resized (if needed) when a message is sent out and you won't see the resized image in the rich text editor. 
+(default: B<checked>). Check this option to resize drag and dropped images, as soon as they're uploaded. Images added to your message in any other way will be resized (if needed) when a message is sent out, so you won't see the resized image in the rich text editor. The original image you dragged/dropped will be saved in Dada Mail's file upload directory, as well as the resized version, when you do this, just in case you want the original image for some reason. 
  
 =head3 More on image resizing 
 
@@ -50,32 +65,32 @@ To accomplish image resizing, one of the following Perl CPAN modules will need t
 
 =back
 
-You can install any (or all!) of these modules separately, or just install/upgrade the, B<Bundle::DadaMail> module. 
+If you need to, you can install any (or all!) of these modules separately, or just install/upgrade the B<Bundle::DadaMail> module. 
  
 =head3 Message Size
 
 You can now set a limit on how large a mass mailing message can be.
 Setting a message size limit helps keep a practical and realistic size to messages, 
-so you're not sending out enormous messages to thousands of people. 
+so you're not try to send out enormous messages to thousands of people. 
+Services like Amazon SES do have a limit on how large an email message can be (10 megabytes)
 
-The default mass mailing size limit is 5 megabytes, which is very roomy.
-Checks on message limits are enabled by default. 
+The default mass mailing size limit is 10 megabytes, which is very, very roomy.
+This limit is enabled by default, and covers both messages sent through the list control panel, as well as via Bridge. 
+Bridge DOES have it's own soft and max size limits for messages it receives. These limits could be higher than the max message size, and that's OK, as transformations of the message received - like resizing of images, or stripping of attachments could lower the final file size. 
 
 =head3 Mass Mailing Schedules Enhancements
 
-More love have been giving to the mass mailing schedules. 
-
 =head4 Week of the Month
 
-You can do set which week of the month a recurring scheduled mailing will be sent on (first, second, third, fourth or fifth week of the month). 
-For example, you may not set a schedule to send your message on only the first Monday of each month. 
+You can do set which week of the month a recurring scheduled mailing will be sent on (first, second, third, fourth, or fifth week of the month). 
+For example, you may now set a schedule to send your message on only the first Monday of each month - a message sent once a month, rather than 4/5 times a month. 
 
 =head4 Scheduled Mass Mailing Preview Calendar
 
 To help understand when scheduled messages will be sent out, a calendar can now be access that shows when a mass mailing should go out. 
 Click on the button labeled, B<Save + View Recurring Schedule in Calendar>. The calendar will be shown in a separate window. 
 
-=head3 Mass Mailing from RSS/Atom feed enahncements 
+=head3 Mass Mailing from RSS/Atom feed enhancements 
 
 Dada Mail can create a mass mailing from a feed that is produced by something like a blog. 
 
@@ -85,7 +100,7 @@ B<Remove content found between the following id/class: >
 
 Then select either a class or id to look for, and the name of those id's or classes. 
 
-=head3 Moderation Ehancements
+=head3 Moderation Enhancements
 
 Discussion messages in Dada Mail can be optionally moderated by a sublist of moderators. 
 In this version, the moderator who took action towards the message, either approve the message, or deny the message is noted in the logs. 
@@ -98,7 +113,7 @@ and hopefully stop any fires that started if the decision was critical to some o
 
 =head3 Timezone show in the UI
 
-Setting a time zone shown in the list control panel will be added in a future releae, but for now, the server's time zone is now exposed to the user via the UI to help them understand what time of day the app is running (and how that compares to local time)
+Setting a time zone shown in the list control panel will be added in a future release, but for now, the server's time zone is now exposed to the user via the UI to help them understand what time of day the app is running (and help the user compare that time to local time)
 
 =head2 Bugfixes
 
