@@ -2,6 +2,7 @@
 
 <!-- tmpl_set name="title" value="Your New Mailing List Has Been Created" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
+<!-- tmpl_set name="load_captcha_js" value="1" --> 
 
 <table  style="width:100%" class="responsive">
  <tr>
@@ -120,34 +121,12 @@
 		Log into Your New Mailing List
 	</legend>
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-    <input type="hidden"   name="flavor"          value="login" >
-    <input type="hidden"   name="admin_list" value="<!-- tmpl_var list -->" >
-	<input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" > 
-
-
-		<div class="row">
-			<div class="small-10 medium-5 large-4 small-centered medium-centered large-centered columns">	 
-			   <label for="admin_password">
-			   	 List Password/<!-- tmpl_var PROGRAM_NAME --> Root Password:
-			   </label>
-			    <input 
-					type="password" 
-					name="admin_password" 
-					id="admin_password" 
-					maxlength="24"
-					required="required"
-				>
-			</div>
+	<div class="row">
+		<div class="small-10 medium-5 large-5 small-centered medium-centered large-centered columns">
+			
+			<!-- tmpl_include control_panel_login_form.tmpl -->
 		</div>
-		<div class="row">
-			<div class="small-10 medium-5 large-4 small-centered medium-centered large-centered columns">	 
- 			   <input type="submit" class="success button expand" value="Log In" >   
-			</div>
-		</div>
-
-   </form>
-
+	</div>
 
 </fieldset> 
 

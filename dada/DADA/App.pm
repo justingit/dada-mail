@@ -3500,7 +3500,7 @@ sub manage_list_consent {
 		my $con = DADA::MailingList::Consents->new; 
 		my $new_id = $con->add(
 			{ 
-				-list => $list, 
+				-list    => $list, 
 				-consent => $new_consent,
 			}
 		); 
@@ -11702,7 +11702,6 @@ sub text_list {
     $self->header_props(%$headers);
     return $body;
 }
-
 sub new_list {
 
     my $self = shift;
@@ -11748,7 +11747,7 @@ sub new_list {
 
         }
 		
-		if (can_use_Google_reCAPTCHA() == 1 ) {
+		if (!$errors && can_use_Google_reCAPTCHA() == 1 ) {
 
 	        my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
 			my $captcha_status = validate_recaptcha(
@@ -11877,8 +11876,10 @@ sub new_list {
                         info                   => $info,
                         flags_privacy_policy   => $flags->{privacy_policy},
                         privacy_policy         => $privacy_policy,
+						
 						consent                => $consent,
-				
+						flags_consent          =>  $flags->{consent},
+						
                         flags_physical_address => $flags->{physical_address},
                         physical_address       => $physical_address,
                         flags_list_name_bad_characters =>
@@ -11886,7 +11887,7 @@ sub new_list {
 
                         lists_exist     => $lists_exist,
                         list_popup_menu => $list_popup_menu,
-                        auth_state      => $sast->make_state
+                        auth_state      => $sast->make_state,
 						
                     },
                 }
@@ -11950,6 +11951,7 @@ sub new_list {
                 info             => $info,
                 privacy_policy   => $privacy_policy,
                 physical_address => $physical_address,
+				consent          => $consent,
             }
         );
 
@@ -12074,6 +12076,12 @@ sub new_list {
                         -Use_Custom => 0,
                     },
                     -vars => {
+						
+                        login_widget     => 'hidden_field',
+                        selected_list    => $ls->param('list'),
+                        auth_state       => $auth_state,
+						
+						
                         list_name        => $ls->param('list_name'),
                         list             => $ls->param('list'),
                         escaped_list     => $escaped_list,
@@ -12081,7 +12089,6 @@ sub new_list {
                         info             => $ls->param('info'),
                         privacy_policy   => $ls->param('privacy_policy'),
                         physical_address => $ls->param('physical_address'),
-                        auth_state       => $auth_state,
                     },
                 }
             );

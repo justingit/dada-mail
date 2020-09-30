@@ -2019,9 +2019,22 @@ if($args{-new_list} eq "yes") {
 	}else{ 
 		$new_list_errors{physical_address} = 0;
 	}
-
-
 	
+	
+	if($args{-new_list} eq "yes") {
+		# optional, but if there, needs to be like, *something* 
+		if(defined($fields->{consent}) &&  length($fields->{consent}) > 0){ 
+			if(length($fields->{consent}) < 16){ 
+				$list_errors++;
+				$new_list_errors{consent} = 1;
+			}else{ 
+				$new_list_errors{consent} = 0;
+			}
+		}
+		else { 
+			$new_list_errors{consent} = 0;
+		}
+	}
 	return ($list_errors, \%new_list_errors);
 }
 

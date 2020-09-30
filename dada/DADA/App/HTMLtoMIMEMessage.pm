@@ -636,12 +636,10 @@ sub build_mime_object {
 				$multipart_related_entity->add_part($_); 
 			}
 			$final_entity = $multipart_related_entity;
-			$final_entity->dump_skeleton(\*STDERR);
 		}
 		else { 
 			
 			$final_entity = $multipart_alternative_entity;
-			$final_entity->dump_skeleton(\*STDERR);
 		}
 	}
 	elsif(

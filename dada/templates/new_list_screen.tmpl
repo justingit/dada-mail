@@ -74,8 +74,8 @@
 					type="text" 
 					id="list_name" 
 					name="list_name" 
-					value="<!-- tmpl_var list_name escape="HTML" -->"  m
-					axlength="250" 
+					value="<!-- tmpl_var list_name escape="HTML" -->"  
+					maxlength="250" 
 				>
 			</div> 
 		</div>
@@ -386,6 +386,14 @@
 	<legend>
 		List Consent
 	</legend>
+	
+	<!-- tmpl_if flags_consent -->
+		<div class="alert-box alert radius">
+			Your List Consent is too short. 
+		</div>
+	<!-- /tmpl_if -->
+	
+	
 	
     <div class="alert-box info radius">
 	  <p>

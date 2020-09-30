@@ -104,10 +104,15 @@ sub Create {
 
     $ls->save({ -settings => $args->{ -settings } });
 	
-		
+    available_lists( -clear_cache => 1 );
+	
+	
+	#undef $ls; 
+	#my $ls = DADA::MailingList::Settings->new({-list => $args->{ -list }});
+	
 	if(
 		  defined($consent) 
-		&& length($consent) > 0
+		&& length($consent) > 16
 	) {
 		# Consent!
 		require DADA::MailingList::Consents; 
