@@ -251,15 +251,22 @@ sub run_schedules {
                     -days           => $sched->{schedule_recurring_days},
                     -start          => $sched->{schedule_recurring_ctime_start},
                     -end            => $sched->{schedule_recurring_ctime_end},
+					-window_only    => 1, 
                 }
               );
             if ( $status == 0 ) {
                 $rb .= "Problems calculating recurring schedules - skipping schedule: "
                   . $errors . "\n";
 
+
+                 warn "Problems calculating recurring schedules - skipping schedule: "
+                    . $errors . "\n";
+
+
                 #$r  .= $rb;
                 # Send a failure notification
-
+				
+				
                 $self->send_schedule_notification(
                     {
                         -type    => 'failure',
@@ -803,12 +810,40 @@ sub recurring_schedule_times {
     my $start          = $args->{-start};
     my $end            = $args->{-end};
 
+	my $window_only = 0; 
+	if(exists($args->{-window_only})){ 
+		$window_only = $args->{-window_only};
+	}
 
     try {
         
         require DateTime;
         require DateTime::Event::Recurrence;
         
+		
+		if($window_only == 1) {
+			if(
+				$start < (time - (86_400 * 60) )
+			){ 
+				$start = (time - (86_400 * 60) ); 
+				# warn "start time tweaked to, " . scalar localtime($start) . "\n"; 
+			}
+			else { 
+				# warn "og start time:, " . scalar localtime($start) . "\n"; 
+			}
+		
+			if(
+				$end > (time + (86_400 * 120) )
+			){ 
+				$end = (time + (86_400 * 120) ); 
+				# warn "end time tweaked to, " . scalar localtime($end) . "\n"; 
+				
+			}
+			else { 
+				# warn "og end time: " . scalar localtime($end) . "\n"; 
+			}
+		}
+		
         my $start_dt = DateTime->from_epoch( epoch => $start );
         my $end_dt   = DateTime->from_epoch( epoch => $end );
 

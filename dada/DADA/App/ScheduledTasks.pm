@@ -112,15 +112,26 @@ sub scheduled_mass_mailings {
     else { 
         push(@lists, $list); 
     }
+	
+	my $limit = time + 120; 
     
     require DADA::MailingList::Schedules; 
+	
     foreach my $l (@lists){ 			    
         my $sched = DADA::MailingList::Schedules->new({-list => $l});
-#        if($sched->enabled) {
-            $r .= $sched->run_schedules();  
-#       }
-        undef($sched); 
-    }
+        $r .= $sched->run_schedules();  
+		undef($sched); 
+		
+		if(time > $limit) { 
+			$r .= 'Limit of, '
+			.  formatted_runtime($limit) 
+			. ' reached, skipping any remaining mailing lists. ' 
+			. "\n";
+			
+			last;
+		}
+    
+	}
     return $r; 
 }
 
