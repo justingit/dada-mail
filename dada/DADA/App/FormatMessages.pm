@@ -2012,10 +2012,29 @@ sub change_content_transfer_encoding {
             && ( $is_att != 1 )
           )
         {
-
-            $args->{-entity} =
-              $self->change_content_transfer_encoding_in_body(
-                $args->{-entity} );
+			
+			if($self->no_list != 1){
+				if($args->{-entity}->head->mime_type eq 'text/plain'){
+		            $args->{-entity} = $self->change_content_transfer_encoding_in_body(
+		            	$args->{-entity},
+						scalar $self->{ls}->param('plaintext_encoding'), \
+						scalar $self->{ls}->param('charset_value'), 
+					);
+				}
+				elsif($args->{-entity}->head->mime_type eq 'text/html'){
+		            $args->{-entity} = $self->change_content_transfer_encoding_in_body(
+		            	$args->{-entity},
+						scalar $self->{ls}->param('html_encoding'), 
+						scalar $self->{ls}->param('charset_value'), 					
+					);
+				}
+			}
+			else { 
+				# would this ever happen:
+	            $args->{-entity} = $self->change_content_transfer_encoding_in_body(
+	            	$args->{-entity},
+				);				
+			}
         }
     }
 
