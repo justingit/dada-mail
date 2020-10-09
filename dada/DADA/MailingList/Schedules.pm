@@ -526,31 +526,30 @@ sub run_schedules {
                            -draft_id => $sched->{id},
                            -screen   => $sched->{screen},
                            -role     => $sched->{role},
-                   
-                           -process => 1,
+                           -process  => 1,
                    
                        }
                    );
                 }
-                if ( $sched->{schedule_type} eq 'recurring' ) {
-				   $rc .= $self->update_schedule(
-                       {
-                           -id     => $sched->{id},
-                           -role   => $sched->{role},
-                           -screen => $sched->{screen},
-                           -vars   => {
-                               schedule_html_body_checksum => $c_r->{md5},
-                               feed_url_most_recent_entry =>
-                                 $c_r->{vars}->{most_recent_entry},
-                           },
-                       }
-                   );
-                }
-				
                 # oh, there it is.
                 
 				if ( $c_r->{status} == 1 ) {
 
+					if ( $sched->{schedule_type} eq 'recurring' ) {
+					   $rc .= $self->update_schedule(
+	                       {
+	                           -id     => $sched->{id},
+	                           -role   => $sched->{role},
+	                           -screen => $sched->{screen},
+	                           -vars   => {
+	                               schedule_html_body_checksum => $c_r->{md5},
+	                               feed_url_most_recent_entry =>
+	                                 $c_r->{vars}->{most_recent_entry},
+	                           },
+	                       }
+	                   );
+	                }
+					
 					my $escaped_mid = $c_r->{mid};
                     $escaped_mid =~ s/\>|\<//g;
                     $rc .= "\t\t* Scheduled Mass Mailing added to the queue, Message ID: $escaped_mid\n";
