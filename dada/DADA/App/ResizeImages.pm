@@ -219,17 +219,17 @@ sub resize_image_via_Image_Resize {
             my $n_w = $args->{-width};
             my $n_h = int( ( int($n_w) * int($h) ) / int($w) );
         
-            $img->resize($n_w, $n_h);
+            my $gd = $img->resize($n_w, $n_h);
 			require File::Slurper; 
 			
             if ( $u_filename =~ m/\.(jpg|jpeg)$/ ) {
-		        File::Slurper::write_binary( $new_file_path, $img->jpeg($new_file_path) );
+		        File::Slurper::write_binary( $new_file_path, $gd->jpeg() );
             }
             elsif ( $u_filename =~ m/\.(gif)$/ ) {
-		        File::Slurper::write_binary( $new_file_path, $img->gif($new_file_path) );
+		        File::Slurper::write_binary( $new_file_path, $gd->gif() );
             }
             elsif ( $u_filename =~ m/\.(png)$/ ) {
-		        File::Slurper::write_binary( $new_file_path, $img->png($new_file_path) );
+		        File::Slurper::write_binary( $new_file_path, $gd->png() );
             }
 
             return ( 1, $new_file_path, $n_w, $n_h );
