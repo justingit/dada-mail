@@ -40,10 +40,9 @@ sub resize_image {
         $img_scale_obj = Image::Scale->new( $args->{-file_path} )
           || die "Invalid file: " . $args->{-file_path};
         $can_use_Image_Scale = 1;
-    }
-    catch {
+    } catch {
         # ...
-        warn $_;
+        warn substr($_, 0, 100) . '...';
     };
 
     if ( $can_use_Image_Scale == 1 ) {
@@ -62,12 +61,11 @@ sub resize_image {
         #
         require Image::Resize;
         $img_resize_obj = Image::Resize->new( $args->{-file_path} )
-          || die $_; 
-        $can_use_Image_Resize = 1;
-    }
-    catch {
+          || die substr($_, 0, 100) . '...'; 
+		  $can_use_Image_Resize = 1;
+    } catch {
         # ...
-        warn $_;
+        warn substr($_, 0, 100) . '...';
     };
 	
     if ( $can_use_Image_Resize == 1 ) {
@@ -91,12 +89,11 @@ sub resize_image {
         #
         require Image::Magick;
         $img_magick_obj = Image::Magick->new()
-          || die $_; 
+          || die substr($_, 0, 100) . '...'; 
         $can_use_Image_Magick = 1;
-    }
-    catch {
+    } catch {
         # ...
-        warn $_;
+        warn substr($_, 0, 100) . '...';
     };
 	
     if ( $can_use_Image_Magick == 1 ) {
