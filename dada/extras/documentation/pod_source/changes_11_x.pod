@@ -3,6 +3,28 @@
 
 =encoding utf-8
 
+=head1 11.12.1
+
+This is mostly a bug-fix release for issues found in the v11.12.0 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 Image resizing using Image::Scale does not work correctly 
+
+L<https://github.com/justingit/dada-mail/issues/989>
+
+=head3 Recurring schedules that grab content from an outside source (webpage, feed) which fail during constructing and sending still update MD5 
+
+L<https://github.com/justingit/dada-mail/issues/986>
+
+=head3 Content-Encoding never changed in messages received via Bridge
+
+L<https://github.com/justingit/dada-mail/issues/985>
+
+=head3 Recurring Schedules that end many decades into the future are slow to process 
+
+L<https://github.com/justingit/dada-mail/issues/984>
+
 =head1 11.12.0
 
 =head2 Focus 
