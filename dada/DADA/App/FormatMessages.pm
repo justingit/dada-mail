@@ -2017,7 +2017,7 @@ sub change_content_transfer_encoding {
 				if($args->{-entity}->head->mime_type eq 'text/plain'){
 		            $args->{-entity} = $self->change_content_transfer_encoding_in_body(
 		            	$args->{-entity},
-						scalar $self->{ls}->param('plaintext_encoding'), \
+						scalar $self->{ls}->param('plaintext_encoding'), 
 						scalar $self->{ls}->param('charset_value'), 
 					);
 				}
