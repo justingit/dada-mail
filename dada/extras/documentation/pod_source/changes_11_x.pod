@@ -3,6 +3,20 @@
 
 =encoding utf-8
 
+
+=head1 11.12.2
+
+This is mostly a bug-fix release for issues found in the v11.12.1 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 Content-Encoding never changed in messages received via Bridge
+
+L<https://github.com/justingit/dada-mail/issues/985>
+
+(the previous bugfix introduced a small, one-character bug, which is fixed with this release)
+
+
 =head1 11.12.1
 
 This is mostly a bug-fix release for issues found in the v11.12.0 release of Dada Mail. 
