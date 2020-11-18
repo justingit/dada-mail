@@ -111,7 +111,7 @@ Download using the link below - it's a small CGI Perl script - so you will want 
 
 =end html
 
-and upload the C<uncompress_dada.cgi> script (PlainTest/ASCII mode - NOT binary!) to the same directory in your hosting account that you just uploaded, I<dada-11_12_2.tar.gz>. 
+and upload the C<uncompress_dada.cgi> script (PlainText/ASCII mode - NOT binary!) to the same directory in your hosting account that you just uploaded, I<dada-11_12_2.tar.gz>. 
 
 =head3 Change the file permissions of the helper script to, "755"
 
