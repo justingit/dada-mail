@@ -3099,6 +3099,9 @@ sub mass_mailing_options {
                     -List       => $list,
                 },
                 -vars => {
+					
+					screen                  => 'mass_mailing_options',
+					
                     root_login                => $root_login,
                     done                      => $done,
                     can_use_css_inliner       => $can_use_css_inliner,
