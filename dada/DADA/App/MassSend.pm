@@ -1312,6 +1312,16 @@ sub send_email {
             values => [(1..100)],
         }
       );
+	  
+	my $feed_url_max_age_of_entries_widget = HTML::Menu::Select::popup_menu(
+        {
+            name    => 'feed_url_max_age_of_entries',
+            id      => 'feed_url_max_age_of_entries',
+            default => 7,
+            values  => [(1..366)],
+        }
+    );
+	 
 	
 
     if ( !$process ) {
@@ -1418,8 +1428,9 @@ sub send_email {
 					
 					default_subject => $subject,
 					
-					feed_url_max_entries_widget => $feed_url_max_entries_widget, 
-						
+					feed_url_max_age_of_entries_widget => $feed_url_max_age_of_entries_widget,
+					feed_url_max_entries_widget        => $feed_url_max_entries_widget, 
+					
                     %wysiwyg_vars,
                     %$ses_params,
 
