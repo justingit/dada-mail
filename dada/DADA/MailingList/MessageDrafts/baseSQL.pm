@@ -1002,21 +1002,25 @@ sub params_to_save {
         $params->{ $_ . '.rangeend' }   = 1;
     }
 	
-    $params->{attachment1} = 1;
-    $params->{attachment2} = 1;
-    $params->{attachment3} = 1;
-    $params->{attachment4} = 1;
-    $params->{attachment5} = 1;
+    $params->{attachment1}                       = 1;
+    $params->{attachment2}                       = 1;
+    $params->{attachment3}                       = 1;
+    $params->{attachment4}                       = 1;
+    $params->{attachment5}                       = 1;
 
-    $params->{content_from}          = 1;
-    $params->{url}                   = 1;
-    $params->{url_options}           = 1;
+    $params->{content_from}                      = 1;
+    $params->{url}                               = 1;
+    $params->{url_options}                       = 1;
     
-    $params->{plaintext_content_from} = 1;
-    $params->{plaintext_url}          = 1;
+    $params->{plaintext_content_from}            = 1;
+    $params->{plaintext_url}                     = 1;
+	                                             
+	$params->{feed_url}                          = 1; 
+	$params->{feed_url_max_entries}              = 1;
 	
-	$params->{feed_url}               = 1; 
-	$params->{feed_url_max_entries}   = 1;
+	$params->{feed_url_max_age_of_entries}       = 1;
+	$params->{feed_url_set_max_age_of_entries}   = 1;
+	
 	$params->{feed_url_content_type}  = 1;
 
 	$params->{feed_url_pre_html}      = 1; 

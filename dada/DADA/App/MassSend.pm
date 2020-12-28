@@ -523,13 +523,14 @@ sub construct_from_url {
 					{ 
 						-feed_url                           => scalar $draft_q->param('feed_url'), 
 						-max_entries                        => scalar $draft_q->param('feed_url_max_entries'), 
+						-set_max_age_of_entries             => scalar $draft_q->param('feed_url_set_max_age_of_entries'),
+						-max_age_of_entries                 => scalar $draft_q->param('feed_url_max_age_of_entries'),
 						-content_type                       => scalar $draft_q->param('feed_url_content_type'), 
 						-pre_html                           => scalar $draft_q->param('feed_url_pre_html'), 
 						-post_html                          => scalar $draft_q->param('feed_url_post_html'), 
 						-remove_rss_content                 => scalar $draft_q->param('remove_rss_content'), 
 						-remove_rss_content_selector_type   => scalar $draft_q->param('remove_rss_content_selector_type'), 
 						-remove_rss_content_selector_label  => scalar $draft_q->param('remove_rss_content_selector_label'), 
-						
 						
 						(($pass_last_read_entry == 1) ?(
 							-last_read_entry => scalar $draft_q->param('feed_url_most_recent_entry'),
@@ -941,6 +942,9 @@ sub content_from_feed_url {
 	my $post_html       = $args->{-post_html}       || undef; 
 	my $last_read_entry = $args->{-last_read_entry} || undef; 
 	
+	my $set_max_age_of_entries = $args->{-set_max_age_of_entries} || 0; 
+	my $max_age_of_entries     = $args->{-max_age_of_entries}     || undef; 
+	
 	my $status = 1; 
 	my $error  = {};
 	
@@ -995,6 +999,23 @@ sub content_from_feed_url {
 				# probably be, "last", cause entries should go newest -> oldest...
 			}
 		}
+		
+		my $days_in_seconds = 86_400; 
+		warn '$set_max_age_of_entries: '                         .  $set_max_age_of_entries; 
+		warn '$max_age_of_entries: '                             .  $max_age_of_entries; 
+		warn '(time - ($days_in_seconds * $max_age_of_entries))' .  (time - ($days_in_seconds * $max_age_of_entries));
+		warn 'localtime: ' . scalar localtime((time - ($days_in_seconds * $max_age_of_entries))); 
+		
+		if($set_max_age_of_entries == 1 && defined($max_age_of_entries)){ 
+			if($pubDate_epoch < (time - ($days_in_seconds * $max_age_of_entries))){ 
+				next;
+			}
+		}
+		
+		my $set_max_age_of_entries = $args->{-set_max_age_of_entries} || 0; 
+		my $max_age_of_entries     = $args->{-max_age_of_entries}     || undef; 
+		
+		
 		
 		$n++;
 		if($n == 1){ 
