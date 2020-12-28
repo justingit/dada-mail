@@ -173,28 +173,6 @@
 			</a>
 		</div> 
 	</div>
-	<div class="row">
-		<div class="small-12 columns">       
-			<input 
-				type="radio" 
-				name="archive_protect_email" 
-				id="archive_protect_email_recaptcha_mailhide" 
-				value="recaptcha_mailhide" 
-				<!-- tmpl_if expr="(list_settings.archive_protect_email eq 'recaptcha_mailhide')" -->checked="checked"<!--/tmpl_if-->
-			>
-			<label for="archive_protect_email_recaptcha_mailhide"  <!-- tmpl_unless can_use_recaptcha_mailhide -->class="disabled"<!-- /tmpl_unless -->>
-				reCAPTCHA MailHide
-			</label>
-		    <a href="https://www.google.com/recaptcha/admin#mailhide" target="_blank">
-		     ?
-		    </a>
-			 <!-- tmpl_unless can_use_recaptcha_mailhide -->    
-				<div class="alert-box info radius">
-			      <strong>reCAPTCHA MailHide Disabled.</strong> reCAPTCHA MailHide needs to be successfully configured. 
-				</div> 
-			<!--/tmpl_unless-->
-		</div> 
-	</div>
 </fieldset>
 
 

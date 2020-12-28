@@ -8857,30 +8857,6 @@ sub adv_archive_options {
             $can_use_html_scrubber = 0;
         };
 
-        my $can_use_recaptcha_mailhide = 1;
-        try {
-            require Captcha::reCAPTCHA::Mailhide;
-        }
-        catch {
-            carp "reCAPTCHA Mailhide not working correctly?:"  . substr($_, 0, 100) . '...';
-            $can_use_recaptcha_mailhide = 0;
-        }
-        finally {
-            if (
-                !defined(
-                    $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key}
-                )
-                || !defined(
-                    $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key}
-                )
-                || $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key} eq ''
-                || $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key} eq ''
-              )
-            {
-                $can_use_recaptcha_mailhide = 0;
-            }
-        };
-
         my $gravatar_img_url     = '';
         my $can_use_gravatar_url = 1;
         try {
@@ -8919,7 +8895,6 @@ sub adv_archive_options {
                     can_use_xml_rpc                         => $can_use_xml_rpc,
                     can_use_html_scrubber                   => $can_use_html_scrubber,
                     can_display_attachments                 => $la->can_display_attachments,
-                    can_use_recaptcha_mailhide              => $can_use_recaptcha_mailhide,
                     can_use_gravatar_url                    => $can_use_gravatar_url,
                     gravatar_img_url                        => $gravatar_img_url,
 					archive_auto_remove_after_timespan_menu => $archive_auto_remove_after_timespan_menu, 
@@ -12484,13 +12459,7 @@ sub list_archive {
             $header_from =
               $archive->_parse_in_list_info( -data => $header_from );
 
-            # this should be only one sub.
-            if ( $ls->param('archive_protect_email') eq 'recaptcha_mailhide' ) {
-
-                # D'oh!
-                $header_from = mailhide_encode($header_from);
-            }
-            elsif ( $ls->param('archive_protect_email') eq 'break' ) {
+			if ( $ls->param('archive_protect_email') eq 'break' ) {
                 $header_from = encode_html_entities( break_encode($header_from),
                     , "\200-\377" );
             }

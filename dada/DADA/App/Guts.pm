@@ -74,7 +74,6 @@ require Exporter;
   break_encode
   anonystar_address_encode
   optimize_mime_parser
-  mailhide_encode
   gravatar_img_url
   perl_dehex
   csv_parse
@@ -2728,69 +2727,6 @@ sub anonystar_address_encode {
 	}
 }
 
-
-
-
-
-sub mailhide_encode {
-
-    my $str = shift;
-
-	my $can_use_mailhide = 1; 
-    try {
-        require Captcha::reCAPTCHA::Mailhide;
-    }
-    catch {
-        carp
-"Problems with loading Mailhide support (Captcha::reCAPTCHA::Mailhide): $_";
-	$can_use_mailhide = 0; 
-    };
-	if($can_use_mailhide == 0){ 
-		return $str; 
-	}
-
-    if (   !defined( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key} )
-        || !defined( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key} )
-        || $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key}  eq ''
-        || $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key} eq '' )
-    {
-        carp 'reCaptcha Mailhide doesn\'t seem to be configured? both public_key and private_key have to be filled out.';
-        return $str;
-    }
-
-# DEV: Should I put a test to make sure that $RECAPTHCA_MAILHIDE_PARAMS is filled out correctly?
-
-    my $rcmh = Captcha::reCAPTCHA::Mailhide->new;
-    require Email::Address;
-    my $addy = undef;
-
-    if ( defined($str) ) {
-        eval {
-            $addy = ( Email_Address_parse($str) )[0]->address;
-
-        };
-    }
-
-    if ($addy) {
-        my $mh_addy = $addy;
-        try {
-            $mh_addy =
-              $rcmh->mailhide_html(
-                $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key},
-                $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key},
-                $addy );
-        }
-        catch {
-            carp "Wasn't able to successfully Mailhide encode the email address: $_";
-        };
-
-		$addy = quotemeta($addy);
-        $str =~ s/$addy/$mh_addy/g;
-
-    }
-    return $str;
-
-}
 
 
 

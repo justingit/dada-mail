@@ -579,8 +579,6 @@ Related to showing information via map charts, Dada Mail, by default anonymized 
 Dada Mail uses CAPTCHA challenge-response tests optionally for many things: for the initial signup form, as an additional step to confirm a subscription, the Forward a Friend form, and other places. 
 Dada Mail supports Google's reCAPTCHA v2 and v3. 
 
-Dada Mail also supports Mailhide, which uses the reCAPTCHA system to easily protect email addresses shown in Dada Mail's public archives.
-
 B<More Information:> L<https://dadamailproject.com/d/features-CAPTCHA.pod.html>
 
 In this section, we can configure the CAPTCHA options in Dada Mail. 
@@ -616,14 +614,6 @@ Plug in your reCAPTCHA v3 Secret key here.
 =head4 Score Threshold
 
 reCAPTCHA v3 returns a score (1.0 is very likely a good interaction, 0.0 is very likely a bot). Depending on how strict you'd like the reCAPTCHA check to be, you may customize the score threshold, here. The default is, C<.5>. 
-
-=head3 reCAPTCHA Mailhide
-
-reCAPTCHA Mailhide is also supported, and also needs a Public and Private API key, which can be created here: L<https://www.google.com/recaptcha/admin#mailhide> - NOTE! That this API key pair is different from your reCAPTHCA public/private key - they're not interchangeable. 
-
-=head4 Test reCAPTCHA Mailhide Configuration
-
-You may use the, B<Test reCAPTCHA Mailhide Configuration> button to make sure the Mailhide system is working. Results should be shown below the button, as well as an example of a protected email address. If the example does not show, double-check that the information you've added is correct.
 
 =head2 Configure Global Mailing List Options 
 

@@ -243,7 +243,6 @@ BEGIN{ use_ok('File::Spec'); }
 BEGIN{ use_ok('Best') }; 
 #BEGIN{ use_ok('Crypt::Rijndael_PP'); 
 BEGIN{ use_ok('HTML::Tiny') }; 
-#BEGIN{ use_ok('Captcha::reCAPTCHA::MyMailhide');
 BEGIN{ use_ok('Captcha::reCAPTCHA') };
 
 

@@ -494,10 +494,8 @@ $RECAPTCHA_PARAMS //= {
 };
 
 
-$RECAPTHCA_MAILHIDE_PARAMS //= {
-    public_key  => '',
-    private_key => '',
-};
+# NOOP
+$RECAPTHCA_MAILHIDE_PARAMS //= {};
 
 
 
@@ -1484,7 +1482,7 @@ $MIME_TOOLS_PARAMS //= {
 	archive_auto_remove                   => 0,
 	archive_auto_remove_after_timespan    => '1y', 
 
-    # Can be set to, "none","break", "spam_me_not", or, "recaptcha_mailhide"
+    # Can be set to, "none","break", "spam_me_not"
     archive_protect_email => 'break',
 
     enable_gravatars     => 0,

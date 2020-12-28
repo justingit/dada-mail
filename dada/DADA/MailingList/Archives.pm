@@ -721,17 +721,7 @@ sub _email_protect {
 		my $look_e      = quotemeta($_);
 		
 		
-		if($self->{ls}->param('archive_protect_email') eq 'recaptcha_mailhide'){ 
-            my $protected_e = mailhide_encode($_); 
-
-			# This isn't going to cover everything, but a lot of things: 
-			my $entire_mail_link = quotemeta('<a href="mailto:'.$_.'">'.$_.'</a>'); 
- 			$body                =~ s/$entire_mail_link/$protected_e/g; 
-			
-			
-            $body =~ s/$look_e/$protected_e/g;
-		}
-		elsif($self->{ls}->param('archive_protect_email') eq 'break'){ 				
+		if($self->{ls}->param('archive_protect_email') eq 'break'){ 				
             my $protected_e = break_encode($_); 
               $body =~ s/$look_e/$protected_e/g;
 		}
@@ -770,13 +760,7 @@ sub _email_protect {
 			next; 
 		}
 		
-		if($self->{ls}->param('archive_protect_email') eq 'recaptcha_mailhide'){ 
-            my $pe = mailhide_encode($fa);
-            my $le = quotemeta($fa); 
-            $body =~ s/$le/$pe/g;
-            
-		}
-		elsif($self->{ls}->param('archive_protect_email') eq 'break'){ 				
+		if($self->{ls}->param('archive_protect_email') eq 'break'){ 				
             my $pe = break_encode($fa); 
             my $le = quotemeta($fa); 
 			$body =~ s/$le/$pe/g;

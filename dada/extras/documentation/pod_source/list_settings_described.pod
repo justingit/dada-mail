@@ -240,7 +240,7 @@ L<https://dadamailproject.com/d/features-public_and_private_lists.pod.html>
 
     add_social_bookmarking_badges => 1,
 
-    # Can be set to, "none", "spam_me_not", or, "recaptcha_mailhide"
+    # Can be set to, "none", "spam_me_not"
     archive_protect_email => 'spam_me_not',
 
     enable_gravatars     => 0,

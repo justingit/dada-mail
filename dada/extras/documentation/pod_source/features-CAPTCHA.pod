@@ -78,26 +78,4 @@ CAPTCHA protection is available for Dada Mail Profile Registrations.
 
 CAPTCHA for Profile Registrations is enabled by default. If you'd like to I<disable> CAPTCHA, you can do so in the config variable, C<$PROFILE_OPTIONS>
 
-=head1 reCAPTCHA Mailhide
-
-If you're using the reCAPTCHA service, you may also take advantage of reCAPTCHA Mailhide. In Dada Mail, this is used to protect individual email addresses in mailing list archives. Before an email address can be viewed, a CAPTCHA has to be solved. 
-
-=head2 Configuration 
-
-Mailhide can also be configued in the Dada Mail Installer. 
-
-If not already shown, click the button, B<Show/Hide Advanced Options...>, then check the option, B<Configure CAPTCHA Options>. Additional CAPTCHA settings will then be revealed. 
-
-Under, B<reCAPTCHA Mailhide Settings>, enter in your B<reCAPTCHA Mailhide Public Key> and B<reCAPTCHA Mailhide Private Key>, much like you did for your CAPTCHA settings, above. You may create those keys here: 
-
-L<https://www.google.com/recaptcha/admin#mailhide/apikey>
-
-=head2 Enabling
-
-In your list control panel, go to: B<Manage Archives - Advanced Archive Options>, under, B<Email Address Protection> select, B<reCAPTCHA MailHide>.
-
-=head2 Requirements
-
-You may need to separately install the C<Captcha::reCAPTCHA::Mailhide> CPAN Perl module, in order to gain reCAPTCHA Mailhide support. 
-
 =cut

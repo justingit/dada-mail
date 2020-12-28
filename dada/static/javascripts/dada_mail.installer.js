@@ -42,9 +42,6 @@ jQuery(document).ready(function($){
 		$("body").on("click", '.test_CAPTCHA_configuration', function(event) {
 			test_CAPTCHA_configuration();
 		});
-		$("body").on("click", '.test_captcha_reCAPTCHA_Mailhide_configuration', function(event) {
-			test_captcha_reCAPTCHA_Mailhide_configuration();
-		});
 		
 		$("body").on("click", '.test_amazon_ses_configuration', function(event) {
 			test_amazon_ses_configuration();
@@ -207,11 +204,6 @@ jQuery(document).ready(function($){
 				if ($("#captcha_params_recaptcha_type_v2").prop("checked") === true){ 
 					test_CAPTCHA_configuration();
 				}	
-				if ($("#captcha_reCAPTCHA_Mailhide_public_key").prop("checked") === true){ 
-					if ($("#captcha_reCAPTCHA_Mailhide_private_key").prop("checked") === true){ 
-						test_captcha_reCAPTCHA_Mailhide_configuration();
-					}
-				}
 			}
 			if ($("#configure_amazon_ses").prop("checked") === true){ 
 				test_amazon_ses_configuration(); 
@@ -493,31 +485,8 @@ function test_CAPTCHA_configuration() {
 
 }
 
-function test_captcha_reCAPTCHA_Mailhide_configuration() {
-	
-	var target_div = 'captcha_reCAPTCHA_Mailhide_configuration_results';
-	
-	$("#" + target_div).html('<p class="label info">Loading...</p>');
-	if ($("#" + target_div).is(':hidden')) {
-		$("#" + target_div).show();
-	}
-	
-	var request = $.ajax({
-		url: $("#self_url").val(),
-		type: "POST",
-		cache: false,
-		data: {
-			flavor: 'cgi_test_captcha_reCAPTCHA_Mailhide',
-			captcha_reCAPTCHA_Mailhide_public_key:  $("#captcha_reCAPTCHA_Mailhide_public_key").val(), 
-			captcha_reCAPTCHA_Mailhide_private_key: $("#captcha_reCAPTCHA_Mailhide_private_key").val()
-		},
-		dataType: "html"
-	});
-	request.done(function(content) {
-		$("#" + target_div).html(content);
-	});
-	
-}
+
+
 
 function installer_checkbox_toggle_option_groups(checkbox_id, target_id){ 
 	

@@ -289,7 +289,6 @@ sub setup {
         cgi_test_magic_template_diag_box => \&cgi_test_magic_template_diag_box, 
         cgi_test_amazon_ses_configuration => \&cgi_test_amazon_ses_configuration,
         cgi_test_CAPTCHA_Google_reCAPTCHA => \&cgi_test_CAPTCHA_Google_reCAPTCHA,
-        cgi_test_captcha_reCAPTCHA_Mailhide => \&cgi_test_captcha_reCAPTCHA_Mailhide,
         #cgi_test_FastCGI                    => \&cgi_test_FastCGI,
         cl_run                               => \&cl_run, 
     );
@@ -852,10 +851,7 @@ sub scrn_configure_dada_mail {
                 can_use_SQLite                        => scalar test_can_use_SQLite(),
                 can_use_CAPTCHA_Google_reCAPTCHA_v2   => scalar test_can_use_CAPTCHA_Google_reCAPTCHA_v2(),
                 can_use_CAPTCHA_Google_reCAPTCHA_v3   => scalar test_can_use_CAPTCHA_Google_reCAPTCHA_v3(),
-
-                can_use_CAPTCHA_reCAPTCHA_Mailhide => scalar test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
                 can_use_Net_IMAP_Simple            => scalar test_can_use_Net_IMAP_Simple(),
-
                 can_use_HTML_Tree                  => scalar can_use_HTML_Tree(), 
                 error_cant_read_config_dot_pm      => scalar $self->test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm     => scalar $self->test_can_write_config_dot_pm(),
@@ -1353,7 +1349,7 @@ sub grab_former_config_vals {
     # Configure CAPTCHA
     if (   defined($BootstrapConfig::CAPTCHA_TYPE)
         || keys %{$BootstrapConfig::RECAPTCHA_PARAMS}
-        || keys %{$BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS} )
+		)
     {
         $opt->{'configure_captcha'} = 1;
 		
@@ -1394,15 +1390,7 @@ sub grab_former_config_vals {
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{score_threshold} ) ) {
             $opt->{'captcha_params_v3_score_threshold'} 
 				= $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{score_threshold};
-        }
-		
-        if ( defined( $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key} ) ) {
-            $opt->{'captcha_reCAPTCHA_Mailhide_public_key'} = $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key};
-        }
-        if ( defined( $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{private_key} ) ) {
-            $opt->{'captcha_reCAPTCHA_Mailhide_private_key'} =
-              $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{private_key};
-        }
+        }		
     }
 	
 	# Google Maps API
@@ -1810,9 +1798,6 @@ sub query_params_to_install_params {
       captcha_params_v3_public_key
       captcha_params_v3_private_key	 
 	  captcha_params_v3_score_threshold 
-	  
-      captcha_reCAPTCHA_Mailhide_public_key
-      captcha_reCAPTCHA_Mailhide_private_key
 	  
 	  configure_google_maps
 	  google_maps_api_key
@@ -2773,12 +2758,7 @@ sub create_dada_config_file {
 	    $captcha_params->{captcha_params_v3_public_key}      = clean_up_var( $ip->{-captcha_params_v3_public_key} );
         $captcha_params->{captcha_params_v3_private_key}     = clean_up_var( $ip->{-captcha_params_v3_private_key} );
         $captcha_params->{captcha_params_v3_score_threshold} = clean_up_var( $ip->{-captcha_params_v3_score_threshold} );
-		
-		$captcha_params->{captcha_reCAPTCHA_Mailhide_public_key} =
-          clean_up_var( $ip->{-captcha_reCAPTCHA_Mailhide_public_key} );
-        $captcha_params->{captcha_reCAPTCHA_Mailhide_private_key} =
-          clean_up_var( $ip->{-captcha_reCAPTCHA_Mailhide_private_key} );
-    }
+	}
 
 
     my $google_maps_params = {};
@@ -4576,18 +4556,6 @@ sub test_can_use_CAPTCHA_Google_reCAPTCHA_v3 {
 
 
 
-sub test_can_use_CAPTCHA_reCAPTCHA_Mailhide {
-    eval { require Captcha::reCAPTCHA::Mailhide; };
-    if ($@) {
-        carp $@;
-        $Big_Pile_Of_Errors .= $@;
-        return 0;
-    }
-    else {
-        return 1;
-    }
-}
-
 sub test_can_use_Net_IMAP_Simple {
     eval { require Net::IMAP::Simple; };
     if ($@) {
@@ -4930,45 +4898,8 @@ sub cgi_test_FastCGI {
     return $r;
 }
 
-sub cgi_test_captcha_reCAPTCHA_Mailhide {
 
-    my $self = shift;
-    my $q    = $self->query();
 
-    my $captcha_reCAPTCHA_Mailhide_public_key  = $q->param('captcha_reCAPTCHA_Mailhide_public_key');
-    my $captcha_reCAPTCHA_Mailhide_private_key = $q->param('captcha_reCAPTCHA_Mailhide_private_key');
-
-    my $captcha = '';
-    my $errors  = undef;
-    eval {
-        require Captcha::reCAPTCHA::Mailhide;
-        my $c = Captcha::reCAPTCHA::Mailhide->new;
-        $captcha = $c->mailhide_html(
-            $captcha_reCAPTCHA_Mailhide_public_key,
-            $captcha_reCAPTCHA_Mailhide_private_key,
-            'test@example.com'
-        );
-    };
-    if ($@) {
-        $errors = $@;
-    }
-
-    my $r;
-    require DADA::Template::Widgets;
-    $r = DADA::Template::Widgets::screen(
-        {
-            -screen => 'captcha_recaptcha_mailhide_test_widget.tmpl',
-            -expr   => 1,
-            -vars   => {
-                errors  => $errors,
-                captcha => $captcha,
-            }
-        }
-    );
-
-    return $r;
-
-}
 
 sub cgi_test_magic_template_diag_box {
     my $self = shift; 

@@ -2586,32 +2586,12 @@ sub _email_protect {
 	$finder->find(\$str); 
 	
 	foreach my $fa (@$found_addresses){ 	
-		if($list){ 
-			
-			if($ls->param('archive_protect_email') eq 'recaptcha_mailhide'){ 
-			
-	            my $pe = mailhide_encode($fa);
-				
-				# This isn't going to cover everything, but a lot of things: 
-				my $entire_mail_link = quotemeta('<a href="mailto:'.$fa.'">'.$fa.'</a>'); 
-	 			$str                 =~ s/$entire_mail_link/$pe/g; 
-	
-				my $le = quotemeta($fa);
-	            $str   =~ s/$le/$pe/g;
-            
-			}
-			elsif($ls->param('archive_protect_email') eq 'spam_me_not'){ 		
+		if($list){ 			
+			if($ls->param('archive_protect_email') eq 'spam_me_not'){ 		
 	            my $pe = spam_me_not_encode($fa);
 	            my $le = quotemeta($fa); 
 	            $str =~ s/$le/$pe/g;   
 	        }
-			#elsif($ls->param('archive_protect_email') eq 'break'){ 		
-	        #    my $pe = break_encode($fa);
-	        #    my $le = quotemeta($fa); 
-	        #    $str =~ s/$le/$pe/g;   
-			#	
-			#}
-
 		}
 		else { 
 			 my $pe = spam_me_not_encode($fa);
