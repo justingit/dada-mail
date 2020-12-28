@@ -515,6 +515,9 @@ sub construct_from_url {
 		   && $preview == 0
 		   && $process !~ m/test/i
 		 ){ 
+			 # I see what this is supposed to do, but I believe this may be a no-op, 
+			 # since the default is, "0"
+			 # as far as I can tell, this is a feature that just hasn't been created yet. 
 		 	$pass_last_read_entry;
 		 }
 		
@@ -992,7 +995,7 @@ sub content_from_feed_url {
 		
 		#warn '$pubDate_epoch' . $pubDate_epoch; 
 		
-		
+		# I literally do not remember how this check works out, 
 		if(length($last_read_entry) >= 1){ 
 			if($last_read_entry > $pubDate_epoch){ 
 				next;
@@ -1001,10 +1004,11 @@ sub content_from_feed_url {
 		}
 		
 		my $days_in_seconds = 86_400; 
-		warn '$set_max_age_of_entries: '                         .  $set_max_age_of_entries; 
-		warn '$max_age_of_entries: '                             .  $max_age_of_entries; 
-		warn '(time - ($days_in_seconds * $max_age_of_entries))' .  (time - ($days_in_seconds * $max_age_of_entries));
-		warn 'localtime: ' . scalar localtime((time - ($days_in_seconds * $max_age_of_entries))); 
+		
+		# warn '$set_max_age_of_entries: '                         .  $set_max_age_of_entries; 
+		# warn '$max_age_of_entries: '                             .  $max_age_of_entries; 
+		# warn '(time - ($days_in_seconds * $max_age_of_entries))' .  (time - ($days_in_seconds * $max_age_of_entries));
+		# warn 'localtime: ' . scalar localtime((time - ($days_in_seconds * $max_age_of_entries))); 
 		
 		if($set_max_age_of_entries == 1 && defined($max_age_of_entries)){ 
 			if($pubDate_epoch < (time - ($days_in_seconds * $max_age_of_entries))){ 
