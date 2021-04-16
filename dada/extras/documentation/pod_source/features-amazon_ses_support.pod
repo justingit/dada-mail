@@ -338,7 +338,7 @@ For B<Text Value>, we would paste in:
 
 Then, we would click the B<add record> button. 
 
-Repeat these steps for the three CNAME records, with a sligh change: 
+Repeat these steps for the three CNAME records, with a slight change: 
 
 Under B<Type>, select C<CNAME> and not C<TXT>. 
 
