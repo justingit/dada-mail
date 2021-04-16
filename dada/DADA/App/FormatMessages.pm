@@ -337,6 +337,30 @@ sub format_headers_and_body {
 		    	$self->{ls}->param('email_embed_images_as_attachments') == 1
 	     && 	 $self->{ls}->param('email_resize_embedded_images') == 1
 			){
+				
+				# I guess the best thing to do is to save a copy of the message in a temp file, and if this fails, 
+				# make a mime entity from that temp file? This won't do what I want I don't think: 
+				
+=pod
+				
+			my $resize_images = 1; 
+			try { 		
+				$entity = $self->resize_images($entity); 
+			} catch { 
+				warn 'resize_images failed to work: ' . $_; 
+				$resize_images = 0; 
+			};
+			
+			if($resize_images == 1){
+				try { 		
+					$entity = $self->tweak_image_size_attrs($entity); 
+				} catch { 
+					warn 'tweak_image_size_attrs failed to work: ' . $_; 
+				};			
+			}
+=cut
+				
+				
 			$entity = $self->resize_images($entity); 
 			$entity = $self->tweak_image_size_attrs($entity); 			
 		}
@@ -3445,6 +3469,9 @@ sub resize_images {
                 return $entity;
             }
         }
+		else { 
+			return $entity;
+		}
     }
 }
 
