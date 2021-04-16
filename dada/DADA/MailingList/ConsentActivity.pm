@@ -300,11 +300,30 @@ sub subscriber_consented_to {
 sub list_activity { 
 	my $self   = shift; 
 	my ($args) = @_; 
+
+	if(! exists($args->{-days})){ 
+		$args->{-days} = 30;
+	}
+	
+	my $days = $args->{-days};
 	
 	my $query = 'SELECT email, action, timestamp FROM ' 
 	. $DADA::Config::SQL_PARAMS{consent_activity_table}
-	. ' WHERE list = ? AND (action = \'subscription\' OR action = \'unsubscribe\')'
-	. ' ORDER BY timestamp DESC LIMIT 100'; 
+	. ' WHERE list = ? AND (action = \'subscription\' OR action = \'unsubscribe\')'; 
+	
+	if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
+		$query .= ' AND DATE_SUB(CURDATE(),INTERVAL ' 
+		   . $days  
+		   . ' DAY) <= timestamp '
+	}
+	elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
+		$query .= ' AND (NOW() - INTERVAL \'' 
+			   . $days 
+			   . '\' DAY) <= timestamp ';
+	}
+	 	
+	$query .= ' ORDER BY timestamp DESC'; 
+	
 	
     my $sth = $self->{dbh}->prepare($query);
 	
