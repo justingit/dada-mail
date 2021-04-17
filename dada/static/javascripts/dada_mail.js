@@ -2076,7 +2076,7 @@ function admin_menu_notifications(){
 
 
 function setup_attachment_fields() {
-	var a_nums = [1,2,3,4,5];
+	var a_nums = [1,2,3,4,5,6,7,8,9,10];
 	for (var i = 0; i < a_nums.length; i++) {
 		if($("#attachment" + a_nums[i]).length) {
 			if($("#attachment" + a_nums[i]).val() != ""){

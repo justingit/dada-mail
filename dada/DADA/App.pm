@@ -3154,10 +3154,9 @@ sub mass_mailing_options {
 					resize_drag_and_drop_images                 => 0, 
 					email_resize_embedded_images                => 0,
 					email_image_width_limit                     => 0,
-					
+					enable_file_attachments_in_editor           => 0,  
 					email_limit_message_size                    => 0, 
 					email_message_size_limit                    => 0, 
-					
 					mass_mailing_use_list_unsubscribe_headers   => 0,
 					mass_mailing_remove_javascript              => 0, 
                 	mass_mailing_default_layout                 => undef, 
