@@ -2258,7 +2258,7 @@ sub validate_msg {
 		$errors->{message_too_old} = 1; 
 		 $r .= "\t* Message is more than 7 days old, will not process/send\n";
 	}	
-	#/MEssage too old test 
+	#/Message too old test 
 	
 	
     $r .= "\n";
@@ -3360,6 +3360,7 @@ sub handle_errors {
             needs_moderation        => 'Message needs to be moderated',
             msg_not_from_subscriber => 'Message is not from a Subscriber',
             msg_not_from_list_owner => 'Message is not from the List Owner',
+			message_too_old         => 'Message is too old to process',
         );
 
         for ( keys %$errors ) {
@@ -3375,7 +3376,6 @@ sub handle_errors {
 
         if ( $errors->{list_owner_return_path_set_funny} == 1 ) {
             $r .= "\t\t* list_owner_return_path_set_funny\n";
-
             # and I'm not going to do anything...
         }
 
@@ -3407,7 +3407,13 @@ sub handle_errors {
             $r .= "\t\t* message was from the list address - will not process! - (ignoring) \n";
             warn "$DADA::Config::PROGRAM_NAME Error: message was from the list address - will not process! - (ignoring)";
         }
-        elsif ($errors->{msg_not_from_subscriber} == 1
+        elsif($errors->{message_too_old} == 1){
+			
+            $r .= "\t\t* Message is too old - will not process! - (ignoring)";
+            warn "$DADA::Config::PROGRAM_NAME Message is too old - will not process! - (ignoring)";
+        
+		}
+		elsif ($errors->{msg_not_from_subscriber} == 1
             || $errors->{msg_not_from_list_owner} == 1
             || $errors->{msg_not_from_an_authorized_sender} == 1 )
         {
