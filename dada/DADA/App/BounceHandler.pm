@@ -447,9 +447,19 @@ sub parse_all_bounces {
 		    my $nm = 0; 
 		    my @boxes   = $imail_obj->mailboxes;
 		    for my $box(@boxes){ 
-				next if $box =~ m/^Calendar/; 
-				next if $box =~ m/^INBOX\.Trash/;
-				my $box_count = $imail_obj->select($box); 				
+				
+				
+				if($box =~ m/^INBOX\.Trash|^Calendar|\[Gmail\]\/Drafts|\[Gmail\]\/Sent Mail|\[Gmail\]\/All Mail/) { 
+					$log .= "\t* Skipping mailbox: " . $box . "\n";
+					next; 
+				}
+				
+				$log .= "\t* Checking mailbox: " . $box . "\n";
+				 
+				
+				my $box_count = $imail_obj->select($box); 	
+				$log .= "\t\t* Mailbox Count: " . $box_count . "\n"; 
+						
 				if($box_count ne '0E0'){ 
 		       		$nm += $box_count; 
 					my $box_list = $imail_obj->list || {};
@@ -779,18 +789,19 @@ sub parse_bounce {
     # Is this from a mailing list I'm currently looking at?
     if ( $found_list ne $list ) {
         $msg_report .= "Bounced message is from a different Mailing List ($found_list). Skipping over.\n";
-
+		#use Data::Dumper; 
+		#$msg_report .= "Diags: " . Dumper($diagnostics);
         # Save it for another go.
         return ( $found_list, 0, $msg_report, '', $diagnostics );
     }
 	
 
-	my ($msg_too_old, $add_to_r) = $self->msg_too_old($entity);
+	my ($msg_too_old, $add_to_r, $date) = $self->msg_too_old($entity);
 
 	#$msg_report .= $add_to_r; 
 	
 	if($msg_too_old == 1){ 
-        $msg_report .= "Bounced Message is too old. Skipping Over.\n";
+        $msg_report .= "Bounced Message is too old ($date). Skipping Over.\n";
 		 return ( undef, 1, $msg_report, '', $diagnostics );
 	}
 
@@ -940,11 +951,11 @@ sub msg_too_old {
 		# If so, the message is too old.
 		if((int(time) - 604_800) <= int($t)){ 
 			$r .= "too young to fail\n";
-			return (0, $r);
+			return (0, $r, $date);
 		}
 		else { 
 			$r .= "yup, Too old!";
-			return (1, $r);
+			return (1, $r, $date);
 		}
     }
     else {
@@ -953,7 +964,7 @@ sub msg_too_old {
 		# there's a weird edge case, and this will break 
 		# Bounce Handler for SOMEONE out there...
 		$r .= "Couldnt find a date!";
-        return (0, $r);
+        return (0, $r, undef);
     }
 
 }
