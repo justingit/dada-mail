@@ -12,7 +12,7 @@ use DADA::App::Guts;
 
 use Carp qw(croak carp); 
 use Try::Tiny; 
-use CSS::Inliner; 
+
 
 # Need to ship with: 
 use DADA::App::Guts; 
@@ -75,6 +75,8 @@ sub _init  {
 	my ($args)  = @_;
 	
 }
+
+
 
 
 sub filter { 

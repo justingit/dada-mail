@@ -2345,7 +2345,7 @@ sub has_attachments {
 
     my @ive_got = ();
 
-    my $num = 5;
+    my $num = 10;
 
     for ( 1 .. $num ) {
         my $filename = $q->param( 'attachment' . $_ );

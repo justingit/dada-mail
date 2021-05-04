@@ -3154,10 +3154,9 @@ sub mass_mailing_options {
 					resize_drag_and_drop_images                 => 0, 
 					email_resize_embedded_images                => 0,
 					email_image_width_limit                     => 0,
-					
+					enable_file_attachments_in_editor           => 0,  
 					email_limit_message_size                    => 0, 
 					email_message_size_limit                    => 0, 
-					
 					mass_mailing_use_list_unsubscribe_headers   => 0,
 					mass_mailing_remove_javascript              => 0, 
                 	mass_mailing_default_layout                 => undef, 
@@ -3182,7 +3181,8 @@ sub is_valid_url {
     my $self    = shift;
     my $q       = $self->query();
     my $process = $q->param('process') || undef;
-
+	my $enabled = $q->param('enabled')  // 1; 
+	
     my ( $admin_list, $root_login, $checksout, $error_msg ) =
       check_list_security(
         -cgi_obj  => $q,
@@ -3201,12 +3201,15 @@ sub is_valid_url {
 	if ( $res->is_success ) {
 		return "true";
 	}
-	else { 
-		#return $res->message;
-		return "false";
+	else {
+		if($enabled == 0){
+			#return $res->message;
+			return "true";
+		}
+		else { 
+			return "false";
+		}
 	}
-  	
-
 }
 
 sub change_info {
@@ -5469,9 +5472,21 @@ sub list_activity {
 
     my $list = $admin_list;
 
+
+    my $days = xss_filter(
+		strip(
+			scalar $q->param('days')
+		)
+	) || 30; 
+	
 	require DADA::MailingList::ConsentActivity; 
 	my $dmlch = DADA::MailingList::ConsentActivity->new; 
-	my $r = $dmlch->list_activity( { -list => $list, } );
+	my $r = $dmlch->list_activity( 
+		{ 
+			-list => $list, 
+			-days => $days, 
+		} 
+	);
 	
 	my $i;
     for ( $i = 0 ; $i <= ( scalar(@$r) - 1 ) ; $i++ ) {

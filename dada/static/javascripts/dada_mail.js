@@ -1172,7 +1172,14 @@ jQuery(document).ready(function($){
 			          type: "post",
 			          data: {
 			            check_url: function() { return $( "#logo_image_url" ).val() },
-						flavor: 'is_valid_url'
+						flavor: 'is_valid_url',
+  						enabled: function() {
+  							if ($("#validate_urls").prop("checked") === true){ 	
+  								return 1; 
+  							} else { 
+  								return 0; 
+  							}
+  						}						
 			          }
 			        }						
 				},
@@ -1184,7 +1191,14 @@ jQuery(document).ready(function($){
 			          type: "post",
 			          data: {
 			            check_url: function() { return $( "#website_url" ).val() },
-						flavor: 'is_valid_url' 
+						flavor: 'is_valid_url', 
+						enabled: function() {
+							if ($("#validate_urls").prop("checked") === true){ 	
+								return 1; 
+							} else { 
+								return 0; 
+							}
+						}						
 			          }
 			        }		
 				},
@@ -1196,7 +1210,14 @@ jQuery(document).ready(function($){
 			          type: "post",
 			          data: {
 			            check_url: function() { return $( "#facebook_page_url" ).val() },
-						flavor: 'is_valid_url' 
+						flavor: 'is_valid_url',
+  						enabled: function() {
+  							if ($("#validate_urls").prop("checked") === true){ 	
+  								return 1; 
+  							} else { 
+  								return 0; 
+  							}
+  						}						
 			          }
 			        }						
 				},
@@ -1208,7 +1229,14 @@ jQuery(document).ready(function($){
 			          type: "post",
 			          data: {
 			            check_url: function() { return $( "#youtube_url" ).val() },
-						flavor: 'is_valid_url'
+						flavor: 'is_valid_url',
+  						enabled: function() {
+  							if ($("#validate_urls").prop("checked") === true){ 	
+  								return 1; 
+  							} else { 
+  								return 0; 
+  							}
+  						}						
 			          }
 			        }						
 				},
@@ -1220,7 +1248,14 @@ jQuery(document).ready(function($){
 			          type: "post",
 			          data: {
 			            check_url: function() { return $( "#twitter_url" ).val() },
-						flavor: 'is_valid_url'
+						flavor: 'is_valid_url',
+  						enabled: function() {
+  							if ($("#validate_urls").prop("checked") === true){ 	
+  								return 1; 
+  							} else { 
+  								return 0; 
+  							}
+  						}						
 			          }
 			        }						
 				},
@@ -1232,7 +1267,14 @@ jQuery(document).ready(function($){
 			          type: "post",
 			          data: {
 			            check_url: function() { return $( "#instagram_url" ).val() },
-						flavor: 'is_valid_url'
+						flavor: 'is_valid_url',
+  						enabled: function() {
+  							if ($("#validate_urls").prop("checked") === true){ 	
+  								return 1; 
+  							} else { 
+  								return 0; 
+  							}
+  						}						
 			          }
 			        }						
 				},
@@ -2034,7 +2076,7 @@ function admin_menu_notifications(){
 
 
 function setup_attachment_fields() {
-	var a_nums = [1,2,3,4,5];
+	var a_nums = [1,2,3,4,5,6,7,8,9,10];
 	for (var i = 0; i < a_nums.length; i++) {
 		if($("#attachment" + a_nums[i]).length) {
 			if($("#attachment" + a_nums[i]).val() != ""){

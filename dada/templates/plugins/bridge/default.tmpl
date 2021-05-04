@@ -138,8 +138,20 @@
 			</div> 
 		<!-- /tmpl_if -->
 
-		<!-- tmpl_include ses_email_verification_widget.tmpl -->
-
+		<!-- tmpl_if list_settings.discussion_pop_email --> 
+			<!-- tmpl_include ses_email_verification_widget.tmpl -->
+		<!-- /tmpl_if -->
+		
+		<!-- tmpl_unless list_settings.discussion_pop_email --> 
+			<!-- tmpl_unless list_settings.disable_discussion_sending -->
+				<div class="alert-box alert radius">
+					The List Email has been left blank! 
+					<!-- tmpl_var Plugin_Name --> has been activated, but will not function until this is filled in. 
+				</div>
+			<!-- /tmpl_unless -->
+		<!-- /tmpl_unless -->
+		
+		
 		<div class="row collapse">
 			<div class="large-2 medium-2 columns">
 		        <label 

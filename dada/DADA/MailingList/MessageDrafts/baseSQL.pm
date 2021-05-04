@@ -1002,11 +1002,16 @@ sub params_to_save {
         $params->{ $_ . '.rangeend' }   = 1;
     }
 	
-    $params->{attachment1} = 1;
-    $params->{attachment2} = 1;
-    $params->{attachment3} = 1;
-    $params->{attachment4} = 1;
-    $params->{attachment5} = 1;
+    $params->{attachment1}  = 1;
+    $params->{attachment2}  = 1;
+    $params->{attachment3}  = 1;
+    $params->{attachment4}  = 1;
+    $params->{attachment5}  = 1;
+    $params->{attachment6}  = 1;
+    $params->{attachment7}  = 1;
+    $params->{attachment8}  = 1;
+    $params->{attachment9}  = 1;
+    $params->{attachment10} = 1;
 
     $params->{content_from}          = 1;
     $params->{url}                   = 1;

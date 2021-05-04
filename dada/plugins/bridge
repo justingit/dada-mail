@@ -1027,6 +1027,16 @@ sub start {
 			undef($ls);
             next LIST_QUEUE;
         }
+		
+        if ( length($ls->param('discussion_pop_email')) <= 0
+		|| 	check_for_valid_email($ls->param('discussion_pop_email')) == 1
+		
+		) {
+            $r .= "\t* ***Warning!*** Misconfiguration of plugin! List Email has not been set to a valid email address!\n\t\tSkipping $list...";
+			undef($ls);
+            next LIST_QUEUE;
+        }
+		
         if ( 
 			cased($ls->param('discussion_pop_email')) eq 
 			cased($ls->param('list_owner_email'))
@@ -2258,7 +2268,7 @@ sub validate_msg {
 		$errors->{message_too_old} = 1; 
 		 $r .= "\t* Message is more than 7 days old, will not process/send\n";
 	}	
-	#/MEssage too old test 
+	#/Message too old test 
 	
 	
     $r .= "\n";
@@ -3360,6 +3370,7 @@ sub handle_errors {
             needs_moderation        => 'Message needs to be moderated',
             msg_not_from_subscriber => 'Message is not from a Subscriber',
             msg_not_from_list_owner => 'Message is not from the List Owner',
+			message_too_old         => 'Message is too old to process',
         );
 
         for ( keys %$errors ) {
@@ -3375,7 +3386,6 @@ sub handle_errors {
 
         if ( $errors->{list_owner_return_path_set_funny} == 1 ) {
             $r .= "\t\t* list_owner_return_path_set_funny\n";
-
             # and I'm not going to do anything...
         }
 
@@ -3407,7 +3417,13 @@ sub handle_errors {
             $r .= "\t\t* message was from the list address - will not process! - (ignoring) \n";
             warn "$DADA::Config::PROGRAM_NAME Error: message was from the list address - will not process! - (ignoring)";
         }
-        elsif ($errors->{msg_not_from_subscriber} == 1
+        elsif($errors->{message_too_old} == 1){
+			
+            $r .= "\t\t* Message is too old - will not process! - (ignoring)";
+            warn "$DADA::Config::PROGRAM_NAME Message is too old - will not process! - (ignoring)";
+        
+		}
+		elsif ($errors->{msg_not_from_subscriber} == 1
             || $errors->{msg_not_from_list_owner} == 1
             || $errors->{msg_not_from_an_authorized_sender} == 1 )
         {
@@ -3630,67 +3646,86 @@ sub inject {
     };
     
     if ( $ls->param('disable_discussion_sending') != 1 ) {
-        my ( $status, $errors );
-
-        my $status;
-        my $errors;
-        my $report;
-         
-        try {
-			# warn 'validate_msg';
-            ( $status, $errors, $report ) = validate_msg( $ls, \$msg );
-        } catch { 
-            warn 'couldn\'t validate_msg?!'; 
-            return (0, {}, 'couldn\'t validate_msg?!'); 
-        };
-        
-		try { 
-            
-            if ($status == 1) {
-                $r .= process(
-                    {
-                        -ls        => $ls,
-                        -msg       => \$msg,
-                        -test_mail => $test_mail,
-                    }
-                );
-
-				# warn 'append_message_to_file';
-                my ( $amtf_status, $amtf_r ) = append_message_to_file( $ls, $msg );
-                $r .= $amtf_r;
-                return ( $status, $errors, $r );
-
-            }
-            else {
-
-				# warn 'handle_errors';
-                $r .= "\tMessage did not pass verification.\n";
-                $r .= handle_errors( $ls, $errors, $msg );
-                
-                append_message_to_file( $ls, $msg );
-
-                return ( $status, $errors, $r );
-
-            }
-
-        } catch { 
-
-            cluck "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
-            # Then, we have to tell the og sender, something went wrong: 
-            
-            
-            $r .= "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
-            return ( 0, { irrecoverable_error => 1 }, $r );
-			# warn '$r' .  $r;
-
-        }; 
-        return ( $status, $errors, $r );
-
-    }
-    else {
         $r .= "\tThis sending method has been disabled for " . $ls->param('list') . ", ignoring message... \n";
         return ( 0, { disabled => 1 }, $r );
+	}
+	
+    if ( $ls->param('bridge_list_email_type') ne "mail_forward_pipe" ) {
+        $r .= "\t* List Email is NOT set up as a Email Forward to Pipe to Bridge \n";
+        return ( 0, { bridge_list_email_type_ne_mail_forward_pipe => 1 }, $r );
     }
+	
+    if ( 
+		length($ls->param('discussion_pop_email')) <= 0
+		|| 	check_for_valid_email($ls->param('discussion_pop_email')) == 1
+	) {
+        $r .= "\t* ***Warning!*** Misconfiguration of plugin! List Email has not been set to a valid email address!\n\t\tSkipping $list...";
+		return ( 0, { list_email_invalid => 1 }, $r );
+    }
+	
+    if ( 
+		cased($ls->param('discussion_pop_email')) eq 
+		cased($ls->param('list_owner_email'))
+	) {
+        $r .= "\t\t***Warning!*** Misconfiguration of plugin! The List Owner email cannot be the same address as the list email address!\n\t\tSkipping $list...\n";
+		return ( 0, { list_owner_same_as_list_email => 1 }, $r );
+    }
+
+    my ( $status, $errors );
+
+    my $status;
+    my $errors;
+    my $report;
+     
+    try {
+		# warn 'validate_msg';
+        ( $status, $errors, $report ) = validate_msg( $ls, \$msg );
+    } catch { 
+        warn 'couldn\'t validate_msg?!'; 
+        return (0, {}, 'couldn\'t validate_msg?!'); 
+    };
+    
+	try { 
+        
+        if ($status == 1) {
+            $r .= process(
+                {
+                    -ls        => $ls,
+                    -msg       => \$msg,
+                    -test_mail => $test_mail,
+                }
+            );
+
+			# warn 'append_message_to_file';
+            my ( $amtf_status, $amtf_r ) = append_message_to_file( $ls, $msg );
+            $r .= $amtf_r;
+            return ( $status, $errors, $r );
+
+        }
+        else {
+
+			# warn 'handle_errors';
+            $r .= "\tMessage did not pass verification.\n";
+            $r .= handle_errors( $ls, $errors, $msg );
+            
+            append_message_to_file( $ls, $msg );
+
+            return ( $status, $errors, $r );
+
+        }
+
+    } catch { 
+
+        cluck "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
+        # Then, we have to tell the og sender, something went wrong: 
+        
+        
+        $r .= "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
+        return ( 0, { irrecoverable_error => 1 }, $r );
+		# warn '$r' .  $r;
+
+    }; 
+    return ( $status, $errors, $r );
 
 }
 
