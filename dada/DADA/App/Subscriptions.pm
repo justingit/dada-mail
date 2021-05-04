@@ -3165,7 +3165,7 @@ sub alt_redirect {
     $url = strip($url);
 
     if ( !isa_url($url) ) {
-        $url = 'http://' . $url;
+        $url = 'https://' . $url;
     }
     if ( $args->{redirect}->{using_with_query} == 1 ) {
         if ( $url =~ m/\?/ ) {

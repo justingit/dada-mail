@@ -162,7 +162,7 @@ sub DESTROY{
 =head1 COPYRIGHT
 
 Copyright (c) 1999 - 2020 Justin Simoni 
-http://justinsimoni.com 
+https://justinsimoni.com 
 All rights reserved. 
 
 This program is free software; you can redistribute it and/or

@@ -1347,7 +1347,7 @@ sub _format_headers {
             $new_subject = $og_subject;
 
 # This is related to the bug with the named capture in _list_name_subject
-# http://stackoverflow.com/questions/10217531/whats-the-best-way-to-clear-regex-matching-variables
+# https://stackoverflow.com/questions/10217531/whats-the-best-way-to-clear-regex-matching-variables
             "a" =~ /a/;
 
         }

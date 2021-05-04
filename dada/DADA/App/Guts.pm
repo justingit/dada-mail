@@ -2860,8 +2860,8 @@ sub csv_subscriber_parse {
     # Line translation.
     # Don't like it.
     # Notes:
-    # http://use.perl.org/comments.pl?sid=33475&cid=55956
-    # http://search.cpan.org/~rgarcia/perl-5.10.0/lib/PerlIO.pm
+    # https://use.perl.org/comments.pl?sid=33475&cid=55956
+    # https://search.cpan.org/~rgarcia/perl-5.10.0/lib/PerlIO.pm
 
     # Reading
     open my $NE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $DADA::Config::TMP . '/' . $filename
@@ -3873,7 +3873,7 @@ sub new_image_file_path {
 
 Copyright (c) 1999 - 2020 Justin Simoni 
 
-http://justinsimoni.com 
+https://justinsimoni.com 
 
 All rights reserved. 
 

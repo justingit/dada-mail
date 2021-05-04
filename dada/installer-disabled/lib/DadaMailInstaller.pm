@@ -4379,7 +4379,7 @@ sub hack_in_js {
 
 sub hack_program_url {
     my $scrn            = shift;
-    my $bad_program_url = quotemeta('http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi');
+    my $bad_program_url = quotemeta('https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi');
     my $better_prog_url = program_url_guess();
     $scrn =~ s/$bad_program_url/$better_prog_url/g;
 
@@ -5636,7 +5636,7 @@ sub config_import {
 
     $CONFIG_FILE = shift || guess_config_file();
 
-    # Keep this as, 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'
+    # Keep this as, 'https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'
     # What we're doing is, seeing if you've actually changed the variable from
     # it's default, and if not, we take a best guess.
 

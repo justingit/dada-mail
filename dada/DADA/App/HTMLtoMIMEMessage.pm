@@ -420,6 +420,7 @@ sub parse {
             && ( $$url[2] )
             && (
                 ( $$url[2] !~ m!^http://! ) &&    # un lien non absolu
+                ( $$url[2] !~ m!^https://! ) &&    # un lien non absolu
                 ( $$url[2] !~ m!^mailto:! ) &&    # pas les mailto
                 ( $$url[2] !~ m!^\#! )      &&    # ni les ancres
                 ( $$url[2] !~ m!\<! )      &&    # ni les tags du "Dada Mail"
@@ -1156,7 +1157,7 @@ MIME::Lite::HTMLForked - Provide routine to transform a HTML page in a MIME-Lite
      new MIME::Lite::HTMLForked
          From     => "MIME-Lite\@alianwebserver.com",
          To       => "alian\@cpan.org",
-         Url      => "http://localhost/server-status";'
+         Url      => "https://localhost/server-status";'
 
 =head1 VERSION
 

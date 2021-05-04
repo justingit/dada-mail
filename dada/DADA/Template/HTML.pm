@@ -142,7 +142,7 @@ sub admin_template {
 	require DADA::Template::Widgets::Admin_Menu;
 	require CGI; 
 	# DEV: Weird. I know. 
-	if($DADA::Config::PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
+	if($DADA::Config::PROGRAM_URL eq 'https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
 		$DADA::Config::PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
 	}
 	
@@ -741,7 +741,7 @@ sub list_template {
     require DADA::Template::Widgets;
     # DEV: Weird. I know.
     if ( $DADA::Config::PROGRAM_URL eq
-        'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' )
+        'https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' )
     {
         $DADA::Config::PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
     }
@@ -1018,7 +1018,7 @@ sub lame_init(){
 =head1 COPYRIGHT
 
 Copyright (c) 1999 - 2020 Justin Simoni 
-http://justinsimoni.com 
+https://justinsimoni.com 
 All rights reserved. 
 
 This program is free software; you can redistribute it and/or

@@ -72,7 +72,7 @@ L<https://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 
 Dada Mail is developed openly at: 
 
-L<http://github.com/justingit/dada-mail>
+L<https://github.com/justingit/dada-mail>
 	
 "master" - always stable
 

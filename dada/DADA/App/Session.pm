@@ -32,11 +32,11 @@ sub _init {
     require DADA::App::DBIHandle;
     $self->{dbh} = DADA::App::DBIHandle->new->dbh_obj;
 
-    # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session.pm
+    # https://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session.pm
 
     if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
 
-# http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/postgresql.pm
+# https://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/postgresql.pm
         $self->{dsn}      = 'driver:PostgreSQL';
         $self->{dsn_args} = {
 
@@ -47,7 +47,7 @@ sub _init {
     }
     elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
 
-# http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/mysql.pm
+# https://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/mysql.pm
         $self->{dsn}      = 'driver:mysql';
         $self->{dsn_args} = {
 
@@ -58,7 +58,7 @@ sub _init {
     }
     elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
 
-        # http://search.cpan.org/~bmoyles/CGI-Session-SQLite/SQLite.pm
+        # https://search.cpan.org/~bmoyles/CGI-Session-SQLite/SQLite.pm
         $self->{dsn} = 'driver:SQLite:'
           ;    # . ':' . $DADA::Config::FILES . '/' . $database;;
         $self->{dsn_args} = {
