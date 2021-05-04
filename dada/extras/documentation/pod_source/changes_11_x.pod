@@ -3,6 +3,31 @@
 
 =encoding utf-8
 
+=head1 11.12.3
+
+=head2 Features
+
+=head3 File Attachments Limit Raised to 10
+
+=head3 URLs in, Mailing List: List Information can now be optionally validated
+
+=head2 Bugfixes 
+
+=head3 Plugin: Bridge - "Message too old" check will still send, "Not Allowed to Post" email notifications to list owner/subscriber #1011 
+
+L<https://github.com/justingit/dada-mail/issues/1011>
+
+=head3  List Email can be set as blank in Bridge, but messages can still be sent to the list - no check to make sure List Email is valid? #1004 
+
+L<https://github.com/justingit/dada-mail/issues/1004>
+
+=head3 Speling error in docs: "PlainTest" should be, "PlainText" 
+
+L<https://github.com/justingit/dada-mail/issues/990>
+
+=head2 Changes
+
+=head3 Mailhide support dropped
 
 =head1 11.12.2
 
