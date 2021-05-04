@@ -4,7 +4,7 @@ use v5.10.1;
 # This file holds default values for the global configuration variables 
 # in Dada Mail. See:
 #
-#          http://dadamailproject.com/d/global_variables.pod.html
+#          https://dadamailproject.com/d/global_variables.pod.html
 # 
 # for more information. 
 #
@@ -88,7 +88,7 @@ $TMP               //= $DIR . '/.tmp';
 
 
 
-$PROGRAM_URL   //= 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi';
+$PROGRAM_URL   //= 'https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi';
 $S_PROGRAM_URL //= $PROGRAM_URL;
 
 $RUNNING_UNDER //= 'CGI'; 
@@ -502,7 +502,7 @@ $RECAPTHCA_MAILHIDE_PARAMS //= {
 
 
 $SHOW_HELP_LINKS //= 1;
-$HELP_LINKS_URL  //= 'http://dadamailproject.com/pro_dada/11.0.0';
+$HELP_LINKS_URL  //= 'https://dadamailproject.com/pro_dada/11.0.0';
 $NPH //= 0;
 
 
@@ -545,25 +545,25 @@ $DEBUG_TRACE //= {
 
     # DBI, handles all SQL database calls.
     # More Information:
-    # http://search.cpan.org/~timb/DBI/DBI.pm#TRACING
+    # https://search.cpan.org/~timb/DBI/DBI.pm#TRACING
     # As noted in these docs, you can set the trace level as far 15
 
     DBI => 0,
 
     # HTML::Template, used for generating HTML screens
     # More information:
-    # http://search.cpan.org/~samtregar/HTML-Template/Template.pm
+    # https://search.cpan.org/~samtregar/HTML-Template/Template.pm
 
     HTML_TEMPLATE => 0,
 
     #  Net::POP3, used for checking awaiting messages on a POP3 Server
     #  More Information:
-    #  http://search.cpan.org/~gbarr/libnet/Net/POP3.pm
+    #  https://search.cpan.org/~gbarr/libnet/Net/POP3.pm
        NET_POP3 => 0,
 
     # Net::SMTP, used for sending messages via SMTP:
     # more information:
-    # http://search.cpan.org/~gbarr/libnet/Net/SMTP.pm
+    # https://search.cpan.org/~gbarr/libnet/Net/SMTP.pm
 
     NET_SMTP => 0,
 
@@ -619,7 +619,7 @@ $SCREEN_CACHE                           //= 1;
 $DATA_CACHE                             //= 1;
 
 @PING_URLS = qw(
-  http://rpc.pingomatic.com/
+  https://rpc.pingomatic.com/
 ) unless scalar @PING_URLS;
 
 
@@ -1052,8 +1052,8 @@ $DIR_CHMOD  //= 0755;
 
 $HTML_CHARSET //= 'UTF-8';
 
-# http://www.w3.org/International/O-charset.html
-# http://www.w3.org/International/O-HTTP-charset
+# https://www.w3.org/International/O-charset.html
+# https://www.w3.org/International/O-HTTP-charset
 
 @CHARSETS = (
     'UTF-8	UTF-8',
@@ -1872,7 +1872,7 @@ $PROGRAM_NAME //= "Dada Mail";
 
 ######################################################################
 
-# http://dadamailproject.com/purchase/pro.html
+# https://dadamailproject.com/purchase/pro.html
 #
 #
 #
@@ -1908,7 +1908,7 @@ sub _config_import {
         }
     }
 
-    # Keep this as, 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'
+    # Keep this as, 'https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'
     # What we're doing is, seeing if you've actually changed the variable from
     # it's default, and if not, we take a best guess.
 
@@ -1962,7 +1962,7 @@ sub _config_import {
     }
 
     if ( $PROGRAM_URL eq
-        'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' )
+        'https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' )
     {
         require CGI;
         $PROGRAM_URL = CGI::url();

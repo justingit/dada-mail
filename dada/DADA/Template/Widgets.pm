@@ -273,7 +273,7 @@ sub make_wysiwyg_vars {
 	return %vars; 
 
 }
-if($Global_Template_Variables{PROGRAM_URL} eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
+if($Global_Template_Variables{PROGRAM_URL} eq 'https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
 
 	$Global_Template_Variables{PROGRAM_URL} = $q->url; 
 	# Well, what if we're running as the installer?
@@ -281,7 +281,7 @@ if($Global_Template_Variables{PROGRAM_URL} eq 'http://www.changetoyoursite.com/c
 		$Global_Template_Variables{PROGRAM_URL} =~ s{installer\/install\.cgi}{mail.cgi};
 	}
 }
-if($Global_Template_Variables{S_PROGRAM_URL} eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
+if($Global_Template_Variables{S_PROGRAM_URL} eq 'https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
 	$Global_Template_Variables{S_PROGRAM_URL} = $Global_Template_Variables{PROGRAM_URL}; 
 }
 my %Global_Template_Options = (
@@ -2967,7 +2967,7 @@ sub lame_init(){
 =head1 COPYRIGHT
 
 Copyright (c) 1999 - 2020 Justin Simoni 
-http://justinsimoni.com 
+https://justinsimoni.com 
 All rights reserved. 
 
 This program is free software; you can redistribute it and/or

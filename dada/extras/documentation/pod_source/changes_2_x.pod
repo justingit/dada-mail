@@ -3016,7 +3016,7 @@ In many of the list/archive screens of Dada Mail, I've added breadcumb links to 
 
 I added a link to the default HTML screen confirmation message, it links to a page that looks like this: 
 
-http://justinsimoni.com/cgi-bin/dada/mail.cgi/subscriber_help/announce/
+https://justinsimoni.com/cgi-bin/dada/mail.cgi/subscriber_help/announce/
 
 Which gives basic support on how to add the list owner to an address book/ whitelist. Why? It's a defensive measure. You want your messages to be delivered. Usually, when you add an address to your addressbook, it really really really makes these changes a whole lot better on very strict systems. 
 
@@ -3053,7 +3053,7 @@ So, we've got rss *and* atom feeds, we've got ping'ing capabilities, we've got s
 
 Here's a real example of the atom feed created by Dada Mail: 
 
-http://justinsimoni.com/cgi-bin/dada/mail.cgi/archive_atom/announce/
+https://justinsimoni.com/cgi-bin/dada/mail.cgi/archive_atom/announce/
 
 Neat. 
 
@@ -3088,11 +3088,11 @@ Many, many many of the Query Strings in Dada Mail - and not only in email messag
 
 Query String Version:
 
-http://justinsimoni.com/cgi-bin/dada/mail.cgi?flavor=archive;list=announce;id=20040604025003
+https://justinsimoni.com/cgi-bin/dada/mail.cgi?flavor=archive;list=announce;id=20040604025003
 
 Path Info Version: 
 
-http://justinsimoni.com/cgi-bin/dada/mail.cgi/archive/announce/20040604025003/
+https://justinsimoni.com/cgi-bin/dada/mail.cgi/archive/announce/20040604025003/
 
 Both of these URLs go to the same screen. 
 

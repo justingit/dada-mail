@@ -4135,7 +4135,7 @@ sub api {
       split( '/', $info );
 
 # https://metacpan.org/pod/distribution/CGI/lib/CGI.pod#FETCHING-ENVIRONMENT-VARIABLES
-# http://stackoverflow.com/questions/7362932/perl-equivalent-of-php-auth-pw
+# https://stackoverflow.com/questions/7362932/perl-equivalent-of-php-auth-pw
 # HTTP_AUTHORIZATION
     my %incoming_headers = map { $_ => $q->http($_) } $q->http();
     if ( $DADA::Config::DEBUG_TRACE->{DADA_App_WebServices} == 1 ) {
@@ -10952,7 +10952,7 @@ sub restful_subscribe {
 
         # RTFM!
         my $api_doc_url =
-'http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html#restful_api';
+'https://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html#restful_api';
         return
             '<p>API Documentation: <a href="'
           . $api_doc_url . '"/>'
@@ -14054,7 +14054,7 @@ sub setup_info {
             $guess = $q->script_name()
               if $DADA::Config::PROGRAM_URL eq ""
               || $DADA::Config::PROGRAM_URL eq
-              'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'
+              'https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'
               ;    # default.
 
             my $incorrect_root_password = $root_password ? 1 : 0;
@@ -15992,7 +15992,7 @@ sub contact_mothership {
 
         my $response = $ua->request(
             HTTP::Request::Common::POST(
-                'http://dadamailproject.com/pro_dada/cpdus.cgi',
+                'https://dadamailproject.com/pro_dada/cpdus.cgi',
                 content => $gargs,
             )
         );

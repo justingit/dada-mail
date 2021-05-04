@@ -33,14 +33,14 @@ use Carp qw(carp croak);
 #$Carp::Verbose = 1;
 
 #if (   ( $DADA::Config::PROGRAM_URL eq "" )
-#    || ( $DADA::Config::PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' ) )
+#    || ( $DADA::Config::PROGRAM_URL eq 'https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' ) )
 #{
 #    $DADA::Config::PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
 #
 #}
 #
 #if (   ( $DADA::Config::S_PROGRAM_URL eq "" )
-#    || ( $DADA::Config::S_PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' ) )
+#    || ( $DADA::Config::S_PROGRAM_URL eq 'https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' ) )
 #{
 #    $DADA::Config::S_PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
 #}

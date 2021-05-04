@@ -4142,7 +4142,7 @@ is controlled by C<DADA::Mail::MailOut>.
 
 Copyright (c) 1999 - 2020 Justin Simoni 
 me - justinsimoni.com
-http://justinsimoni.com 
+https://justinsimoni.com 
 All rights reserved. 
 
 This program is free software; you can redistribute it and/or

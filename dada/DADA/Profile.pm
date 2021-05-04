@@ -1766,7 +1766,7 @@ If CAPTCHA is enabled for Profiles, (via the Config.pm C<$PROFILE_OPTIONS-E<gt>{
 C<-recaptcha_challenge_field> and C<-recaptcha_response_field> map to the 3rd and 4th arguments you have to pass in C<require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;>'s method, C<check_answer>, which is sadly currently under documented, but 
 follows the same API as Captcha::reCAPTCHA: 
 
-L<http://search.cpan.org/~andya/Captcha-reCAPTCHA/lib/Captcha/reCAPTCHA.pm>
+L<https://search.cpan.org/~andya/Captcha-reCAPTCHA/lib/Captcha/reCAPTCHA.pm>
 
 (the C<check_answer> method does, at the very least) 
 
