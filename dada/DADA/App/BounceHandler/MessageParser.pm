@@ -1,26 +1,26 @@
 package DADA::App::BounceHandler::MessageParser;
 
 use strict;
-use lib qw(../../../ ../../../DADA/perllib);
+use lib qw(./ ../ ../../ ../../../ ./../../DADA ../../perllib);
 
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
-use Mail::Verp;
-use Try::Tiny; 
+
+use Try::Tiny;
 
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_BounceHandler};
 
-if($t == 1){ 
-	require Data::Dumper;
+if ( $t == 1 ) {
+    require Data::Dumper;
 }
 my %allowed = ();
 
 sub new {
 
-    my $that = shift;
+    my $that  = shift;
     my $class = ref($that) || $that;
 
     my $self = {
@@ -40,7 +40,7 @@ sub AUTOLOAD {
     my $type = ref($self)
       or croak "$self is not an object";
 
-	return if(substr($AUTOLOAD, -7) eq 'DESTROY');
+    return if ( substr( $AUTOLOAD, -7 ) eq 'DESTROY' );
 
     my $name = $AUTOLOAD;
     $name =~ s/.*://;    #strip fully qualifies portion
@@ -60,10 +60,10 @@ sub _init {
 
     my $self = shift;
     my $args = shift;
-	
+
     require MIME::Parser;
     $self->{parser} = new MIME::Parser;
-    $self->{parser} = optimize_mime_parser($self->{parser});
+    $self->{parser} = optimize_mime_parser( $self->{parser} );
 }
 
 sub run_all_parses {
@@ -76,284 +76,331 @@ sub run_all_parses {
 
     $email = $self->find_verp($entity);
 
-	# Amazon SES is sort of special, since it's very, very easy to understand if
-	# It's coming from it: 
-	if($self->bounce_from_ses($entity)){ 
-		warn "bounce_from_ses"
-			if $t; 
-			
-		  my ( $ses_list, $ses_email, $ses_diagnostics ) =
-	          $self->parse_for_amazon_ses($entity);
-	        $list  ||= $ses_list;
-	        $email ||= $ses_email;
-			
-			warn "list: $list" 
-				if $t; 
-			warn "email: $email" 
-				if $t; 	
-			warn "diagnostics: \n" . Data::Dumper::Dumper($ses_diagnostics)
-				if $t; 
-			
-			$diagnostics = $self->_fold_in_diagnostics($diagnostics, $ses_diagnostics); 
-		}
-	elsif($self->bounce_is_amazon_ses_abuse_report($entity)){ 
-	    
-        warn "bounce_is_amazon_ses_abuse_report"
-			if $t; 
-		  my ( $sesa_list, $sesa_email, $sesa_diagnostics ) =
-  	          $self->parse_for_ses_abuse_report($entity);
-  	        
-  	          $list  ||= $sesa_list;
-              $email ||= $sesa_email;
-              
-  	          $diagnostics = $self->_fold_in_diagnostics($diagnostics, $sesa_diagnostics); 
-  	          
+    # Amazon SES is sort of special, since it's very, very easy to understand if
+    # It's coming from it:
+    if ( $self->bounce_from_ses($entity) ) {
+        warn "bounce_from_ses"
+          if $t;
+
+        my ( $ses_list, $ses_email, $ses_diagnostics ) =
+          $self->parse_for_amazon_ses($entity);
+        $list  ||= $ses_list;
+        $email ||= $ses_email;
+
+        warn "list: $list"
+          if $t;
+        warn "email: $email"
+          if $t;
+        warn "diagnostics: \n" . Data::Dumper::Dumper($ses_diagnostics)
+          if $t;
+
+        $diagnostics =
+          $self->_fold_in_diagnostics( $diagnostics, $ses_diagnostics );
     }
-	elsif($self->isa_rfc6522_bounce($entity)) { 
-		warn "isa_rfc6522_bounce"
-			if $t; 
-			
-	  my ( $rfc6522_list, $rfc6522_email, $rfc6522_diagnostics ) =
+    elsif ( $self->bounce_is_amazon_ses_abuse_report($entity) ) {
+
+        warn "bounce_is_amazon_ses_abuse_report"
+          if $t;
+        my ( $sesa_list, $sesa_email, $sesa_diagnostics ) =
+          $self->parse_for_ses_abuse_report($entity);
+
+        $list  ||= $sesa_list;
+        $email ||= $sesa_email;
+
+        $diagnostics =
+          $self->_fold_in_diagnostics( $diagnostics, $sesa_diagnostics );
+
+    }
+    elsif ( $self->isa_rfc6522_bounce($entity) ) {
+        warn "isa_rfc6522_bounce"
+          if $t;
+
+        my ( $rfc6522_list, $rfc6522_email, $rfc6522_diagnostics ) =
           $self->parse_for_rfc6522($entity);
         $list  ||= $rfc6522_list;
         $email ||= $rfc6522_email;
 
-		warn "list: $rfc6522_list" 
-			if $t; 
-		warn "email: $rfc6522_email" 
-			if $t; 
-		warn "diagnostics: \n" . Data::Dumper::Dumper($rfc6522_diagnostics)
-			if $t; 
-			
-          $diagnostics = $self->_fold_in_diagnostics($diagnostics, $rfc6522_diagnostics); 
-          
-	} 
-	else { 
-	    
-	}
-	
-	if(defined($email) && length($email) < 1) { undef($email); }
-    if(defined($list) && length($list) < 1) { undef($list);}
-    
-    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
+        warn "list: '$rfc6522_list'"
+          if $t;
+        warn "email: '$rfc6522_email'"
+          if $t;
+        warn "diagnostics: \n" . Data::Dumper::Dumper($rfc6522_diagnostics)
+          if $t;
 
-		warn "bounce_from_secureserver_dot_net"
-			if $t; 
+        $diagnostics =
+          $self->_fold_in_diagnostics( $diagnostics, $rfc6522_diagnostics );
 
-
-		  my ( $ss_list, $ss_email, $ss_diagnostics ) =
-	          $self->parse_for_secureserver_dot_net($entity);
-
-			warn "list: $ss_list" 
-				if $t; 
-			warn "email: $ss_email" 
-				if $t; 
-			warn "diagnostics: \n" . Data::Dumper::Dumper($ss_diagnostics)
-				if $t; 
-
-	        $list  ||= $ss_list;
-	        $email ||= $ss_email;
-
-	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $ss_diagnostics); 
-
-	
-	if(defined($email) && length($email) < 1) { undef($email); }
-    if(defined($list) && length($list) < 1) { undef($list);}
-    
-    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
-
-		warn "generic_parse"
-			if $t; 
-		
-	    my ( $gp_list, $gp_email, $gp_diagnostics ) = $self->generic_parse($entity);
-	
-		warn "list: $gp_list" 
-			if $t; 
-		warn "email: $gp_email" 
-			if $t; 
-		warn "diagnostics: \n" . Data::Dumper::Dumper($gp_diagnostics)
-			if $t; 
-
-		if(!$list) { 
-	    	$list = $gp_list;
-		}
-		if(!$email){ 
-	    	$email = $gp_email;
-	    }
-	    
-	    $diagnostics = $self->_fold_in_diagnostics($diagnostics, $gp_diagnostics); 
-
-		# This should really do the same thing, first look for tell-tale signs
-		# that the bounce is a qmail-like bounce, before parsing it out. 
-		# (and along down the line...)
-    
     }
-        if(defined($email) && length($email) < 1) { undef($email); }
-        if(defined($list) && length($list) < 1) { undef($list);}
-	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
+    else {
+
+    }
+
+    if ( defined($email) && length($email) < 1 ) { 
+			undef($email); }
+    if ( defined($list)  && length($list) < 1 )  { undef($list); }
+	
+
+    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} )    {
+
+        warn "bounce_from_secureserver_dot_net"
+          if $t;
+
+        my ( $ss_list, $ss_email, $ss_diagnostics ) =
+          $self->parse_for_secureserver_dot_net($entity);
+
+        warn "sslist: $ss_list"
+          if $t;
+        warn "ssemail: $ss_email"
+          if $t;
+        warn "ssdiagnostics: \n" . Data::Dumper::Dumper($ss_diagnostics)
+          if $t;
+
+        $list  ||= $ss_list;
+        $email ||= $ss_email;
+
+        $diagnostics =
+          $self->_fold_in_diagnostics( $diagnostics, $ss_diagnostics );
+
+        if ( defined($email) && length($email) < 1 ) { undef($email); }
+        if ( defined($list)  && length($list) < 1 )  { undef($list); }
+
+        if (   ( !defined($list) )
+            || ( !defined($email) )
+            || !keys %{$diagnostics} )
+        {
+
+            warn "generic_parse"
+              if $t;
+
+            my ( $gp_list, $gp_email, $gp_diagnostics ) =
+              $self->generic_parse($entity);
+
+            warn "list: $gp_list"
+              if $t;
+            warn "email: $gp_email"
+              if $t;
+            warn "diagnostics: \n" . Data::Dumper::Dumper($gp_diagnostics)
+              if $t;
+
+            if ( !$list ) {
+                $list = $gp_list;
+            }
+            if ( !$email ) {
+                $email = $gp_email;
+            }
+
+            $diagnostics =
+              $self->_fold_in_diagnostics( $diagnostics, $gp_diagnostics );
+
+          # This should really do the same thing, first look for tell-tale signs
+          # that the bounce is a qmail-like bounce, before parsing it out.
+          # (and along down the line...)
+
+        }
+        if ( defined($email) && length($email) < 1 ) { 
+			undef($email); 
+		}
+        if ( defined($list)  && length($list) < 1 )  { 
+			undef($list); 
+		}
 		
-			warn "parse_for_qmail"
-				if $t; 
-		
-	        my ( $qmail_list, $qmail_email, $qmail_diagnostics ) =
-	          $self->parse_for_qmail($entity);
-	
-			warn "list: $qmail_list" 
-				if $t; 
-			warn "email: $qmail_email" 
-				if $t; 
-			warn "diagnostics: \n" . Data::Dumper::Dumper($qmail_diagnostics)
-				if $t; 
-	
-	        $list  ||= $qmail_list;
-	        $email ||= $qmail_email;
-	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $qmail_diagnostics); 
-	    }
+        if (   ( !defined($list) )
+            || ( !defined($email) )
+            || !keys %{$diagnostics} )
+        {
 
-        if(defined($email) && length($email) < 1) { undef($email); }
-        if(defined($list) && length($list) < 1) { undef($list);}
-	    
-	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
-	        
-			warn "parse_for_exim"
-				if $t; 
+            warn "parse_for_qmail"
+              if $t;
 
-			my ( $exim_list, $exim_email, $exim_diagnostics ) =
-	          $self->parse_for_exim($entity);
+            my ( $qmail_list, $qmail_email, $qmail_diagnostics ) =
+              $self->parse_for_qmail($entity);
 
-			warn "list: $exim_list" 
-				if $t; 
-			warn "email: $exim_email" 
-				if $t; 
-			warn "diagnostics: \n" . Data::Dumper::Dumper($exim_diagnostics)
-				if $t; 
-				
-				$list  ||= $exim_list;
-	        	$email ||= $exim_email;				
-	        	
-			$diagnostics = $self->_fold_in_diagnostics($diagnostics, $exim_diagnostics); 
+            warn "list: $qmail_list"
+              if $t;
+            warn "email: $qmail_email"
+              if $t;
+            warn "diagnostics: \n" . Data::Dumper::Dumper($qmail_diagnostics)
+              if $t;
 
-	    }
+            $list  ||= $qmail_list;
+            $email ||= $qmail_email;
+            $diagnostics =
+              $self->_fold_in_diagnostics( $diagnostics, $qmail_diagnostics );
+        }
 
-        if(defined($email) && length($email) < 1) { undef($email); }
-        if(defined($list) && length($list) < 1) { undef($list);}
-        
-	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
-			warn "parse_for_f__king_exchange"
-				if $t; 
-				
-	        my ( $ms_list, $ms_email, $ms_diagnostics ) =
-	          $self->parse_for_f__king_exchange($entity);
-	
-			warn "list: $ms_list" 
-				if $t; 
-			warn "email: $ms_email" 
-				if $t; 
-			warn "diagnostics: \n" . Data::Dumper::Dumper($ms_diagnostics)
-				if $t; 
-	
-	        $list  ||= $ms_list;
-	        $email ||= $ms_email;
-	        
-	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $ms_diagnostics); 
-			
-	    }
+        if ( defined($email) && length($email) < 1 ) { undef($email); }
+        if ( defined($list)  && length($list) < 1 )  { undef($list); }
 
-        if(defined($email) && length($email) < 1) { undef($email); }
-        if(defined($list) && length($list) < 1) { undef($list);}
-	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
-			warn "parse_for_novell"
-				if $t; 
-				
-	        my ( $nv_list, $nv_email, $nv_diagnostics ) =
-	          $self->parse_for_novell($entity);
-	
-			warn "list: $nv_list" 
-				if $t; 
-			warn "email: $nv_email" 
-				if $t; 
-			warn "diagnostics: \n" . Data::Dumper::Dumper($nv_diagnostics)
-				if $t; 
-	
-	
-	        $list  ||= $nv_list;
-	        $email ||= $nv_email;
-            $diagnostics = $self->_fold_in_diagnostics($diagnostics, $nv_diagnostics); 
-  	        
-  	        
-	    }
+        if (   ( !defined($list) )
+            || ( !defined($email) )
+            || !keys %{$diagnostics} )
+        {
 
-        if(defined($email) && length($email) < 1) { undef($email); }
-        if(defined($list) && length($list) < 1) { undef($list);}
-        
-	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
-	        
-	        my ( $g_list, $g_email, $g_diagnostics ) =
-	          $self->parse_for_gordano($entity);
-	        $list  ||= $g_list;
-	        $email ||= $g_email;
-	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $g_diagnostics); 
-              
-              
-	    }
+            warn "parse_for_exim"
+              if $t;
 
-        if(defined($email) && length($email) < 1) { undef($email); }
-        if(defined($list) && length($list) < 1) { undef($list);}
-        
-	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
-	        
-	        my ( $y_list, $y_email, $y_diagnostics ) =
-	          $self->parse_for_overquota_yahoo($entity);
-	        $list  ||= $y_list;
-	        $email ||= $y_email;
+            my ( $exim_list, $exim_email, $exim_diagnostics ) =
+              $self->parse_for_exim($entity);
 
-	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $y_diagnostics); 
-  	        
-	    }
+            warn "list: $exim_list"
+              if $t;
+            warn "email: $exim_email"
+              if $t;
+            warn "diagnostics: \n" . Data::Dumper::Dumper($exim_diagnostics)
+              if $t;
 
-        if(defined($email) && length($email) < 1) { undef($email); }
-        if(defined($list) && length($list) < 1) { undef($list);}
-        
-	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
-	        my ( $el_list, $el_email, $el_diagnostics ) =
-	          $self->parse_for_earthlink($entity);
-	        $list  ||= $el_list;
-	        $email ||= $el_email;
-	        
-	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $el_diagnostics); 
+            $list  ||= $exim_list;
+            $email ||= $exim_email;
 
-	    }
+            $diagnostics =
+              $self->_fold_in_diagnostics( $diagnostics, $exim_diagnostics );
 
-        if(defined($email) && length($email) < 1) { undef($email); }
-        if(defined($list) && length($list) < 1) { undef($list);}
-        
-	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {	        my ( $wl_list, $wl_email, $wl_diagnostics ) =
-	          $self->parse_for_windows_live($entity);
+        }
 
-	        $list  ||= $wl_list;
-	        $email ||= $wl_email;
-	        
-	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $wl_diagnostics); 
+        if ( defined($email) && length($email) < 1 ) { undef($email); }
+        if ( defined($list)  && length($list) < 1 )  { undef($list); }
 
-	    }
+        if (   ( !defined($list) )
+            || ( !defined($email) )
+            || !keys %{$diagnostics} )
+        {
+            warn "parse_for_f__king_exchange"
+              if $t;
 
-	    # This is a special case - since this outside module adds pseudo diagonistic
-	    # reports, we'll say, add them if they're NOT already there:
-#
-#		    my ( $bp_list, $bp_email, $bp_diagnostics ) =
-#		      $self->parse_using_m_ds_bp($entity);
-#
-#		    # There's no test for these in the module itself, so we
-#		    # won't even look for them.
-#		    #$list  ||= $bp_list;
-#		    #$email ||= $bp_email;
-#
-#		    %{$diagnostics} = ( %{$diagnostics}, %{$bp_diagnostics} )
-#		      if $bp_diagnostics;
+            my ( $ms_list, $ms_email, $ms_diagnostics ) =
+              $self->parse_for_f__king_exchange($entity);
 
+            warn "list: $ms_list"
+              if $t;
+            warn "email: $ms_email"
+              if $t;
+            warn "diagnostics: \n" . Data::Dumper::Dumper($ms_diagnostics)
+              if $t;
 
-	}
-    chomp($email) if $email;
+            $list  ||= $ms_list;
+            $email ||= $ms_email;
+
+            $diagnostics =
+              $self->_fold_in_diagnostics( $diagnostics, $ms_diagnostics );
+
+        }
+
+        if ( defined($email) && length($email) < 1 ) { undef($email); }
+        if ( defined($list)  && length($list) < 1 )  { undef($list); }
+        if (   ( !defined($list) )
+            || ( !defined($email) )
+            || !keys %{$diagnostics} )
+        {
+            warn "parse_for_novell"
+              if $t;
+
+            my ( $nv_list, $nv_email, $nv_diagnostics ) =
+              $self->parse_for_novell($entity);
+
+            warn "list: $nv_list"
+              if $t;
+            warn "email: $nv_email"
+              if $t;
+            warn "diagnostics: \n" . Data::Dumper::Dumper($nv_diagnostics)
+              if $t;
+
+            $list  ||= $nv_list;
+            $email ||= $nv_email;
+            $diagnostics =
+              $self->_fold_in_diagnostics( $diagnostics, $nv_diagnostics );
+
+        }
+
+        if ( defined($email) && length($email) < 1 ) { undef($email); }
+        if ( defined($list)  && length($list) < 1 )  { undef($list); }
+
+        if (   ( !defined($list) )
+            || ( !defined($email) )
+            || !keys %{$diagnostics} )
+        {
+
+            my ( $g_list, $g_email, $g_diagnostics ) =
+              $self->parse_for_gordano($entity);
+            $list  ||= $g_list;
+            $email ||= $g_email;
+            $diagnostics =
+              $self->_fold_in_diagnostics( $diagnostics, $g_diagnostics );
+
+        }
+
+        if ( defined($email) && length($email) < 1 ) { undef($email); }
+        if ( defined($list)  && length($list) < 1 )  { undef($list); }
+
+        if (   ( !defined($list) )
+            || ( !defined($email) )
+            || !keys %{$diagnostics} )
+        {
+
+            my ( $y_list, $y_email, $y_diagnostics ) =
+              $self->parse_for_overquota_yahoo($entity);
+            $list  ||= $y_list;
+            $email ||= $y_email;
+
+            $diagnostics =
+              $self->_fold_in_diagnostics( $diagnostics, $y_diagnostics );
+
+        }
+
+        if ( defined($email) && length($email) < 1 ) { undef($email); }
+        if ( defined($list)  && length($list) < 1 )  { undef($list); }
+
+        if (   ( !defined($list) )
+            || ( !defined($email) )
+            || !keys %{$diagnostics} )
+        {
+            my ( $el_list, $el_email, $el_diagnostics ) =
+              $self->parse_for_earthlink($entity);
+            $list  ||= $el_list;
+            $email ||= $el_email;
+
+            $diagnostics =
+              $self->_fold_in_diagnostics( $diagnostics, $el_diagnostics );
+
+        }
+
+        if ( defined($email) && length($email) < 1 ) { undef($email); }
+        if ( defined($list)  && length($list) < 1 )  { undef($list); }
+
+        if (   ( !defined($list) )
+            || ( !defined($email) )
+            || !keys %{$diagnostics} )
+        {
+            my ( $wl_list, $wl_email, $wl_diagnostics ) =
+              $self->parse_for_windows_live($entity);
+
+            $list  ||= $wl_list;
+            $email ||= $wl_email;
+
+            $diagnostics =
+              $self->_fold_in_diagnostics( $diagnostics, $wl_diagnostics );
+
+        }
+
+    # This is a special case - since this outside module adds pseudo diagonistic
+    # reports, we'll say, add them if they're NOT already there:
+    #
+    #		    my ( $bp_list, $bp_email, $bp_diagnostics ) =
+    #		      $self->parse_using_m_ds_bp($entity);
+    #
+    #		    # There's no test for these in the module itself, so we
+    #		    # won't even look for them.
+    #		    #$list  ||= $bp_list;
+    #		    #$email ||= $bp_email;
+    #
+    #		    %{$diagnostics} = ( %{$diagnostics}, %{$bp_diagnostics} )
+    #		      if $bp_diagnostics;
+
+    }
+
+    if ($email) {
+        chomp($email);
+        $email =~ s/\:$//;
+    }
 
     #small hack, turns, %2 into, '-'
     $list =~ s/\%2d/\-/g;
@@ -376,54 +423,71 @@ sub run_all_parses {
         $diagnostics->{'Simplified-Message-Id'} =
           strip( $diagnostics->{'Simplified-Message-Id'} );
     }
-	
+
     return ( $email, $list, $diagnostics );
 }
 
 sub _fold_in_diagnostics {
-    
-    my $self   = shift; 
-    my $orig_d = shift || {}; 
-    my $new_d  = shift || {}; 
-        
-    foreach my $key2 ( keys %{$new_d} )
-        {
-        if( exists $orig_d->{$key2} )
-            {
-          #  warn "Key [$key2] is in both hashes!";
-            
-                if(length($new_d->{$key2}) > 0){ 
-                    $orig_d->{$key2} = $new_d->{$key2};
-                }
-                else { 
-                   # warn "keeping old value."; 
-                }
+
+    my $self   = shift;
+    my $orig_d = shift || {};
+    my $new_d  = shift || {};
+
+    foreach my $key2 ( keys %{$new_d} ) {
+        if ( exists $orig_d->{$key2} ) {
+
+            #  warn "Key [$key2] is in both hashes!";
+
+            if ( length( $new_d->{$key2} ) > 0 ) {
+                $orig_d->{$key2} = $new_d->{$key2};
             }
-        else
-            {
-            $orig_d->{$key2} = $new_d->{$key2};
+            else {
+                # warn "keeping old value.";
             }
         }
-        
-    #use Data::Dumper; 
-    # warn 'diag now looks like this: ' . Dumper($orig_d); 
-    return $orig_d; 
-        
-}
+        else {
+            $orig_d->{$key2} = $new_d->{$key2};
+        }
+    }
 
+    #use Data::Dumper;
+    # warn 'diag now looks like this: ' . Dumper($orig_d);
+    return $orig_d;
+
+}
 
 sub find_verp {
 
     my $self   = shift;
     my $entity = shift;
-    my $mv     = Mail::Verp->new;
-    $mv->separator($DADA::Config::MAIL_VERP_SEPARATOR);
-    if ( $entity->head->count('To') > 0 ) {
-        my ( $sender, $recipient ) =
-          $mv->decode( $entity->head->get( 'To', 0 ) );
-        return $recipient || undef;
+
+    my $have_verp = 0;
+
+    try {
+        require Mail::Verp;
+        $have_verp = 1;
+
     }
-    return undef;
+    catch {
+        # nope.
+    };
+
+    if ( $have_verp == 1 ) {
+        my $mv = Mail::Verp->new;
+        $mv->separator($DADA::Config::MAIL_VERP_SEPARATOR);
+        if ( $entity->head->count('To') > 0 ) {
+            my ( $sender, $recipient ) =
+              $mv->decode( $entity->head->get( 'To', 0 ) );
+            return $recipient || undef;
+        }
+        else {
+            return undef;
+        }
+    }
+    else {
+        return undef;
+    }
+
 }
 
 sub generic_parse {
@@ -444,17 +508,17 @@ sub generic_parse {
         %return = %{$headers_diag};
     }
 
-    $list   = $self->find_list_in_list_headers($entity);
+    $list = $self->find_list_in_list_headers($entity);
     $list ||= $self->generic_body_parse_for_list($entity);
 
     $email = DADA::App::Guts::strip($email);
     $email =~ s/^\<|\>$//g if $email;
-	if(!$email) { 
-		$email = $self->generic_body_parse_for_email($entity); 
-	}
+    if ( !$email ) {
+        $email = $self->generic_body_parse_for_email($entity);
+    }
 
     $list = DADA::App::Guts::strip($list) if $list;
-    
+
     return ( $list, $email, \%return );
 
 }
@@ -523,25 +587,25 @@ sub find_list_in_list_headers {
     my $entity = shift;
     my @parts  = $entity->parts;
     my $list;
-	my $orig_msg_copy = undef; 
-	
-    if ( $entity->head->mime_type eq 'message/rfc822') {
+    my $orig_msg_copy = undef;
+
+    if ( $entity->head->mime_type eq 'message/rfc822' ) {
         $orig_msg_copy = $parts[0];
-		$list = $self->list_in_list_headers($orig_msg_copy);      
+        $list          = $self->list_in_list_headers($orig_msg_copy);
     }
-	elsif($entity->head->mime_type eq 'text/rfc822-headers'){ 
+    elsif ( $entity->head->mime_type eq 'text/rfc822-headers' ) {
 
-
-	    eval {
-	        $orig_msg_copy = $self->{parser}->parse_data( $entity->bodyhandle->as_string );
-	    };
-	    if ($@) {
-	        warn "Trouble parsing text/rfc822-headers message. $@";
-	    }
-	    else {
-	    }
-		$list = $self->list_in_list_headers($orig_msg_copy);
-	}
+        eval {
+            $orig_msg_copy =
+              $self->{parser}->parse_data( $entity->bodyhandle->as_string );
+        };
+        if ($@) {
+            warn "Trouble parsing text/rfc822-headers message. $@";
+        }
+        else {
+        }
+        $list = $self->list_in_list_headers($orig_msg_copy);
+    }
     else {
         my $i;
         for $i ( 0 .. $#parts ) {
@@ -552,22 +616,21 @@ sub find_list_in_list_headers {
     }
 }
 
-
 sub list_in_list_headers {
-    my $self   = shift;
-    my $entity = shift;
-    my $list   = undef;	
+    my $self        = shift;
+    my $entity      = shift;
+    my $list        = undef;
     my $list_header = $entity->head->get( 'List', 0 ) || undef;
-    
-    if(defined($list_header)){ 
-		if($list_header !~ /\:/) { 
-			$list = $list_header;
-		}
-	}
-	
+
+    if ( defined($list_header) ) {
+        if ( $list_header !~ /\:/ ) {
+            $list = $list_header;
+        }
+    }
+
     if ( !$list ) {
         $list_header = $entity->head->get( 'X-List', 0 );
-        $list = $list_header if $list_header !~ /\:/;
+        $list        = $list_header if $list_header !~ /\:/;
     }
     if ( !$list ) {
         my $list_id = $entity->head->get( 'List-ID', 0 );
@@ -585,51 +648,54 @@ sub list_in_list_headers {
     return $list;
 }
 
-
 sub find_message_id_in_headers {
 
     my $self   = shift;
     my $entity = shift;
     my @parts  = $entity->parts;
     my $mid;
-    
-    if ( $entity->head->mime_type eq 'message/rfc822' || $entity->head->mime_type eq 'text/rfc822-headers') {
-        my $orig_msg_copy = ''; 
 
-		if($entity->head->mime_type eq 'text/rfc822-headers') { 			
-			eval { $orig_msg_copy = $self->{parser}->parse_data($entity->bodyhandle->as_string) };
-			if ( $@ ) {
-				warn "Trouble parsing text/rfc822-headers message. $@"; 
-			}
-			else { 
-			}
-		}
-		else { 
-            
-		   $orig_msg_copy = $parts[0]; 
-           my $munge = $orig_msg_copy->as_string; 
-           if($munge =~ m/^\n/) { # you've got to be kidding me...
-                $munge =~ s/^\n//; 
+    if (   $entity->head->mime_type eq 'message/rfc822'
+        || $entity->head->mime_type eq 'text/rfc822-headers' )
+    {
+        my $orig_msg_copy = '';
+
+        if ( $entity->head->mime_type eq 'text/rfc822-headers' ) {
+            eval {
+                $orig_msg_copy =
+                  $self->{parser}->parse_data( $entity->bodyhandle->as_string );
+            };
+            if ($@) {
+                warn "Trouble parsing text/rfc822-headers message. $@";
+            }
+            else {
+            }
+        }
+        else {
+
+            $orig_msg_copy = $parts[0];
+            my $munge = $orig_msg_copy->as_string;
+            if ( $munge =~ m/^\n/ ) {    # you've got to be kidding me...
+                $munge =~ s/^\n//;
                 $orig_msg_copy = $self->{parser}->parse_data($munge);
             }
-            
-            undef $munge; 
-		}
-		
-	
-		# Amazon SES finds this in the, "X-Message-ID" header: 
-		# Amazon SES will also set its own Message-ID. Maddening!
-        
-		if($orig_msg_copy->head->get( 'X-Message-ID', 0 )){ 		    
-			$mid = $orig_msg_copy->head->get( 'X-Message-ID', 0 );
-		}
-		else { 
-        	$mid = $orig_msg_copy->head->get( 'Message-ID', 0 );
+
+            undef $munge;
         }
-		
-		$orig_msg_copy->purge; 
-        
-		$mid = strip($mid);
+
+        # Amazon SES finds this in the, "X-Message-ID" header:
+        # Amazon SES will also set its own Message-ID. Maddening!
+
+        if ( $orig_msg_copy->head->get( 'X-Message-ID', 0 ) ) {
+            $mid = $orig_msg_copy->head->get( 'X-Message-ID', 0 );
+        }
+        else {
+            $mid = $orig_msg_copy->head->get( 'Message-ID', 0 );
+        }
+
+        $orig_msg_copy->purge;
+
+        $mid = strip($mid);
         chomp($mid);
         return $mid;
     }
@@ -710,40 +776,41 @@ sub generic_delivery_status_parse {
         $diag->{Guessed_MTA} = 'Postfix';
     }
 
-	my $rfc    = undef; 
-	my $remail = undef; 
-	if(exists($diag->{'Original-Recipient'})){ 
-		( $rfc, $remail ) = split( ';', $diag->{'Original-Recipient'} );
-	}
-	elsif(exists($diag->{'Final-Recipient'})){ 
-		( $rfc, $remail ) = split( ';', $diag->{'Final-Recipient'} );	
-		if ( $remail eq '<>' ) {    #example: Final-Recipient: LOCAL;<>
-	    	$remail = undef; 
-		}
-	}
-	elsif(exists($diag->{'Original-Rcpt-To'})){ 
-	    $remail = $diag->{'Original-Rcpt-To'}; 
-	}
-	# Seeeeeriously:
-	elsif(exists($diag->{'Original-Rcpt-to'})){ 
-	    $remail = $diag->{'Original-Rcpt-to'}; 
-	}
+    my $rfc    = undef;
+    my $remail = undef;
+    if ( exists( $diag->{'Original-Recipient'} ) ) {
+        ( $rfc, $remail ) = split( ';', $diag->{'Original-Recipient'} );
+    }
+    elsif ( exists( $diag->{'Final-Recipient'} ) ) {
+        ( $rfc, $remail ) = split( ';', $diag->{'Final-Recipient'} );
+        if ( $remail eq '<>' ) {    #example: Final-Recipient: LOCAL;<>
+            $remail = undef;
+        }
+    }
+    elsif ( exists( $diag->{'Original-Rcpt-To'} ) ) {
+        $remail = $diag->{'Original-Rcpt-To'};
+    }
+
+    # Seeeeeriously:
+    elsif ( exists( $diag->{'Original-Rcpt-to'} ) ) {
+        $remail = $diag->{'Original-Rcpt-to'};
+    }
 
     $email = $remail;
 
     #
-	# Or, use Email::Address
-	if($email =~ m/(.*?)\<(.*?)\>/) { 
-		$email = $2; 
-	}
+    # Or, use Email::Address
+    if ( $email =~ m/(.*?)\<(.*?)\>/ ) {
+        $email = $2;
+    }
 
     for ( keys %$diag ) {
         $diag->{$_} = strip( $diag->{$_} );
     }
-	chomp ($email);
-	$email =~ s/\n$//g;
-	$email =~ s/\r$//g;
-	
+    chomp($email);
+    $email =~ s/\n$//g;
+    $email =~ s/\r$//g;
+
     return ( $email, $diag );
 }
 
@@ -779,25 +846,26 @@ sub generic_body_parse_for_email {
     my @parts = $entity->parts;
     if ( !@parts ) {
 
-	    my $body = $entity->bodyhandle;
-	    my $IO;
-		
-	    return undef if !defined($body);
+        my $body = $entity->bodyhandle;
+        my $IO;
 
-        
-	    if ( $IO = $body->open("r") ) {    # "r" for reading.
-	        while ( defined( $_ = $IO->getline ) ) {	            
-	            chomp($_);
-				if($_ =~ m/Your message to \<(.*?)\> was automatically rejected/){ 
-					return $1; 
-				}
-				elsif($_ =~ m/Recipient a(d{1,2})ress\: (.*?)$/i) {    
-                    my $email = $2; 
-                    $email =~ s/\=20$//; 
-				    return $email; 
-				}
-			}
-		}
+        return undef if !defined($body);
+
+        if ( $IO = $body->open("r") ) {    # "r" for reading.
+            while ( defined( $_ = $IO->getline ) ) {
+                chomp($_);
+                if ( $_ =~
+                    m/Your message to \<(.*?)\> was automatically rejected/ )
+                {
+                    return $1;
+                }
+                elsif ( $_ =~ m/Recipient a(d{1,2})ress\: (.*?)$/i ) {
+                    my $email = $2;
+                    $email =~ s/\=20$//;
+                    return $email;
+                }
+            }
+        }
     }
     else {
         my $i;
@@ -810,9 +878,6 @@ sub generic_body_parse_for_email {
         }
     }
 }
-
-
-
 
 sub find_list_from_unsub_link {
 
@@ -834,9 +899,10 @@ sub find_list_from_unsub_link {
 # https://sourceforge.net/tracker2/?func=detail&aid=2351425&group_id=13002&atid=113002
             if ( $_ =~ m/$DADA::Config::PROGRAM_URL\/(u|list)\/(.*?)\// ) {
                 $list = $2;
-				if($list =~ m/\"\>/){ # We've picked up a screwy link in HTML.
-					undef $list;
-				}
+                if ( $list =~ m/\"\>/ )
+                {    # We've picked up a screwy link in HTML.
+                    undef $list;
+                }
             }
 
             # /DEV: BUGFIX
@@ -859,47 +925,51 @@ sub find_list_from_unsub_link {
     return $list;
 }
 
-sub bounce_from_ses { 
-	my $self = shift; 
-	my $entity = shift; 
-	# As far as I know, it's all from: 
-	my $amazon_ses_from1 = 'MAILER-DAEMON@email-bounces.amazonses.com'; 
-	my $qm_ses1 = quotemeta($amazon_ses_from1); 
-	
-	my $amazon_ses_from2 = 'MAILER-DAEMON@amazonses.com'; 
-	my $qm_ses2 = quotemeta($amazon_ses_from2); 
+sub bounce_from_ses {
+    my $self   = shift;
+    my $entity = shift;
 
-	if($entity->head->get( 'From', 0 ) =~ m/$qm_ses1|$qm_ses2/){ 
-		return 1; 
-	}
-	else { 
-		return 0; 
-	}
+    # As far as I know, it's all from:
+    my $amazon_ses_from1 = 'MAILER-DAEMON@email-bounces.amazonses.com';
+    my $qm_ses1          = quotemeta($amazon_ses_from1);
+
+    my $amazon_ses_from2 = 'MAILER-DAEMON@amazonses.com';
+    my $qm_ses2          = quotemeta($amazon_ses_from2);
+
+    if ( $entity->head->get( 'From', 0 ) =~ m/$qm_ses1|$qm_ses2/ ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
-sub bounce_is_amazon_ses_abuse_report { 
-    my $self = shift; 
-	my $entity = shift; 
-	# As far as I know, it's all from: 
-	my $amazon_ses_from1 = 'complaints@email-abuse.amazonses.com'; 
-	my $qm_ses1 = quotemeta($amazon_ses_from1); 
-	
-	if($entity->head->get( 'From', 0 ) =~ m/$qm_ses1/){ 
-		return 1; 
-	}
-	else { 
-		return 0; 
-	}
+sub bounce_is_amazon_ses_abuse_report {
+    my $self   = shift;
+    my $entity = shift;
+
+    # As far as I know, it's all from:
+    my $amazon_ses_from1 = 'complaints@email-abuse.amazonses.com';
+    my $qm_ses1          = quotemeta($amazon_ses_from1);
+
+    if ( $entity->head->get( 'From', 0 ) =~ m/$qm_ses1/ ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
 sub isa_rfc6522_bounce {
     my $self   = shift;
     my $entity = shift;
-#	print '$entity->effective_type ' . $entity->effective_type . "\n"; 
-#	print '$entity->head->mime_attr(\'content-type.report-type\'); ' . $entity->head->mime_attr('content-type.report-type') . "\n"; 
-	
+
+#	print '$entity->effective_type ' . $entity->effective_type . "\n";
+#	print '$entity->head->mime_attr(\'content-type.report-type\'); ' . $entity->head->mime_attr('content-type.report-type') . "\n";
+
     if (   $entity->effective_type eq 'multipart/report'
-        && $entity->head->mime_attr('content-type.report-type') eq 'delivery-status' )
+        && $entity->head->mime_attr('content-type.report-type') eq
+        'delivery-status' )
     {
         return 1;
     }
@@ -908,139 +978,151 @@ sub isa_rfc6522_bounce {
     }
 }
 
+sub bounce_from_secureserver_dot_net {
+    my $self   = shift;
+    my $entity = shift;
 
-sub bounce_from_secureserver_dot_net { 
-	my $self = shift; 
-	my $entity = shift; 
-	# As far as I know, it's all from: 
-	my $secure_server_from_fragment = 'secureserver.net'; 
-	my $qm = quotemeta($secure_server_from_fragment); 
-	
-	if($entity->head->get( 'From', 0 ) =~ m/$qm/){ 
-		return 1; 
-	}
-	else { 
-		return 0; 
-	}
+    # As far as I know, it's all from:
+    my $secure_server_from_fragment = 'secureserver.net';
+    my $qm                          = quotemeta($secure_server_from_fragment);
+
+    if ( $entity->head->get( 'From', 0 ) =~ m/$qm/ ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
-
-
-sub parse_for_amazon_ses { 
-	my $self = shift; 
-	my $entity = shift; 
-	my ( $list, $email, $diag ) = $self->parse_for_rfc6522($entity);
-	$diag->{Guessed_MTA} = 'Amazon_SES'; 
-	return ( $list, $email, $diag );
+sub parse_for_amazon_ses {
+    my $self   = shift;
+    my $entity = shift;
+    my ( $list, $email, $diag ) = $self->parse_for_rfc6522($entity);
+    $diag->{Guessed_MTA} = 'Amazon_SES';
+    return ( $list, $email, $diag );
 }
 
+sub parse_for_rfc6522 {
 
-sub parse_for_rfc6522 { 
-	
-	my $self   = shift; 
-	my $entity = shift; 
-	
-	my $diag = {};
-	my $email; 
-	my $list; 
-	
-	my @parts = $entity->parts; 
-	
-	# Human readable 
-	my $notification = ''; 
-	if($parts[0]){ 
-		 $notification = $self->generic_human_readable_parse($parts[0]);
-	}
-	if($parts[1]){ 
-		my $mds_entity = $parts[1];
-		
-		if ( $mds_entity->head->mime_type eq 'message/delivery-status' ) {
-	    	( $email, $diag ) = $self->generic_delivery_status_parse($mds_entity);
-		}
-	}
-	if($parts[2]){ 
-		my $orig_msg_entity = $parts[2];
-		if ( $orig_msg_entity->head->mime_type eq 'message/rfc822'
-		||  $orig_msg_entity->head->mime_type eq 'text/rfc822-headers'
-		 ) {
-			$list = $self->find_list_in_list_headers($orig_msg_entity);	
-			$diag->{'Message-Id'} = $self->find_message_id_in_headers($orig_msg_entity);
-		}
-	}
-	$diag->{'Notification'} = $notification
-		if defined $notification;
-	
-	$diag->{parsed_by} .= 'parse_for_rfc6522'; 
-    $email =~ s/\<|\>//g; 
-	$email = strip($email); 
-	return ( $list, $email, $diag );
-	
+    my $self   = shift;
+    my $entity = shift;
+
+    my $diag = {};
+    my $email;
+    my $list;
+
+    my @parts = $entity->parts;
+
+    # Human readable
+    my $notification = '';
+    if ( $parts[0] ) {
+        $notification = $self->generic_human_readable_parse( $parts[0] );
+    }
+    if ( $parts[1] ) {
+        my $mds_entity = $parts[1];
+		#warn '$mds_entity->head->mime_type: ' . $mds_entity->head->mime_type; 
+
+        if ( $mds_entity->head->mime_type eq 'message/delivery-status' ) {
+            ( $email, $diag ) =
+              $self->generic_delivery_status_parse($mds_entity);
+        }
+    }
+    if ( $parts[2] ) {
+        my $orig_msg_entity = $parts[2];
+        if (   $orig_msg_entity->head->mime_type eq 'message/rfc822'
+            || $orig_msg_entity->head->mime_type eq 'text/rfc822-headers' )
+        {
+			
+			
+            $list = $self->find_list_in_list_headers($orig_msg_entity);
+            $diag->{'Message-Id'} =
+              $self->find_message_id_in_headers($orig_msg_entity);
+        }
+    }
+   
+    $diag->{'Notification'} = $notification
+      if defined $notification;
+	  
+	  if(!$email){ 
+		  # Subject: this is the subject
+		  # To: the email address we want. 
+     	  my ($n_subject, $n_email) = ($notification =~ m/Subject\: (.*?)\nTo\: (.*?)\n/ms);
+		  if(defined($n_email)){ 
+			  $email = $n_email; 
+			  undef $n_email; 
+			  undef $n_subject; 
+		  }
+	  }
+
+    $diag->{parsed_by} .= 'parse_for_rfc6522';
+    $email =~ s/\<|\>//g;
+    $email = strip($email);
+    return ( $list, $email, $diag );
+
 }
 
+sub parse_for_ses_abuse_report {
 
-sub parse_for_ses_abuse_report { 
+    my $self   = shift;
+    my $entity = shift;
 
-	my $self   = shift; 
-	my $entity = shift; 
-	
-	my $diag = {};
-	my $email; 
-	my $list; 
-	
-	my @parts = $entity->parts; 
-	
-	# Human readable 
-	my $notification = ''; 
-	if($parts[0]){ 
-		 $notification = $self->generic_human_readable_parse($parts[0]);
-	}
-	if($parts[1]){ 
-		my $mds_entity = $parts[1];
-		if ( $mds_entity->head->mime_type eq 'message/feedback-report' ) {
-	    	( $email, $diag ) = $self->generic_delivery_status_parse($mds_entity);
-		}
-	}
+    my $diag = {};
+    my $email;
+    my $list;
 
-# This is NOT working correctly: 
-    if($parts[2]){ 
-		my $orig_msg_entity = $parts[2];
-        $diag->{'Message-Id'} = $self->find_message_id_in_headers($orig_msg_entity);
-        
+    my @parts = $entity->parts;
 
+    # Human readable
+    my $notification = '';
+    if ( $parts[0] ) {
+        $notification = $self->generic_human_readable_parse( $parts[0] );
+    }
+    if ( $parts[1] ) {
+        my $mds_entity = $parts[1];
+        if ( $mds_entity->head->mime_type eq 'message/feedback-report' ) {
+            ( $email, $diag ) =
+              $self->generic_delivery_status_parse($mds_entity);
+        }
+    }
+
+    # This is NOT working correctly:
+    if ( $parts[2] ) {
+        my $orig_msg_entity = $parts[2];
+        $diag->{'Message-Id'} =
+          $self->find_message_id_in_headers($orig_msg_entity);
 
 #		if ( $orig_msg_entity->head->mime_type eq 'message/rfc822'
 #		||  $orig_msg_entity->head->mime_type eq 'text/rfc822-headers'
-#		 ) {		    
-#   	    $list = $self->find_list_in_list_headers($orig_msg_entity);	
+#		 ) {
+#   	    $list = $self->find_list_in_list_headers($orig_msg_entity);
 #			$diag->{'Message-Id'} = $self->find_message_id_in_headers($orig_msg_entity);
-#		    warn 'checking if these do anythig...'; 
-#		    warn '$list ' . $list; 
-#		    warn q|$diag->{'Message-Id'} | . $diag->{'Message-Id'}; 
-#		    
+#		    warn 'checking if these do anythig...';
+#		    warn '$list ' . $list;
+#		    warn q|$diag->{'Message-Id'} | . $diag->{'Message-Id'};
+#
 #		}
-	}
-	$diag->{Notification} = $notification
-		if defined $notification;
-	$diag->{parsed_by} .= 'parse_for_ses_abuse_report'; 
-    $email =~ s/\<|\>//g; 
-	$email = strip($email); 
-	return ( $list, $email, $diag );
+    }
+    $diag->{Notification} = $notification
+      if defined $notification;
+    $diag->{parsed_by} .= 'parse_for_ses_abuse_report';
+    $email =~ s/\<|\>//g;
+    $email = strip($email);
+    return ( $list, $email, $diag );
 
 }
 
-
-sub generic_human_readable_parse { 
-	my $self   = shift;
-	my $entity = shift; 
-	my $msg; 
-	try {
-		$msg =  $entity->bodyhandle->as_string; 
-	} catch { 
-		carp "Problems creating generic_human_readable_parse: '$_'";
-	};
-	return $msg; 
+sub generic_human_readable_parse {
+    my $self   = shift;
+    my $entity = shift;
+    my $msg;
+    try {
+        $msg = $entity->bodyhandle->as_string;
+    }
+    catch {
+        carp "Problems creating generic_human_readable_parse: '$_'";
+    };
+    return $msg;
 }
-
 
 sub parse_for_secureserver_dot_net { 
 	
@@ -1100,10 +1182,11 @@ sub parse_for_secureserver_dot_net {
 		# print "all the stuff:\n$stuff\n"; 
 		$diag->{'Notification'} = $stuff
 		 if defined $stuff;
-		$stuff =~ m/\<(.*?)\>\:(.*)/ms; 
-	 	$email =  $1;
+
+        ($email, $diag->{'Diagnostic-Code'}) = ($stuff =~ m/\<(.*?)\>\:(.*)/ms );
+		 
+
 		$email = strip($email); 
-		$diag->{'Diagnostic-Code'} = $2; 
 		$diag->{'Diagnostic-Code'} = strip($diag->{'Diagnostic-Code'}); 
 
 		undef $IO; 
@@ -1169,8 +1252,6 @@ sub parse_for_secureserver_dot_net {
 }
 
 
-
-
 sub parse_for_qmail {
 
     my $self = shift;
@@ -1187,22 +1268,22 @@ sub parse_for_qmail {
     my $state    = 0;
     my $pattern  = 'Hi. This is the';
     my $pattern2 = 'Your message has been enqueued by';
-    my $pattern3 = 'Customer Support at 480-624-2500.'; # This is lame - Customer Support at 480-624-2500.
-     
+    my $pattern3 = 'Customer Support at 480-624-2500.'
+      ;    # This is lame - Customer Support at 480-624-2500.
+
     my $end_pattern  = '--- Undelivered message follows ---';
     my $end_pattern2 = '--- Below this line is a copy of the message.';
     my $end_pattern3 = '--- Enclosed is a copy of the message.';
     my $end_pattern4 = 'Your original message headers are included below.';
 
     my ( $addr, $reason );
-	
-	
+
     if ( !@parts ) {
         my $body = $entity->bodyhandle;
         my $IO;
         if ($body) {
             if ( $IO = $body->open("r") ) {    # "r" for reading.
-				my $notification = undef; 
+                my $notification = undef;
                 while ( defined( $_ = $IO->getline ) ) {
 
                     my $data = $_;
@@ -1211,7 +1292,7 @@ sub parse_for_qmail {
                       if $data =~ /$end_pattern|$end_pattern2|$end_pattern3/;
 
                     if ( $state == 1 ) {
-						$notification .= $_; 
+                        $notification .= $_;
                         $data =~ s/\n/ /g;
 
                         if ( $data =~ /\t(\S+\@\S+)/ ) {
@@ -1266,11 +1347,11 @@ sub parse_for_qmail {
                             my $status;
                             $email ||= $2;
 
-                            $status ||= $1;
+                            $status         ||= $1;
                             $diag->{Status} ||= '5.x.y' if $status =~ /^5/;
                             $diag->{Status} ||= '4.x.y' if $status =~ /^4/;
                             $diag->{'Diagnostic-Code'} = $data;
-                            $diag->{Guessed_MTA} = 'Qmail';
+                            $diag->{Guessed_MTA}       = 'Qmail';
 
                         }
                         elsif ( $data =~ /Remote host said:\s(\d{3}.*)/ ) {
@@ -1287,13 +1368,13 @@ sub parse_for_qmail {
                         elsif ( $data =~ /(.*)\s\(\#(\d+\.\d+\.\d+)\)/ ) {
 
                             $diag->{'Diagnostic-Code'} = $1;
-                            $diag->{Status} = $2;
+                            $diag->{Status}            = $2;
 
                         }
                         elsif ( $data =~ /(No User By That Name)/ ) {
 
                             $diag->{'Diagnostic-Code'} = $data;
-                            $diag->{Status} = '5.x.y';
+                            $diag->{Status}            = '5.x.y';
 
                         }
                         elsif (
@@ -1306,18 +1387,18 @@ sub parse_for_qmail {
                         elsif ( $data =~
                             /The mail system will continue delivery attempts/ )
                         {
-                            $diag->{Guessed_MTA} = 'Qmail';
+                            $diag->{Guessed_MTA}       = 'Qmail';
                             $diag->{'Diagnostic-Code'} = $data;
                         }
-						elsif($data =~ m/user is over quota/){ 
-                            $diag->{Guessed_MTA} = 'Qmail';
-                            $diag->{'Diagnostic-Code'} = $data;							
-						}
+                        elsif ( $data =~ m/user is over quota/ ) {
+                            $diag->{Guessed_MTA}       = 'Qmail';
+                            $diag->{'Diagnostic-Code'} = $data;
+                        }
                     }
                 }
-				
-				$diag->{Notification} = $notification
-					if defined $notification;
+
+                $diag->{Notification} = $notification
+                  if defined $notification;
             }
 
 # Not Good:
@@ -1327,7 +1408,7 @@ sub parse_for_qmail {
 #				}
 #			}
             $list ||= $self->generic_body_parse_for_list($entity);
-            
+
             return ( $list, $email, $diag );
         }
         else {
@@ -1353,79 +1434,87 @@ sub parse_for_exim {
     my $self   = shift;
     my $entity = shift;
     my $email;
- 	my $list;
+    my $list;
     my $diag = {};
 
-    my $pattern      = quotemeta('This message was created automatically by mail delivery software');
-    my $end_pattern  = quotemeta('------ This is a copy of the message');
-    my $end_pattern2 = quotemeta('--- The header of the original message is following.');
+    my $pattern = quotemeta(
+        'This message was created automatically by mail delivery software');
+    my $end_pattern = quotemeta('------ This is a copy of the message');
+    my $end_pattern2 =
+      quotemeta('--- The header of the original message is following.');
 
     my @parts = $entity->parts;
     if ( !@parts ) {
         if ( $entity->head->mime_type =~ /text/ ) {
-			my $data = ''; 
+            my $data = '';
             my $body = $entity->bodyhandle;
             my $IO;
-			
 
             if ($body) {
                 if ( $IO = $body->open("r") ) {    # "r" for reading.
                     my $state = 0;
                     while ( defined( $_ = $IO->getline ) ) {
-						if($_ =~ m/$pattern/) { 
-							$state = 1;
-						}
-						if($_ =~ m/$end_pattern|$end_pattern2/) { 
-							$state = 0;
-	                    };
+                        if ( $_ =~ m/$pattern/ ) {
+                            $state = 1;
+                        }
+                        if ( $_ =~ m/$end_pattern|$end_pattern2/ ) {
+                            $state = 0;
+                        }
                         if ( $state == 1 ) {
-							$data .= $_;
+                            $data .= $_;
                             if ( $_ =~ m/unknown local-part/ ) {
                                 $diag->{'Status'} = '5.x.y';
                             }
-							# This should probably be moved to the Rules...
-							# And these are fairly genreal-purpose...
-							elsif ($_ =~ m/This user doesn\'t have a (.*?) account|unknown user|This account has been disabled or discontinued|or discontinued \[\#102\]|User(.*?)does not exist|Invalid mailbox|mailbox unavailable|550\-5\.1\.1|550 5\.1\.1|Recipient does not exist here/) { 
+
+                            # This should probably be moved to the Rules...
+                            # And these are fairly genreal-purpose...
+                            elsif ( $_ =~
+m/This user doesn\'t have a (.*?) account|unknown user|This account has been disabled or discontinued|or discontinued \[\#102\]|User(.*?)does not exist|Invalid mailbox|mailbox unavailable|550\-5\.1\.1|550 5\.1\.1|Recipient does not exist here/
+                              )
+                            {
                                 $diag->{'Status'} = '5.x.y';
-							}
+                            }
                             else {
                             }
-							
-							
-							if($_ =~ m/This user doesn't have a (.*?) account \((.*?)\)/){ 
-								$email = $2; 
-							}
-							elsif($_ =~ m/RCPT TO\:\<(\S+\@\S+)\>\:/){ 
-								$email = $1; 	
-							}	
+
+                            if ( $_ =~
+m/This user doesn't have a (.*?) account \((.*?)\)/
+                              )
+                            {
+                                $email = $2;
+                            }
+                            elsif ( $_ =~ m/RCPT TO\:\<(\S+\@\S+)\>\:/ ) {
+                                $email = $1;
+                            }
                             elsif ( $_ =~ /(\S+\@\S+)/ ) {
                                 $email = $1;
                                 $email = strip($email);
-								if($email =~ m/\.$/){ 
-									# This can be ridiculous, but you get messages like this: 
-									#    The mail server could not deliver mail to user@example.com.
-									$email =~ s/\.$//; 
-								}
-								elsif($email) { 
-	                                $email =~ s/^\<|\>$//g;
-								}
+                                if ( $email =~ m/\.$/ ) {
+
+                # This can be ridiculous, but you get messages like this:
+                #    The mail server could not deliver mail to user@example.com.
+                                    $email =~ s/\.$//;
+                                }
+                                elsif ($email) {
+                                    $email =~ s/^\<|\>$//g;
+                                }
                             }
                         }
                     }
                 }
-				$IO->close;
-				$diag->{'Notification'} = $data
-					if defined $data;
+                $IO->close;
+                $diag->{'Notification'} = $data
+                  if defined $data;
             }
             if ( $diag->{'Diagnostic-Code'} =~ m/yahoo.com/ )
             {    # actually, I guess if the email address is from yahoo...
                 $diag->{'Remote-MTA'} = 'yahoo.com';
             }
 
-             #if ( $diag->{Guessed_MTA} eq 'Exim' ) {
-			 if ( $entity->head->count( 'X-Failed-Recipients', 0 ) ) {
-				$diag->{Guessed_MTA} = 'Exim';
-                
+            #if ( $diag->{Guessed_MTA} eq 'Exim' ) {
+            if ( $entity->head->count( 'X-Failed-Recipients', 0 ) ) {
+                $diag->{Guessed_MTA} = 'Exim';
+
                 # well, looks like we got something...
                 if ( $entity->head->get( 'X-Failed-Recipients', 0 ) ) {
                     $email = $entity->head->get( 'X-Failed-Recipients', 0 );
@@ -1434,16 +1523,16 @@ sub parse_for_exim {
                 }
                 my $body = $entity->bodyhandle;
                 my $IO;
-                my $data = '';
-				my $copy  = '';
+                my $data  = '';
+                my $copy  = '';
                 my $state = 0;
-                
+
                 if ($body) {
                     if ( $IO = $body->open("r") ) {    # "r" for reading.
-						
+
                         while ( defined( $_ = $IO->getline ) ) {
-							my $data = $_;
-							
+                            my $data = $_;
+
                             if ( $data =~ /$end_pattern|$end_pattern2/ ) {
                                 $state = 1;
                                 next;
@@ -1453,20 +1542,19 @@ sub parse_for_exim {
                             }
                         }
                     }
-					$IO->close;  
+                    $IO->close;
                     my $orig_entity;
-					
-					
-					$copy =~ s/^\r|\n//; 
-					$copy =~ s/^\r|\n//; 
-					
+
+                    $copy =~ s/^\r|\n//;
+                    $copy =~ s/^\r|\n//;
+
                     eval { $orig_entity = $self->{parser}->parse_data($copy) };
                     if ( !$@ ) {
-					$list = $self->list_in_list_headers($orig_entity); 
-					}
-					else { 
-						# print "errors! $@\n"; 
-					}
+                        $list = $self->list_in_list_headers($orig_entity);
+                    }
+                    else {
+                        # print "errors! $@\n";
+                    }
                 }
 
             }
@@ -1483,7 +1571,6 @@ sub parse_for_exim {
         return ( undef, undef, {} );
     }
 }
-
 
 sub parse_for_f__king_exchange {
     my $self   = shift;
@@ -1511,7 +1598,7 @@ sub parse_for_f__king_exchange {
                             }
                             elsif ( $data =~
                                 /(MSEXCH)(.*?)(Unknown\sRecipient|Unknown|)/ )
-                            {                      # I know, not perfect.
+                            {    # I know, not perfect.
                                 $diag->{Guessed_MTA} = 'Exchange';
                                 $diag->{'Diagnostic-Code'} =
                                   'Unknown Recipient';
@@ -1627,7 +1714,7 @@ sub parse_for_gordano {    # what... ever that is there...
                         if ( $state == 1 ) {
                             $data =~ s/\n/ /g;
                             if ( $data =~ /RCPT To:\<(\S+\@\S+)\>/ )
-                            {                      #    RCPT To:<xxx@usnews.com>
+                            {    #    RCPT To:<xxx@usnews.com>
                                 $email = $1;
                             }
                             elsif ( $data =~ /(.*?)\s(\d+\.\d+\.\d+)\s(.*)/ )
@@ -1683,10 +1770,10 @@ sub parse_for_overquota_yahoo {
                         $state = 1 if $data =~ /$pattern/;
 
                         if ( $state == 1 ) {
-                        	$diag->{'Remote-MTA'} = 'yahoo.com';
-						}
+                            $diag->{'Remote-MTA'} = 'yahoo.com';
+                        }
                         if ( $state == 1 ) {
-                            $data =~ s/\n/ /g;     #what's up with that?
+                            $data =~ s/\n/ /g;    #what's up with that?
                             if ( $data =~ /\<(\S+\@\S+)\>\:/ ) {
                                 $email = $1;
                             }
@@ -1738,7 +1825,7 @@ sub parse_for_earthlink {
                         $state = 1 if $data =~ /$pattern/;
                         if ( $state == 1 ) {
                             $diag->{'Remote-MTA'} = 'Earthlink';
-                            $data =~ s/\n/ /g;     #what's up with that?
+                            $data =~ s/\n/ /g;    #what's up with that?
                             if ( $data =~ /(\d{3})\s(.*?)\s(\S+\@\S+)/ )
                             {  #  552 Quota violation for postmaster@example.com
                                 $diag->{'Diagnostic-Code'} = $1 . ' ' . $2;
@@ -1865,10 +1952,10 @@ sub parse_using_m_ds_bp {
 }
 
 sub DESTROY {
-	
-	my $self = shift; 
 
-#    $self->{parser}->filer->purge
-#		if $self->{parser};
+    my $self = shift;
+
+    #    $self->{parser}->filer->purge
+    #		if $self->{parser};
 }
 1;
