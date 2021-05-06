@@ -1160,6 +1160,8 @@ sub start {
             
             try {
 
+				require ThisDoesntExist; 
+				
                 my ( $status, $errors, $validate_r ) = validate_msg( $ls, \$full_msg );
                 $r .= $validate_r; 
                 
@@ -1176,12 +1178,15 @@ sub start {
                     $r .= "\tMessage did not pass verification.\n";
                     $r .= handle_errors( $ls, $errors, $full_msg );
                 }
-                append_message_to_file( $ls, $full_msg );
+                append_message_to_file( $ls, $errors, $full_msg );
 
             } catch { 
                 cluck "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
                 # Then, we have to tell the og sender, something went wrong: 
                 $r .= "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
+				
+				send_problem_message_to_list_owner($ls, $_, $full_msg); 
+				
             };
 
         }    # MSG_QUEUE
@@ -3544,6 +3549,62 @@ sub append_message_to_file {
     return ( 1, $r );
 
 }
+
+
+sub send_problem_message_to_list_owner { 
+
+    my $ls     = shift;
+    my $errors = shift; 
+	my $msg    = shift;
+	
+    require DADA::App::FormatMessages;
+    my $dfm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
+
+	require DADA::App::EmailThemes; 
+	my $em = DADA::App::EmailThemes->new(
+		{ 
+			-list      => $ls->param('list'),		
+			
+		}
+	);
+	my $etp = $em->fetch('bridge_problems_with_message');
+	
+	require DADA::App::Messages;
+    my $dap = DADA::App::Messages->new({-list => $ls->param('list')});
+	
+	create_dir($DADA::Config::TMP . '/file_attachments'); 
+	my $attachment_filename = 'recieved_message.eml';
+	my $nifp = new_image_file_path($attachment_filename, $DADA::Config::TMP . '/file_attachments'); 
+	simple_printout_file($nifp, \$msg);
+			
+	$dap->send_multipart_email(
+        {
+            -headers => {
+                To      => $ls->param('list_owner_email'),
+                From    => $ls->param('list_owner_email'),
+                Subject => $etp->{vars}->{subject},
+            },
+            -plaintext_body          => $etp->{plaintext},
+            -html_body               => $etp->{html},
+
+            -tmpl_params => {
+                -list_settings_vars       => $ls->params,
+                -list_settings_vars_param => { -dot_it => 1, },
+                -vars                     => {
+                   # original_subject => '',
+                }
+            },
+			-attachments => [{
+				-type         => 'message/rfc822',
+				-path         => $nifp, 
+				-filename     => $attachment_filename,
+			}],
+        }
+    );
+}
+
+
+
 
 sub find_return_path {
 
