@@ -5699,6 +5699,7 @@ sub subscription_requests {
                     -confirmed => 1,
                 }
             );
+			# The address shouldn't be on this list, but I guess it doesn't hurt to remove it here, too: 
             $lh->remove_subscriber(
                 {
                     -email => $email,

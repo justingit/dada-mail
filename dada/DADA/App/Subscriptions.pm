@@ -1148,7 +1148,7 @@ sub confirm {
             
             return $self->subscription_approval_step(  
                 {               
-                    -email => $email,
+                    -email       => $email,
                     -html_output => $args->{-html_output}, 
                     -return_json => $args->{-return_json}, 
                     -ls_obj      => $ls, 
@@ -1362,7 +1362,6 @@ sub subscription_approval_step {
     my $q     = $args->{-cgi_obj};
     my $fh    = $args->{-fh};
 
-    # we go HERE, if subscriptions need to be approved. Got that?
     $lh->move_subscriber(
         {
             -email          => $email,
@@ -1372,17 +1371,6 @@ sub subscription_approval_step {
             -confirmed      => 1,
             -fields_options => { -mode => 'preserve_if_defined', },
 
-        }
-    );
-    $lh->add_subscriber(
-        {
-            -email      => $email,
-            -type       => 'sub_confirm_list',
-            -confirmed  => 1,
-            -dupe_check => {
-                -enable  => 1,
-                -on_dupe => 'ignore_add',
-            },
         }
     );
     
