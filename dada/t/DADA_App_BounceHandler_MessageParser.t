@@ -411,12 +411,47 @@ undef $email;
 undef $found_list; 
 undef $diag; 
 undef $entity;
-
-
-
-
-
 $parser->filer->purge;
+
+
+# diag "looking at: bounce_secureserver.net-mail_quota_exceeded.eml"; 
+$msg    = dada_test_config::slurp('t/corpus/email_messages/bounces-disabled.eml'); 
+$entity = $parser->parse_data($msg);
+( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+$parser->filer->purge;
+ok($email eq 'subscriber@example.com'); 
+ok($found_list eq 'dadatest', 'found list');
+$rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+ok($rule eq 'permanent_error', "rule is: $rule"); 
+undef $msg; 
+undef $email; 
+undef $found_list; 
+undef $diag; 
+undef $entity;
+
+
+
+
+
+
+$msg    = dada_test_config::slurp('t/corpus/email_messages/permanent_error.eml'); 
+$entity = $parser->parse_data($msg);
+( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+$parser->filer->purge;
+#ok($email eq 'subscriber@example.com'); 
+ok($email eq 'subscriber@example.com'); 
+ok($found_list eq 'dadatest', 'found list');
+$rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+ok($rule eq 'permanent_error', "rule is: $rule"); 
+
+undef $msg; 
+undef $email; 
+undef $found_list; 
+undef $diag; 
+undef $entity;
+
+
+
 
 dada_test_config::remove_test_list;
 dada_test_config::destroy_SQLite_db();

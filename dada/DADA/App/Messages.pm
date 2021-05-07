@@ -1,6 +1,6 @@
 package DADA::App::Messages;
 
-use lib qw(../../ ../../perllib);
+use lib qw(./ ./DADA/perllib ../../ ../../perllib);
 use Carp qw(croak carp cluck);
 
 use DADA::Config qw(!:DEFAULT);
@@ -318,8 +318,82 @@ sub create_multipart_email {
 	    );
 	}
 	
+	# This is only good for .eml attachments, like we use for Bridge
+	my $attachments = []; 
+	if(exists $args->{-attachments}){ 
+		$attachments = $args->{-attachments}
+	}	
+	if(scalar @$attachments > 0){
+		$entity = $self->add_attachments(
+			{
+				-entity      => $entity, 
+				-attachments => $attachments
+			}
+		); 
+	}
+	
 	return $entity; 
 }
+
+
+
+
+sub add_attachments { 
+	warn 'add_attachments' if $t; 
+	my $self = shift; 
+	my ($args) = @_; 
+	
+	
+    my $entity      = $args->{-entity};
+	my $attachments = $args->{-attachments};
+	
+	
+	# is there anything to add? 
+	return $entity if scalar @$attachments < 1; 
+	
+    require MIME::Entity;
+
+    my @attachment_entities = ();
+    for my $attachment_data(@$attachments) {
+        my $attachment_entity = MIME::Entity->build(        	
+	        Type                 => $attachment_data->{-type},
+	  	    Disposition          => 'inline',
+	        #'Id'                 => $attachment_data->{-filename},
+			#'X-Attachment-Id'    => $attachment_data->{-filename}, 
+		    #Filename             => $self->fm->_encode_header('just_phrase', $attachment_data->{-filename}),
+	        Path                 => $attachment_data->{-path},
+        );
+		
+		# Filename actually triggers a mail filter for .eml attachments - sigh! 
+		$attachment_entity->head->delete('Filename');		
+		$attachment_entity->head->delete('X-Mailer');		
+		$attachment_entity->head->mime_attr("content-type.name"            => undef);
+		$attachment_entity->head->mime_attr("content-disposition.filename" => undef);
+		
+		warn '$attachment_entity->as_string: ' . $attachment_entity->as_string; 
+		
+        push( @attachment_entities, $attachment_entity )
+          if $attachment_entity;
+    }
+    
+	# did we really really add anything? 
+	return $entity if scalar @attachment_entities < 1; 
+	
+	my %opts = (Force => 1); 
+	$entity->make_multipart('mixed', %opts); 
+	
+    for my $attachment_entity(@attachment_entities) {
+        $entity->add_part($attachment_entity);
+    }
+
+	#warn '$entity->as_string' . $entity->as_string; 
+	
+	return $entity; 
+
+}
+
+
+
 
 
  
@@ -340,9 +414,12 @@ sub send_multipart_email {
     my ($args) = @_;
 	
 	my $entity = $self->create_multipart_email($args);
-
+	
     my $msg = $entity->as_string;
-    my ( $header_str, $body_str ) = split( "\n\n", $msg, 2 );
+    
+	warn '$msg: ' . $msg; 
+	
+	my ( $header_str, $body_str ) = split( "\n\n", $msg, 2 );
 	
     # Time for DADA::Mail::Send to just have a, "Here's th entity!" argument,
     # rather than always passing this crap back and forth.
@@ -353,6 +430,7 @@ sub send_multipart_email {
         $self->mh->test(1);
     }
     
+
 	$self->mh->send( 
 		$self->mh->return_headers($header_str),
         Body => $body_str,

@@ -154,17 +154,13 @@ sub expire_rate_limit_checks {
 sub clean_out_mime_cache { 
 	my $self = shift;
 	
-	if($DADA::Config::MIME_TOOLS_PARAMS->{tmp_to_core} != 1){ 	
+	if(-d $DADA::Config::TMP . '/_mime_cache' ) {
 		require   DADA::App::MIMECache; 
 		my $dam = DADA::App::MIMECache->new; 
 		$dam->clean_out; 
 		undef $dam; 
 		return " Done!\n";
 	}
-	else { 
-		return "MIME files written in core, skipping!\n";
-	}
-
 }
 
 sub remove_old_archive_messages { 

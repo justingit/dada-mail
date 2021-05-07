@@ -1365,7 +1365,7 @@ qr/No Such User Here|The email account that you tried to reach does not exist/
         permanent_error => {
             Examine => {
                 Message_Fields => {
-                    'Notification_regex' => [qr/This is a permanent error\./],
+                    'Notification_regex' => [qr/This is a permanent error/],
                 },
                 Data => {
                     Email => 'is_valid',

@@ -1,0 +1,137 @@
+X-Mozilla-Keys:                                                                                 
+Return-Path: <>
+Received: from sonic314-28.consmr.mail.sg3.yahoo.com ([106.10.240.152]) by
+ mx.perfora.net (mxeueus003 [74.208.5.21]) with ESMTPS (Nemesis) id
+ 1N6c8g-1lWBZj0y0E-017zGT for <bounces@example.com>; Fri, 30 Apr 2021 12:01:01
+ +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=bounce; t=1619776859; bh=YeaqOo1ZWeOTdEUTVN3AAvUHudxJc+ueAIHJDqDWneg=; h=Date:From:To:Subject:From:Subject:Reply-To; b=Vg0K+o4Qh2yInVKtSRS7T2zAzfEq223Q7TXJVtuNyx703xLiHU47YWee25ajjb444x89iXmkpUFb/knVZ9IATqAXSs/OqiBSAQGcH/gjdMJKJccLaarIa+tgLP27X8Xo4jAJYMsV+pVGkKmLsivUny7+fwPXkift8EwVLgMZb94=
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1619776859; bh=Huib/ryT9pjG24/GLrWUEe16v8bGZVYHpLfL9bf2ZWq=; h=X-Sonic-MF:Date:From:To:Subject:From:Subject; b=jU1qcPy5aqMO4s5DfITzDDVS0PVAPgbaey1+o5TRsbcBTqXUHAubEGIAeoJ6CejZP+gsqW3G2wzJGfLhV2DoP69sAvMw4D4ittb0OUSKfH8P2wIKZpTXVEXRmBXdrLoAtrH82SVWr3IHvnmtR/tRnaKU1RLFUVJTLRRopeJHpIEpb6501KWsa2ZyOz5cEXm0GZw/E/3FErXPPlzsbpwvrNS+L5OZNTsyoBO8vJGPXbKJPW6c62aH+Z1hn28uZC8ZHOgz7NTm9XEenKuRdMr+eZFItArdTdqSwvL9VyEbzwwwEvww8on+sZ7DyPOu6Y6EQbPedw4xaSFUGTR3ZN9RNA==
+X-Sonic-MF: 
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic314.consmr.mail.sg3.yahoo.com with HTTP; Fri, 30 Apr 2021 10:00:59 +0000
+Date: Fri, 30 Apr 2021 10:00:57 +0000
+From: MAILER-DAEMON@yahoo.com
+To: bounces@example.com
+Message-ID:
+ <2035779683.6157742.1619776857129@mpq202.consmr.mail.sg3.yahoo.com>
+Subject: Failure Notice
+Content-Type: multipart/report; report-type=delivery-status;
+ boundary="-=Part.5df5ae.cc0262a2597314ad.17922396429.2bb9c57df9844382=-"
+Envelope-To: <bounces@example.com>
+X-Spam-Flag: NO
+
+---=Part.5df5ae.cc0262a2597314ad.17922396429.2bb9c57df9844382=-
+Content-Type: text/plain; charset=UTF-8
+
+I'm afraid I wasn't able to deliver the following message.
+This is a permanent error; I've given up. Sorry it didn't work out.
+
+Subject: subject
+To: subscriber@example.com
+
+--- Below this line is a copy of the message.
+
+---=Part.5df5ae.cc0262a2597314ad.17922396429.2bb9c57df9844382=-
+Content-Type: message/rfc822
+
+X-PQ-Received: mpq205.prodcr.mail.sg3.yahoo.com; Fri Apr 30 10:00:57 UTC 2021
+X-PQ-Received: mpq210.prodcr.mail.sg3.yahoo.com; Fri Apr 30 06:36:45 UTC 2021
+X-PQ-Received: mpq209.prodcr.mail.sg3.yahoo.com; Fri Apr 30 06:05:17 UTC 2021
+X-PQ-Received: mpq203.prodcr.mail.sg3.yahoo.com; Fri Apr 30 05:34:55 UTC 2021
+X-PQ-Received: mpq207.prodcr.mail.sg3.yahoo.com; Fri Apr 30 05:02:36 UTC 2021
+X-PQ-Received: mpq203.prodcr.mail.sg3.yahoo.com; Fri Apr 30 04:32:35 UTC 2021
+X-PQ-Received: mpq203.prodcr.mail.sg3.yahoo.com; Fri Apr 30 04:00:09 UTC 2021
+X-PQ-Received: mpq201.prodcr.mail.sg3.yahoo.com; Fri Apr 30 04:00:09 UTC 2021
+Received: from 10.241.225.174
+ by atlas213.free.mail.sg3.yahoo.com with HTTPS; Fri, 30 Apr 2021 04:00:08 +0000
+Return-Path: <bounces@example.com>
+X-Originating-Ip: [74.208.4.196]
+Received-SPF: pass (domain of example.com designates 74.208.4.196 as permitted sender)
+Authentication-Results: atlas213.free.mail.sg3.yahoo.com;
+ dkim=unknown;
+ spf=pass smtp.mailfrom=example.com;
+ dmarc=unknown header.from=example.com;
+X-Apparently-To: subscriber@example.com; Fri, 30 Apr 2021 04:00:09 +0000
+X-Rocket-Delivery: qYEipoQ4ZBuSsXS4dLj1kbCXaKMFrHa3qtq944psr10x9Ot.PX7sS6SsSsjCso6oRLnVyIhJIEN_.sZ1DqInjoS9_mQR14Yr0G_D3HCQZeyloFXvMLuMES_FnAfwp1K9e6FK1fE2f1iv7FBUHaUlp3RIh.kfF0JBaJ6ulujwtlgODmbqP6GZ90KnXCFZg96m1K.aZN2FW9QcF2lzwaOpTS3CJhDMKAg6bG7FRN9kjdv.6Q6rNyqpq0ssx_jAgr7wHMrFe4A.p11hvk2g1uSSTdsXdV5cSN1QVNt5zZJgCVNQUpR0WkG_4DTOZNb8HdMOqSxHJ7l2HggIk8TQgHBZsE.vYo1aiYGsHlJw1U0nhSIDPAvypBwjjiGV3_REJ5sNoaK9nKYbQvaqjQzc06sTR9TuZvb97YwZb6s3J2pEqD6aRySfLzCIbimMLkA_NBkINTdgKos-
+X-YMailISG: OLvemQYWLDsSDnisVAVc931svkeLZC9wfWRXrzpZOoHzFHK5
+ jUaqxqQ.KjUyePjkR4NpufdJ5ROAzBPrRKwrYhFNq132j6HCsEc_4EUbpozP
+ .4gNzcaaxrHEy7_YpKMln6hEh2E8iR2NJHUgzAyCLWp21weDa1kg1kxe.nIJ
+ NNa1flbT2uKLNwYrw87ZmePAMXQEkLoybjfvq2cjcLgdnezqGSTYSpxhO1yd
+ ICpPbRI5lIeHUw9QLnLQnOLIaVgYd332gKUuEjkTjMgnIlfS4BWdcr9uVrEc
+ KCiRK_RVnNguPMhj84Sff4KQ9jkBzk8vz1qBY9H5onCkKyJGYH7x_8R7yPia
+ phKJOfiMNtl23wG6HLHry1iAKiho48Y04xHggq4EVS3vrVE1171eDFNzkmwH
+ O7Yl0z_Zn8qv2IklL1PZw.Zdy0Pe8yyOFfhw6fOaYAKVATmxG_CwgtSNowCH
+ qDd74cULuLyZVcGm6GHB177gk.IFu.eatSUX90K6AfxLnErE6zU9TU072sBC
+ kKfAjZIT5TzC0HNqZGcnaRdLfPj9NY.7Nb2_qpFOWAoPqyOheDavipb1Hmds
+ CKlZO85UKGmIgTyQK_bO9Fj.eD8XnEJrddtLNOAtNysWLuDklNwgmEo9QEB0
+ M6t0P_zwTAMIpR0V.LkCYmVcekiVic4fP_d62UaUgQ3R1VOX7rdGbGj77ClU
+ 7hfD0mdrSgwo5QsgjzNCSxiWQZwGNh2QoXHXy6gohV0z_jAuMuRaaxR0KCUp
+ 6b2OqpU3dndXiPtGDJeSo5VNhFCyAn8m7iNgjG5q_DBvQUjkxHcM8SSOKzZK
+ Lhlrk5onmrtaYDKliddIS0awkF3ju6cyoQhbCrKOjm1MFhqJsrHh9ToK2MnA
+ QvE.04KJAZe_kJD.wkyWRBtIoqC6nvcOzjOHcBp1rWYZLn21LyJ69ts2JYnn
+ 0TxHfzkmKkF7aEyRWUy0gjjFI_gWVzb2wJPgLSj_oOR4CT08ApCI1w.FC2Wg
+ JMBa0w3VB_8pVkn5sLn6JqlUZOYlOAd708FH4OTNx.Q.OOdcuoezcgiPQ793
+ hiXhWZ3Nhhhef2xqYeYEmkHCY4vKd6Zz0Wo5ZtSBRvrOzSRKiqRtjYTuGzuh
+ 4qb_nGAzy1WmpM._rziGd226S8A.yLNeBbxQ
+Received: from 74.208.4.196 (EHLO mout.perfora.net)
+ by 10.241.225.174 with SMTPs
+ (version=TLS1_2 cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256);
+ Fri, 30 Apr 2021 04:00:08 +0000
+Received: from localhost ([74.208.56.205]) by mrelay.perfora.net (mreueus003
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 0M4XIg-1lNzKr3KNI-00ygVk for
+ <subscriber@example.com>; Fri, 30 Apr 2021 06:00:05 +0200
+Date: Fri, 30 Apr 2021 00:00:05 -0400
+From: "test list" <subscriber@example.com>
+To: "test list Subscriber" <subscriber@example.com>
+X-Priority: 3
+Precedence: list
+List: dadatest
+List-Archive: <https://www.example.com/cgi-bin/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.infong488.schlund.de>
+List-Owner: <subscriber@example.com>
+List-Post: NO
+List-Subscribe: <https://www.example.com/cgi-bin/dada/mail.cgi/s/dadatest/dattabharath/yahoo.co.in/>
+List-Unsubscribe: <mailto:subscriber@example.com?Subject=Unsubscribe%20dattabharath%40yahoo.co.in%20from%20dadatest&Body=Unsubscripton%20Link%20for%20dattabharath%40yahoo.co.in%3A%20%0A%0Ahttps%3A%2F%2Fwww.example.com%2Fcgi-bin%2Fdada%2Fmail.cgi%2Ft%2FtWimB78fEjno2bWxwo5UxJfadTGYxvQ3hdNk6Sre%2Ffrom_email_header%2F>, <https://www.example.com/cgi-bin/dada/mail.cgi/t/tWimB78fEjno2bWxwo5UxJfadTGYxvQ3hdNk6Sre/from_email_header/>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+List-URL: <https://www.example.com/cgi-bin/dada/mail.cgi/list/dadatest/>
+X-BeenThere: https://www.example.com/cgi-bin/dada/mail.cgi
+Message-ID: <20210429230159.09455639@example.com>
+X-Mailer: Pro Dada 11.12.2 10/17/20 
+Content-type: multipart/alternative; boundary="----------=_1619751719-78040-0"; charset=UTF-8
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+Subject: subject
+X-Provags-ID: V03:K1:8XQKViYWFDizCKtCRtsCS9BRsF4FBlYThdvREuiotPHxRIyFoUK
+ CvXHvKCs7yl/I9pVFBruZqwsVj/AHpakg10Huvcn3J61vdDWuoQMkhyi1wz6221D+gOFovI
+ rySkGz7XZXkK6Ubi7Y5fkuAXo8iVHD8VDBrBs9p+1p3pz9fKVZLVDzO7XZvp8tgy7ZfwYWK
+ HbNAv5PDDZbv8N4SER7JQ==
+X-Spam-Flag: NO
+
+This is a multi-part message in MIME format...
+
+------------=_1619751719-78040-0
+Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+
+
+
+
+
+
+------------=_1619751719-78040-0
+Content-Type: text/html; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+[remainder of message body omitted; too large]
+
+------------=_1619751719-78040-0--
+---=Part.5df5ae.cc0262a2597314ad.17922396429.2bb9c57df9844382=---

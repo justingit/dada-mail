@@ -1,0 +1,68 @@
+X-Mozilla-Keys:                                                                                 
+Return-Path: <>
+Received: from mout-bounce.example.com ([74.208.4.205]) by mx.example.com
+ (mxeueus004 [74.208.5.3]) with ESMTPS (Nemesis) id 1MXYN1-1m5FD72Ro7-00YvLa
+ for <bounce@example.com>; Fri, 30 Apr 2021 12:01:02 +0200
+Received: from localhost by mout-bounce.example.com id 1MoxOc-1lEeiu27qQ-00qUNS
+    Fri, 30 Apr 2021 12:01:02 +0200
+Date: Fri, 30 Apr 2021 12:01:02 +0200
+From: "Mail Delivery System" <mailer-daemon@example.com>
+To: bounce@example.com
+Subject: Mail delivery failed: returning message to sender
+Auto-Submitted: auto-replied
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-UI-Out-Filterresults: unknown:0;V03:K0:7AxyZpdAq7o=:c6WpK++O8jrUCuWcpiaptQ
+ ==
+Envelope-To: <bounce@example.com>
+X-Spam-Flag: NO
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of
+its recipients. This is a permanent error. The following address(es)
+failed:
+
+subscriber@example.com:
+SMTP error from remote server for RCPT TO command, host: aspmx.l.google.com (142.250.123.27) reason: 550-5.2.1 The email account that you tried to reach is disabled. Learn mor
+e at
+550 5.2.1  https://support.google.com/mail/?p=DisabledUser h16si851737uar.
+253 - gsmtp
+
+
+
+--- The header of the original message is following. ---
+
+Received: from localhost ([74.208.56.205]) by mrelay.example.com (mreueus002
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 0MNJJ1-1leKgu3VFJ-006u0f for
+ <subscriber@example.com>; Fri, 30 Apr 2021 12:01:01 +0200
+Date: Fri, 30 Apr 2021 06:01:01 -0400
+From: "Sivananda" <pannir@example.com>
+To: "Sivananda Subscriber" <subscriber@example.com>
+X-Priority: 3
+Precedence: list
+List: dadatest
+List-Archive: <https://www.example.com/cgi-bin/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.example.com>
+List-Owner: <pannir@example.com>
+List-Post: NO
+List-Subscribe: <https://www.example.com/cgi-bin/dada/mail.cgi/s/dadatest/kala/multivistaglobal.com/>
+List-Unsubscribe: <mailto:pannir@example.com?Subject=Unsubscribe%20kala%40multivistaglobal.com%20from%20dadatest&Body=Unsubscripton%20Link%20for%20kala%40multivistaglobal.com%3A%20%0A%0Ahttps%3A%2F%2Fwww.example.com%2Fcgi-bin%2Fdada%2Fmail.cgi%2Ft%2Fzmb86dCSQjOdkWeWaXHuFdiZXE2OdcVevu2kEha8%2Ffrom_email_header%2F>, <https://www.example.com/cgi-bin/dada/mail.cgi/t/zmb86dCSQjOdkWeWaXHuFdiZXE2OdcVevu2kEha8/from_email_header/>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+List-URL: <https://www.example.com/cgi-bin/dada/mail.cgi/list/dadatest/>
+X-BeenThere: https://www.example.com/cgi-bin/dada/mail.cgi
+Message-ID: <20210429230159.09455639@example.com>
+X-Mailer: Pro Dada 11.12.2 10/17/20 
+Content-type: multipart/alternative; boundary="----------=_1619751719-78040-0"; charset=UTF-8
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+Subject: Subject Message
+X-Provags-ID: V03:K1:0Oir6qSMEGWTEGnhZGuRUEv7rDd2abwXMl+lZSJkV94zztE2IJH
+ vUy4j3aq591hUNMqRY8LjUw9Ib0o9QTbYsez68xY1DAbAOOHPZOJIJi2HZ9Uqr9HZFgJ2NU
+ xjibu0zLIO2WbTkw1lEgjkLXGWXxjm3IRlsRUs5uYhWgNnKp9FfdR1i7ozLP6EdGFPA3AYP
+ erWux8E/0s9ZAZtUiwDGA==
+X-Spam-Flag: NO
+
+
+

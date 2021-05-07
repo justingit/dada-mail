@@ -2,6 +2,8 @@ package DADA::App::Guts;
 
 use lib "../../";
 use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
 
 use Carp qw(carp croak);
 use DADA::Config qw(!:DEFAULT);  
@@ -117,8 +119,8 @@ require Exporter;
   Email_Address_parse
   
   human_readable_filesize
-
-	create_dir
+	
+   create_dir
 	filename_from_url
 	path_and_file
 	simple_printout_file
@@ -3788,23 +3790,6 @@ sub path_and_file {
 }
 
 
-
-sub simple_printout_file { 
-	
-	warn 'in simple_printout_file'
-		if $t; 
-
-	my $fp   = shift; 
-	my $ref  = shift; 
-	
-    open( OUTFILE, '>', $fp ) or die( "can't write to " . $fp . ": $!" );
-	print OUTFILE $$ref or die $!;
-	close(OUTFILE) or die $!;
-    chmod( $DADA::Config::FILE_CHMOD, $fp );
-	
-}
-
-
 sub new_image_file_path {
 	
 	warn 'in new_image_file_path'
@@ -3861,6 +3846,22 @@ sub new_image_file_path {
 		if $t; 
 	
 	return $n_fp; 
+}
+
+
+sub simple_printout_file { 
+	
+	warn 'in simple_printout_file'
+		if $t; 
+
+	my $fp   = shift; 
+	my $ref  = shift; 
+	
+    open( OUTFILE, '>', $fp ) or die( "can't write to " . $fp . ": $!" );
+	print OUTFILE $$ref or die $!;
+	close(OUTFILE) or die $!;
+    chmod( $DADA::Config::FILE_CHMOD, $fp );
+	
 }
 
 
