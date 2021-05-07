@@ -1159,8 +1159,6 @@ sub start {
             
             
             try {
-
-				require ThisDoesntExist; 
 				
                 my ( $status, $errors, $validate_r ) = validate_msg( $ls, \$full_msg );
                 $r .= $validate_r; 
