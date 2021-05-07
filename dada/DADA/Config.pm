@@ -1650,6 +1650,10 @@ $MIME_TOOLS_PARAMS //= {
 	
 	delivery_prefs_set_default => 0, 
 	delivery_prefs_default     => 'individual',
+	
+	bridge_send_internal_problem_to_list_owner => 1, 
+	
+	
 
     # Tracker
     tracker_record_view_count                       => 5,

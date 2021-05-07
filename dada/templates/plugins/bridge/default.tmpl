@@ -1451,6 +1451,42 @@
 				</label>
 			</div> 
 		</div> 
+		
+		
+		<div class="row">
+			<div class="small-12 columns">		
+				<h5>
+					When a received message cannot be processed:
+				</h5>
+			</div> 
+		</div> 
+		
+		<div class="row">
+			<div class="small-12 columns">				
+				<label for="bridge_send_internal_problem_to_list_owner">
+				<input 
+					type="checkbox" 
+					name="bridge_send_internal_problem_to_list_owner"
+					id="bridge_send_internal_problem_to_list_owner"
+					value="1" <!-- tmpl_if list_settings.bridge_send_internal_problem_to_list_owner -->checked="checked"<!--/tmpl_if-->
+				>
+					Send a copy of the message to the List Owner
+				</label>
+				
+				<div class="alert-box info radius"> 
+					Sometimes messages cannot be properly parsed, 
+					or an internal problem stops the message from being correctly processed. 
+					When this happened, the error is logged. Checking this option will also send
+					the message as an attachment to the list owner, along with the error. 
+				</div> 
+				
+				
+				
+			</div> 
+		</div> 
+		
+		
+		
 	</fieldset> 
 
 	<fieldset> 
