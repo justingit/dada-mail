@@ -3423,6 +3423,12 @@ sub change_info {
                     twitter_url          => xss_filter( strip( scalar $q->param('twitter_url') ) ),
                     instagram_url        => xss_filter( strip( scalar $q->param('instagram_url') )),
 					whatsapp_number      => xss_filter( strip( scalar $q->param('whatsapp_number') )),
+					custom_url_color     => xss_filter( strip( scalar $q->param('custom_url_color') )),
+					custom_url_label     => xss_filter( strip( scalar $q->param('custom_url_label') )),
+					custom_url           => xss_filter( strip( scalar $q->param('custom_url') )),
+	
+					
+					
                 }
             }
         );
