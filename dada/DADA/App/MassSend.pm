@@ -515,6 +515,9 @@ sub construct_from_url {
 		   && $preview == 0
 		   && $process !~ m/test/i
 		 ){ 
+			 # I see what this is supposed to do, but I believe this may be a no-op, 
+			 # since the default is, "0"
+			 # as far as I can tell, this is a feature that just hasn't been created yet. 
 		 	$pass_last_read_entry;
 		 }
 		
@@ -523,13 +526,14 @@ sub construct_from_url {
 					{ 
 						-feed_url                           => scalar $draft_q->param('feed_url'), 
 						-max_entries                        => scalar $draft_q->param('feed_url_max_entries'), 
+						-set_max_age_of_entries             => scalar $draft_q->param('feed_url_set_max_age_of_entries'),
+						-max_age_of_entries                 => scalar $draft_q->param('feed_url_max_age_of_entries'),
 						-content_type                       => scalar $draft_q->param('feed_url_content_type'), 
 						-pre_html                           => scalar $draft_q->param('feed_url_pre_html'), 
 						-post_html                          => scalar $draft_q->param('feed_url_post_html'), 
 						-remove_rss_content                 => scalar $draft_q->param('remove_rss_content'), 
 						-remove_rss_content_selector_type   => scalar $draft_q->param('remove_rss_content_selector_type'), 
 						-remove_rss_content_selector_label  => scalar $draft_q->param('remove_rss_content_selector_label'), 
-						
 						
 						(($pass_last_read_entry == 1) ?(
 							-last_read_entry => scalar $draft_q->param('feed_url_most_recent_entry'),
@@ -941,6 +945,9 @@ sub content_from_feed_url {
 	my $post_html       = $args->{-post_html}       || undef; 
 	my $last_read_entry = $args->{-last_read_entry} || undef; 
 	
+	my $set_max_age_of_entries = $args->{-set_max_age_of_entries} || 0; 
+	my $max_age_of_entries     = $args->{-max_age_of_entries}     || undef; 
+	
 	my $status = 1; 
 	my $error  = {};
 	
@@ -988,13 +995,31 @@ sub content_from_feed_url {
 		
 		#warn '$pubDate_epoch' . $pubDate_epoch; 
 		
-		
+		# I literally do not remember how this check works out, 
 		if(length($last_read_entry) >= 1){ 
 			if($last_read_entry > $pubDate_epoch){ 
 				next;
 				# probably be, "last", cause entries should go newest -> oldest...
 			}
 		}
+		
+		my $days_in_seconds = 86_400; 
+		
+		# warn '$set_max_age_of_entries: '                         .  $set_max_age_of_entries; 
+		# warn '$max_age_of_entries: '                             .  $max_age_of_entries; 
+		# warn '(time - ($days_in_seconds * $max_age_of_entries))' .  (time - ($days_in_seconds * $max_age_of_entries));
+		# warn 'localtime: ' . scalar localtime((time - ($days_in_seconds * $max_age_of_entries))); 
+		
+		if($set_max_age_of_entries == 1 && defined($max_age_of_entries)){ 
+			if($pubDate_epoch < (time - ($days_in_seconds * $max_age_of_entries))){ 
+				next;
+			}
+		}
+		
+		my $set_max_age_of_entries = $args->{-set_max_age_of_entries} || 0; 
+		my $max_age_of_entries     = $args->{-max_age_of_entries}     || undef; 
+		
+		
 		
 		$n++;
 		if($n == 1){ 
@@ -1312,6 +1337,16 @@ sub send_email {
             values => [(1..100)],
         }
       );
+	  
+	my $feed_url_max_age_of_entries_widget = HTML::Menu::Select::popup_menu(
+        {
+            name    => 'feed_url_max_age_of_entries',
+            id      => 'feed_url_max_age_of_entries',
+            default => 7,
+            values  => [(1..366)],
+        }
+    );
+	 
 	
 
     if ( !$process ) {
@@ -1418,8 +1453,9 @@ sub send_email {
 					
 					default_subject => $subject,
 					
-					feed_url_max_entries_widget => $feed_url_max_entries_widget, 
-						
+					feed_url_max_age_of_entries_widget => $feed_url_max_age_of_entries_widget,
+					feed_url_max_entries_widget        => $feed_url_max_entries_widget, 
+					
                     %wysiwyg_vars,
                     %$ses_params,
 

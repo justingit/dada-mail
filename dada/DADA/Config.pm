@@ -1264,6 +1264,7 @@ $MIME_TOOLS_PARAMS //= {
 	instagram_url        => undef,
 	youtube_url          => undef, 
 	whatsapp_number      => undef,
+	custom_url_color     => '#666666',
 
     # Mailing List >> List Password
     password         => '',      # you'll need to encrypt it to use this...

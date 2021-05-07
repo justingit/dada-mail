@@ -95,20 +95,23 @@ sub cgi_user_error {
 
     # Something Something, add Name/Label of Field...
     if ( exists( $args->{-invalid_profile_fields} ) ) {
-
-        require DADA::ProfileFieldsManager;
-        my $attrs = DADA::ProfileFieldsManager->new->get_all_field_attributes;
-        foreach my $field_error ( keys %{ $args->{-invalid_profile_fields} } ) {
-            push(
-                @$profile_fields_report,
-                {
-                    field => $field_error,
-                    label => $attrs->{$field_error}->{label},
-                    error => 'required',                        # punking out on this, for now
-                }
-            );
-        }
-    }
+		if(keys %{$args->{-invalid_profile_fields} }){ 
+			require DADA::ProfileFieldsManager;
+	        my $attrs = DADA::ProfileFieldsManager->new->get_all_field_attributes;
+	        foreach my $field_error ( keys %{ $args->{-invalid_profile_fields} } ) {
+	            push(
+	                @$profile_fields_report,
+	                {
+	                    field => $field_error,
+	                    label => $attrs->{$field_error}->{label},
+	                    error => 'required',                        # punking out on this, for now
+	                }
+	            );
+	        }
+	    }
+	}
+	
+	
     if ( $args->{-error} !~ /unreadable_db_files|sql_connect_error|bad_setup/ ) {
         $list_exists = check_if_list_exists( -List => $args->{-list}, -Dont_Die => 1 ) || 0;
     }

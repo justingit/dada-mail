@@ -2,6 +2,7 @@
 
 <!-- tmpl_set name="title" value="Congratulations, and Welcome to <!-- tmpl_var PROGRAM_NAME -->!" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
+<!-- tmpl_set name="load_captcha_js" value="1" --> 
  
 <form action="<!-- tmpl_var name="PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
  
@@ -71,10 +72,38 @@
  <input type="hidden" name="flavor" value="new_list" >
 
 
-  <label for="root_password">
-   <!-- tmpl_var PROGRAM_NAME --> Root Password:
-  </label>
-  <input type="password" name="root_password" id="root_password" maxlength="24">
+
+ <div class="row">
+	<div class="small-12 columns">
+		<!-- tmpl_if can_use_Google_reCAPTCHA_v2 --> 
+			<div class="form-group">
+				<div 
+					class="g-recaptcha" 
+					id="cp_login_gr"
+				></div>
+			</div>
+		<!-- /tmpl_if --> 
+
+		<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->			
+			<input 
+				type="hidden"
+				id="g-recaptcha-response_cp_login"
+				class="g-recaptcha-response"
+				name="g-recaptcha-response"
+			>
+		<!-- /tmpl_if -->
+	</div> 
+</div>
+
+
+ <div class="row">
+	<div class="small-12 columns">
+	  <label for="root_password">
+	   <!-- tmpl_var PROGRAM_NAME --> Root Password:
+	  </label>
+	  <input type="password" name="root_password" id="root_password" maxlength="24">
+  	</div> 
+  </div>
   
   
   <input type="submit" class="success large button expand" value="Set Up a New Mailing List" >
