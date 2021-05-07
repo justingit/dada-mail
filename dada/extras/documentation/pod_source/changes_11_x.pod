@@ -3,13 +3,21 @@
 
 =encoding utf-8
 
-=head1 11.12.3
+=head1 11.13.0
 
 =head2 Features
 
 =head3 File Attachments Limit Raised to 10
 
 =head3 URLs in, Mailing List: List Information can now be optionally validated
+
+=head3 Add a Custom Button
+
+You can now add your own button with a custom button label and background color. 
+
+=head3 Grab content from an RSS/Atom feed: set a limit on how old entries can be 
+
+This is helpful for recurring scheduled messages: say you send out a message every month. Now, you can make sure that only entries that were posted within a month are a part of the mailing list message you send out. 
 
 =head2 Bugfixes 
 
@@ -25,9 +33,21 @@ L<https://github.com/justingit/dada-mail/issues/1004>
 
 L<https://github.com/justingit/dada-mail/issues/990>
 
+=head3 reCAPTCHA on the initial default screen not come up? #999 
+
+L<https://github.com/justingit/dada-mail/issues/999>
+
+=head3  Subscribers that need to be confirmed by the list owner also show up in the, "unconfirmed subscribers" sublist, even though the confirmed #997 
+
+L<https://github.com/justingit/dada-mail/issues/997>
+
 =head2 Changes
 
 =head3 Mailhide support dropped
+
+=head3 Better SQL Connection Error reporting
+
+A message is now correctly shown in the browser window if the SQL connection isn't working. This wasn't always working well, but the implicit, "hey this is what the problem is" will hopefully help those whose job is to fix such things.
 
 =head1 11.12.2
 
