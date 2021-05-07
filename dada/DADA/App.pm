@@ -303,8 +303,20 @@ sub setup {
 
         require DADA::App::DBIHandle;
         my $dbi_handle = DADA::App::DBIHandle->new;
-        my $dbh        = $dbi_handle->dbh_obj;
-
+		my $dbh = undef; 
+		
+		my $dbi_handle_check = 1; 
+	    try {
+	       $dbh =  $dbi_handle->dbh_obj;
+		
+	    } catch {
+			warn $_; 
+			$dbi_handle_check = 0; 
+	    };
+		if($dbi_handle_check == 0){ 
+	        return $self->sql_connect_error(); 
+		}
+		
         # call this in your setup routine to set
         my $rate_limit = $self->rate_limit();
 		my $remote_addr = $ENV{REMOTE_ADDR}; # I can't think of any reason this should log anonymously.  
