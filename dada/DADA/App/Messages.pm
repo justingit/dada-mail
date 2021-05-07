@@ -318,7 +318,11 @@ sub create_multipart_email {
 	    );
 	}
 	
-	my $attachments = $args->{-attachments};	
+	# This is only good for .eml attachments, like we use for Bridge
+	my $attachments = []; 
+	if(exists $args->{-attachments}){ 
+		$attachments = $args->{-attachments}
+	}	
 	if(scalar @$attachments > 0){
 		$entity = $self->add_attachments(
 			{
@@ -348,7 +352,6 @@ sub add_attachments {
 	return $entity if scalar @$attachments < 1; 
 	
     require MIME::Entity;
-	
 
     my @attachment_entities = ();
     for my $attachment_data(@$attachments) {
@@ -361,7 +364,7 @@ sub add_attachments {
 	        Path                 => $attachment_data->{-path},
         );
 		
-		# Filename actually triggers a mail filter
+		# Filename actually triggers a mail filter for .eml attachments - sigh! 
 		$attachment_entity->head->delete('Filename');		
 		$attachment_entity->head->delete('X-Mailer');		
 		$attachment_entity->head->mime_attr("content-type.name"            => undef);
