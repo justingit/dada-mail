@@ -19,6 +19,11 @@ You can now add your own button with a custom button label and background color.
 
 This is helpful for recurring scheduled messages: say you send out a message every month. Now, you can make sure that only entries that were posted within a month are a part of the mailing list message you send out. 
 
+=head3 Bridge: Messages that cannot be parsed/processed can be sent to List Owner
+
+Rather than just quietly fail. messages that cannot be parsed/processed can then be sent to the List Owner, who can look over 
+what may be the issue. The error produced will also be sent. Enable/Disable this option in Bridge's settings. Look for the option labled, B<When a received message cannot be processed: [x] Send a copy of the message to the List Owner >.
+
 =head2 Bugfixes 
 
 =head3 Plugin: Bridge - "Message too old" check will still send, "Not Allowed to Post" email notifications to list owner/subscriber #1011 
