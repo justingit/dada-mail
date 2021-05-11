@@ -3713,7 +3713,7 @@ sub inject {
         warn 'Couldn\'t change Content-Transfer-Encoding: ' . $_; 
     };
     
-    if ( $ls->param('disable_discussion_sending') != 1 ) {
+    if ( $ls->param('disable_discussion_sending') == 1 ) {
         $r .= "\tThis sending method has been disabled for " . $ls->param('list') . ", ignoring message... \n";
         return ( 0, { disabled => 1 }, $r );
 	}
