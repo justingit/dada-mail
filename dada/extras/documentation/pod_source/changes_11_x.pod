@@ -5,6 +5,22 @@
 
 =head1 11.13.0
 
+=head2 Focus
+
+This is mostly a bug-fix release for issues found in the v11.13.0 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 Noisy warning in DADA::App::Messages::send_multipart_email (v11.13.0)
+
+L<https://github.com/justingit/dada-mail/issues/1014>
+
+=head3 Bridge: Setup As: Email Forward will not wor
+
+L<https://github.com/justingit/dada-mail/issues/1013>
+
+=head1 11.13.0
+
 =head2 Features
 
 =head3 File Attachments Limit Raised to 10
