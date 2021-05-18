@@ -2840,13 +2840,13 @@ backgroundColor: {
 */
 
 	var options = {
-		width: 720,
-		height: 720,
+		width: 480,
+		height: 480,
 		chartArea: {
 			left: 60,
 			top: 20,
-			width: '90%',
-			height: '90%',
+			width: "75%",
+			height: "75%"
 
 		},
 		colors: ['blue', 'red', 'green', 'orange'],
@@ -2881,13 +2881,23 @@ backgroundColor: {
 				data = new google.visualization.DataTable(jsonData);
 
 				var options = {
+					width: 480,
+					height: 480,
 					chartArea: {
 						left: 60,
 						top: 20,
-						width: "70%",
-						height: "70%"
+						width: "75%",
+						height: "75%"
+
 					},
+					colors: ['blue', 'red', 'green', 'orange'],
+					title: "Subscription Trends",
+					animation: {
+						duration: 1000,
+						easing: 'out'
+					}
 				};
+
 				 options['width']  = $('#sub_unsub_trends').width();
 				 options['height'] = $('#sub_unsub_trends').width();
 
@@ -2899,17 +2909,51 @@ backgroundColor: {
 					sub_unsub_trend_c.draw(data, options);
 				};
 				$("#sub_unsub_trends_loading").html('<p>&nbsp;</p>');
+				
+				recent_subscription_activity($("#amount option:selected").val());
+				
 			}
+			
+			
+			
+			
 		});
 	}
 
 	//google.charts.setOnLoadCallback(draw_sub_unsub_trend_chart());
 	
 	draw_sub_unsub_trend_chart();
+	
 }
 
 
 
+
+
+
+function recent_subscription_activity(days) {
+	
+	
+	$("#recent_subscription_activity_loading").html(loading_str);
+
+
+	var request = $.ajax({
+		url: $("#s_program_url").val(),
+		type: "POST",
+		cache: false,
+		data: {
+			flavor: 'recent_subscription_activity',
+			days:   days
+			
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+		$("#recent_subscription_activity").hide().html(content).show('fade');
+		$("#recent_subscription_activity_loading").html('<p>&nbsp;</p>');
+	});
+	
+}
 // Membership >> user@example.com
 
 function mailing_list_history() {
