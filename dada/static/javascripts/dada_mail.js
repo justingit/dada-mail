@@ -239,6 +239,7 @@ jQuery(document).ready(function($){
 
 			$("body").on("click", ".save_msg", function(event) {
 				console.log('.save_msg');
+				
 				$("#button_action_notice").html('Working...');
 
 				$("#save_draft_role").val($(this).attr("data-save_draft_role"));
@@ -283,7 +284,7 @@ jQuery(document).ready(function($){
 			if($(this).hasClass("preview") === true){ 
 				
 				//alert('preview!');
-
+				
 				
 				var request = $.ajax({
 					url:       $("#s_program_url").val(),
@@ -292,7 +293,7 @@ jQuery(document).ready(function($){
 					cache:     false,
 					data: $("#mass_mailing").serialize() + '&process=preview',
 					success: function(content) {
-						
+												
 						//if(content.status === 0){ 
 						//	alert(content.errors); 
 						//	return false; 
@@ -300,23 +301,23 @@ jQuery(document).ready(function($){
 						
 						//alert('requrest success!');
 						
-						console.log('content.id:'     + content.id);
-						console.log('content.status:' + content.status);
-						console.log('content.body:'   + content.body);
-						console.log('content.errors:'   + content.errors);
+						// console.log('content.id:'     + content.id);
+						// console.log('content.status:' + content.status);
+						// console.log('content.body:'   + content.body);
+						// console.log('content.errors:' + content.errors);
+						// 
+						// if(content.status == 0){
+						// 	alert('Problems saving preference:' . content.error)
+						// } else { 
+						// 	alert('Preference Saved');
+						// }
 						
-						//if(content.status == 0){
-						//	alert('Problems saving preference:' . content.error)
-						//} else { 
-						//	alert('Preference Saved');
-						//}
+						
+						// YES!
+						$("#draft_id").val(content.id);
 						
 						
-						// ajax to get the json doc with the id - 
-						// construct URL
-						// give URL w/flavor to colorbox to show the previw. 
-				
-						//alert('s_program_url! ' + $("#s_program_url").val());
+						
 						var responsive_options = {
 						  width: '95%',
 						  height: '95%',
@@ -344,15 +345,19 @@ jQuery(document).ready(function($){
 								});
 								return true; 
 						}
-						else {					
+						else {
+							
+							$('#draft_notice').text($("#draft_role").val() + ' saved: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
+							
+												
 							if ( $("#mass_mailing_show_previews_in").val() == 'new_window' ){
-								window.open($("#s_program_url").val() + '?flavor=email_message_preview&id=' + content.id, "_blank"); 
+								window.open($("#s_program_url").val() + '?flavor=email_message_preview&id=' + content.preview_draft_id, "_blank"); 
 							}
 							else {						
 								$.colorbox({
 									iframe: true,
 									fastIframe: false,
-									href: $("#s_program_url").val() + '?flavor=email_message_preview&id=' + content.id,
+									href: $("#s_program_url").val() + '?flavor=email_message_preview&id=' + content.preview_draft_id,
 									opacity: 0.50,
 									maxWidth: '640px',
 									width: '95%',
@@ -372,7 +377,40 @@ jQuery(document).ready(function($){
 					error: function(xhr, ajaxOptions, thrownError) {
 						console.log('status: ' + xhr.status);
 						console.log('thrownError:' + thrownError);
+						
+						var responsive_options = {
+						  width: '95%',
+						  height: '95%',
+						  maxWidth: '640px',
+						};
+						
+							
+						var return_this = '<p><strong>Problems with creating preview/saving draft</strong> - see error log for more details.</p>'; 
+						
+						$.colorbox({
+							html: return_this,
+							opacity: 0.50,
+							maxWidth: '640px',
+							width: '95%',
+							height: '95%'					
+						});
+						$(window).resize(function(){
+						    $.colorbox.resize({
+						      width:  window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+						      height: responsive_options.height
+						    });		
+						});
+						
+						$('#draft_notice').text('Problems saving! '  + new Date().format("yyyy-MM-dd h:mm:ss"));
+						
+						
+						return true; 
+
+
 					},
+					complete: function(){ 
+						$("#button_action_notice").html('&nbsp;');
+					}
 				});
 			}
 			else {
@@ -484,8 +522,7 @@ jQuery(document).ready(function($){
 
 		$("body").on("click", ".cancel_message", function(event) {
 			
-			
-			
+				
 			$("#button_action_notice").html('Working...');
 			save_msg(false)
 
@@ -501,11 +538,8 @@ jQuery(document).ready(function($){
 			}
 			if (confirm(confirm_msg)) {
 				window.location.replace($("#s_program_url").val() + '?flavor=delete_drafts&draft_ids=' + $("#draft_id").val());
-			 }
-			else {
-				$("#button_action_notice").html('&nbsp;');
-
 			}
+			$("#button_action_notice").html('&nbsp;');
 		});
 
 	}
@@ -2276,8 +2310,6 @@ function update_scheduled_mass_mailings_options() {
 
 function save_msg(async) {
 	
-	//alert('save draft called!');
-
 	var r = false;
 
 	//	console.log(
@@ -2296,7 +2328,7 @@ function save_msg(async) {
 		}
 	}
 
-		$('#draft_notice .alert').text('auto-saving...');
+		$('#draft_notice').text('auto-saving...');
 
 		// remove warning about unsaved changes
 		$('.changed-input').removeClass('changed-input');
@@ -2316,7 +2348,7 @@ function save_msg(async) {
 			success: function(content) {
 				//alert('content.id ' + content.id);
 				$("#draft_id").val(content.id);
-				$('#draft_notice .alert').text($("#draft_role").val() + ' saved: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
+				$('#draft_notice').text($("#draft_role").val() + ' saved: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
 				r = true;
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
@@ -2359,7 +2391,7 @@ function auto_save_as_draft() {
 		}
 		
 		
-		$('#draft_notice .alert').text('auto-saving...');
+		$('#draft_notice').text('auto-saving...');
 		var request = $.ajax({
 			url: $("#s_program_url").val(),
 			type: "POST",
@@ -2367,17 +2399,16 @@ function auto_save_as_draft() {
 			cache: false,
 			data: $("#mass_mailing").serialize() + '&process=save_as_draft&json=1',
 			success: function(content) {
-				$('#draft_notice .alert').text('Last auto-save: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
+				$('#draft_notice').text('Last auto-save: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
 				console.log('Saving Draft Successful - content.id: ' + content.id);
 				console.log('$("#draft_role").val(): '               + $("#draft_role").val());
 				console.log('$("#save_draft_role").val(): '          + $("#save_draft_role").val());
 
 
-
 				$("#draft_id").val(content.id);
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
-				$('#draft_notice .alert').text('Problems auto-saving!'  + new Date().format("yyyy-MM-dd h:mm:ss"));
+				$('#draft_notice').text('Problems auto-saving! '  + new Date().format("yyyy-MM-dd h:mm:ss"));
 				console.log('status: ' + xhr.status);
 				console.log('thrownError:' + thrownError);
 			}

@@ -1488,7 +1488,6 @@ sub send_email {
         return ( $headers, $body );
     }
     elsif ( $process =~ m/preview/i ) {
-     	    
 			my $draft_id = $self->save_as_draft(
             {
                 -cgi_obj => $q,
@@ -1548,7 +1547,10 @@ sub send_email {
 			});
 			require JSON;
 	        my $json    = JSON->new->allow_nonref;
-	        my $return  = { id => $daemp_id };
+	        my $return  = { 
+				preview_draft_id => $daemp_id, 
+				id               => $draft_id,
+			};
 	        my $headers = {
 	            '-Cache-Control' => 'no-cache, must-revalidate',
 	            -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
@@ -1891,8 +1893,6 @@ sub save_as_draft {
  
  
  	if($t == 1){ 
-	
-		
 		require Data::Dumper; 
 		warn Data::Dumper::Dumper({
 		draft_id      => $draft_id, 
