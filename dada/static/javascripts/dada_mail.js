@@ -245,12 +245,30 @@ jQuery(document).ready(function($){
 				$("#save_draft_role").val($(this).attr("data-save_draft_role"));
 
 				var ds = save_msg(false);
-				window.location.replace(
-					$("#s_program_url").val()
-					+ '?flavor='   + $("#flavor").val()
-					+ '&draft_id=' + $("#draft_id").val() +
-					'&draft_role=' + $("#save_draft_role").val() + '&done=1'
-				);
+				
+				if (history.pushState) {
+					if (ds === true){
+				        let searchParams = new URLSearchParams(window.location.search);
+				        searchParams.set('flavor',     $("#flavor").val()         );
+				        searchParams.set('draft_id',   $("#draft_id").val()       );
+				        searchParams.set('draft_role', $("#save_draft_role").val());
+					
+				        let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + searchParams.toString();
+				        window.history.pushState({path: newurl}, '', newurl);
+					
+						alert('Message Saved.');	
+						$("#button_action_notice").html('&nbsp;');		
+					}
+				}
+				else { 
+					window.location.replace(
+						$("#s_program_url").val()
+						+ '?flavor='   + $("#flavor").val()
+						+ '&draft_id=' + $("#draft_id").val() +
+						'&draft_role=' + $("#save_draft_role").val() + '&done=1'
+					);
+				
+				}				
 			});
 		}
 
@@ -2328,7 +2346,7 @@ function save_msg(async) {
 		}
 	}
 
-		$('#draft_notice').text('auto-saving...');
+		$('#draft_notice').text('Saving...');
 
 		// remove warning about unsaved changes
 		$('.changed-input').removeClass('changed-input');
