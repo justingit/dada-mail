@@ -241,6 +241,56 @@ sub default {
 
 	# warn '$tracker_tracking_mode: ' . $tracker_tracking_mode; 
 	
+	
+	my $remove_after_timespan_vals = [
+	'1m',
+	'2m',
+	'3m',
+	'4m',
+	'5m',
+	'6m',
+	'7m',
+	'8m',
+	'9m',
+	'10m',
+	'11m',
+	'1y',
+	'2y',
+	'3y',
+	'4y',
+	'5y'];
+
+	my $remove_after_timespan_ops = { 
+		'1m'  => '1 month',
+		'2m'  => '2 months',
+		'3m'  => '3 months',
+		'4m'  => '4 months',
+		'5m'  => '5 months',
+		'6m'  => '6 months',
+		'7m'  => '7 months',
+		'8m'  => '8 months',
+		'9m'  => '9 months',
+		'10m' => '10 months',
+		'11m' => '11 months',
+		'1y'  => '1 year',
+		'2y'  => '2 years',
+		'3y'  => '3 years',
+		'4y'  => '4 years',
+		'5y'  => '5 years',
+	};
+	my $tracker_data_auto_remove_after_timespan_menu = HTML::Menu::Select::popup_menu(
+        {
+            name  => 'tracker_data_auto_remove_after_timespan',
+            id    => 'tracker_data_auto_remove_after_timespan',
+            values => $remove_after_timespan_vals,
+			labels => $remove_after_timespan_ops, 
+			default => $ls->param('tracker_data_auto_remove_after_timespan'), 
+		}
+    );
+	
+	
+	
+	
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -262,6 +312,8 @@ sub default {
                 field_names                      => $field_names,
 				
 				tracker_tracking_mode            => $tracker_tracking_mode, 
+				
+				tracker_data_auto_remove_after_timespan_menu => $tracker_data_auto_remove_after_timespan_menu, 
 				
 				PII_OPTIONS_allow_logging_emails_in_analytics 
 					=> $DADA::Config::PII_OPTIONS->{allow_logging_emails_in_analytics},
@@ -855,6 +907,8 @@ sub edit_prefs {
                 tracker_show_message_reports_in_mailing_monitor => 0,
                 tracker_update_profiles_w_geo_ip_data           => 0,
 				tracker_send_analytics_email_notification       => 0, 
+				tracker_data_auto_remove                        => 0, 
+				tracker_data_auto_remove_after_timespan         => undef, 
             },
 			-also_save_for => $also_save_for_list,
         }

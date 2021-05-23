@@ -509,6 +509,36 @@
    </div>
    
    
+   <fieldset>
+   <legend>
+    Auto-Removal
+   </legend>
+
+   	<div class="row">
+   	   <div class="small-12 columns">    
+   		   <label for="tracker_data_auto_remove">   
+   		    <input 
+   				type="checkbox" 
+   				name="tracker_data_auto_remove" 
+   				value="1"
+   				id="tracker_data_auto_remove" 
+   				<!-- tmpl_if list_settings.tracker_data_auto_remove -->
+   					checked="checked"
+   				<!-- /tmpl_if -->
+   			>
+   				Auto-remove tracker data older than:
+   		    </label>  
+			
+			<!-- tmpl_var tracker_data_auto_remove_after_timespan_menu --> 
+   			
+			
+   		</div> 
+   	</div>
+   </fieldset>
+   
+   
+   
+   
 	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
 	</form> 
 </fieldset> 
