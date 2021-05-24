@@ -5,6 +5,21 @@
 
 		<!-- <ul class="small-block-grid-3"> -->
 			<ul style="list-style-type:none">
+				
+				 <li>
+					   <input 
+					    id="check_uncheck_all"
+					   	class="toggleCheckboxes" 
+						type="checkbox" 
+						data-target_class="also_save_cb"
+					 ><label for="check_uncheck_all">
+ 							<span class="warning label">
+							 
+						 Check/Uncheck all other mailing lists:
+					 </span>
+					 </label>
+				</li>
+				
 				 <!-- tmpl_loop lists -->
 			 	<!-- tmpl_if expr="(current_list ne list)" -->
 				 	<li>
@@ -15,7 +30,7 @@
 								name="also_save" 
 								id="also_save_<!-- tmpl_var list -->"
 								value="<!-- tmpl_var list -->"
-								checked="checked"
+								class="also_save_cb"
 							>
 							<!-- tmpl_var list_name --> (<!-- tmpl_var list -->)
 						</label>
@@ -34,6 +49,10 @@
 					</li>
 				<!-- /tmpl_if -->
 			 <!-- /tmpl_loop -->
+			 
+
+				
+				
 		</ul>
 	</div> 
 </div>
