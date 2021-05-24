@@ -202,8 +202,8 @@ sub remove_old_tracker_data {
     
     require DADA::Logging::Clickthrough; 
     foreach my $l (@lists){ 			
-		my $la = require DADA::Logging::Clickthrough->new({-list => $l}); 
-		$r .= $la->remove_old_tracker_data();     
+		my $dlc = DADA::Logging::Clickthrough->new({-list => $l}); 
+		$r .= $dlc->remove_old_tracker_data();     
     }
     return $r; 
 }

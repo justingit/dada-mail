@@ -43,6 +43,9 @@ sub _sql_init {
     require DADA::App::DBIHandle;
     my $dbi_obj = DADA::App::DBIHandle->new;
     $self->{dbh} = $dbi_obj->dbh_obj;
+	
+	$self->{sql_params} = {%DADA::Config::SQL_PARAMS};
+
 }
 
 sub custom_fields {
