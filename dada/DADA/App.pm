@@ -16253,6 +16253,14 @@ sub schedules {
 	        } catch {
 	            $r .= "* Error: $_\n";
 	        };
+			
+	        $r .= "\nRemoving old tracker data:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->remove_old_tracker_data($list);
+	        } catch {
+	            $r .= "* Error: $_\n";
+	        };
+			
 
 	        $r .= "\nSending Analytics Email Notification:\n" . '-' x 72 . "\n";
 	        try {
@@ -16316,6 +16324,16 @@ sub schedules {
 	            $r .= "* Error: $_\n";
 	        };
 	    }
+	    elsif ( $schedule eq 'remove_old_tracker_data' ) {
+	        $r .= "Removing out old archive messages:\n" . '-' x 72 . "\n";
+	        try {
+	            $r .= $dast->remove_old_tracker_data($list);
+	        }
+	        catch {
+	            $r .= "* Error: $_\n";
+	        };
+	    }
+
 	    elsif ( $schedule eq 'send_analytics_email_notification' ) {
 	        $r .= "Sending Analytics Email Notification:\n" . '-' x 72 . "\n";
 	        try {
