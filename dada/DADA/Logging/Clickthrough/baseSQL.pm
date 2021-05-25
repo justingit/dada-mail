@@ -43,6 +43,9 @@ sub _sql_init {
     require DADA::App::DBIHandle;
     my $dbi_obj = DADA::App::DBIHandle->new;
     $self->{dbh} = $dbi_obj->dbh_obj;
+	
+	$self->{sql_params} = {%DADA::Config::SQL_PARAMS};
+
 }
 
 sub custom_fields {
@@ -3413,6 +3416,111 @@ sub delete_msg_id_data {
     return 1; 
 
 }
+
+
+
+
+sub remove_old_tracker_data {
+    my $self = shift;
+    my $r;
+
+    $r .=
+        "Mailing List: "
+      . $self->{ls}->param('list_name') . " ("
+      . $self->{ls}->param('list') . ")\n"
+      . '-' x 72 . "\n";
+
+    if ( $self->{ls}->param('tracker_data_auto_remove') == 1 ) {
+
+        my $translation_key = {
+            '1m',  => 1,
+            '2m',  => 2,
+            '3m',  => 3,
+            '4m',  => 4,
+            '5m',  => 5,
+            '6m',  => 6,
+            '7m',  => 7,
+            '8m',  => 8,
+            '9m',  => 9,
+            '10m', => 10,
+            '11m', => 11,
+            '1y',  => 12,
+            '2y',  => 24,
+            '3y',  => 36,
+            '4y',  => 48,
+            '5y'   => 60,
+        };
+
+        my $timespan;
+        if (
+            exists(
+                $translation_key->{ $self->{ls}
+                      ->param('tracker_data_auto_remove_after_timespan') }
+            )
+          )
+        {
+            $timespan = $translation_key->{ $self->{ls}
+                  ->param('tracker_data_auto_remove_after_timespan') };
+            require DateTime;
+            my $old_epoch =
+              DateTime->today->subtract(
+                months => $translation_key->{ $self->{ls}
+                      ->param('tracker_data_auto_remove_after_timespan') } )->epoch;
+
+            #$r .= "epoch: " . $old_epoch . "\n";
+            #$r .= "localtime: " . scalar localtime($old_epoch) . "\n";
+
+            my $old_msg_id = DADA::App::Guts::message_id($old_epoch);
+            $r .= "\tRemoving clickthrough data that's older than, "
+              . scalar localtime($old_epoch) . "\n";
+
+            my $query =
+                'DELETE FROM '
+              . $self->{sql_params}->{clickthrough_url_log_table}
+              . ' WHERE msg_id <= ? AND list = ?';
+
+            my $sth = $self->{dbh}->prepare($query);
+            my $c = $sth->execute( $old_msg_id, $self->{name} );
+            $sth->finish;
+            if ( $c eq '0E0' ) {
+                $c = 0;
+            }
+            $r .= "\tRemoved " . $c . " rows(s) in clickthrough_url_log_table\n";
+			undef $query; 
+			undef $sth; 
+			undef $c; 
+			
+            my $query =
+                'DELETE FROM '
+              . $self->{sql_params}->{mass_mailing_event_log_table}
+              . ' WHERE msg_id <= ? AND list = ?';
+
+            my $sth = $self->{dbh}->prepare($query);
+            my $c = $sth->execute( $old_msg_id, $self->{name} );
+            $sth->finish;
+            if ( $c eq '0E0' ) {
+                $c = 0;
+            }
+            $r .= "\tRemoved " . $c . " rows(s) in mass_mailing_event_log_table\n";
+			
+        }
+        else {
+            $r .= "Unknown timespan: "
+              . $self->{ls}->param('tracker_data_auto_remove_after_timespan') . "\n";
+        }
+    }
+    else {
+        $r .= "\tDisabled.\n";
+    }
+
+    return $r . "\n";
+
+}
+
+
+
+
+
 
 
 
