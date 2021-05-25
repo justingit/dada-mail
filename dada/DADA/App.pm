@@ -139,6 +139,7 @@ sub setup {
         'search_list_auto_complete'     => \&search_list_auto_complete,
         'list_activity'                 => \&list_activity,
         'sub_unsub_trends_json'         => \&sub_unsub_trends_json,
+		'recent_subscription_activity'  => \&recent_subscription_activity, 
         'view_bounce_history'           => \&view_bounce_history,
         'subscription_requests'         => \&subscription_requests,
         'unsubscription_requests'       => \&unsubscription_requests,
@@ -5538,29 +5539,7 @@ sub list_activity {
       );
     if ( !$checksout ) { return $error_msg; }
 
-    my $list = $admin_list;
-
-
-    my $days = xss_filter(
-		strip(
-			scalar $q->param('days')
-		)
-	) || 30; 
-	
-	require DADA::MailingList::ConsentActivity; 
-	my $dmlch = DADA::MailingList::ConsentActivity->new; 
-	my $r = $dmlch->list_activity( 
-		{ 
-			-list => $list, 
-			-days => $days, 
-		} 
-	);
-	
-	my $i;
-    for ( $i = 0 ; $i <= ( scalar(@$r) - 1 ) ; $i++ ) {
-        $r->[$i]->{show_email} = 1;
-    }
-	
+    my $list = $admin_list;	
     my $body = DADA::Template::Widgets::wrap_screen(
         {
             -list           => $list,
@@ -5570,7 +5549,6 @@ sub list_activity {
                 -Root_Login => $root_login,
                 -List       => $list,
             },
-            -vars => { history => $r, },
             -expr => 1,
         }
     );
@@ -5618,6 +5596,54 @@ sub sub_unsub_trends_json {
 
     $self->header_props(%$headers);
     return $r;
+}
+
+sub recent_subscription_activity { 
+	
+    my $self = shift;
+    my $q    = $self->query();
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list'
+      );
+    if ( !$checksout ) { return $error_msg; }
+
+    my $list           = $admin_list;
+	
+    my $days = xss_filter(
+		strip(
+			scalar $q->param('days')
+		)
+	) || 30; 
+	
+	require DADA::MailingList::ConsentActivity; 
+	my $dmlch = DADA::MailingList::ConsentActivity->new; 
+	my $r = $dmlch->list_activity( 
+		{ 
+			-list => $list, 
+			-days => $days, 
+		} 
+	);
+	
+	my $i;
+    for ( $i = 0 ; $i <= ( scalar(@$r) - 1 ) ; $i++ ) {
+        $r->[$i]->{show_email} = 1;
+    }
+	
+    my $body = DADA::Template::Widgets::screen(
+        {
+            -list   => $list,
+            -screen => 'filtered_list_activity_widget.tmpl',
+            -vars => { 
+				history => $r, 
+			},
+            -expr => 1,
+        }
+    );
+    return $body;
+
 }
 
 sub view_bounce_history {
