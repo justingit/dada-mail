@@ -3,6 +3,43 @@
 
 =encoding utf-8
 
+=head1 11.14.0
+
+=head2 Focus
+
+This is a release that includes some features as well as some bugfixes. 
+
+=head2 Features 
+
+=head3 Auto-Remove Old Tracker Data
+
+Data the Tracker plugin collects can take up a lot of database disk space! And processing the raw data into reports can take a lot of time - the more data, the more time you may be waiting to get a report! We've added the feature of removing tracker data that's older than a period of time, starting with being a month or older. This is an optional feature that's disabled by default. It can be enabled for each list separately. Find the option in the Tracker plugin's own preferences. 
+
+=head3 "Save Draft" button, when pressed, no longer refreshes screen 
+
+When creating a draft, one of the buttons allows you to save the draft. Rather than having to wait for the screen to refresh to continue editing, clicking the B<Save Draft> button will now save your draft in the background and you can keep editing your draft message.  
+
+Also pay attention to issue #1019 - Previewing a draft also will save the draft before the preview is shown, but there was a big issue when this happened. 
+
+=head3 "Check All/Uncheck All" option added to saving settings to multiple lists
+
+Dada Mail has the ability to save it's list settings to > one mailing list at once on most of the screens (screens like Mailing List: List Information don't have this option for hopefully understandable reasons). We've added a way to select/unselect all mailing lists, to more easily select just a few mailing lists to save to. 
+
+=head2 Bugfixes
+
+=head3 Send a Message: Previewing an unsaved draft will lead to multiple copies of the draft 
+
+L<https://github.com/justingit/dada-mail/issues/1019>
+
+This is a particularly big bug - and one of the reasons I want to push out an update. Anytime you press the, "Preview" button when you're creating a Draft, you run the big risk of making two copies of your draft message, which can be very confusing. These copies can also accumulate, making things more mysterious.
+
+=head3 Membership: Recent Activity table of subs/unsub always static at last 100 log lines. Why?
+
+L<https://github.com/justingit/dada-mail/issues/1005>
+
+This was a strange issue - perhaps this is more of a feature. But the chart on the top of, B<Membership: Recent Activity>, and the table on the bottom don't align up. The chart can show months of data, while the table below shows perhaps the only last 100 lines, which could be years of activity, or just a few days of activity. 
+
+
 =head1 11.13.1
 
 =head2 Focus
