@@ -16351,7 +16351,7 @@ sub schedules {
 	        };
 	    }
 	    elsif ( $schedule eq 'remove_old_tracker_data' ) {
-	        $r .= "Removing out old archive messages:\n" . '-' x 72 . "\n";
+	        $r .= "Removing out old tracker data:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->remove_old_tracker_data($list);
 	        }
