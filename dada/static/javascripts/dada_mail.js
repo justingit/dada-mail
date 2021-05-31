@@ -246,7 +246,10 @@ jQuery(document).ready(function($){
 
 				var ds = save_msg(false);
 				
-				if (history.pushState) {
+				// First we make sure the browser support this
+				// Then we test if we're not changing the role of the message - 
+				// for example, from stationery to draft: 
+				if (history.pushState && $(this).attr("data-save_draft_role") == $("#draft_role").val()) {
 					if (ds === true){
 				        let searchParams = new URLSearchParams(window.location.search);
 				        searchParams.set('flavor',     $("#flavor").val()         );
@@ -260,7 +263,7 @@ jQuery(document).ready(function($){
 						$("#button_action_notice").html('&nbsp;');		
 					}
 				}
-				else { 
+				else {
 					window.location.replace(
 						$("#s_program_url").val()
 						+ '?flavor='   + $("#flavor").val()
