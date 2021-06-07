@@ -356,6 +356,7 @@ sub setup {
             outdated_subscription_urls         => $pm_prefs,
             t                                  => $pm_prefs,
             ur                                 => $pm_prefs,
+			send_archive                       => $pm_prefs,
             $DADA::Config::ADMIN_FLAVOR_NAME   => $pm_prefs,
             $DADA::Config::SIGN_IN_FLAVOR_NAME => $pm_prefs,
         );
