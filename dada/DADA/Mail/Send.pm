@@ -525,42 +525,49 @@ sub send {
                                 # oh hey, everything worked!
                             }
                             else {
-                                carp
-"problems completing sending message to SMTP server. (dataend)";
+                                carp "problems completing sending message to SMTP server. (dataend)";
+								return -1;
                             }
 
                         }
                         else {
-                            carp
-"problems sending message to SMTP server. (datasend)";
+                            carp "problems sending message to SMTP server. (datasend)";
+							return -1;
                         }
                     }
                     else {
-                        carp
-"problems sending DATA command to SMTP server. (data)";
+                        carp "problems sending DATA command to SMTP server. (data)";
+						return -1;
                     }
                 }
                 else {
                     carp "problems sending '" . $to
                       . "' in 'RCPT TO:<>' command to SMTP server.";
+					 return -1;
                 }
             }
             else {
                 carp $FROM_error;
+				return -1;
             }
 
-            $smtp_obj->reset()
-              or carp 'problems sending, "RSET" command to SMTP server.';
+			my $reset_problem = 0; 
+            $smtp_obj->reset() or $reset_problem = 1; 
+			
 
-            if ( $self->{ls}->param('smtp_connection_per_batch') != 1 ) {
+            if ( $self->{ls}->param('smtp_connection_per_batch') != 1 || $reset_problem == 1) {
 
                 $smtp_obj->quit
                   or carp "problems 'QUIT'ing SMTP server.";
                 $self->net_smtp_obj(undef);
-
-                warn
-'Purging Net::SMTP object, since we reconnect for each message'
-                  if $t;
+				
+				if($reset_problem == 1) { 
+	                warn 'Purging Net::SMTP object, after reset error.';
+				}
+				else {
+	                warn 'Purging Net::SMTP object, since we reconnect for each message'
+	                  if $t;
+				}
             }
 
         } catch {    # end of the eval block.
