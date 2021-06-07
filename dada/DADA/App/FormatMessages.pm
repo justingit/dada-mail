@@ -1788,7 +1788,18 @@ sub _encode_header {
 	else { 
 		$charset = $self->{ls}->param('charset_value');
 	}
-    if (   $label eq 'Subject'
+	
+	if($charset eq 'UTF-8	UTF-8'){ 
+		warn '$charset still unmunged?!';
+		$charset = 'UTF-8';
+	}
+	elsif($charset =~ m/\t/){ 
+		warn '$charset still unmunged?!';
+		$charset = 'UTF-8';
+	}
+    
+	
+	if (   $label eq 'Subject'
         || $label eq 'List'
         || $label eq 'List-URL'
         || $label eq 'List-Owner'
