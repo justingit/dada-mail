@@ -482,6 +482,7 @@ sub send {
 
             my $FROM_error_flag = 0;
             my $FROM_error = "problems sending FROM:<> command to SMTP server.";
+			
             if ( $self->{ls}->param('set_smtp_sender') == 1 ) {
                 if ( $self->{ls}->param('verp_return_path') ) {
                     if ( !$smtp_obj->mail( $self->_verp($to) ) ) {
@@ -517,37 +518,41 @@ sub send {
             }
 
             if ( !$FROM_error_flag ) {
-                if ( $smtp_obj->to($to) ) {
+            	if ( $smtp_obj->to($to) ) {
                     if ( $smtp_obj->data ) {
                         if ( $smtp_obj->datasend($smtp_msg) ) {
                             if ( $smtp_obj->dataend ) {
-
                                 # oh hey, everything worked!
                             }
                             else {
-                                carp "problems completing sending message to SMTP server. (dataend)";
+                                carp "problems completing sending message to SMTP server. (dataend): " . $smtp_obj->message();
+								$smtp_obj->reset();
 								return -1;
                             }
 
                         }
                         else {
-                            carp "problems sending message to SMTP server. (datasend)";
+                            carp "problems sending message to SMTP server. (datasend): " . $smtp_obj->message();
+							$smtp_obj->reset();
 							return -1;
                         }
                     }
                     else {
-                        carp "problems sending DATA command to SMTP server. (data)";
+                        carp "problems sending DATA command to SMTP server. (data): " . $smtp_obj->message();
+						$smtp_obj->reset();
 						return -1;
                     }
                 }
                 else {
                     carp "problems sending '" . $to
-                      . "' in 'RCPT TO:<>' command to SMTP server.";
-					 return -1;
+                      . "' in 'RCPT TO:<>' command to SMTP server: " . $smtp_obj->message();
+					  $smtp_obj->reset();
+					  return -1;
                 }
             }
             else {
                 carp $FROM_error;
+				$smtp_obj->reset();
 				return -1;
             }
 
