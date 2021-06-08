@@ -3,6 +3,30 @@
 
 =encoding utf-8
 
+=head1 11.14.1
+
+=head2 Focus
+
+This release includes bugfixes found in the v11.14.0 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 RESTful webservices: "mass_email": plain text messages don't send #1026 
+
+L<https://github.com/justingit/dada-mail/issues/1026>
+
+=head3 Remove Net::SMTP_auth from distribution - it isn't used #1025 
+
+L<https://github.com/justingit/dada-mail/issues/1025>
+
+=head3  "Forward to a Friend" form not protected by rate limiting, and it really should
+
+L<https://github.com/justingit/dada-mail/issues/1022>
+
+=head3 Creating a new Draft from a Stationery doesn't redirect you to the newly made Draft Message
+
+L<https://github.com/justingit/dada-mail/issues/1021>
+
 =head1 11.14.0
 
 =head2 Focus
