@@ -147,7 +147,7 @@ sub smtp_obj {
 		$smtp_obj = Net::SMTP->new(
 			$args->{host},
 			%$smtp_args,
-		) or $r .= "Connection to '" . $args->{host} . "' failed: $@\n";
+		) or $r .= "Connection to '" . $args->{host} . "' failed(0): $_" . $smtp_obj->message() . "\n";
 	} catch { 
 		warn $r 
 			if($args->{debug} == 1); 
@@ -206,7 +206,7 @@ sub smtp_obj {
 		 	$auth_r = $smtp_obj->auth($sasl);
 		}
 		if($auth_r != 1){ 
-			$r .= "Connection to '" . $args->{host} . "' failed: $@\n";
+			$r .= "Connection to '" . $args->{host} . "' failed(1): " . $smtp_obj->message() . "\n";
 			$smtp_obj->quit;
 			warn $r 
 				if($args->{debug} == 1); 
@@ -221,7 +221,7 @@ sub smtp_obj {
 		return (1, $r, $smtp_obj);
 	}
 	else { 
-		$r .= "Connection to '" . $args->{host} . "' failed: $@\n";
+		$r .= "Connection to '" . $args->{host} . "' failed(2): " . $smtp_obj->message() . "\n";
 		warn $r 
 			if($args->{debug} == 1); 
 		return (0, $r, undef); 	
