@@ -319,7 +319,12 @@ sub mass_email {
         if($type eq 'text/html'){ 
             $qq->param('html_message_body', $message); 
         }
-        else { 
+        else {
+			# Say that we don't have any HTML
+            $qq->param('content_from', 'none');
+			# but we do have plaintext 
+            $qq->param('plaintext_content_from', 'text'); 
+			# and make sure that's found
             $qq->param('text_message_body', $message); 
         }
         $qq->param('f', 'send_email');
