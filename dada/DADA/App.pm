@@ -4379,7 +4379,7 @@ sub mail_sending_options {
 
 # DEV: This is really strange, since if Net::SMTP isn't available, SMTP sending is completely broken.
         my $can_use_net_smtp = 0;
-        eval { require Net::SMTP_auth };
+        eval { require Net::SMTP };
         if ( !$@ ) {
             $can_use_net_smtp = 1;
         }

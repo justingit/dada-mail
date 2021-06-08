@@ -52,11 +52,10 @@ Some reasons you may want to use SMTP sending:
 
 =head2 What does Dada Mail use for its SMTP Sending? 
 
-Currently, Dada Mail uses the B<Net::SMTP_auth> CPAN module to send email via SMTP. More information: 
+Currently, Dada Mail uses the B<Net::SMTP> CPAN module to send email via SMTP. More information: 
 
-L<http://search.cpan.org/~apleiner/Net-SMTP_auth>
+L<https://metacpan.org/pod/Net::SMTP>
 
-C<Net::SMTP_auth> is a little more flexible than C<Net::SMTP> when it comes to setting the authentication schemes to use and Mail::Bulkmail does not support SASL authentication at all, has some mysterious bugs we couldn't figure out and Dada Mail does much of the rest of the utilities that it packs. 
 
 =head2 SMTP Authentication
 
