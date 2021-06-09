@@ -11,6 +11,10 @@ This release includes bugfixes found in the v11.14.0 release of Dada Mail.
 
 =head2 Bugfixes
 
+=head3 @LIST_SETUP_DONT_CLONE can't be overridden in .dada_config file
+
+L<https://github.com/justingit/dada-mail/issues/1027>
+
 =head3 RESTful webservices: "mass_email": plain text messages don't send #1026 
 
 L<https://github.com/justingit/dada-mail/issues/1026>
