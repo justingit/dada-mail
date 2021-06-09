@@ -1732,9 +1732,8 @@ $MIME_TOOLS_PARAMS //= {
   discussion_pop_auth_mode
   discussion_pop_use_ssl
 
-
-  ) unless keys %LIST_SETUP_OVERRIDES;
-
+)  unless scalar @LIST_SETUP_DONT_CLONE;
+ 
 $OS //= $^O;
 
 $NULL_DEVICE //= '/dev/null';
