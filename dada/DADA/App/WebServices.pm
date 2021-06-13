@@ -1,10 +1,7 @@
 package DADA::App::WebServices;
 use strict;
 
-use lib qw(
-  ../../
-  ../../DADA/perllib
-);
+use lib qw(./ ../ ../../ ../../DADA ../perllib); 
 
 use Carp qw(carp croak);
 
@@ -25,7 +22,20 @@ use vars qw($AUTOLOAD);
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_WebServices};
 
-my %allowed = ( test => 0, );
+my %allowed = ( 
+	test => 0, 
+
+	ls_obj        => undef, 
+	
+	r_list        => undef, 
+	r_service	  => undef, 
+	r_public_key  => undef, 
+	r_digest      => undef, 
+	r_cgi_obj     => undef, 
+	
+	global_level  => undef, 
+		
+);
 
 sub new {
     my $that = shift;
@@ -75,6 +85,7 @@ sub request {
     my $status = 1;
     my $errors = {};
     my ($args) = @_;
+	
     for ( '-list', '-service', '-public_key', '-digest', '-cgi_obj' ) {
 
         my $param = $_;
@@ -87,42 +98,67 @@ sub request {
               if $t;
         }
         else {
-            $self->{$param} = strip($args->{$_});
+            $args->{$_} = strip($args->{$_});
         }
     }
-
-    if ( $self->check_list() == 0 ) {
-        $status = 0;
-        $errors->{'invalid_list'};
+	
+	if($status == 1){ 
+		$self->r_list(       $args->{-list}       );      
+		$self->r_service(    $args->{-service}    );	 
+		$self->r_public_key( $args->{-public_key} );
+		$self->r_digest(     $args->{-digest}     );    
+		$self->r_cgi_obj(    $args->{-cgi_obj}    );   
+	}
+	
+	
+	$GLOBAL_API_OPTIONS
+	
+	
+    if ( $self->check_list() == 1 ) {
+		$self->ls_obj(DADA::MailingList::Settings->new( { -list => $self->r_list } ));
+		$self->global_level(0);
+		$self->i_private_api_key($self->ls_obj->param('private_api_key')); 
     }
+	else { 
+		# If there's a list that's passed, but it's invalid, this shouldn't workL
+		if($self->r_list eq undef && $self->r_public_key eq $GLOBAL_API_OPTIONS->{public_key}){ 
+			$self->global_level(1);
+			# Well, OK... 
+			$self->i_private_api_key($DADA::Config::GLOBAL_API_OPTIONS->{private_key}); 
+		}
+		else {		
+	        $status = 0;
+	        $errors->{'invalid_list'};
+		}
+	}
 
     if ( $status == 1 ) {
-        $self->{ls} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+        
         ( $status, $errors ) = $self->check_request();
     }
 
     my $r = {};
 
     if ( $status == 1 ) {
-        if ( $self->{service} eq 'validate_subscription' ) {
+        if ( $self->r_service eq 'validate_subscription' ) {
             $r = $self->validate_subscription();
         }
-        elsif ( $self->{service} eq 'subscription' ) {
+        elsif ( $self->r_service eq 'subscription' ) {
             $r = $self->subscription();
         }
-        elsif ( $self->{service} eq 'unsubscription' ) {
+        elsif ( $self->r_service eq 'unsubscription' ) {
             $r = $self->unsubscription();
         }
-        elsif ( $self->{service} eq 'mass_email' ) {
+        elsif ( $self->r_service eq 'mass_email' ) {
             $r = $self->mass_email();
         }
-        elsif ( $self->{service} eq 'settings' ) {
+        elsif ( $self->r_service eq 'settings' ) {
             $r = $self->settings();
         }
-        elsif( $self->{service} eq 'update_settings') { 
+        elsif( $self->r_service eq 'update_settings') { 
             $r = $self->update_settings();            
         }
-		elsif( $self->{service} eq 'update_profile_fields') { 
+		elsif( $self->r_service eq 'update_profile_fields') { 
             $r = $self->update_profile_fields();            
         }
         else {
@@ -140,17 +176,13 @@ sub request {
     }
 
     if ($t) {
-        $r->{og_path_info}      = $self->{cgi_obj}->path_info();
-        $r->{og_service}        = $self->{service};
-        $r->{og_query}          = $self->{cgi_obj}->query_string();
-        $r->{og_digest}         = $self->{digest};
+        $r->{r_path_info}      = $self->r_cgi_obj->path_info();
+        $r->{r_service}        = $self->r_service;
+        $r->{r_query}          = $self->r_cgi_obj->query_string();
+        $r->{r_digest}         = $self->{digest};
         $r->{calculated_digest} = $calculated_digest;
-        $r->{public_api_key}    = $self->{ls}->param('public_api_key');
-        $r->{private_api_key}   = $self->{ls}->param('private_api_key');
-        if ( exists( $self->{ls} ) ) {
-            $r->{public_api_key}  = $self->{ls}->param('public_api_key');
-            $r->{private_api_key} = $self->{ls}->param('private_api_key');
-        }
+        $r->{public_api_key}    = $self->public_api_key;
+        $r->{private_api_key}   = $self->private_api_key;
     }
     my $headers = {
         -type            => 'application/json',
@@ -163,7 +195,7 @@ sub request {
 
 sub validate_subscription {
     my $self      = shift;
-    my $addresses = $self->{cgi_obj}->param('addresses');
+    my $addresses = $self->r_cgi_obj->param('addresses');
 
     my $lh                = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
     my $json              = JSON->new;
@@ -190,7 +222,7 @@ sub validate_subscription {
 sub subscription {
 
     my $self                = shift;
-    my $addresses           = $self->{cgi_obj}->param('addresses');
+    my $addresses           = $self->r_cgi_obj->param('addresses');
     my $lh                  = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
     my $json                = JSON->new;
     my $decoded_addresses   = $json->decode($addresses);
@@ -253,7 +285,7 @@ sub subscription {
 sub unsubscription {
 
     my $self                = shift;
-    my $addresses           = $self->{cgi_obj}->param('addresses');
+    my $addresses           = $self->r_cgi_obj->param('addresses');
     my $lh                  = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
     my $json                = JSON->new;
     my $decoded_addresses   = $json->decode($addresses);
@@ -303,10 +335,10 @@ sub unsubscription {
 sub mass_email {
 
     my $self    = shift;
-    my $subject = $self->{cgi_obj}->param('subject');
-    my $format  = $self->{cgi_obj}->param('format');
-    my $message = $self->{cgi_obj}->param('message');
-    my $test    = $self->{cgi_obj}->param('test') || 0;
+    my $subject = $self->r_cgi_obj->param('subject');
+    my $format  = $self->r_cgi_obj->param('format');
+    my $message = $self->r_cgi_obj->param('message');
+    my $test    = $self->r_cgi_obj->param('test') || 0;
 
     my $type = 'text/plain';
     if ( $format =~ m/html/i ) {
@@ -385,7 +417,7 @@ sub settings {
       return {
           status  => 1,
           results =>  {
-              settings => $self->{ls}->get()
+              settings => $self->ls_obj->get()
         }
     };
 }
@@ -398,11 +430,11 @@ sub update_settings {
     my $json = JSON->new->allow_nonref;
     my $r = {}; 
         
-    my $settings = $self->{cgi_obj}->param('settings');
+    my $settings = $self->r_cgi_obj->param('settings');
        $settings = $json->decode($settings);
         
     try {
-        $self->{ls}->save(
+        $self->ls_obj->save(
 			{
 				-settings => $settings
 			}
@@ -432,7 +464,7 @@ sub update_profile_fields {
     my $json = JSON->new->allow_nonref;
     my $r    = {};
 
-    my $email = $self->{cgi_obj}->param('email');
+    my $email = $self->r_cgi_obj->param('email');
 	   $email = $json->decode($email);
        $email = cased( xss_filter($email) );
 	   
@@ -451,7 +483,7 @@ sub update_profile_fields {
 	    require DADA::Profile;
 	    my $prof = DADA::Profile->new( { -email => $email } );
 
-	    my $profile_fields = $self->{cgi_obj}->param('profile_fields');
+	    my $profile_fields = $self->r_cgi_obj->param('profile_fields');
 	       $profile_fields = $json->decode($profile_fields);
 
 		   #warn 'pf:' . $profile_fields; 
@@ -501,6 +533,18 @@ sub update_profile_fields {
 }
 
 
+
+sub create_a_new_list { 
+    my $self = shift;
+
+    my $status = 1;
+    my $errors = {};
+	
+	
+
+}
+
+
 sub check_request {
 
     my $self = shift;
@@ -534,7 +578,7 @@ sub check_request {
 
 sub check_nonce {
     my $self = shift;
-    my ( $timestamp, $nonce ) = split( ':', $self->{cgi_obj}->param('nonce'));
+    my ( $timestamp, $nonce ) = split( ':', $self->r_cgi_obj->param('nonce'));
     
     my $r = 0;
 
@@ -556,9 +600,22 @@ sub check_public_key {
     my $self = shift;
     my $r    = 0;
 
-    if ( 
-		   $self->{ls}->param('public_api_key') 
-	    ne $self->{public_key} 
+	# I mean, ok:
+	# $self->r_public_key 
+	# is what's passed in the request, so I guess this sort of makes sense: 
+	# 
+	
+	my $tmp_public_key = undef; 
+	if($self->global_level == 1){ 
+		$tmp_public_key = $DADA::Config::GLOBAL_API_OPTIONS->{private_key};
+	}
+	else { 
+		$tmp_public_key = $self->ls_obj->param('public_api_key') ; 
+	}
+    
+	if ( 
+		$tmp_public_key
+	    ne $self->r_public_key 
 	) {
         $r = 0;
     }
@@ -581,34 +638,34 @@ sub check_digest {
 
     my $n_digest = undef; 
 
-    if ( $self->{service} eq 'mass_email' ) {
-        $qq->param( 'format',  $self->{cgi_obj}->param('format') );
-        $qq->param( 'message', $self->{cgi_obj}->param('message') );
-        $qq->param( 'nonce',   $self->{cgi_obj}->param('nonce') );
-        $qq->param( 'subject', $self->{cgi_obj}->param('subject') );
+    if ( $self->r_service eq 'mass_email' ) {
+        $qq->param( 'format',  $self->r_cgi_obj->param('format') );
+        $qq->param( 'message', $self->r_cgi_obj->param('message') );
+        $qq->param( 'nonce',   $self->r_cgi_obj->param('nonce') );
+        $qq->param( 'subject', $self->r_cgi_obj->param('subject') );
         # optional
-        if(defined($self->{cgi_obj}->param('test'))){ 
-            $qq->param( 'test', $self->{cgi_obj}->param('test') );
+        if(defined($self->r_cgi_obj->param('test'))){ 
+            $qq->param( 'test', $self->r_cgi_obj->param('test') );
         }
         $n_digest = $self->digest( $qq->query_string() );
     }
-    elsif ( $self->{service} eq 'update_settings' ) {
-        $qq->param( 'nonce',     $self->{cgi_obj}->param('nonce') );
-        $qq->param( 'settings',  $self->{cgi_obj}->param('settings') );
+    elsif ( $self->r_service eq 'update_settings' ) {
+        $qq->param( 'nonce',     $self->r_cgi_obj->param('nonce') );
+        $qq->param( 'settings',  $self->r_cgi_obj->param('settings') );
         $n_digest = $self->digest( $qq->query_string() );    
     }
-    elsif($self->{service} eq 'settings' ){ 
-        $n_digest = $self->digest($self->{cgi_obj}->param('nonce'));
-
+    elsif($self->r_service eq 'settings' ){ 
+        $n_digest = $self->digest($self->r_cgi_obj->param('nonce'));
 	}
-	elsif ( $self->{service} eq 'update_profile_fields' ) {
-        $qq->param( 'email',           $self->{cgi_obj}->param('email') );
-        $qq->param( 'nonce',           $self->{cgi_obj}->param('nonce') );
-        $qq->param( 'profile_fields',  $self->{cgi_obj}->param('profile_fields') );
+	elsif ( $self->r_service eq 'update_profile_fields' ) {
+        $qq->param( 'email',           $self->r_cgi_obj->param('email') );
+        $qq->param( 'nonce',           $self->r_cgi_obj->param('nonce') );
+        $qq->param( 'profile_fields',  $self->r_cgi_obj->param('profile_fields') );
         $n_digest = $self->digest( $qq->query_string() );
 	}else {
-        $qq->param( 'addresses', $self->{cgi_obj}->param('addresses') );
-        $qq->param( 'nonce',     $self->{cgi_obj}->param('nonce') );
+		# This should be explicit
+        $qq->param( 'addresses', $self->r_cgi_obj->param('addresses') );
+        $qq->param( 'nonce',     $self->r_cgi_obj->param('nonce') );
         $n_digest = $self->digest( $qq->query_string() );        
     }
     # debug'n
@@ -631,7 +688,10 @@ sub digest {
     warn '$message ' . $message 
         if $t; 
         
-    my $n_digest = hmac_sha256_base64( $message, $self->{ls}->param('private_api_key') );
+    my $n_digest = hmac_sha256_base64( 
+		$message, 
+		$self->private_api_key
+	);
     while ( length($n_digest) % 4 ) {
         $n_digest .= '=';
     }
