@@ -92,6 +92,18 @@ sub request {
     elsif($service eq 'settings'){ 
         $digest = $self->digest($nonce); 
     }
+    elsif($service eq 'create_new_list'){ 
+        $query = {
+            nonce          => $nonce,
+            settings       => $self->{json_obj}->utf8->encode( $params->{settings} ),
+        };
+        $q->param( 'nonce',    $query->{nonce} );
+        $q->param( 'settings', $query->{settinhgs} );
+        
+        $qs     = $self->the_query_string($query);
+        $digest = $self->digest($qs);        
+
+	}
     else {
         $query = {
             addresses => $self->{json_obj}->utf8->encode( $params->{addresses} ),
@@ -108,7 +120,8 @@ sub request {
     my $ua = LWP::UserAgent->new;
     $ua->agent('Mozilla/5.0 (compatible);');
     
-    if($service eq 'settings'){ 
+    if($service eq 'settings'){
+	 
         $ua->default_header( 
             'Authorization' => 'hmac ' . ' ' . $self->{public_key} . ':' . $digest,
             'X-DADA-NONCE'  => $nonce, 
@@ -120,7 +133,7 @@ sub request {
     my $server_w_path_info = $self->{server} . '/api/' . uri_escape($list) . '/' . uri_escape($service) . '/';
     my $response; 
     
-    if($service eq 'settings'){ 
+    if($service eq 'settings'){
         $response = $ua->request( GET $server_w_path_info)   
     }
     else { 

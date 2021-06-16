@@ -4,6 +4,7 @@ use strict;
 use lib qw(./ ../ ../../ ../../DADA ../perllib); 
 
 use Carp qw(carp croak);
+$CARP::Verbose = 1;
 
 
 use DADA::Config qw(!:DEFAULT);
@@ -20,20 +21,20 @@ my $calculated_digest = undef;
 
 use vars qw($AUTOLOAD);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_WebServices};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_WebServices};
 
 my %allowed = ( 
 	test => 0, 
-
-	ls_obj        => undef, 
-	
-	r_list        => undef, 
-	r_service	  => undef, 
-	r_public_key  => undef, 
-	r_digest      => undef, 
-	r_cgi_obj     => undef, 
-	
-	global_level  => undef, 
+                    
+	ls_obj              => undef, 
+	                   
+	r_list              => undef, 
+	r_service	        => undef, 
+	r_public_key        => undef, 
+	r_digest            => undef, 
+	r_cgi_obj           => undef, 
+	global_level        => undef,       
+	i_private_api_key   => undef, 
 		
 );
 
@@ -88,7 +89,8 @@ sub request {
 	
     for ( '-list', '-service', '-public_key', '-digest', '-cgi_obj' ) {
 
-        my $param = $_;
+		
+		my $param = $_;
         $param =~ s/^\-//;
 
         if ( !exists( $args->{$_} ) ) {
@@ -100,7 +102,14 @@ sub request {
         else {
             $args->{$_} = strip($args->{$_});
         }
+		
+		warn $_ . ' => ' . $args->{$_} 
+			if $t; 
+        
     }
+	
+	warn '$status: ' . $status
+		if $t; 
 	
 	if($status == 1){ 
 		$self->r_list(       $args->{-list}       );      
@@ -110,27 +119,40 @@ sub request {
 		$self->r_cgi_obj(    $args->{-cgi_obj}    );   
 	}
 	
-	
-	$GLOBAL_API_OPTIONS
-	
+	warn '$self->check_list(): ' . $self->check_list(); 
+	warn '$self->r_list: '       . $self->r_list; 
 	
     if ( $self->check_list() == 1 ) {
 		$self->ls_obj(DADA::MailingList::Settings->new( { -list => $self->r_list } ));
 		$self->global_level(0);
-		$self->i_private_api_key($self->ls_obj->param('private_api_key')); 
+		$self->i_private_api_key(	
+			$self->ls_obj->param('private_api_key')
+		); 
     }
 	else { 
 		# If there's a list that's passed, but it's invalid, this shouldn't workL
-		if($self->r_list eq undef && $self->r_public_key eq $GLOBAL_API_OPTIONS->{public_key}){ 
+		if(
+				($self->r_list eq undef)
+			 && ($self->r_public_key eq $DADA::Config::GLOBAL_API_OPTIONS->{public_key})
+		 ){ 
 			$self->global_level(1);
 			# Well, OK... 
-			$self->i_private_api_key($DADA::Config::GLOBAL_API_OPTIONS->{private_key}); 
+			$self->i_private_api_key(
+				$DADA::Config::GLOBAL_API_OPTIONS->{private_key}
+			); 
 		}
 		else {		
 	        $status = 0;
 	        $errors->{'invalid_list'};
 		}
 	}
+	
+	warn 'global_level: ' . $self->global_level 
+		if $t; 
+	
+	warn '$status: ' . $status
+		if $t; 
+	
 
     if ( $status == 1 ) {
         
@@ -161,10 +183,15 @@ sub request {
 		elsif( $self->r_service eq 'update_profile_fields') { 
             $r = $self->update_profile_fields();            
         }
+		elsif( $self->r_service eq 'create_new_list') { 
+            $r = $self->create_new_list();            
+		}
         else {
             $r = {
                 status => 0,
-                errors => { invalid_request => 1 }
+                errors => { 
+						invalid_request => 1 
+				}
             };
         }
     }
@@ -176,13 +203,13 @@ sub request {
     }
 
     if ($t) {
-        $r->{r_path_info}      = $self->r_cgi_obj->path_info();
-        $r->{r_service}        = $self->r_service;
-        $r->{r_query}          = $self->r_cgi_obj->query_string();
-        $r->{r_digest}         = $self->{digest};
+        $r->{r_path_info}       = $self->r_cgi_obj->path_info();
+        $r->{r_service}         = $self->r_service;
+        $r->{r_query}           = $self->r_cgi_obj->query_string();
+        $r->{r_digest}          = $self->r_digest;
         $r->{calculated_digest} = $calculated_digest;
-        $r->{public_api_key}    = $self->public_api_key;
-        $r->{private_api_key}   = $self->private_api_key;
+        $r->{r_public_key}      = $self->r_public_key;
+        $r->{i_private_api_key} = $self->i_private_api_key;
     }
     my $headers = {
         -type            => 'application/json',
@@ -197,7 +224,7 @@ sub validate_subscription {
     my $self      = shift;
     my $addresses = $self->r_cgi_obj->param('addresses');
 
-    my $lh                = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
+    my $lh                = DADA::MailingList::Subscribers->new( { -list => $self->r_list } );
     my $json              = JSON->new;
     my $decoded_addresses = $json->decode($addresses);
 
@@ -223,7 +250,7 @@ sub subscription {
 
     my $self                = shift;
     my $addresses           = $self->r_cgi_obj->param('addresses');
-    my $lh                  = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
+    my $lh                  = DADA::MailingList::Subscribers->new( { -list => $self->r_list } );
     my $json                = JSON->new;
     my $decoded_addresses   = $json->decode($addresses);
     my $new_email_count     = 0;
@@ -286,7 +313,7 @@ sub unsubscription {
 
     my $self                = shift;
     my $addresses           = $self->r_cgi_obj->param('addresses');
-    my $lh                  = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
+    my $lh                  = DADA::MailingList::Subscribers->new( { -list => $self->r_list } );
     my $json                = JSON->new;
     my $decoded_addresses   = $json->decode($addresses);
     my $removed_email_count = 0;
@@ -363,11 +390,11 @@ sub mass_email {
         $qq->param('draft_role', 'draft'); 
     
         require DADA::App::MassSend; 
-        my $dam = DADA::App::MassSend->new({-list => $self->{list}}); 
+        my $dam = DADA::App::MassSend->new({-list => $self->r_list}); 
         my $draft_id = $dam->save_as_draft(
             {
                 -cgi_obj => $qq,
-                -list    => $self->{list},
+                -list    => $self->r_list,
                 -json    => 0,
                 
             }
@@ -459,7 +486,7 @@ sub update_profile_fields {
 
     my $self = shift;
 
-    my $lh = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $self->r_list } );
 
     my $json = JSON->new->allow_nonref;
     my $r    = {};
@@ -534,16 +561,202 @@ sub update_profile_fields {
 
 
 
-sub create_a_new_list { 
-    my $self = shift;
+sub create_new_list {
+	
+    my $self = shift; 
+    warn 'create_new_list called'
+      if $t;
+	  
+	my $json = JSON->new->allow_nonref;
+	my $r    = {};
 
-    my $status = 1;
+    my $status = 0;
     my $errors = {};
 	
+
+=pod
+
+	# OK, so remember we need to do a list quota check: 
 	
+	if(strip($DADA::Config::LIST_QUOTA) eq '') {
+		$DADA::Config::LIST_QUOTA = undef;
+    } 
+	# Special: 
+	if($DADA::Config::LIST_QUOTA == 0){ 
+		$DADA::Config::LIST_QUOTA = undef;
+	}
+    if (   defined($DADA::Config::LIST_QUOTA)
+        && ( ( $#t_lists + 1 ) >= $DADA::Config::LIST_QUOTA ) )
+    {
+        return user_error(
+            { -list => $list, -error => "over_list_quota" } );
+    }
 
-}
+    
+    my @available_lists = DADA::App::Guts::available_lists();
+    my $lists_exist     = $#available_lists + 1;
 
+=cut
+
+	my $settings = $self->r_cgi_obj->param('settings');
+	   $settings = $json->decode($settings);
+
+       my $list_exists = check_if_list_exists( -List => $settings->{list} );
+       my ( $list_errors, $flags ) = check_list_setup(
+           -fields => {
+               list             => $settings->{list},
+               list_name        => $settings->{list_name},
+               list_owner_email => $settings->{list_owner_email},
+               password         => $settings->{password},
+               retype_password  => $settings->{password},
+               info             => $settings->{info},
+               privacy_policy   => $settings->{privacy_policy},
+               physical_address => $settings->{physical_address},
+			   consent          => $settings->{consent},
+           }
+       );
+	   
+	   
+       if ( $list_errors >= 1 ) {
+			$status = 0; 
+			$errors = $flags;
+       	 
+		 	for(keys %$errors){ 
+				if($errors->{$_} != 1){ 
+					delete($errors->{$_});
+				}
+			}
+	        return {
+	            status => $status,
+	            results =>  {
+	                error => $errors,        
+	             }
+	          };
+	   
+	   }
+       elsif ( $list_exists >= 1 ) {
+		$status = 0; 
+		$errors = {list_already_exists => 1};
+        return {
+            status => $status,
+            results =>  {
+                error => $errors,        
+             }
+          };
+		   
+       }
+	   else { 
+		   
+		   
+           $settings->{list_owner_email} = lc_email($settings->{list_owner_email});
+           
+           my $new_info = {}; 
+		   
+		   my @init_settings = (
+			   qw(
+			    list       
+				list_owner_email
+				list_name       
+				password        
+				info            
+				physical_address
+				privacy_policy  
+				consent         
+			   )			
+		   );
+		   
+		   for(@init_settings){ 
+			   if(length($settings->{$_}) > 1){ 
+			   		$new_info->{$_} = $settings->{$_};
+			   }
+		   }		   
+           
+		   require DADA::MailingList;
+           my $ls;
+           #if ( $q->param('clone_settings') == 1 ) {
+           #    $ls = DADA::MailingList::Create(
+           #        {
+           #            -list     => $list,
+           #            -settings => $new_info,
+           #            -clone    => xss_filter(
+           #                scalar $q->param('clone_settings_from_this_list')
+           #            ),
+           #        }
+           #    );
+           #}
+           #else {
+               $ls = DADA::MailingList::Create(
+                   {
+                       -list     => $settings->{list},
+                       -settings => $new_info,
+                   }
+               );
+			   #}
+
+
+           if ( $DADA::Config::LOG{list_lives} ) {
+               require DADA::Logging::Usage;
+               my $log = new DADA::Logging::Usage;
+               $log->mj_log(
+                   $settings->{list},
+                   'List Created',
+                   "remote_host:$ENV{REMOTE_HOST},"
+                     . "ip_address:$ENV{REMOTE_ADDR}"
+               );
+           }
+
+
+
+
+=pod
+		   
+         my $escaped_list = uriescape( $ls->param('list') );
+		if ( $q->param('send_new_list_welcome_email') == 1 ) {
+			try { 
+		        require DADA::App::Messages;
+		        my $dap = DADA::App::Messages->new(
+					{
+						-list => $ls->param('list'),
+					}
+				);
+				# seems dumb to be passing this around, if we don't need to: 
+				my $send_new_list_created_notification_vars = {}; 
+				
+				if($send_new_list_welcome_email_with_list_pass == 1){ 
+					$send_new_list_created_notification_vars = { 
+						send_new_list_welcome_email_with_list_pass => 1, 
+						list_password                              => $password,
+					} 
+				}
+				else { 
+					$send_new_list_created_notification_vars = { 
+						send_new_list_welcome_email_with_list_pass => 0, 
+						list_password                              => undef,
+					} 
+				}
+				
+		        $dap->send_new_list_created_notification(
+					{ 
+						-vars => $send_new_list_created_notification_vars
+					}
+		        ); 
+			} catch { 
+				warn 'problems sending send_new_list_created_notification: ' . $_; 
+			};
+		}
+=cut
+		   				   
+		   
+		   use Data::Dumper; 
+	  
+	       return {
+	           status  => 1,
+	           results =>  {
+	               settings => Dumper($settings),
+	         	}
+	   		};
+		}
+ }
 
 sub check_request {
 
@@ -564,7 +777,10 @@ sub check_request {
         $status = 0;
         $errors->{invalid_digest} = 1;
     }
-    if ( $self->check_list() == 0 ) {
+    if ( 
+	      $self->check_list() == 0
+	   && $self->global_level != 1
+	 ) {
         $status = 0;
         $errors->{invalid_list} = 1;
     }
@@ -578,6 +794,9 @@ sub check_request {
 
 sub check_nonce {
     my $self = shift;
+	
+	warn '$self->r_cgi_obj->param(\'nonce\'): ' . $self->r_cgi_obj->param('nonce'); 
+	
     my ( $timestamp, $nonce ) = split( ':', $self->r_cgi_obj->param('nonce'));
     
     my $r = 0;
@@ -605,9 +824,11 @@ sub check_public_key {
 	# is what's passed in the request, so I guess this sort of makes sense: 
 	# 
 	
+	warn '$self->global_level : ' . $self->global_level ; 
+	
 	my $tmp_public_key = undef; 
 	if($self->global_level == 1){ 
-		$tmp_public_key = $DADA::Config::GLOBAL_API_OPTIONS->{private_key};
+		$tmp_public_key = $DADA::Config::GLOBAL_API_OPTIONS->{public_key};
 	}
 	else { 
 		$tmp_public_key = $self->ls_obj->param('public_api_key') ; 
@@ -638,6 +859,9 @@ sub check_digest {
 
     my $n_digest = undef; 
 
+	warn '$self->r_service: ' . $self->r_service 
+		if $t; 
+		
     if ( $self->r_service eq 'mass_email' ) {
         $qq->param( 'format',  $self->r_cgi_obj->param('format') );
         $qq->param( 'message', $self->r_cgi_obj->param('message') );
@@ -662,7 +886,13 @@ sub check_digest {
         $qq->param( 'nonce',           $self->r_cgi_obj->param('nonce') );
         $qq->param( 'profile_fields',  $self->r_cgi_obj->param('profile_fields') );
         $n_digest = $self->digest( $qq->query_string() );
-	}else {
+	} 
+	elsif ( $self->r_service eq 'create_new_list' ) {
+        $qq->param( 'nonce',    $self->r_cgi_obj->param('nonce') );
+        $qq->param( 'settings', $self->r_cgi_obj->param('settings') );
+        $n_digest = $self->digest( $qq->query_string() );
+	}
+	else {
 		# This should be explicit
         $qq->param( 'addresses', $self->r_cgi_obj->param('addresses') );
         $qq->param( 'nonce',     $self->r_cgi_obj->param('nonce') );
@@ -672,7 +902,7 @@ sub check_digest {
     
     $calculated_digest = $n_digest;
 
-    if ( $self->{digest} ne $n_digest ) {
+    if ( $self->r_digest ne $n_digest ) {
         return 0;
     }
     else {
@@ -688,9 +918,12 @@ sub digest {
     warn '$message ' . $message 
         if $t; 
         
+	warn '$self->i_private_api_key: ' . $self->i_private_api_key
+		if $t; 
+	
     my $n_digest = hmac_sha256_base64( 
 		$message, 
-		$self->private_api_key
+		$self->i_private_api_key
 	);
     while ( length($n_digest) % 4 ) {
         $n_digest .= '=';
@@ -704,7 +937,7 @@ sub digest {
 
 sub check_list {
     my $self = shift;
-    if ( DADA::App::Guts::list_exists( -List => $self->{list} ) ) {
+    if ( DADA::App::Guts::list_exists( -List => $self->r_list ) ) {
         return 1;
     }
     else {
