@@ -601,6 +601,15 @@ sub create_new_list {
 	my $settings = $self->r_cgi_obj->param('settings');
 	   $settings = $json->decode($settings);
 
+	   warn '$self->r_cgi_obj->param(\'options\'): ' . $self->r_cgi_obj->param('options'); 
+	   
+   	my $options = $self->r_cgi_obj->param('options');
+   	   $options = $json->decode($options);
+
+
+	   use Data::Dumper; 
+	   warn '$options: ' . Dumper($options);
+	   
        my $list_exists = check_if_list_exists( -List => $settings->{list} );
        my ( $list_errors, $flags ) = check_list_setup(
            -fields => {
@@ -671,27 +680,61 @@ sub create_new_list {
 			   }
 		   }		   
            
+		   
+		   
 		   require DADA::MailingList;
            my $ls;
-           #if ( $q->param('clone_settings') == 1 ) {
-           #    $ls = DADA::MailingList::Create(
-           #        {
-           #            -list     => $list,
-           #            -settings => $new_info,
-           #            -clone    => xss_filter(
-           #                scalar $q->param('clone_settings_from_this_list')
-           #            ),
-           #        }
-           #    );
-           #}
-           #else {
+           
+		   
+		   
+		   # Before I do this, I have to make sure the list to clone exists! The entire list create should fail if this
+		   # doesn't work. 
+		   
+		   if ( exists($options->{clone_settings_from_list}) ) {
+			   warn 'yes.';
+			   
+			   warn 'check_if_list_exists(-List => $options->{clone_settings_from_list}: ' 
+			   		. check_if_list_exists(-List => $options->{clone_settings_from_list}); 
+			   
+		       if(check_if_list_exists(-List => $options->{clone_settings_from_list}) <= 0){
+				   
+				   warn 'yes.';
+				   
+					$status = 0; 
+					$errors = {clone_list_no_exists => 1};
+					return {
+						status => $status,
+						results =>  {
+							error => 'clone_list_no_exists',        
+						}
+					};
+			   }
+			   else { 
+				   
+				   warn 'yes.';
+				   
+	               $ls = DADA::MailingList::Create(
+	                   {
+	                       -list     => $settings->{list},
+	                       -settings => $new_info,
+	                       -clone    => xss_filter(
+	                           scalar $options->{clone_settings_from_list}
+	                       ),
+	                   }
+	               );
+			   }
+           }
+           else {
+			   
+			   warn 'yes.';
+			   
                $ls = DADA::MailingList::Create(
                    {
                        -list     => $settings->{list},
                        -settings => $new_info,
                    }
                );
-			   #}
+		   }
 
 
            if ( $DADA::Config::LOG{list_lives} ) {
@@ -707,25 +750,21 @@ sub create_new_list {
 
 
 
-
-=pod
-		   
-         my $escaped_list = uriescape( $ls->param('list') );
-		if ( $q->param('send_new_list_welcome_email') == 1 ) {
+		if ( $options->{'send_new_list_welcome_email'} == 1 ) {
 			try { 
 		        require DADA::App::Messages;
 		        my $dap = DADA::App::Messages->new(
 					{
-						-list => $ls->param('list'),
+						-list => $settings->{list},
 					}
 				);
 				# seems dumb to be passing this around, if we don't need to: 
 				my $send_new_list_created_notification_vars = {}; 
 				
-				if($send_new_list_welcome_email_with_list_pass == 1){ 
+				if($options->{send_new_list_welcome_email_with_list_pass} == 1){ 
 					$send_new_list_created_notification_vars = { 
 						send_new_list_welcome_email_with_list_pass => 1, 
-						list_password                              => $password,
+						list_password                              => $settings->{password},
 					} 
 				}
 				else { 
@@ -744,9 +783,7 @@ sub create_new_list {
 				warn 'problems sending send_new_list_created_notification: ' . $_; 
 			};
 		}
-=cut
-		   				   
-		   
+
 		   use Data::Dumper; 
 	  
 	       return {
@@ -889,6 +926,9 @@ sub check_digest {
 	} 
 	elsif ( $self->r_service eq 'create_new_list' ) {
         $qq->param( 'nonce',    $self->r_cgi_obj->param('nonce') );
+        if(defined($self->r_cgi_obj->param('options'))){ 
+            $qq->param( 'options', $self->r_cgi_obj->param('options') );
+        }
         $qq->param( 'settings', $self->r_cgi_obj->param('settings') );
         $n_digest = $self->digest( $qq->query_string() );
 	}
@@ -899,7 +939,7 @@ sub check_digest {
         $n_digest = $self->digest( $qq->query_string() );        
     }
     # debug'n
-    
+   
     $calculated_digest = $n_digest;
 
     if ( $self->r_digest ne $n_digest ) {
@@ -909,6 +949,7 @@ sub check_digest {
         return 1;
     }
 }
+
 
 sub digest {
 

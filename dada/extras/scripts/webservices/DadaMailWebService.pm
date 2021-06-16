@@ -95,10 +95,12 @@ sub request {
     elsif($service eq 'create_new_list'){ 
         $query = {
             nonce          => $nonce,
+			options        => $self->{json_obj}->utf8->encode( $params->{options} ),
             settings       => $self->{json_obj}->utf8->encode( $params->{settings} ),
         };
         $q->param( 'nonce',    $query->{nonce} );
-        $q->param( 'settings', $query->{settinhgs} );
+        $q->param( 'options',  $query->{options} );
+        $q->param( 'settings', $query->{settings} );
         
         $qs     = $self->the_query_string($query);
         $digest = $self->digest($qs);        
