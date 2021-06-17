@@ -4311,7 +4311,12 @@ sub web_services {
                 -List       => $list,
             },
             -vars => {
+                root_login => $root_login,
+				
                 keys_reset => $keys_reset,
+				GLOBAL_API_OPTIONS_enabled => $DADA::Config::GLOBAL_API_OPTIONS->{enabled}, 
+				GLOBAL_API_OPTIONS_public_key => $DADA::Config::GLOBAL_API_OPTIONS->{public_key}, 
+				GLOBAL_API_OPTIONS_private_key => $DADA::Config::GLOBAL_API_OPTIONS->{private_key}, 
             },
             -list_settings_vars_param => {
                 -list   => $list,

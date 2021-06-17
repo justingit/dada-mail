@@ -47,7 +47,9 @@
     <input type="hidden" name="process" value="reset_keys" >
 
     <fieldset> 
-
+		<legend>
+			List-Specific Key Pairs
+		</legend>
                 <label for="public_api_key">
                     Public API Key
                 </label>
@@ -96,5 +98,71 @@
 		</div>
     </fieldset> 
 </form> 
+
+<!-- tmpl_if root_login --> 
+    <fieldset> 
+		<legend>
+			Global Key Pairs
+		</legend>
+		
+		<!-- tmpl_if GLOBAL_API_OPTIONS_enabled -->
+			<div class="alert-box info radius">
+			    Global API Keys are enabled.
+			</div>
+		<!-- tmpl_else -->
+			<div class="alert-box info radius">
+			    Global API keys are disabled.
+			</div>		
+		<!-- /tmpl_if -->
+		
+		
+		
+		
+                <label for="public_api_key">
+                    Global Public API Key
+                </label>
+
+		<div class="row collapse">
+			<div class="large-10 medium-10 columns">
+                    <input readonly type="text" value="<!-- tmpl_var GLOBAL_API_OPTIONS_public_key escape="HTML" -->" id="GLOBAL_API_OPTIONS_public_key" >
+           </div> 
+			<div class="large-2 medium-2 columns">
+	 			<button 
+		
+	 				type="button" 
+	 				class="copy_button postfix" 
+	  				data-clipboard-target="#GLOBAL_API_OPTIONS_public_key"
+	 			>
+	 					Copy
+	 				</button>
+			</div>
+        </div>
+
+        <label for="private_api_key">
+            Global Private API Key
+        </label>
+
+		<div class="row collapse">
+			<div class="large-10 medium-10 columns">
+                    <input readonly type="text"  value="<!-- tmpl_var GLOBAL_API_OPTIONS_private_key escape="HTML" -->" id="GLOBAL_API_OPTIONS_private_key">
+           </div> 
+			<div class="large-2 medium-2 columns">
+	 			<button 
+		
+	 				type="button" 
+	 				class="copy_button postfix" 
+					data-clipboard-target="#GLOBAL_API_OPTIONS_private_key"
+	 			>
+	 					Copy
+	 				</button>
+			</div>
+
+        </div>
+		
+		
+	</fieldset> 	
+
+<!-- /tmpl_if -->
+
 
 <!-- end web_services.tmpl --> 
