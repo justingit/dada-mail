@@ -1805,6 +1805,11 @@ sub query_params_to_install_params {
       cache_options_SCREEN_CACHE
       cache_options_DATA_CACHE
 
+	  configure_global_api
+	  global_api_enable
+	  global_api_public_key
+	  global_api_private_key
+
       configure_security
       security_no_show_admin_link
       security_DISABLE_OUTSIDE_LOGINS
@@ -2777,6 +2782,14 @@ sub create_dada_config_file {
 		
     }
 
+    my $global_api_params = {};
+    if ( $ip->{-configure_global_api} == 1 ) {
+        $security_params->{configure_global_api}   = 1;
+        $security_params->{global_api_enable}      = $ip->{-global_api_enable}      || 0;
+        $security_params->{global_api_public_key}  = $ip->{-global_api_public_key}  || '';
+        $security_params->{global_api_private_key} = $ip->{-global_api_private_key} || '';		
+    }
+
     my $captcha_params = {};
     if ( $ip->{-configure_captcha} == 1 ) {
         $captcha_params->{configure_captcha}                = 1;
@@ -2918,6 +2931,7 @@ sub create_dada_config_file {
                 %{$extensions_params}, 
                 %{$profiles_params},
                 %{$security_params},
+				%{$global_api_params},
                 %{$captcha_params},
 				%{$google_maps_params},
 				%{$pii_params},

@@ -299,6 +299,19 @@ $GOOGLE_MAPS_API_PARAMS = {
 <!-- /tmpl_if -->
 
 
+
+
+<!-- tmpl_if configure_global_api --> 
+$GLOBAL_API_OPTIONS = { 
+	enabled     => <!-- tmpl_var global_api_enable default="0" -->, 
+	public_key  => '<!-- tmpl_var global_api_public_key default="" -->', 
+	private_key => '<!-- tmpl_var global_api_private_key default="" -->', 
+};
+<!-- /tmpl_if -->
+
+
+
+
 <!-- tmpl_if configure_pii --> 
 #---------------------------------------------------------------------#
 # Personal Identifying Information

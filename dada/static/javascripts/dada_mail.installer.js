@@ -164,6 +164,12 @@ jQuery(document).ready(function($){
 		
 		installer_dada_root_pass_options();
 
+
+		//$("body").on('click', "#global_api_enable", function(event) {
+		//	installer_checkbox_toggle_option_groups('global_api_enable', 'global_api_keys'); 
+		//});
+		//installer_checkbox_toggle_option_groups('global_api_enable', 'global_api_keys'); 
+		
 		$("body").on("click", '.reset_global_api_keys', function(event) {
 			installer_set_up_global_api_options();
 		});
@@ -497,7 +503,6 @@ function test_CAPTCHA_configuration() {
 
 
 function installer_checkbox_toggle_option_groups(checkbox_id, target_id){ 
-	
 	if ($("#" + checkbox_id).length) {
 		if ($("#" + checkbox_id).prop("checked") === true) {
 			if ($('#' + target_id).is(':hidden')) {
