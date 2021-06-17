@@ -262,7 +262,7 @@ $PII_OPTIONS //= {
 };
 
 $GLOBAL_API_OPTIONS //= { 
-	enabled     => 1, 
+	enabled     => 0, 
 	public_key  => undef, 
 	private_key => undef, 
 };

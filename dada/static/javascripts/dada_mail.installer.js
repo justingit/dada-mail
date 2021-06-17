@@ -137,13 +137,13 @@ jQuery(document).ready(function($){
 			"debugging", 
 			"google_maps",
 			"security", 
+			"global_api",
 			"captcha", 
 			"global_mailing_list", 
 			"mass_mailing", 
 			"confirmation_token", 
 		];
 		$.each(o, function(index, value) {
-			
 		
 			$("body").on('click', "#configure_" + value, function(event) {
 				installer_checkbox_toggle_option_groups('configure_' + value, value +'_options');			
@@ -163,6 +163,14 @@ jQuery(document).ready(function($){
 		}); 
 		
 		installer_dada_root_pass_options();
+
+		$("body").on("click", '.reset_global_api_keys', function(event) {
+			installer_set_up_global_api_options();
+		});
+		
+		
+		
+		
 		installer_toggle_dada_files_dirOptions();
 		installer_toggle_captcha_type_options();
 		installer_toggle_template_mode_magic_options();
@@ -521,6 +529,13 @@ function installer_dada_root_pass_options() {
 
 }
 
+function installer_set_up_global_api_options() { 
+	$('#global_api_public_key').val(installer_random_string(21));
+	$('#global_api_private_key').val(installer_random_string(41));
+}
+
+
+
 function installer_toggle_captcha_type_options() { 
 
 	var selected = ''; 
@@ -603,6 +618,20 @@ function installer_toggle_bounce_handler_Connection_Protocol_options() {
 	}
 }
 */
+
+
+function installer_random_string(string_length) {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < string_length; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
+}
+
+
+
 
 function installer_move_installer_dir(file_chmod) {
 	
