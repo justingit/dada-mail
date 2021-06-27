@@ -446,18 +446,20 @@ sub _update_profile_fields {
         $postal_code,  $latitude,      $longitude,    $metro_code, $area_code
     ) = $gi->get_city_record( $args->{-ip_address} );
 
+	my $uts = time; 
     my $named_vals = {
-        ip_address    => $args->{-ip_address},
-        country_code  => $country_code,
-        country_code3 => $country_code3,
-        country_name  => $country_name,
-        region        => $region,
-        city          => $city,
-        postal_code   => $postal_code,
-        latitude      => $latitude,
-        longitude     => $longitude,
-        metro_code    => $metro_code,
-        area_code     => $area_code,
+        ip_address      => $args->{-ip_address},
+        country_code    => $country_code,
+        country_code3   => $country_code3,
+        country_name    => $country_name,
+        region          => $region,
+        city            => $city,
+        postal_code     => $postal_code,
+        latitude        => $latitude,
+        longitude       => $longitude,
+        metro_code      => $metro_code,
+        area_code       => $area_code,
+		unix_time_stamp => $uts, 
     };
 
     require DADA::ProfileFieldsManager;

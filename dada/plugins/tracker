@@ -187,21 +187,23 @@ sub default {
           longitude
           metro_code
           area_code
+		  unix_time_stamp
           )
     ];
 
     my $geo_ip_data_types = {
-        'ip_address'    => 'IP Address     (' . $rd->remote_addr . ')',
-        'country_code'  => 'Country Code 2 (' . $country_code . ')',
-        'country_code3' => 'Country Code 3 (' . $country_code3 . ')',
-        'country_name'  => 'Country Name   (' . $country_name . ')',
-        'region'        => 'Region         (' . $region . ')',
-        'city'          => 'City           (' . $city . ')',
-        'postal_code'   => 'Postal Code    (' . $postal_code . ')',
-        'latitude'      => 'Latitude       (' . $latitude . ')',
-        'longitude'     => 'Longitude      (' . $longitude . ')',
-        'metro_code'    => 'Metro Code     (' . $metro_code . ')',
-        'area_code'     => 'Area Code      (' . $area_code . ')',
+        'ip_address'      => 'IP Address     (' . $rd->remote_addr . ')',
+        'country_code'    => 'Country Code 2 (' . $country_code . ')',
+        'country_code3'   => 'Country Code 3 (' . $country_code3 . ')',
+        'country_name'    => 'Country Name   (' . $country_name . ')',
+        'region'          => 'Region         (' . $region . ')',
+        'city'            => 'City           (' . $city . ')',
+        'postal_code'     => 'Postal Code    (' . $postal_code . ')',
+        'latitude'        => 'Latitude       (' . $latitude . ')',
+        'longitude'       => 'Longitude      (' . $longitude . ')',
+        'metro_code'      => 'Metro Code     (' . $metro_code . ')',
+        'area_code'       => 'Area Code      (' . $area_code . ')',
+		'unix_time_stamp' => 'Unix Timestamp (' . time .')',
     };
     my $field_names = [];
 	require HTML::Menu::Select; 
