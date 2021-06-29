@@ -1,10 +1,10 @@
 package DADA::App::FormatMessages;
 
 use strict;
-use lib qw(
-  ../../
-  ../../DADA/perllib
-);
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
 
 use DADA::Config qw(!:DEFAULT);
 
@@ -315,7 +315,16 @@ sub format_headers_and_body {
         $entity = $self->_make_multipart_alternative($entity);
     }
     if ( $args->{-format_body} == 1 ) {
-        $entity = $self->_format_body(
+        
+		
+		if($self->mass_mailing == 1) {
+			my ($f_entity, $a_l)  = $self->attachment_filter($entity, undef);
+		 	    $entity  = $self->html_attachment_list_filter($f_entity, $a_l);
+		}
+		
+		
+		
+		$entity = $self->_format_body(
             $entity,
             {
                 -format_mlm => $args->{-format_mlm}
@@ -327,8 +336,10 @@ sub format_headers_and_body {
     # RIGHT BEFORE you make it a string...
     $entity->head->delete('X-Mailer')
       if $entity->head->get( 'X-Mailer', 0 );
-
-    # or how about, count?
+	  # or how about, count?
+	
+	
+	
 	
 	if($self->mass_mailing == 1) {
 	
@@ -367,6 +378,10 @@ sub format_headers_and_body {
 		else { 
 			warn 'NOT resizing images' if $t; 
 		}
+
+
+	
+
 	}
 
 
@@ -3792,6 +3807,283 @@ sub unshield_tags_in_hrefs {
     $str =~ s/____DDM_CLOSING_TEMPLATE_CHAR____/\>/gi;
     return $str;
 }
+
+
+
+
+
+sub attachment_filter {
+
+   my $self   = shift;
+   
+   warn 'in attachment_filter';
+   
+    my ($entity, $a_fn) = @_;
+	my $a_fns = []; 
+	
+    my @parts = $entity->parts;
+
+    if (@parts) {
+		my $i;
+		warn 'part ' . $i; 
+		
+        for $i ( 0 .. $#parts ) {
+            my ($n_entity, $n_fn) = $self->attachment_filter( $parts[$i], undef);
+			
+			#use Data::Dumper;
+			#warn '$n_fn: ' . Dumper($n_fn);
+			
+            if ($n_entity) {
+                $parts[$i] = $n_entity;
+            }
+            else {
+				$parts[$i] = undef;
+				push(@$a_fns, $n_fn);
+            }
+        }
+
+		@parts = grep { defined($_) } @parts;
+		
+        $entity->parts( \@parts );
+        $entity->sync_headers(
+            'Length'      => 'COMPUTE',
+            'Nonstandard' => 'ERASE'
+        );
+
+        return ($entity, $a_fns);
+    }
+    else {
+		
+		# this will most likely not give me what I want, anyways. 
+     	my ($n_entity, $fn)  = $self->attachment_filter_inner($entity);
+    }
+}
+
+
+
+sub attachment_filter_inner {
+	
+	my $self   = shift; 
+	my $entity = shift; 
+	
+	warn 'in attachment_filter_inner'; 
+	
+	
+	#print "\n";
+	
+	# What we're looking for
+	my $disp = $entity->head->mime_attr('content-disposition');
+	my $a_fn = $entity->head->mime_attr('content-disposition.filename') || $entity->head->mime_attr("content-type.name"); 
+			
+	warn '$disp: ' . $disp; 
+	warn '$a_fn: ' . $a_fn; 
+		
+	my $is_an_img = 0;
+	
+	if(defined($a_fn)){
+		if($a_fn =~ m/\.(png|jpg|gif|webp)$/){ 
+			$is_an_img = 1; 
+		}
+	}
+	
+	warn '$is_an_img: ' . $is_an_img; 
+	
+    if (
+        $disp eq 'attachment'
+        && $is_an_img == 0	
+      )
+    {
+		
+		warn 'found attachment: ' . $entity->head->mime_attr('content-disposition.filename'); 
+      
+	#	print "Here!\n";
+	 #  print $entity->as_string;  
+       #return $entity;
+	   
+	   my $s_fn = $self->save_attachment($entity);
+	  
+	   return (undef, $s_fn); 
+    }
+    else {
+		warn 'no attachments found';
+        return ($entity, undef);
+    }
+
+}
+
+sub save_attachment { 
+	my $self   = shift; 
+	my $entity = shift; 
+
+
+    my $att_upload_dir =
+        $DADA::Config::SUPPORT_FILES->{dir} . '/'
+      . 'file_uploads' . '/'
+      . 'attachments';
+
+	my $a_fn = $entity->head->mime_attr('content-disposition.filename') || $entity->head->mime_attr("content-type.name"); 
+ 	   $a_fn = $self->{ls}->param('list') . '-' . $a_fn;
+
+
+    create_dir($att_upload_dir);
+
+
+    my $og_saved_fn =
+      new_image_file_path( uriescape($a_fn), $att_upload_dir );
+
+    warn '$og_saved_fn ' . $og_saved_fn
+      if $t;
+
+    $og_saved_fn = make_safer($og_saved_fn);
+
+    if ( defined $entity->bodyhandle ) {
+
+        warn '$entity->bodyhandle defined'
+          if $t;
+
+        require File::Slurper;
+        File::Slurper::write_binary( $og_saved_fn,
+            $entity->bodyhandle->as_string );
+    }
+    else {
+        warn '$entity->bodyhandle NOT defined'
+          if $t;
+    }
+	return $og_saved_fn; 
+
+}
+
+
+
+
+sub html_attachment_list_filter {
+
+	# print "html_attachment_list_filter\n";
+
+    my $self   = shift;
+    my $entity = shift;
+	my $fns    = shift; 
+
+    my @parts = $entity->parts;
+
+    if (@parts) {
+		my $i;
+        for $i ( 0 .. $#parts ) {
+            my $n_entity = undef;
+            $n_entity = $self->html_attachment_list_filter( $parts[$i], $fns );
+
+            if ($n_entity) {
+                $parts[$i] = $n_entity;
+            }
+            else {
+                 warn 'no $n_entity returned?!'; # if $t;
+            }
+        }
+        $entity->parts( \@parts );
+        $entity->sync_headers(
+            'Length'      => 'COMPUTE',
+            'Nonstandard' => 'ERASE'
+        );
+
+        return $entity;
+    }
+    else {
+
+        if ( $entity->head->mime_type eq 'text/html' ) {
+			if (
+                $entity->head->mime_attr('content-disposition') eq 'inline' 
+				|| !defined( $entity->head->mime_attr('content-disposition') )
+				|| $entity->head->mime_attr('content-disposition') eq ''
+
+              )
+            {
+                #print 'found text/html' . "\n"; #if $t;
+
+                my $body = $entity->bodyhandle;
+
+                my $content = $body->as_string;
+                $content = safely_decode($content);
+                $content = $self->html_attachment_list_filter_inner($content, $fns);
+                my $io = $body->open('w');
+                $content = safely_encode($content);
+                $io->print($content);
+                $io->close;
+                $entity->sync_headers(
+                    'Length'      => 'COMPUTE',
+                    'Nonstandard' => 'ERASE'
+                );
+                return $entity;
+            }
+            else {
+                return $entity;
+            }
+        }
+        else {
+            return $entity;
+        }
+    }
+}
+
+sub html_attachment_list_filter_inner {
+
+	warn 'in html_attachment_list_filter_inner'; 
+	
+    my $self   = shift;
+    my $html   = shift; 
+	my $fn     = shift; 
+	
+	my $og_html = $html; 
+	
+	my $new_html = '<table style="padding:10px;"><tr><td><h3>Attachments:</h3><ul>';
+	for(@$fn){ 
+		$new_html .= '<li>' . $_ . '</li>';
+	}   
+   	$new_html .= '</ul></td></tr></table>';
+	
+	#	warn '$new_html: ' . $new_html; 
+	#	return $html . $new_html; 
+	
+    try {
+
+		require HTML::Tree;
+		require HTML::Element;
+		require HTML::TreeBuilder;
+
+
+		my $root = HTML::TreeBuilder->new(
+		    ignore_unknown      => 0,
+		    no_space_compacting => 1,
+		    store_comments      => 1,
+			no_expand_entities  => 1, 
+		);
+
+
+		$html = $self->shield_tags_in_hrefs($html); 
+		$root->parse($html);
+		$root->eof();
+		$root->elementify();
+
+		my $body_tag = $root->find_by_tag_name('body');
+		$body_tag->unshift_content(
+		    HTML::Element->new(
+		        '~literal', 'text' => $new_html,
+		    )
+		);
+		$html = $root->as_HTML( undef, '  ');
+		$html = $self->unshield_tags_in_hrefs($html);
+		warn 'all set.';		
+    } catch {  
+		warn 'that didnt work: ' . $_; 
+		return $og_html; 
+    };
+	
+	
+	
+	return $html; 
+	
+}
+
+
 
 sub DESTROY {
 
