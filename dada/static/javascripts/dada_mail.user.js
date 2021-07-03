@@ -55,8 +55,7 @@
 	}
 
 
-	if ($("#subscription_form").length) {
-		
+	if ($("#subscription_form").length) {	
 		$("#subscription_form").validate({
 		   ignore: ".ignore",
 			debug: false,
@@ -94,6 +93,41 @@
 				}
 			}
 		});
+		
+		var email = $('#ddm_email');
+		var hint  = $("#ddm_email_hint");
+	
+		if ( $("#ddm_email_hint").length ){
+		    email.on('blur',function() {
+		        hint.css('display', 'none').empty(); // hide hint initially
+		        $(this).mailcheck({
+		            suggested: function(element, suggestion) {
+		                if(!hint.html()) {
+		                    // misspell - display hint element
+		                     var suggestion = "Did you mean <span class='suggestion'>" +
+		                        "<span class='address'>" + suggestion.address + "</span>"
+		                        + "@<a href='#' class='domain'>" + suggestion.domain +
+		                        "</a></span>?<br><br>";
+
+		                    hint.html(suggestion).fadeIn(150);
+		                } else {
+		                    // Subsequent errors
+		                    $(".address").html(suggestion.address);
+		                    $(".domain").html(suggestion.domain);
+		                }
+		            }
+		        });
+		    });
+
+		    hint.on('click', '.domain', function() {
+		        // Display with the suggestion and remove the hint
+		        email.val($(".suggestion").text());
+		        hint.fadeOut(200, function() {
+		            $(this).empty();
+		        });
+		        return false;
+		    });
+		}
 	}
 	
 	if ($("#unsubscription_form").length) {
