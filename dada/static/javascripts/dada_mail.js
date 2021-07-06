@@ -1687,8 +1687,42 @@ jQuery(document).ready(function($){
 			event.preventDefault();
 			window.location.href = $("#s_program_url").val() + '?flavor=add&type=ignore_bounces_list';
 		});
+
+		$("body").on("click", ".bounce_handler_preemptively_act", function(event) {
+
+			var responsive_options = {
+			  width: '95%',
+			  height: '95%',
+			  maxWidth: '640px',
+			  maxHeight: '480px'
+			};
+
+			$.colorbox({
+				opacity: 0.50,
+				maxWidth: '640px',
+				maxHeight: '480px',
+				width:  '95%',
+				height: '95%',		
+			    href: $("#s_program_url").val(),
+				data: {
+					flavor: 'plugins',
+					plugin: 'bounce_handler',
+					prm: 'preemptively_act',
+					bounce_handler_prempt_act_score: $("#bounce_handler_prempt_act_score option:selected").val()
+				},		
+				onComplete:function(){
+					bounce_handler_show_scorecard();
+				}
+			});
+			
+			$(window).resize(function(){
+			    $.colorbox.resize({
+			      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+			      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+			    });		
+			});	
+		});
 		
-	
 	}
 	if ($("#plugins_bounce_handler_parse_bounce").length) {
 		bounce_handler_parse_bounces();

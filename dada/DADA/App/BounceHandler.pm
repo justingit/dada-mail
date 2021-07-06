@@ -1,7 +1,10 @@
 package DADA::App::BounceHandler;
 
 use strict;
-use lib qw(../../ ../../DADA/perllib);
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
 
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
@@ -718,6 +721,59 @@ sub parse_all_bounces {
     return $log;
 }
 
+
+
+
+sub preemptively_act { 
+
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	my $r;
+	
+    my $ls = DADA::MailingList::Settings->new( { -list => $args->{-list} } );
+	
+
+    require   DADA::App::BounceHandler::ScoreKeeper;
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( { -list => $args->{-list} } );
+	
+	my $removal_list = $bsk->removal_list({
+		-threshold_score => $args->{-threshold_score},
+	}); 
+	
+	
+	if(scalar(@$removal_list) <= 0){ 
+		return "No addresses on the scorecard have been found with this score";
+	}
+	
+	my $hr_removal_list = {};
+    for my $bad_email (@$removal_list) {
+        $hr_removal_list->{$bad_email} = 1;
+    }	
+	
+ 
+    if ( $ls->param('bounce_handler_when_threshold_reached') eq 'move_to_bounced_sublist' ) {
+        $r = $self->move_bouncing_subscribers(
+            {
+                -list         => $args->{-list},
+				-removal_list => $hr_removal_list, 
+            }
+        );
+    }
+    elsif ( $ls->param('bounce_handler_when_threshold_reached') eq 'unsub_subscriber' ) {
+        $r = $self->remove_bounces(
+            {
+                -list => $args->{-list},
+				-removal_list => $hr_removal_list, 
+			}
+        );
+    }
+	
+    $bsk->flush_old_scores({-threshold_score => $args->{-threshold_score},});
+		
+	return $r; 
+}
+
 sub parse_bounce {
 
     my $self = shift;
@@ -1039,11 +1095,24 @@ sub save_scores {
     return $m;
 }
 
+
+
+
 sub remove_bounces {
 
     my $self   = shift;
     my ($args) = @_;
     my $list   = $args->{-list};
+
+
+	my $removal_list = {}; 
+	if(exists($args->{-removal_list})){ 
+		$removal_list = $args->{-removal_list};
+	}
+	else { 
+		$removal_list =  $self->{tmp_remove_list}->{$list}; 
+	}
+
 
     my $m = '';
     $m .= "Unsubscribing bouncing addresses:\n" . '-' x 72 . "\n";
@@ -1056,7 +1125,7 @@ sub remove_bounces {
 	require DADA::MailingList::ConsentActivity; 
 	my $dmlc = DADA::MailingList::ConsentActivity->new; 
 
-    my @remove_list = keys %{ $self->{tmp_remove_list}->{$list} };
+    my @remove_list = keys %{ $removal_list };
 
 
 	$args->{-consent_vars} = { 
@@ -1065,21 +1134,32 @@ sub remove_bounces {
 	};
 	
     # Remove the Subscriber:
+	my $remove_results = {}; 
+	
     for (@remove_list) {
-        $lh->remove_subscriber(
+		
+		$m .= "Removing: $_\n";
+        $remove_results->{$_} = $lh->remove_subscriber(
 			{
 				-email        => $_, 
 				-type         => 'list',
 				-consent_vars => $args->{-consent_vars},
 			}
 		);
+		if($remove_results->{$_} <= 0){ 
+			$m .= "$_ not subscribed to remove.\n";
+		}
+		
 	}
-		$m .= "Removing: $_\n";
+		
 
     if (   ( $ls->param('black_list') == 1 )
         && ( $ls->param('add_unsubs_to_black_list') == 1 ) )
     {
         for my $re (@remove_list) {
+			
+			next if $remove_results->{$re} <= 0; 
+			
             $lh->add_subscriber(
                 {
                     -email      => $re,
@@ -1103,6 +1183,8 @@ sub remove_bounces {
 
         for my $d_email (@remove_list) {
 
+			next if $remove_results->{$d_email} <= 0; 
+			
             $dap->send_owner_happenings(
                 {
                     -email  => $d_email,
@@ -1126,8 +1208,6 @@ sub remove_bounces {
 					}
 				); 
 			}
-			
-
         }
     }
 
@@ -1140,6 +1220,16 @@ sub move_bouncing_subscribers {
     my ($args) = @_;
     my $list   = $args->{-list};
 
+	my $hr_removal_list    = {}; 
+	
+	if(exists($args->{-removal_list})){ 
+		$hr_removal_list = $args->{-removal_list};
+	}
+	else { 
+		$hr_removal_list =  $self->{tmp_remove_list}->{$list}; 
+	
+	}
+	
     my $m = '';
     $m .= "Moving Subscribers to Bouncing Addresses sublist:\n" . '-' x 72 . "\n";
     $m .= "\nList: $list\n";
@@ -1147,16 +1237,17 @@ sub move_bouncing_subscribers {
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-    my @remove_list = keys %{ $self->{tmp_remove_list}->{$list} };
+    my @remove_list = keys %{ $hr_removal_list };
 
     foreach my $sub (@remove_list) {
-        $m .= "Moving: $sub\n";
+        $m .= "* $sub\n";
         $lh->move_subscriber(
             {
-                -email => $sub,
-                -from  => 'list',
-                -to    => 'bounced_list',
-                -mode  => 'writeover',
+                -email            => $sub,
+                -from             => 'list',
+                -to               => 'bounced_list',
+                -mode             => 'writeover',
+				-moved_from_check => 0, 
             }
         );
     }

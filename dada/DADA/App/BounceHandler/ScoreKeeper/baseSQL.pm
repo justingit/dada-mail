@@ -172,7 +172,17 @@ sub removal_list {
     warn "removal_list method called."
       if $t;
 
-    my $self         = shift;
+    my $self            = shift;
+	my ($args)          = @_; 
+	my $threshold_score = undef; 
+	
+	if(exists($args->{-threshold_score})){ 
+		$threshold_score = $args->{-threshold_score};
+	}
+	else { 
+		$threshold_score = $self->{ls}->param('bounce_handler_threshold_score');
+	}
+	
     my $removal_list = [];
     my $query =
         'SELECT email, score FROM '
@@ -182,9 +192,8 @@ sub removal_list {
       if $t;
 
     my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $self->{list},
-        $self->{ls}->param('bounce_handler_threshold_score') )
-      or croak "cannot do statement '$query'! $DBI::errstr\n";
+    $sth->execute( $self->{list}, $threshold_score)
+		or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     while ( my ( $email, $score ) = $sth->fetchrow_array ) {
         warn "Found email, $email with score, $score"
@@ -199,15 +208,27 @@ sub removal_list {
 
 sub flush_old_scores {
 
-    my $self = shift;
+    my $self   = shift;
+	my ($args) = @_; 
+	
+	my $threshold_score = undef; 
+	
+	if(exists($args->{-threshold_score})){ 
+		$threshold_score = $args->{-threshold_score};
+	}
+	else { 
+		$threshold_score = $self->{ls}->param('bounce_handler_threshold_score');
+	}
+	
     my $query =
         'DELETE FROM '
       . $self->{sql_params}->{bounce_scores_table}
       . ' WHERE list = ? AND score >= ?';
     my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $self->{list},
-        $self->{ls}->param('bounce_handler_threshold_score') )
-      or croak "cannot do statement '$query'! $DBI::errstr\n";
+    $sth->execute( 
+		$self->{list},
+        $threshold_score
+	) or croak "cannot do statement '$query'! $DBI::errstr\n";
     $sth->finish;
 
 }

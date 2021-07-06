@@ -212,6 +212,7 @@ sub cgi_main {
             'manually_enter_bounces'     => \&manually_enter_bounces,
             'cgi_erase_scorecard'        => \&cgi_erase_scorecard,
             'edit_prefs'                 => \&edit_prefs,
+			'preemptively_act'           => \&preemptively_act, 
         );
 
         if ( exists( $Mode{$prm} ) ) {
@@ -268,6 +269,17 @@ sub cgi_default {
         	default => $ls->param('bounce_handler_threshold_score'),
     	}
 	);
+
+    my $bounce_handler_prempt_act_score_popup_menu = HTML::Menu::Select::popup_menu(
+        {
+			name    => 'bounce_handler_prempt_act_score',
+			id      => 'bounce_handler_prempt_act_score',
+        	values  => [ ( 0 .. 100 ) ],
+        	default => (int($ls->param('bounce_handler_threshold_score')) - 1),
+    	}
+	);
+
+
 
     my $curl_location = `which curl`;
     $curl_location = strip( make_safer($curl_location) );
@@ -328,6 +340,7 @@ sub cgi_default {
                 bounce_handler_hardbounce_score_popup_menu => $bounce_handler_hardbounce_score_popup_menu,
                 bounce_handler_decay_score_popup_menu      => $bounce_handler_decay_score_popup_menu,
                 bounce_handler_threshold_score_popup_menu  => $bounce_handler_threshold_score_popup_menu,
+				bounce_handler_prempt_act_score_popup_menu => $bounce_handler_prempt_act_score_popup_menu, 
 				
 				ignore_bounces_list_count                  => $ignore_bounces_list_count, 
 				root_login                                 => $root_login, 
@@ -365,6 +378,29 @@ sub edit_prefs {
         }
     );
     return ( { -redirect_uri => $Plugin_Config->{Plugin_URL} . '&done=1' }, undef );
+}
+
+
+
+sub preemptively_act { 
+	my $q     = shift; 
+	
+	
+	my $score = $q->param('bounce_handler_prempt_act_score'); 
+    my $bh = DADA::App::BounceHandler->new($Plugin_Config);
+	
+	my $r = $bh->preemptively_act(
+		{
+			-threshold_score => $score, 
+			-list            => $list, 
+		}); 
+	
+    my $rr = '';
+    $rr .= '<pre>';
+	$rr .= encode_html_entities($r);
+    $rr .= '</pre>';
+	
+	return ( {}, $rr );
 }
 
 sub ajax_parse_bounces_results {

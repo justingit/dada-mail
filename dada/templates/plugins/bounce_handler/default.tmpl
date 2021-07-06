@@ -233,12 +233,32 @@
 	</div> 
 </div> 
 
+	<fieldset> 
+		<legend>
+			Preemptively Act Upon Scorecard Addresses
+		</legend> 
+		 
+		 <label for="bounce_handler_prempt_act_score_popup_menu">
+			 Act Upon Addresses with a score of: <!-- tmpl_var bounce_handler_prempt_act_score_popup_menu --> or higher
+		</label>
+
+		<div class="clearfix">
+			<ul class="button-group right">
+			    
+				<li>
+					<input type="button" class="success bounce_handler_preemptively_act button small" value="Act!">
+				</li>
+			</ul>
+		</div>
+		
+		
+	</fieldset>
 
 </fieldset>
 
 	<fieldset> 
 		<legend>
-			Ignore Bounces
+			Ignore Bounces Sublist
 		</legend> 
 		<div class="alert-box info radius">
 			Allow a list of certain addresses/domains to be ignored when processing bounced messages
@@ -254,7 +274,7 @@
 						value="1" 
 						<!--tmpl_if list_settings.enable_ignore_bounces_list -->checked="checked"<!--/tmpl_if-->
 					> 
-						Enable Ignore Bounces
+						Enable Ignore Bounces sublist
 				</label>
 			</div>
 		</div>

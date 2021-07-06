@@ -704,7 +704,7 @@ sub remove {
     warn 'QUERY: ' . $query
       if $t;
 
-    my $sth = $self->{dbh}->prepare($query);
+    my $sth  = $self->{dbh}->prepare($query);
     my $rows = $sth->execute( $id, $self->{list} );
     $sth->finish;
     return $rows;
