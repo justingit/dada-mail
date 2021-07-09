@@ -248,7 +248,7 @@ sub raw_scorecard {
     my $query =
         'SELECT email, score FROM '
       . $self->{sql_params}->{bounce_scores_table}
-      . ' WHERE list = ? ORDER BY email';
+      . ' WHERE list = ? ORDER BY score DESC';
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list} )
       or croak "cannot do statement '$query'! $DBI::errstr\n";
@@ -296,7 +296,7 @@ sub csv_scorecard {
     my $query =
         'SELECT email, score FROM '
       . $self->{sql_params}->{bounce_scores_table}
-      . ' WHERE list = ? ORDER BY email';
+      . ' WHERE list = ? ORDER BY score DESC';
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list} )
       or croak "cannot do statement '$query'! $DBI::errstr\n";
