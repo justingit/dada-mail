@@ -206,7 +206,7 @@ sub save {
 		    $query =
                 'INSERT INTO '
               . $self->{sql_params}->{message_drafts_table}
-              . ' (list, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?, NULL, NULL)'; 
+              . ' (list, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?, NOW(), NOW())'; 
 			  # I'm such NOW() NOW() (untested!) would also work
         }
         else {
