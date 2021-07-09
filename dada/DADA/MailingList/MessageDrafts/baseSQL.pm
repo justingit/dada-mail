@@ -207,7 +207,6 @@ sub save {
                 'INSERT INTO '
               . $self->{sql_params}->{message_drafts_table}
               . ' (list, role, draft, created_timestamp, last_modified_timestamp) VALUES (?,?,?, NOW(), NOW())'; 
-			  # I'm such NOW() NOW() (untested!) would also work
         }
         else {
 			# screen, 
@@ -388,8 +387,7 @@ sub change_role {
 		$query =
             'UPDATE '
           . $self->{sql_params}->{message_drafts_table}
-          . ' SET role = ?, created_timestamp = NULL, last_modified_timestamp = NULL WHERE list = ? AND id = ? and role = ?';
-		     # NOW() works just fine, too. 
+          . ' SET role = ?, created_timestamp = NOW(), last_modified_timestamp = NULL WHERE list = ? AND id = ? and role = ?';
 		  
     }
     else { 
