@@ -1305,7 +1305,7 @@ sub msg_basic_event_count {
 		}
 		
 		my $hourly_sending = ($basic_events->{total_recipients} / $total_sending_time ) * 60 * 60; 
-		$basic_events->{sending_speed_formatted} = sprintf("%.2f", $hourly_sending);
+		$basic_events->{sending_speed_formatted} = commify(int($hourly_sending + .5));
 		
 	} 
 	if(defined($basic_events->{start_time})){ 
