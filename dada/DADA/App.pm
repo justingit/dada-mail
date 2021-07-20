@@ -16279,42 +16279,42 @@ sub schedules {
 	        try {
 	            $r .= $dast->mass_mailing_monitor($list);
 	        } catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 
 	        $r .= "Mass Mailing Schedules:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->scheduled_mass_mailings($list);
 	        } catch {
-	            $r .= "* Error: $_\n";
+	        	$r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 
 	        $r .= "Rate Limits:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->expire_rate_limit_checks($list);
 	        } catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 		
 	        $r .= "Cleaning Out MIME Cache:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->clean_out_mime_cache();
 	        } catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 			
 	        $r .= "\nRemoving old archive messages:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->remove_old_archive_messages($list);
 	        } catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 			
 	        $r .= "\nRemoving old tracker data:\n" . '-' x 72 . "\n";
 	        try {
 	            $r .= $dast->remove_old_tracker_data($list);
 	        } catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 			
 
@@ -16322,7 +16322,7 @@ sub schedules {
 	        try {
 	            $r .= $dast->send_analytics_email_notification($list);
 	        } catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };		  
 
 	        for my $plugin ( keys %$DADA::Config::PLUGINS_ENABLED ) {
@@ -16339,7 +16339,7 @@ sub schedules {
 	                      ->($list);
 	                }
 	                catch {
-	                    $r .= "* Error: $_\n";
+	                    $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	                };
 	            }
 	        }
@@ -16350,7 +16350,7 @@ sub schedules {
 	            $r .= $dast->mass_mailing_monitor($list);
 	        }
 	        catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 	    }
 	    elsif ( $schedule eq 'rate_limit_checks' ) {
@@ -16359,7 +16359,7 @@ sub schedules {
 	            $r .= $dast->expire_rate_limit_checks($list);
 	        }
 	        catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 	    }
 	    elsif ( $schedule eq 'mime_cache' ) {
@@ -16368,7 +16368,7 @@ sub schedules {
 	            $r .= $dast->clean_out_mime_cache();
 	        }
 	        catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 	    }
 	    elsif ( $schedule eq 'remove_old_archive_messages' ) {
@@ -16377,7 +16377,7 @@ sub schedules {
 	            $r .= $dast->remove_old_archive_messages($list);
 	        }
 	        catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 	    }
 	    elsif ( $schedule eq 'remove_old_tracker_data' ) {
@@ -16386,7 +16386,7 @@ sub schedules {
 	            $r .= $dast->remove_old_tracker_data($list);
 	        }
 	        catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 	    }
 
@@ -16396,7 +16396,7 @@ sub schedules {
 	            $r .= $dast->send_analytics_email_notification($list);
 	        }
 	        catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 	    }
 	    elsif ( $schedule eq 'scheduled_mass_mailings' ) {
@@ -16405,7 +16405,7 @@ sub schedules {
 	            $r .= $dast->scheduled_mass_mailings($list);
 	        }
 	        catch {
-	            $r .= "* Error: $_\n";
+	            $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	        };
 	    }
 	    elsif ($schedule eq 'bridge'
@@ -16425,7 +16425,7 @@ sub schedules {
 	                  ->($list);
 	            }
 	            catch {
-	                $r .= "* Error: $_\n";
+	                $r .= "* Error: " . substr($_, 0, 100) . '...' . "\n";
 	            };
 	        }
 	    }
