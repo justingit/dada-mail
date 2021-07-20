@@ -1956,7 +1956,7 @@ sub clean_up {
     $tmp_name =~ s/sendout/TMP_sendout/;
 
     File::Copy::move( $orig_name, $tmp_name )
-      or warn "could not move director from, '$orig_name', to, '$tmp_name': $!";
+      or warn "could not move directory from, '$orig_name', to, '$tmp_name': $!";
 
     # return 1; warn 'change back when shipping!';
     $self->dir($tmp_name);
