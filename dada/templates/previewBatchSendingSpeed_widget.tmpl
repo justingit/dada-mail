@@ -6,16 +6,56 @@
 	<!-- tmpl_if somethings_wrong --> 
 	
 		<li>
-			<strong>Warning!</strong>  There's a problem with the credentials. 
+			<strong>Warning!</strong>  There may be a problem with the credentials. 
 		</li>
 	
 	<!-- tmpl_else -->
-		<li>
-			Messages will be sent at a rate of up to <strong><!-- tmpl_var per_hour --> messages/hour</strong>. 
-		</li>
-		<li>
-			Mailing to <strong><!-- tmpl_var num_subscribers --> subscribers</strong> will take at least <strong><!-- tmpl_var time_to_send --></strong>.
-		</li>
+	
+	
+		<!-- tmpl_if amazon_ses_auto_batch_settings -->
+		
+
+			<li>
+				Real world maximum sending speeds for Amazon SES are between 
+					<strong>1</strong>
+						and 
+					<strong>3</strong>
+				messages/second
+			</li>
+		
+			<li>
+				Messages should be sent at a rate of between approximately  
+				<strong><!-- tmpl_var per_hour --> </strong>
+				and 
+				<strong><!-- tmpl_var per_hour_thirded --></strong>
+				
+				 messages/hour. 
+			</li>
+			<li>
+				Mass mailing to <strong><!-- tmpl_var num_subscribers --> subscribers</strong> will take between approximately  
+				<strong><!-- tmpl_var time_to_send_thirded --></strong>
+					and
+				<strong><!-- tmpl_var time_to_send --></strong>
+
+
+			</li>
+
+		
+		<!-- tmpl_else -->
+
+			
+			<li>
+				Messages will be sent at a rate of up to <strong><!-- tmpl_var per_hour --> messages/hour</strong>. 
+			</li>
+			<li>
+				Mass mailing to <strong><!-- tmpl_var num_subscribers --> subscribers</strong> will take at least <strong><!-- tmpl_var time_to_send --></strong>.
+			</li>
+		
+		<!-- /tmpl_if -->
+		
+		
+		
+		
 	<!-- /tmpl_if -->
 
 <!-- tmpl_else -->

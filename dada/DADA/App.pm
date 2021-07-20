@@ -4781,8 +4781,10 @@ sub previewBatchSendingSpeed {
     my $amazon_ses_auto_batch_settings = xss_filter( scalar $q->param('amazon_ses_auto_batch_settings') );
 
     my $per_hour         = 0;
+	my $per_hour_thirded;
     my $num_subs         = 0;
     my $time_to_send     = 0;
+	my $time_to_send_thirded; 
     my $somethings_wrong = 0;
 
     if ( $enable_bulk_batching == 1 ) {
@@ -4797,8 +4799,19 @@ sub previewBatchSendingSpeed {
 
         if ( $bulk_sleep_amount > 0 && $mass_send_amount > 0 ) {
 
-            my $per_sec = $mass_send_amount / $bulk_sleep_amount;
-            $per_hour =
+			my $per_sec; 
+		
+			
+			if ( $amazon_ses_auto_batch_settings == 1 ) {
+				# This adds a second to each message sent, less the time spend sleeping
+				# This is to take into consideration how long a message actually takes to send
+				# to the service. 
+				$per_sec = ($mass_send_amount / $bulk_sleep_amount) - ($mass_send_amount - $bulk_sleep_amount);
+            }
+			else { 
+				$per_sec = ($mass_send_amount / $bulk_sleep_amount);
+			}
+			$per_hour =
               int( $per_sec * 60 * 60 + .5 )
               ; # DEV .5 is some sort of rounding thing (with int). That's wrong.
 
@@ -4808,10 +4821,18 @@ sub previewBatchSendingSpeed {
                 $total_hours = $lh->num_subscribers / $per_hour;
             }
 
+			$per_hour_thirded = int(($per_hour * 3) + .5); 
+			$per_hour_thirded  = commify($per_hour_thirded);
             $per_hour = commify($per_hour);
             $num_subs = commify($num_subs);
 
             $time_to_send = formatted_runtime( $total_hours * 60 * 60 );
+			
+			if ( $amazon_ses_auto_batch_settings == 1 ) {
+			
+				$time_to_send_thirded = formatted_runtime( ($total_hours/3) * 60 * 60 );
+			}
+			
 
         }
         else {
@@ -4823,11 +4844,14 @@ sub previewBatchSendingSpeed {
         {
             -screen => 'previewBatchSendingSpeed_widget.tmpl',
             -vars   => {
-                enable_bulk_batching => $enable_bulk_batching,
-                per_hour             => $per_hour,
-                num_subscribers      => $num_subs,
-                time_to_send         => $time_to_send,
-                somethings_wrong     => $somethings_wrong,
+				amazon_ses_auto_batch_settings => $amazon_ses_auto_batch_settings, 
+                enable_bulk_batching           => $enable_bulk_batching,
+                per_hour                       => $per_hour,
+				per_hour_thirded               => $per_hour_thirded, 
+                num_subscribers                => $num_subs,
+                time_to_send                   => $time_to_send,
+				time_to_send_thirded           => $time_to_send_thirded, 
+                somethings_wrong               => $somethings_wrong,
             }
         }
     );
