@@ -42,7 +42,11 @@
 						<strong>Sending Method</strong>
 					</td> 
 					<td class="text-right"  valign="top"> 
-						<!-- tmpl_var sending_method -->
+						<!-- tmpl_if expr="(sending_method eq 'amazon_ses')" -->
+							Amazon SES
+						<!-- tmpl_else -->
+							<!-- tmpl_var sending_method -->
+						<!-- /tmpl_if -->
 					</td>
 				</tr>
 			<!-- /tmpl_if -->
