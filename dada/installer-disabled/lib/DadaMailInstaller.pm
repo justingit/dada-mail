@@ -180,6 +180,7 @@ show_deployment_options             => 1,
 show_profiles                       => 1,
 show_global_template_options        => 1,
 show_security_options               => 1,
+show_global_api_options             => 1, 
 show_google_maps_options            => 1,
 show_captcha_options                => 1,
 show_global_mailing_list_options    => 1,
@@ -1345,6 +1346,38 @@ sub grab_former_config_vals {
 	#	die Dumper($opt)
 
     }
+	
+    # $SCHEDULED_JOBS_OPTIONS
+    
+	require DADA::Security::Password;
+	if ( keys( %{$BootstrapConfig::GLOBAL_API_OPTIONS} ) ) {
+        $opt->{'configure_global_api'} = 1;
+        if ( !exists( $BootstrapConfig::GLOBAL_API_OPTIONS->{enabled} ) ) {
+			$BootstrapConfig::GLOBAL_API_OPTIONS->{enabled} = 0; 
+		}
+
+        if ( !exists( $BootstrapConfig::GLOBAL_API_OPTIONS->{public_key} ) ) {
+            $BootstrapConfig::GLOBAL_API_OPTIONS->{public_key} = DADA::Security::Password::generate_rand_string(undef, 21);
+        }
+        if ( !exists( $BootstrapConfig::GLOBAL_API_OPTIONS->{private_key} ) ) {
+            $BootstrapConfig::GLOBAL_API_OPTIONS->{private_key} = DADA::Security::Password::generate_rand_string(undef, 41);
+        }
+		
+		$opt->{'global_api_enable'}      = $BootstrapConfig::GLOBAL_API_OPTIONS->{enabled};
+		$opt->{'global_api_public_key'}  = $BootstrapConfig::GLOBAL_API_OPTIONS->{public_key};
+		$opt->{'global_api_private_key'} = $BootstrapConfig::GLOBAL_API_OPTIONS->{private_key};
+    }
+    else {
+		$BootstrapConfig::GLOBAL_API_OPTIONS->{enabled}     = 0; 
+		$BootstrapConfig::GLOBAL_API_OPTIONS->{public_key}  = DADA::Security::Password::generate_rand_string(undef, 21);
+		$BootstrapConfig::GLOBAL_API_OPTIONS->{private_key} = DADA::Security::Password::generate_rand_string(undef, 41);
+		
+		$opt->{'global_api_enable'}      = $BootstrapConfig::GLOBAL_API_OPTIONS->{enabled};
+		$opt->{'global_api_public_key'}  = $BootstrapConfig::GLOBAL_API_OPTIONS->{public_key};
+		$opt->{'global_api_private_key'} = $BootstrapConfig::GLOBAL_API_OPTIONS->{private_key};
+    }
+	
+	
 
     # Configure CAPTCHA
     if (   defined($BootstrapConfig::CAPTCHA_TYPE)
@@ -1771,6 +1804,11 @@ sub query_params_to_install_params {
       configure_cache
       cache_options_SCREEN_CACHE
       cache_options_DATA_CACHE
+
+	  configure_global_api
+	  global_api_enable
+	  global_api_public_key
+	  global_api_private_key
 
       configure_security
       security_no_show_admin_link
@@ -2744,6 +2782,14 @@ sub create_dada_config_file {
 		
     }
 
+    my $global_api_params = {};
+    if ( $ip->{-configure_global_api} == 1 ) {
+        $security_params->{configure_global_api}   = 1;
+        $security_params->{global_api_enable}      = $ip->{-global_api_enable}      || 0;
+        $security_params->{global_api_public_key}  = $ip->{-global_api_public_key}  || '';
+        $security_params->{global_api_private_key} = $ip->{-global_api_private_key} || '';		
+    }
+
     my $captcha_params = {};
     if ( $ip->{-configure_captcha} == 1 ) {
         $captcha_params->{configure_captcha}                = 1;
@@ -2885,6 +2931,7 @@ sub create_dada_config_file {
                 %{$extensions_params}, 
                 %{$profiles_params},
                 %{$security_params},
+				%{$global_api_params},
                 %{$captcha_params},
 				%{$google_maps_params},
 				%{$pii_params},

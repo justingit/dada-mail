@@ -367,218 +367,218 @@ sub send {
         }
         $host =~ s/(.*?)\@//;
 
-        try  {
-
-            my $smtp_obj;
-
-            if ( defined( $self->net_smtp_obj ) && $self->im_mass_sending == 1 )
-            {    # If it's defined, let's use it;
-                warn 'Reusing Net::SMTP object...'
-                  if $t;
-                $smtp_obj = $self->net_smtp_obj;
-            }
-            else {
-                
-				my $smtp_params = {
-                    hello           => $host,
-                    host            => $self->{ls}->param('smtp_server'),
-                    port            => $self->{ls}->param('smtp_port'),
-					ssl             => $self->{ls}->param('use_smtp_ssl'),
-					starttls        => $self->{ls}->param('smtp_starttls'),
-					ssl_verify_mode => $self->{ls}->param('smtp_ssl_verify_mode'),
-                };
-                
-				if($self->{ls}->param('use_sasl_smtp_auth') == 1){ 
-				
-					$smtp_params->{username}            = $self->{ls}->param('sasl_smtp_username');
-					$smtp_params->{password}            = $self->_cipher_decrypt(
-																$self->{ls}->param('sasl_smtp_password')
-														);
-					$smtp_params->{sasl_auth_mechanism} = $self->{ls}->param('sasl_auth_mechanism');
-				}
-				
-				require DADA::App::SMTPTools; 
-				my $smtp_status = 0;
-				my $smtp_r     = undef; 
-				
-				($smtp_status, $smtp_r, $smtp_obj) = DADA::App::SMTPTools::smtp_obj($smtp_params);
-				if($smtp_status == 0){ 					
-		            carp "Problems sending via SMTP:" . $smtp_r;
-		            return -1;
-				}
-
-            }
-            warn 'Saving Net::SMTP Object for re-use'
+        my $smtp_obj;
+        if ( defined( $self->net_smtp_obj ) && $self->im_mass_sending == 1 )
+        {    # If it's defined, let's use it;
+            warn 'Reusing Net::SMTP object...'
               if $t;
-
-            if ( $self->im_mass_sending == 1 ) {
-                $self->net_smtp_obj($smtp_obj);
-            }
-
-            my $to;
-            if (
-                   $self->{ls}->param('group_list') == 1
-                && $fields{from_mass_send} == 1
-                && defined(
-                    $self->{ls}->param('discussion_pop_email') )    # safegaurd?
-
-              )
-            {
-                # This is who it's going to.
-                $to = $fields{To};
-
-                require DADA::App::FormatMessages;
-                my $fm = DADA::App::FormatMessages->new(
-                    -List   => $self->{list},
-                    -ls_obj => $self->{ls},
-                );
-                require Email::Address;
-
-                my $formatted_disc_email = $fm->_encode_header(
-                    'To',
-                    $fm->format_phrase_address(
-                        $self->{ls}->param('list_name'),
-                        $self->{ls}->param('discussion_pop_email')
-                    )
-                );
-
-                # This is what we're going to say we are...
-                $fields{To} = $formatted_disc_email;
-
-                if ( $self->{ls}->param('set_to_header_to_list_address') == 1 )
-                {
-
-                    # Nothin' needed.
-                }
-                else {
-           # Uh, unless it's a list invitation we're sending - why would we want
-           # replies from a non-subscriber posting to the list?
-                    if ( $self->list_type ne 'invite_list' ) {
-                        # This goes against RFC
-                        $fields{'Reply-To'} = $formatted_disc_email;
-                    }
-                }
-            }
-            else {
-                # um, nevermind.
-                $to = $fields{To};
-
-            }
-
-            # why wouldn't it be defined?
-            if ( defined($to) ) {
-                ;
-                eval { $to = ( Email_Address_parse($to) )[0]->address; };
-            }
-
-            my $smtp_msg = '';
-            for my $field (@default_headers) {
-                $smtp_msg .= "$field: $fields{$field}\n"
-                  if ( ( defined $fields{$field} )
-                    && ( $fields{$field} ne "" ) );
-            }
-            $smtp_msg .= "\n";
-            $smtp_msg .= $fields{Body} . "\n";
-
-            my $FROM_error_flag = 0;
-            my $FROM_error = "problems sending FROM:<> command to SMTP server.";
+            $smtp_obj = $self->net_smtp_obj;
+        }
+        else {
+            
+			my $smtp_params = {
+                hello           => $host,
+                host            => $self->{ls}->param('smtp_server'),
+                port            => $self->{ls}->param('smtp_port'),
+				ssl             => $self->{ls}->param('use_smtp_ssl'),
+				starttls        => $self->{ls}->param('smtp_starttls'),
+				ssl_verify_mode => $self->{ls}->param('smtp_ssl_verify_mode'),
+            };
+            
+			if($self->{ls}->param('use_sasl_smtp_auth') == 1){ 
 			
-            if ( $self->{ls}->param('set_smtp_sender') == 1 ) {
-                if ( $self->{ls}->param('verp_return_path') ) {
-                    if ( !$smtp_obj->mail( $self->_verp($to) ) ) {
-                        carp $FROM_error;
-                        $FROM_error_flag++;
-                    }
+				$smtp_params->{username}            = $self->{ls}->param('sasl_smtp_username');
+				$smtp_params->{password}            = $self->_cipher_decrypt(
+															$self->{ls}->param('sasl_smtp_password')
+													);
+				$smtp_params->{sasl_auth_mechanism} = $self->{ls}->param('sasl_auth_mechanism');
+			}
+			
+			require DADA::App::SMTPTools; 
+			my $smtp_status = 0;
+			my $smtp_r     = undef; 
+			
+			warn 'creating net_smtp_obj' 
+				if $t; 
+			($smtp_status, $smtp_r, $smtp_obj) = DADA::App::SMTPTools::smtp_obj($smtp_params);
+			if($smtp_status == 0){ 					
+	            carp "Problems sending via SMTP:" . $smtp_r;
+	            return -1;
+			}
+			else { 
+				warn 'net_smtp_obj created.' 
+					if $t; 
+			}
+
+        }
+        
+
+        if ( $self->im_mass_sending == 1 ) {
+            warn 'Saving Net::SMTP Object for re-use' 
+				if $t;
+            $self->net_smtp_obj($smtp_obj);
+        }
+
+        my $to;
+        if (
+               $self->{ls}->param('group_list') == 1
+            && $fields{from_mass_send} == 1
+            && defined(
+                $self->{ls}->param('discussion_pop_email') )    # safegaurd?
+
+          )
+        {
+            # This is who it's going to.
+            $to = $fields{To};
+
+            require DADA::App::FormatMessages;
+            my $fm = DADA::App::FormatMessages->new(
+                -List   => $self->{list},
+                -ls_obj => $self->{ls},
+            );
+            require Email::Address;
+
+            my $formatted_disc_email = $fm->_encode_header(
+                'To',
+                $fm->format_phrase_address(
+                    $self->{ls}->param('list_name'),
+                    $self->{ls}->param('discussion_pop_email')
+                )
+            );
+
+            # This is what we're going to say we are...
+            $fields{To} = $formatted_disc_email;
+
+            if ( $self->{ls}->param('set_to_header_to_list_address') == 1 )
+            {
+
+                # Nothin' needed.
+            }
+            else {
+       # Uh, unless it's a list invitation we're sending - why would we want
+       # replies from a non-subscriber posting to the list?
+                if ( $self->list_type ne 'invite_list' ) {
+                    # This goes against RFC
+                    $fields{'Reply-To'} = $formatted_disc_email;
                 }
-                else {
-                    if ( !$smtp_obj->mail( $self->{ls}->param('admin_email') ) ) {
-                        carp $FROM_error;
-                        $FROM_error_flag++;
-                    }
+            }
+        }
+        else {
+            # um, nevermind.
+            $to = $fields{To};
+
+        }
+
+        # why wouldn't it be defined?
+        if ( defined($to) ) {
+            ;
+            eval { $to = ( Email_Address_parse($to) )[0]->address; };
+        }
+
+        my $smtp_msg = '';
+        for my $field (@default_headers) {
+            $smtp_msg .= "$field: $fields{$field}\n"
+              if ( ( defined $fields{$field} )
+                && ( $fields{$field} ne "" ) );
+        }
+        $smtp_msg .= "\n";
+        $smtp_msg .= $fields{Body} . "\n";
+
+        my $FROM_error_flag = 0;
+        my $FROM_error = "problems sending FROM:<> command to SMTP server.";
+		
+        if ( $self->{ls}->param('set_smtp_sender') == 1 ) {
+            if ( $self->{ls}->param('verp_return_path') ) {
+                if ( !$smtp_obj->mail( $self->_verp($to) ) ) {
+                    carp $FROM_error;
+                    $FROM_error_flag++;
                 }
             }
             else {
-                if ( $self->{ls}->param('verp_return_path') ) {
-                    if ( !$smtp_obj->mail( $self->_verp($to) ) ) {
-                        carp $FROM_error;
-                        $FROM_error_flag++;
-                    }
-                }
-                else {
-                    if (
-                        !$smtp_obj->mail(
-                            $self->{ls}->param('list_owner_email')
-                        )
-                      )
-                    {
-                        carp $FROM_error;
-                        $FROM_error_flag++;
-                    }
+                if ( !$smtp_obj->mail( $self->{ls}->param('admin_email') ) ) {
+                    carp $FROM_error;
+                    $FROM_error_flag++;
                 }
             }
+        }
+        else {
+            if ( $self->{ls}->param('verp_return_path') ) {
+                if ( !$smtp_obj->mail( $self->_verp($to) ) ) {
+                    carp $FROM_error;
+                    $FROM_error_flag++;
+                }
+            }
+            else {
+                if (
+                    !$smtp_obj->mail(
+                        $self->{ls}->param('list_owner_email')
+                    )
+                  )
+                {
+                    carp $FROM_error;
+                    $FROM_error_flag++;
+                }
+            }
+        }
 
-            if ( !$FROM_error_flag ) {
-            	if ( $smtp_obj->to($to) ) {
-                    if ( $smtp_obj->data ) {
-                        if ( $smtp_obj->datasend($smtp_msg) ) {
-                            if ( $smtp_obj->dataend ) {
-                                # oh hey, everything worked!
-                            }
-                            else {
-                                carp "problems completing sending message to SMTP server. (dataend): " . $smtp_obj->message();
-								$smtp_obj->reset();
-								return -1;
-                            }
-
+        if ( !$FROM_error_flag ) {
+        	if ( $smtp_obj->to($to) ) {
+                if ( $smtp_obj->data ) {
+                    if ( $smtp_obj->datasend($smtp_msg) ) {
+                        if ( $smtp_obj->dataend ) {
+                            # oh hey, everything worked!
                         }
                         else {
-                            carp "problems sending message to SMTP server. (datasend): " . $smtp_obj->message();
+                            carp "problems completing sending message to SMTP server. (dataend): " . $smtp_obj->message();
 							$smtp_obj->reset();
 							return -1;
                         }
+
                     }
                     else {
-                        carp "problems sending DATA command to SMTP server. (data): " . $smtp_obj->message();
+                        carp "problems sending message to SMTP server. (datasend): " . $smtp_obj->message();
 						$smtp_obj->reset();
 						return -1;
                     }
                 }
                 else {
-                    carp "problems sending '" . $to
-                      . "' in 'RCPT TO:<>' command to SMTP server: " . $smtp_obj->message();
-					  $smtp_obj->reset();
-					  return -1;
+                    carp "problems sending DATA command to SMTP server. (data): " . $smtp_obj->message();
+					$smtp_obj->reset();
+					return -1;
                 }
             }
             else {
-                carp $FROM_error;
-				$smtp_obj->reset();
-				return -1;
+                carp "problems sending '" . $to
+                  . "' in 'RCPT TO:<>' command to SMTP server: " . $smtp_obj->message();
+				  $smtp_obj->reset();
+				  return -1;
             }
+        }
+        else {
+            carp $FROM_error;
+			$smtp_obj->reset();
+			return -1;
+        }
 
-			my $reset_problem = 0; 
-            $smtp_obj->reset() or $reset_problem = 1; 
+		my $reset_problem = 0; 
+        $smtp_obj->reset() or $reset_problem = 1; 
+		
+        if ( $self->{ls}->param('smtp_connection_per_batch') != 1 || $reset_problem == 1) {				
+            $smtp_obj->quit
+              or carp "problems 'QUIT'ing SMTP server.";
+			  warn 'undefining net_smtp_obj' 
+			  	if $t; 
+            $self->net_smtp_obj(undef);
 			
-
-            if ( $self->{ls}->param('smtp_connection_per_batch') != 1 || $reset_problem == 1) {
-
-                $smtp_obj->quit
-                  or carp "problems 'QUIT'ing SMTP server.";
-                $self->net_smtp_obj(undef);
-				
-				if($reset_problem == 1) { 
-	                warn 'Purging Net::SMTP object, after reset error.';
-				}
-				else {
-	                warn 'Purging Net::SMTP object, since we reconnect for each message'
-	                  if $t;
-				}
-            }
-
-        } catch {    # end of the eval block.
-            carp "Problems sending via SMTP: $_";
-            return -1;
-        };
+			if($reset_problem == 1) { 
+                warn 'Purging Net::SMTP object, after reset error.'
+					if $t
+			}
+			else {
+                warn 'Purging Net::SMTP object, since we reconnect for each message'
+                  if $t;
+			}
+        }
 
     }
     elsif ( $self->{ls}->param('sending_method') eq 'sendmail' ) {
@@ -826,6 +826,7 @@ sub send {
         'Mail Sent', "Recipient:$recipient_for_log, Subject:$fields{Subject}" )
       if $DADA::Config::LOG{mailings};
 
+	warn 'literally returning 1' if $t; 
     return 1;
 
 }

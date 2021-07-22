@@ -1631,7 +1631,8 @@ jQuery(document).ready(function($){
 
 	if($("#scheduled_jobs").length) {
 		new Clipboard('.copy_button');		
-	$("body").on("click", ".manually_run_scheduled_jobs", function(event) {
+		
+		$("body").on("click", ".manually_run_scheduled_jobs", function(event) {
 			
 			var responsive_options = {
 			  width: '95%',
@@ -1652,7 +1653,10 @@ jQuery(document).ready(function($){
 				maxWidth: '640px',
 				maxHeight: '480px',
 				width: '95%',
-				height: '95%'				
+				height: '95%', 
+				onComplete:function(){
+					admin_menu_notifications(1);
+				}				
 			});
 			$(window).resize(function(){
 			    $.colorbox.resize({
@@ -2069,11 +2073,12 @@ jQuery(document).ready(function($){
 
 
 // Admin Menu
-function admin_menu_notifications(){ 
+function admin_menu_notifications(outer_no_loop){ 
 	
 	var r = 60 * 5 * 1000; // Every 5 minutes.
 	
 	var refresh_loop = function(no_loop) {
+		
 			var request = $.ajax({
 				url: $('#navcontainer').attr("data-s_program_url"),
 				type: "POST",
@@ -2117,14 +2122,18 @@ function admin_menu_notifications(){
 						}
 					}
 				}
-
 			});
 			if (no_loop != 1) {
 				setTimeout(refresh_loop, r);
 			}
 		}
-		setTimeout(refresh_loop, r);
-		refresh_loop(1);
+		if (outer_no_loop != 1) {	
+			setTimeout(refresh_loop, r);
+			refresh_loop(1);
+		}
+		else { 
+			refresh_loop(1);
+		}
 }
 
 
@@ -3683,6 +3692,7 @@ function ajax_parse_bounces_results() {
 		},
 		onComplete:function(){
 			bounce_handler_show_scorecard();
+			admin_menu_notifications(1);
 		}
 	});
 	$(window).resize(function(){
@@ -3841,7 +3851,11 @@ function plugins_bridge_manually_check_messages() {
 		maxWidth: '640px',
 		maxHeight: '480px',
 		width: '95%',
-		height: '95%'				
+		height: '95%', 
+		onComplete:function(){
+			admin_menu_notifications(1);
+		}				
+						
 	});
 	$(window).resize(function(){
 	    $.colorbox.resize({

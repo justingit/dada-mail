@@ -1984,6 +1984,42 @@
 			</div> 
 		<!-- /tmpl_if --> 
 
+
+		<!-- tmpl_if show_global_api_options -->
+ 
+			<label for="configure_global_api">
+				<input type="checkbox" name="configure_global_api" id="configure_global_api" value="1">			
+				Configure Global API Options
+			</label>
+
+			<div id="global_api_options">
+				<div class="panel">
+					<label for="global_api_enable">
+						<input type="checkbox" name="global_api_enable" id="global_api_enable" value="1">			
+						Enable Global API 
+					</label>
+					
+					<div id="global_api_keys">
+						<label for="global_api_public_key">Public Key</label>
+						<input type="text" name="global_api_public_key" id="global_api_public_key" value="" readonly>			
+
+						<label for="global_api_private_key">Private Key</label>
+						<input type="text" name="global_api_private_key" id="global_api_private_key" value="" readonly>
+					</div>
+					
+					<input
+						type="button"
+						class="processing reset_global_api_keys small button expand" 
+						value="Reset Global API Keys"
+					>
+								
+					
+				</div>
+			</div>
+
+		<!-- /tmpl_if -->
+		
+		
 		<!-- tmpl_if show_security_options --> 
 
 			<label for="configure_security">

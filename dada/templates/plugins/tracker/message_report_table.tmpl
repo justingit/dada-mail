@@ -42,7 +42,11 @@
 						<strong>Sending Method</strong>
 					</td> 
 					<td class="text-right"  valign="top"> 
-						<!-- tmpl_var sending_method -->
+						<!-- tmpl_if expr="(sending_method eq 'amazon_ses')" -->
+							Amazon SES
+						<!-- tmpl_else -->
+							<!-- tmpl_var sending_method -->
+						<!-- /tmpl_if -->
 					</td>
 				</tr>
 			<!-- /tmpl_if -->
@@ -70,9 +74,9 @@
 				<!-- /tmpl_if -->
 			</td> 
 			<td class="text-right" valign="top"> 
-				Total: <!-- tmpl_var total_recipients_commified default="0" -->, 
+				<strong>Total:</strong> <!-- tmpl_var total_recipients_commified default="0" -->, 
 				<br>
-				Delivered: <!-- tmpl_var received_commified default="0" --> - <!-- tmpl_var received_percent default="0" -->%
+				<strong>Delivered:</strong> <!-- tmpl_var received_commified default="0" --> - <!-- tmpl_var received_percent default="0" -->%
 			</td>
 		</tr>
 		<tr>
@@ -93,7 +97,7 @@
 				<!-- tmpl_if a_in_t -->
 					<a href="#opens">
 				<!-- /tmpl_if -->
-					Total: <!-- tmpl_var open_commified default="0" -->
+					<strong>Total:</strong> <!-- tmpl_var open_commified default="0" -->
 				
 					<!-- tmpl_if expr="(
 						(
@@ -104,7 +108,7 @@
 						(list_settings.tracker_track_anonymously == 1)
 					)" -->
 						<!-- tmpl_if unique_open -->
-							, Unique: <!-- tmpl_var unique_open_commified default="0" --> - <!-- tmpl_var unique_opens_percent default="0" -->%
+							, <strong>Unique:</strong> <!-- tmpl_var unique_open_commified default="0" --> - <!-- tmpl_var unique_opens_percent default="0" -->%
 						<!-- /tmpl_if -->
 					<!-- /tmpl_if -->
 				
@@ -131,7 +135,7 @@
 				<!-- /tmpl_if -->
 					
 					
-					Total: <!-- tmpl_var clickthroughs_commified default="0" -->
+					<strong>Total:</strong> <!-- tmpl_var clickthroughs_commified default="0" -->
 					<!-- tmpl_if expr="(
 						(
 							(list_settings.tracker_track_email == 1)
@@ -141,7 +145,7 @@
 						(list_settings.tracker_track_anonymously == 1)
 					)" -->
 						<!-- tmpl_if unique_clickthroughs -->
-							, Unique: <!-- tmpl_var unique_clickthroughs_commified default="0" --> - <!-- tmpl_var unique_clickthroughs_percent default="0" -->%
+							, <strong>Unique:</strong> <!-- tmpl_var unique_clickthroughs_commified default="0" --> - <!-- tmpl_var unique_clickthroughs_percent default="0" -->%
 						<!-- /tmpl_if -->
 					<!-- /tmpl_if -->	
 				
@@ -203,8 +207,8 @@
 					<a href="#bounces">
 				<!-- /tmpl_if -->
 					<!-- tmpl_if total_bounce -->
-						Soft: <!-- tmpl_var soft_bounce default="0" -->, 
-						Hard: <!-- tmpl_var hard_bounce  default="0" --> 
+						<strong>Soft:</strong> <!-- tmpl_var soft_bounce default="0" -->, 
+						<strong>Hard:</strong> <!-- tmpl_var hard_bounce  default="0" --> 
 						<!-- addresses that are bounces are tallied, even if we're not collecting email addresses *shrug* -->
 							- <!-- tmpl_var unique_bounces_percent default="0" -->%
 					<!-- tmpl_else -->
