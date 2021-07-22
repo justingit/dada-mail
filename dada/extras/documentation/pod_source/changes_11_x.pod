@@ -3,6 +3,48 @@
 
 =encoding utf-8
 
+=head1 11.14.2
+
+=head2 Focus
+
+This release includes bugfixes found in the v11.14.1 release of Dada Mail. 
+
+=head2 Changes 
+
+=head3 Delete email address from Bounce Scorecard when email address is unsubscribed #1035 
+
+L<https://github.com/justingit/dada-mail/issues/1035>
+
+=head3 Plugins: Tracker - Add a date/timestamp to options for updating profile fields in the preferences #1032 
+
+L<https://github.com/justingit/dada-mail/issues/1032>
+
+=head3 Ping POP3 and IMAP connections before attempting to connect #1029 
+
+L<https://github.com/justingit/dada-mail/issues/1029>
+
+=head2 Bugfixes
+
+=head3  Plugins: Tracker - Sending Speed (messages/hour) aren't rounded to the nearest message, or commified #1039 
+
+L<https://github.com/justingit/dada-mail/issues/1039>
+
+=head3  Amazon SES mass mailing batch sending speed estimates are too optimistic #1038 
+
+L<https://github.com/justingit/dada-mail/issues/1038>
+
+=head3 When manually running schedules (cronjobs) in list control panel, the admin menu items should be updated #1037 
+
+L<https://github.com/justingit/dada-mail/issues/1037>
+
+=head3 Cannot create a new draft message w/MySQL v8.0.2x #1034 
+
+L<https://github.com/justingit/dada-mail/issues/1034>
+
+=head3 Mass Mailing: SMTP sending doesn't return back any errors #1028 
+
+L<https://github.com/justingit/dada-mail/issues/1028>
+
 =head1 11.14.1
 
 =head2 Focus
