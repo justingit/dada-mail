@@ -4859,9 +4859,9 @@ sub cgi_test_amazon_ses_configuration {
                 using_ses                        => 1,
                 has_ses_options                  => 1,
                 status                           => $status,
-                MaxSendRate                      => $MaxSendRate,
-                Max24HourSend                    => $Max24HourSend,
-                SentLast24Hours                  => $SentLast24Hours,
+                MaxSendRate                      => commify($MaxSendRate),
+                Max24HourSend                    => commify($Max24HourSend),
+                SentLast24Hours                  => commify($SentLast24Hours),
                 allowed_sending_quota_percentage => $amazon_ses_Allowed_Sending_Quota_Percentage,
 
             }
