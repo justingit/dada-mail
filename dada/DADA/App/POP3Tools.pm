@@ -1,5 +1,10 @@
 package DADA::App::POP3Tools;
-use lib qw(../../ ../../DADA/perllib); 
+
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
 
 use DADA::Config qw(!:DEFAULT);  
 
@@ -15,6 +20,8 @@ use Fcntl qw(
     O_TRUNC
 
 );
+
+use Try::Tiny; 
 
 require Exporter; 
 @ISA = qw(Exporter); 
@@ -92,6 +99,10 @@ sub net_pop3_login {
 	if(!exists($args->{debug})){ 
 		$args->{debug} = 0;
 	}
+	
+	if(!exists($args->{ping_test})){ 
+		$args->{ping_test} = 0; 
+	}
 	# Override everything!
 	if($DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} == 1){ 
 		$args->{debug} = 1; 
@@ -105,6 +116,27 @@ sub net_pop3_login {
 	}
 	else { 
 	    
+		
+		if($args->{ping_test} == 1){ 
+	        my ( $n_p_t_status, $n_p_t_msg );
+	        try {
+	            ( $n_p_t_status, $n_p_t_msg ) = net_ping_test(
+	                $args->{server},
+	                $args->{port},
+	            );
+	        } catch {
+	            warn $_;
+	        };
+			
+			$r .= $n_p_t_msg;
+			
+			if($n_p_t_status == 0){ 
+				return ( undef, 0, $r );
+			}
+			
+		}
+		
+		
         $r .= "* Connecting to POP3 host:'" . $args->{server} . "' on port:'" . $args->{port} . "'\n"; 
 					
 		my $n_p3_args = { 
@@ -123,11 +155,30 @@ sub net_pop3_login {
 		#$r .= "args: " . Dumper($args);
 		#return (undef, 0, Dumper($args)); 
 		
-        my $pop = Net::POP3->new(
-			$args->{server},
-			%$n_p3_args,
- 		);
+        my $pop = undef; 
 		
+		if($args->{ping_test} == 1){ 
+			my $pop_worked = 1; 
+			try { 
+				$pop = Net::POP3->new(
+					$args->{server},
+					%$n_p3_args,
+		 		);
+			} catch { 
+				$pop_worked = 0; 
+				$r .= '* Problems connection to POP3 host: ' . $_ . "\n";
+			};
+		
+			if($pop_worked == 0){ 
+				return ( undef, 0, $r );
+			}
+		}
+		else { 
+			$pop = Net::POP3->new(
+				$args->{server},
+				%$n_p3_args,
+	 		);
+		}
 		
 		# require Data::Dumper; 
 		#$r .= 'Arguments Sent:' . 
@@ -225,6 +276,47 @@ sub net_pop3_login {
       
 	  }
 }
+
+
+
+sub net_ping_test {
+
+  #  my $self = shift;
+    my $host = shift;
+    my $port = shift;
+
+    my $status = 1;
+	my $can_use_net_ping = 1; 
+    try {
+        require Net::Ping;
+    }
+    catch {
+        $status = 0;
+        $can_use_net_ping = 0; 
+    };
+	if($can_use_net_ping == 0){ 
+		return ( 1, "* Net::Ping not available.\n" );
+	}
+
+    my $timeout = 60;
+    my $p       = Net::Ping->new("tcp");
+    $p->port_number($port);
+
+    # perform the ping
+    if ( $p->ping( $host, $timeout ) ) {
+        $p->close();
+        return ( 1, "* Host $host successfully pinged at port $port.\n" );
+    }
+    else {
+        $p->close();
+        return ( 0,
+"* Host $host could not be  pinged at port $port. Outbound port may be blocked, or host is down at specified port\n"
+        );
+    }
+
+}
+
+
 
 
 

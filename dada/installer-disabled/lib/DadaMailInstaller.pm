@@ -4994,6 +4994,10 @@ sub test_pop3_connection {
 	
 	my ($imail_obj, $imail_status, $imail_log);
 	
+
+	
+	
+	
 	if($args->{Mode} eq "POP3"){
 	    require DADA::App::POP3Tools;
 	    ( $imail_obj, $imail_status, $imail_log ) = DADA::App::POP3Tools::net_pop3_login(
@@ -5006,7 +5010,8 @@ sub test_pop3_connection {
 				starttls        => $args->{starttls},
 				SSL_verify_mode => $args->{SSL_verify_mode},
 	            AUTH_MODE       => $args->{AUTH_MODE},
-	        }
+	        	ping_test       => 1,
+			}
 	    );
 	    if ( defined($imail_obj) ) {
 			$imail_obj->quit();
@@ -5021,6 +5026,9 @@ sub test_pop3_connection {
 			);
 		}
 		else { 
+			
+			
+			
 		    require DADA::App::IMAPTools;
 		    ( $imail_obj, $imail_status, $imail_log ) = DADA::App::IMAPTools::imap_login(
 		        {
@@ -5032,6 +5040,7 @@ sub test_pop3_connection {
 					starttls        => $args->{starttls},
 					SSL_verify_mode => $args->{SSL_verify_mode},
 		            AUTH_MODE       => $args->{AUTH_MODE},
+					ping_test       => 1, 
 		        }
 		    );
 		    if ( defined($imail_obj) ) {

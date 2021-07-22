@@ -209,7 +209,8 @@ sub cgi_test_pop3_ajax {
 				AUTH_MODE       => scalar $q->param('auth_mode'),
                 USESSL          => scalar $q->param('use_ssl'),
 				starttls        => scalar $q->param('use_starttls'), 
-				SSL_verify_mode => scalar $q->param('ssl_verify_mode'),				
+				SSL_verify_mode => scalar $q->param('ssl_verify_mode'),		
+				ping_test       => 1, 		
             }
         );
     } catch {
