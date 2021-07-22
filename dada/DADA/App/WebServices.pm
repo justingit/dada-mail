@@ -20,7 +20,7 @@ my $calculated_digest = undef;
 
 use vars qw($AUTOLOAD);
 
-my $t = 1;    #$DADA::Config::DEBUG_TRACE->{DADA_App_WebServices};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_WebServices};
 
 my %allowed = (
     test => 0,
