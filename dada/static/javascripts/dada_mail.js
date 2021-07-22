@@ -2380,6 +2380,9 @@ function save_msg(async) {
 				$("#draft_id").val(content.id);
 				$('#draft_notice').text($("#draft_role").val() + ' saved: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
 				r = true;
+				
+				admin_menu_notifications();
+				
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
 				alert('Error Saving ' + $("#draft_role").val() + ': ' + thrownError);
@@ -2436,6 +2439,9 @@ function auto_save_as_draft() {
 
 
 				$("#draft_id").val(content.id);
+				
+				admin_menu_notifications();
+				
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
 				$('#draft_notice').text('Problems auto-saving! '  + new Date().format("yyyy-MM-dd h:mm:ss"));
