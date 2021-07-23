@@ -1152,17 +1152,40 @@ sub admin_menu_mailing_sending_mass_mailing_options_notification {
             my $list = $admin_list;
             require DADA::Mail::MailOut;
             my $mo = DADA::Mail::MailOut->new( { -list => $list } );
-            my ( $batch_sending_enabled, $batch_size, $batch_wait ) =
-              $mo->batch_params();
+			
+			 require DADA::MailingList::Settings; 
+			 my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+			
+			
+            my ( $batch_sending_enabled, $batch_size, $batch_wait ) = $mo->batch_params();
             my $per_sec  = $batch_size / $batch_wait;
             my $per_hour = int( $per_sec * 60 * 60 + .5 )
               ; # DEV .5 is some sort of rounding thing (with int). That's wrong.
-            if ( $batch_sending_enabled == 1 ) {
-                return commify($per_hour) . '/hr';
-            }
-            else {
-                return '';
-            }
+			  
+			if(     $ls->param('sending_method') eq 'amazon_ses'
+				&&  $ls->param('amazon_ses_auto_batch_settings') == 1
+				&&  $batch_sending_enabled == 1
+			){ 
+					
+				my $per_hour_thirded; 			
+				$per_sec = ($batch_size / $batch_wait) - ($batch_size - $batch_wait);
+				$per_hour = int( $per_sec * 60 * 60 + .5 );
+
+				$per_hour_thirded = int(($per_hour * 3) + .5); 
+				$per_hour_thirded  = commify($per_hour_thirded);
+	            $per_hour = commify($per_hour);
+				
+				 return $per_hour . '/hr - ' . $per_hour_thirded . '/hr'; 
+				
+			}
+			else {  
+	            if ( $batch_sending_enabled == 1 ) {
+	                return commify($per_hour) . '/hr';
+	            }
+	            else {
+	                return '';
+	            }			
+			} 
         }
     }
     catch {
