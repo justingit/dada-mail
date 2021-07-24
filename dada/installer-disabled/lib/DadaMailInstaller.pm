@@ -173,6 +173,7 @@ $plugins_extensions->{usage_log_to_consent_activity}->{code} = q{#					{
 #					},};
 
 
+
 my $advanced_config_params = {
 show_pii_options                    => 1,
 show_scheduled_jobs_options         => 1,
@@ -180,7 +181,7 @@ show_deployment_options             => 1,
 show_profiles                       => 1,
 show_global_template_options        => 1,
 show_security_options               => 1,
-show_global_api_options             => 1, 
+show_global_api_options             => 0, 
 show_google_maps_options            => 1,
 show_captcha_options                => 1,
 show_global_mailing_list_options    => 1,
