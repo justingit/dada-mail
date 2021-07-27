@@ -545,20 +545,15 @@ sub remove {
 				 AND list_type = ?";
 
     if ( $self->type eq 'black_list' ) {
-		#warn "here 1"; 
         if ( $DADA::Config::GLOBAL_BLACK_LIST != 1 ) {
-			#warn "here 2"; 
             $query .= ' AND list =' . $self->{dbh}->quote($self->{list});
         }
     }								 
     elsif ( $self->type eq 'list') {
-		#warn "here 3"; 
         if ( $DADA::Config::GLOBAL_UNSUBSCRIBE != 1 ) {
-			#warn "here 5"; 
             $query .= ' AND list =' . $self->{dbh}->quote($self->{list});
         }
 		else { 
-			#warn "here 6"; 
 		}
     }
 	# this is for the global unsub stuff
@@ -566,12 +561,9 @@ sub remove {
 		# ... nothin' 
 	}
     else {
-		#warn warn "here 4"; 
         $query .= ' AND list =' . $self->{dbh}->quote($self->{list});
     }
-	
-	#warn 'Query: ' . $query;
-	
+		
 	warn 'Query: ' . $query
 		if $t; 
 		
@@ -629,7 +621,19 @@ sub remove {
 		);	
 	}
 	#/ Consent!
-
+	if($self->type eq 'list') {    
+		require DADA::App::BounceHandler::ScoreKeeper;
+        my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( 
+			{ 
+				-list => $self->{list} 
+			} 
+		);
+		$bsk->remove_email(
+		{
+				-email => $self->email
+			}
+		);  
+	}
 
     # TODO: I'm just bummed that when GLOBAL UNSUB is enabled, this only logs the unsub for this list. 
 	if($args->{-log_it} == 1) { 

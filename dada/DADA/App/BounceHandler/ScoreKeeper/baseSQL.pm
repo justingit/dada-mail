@@ -3,9 +3,17 @@ package DADA::App::BounceHandler::ScoreKeeper::baseSQL;
 use strict;
 
 use lib qw(
-  ../../../../
-  ../../../../perllib
+  ../../../
+  ../../../perllib
+  
+  
 );
+
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
 
 use DADA::Config;
 use DADA::App::Guts;
@@ -344,6 +352,39 @@ sub erase {
     return 1;
 
 }
+
+sub remove_email {
+
+    my $self   = shift;
+	my ($args) = @_;
+    
+	if($DADA::Config::GLOBAL_UNSUBSCRIBE == 1){ 
+		my $query =
+	        'DELETE FROM '
+	      . $self->{sql_params}->{bounce_scores_table}
+	      . ' WHERE email = ?';
+	    my $sth = $self->{dbh}->prepare($query);
+	    $sth->execute( $args->{-email} )
+	      or croak "cannot do statement '$query'! $DBI::errstr\n";
+	  	$sth->finish;
+	      return 1;
+	}
+	else { 
+		my $query =
+	        'DELETE FROM '
+	      . $self->{sql_params}->{bounce_scores_table}
+	      . ' WHERE list = ? AND email = ?';
+	    my $sth = $self->{dbh}->prepare($query);
+	    $sth->execute( $self->{list}, $args->{-email} )
+	      or croak "cannot do statement '$query'! $DBI::errstr\n";
+	  	$sth->finish;
+	      return 1;
+	}
+	
+
+
+}
+
 
 sub _list_name_check {
     my ( $self, $n ) = @_;
