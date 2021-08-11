@@ -1901,7 +1901,6 @@ sub screen {
 		if($args->{-decode_before} == 1){ 
 			${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
 		}
-		
 		$template = HTML::Template::MyExpr->new(
 			%Global_Template_Options, 
 			scalarref => $args->{-data},
@@ -2544,13 +2543,31 @@ sub webify_and_santize {
     foreach(@{$args->{-to_sanitize}}){ 
     
         
-        $args->{-vars}->{$_} = markdown_to_html({-str =>$args->{-vars}->{$_}});
+		
+		# Markdown seems to wrap all strings in <p> tags
+		if(
+			   $_ eq 'list_settings.discussion_pop_email'
+			|| $_ eq 'discussion_pop_email'
+			|| $_ eq 'list_settings.list_owner_email'			
+			|| $_ eq 'list_settings.list_owner_email'			
+			|| $_ eq 'list_owner_email'			
+			|| $_ eq 'list_settings.admin_email'			
+			|| $_ eq 'admin_email'			
+		){
+			plaintext_to_html({-str => $args->{-vars}->{$_}});
+		}
+		else { 
+	        $args->{-vars}->{$_} = markdown_to_html({-str =>$args->{-vars}->{$_}});
+		}
+		
         $args->{-vars}->{$_} = _email_protect(
 			{
 				-string => $args->{-vars}->{$_},
 				-list   => $args->{-list}, #?
 			}
-		);  
+		);
+		
+          
         
     }
     
