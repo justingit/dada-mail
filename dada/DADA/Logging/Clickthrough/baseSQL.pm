@@ -1211,6 +1211,12 @@ sub fetch_message_subject {
         )->[0];
     }
 
+
+    require DADA::App::FormatMessages;
+    my $dfm = DADA::App::FormatMessages->new( -List => $self->{name} );
+	$subject = $dfm->_decode_header($subject);
+	
+	
     if ( !defined($subject) ) {
         $subject = DADA::App::Guts::date_this( -Packed_Date => $msg_id );
     }
