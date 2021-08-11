@@ -5,6 +5,11 @@ use lib qw(
   ../../DADA/perllib
 );
 
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
 
@@ -190,8 +195,45 @@ sub fetch {
         if ( $self->cache() == 1 ) {
             $self->{tmp_store}->{$fn} = $r;
         }
+		
+		#my ($pt_valid, $pt_errors) = $self->validate_template($pt); 
+		#if(!$pt_valid) { 
+		#	warn "Problems with template: " . $pt_file . "\nerrors:\n" . $pt_errors;
+		#}
+		#my ($html_valid, $html_errors) = $self->validate_template($html); 
+		#if(!$html_valid) { 
+		#	warn "Problems with template: " . $html_file . "\nerrors:\n" . $html_errors;
+		#}		
         return $r;
     }
+}
+
+
+
+
+sub validate_template { 
+	my $self = shift; 
+	my $data = shift; 
+	
+	require DADA::Template::Widgets; 
+    my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
+        {
+            -data => \$data,
+        }
+    );
+	
+	return($valid, $errors);
+	
+#    if ( $valid == 0 ) {
+#        warn 'Email Theme Template at: '
+#          . $file_path
+#          . ' contains errors: '
+#          . $errors;
+#    	  # Do something very clever here. 
+#    }
+#    else {
+#    }
+
 }
 
 sub filename {
@@ -225,7 +267,7 @@ sub filename {
             if ( $valid == 0 ) {
                 warn 'Email Theme Template at: '
                   . $file_path
-                  . ' contains errors: '
+                  . ' contains errors - using "default": '
                   . $errors;
                 $use_default = 1;
             }
