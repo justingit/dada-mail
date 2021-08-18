@@ -160,6 +160,9 @@ sub setup {
         'delete_email'                   => \&delete_email,
         'subscription_options'           => \&subscription_options,
 		'admin_menu_notifications'       => \&admin_menu_notifications, 
+		
+		'admin_check_login_status'      => \&admin_check_login_status, 
+		
         'send_email'                     => \&send_email,
 		'image_drag_and_drop'            => \&image_drag_and_drop, 
 		'no_draft_available'             => \&no_draft_available, 
@@ -1322,6 +1325,43 @@ sub admin_menu_bridge_notification {
         carp($_);
         return '';
     };
+}
+
+
+
+
+sub admin_check_login_status { 
+    my $self = shift;
+    my $q    = $self->query();
+
+    my $r = {};
+
+    require JSON;
+    my $json = JSON->new->allow_nonref;
+	
+	my $screen = $q->param('screen');
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security(
+        -cgi_obj  => $q,
+        -Function => $screen,
+      );
+    if ( !$checksout ) {
+		$r = {
+			status => 0,	
+		};
+    }
+    else {
+		$r = {
+			status => 1,	
+		};
+	}
+	
+    $self->header_props( -type => 'application/json' );
+    
+	my     $body = $json->encode($r);
+	return $body; 
+	
 }
 
 

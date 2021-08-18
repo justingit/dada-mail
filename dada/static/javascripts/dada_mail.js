@@ -68,6 +68,8 @@ jQuery(document).ready(function($){
 		});
 	});
 
+
+
 	// Admin Menu
 
 	if ($("#navcontainer").length) {
@@ -89,9 +91,15 @@ jQuery(document).ready(function($){
 
 	}
 
+
+	
 	
 	//Mail Sending >> Send a Message
-		if ($("#send_email").length || $("#list_invite").length) {		
+		if ($("#send_email").length || $("#list_invite").length) {
+		
+//		alert("start");	
+		admin_check_login_status('send_email');
+//		alert("finish");		
         
 		var stickyHeader = $('#buttons').offset().top;
         $(window).scroll(function(){
@@ -2449,11 +2457,11 @@ function auto_save_as_draft() {
 				console.log('thrownError:' + thrownError);
 			}
 		});
-			if (no_loop != 1) {
-				setTimeout(
-				refresh_loop, r);
-			}
+		if (no_loop != 1) {
+			setTimeout(
+			refresh_loop, r);
 		}
+	}
 	setTimeout(refresh_loop, r);
 	//refresh_loop(1);
 }
@@ -5288,6 +5296,46 @@ function SetUrl(url, width, height, alt) {
 	oWindow.close(); 
 	oWindow = null;
 }
+
+function admin_check_login_status(screen_name) {
+	
+	alert("admin_check_login_status!");
+	
+	var r = 60 * 1000; // Every 5 minutes. * 5
+	
+	var the_screen_name = screen_name;
+	
+	setTimeout(function() { cls_refresh_loop(the_screen_name) }, 10000);
+}
+
+
+function cls_refresh_loop(screen_name) {
+	
+	alert("screen_name: " + screen_name);
+	var request = $.ajax({
+		url:       $("#s_program_url").val(),
+		type:      "POST",
+		dataType: "json",
+		cache:     false,
+		data:     { 
+			flavor: 'admin_check_login_status', 
+			screen: screen_name
+		},
+		success: function(content) {
+			if (content.status === 1){ 
+				alert("checks out");
+			}
+			else { 
+				alert("nope!");
+			}
+		}, 
+		error: function(xhr, ajaxOptions, thrownError) {
+			alert("well that didn't work");
+		}
+	});
+	admin_check_login_status(screen_name);
+}
+
 
 
 
