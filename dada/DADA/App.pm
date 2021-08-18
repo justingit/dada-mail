@@ -12253,6 +12253,7 @@ sub list_archive {
 
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::PROGRAM_URL );
+		return;
 
     }
 
