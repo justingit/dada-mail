@@ -157,6 +157,7 @@ sub setup {
         'add'                            => \&add,
         'check_status'                   => \&check_status,
         'email_password'                 => \&email_password,
+		'post_email_password'            => \&post_email_password, 
         'add_email'                      => \&add_email,
         'delete_email'                   => \&delete_email,
         'subscription_options'           => \&subscription_options,
@@ -243,6 +244,7 @@ sub setup {
 		'post_profile_activate'         => \&post_profile_activate, 
         'profile_register'              => \&profile_register,
         'profile_reset_password'        => \&profile_reset_password,
+		'post_profile_reset_password'   => \&post_profile_reset_password, 
         'profile_update_email'          => \&profile_update_email,
         'profile_login'                 => \&profile_login,
         'profile_logout'                => \&profile_logout,
@@ -13364,7 +13366,37 @@ sub archive_atom {
     return $self->archive_rss( -type => 'atom' );
 }
 
-sub email_password {
+
+
+
+
+
+sub email_password { 
+    my $self = shift;
+    my $q    = $self->query();
+		
+	if($q->request_method() =~ m/POST/i){
+		return $self->post_email_password(); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_email_password.tmpl',
+				-vars => { 
+					list         => $q->param('list'),
+					pass_auth_id => $q->param('pass_auth_id'),
+				}
+	        }
+	    );
+		return $scrn; 	
+	}
+
+}
+
+
+
+
+sub post_email_password {
 
     my $self = shift;
     my $q    = $self->query();
@@ -15634,7 +15666,35 @@ sub profile_logout {
     return $body;
 }
 
-sub profile_reset_password {
+
+
+
+
+sub profile_reset_password { 
+    my $self = shift;
+    my $q    = $self->query();
+	
+	if($q->request_method() =~ m/POST/i){
+		return $self->post_profile_reset_password(); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_profile_reset_password.tmpl',
+				-vars => { 
+					email     => $q->param('email'),
+					auth_code => $q->param('auth_code'),
+				}
+	        }
+	    );
+		return $scrn; 	
+	}
+}
+
+
+
+
+sub post_profile_reset_password {
 
     my $self  = shift;
     my $q     = $self->query();
