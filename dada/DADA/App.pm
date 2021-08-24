@@ -338,8 +338,11 @@ sub setup {
             $sched_flavor                      => $pm_prefs,
             subscribe                          => $pm_prefs,
             restful_subscribe                  => $pm_prefs,
-            #token                              => $pm_prefs,
+            
+			# Remember to remove these comments:
+			#token                              => $pm_prefs,
 			#post_token                         => $pm_prefs,
+			
             unsubscribe                        => $pm_prefs,
             unsubscription_request             => $pm_prefs,
             login                              => $pm_prefs,
@@ -11311,18 +11314,28 @@ sub token {
     my $q    = $self->query();
 
     my %args = ( -html_output => 1, @_ );
-    require DADA::App::Subscriptions;
-    my $das = DADA::App::Subscriptions->new;
-		
-    my $scrn = DADA::Template::Widgets::screen(
-        {
-            -screen => 'postify_token_get.tmpl',
-			-vars => { 
-				token => $q->param('token'), 
-			}
-        }
-    );
-	return $scrn; 
+
+	# I'm fine with this check, as the whole reason for this is to 
+	# ONLY accept request via POST: 
+	#
+	# There are some exceptions, where "token" is used as a flavor of the form - this 
+	# should handle those exceptions as well, so long as the form's action is, "POST":
+	
+	if($q->request_method() =~ m/POST/i){
+		# is this ever called with args?
+		return $self->post_token(%args); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_token_get.tmpl',
+				-vars => { 
+					token => $q->param('token'), 
+				}
+	        }
+	    );
+		return $scrn; 
+	}
 	
 }
 sub post_token {
