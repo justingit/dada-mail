@@ -113,6 +113,7 @@ sub setup {
 		'modal_subscribe_landing'  => \&modal_subscribe_landing, 
         'api'                      => \&api,
         'token'                    => \&token,
+		'post_token'               => \&post_token, 
         'unsubscribe'              => \&unsubscribe,
         'unsubscription_request'   => \&unsubscription_request,
         'unsubscribe_email_lookup' => \&unsubscribe_email_lookup,
@@ -337,7 +338,8 @@ sub setup {
             $sched_flavor                      => $pm_prefs,
             subscribe                          => $pm_prefs,
             restful_subscribe                  => $pm_prefs,
-            token                              => $pm_prefs,
+            #token                              => $pm_prefs,
+			#post_token                         => $pm_prefs,
             unsubscribe                        => $pm_prefs,
             unsubscription_request             => $pm_prefs,
             login                              => $pm_prefs,
@@ -11302,7 +11304,28 @@ sub outdated_subscription_urls {
     return $scrn;
 }
 
-sub token {
+
+sub token { 
+
+    my $self = shift;
+    my $q    = $self->query();
+
+    my %args = ( -html_output => 1, @_ );
+    require DADA::App::Subscriptions;
+    my $das = DADA::App::Subscriptions->new;
+		
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -screen => 'postify_token_get.tmpl',
+			-vars => { 
+				token => $q->param('token'), 
+			}
+        }
+    );
+	return $scrn; 
+	
+}
+sub post_token {
 
     my $self = shift;
     my $q    = $self->query();
