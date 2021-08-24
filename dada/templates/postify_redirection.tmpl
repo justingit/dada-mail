@@ -1,0 +1,22 @@
+<html>
+<head> 
+	<script type="text/javascript">
+		function submitform() { 
+			document.getElementById('postify_redirection_form').submit();
+		}
+		window.onload=submitform;
+		
+	</script> 
+</head>
+
+<body>
+	<form id="postify_redirection_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+		<input type="hidden" name="flavor" value="post_redirection">
+		<input type="hidden" name="list" value="<!-- tmpl_var list -->">
+		<input type="hidden" name="key" value="<!-- tmpl_var key -->">
+		<input type="hidden" name="email" value="<!-- tmpl_var email -->">
+		<input type="submit" value="Click here to complete request...">
+	</form>
+</body>
+
+</html>

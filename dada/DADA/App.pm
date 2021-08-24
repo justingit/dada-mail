@@ -227,7 +227,8 @@ sub setup {
         'reset_cipher_keys'             => \&reset_cipher_keys,
         'restore_lists'                 => \&restore_lists,
         'r'                             => \&redirection,
-        'subscriber_help'               => \&subscriber_help,
+        'post_redirection'              => \&post_redirection, 
+		'subscriber_help'               => \&subscriber_help,
         'show_img'                      => \&show_img,
         'file_attachment'               => \&file_attachment,
         'm_o_c'                         => \&m_o_c,
@@ -239,6 +240,7 @@ sub setup {
         'show_error'                    => \&show_error,
         'subscription_form_html'        => \&subscription_form_html,
         'profile_activate'              => \&profile_activate,
+		'post_profile_activate'         => \&post_profile_activate, 
         'profile_register'              => \&profile_register,
         'profile_reset_password'        => \&profile_reset_password,
         'profile_update_email'          => \&profile_update_email,
@@ -14742,7 +14744,40 @@ sub file_attachment {
 
 }
 
-sub redirection {
+
+
+
+sub redirection { 
+    my $self = shift;
+    my $q    = $self->query();
+	
+	# This could also certainly be something we do optionally: 
+	
+	if($q->request_method() =~ m/POST/i){
+		return $self->post_redirection(); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_redirection.tmpl',
+				-vars => { 
+					
+					list   => $q->param('list'),
+					key    => $q->param('key'),
+					email  => $q->param('email'),
+					
+				}
+	        }
+	    );
+		return $scrn; 	
+	}
+
+}
+
+
+
+
+sub post_redirection {
 
     my $self = shift;
     my $q    = $self->query();
@@ -15100,7 +15135,34 @@ sub profile_register {
     }
 }
 
-sub profile_activate {
+
+
+
+sub profile_activate { 
+    my $self = shift;
+    my $q    = $self->query();
+	
+	if($q->request_method() =~ m/POST/i){
+		return $self->post_redirection(); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_profile_activate.tmpl',
+				-vars => { 
+					email => $q->param('email'),
+					auth_code => $q->param('auth_code'),
+				}
+	        }
+	    );
+		return $scrn; 	
+	}
+}
+
+
+
+
+sub post_profile_activate {
 
     my $self = shift;
     my $q    = $self->query();
@@ -15113,8 +15175,9 @@ sub profile_activate {
     if ( !DADA::Profile::feature_enabled('register') == 1 ) {
         return $self->default();
     }
-
-    my $email     = strip( cased( xss_filter( scalar $q->param('email') ) ) );
+	
+	
+	my $email     = strip( cased( xss_filter( scalar $q->param('email') ) ) );
     my $auth_code = xss_filter( scalar $q->param('auth_code') );
 
     my $prof = DADA::Profile->new( { -email => $email } );
