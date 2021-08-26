@@ -14783,9 +14783,18 @@ sub redirection {
     my $self = shift;
     my $q    = $self->query();
 	
-	# This could also certainly be something we do optionally: 
+
+    if ( check_if_list_exists( -List => $q->param('list') ) == 0 ) {
+		return $self->default();
+    }
+	require DADA::MailingList::Settings; 
+	my $ls = DADA::MailingList::Settings->new({-list => $q->param('list')});
 	
-	if($q->request_method() =~ m/POST/i){
+	 
+	if(
+		   $q->request_method() =~ m/POST/i
+		|| $ls->param('tracker_protect_tracked_links_from_prefetching') != 1
+	){
 		return $self->post_redirection(); 
 	}
 	else { 

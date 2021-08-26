@@ -1674,12 +1674,13 @@ $MIME_TOOLS_PARAMS //= {
     tracker_clean_up_reports                        => 1,
     tracker_show_message_reports_in_mailing_monitor => 0,
 
-    tracker_update_profiles_w_geo_ip_data            => 0,
-    tracker_update_profile_fields_ip_dada_meta       => undef, 
+	tracker_protect_tracked_links_from_prefetching  => 1, 
+    tracker_update_profiles_w_geo_ip_data           => 0,
+    tracker_update_profile_fields_ip_dada_meta      => undef, 
 
-	tracker_send_analytics_email_notification        => 1, 
-	tracker_data_auto_remove                         => 0,
-	tracker_data_auto_remove_after_timespan          => '1y', 
+	tracker_send_analytics_email_notification       => 1, 
+	tracker_data_auto_remove                        => 0,
+	tracker_data_auto_remove_after_timespan         => '1y', 
 
     #	tracker_enable_data_cache                           => 1,
     #	tracker_dada_cache_expires                          => 1, # in hours
