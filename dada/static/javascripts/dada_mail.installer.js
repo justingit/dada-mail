@@ -479,7 +479,7 @@ function test_CAPTCHA_configuration() {
 			captcha_params_v2_private_key: $("#captcha_params_v2_private_key").val()
 		},
 		dataType: "html",
-		done: function(content) {
+		success: function(content) {
 			$("#" + target_div).html(content);
 			var captchaWidgetId = grecaptcha.render( 'google_recaptcha_example', {
 			  'sitekey' : $("#captcha_params_v2_public_key").val()
