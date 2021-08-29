@@ -1,0 +1,20 @@
+<html>
+<head> 
+	<script type="text/javascript">
+		function submitform() { 
+			document.getElementById('post_token_form').submit();
+		}
+		window.onload=submitform;
+		
+	</script> 
+</head>
+
+<body>
+	<form id="post_token_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+		<input type="hidden" name="flavor" value="post_token">
+		<input type="hidden" name="token" value="<!-- tmpl_var token escape="HTML" -->">
+		<input type="submit" value="Click here to complete request...">
+	</form>
+</body>
+
+</html>

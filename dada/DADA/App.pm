@@ -113,6 +113,7 @@ sub setup {
 		'modal_subscribe_landing'  => \&modal_subscribe_landing, 
         'api'                      => \&api,
         'token'                    => \&token,
+		'post_token'               => \&post_token, 
         'unsubscribe'              => \&unsubscribe,
         'unsubscription_request'   => \&unsubscription_request,
         'unsubscribe_email_lookup' => \&unsubscribe_email_lookup,
@@ -156,6 +157,7 @@ sub setup {
         'add'                            => \&add,
         'check_status'                   => \&check_status,
         'email_password'                 => \&email_password,
+		'post_email_password'            => \&post_email_password, 
         'add_email'                      => \&add_email,
         'delete_email'                   => \&delete_email,
         'subscription_options'           => \&subscription_options,
@@ -226,7 +228,8 @@ sub setup {
         'reset_cipher_keys'             => \&reset_cipher_keys,
         'restore_lists'                 => \&restore_lists,
         'r'                             => \&redirection,
-        'subscriber_help'               => \&subscriber_help,
+        'post_redirection'              => \&post_redirection, 
+		'subscriber_help'               => \&subscriber_help,
         'show_img'                      => \&show_img,
         'file_attachment'               => \&file_attachment,
         'm_o_c'                         => \&m_o_c,
@@ -238,8 +241,10 @@ sub setup {
         'show_error'                    => \&show_error,
         'subscription_form_html'        => \&subscription_form_html,
         'profile_activate'              => \&profile_activate,
+		'post_profile_activate'         => \&post_profile_activate, 
         'profile_register'              => \&profile_register,
         'profile_reset_password'        => \&profile_reset_password,
+		'post_profile_reset_password'   => \&post_profile_reset_password, 
         'profile_update_email'          => \&profile_update_email,
         'profile_login'                 => \&profile_login,
         'profile_logout'                => \&profile_logout,
@@ -337,7 +342,12 @@ sub setup {
             $sched_flavor                      => $pm_prefs,
             subscribe                          => $pm_prefs,
             restful_subscribe                  => $pm_prefs,
-            token                              => $pm_prefs,
+            
+			token                              => $pm_prefs,
+			post_token                         => $pm_prefs,
+			
+			email_password                     => $pm_prefs,
+			profile_reset_password             => $pm_prefs,
             unsubscribe                        => $pm_prefs,
             unsubscription_request             => $pm_prefs,
             login                              => $pm_prefs,
@@ -11302,7 +11312,38 @@ sub outdated_subscription_urls {
     return $scrn;
 }
 
-sub token {
+
+sub token { 
+
+    my $self = shift;
+    my $q    = $self->query();
+
+    my %args = ( -html_output => 1, @_ );
+
+	# I'm fine with this check, as the whole reason for this is to 
+	# ONLY accept request via POST: 
+	#
+	# There are some exceptions, where "token" is used as a flavor of the form - this 
+	# should handle those exceptions as well, so long as the form's action is, "POST":
+	
+	if($q->request_method() =~ m/POST/i){
+		# is this ever called with args?
+		return $self->post_token(%args); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_token_get.tmpl',
+				-vars => { 
+					token => $q->param('token'), 
+				}
+	        }
+	    );
+		return $scrn; 
+	}
+	
+}
+sub post_token {
 
     my $self = shift;
     my $q    = $self->query();
@@ -13327,7 +13368,37 @@ sub archive_atom {
     return $self->archive_rss( -type => 'atom' );
 }
 
-sub email_password {
+
+
+
+
+
+sub email_password { 
+    my $self = shift;
+    my $q    = $self->query();
+		
+	if($q->request_method() =~ m/POST/i){
+		return $self->post_email_password(); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_email_password.tmpl',
+				-vars => { 
+					list         => $q->param('list'),
+					pass_auth_id => $q->param('pass_auth_id'),
+				}
+	        }
+	    );
+		return $scrn; 	
+	}
+
+}
+
+
+
+
+sub post_email_password {
 
     my $self = shift;
     my $q    = $self->query();
@@ -14707,7 +14778,49 @@ sub file_attachment {
 
 }
 
-sub redirection {
+
+
+
+sub redirection { 
+    my $self = shift;
+    my $q    = $self->query();
+	
+
+    if ( check_if_list_exists( -List => $q->param('list') ) == 0 ) {
+		return $self->default();
+    }
+	require DADA::MailingList::Settings; 
+	my $ls = DADA::MailingList::Settings->new({-list => $q->param('list')});
+	
+	 
+	if(
+		   $q->request_method() =~ m/POST/i
+		|| $ls->param('tracker_protect_tracked_links_from_prefetching') != 1
+	){
+		return $self->post_redirection(); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_redirection.tmpl',
+				-vars => { 
+					
+					list   => $q->param('list'),
+					key    => $q->param('key'),
+					email  => $q->param('email'),
+					
+				}
+	        }
+	    );
+		return $scrn; 	
+	}
+
+}
+
+
+
+
+sub post_redirection {
 
     my $self = shift;
     my $q    = $self->query();
@@ -15065,7 +15178,34 @@ sub profile_register {
     }
 }
 
-sub profile_activate {
+
+
+
+sub profile_activate { 
+    my $self = shift;
+    my $q    = $self->query();
+	
+	if($q->request_method() =~ m/POST/i){
+		return $self->post_redirection(); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_profile_activate.tmpl',
+				-vars => { 
+					email => $q->param('email'),
+					auth_code => $q->param('auth_code'),
+				}
+	        }
+	    );
+		return $scrn; 	
+	}
+}
+
+
+
+
+sub post_profile_activate {
 
     my $self = shift;
     my $q    = $self->query();
@@ -15078,8 +15218,9 @@ sub profile_activate {
     if ( !DADA::Profile::feature_enabled('register') == 1 ) {
         return $self->default();
     }
-
-    my $email     = strip( cased( xss_filter( scalar $q->param('email') ) ) );
+	
+	
+	my $email     = strip( cased( xss_filter( scalar $q->param('email') ) ) );
     my $auth_code = xss_filter( scalar $q->param('auth_code') );
 
     my $prof = DADA::Profile->new( { -email => $email } );
@@ -15536,7 +15677,35 @@ sub profile_logout {
     return $body;
 }
 
-sub profile_reset_password {
+
+
+
+
+sub profile_reset_password { 
+    my $self = shift;
+    my $q    = $self->query();
+	
+	if($q->request_method() =~ m/POST/i){
+		return $self->post_profile_reset_password(); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_profile_reset_password.tmpl',
+				-vars => { 
+					email     => $q->param('email'),
+					auth_code => $q->param('auth_code'),
+				}
+	        }
+	    );
+		return $scrn; 	
+	}
+}
+
+
+
+
+sub post_profile_reset_password {
 
     my $self  = shift;
     my $q     = $self->query();
