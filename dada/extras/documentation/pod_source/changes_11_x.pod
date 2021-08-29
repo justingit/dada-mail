@@ -3,6 +3,61 @@
 
 =encoding utf-8
 
+=head1 11.15.0
+
+=head2 Focus
+
+This is a release that includes some features as well as some fairly important security enhancements. 
+Please read the whole changelog for this release to understand the important changes made. 
+
+=head2 Changes
+
+=head3 jQuery upgraded from v2.2.4 to v3.6.0 
+
+Older versions of jQuery have known potential security issues that have been fixed in newer versions.
+No known security exploits in Dada Mail have been found from this older version of jQuery, but we suggest upgrading
+your version of Dada Mail to stay as safe as possible.
+
+More information: 
+
+L<https://snyk.io/test/npm/jquery/2.2.4>
+
+=head2 Link Prefetching Protection
+
+Links in email messages in Dada Mail that cause an action, like "subscribe", "approve message", "reject message", etc can be automatically triggered without the user's knowledge by email readers that prefetch the content from the link. Link prefetching happens for a few reasons, including filtering links for malicious content or generate previews. 
+
+Starting in v11.15.0, Dada Mail has safeguards against link prefetching that leads to an action, by translating these "GET" requests to, "POST" requests. These include: 
+
+=over
+
+=item * Subscription Confirmations
+
+=item * Unsubscriptions
+
+=item * List Owner Accept/Rejecting Subscriptions
+
+=item * List Password Reset
+
+=item * Clickthrough Link Tracking
+
+=item * Profile Activation
+
+=item * Profile Password Reset
+
+=item * Moderating Discussion Messages
+
+=back
+
+This is a farly large issue, and we do suggest everyone to upgrade to v11.15.0 (or later). 
+
+=head2 Bugfixes
+
+=head3 Trying to view the public archive without knowing the list will lead to blank page/error #1047 
+
+L<https://github.com/justingit/dada-mail/issues/1047>
+
+
+
 =head1 11.14.2
 
 =head2 Focus
