@@ -110,7 +110,7 @@ sub reset_globals {
 }
 sub init_vars {
 
-    # DEV: This NEEDS to be in its own  ule - perhaps DADA::App::PluginHelper or something?
+    # DEV: This NEEDS to be in its own  module - perhaps DADA::App::PluginHelper or something?
     while ( my $key = each %$Plugin_Config ) {
         if ( exists( $DADA::Config::PLUGIN_CONFIGS->{'Bridge'}->{$key} ) ) {
             if ( defined( $DADA::Config::PLUGIN_CONFIGS->{'Bridge'}->{$key} ) ) {
