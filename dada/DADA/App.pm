@@ -343,10 +343,11 @@ sub setup {
             subscribe                          => $pm_prefs,
             restful_subscribe                  => $pm_prefs,
             
-			# Remember to remove these comments:
-			#token                              => $pm_prefs,
-			#post_token                         => $pm_prefs,
+			token                              => $pm_prefs,
+			post_token                         => $pm_prefs,
 			
+			email_password                     => $pm_prefs,
+			profile_reset_password             => $pm_prefs,
             unsubscribe                        => $pm_prefs,
             unsubscription_request             => $pm_prefs,
             login                              => $pm_prefs,
