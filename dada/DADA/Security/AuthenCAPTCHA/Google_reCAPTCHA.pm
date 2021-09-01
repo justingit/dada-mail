@@ -62,8 +62,8 @@ sub check_answer {
 			    $result->{is_valid} = 1;
 			}
 		} catch { 
-			warn "Problem with Google reCAPTCHA (v2):" . $_; 
-			 $result->{is_valid} = 0;
+			warn "Problem with Google reCAPTCHA (v2) Service- returning 0/invalid:" . $_; 
+			$result->{is_valid} = 0;
 		};
 	}
     return $result;
