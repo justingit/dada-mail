@@ -63,7 +63,7 @@ sub check_answer {
 			}
 		} catch { 
 			warn "Problem with Google reCAPTCHA (v2):" . $_; 
-			 $result->{is_valid} = 1;
+			 $result->{is_valid} = 0;
 		};
 	}
     return $result;
