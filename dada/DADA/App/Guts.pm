@@ -3347,7 +3347,7 @@ sub validate_recaptcha {
         );
 		my $success = $r->{success};
 		my $score   = $r->{score}; 
-        if (   $$success == 1
+        if (   $success == 1
             && $score >=
             $DADA::Config::RECAPTCHA_PARAMS->{v3}->{score_threshold} )
         {

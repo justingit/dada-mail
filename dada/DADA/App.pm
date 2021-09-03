@@ -13579,7 +13579,7 @@ sub login {
 
     my $list = $admin_list;
 	
-	# We've not going to accept GET requests:
+	# We're not going to accept GET requests:
 	if($q->request_method() !~ m/POST/i){
 	    return user_error(
 	        {
