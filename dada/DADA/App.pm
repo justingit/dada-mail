@@ -13578,6 +13578,17 @@ sub login {
     }
 
     my $list = $admin_list;
+	
+	# We've not going to accept GET requests:
+	if($q->request_method() !~ m/POST/i){
+	    return user_error(
+	        {
+	            -list  => $list,
+	            -error => 'incorrect_login_url',
+	        }
+	    );
+	}
+	
 
     if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
         require DADA::Security::SimpleAuthStringState;
