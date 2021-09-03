@@ -13062,6 +13062,12 @@ sub send_archive {
     my $note       = xss_filter( scalar $q->param('note') );
     my $list       = $q->param('list');
 
+
+	# We're not going to accept GET requests:
+	if($q->request_method() !~ m/POST/i){
+		return $self->default();
+	}
+
     my $errors = 0;
 
     my $list_exists = check_if_list_exists( -List => $list );
