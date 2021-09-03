@@ -11012,6 +11012,13 @@ sub subscribe {
     my $self = shift;
     my $q    = $self->query();
 
+
+	# We're not going to accept GET requests:
+	if($q->request_method() !~ m/POST/i){
+		return $self->subscribe_landing(); 
+	}
+	
+	
     my %args = ( -html_output => 1, @_ );
 
 	my $skip_tests = [];
