@@ -468,11 +468,16 @@ sub send {
             $to = $fields{To};
 
         }
-
         # why wouldn't it be defined?
         if ( defined($to) ) {
             ;
             eval { $to = ( Email_Address_parse($to) )[0]->address; };
+        }
+        
+        if(length(strip($to)) < 4){ 
+            warn 'To: is undefined?!: ' . $to;
+            $smtp_obj->reset();
+            return -1;
         }
 
         my $smtp_msg = '';
