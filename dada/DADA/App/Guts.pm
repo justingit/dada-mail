@@ -3345,7 +3345,7 @@ sub validate_recaptcha {
                 -remoteip => $args->{-remote_addr},
             }
         );
-		my $success = $r->{success};
+		my $success = $r->{success}; 
 		my $score   = $r->{score}; 
         if (   $success == 1
             && $score >=
