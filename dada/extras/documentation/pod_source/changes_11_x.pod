@@ -3,6 +3,46 @@
 
 =encoding utf-8
 
+=head1 11.15.1
+
+=head2 Focus
+
+This is a bugfix release, with changes to close up some potential security holes. It's an update we'd suggest for everyone. Most especially for people who are relying on Google reCAPTCHA v2 to protect their subscription forms. We've found that there is a way to circumvent the reCAPTCHA rendering it ineffective. There was also a bug found in the reCAPTHA v3 implementation, so we don't suggest simply switching to v3. More informaton can be found in these two issues: 
+
+L<https://github.com/justingit/dada-mail/issues/1053>
+
+L<https://github.com/justingit/dada-mail/issues/1060>
+
+=head2 Bugfixes
+
+=head3  Creating a new list can be done via a GET request
+
+L<https://github.com/justingit/dada-mail/issues/1061>
+
+=head3 reCAPTCHA v3 check has strangely derefrenced variable in code, likely to cause issues.
+
+L<https://github.com/justingit/dada-mail/issues/1060>
+
+=head3 Logging into the List Control Panel accepts a GET request
+
+L<https://github.com/justingit/dada-mail/issues/1059>
+
+=head3 Dada Mail accepts GET requests to, "Forward to a Friend" form
+
+L<https://github.com/justingit/dada-mail/issues/1058>
+
+=head3 Dada Mail accepts "subscribe" requests via GET
+
+L<https://github.com/justingit/dada-mail/issues/1057>
+
+=head3 Attempting to send to a blank email address during a mass mailing will stall out the mass mailing (SMTP)
+
+L<https://github.com/justingit/dada-mail/issues/1056>
+
+=head3 Google Recaptcha v2 check will return valid if problem with API call happens 
+
+L<https://github.com/justingit/dada-mail/issues/1053>
+
 =head1 11.15.0
 
 =head2 Focus
