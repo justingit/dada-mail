@@ -91,7 +91,20 @@ Class DadaMailWebService
 			case 'settings':
                 $digest = $this->digest($nonce);
                 break;
-            case 'validate_subscription':
+			case 'create_new_list': 	
+						
+	            $encoded_settings = json_encode($params['settings']);
+	            $encoded_options  = json_encode($params['options']);
+	            $query_params     = array(
+	                'nonce'    => $nonce,
+					'options'  => $encoded_options,
+	                'settings' => $encoded_settings
+	            );
+	            $rpd              = $this->the_query_string($query_params);
+	            $digest           = $this->digest($rpd);
+				break;
+				
+			case 'validate_subscription':
             case 'subscription':
             case 'unsubscription':
                 $encoded_addresses = json_encode($params['addresses']);

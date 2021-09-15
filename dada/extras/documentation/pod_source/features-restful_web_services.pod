@@ -455,6 +455,38 @@ String, B<default: undef>. If a valid list short name is password, list settings
 
 =back
 
+B<Note>: Pass a blank/undefined value for the, "list" in the C<request> method for both the Perl and PHP clients! The C<list> you want the new list to have will be passed in the C<settings> paramaters.
+
+Here's an example of using the php client to create a new list: 
+
+	# List is undefined
+	# public and private key are GLOBAL
+	$ws = new DadaMailWebService(
+	  $server,
+	  $public_key,
+	  $private_key
+	);
+	$params = [
+	       'settings' => [
+	           'list'              => 'newlistname', 
+			   'privacy_policy'    => "privacy_policy",
+	            'list_name'        => "New List Name",
+				'list_owner_email' => 'listowner@example.com',
+	            'password'         => "password" ,
+	            'info'             => "this is my list info",
+	            'physical_address' => "This is the physical address",
+	       ],
+	       'options' => [
+			   'send_new_list_welcome_email'                => 1, 
+			   'send_new_list_welcome_email_with_list_pass' => 1, 
+			   'clone_settings_from_list'                   => 'existinglist',
+	       ] 
+	];
+	$results  = $ws->request(
+	  $list,
+	  'create_new_list',
+	  $params
+	); 
 
 =head4 validate_subscription
 
