@@ -8567,7 +8567,7 @@ sub subscription_options {
                 -associate => $q,
                 -settings  => {
                     view_list_subscriber_number                      => undef,
-                    view_list_show_timestamp_col                     => 0,
+                    #view_list_show_timestamp_col                     => 0,
                     view_list_order_by                               => undef,
                     view_list_order_by_direction                     => undef,
                     view_list_show_sub_confirm_list                  => 0,

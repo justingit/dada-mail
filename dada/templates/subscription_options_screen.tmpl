@@ -55,15 +55,19 @@
     </div> 
     <!-- tmpl_if can_have_subscriber_fields --> 
 	
-        <div class="row">
-            <div class="small-12 columns">
-                <input type="checkbox" name="view_list_show_timestamp_col" id="view_list_show_timestamp_col" value="1" <!-- tmpl_if list_settings.view_list_show_timestamp_col -->checked="checked"<!--/tmpl_if--> >
-                <label for="view_list_show_timestamp_col">
-                 Show, &quot;Subscription Date&quot; column
-                </label>
-            </div> 
-        </div>
+    
 		
+		<!-- tmpl_if comment --> 
+			<!-- this is a feature that's basically removed - we always show the subscription date: -->
+		    <div class="row">
+	            <div class="small-12 columns">
+	                <input type="checkbox" name="view_list_show_timestamp_col" id="view_list_show_timestamp_col" value="1" <!-- tmpl_if list_settings.view_list_show_timestamp_col -->checked="checked"<!--/tmpl_if--> >
+	                <label for="view_list_show_timestamp_col">
+	                 Show, &quot;Subscription Date&quot; column
+	                </label>
+	            </div> 
+	        </div>
+		<!-- /tmpl_if -->
     	
         <div class="row">
             <div class="small-12 columns">

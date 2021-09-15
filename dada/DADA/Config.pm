@@ -1453,8 +1453,8 @@ $MIME_TOOLS_PARAMS //= {
     view_list_show_timestamp_col           => 1, 
 	view_list_show_sub_confirm_list        => 1, 
 	view_list_enable_delete_all_button     => 0,
-    view_list_order_by                     => 'email', 
-    view_list_order_by_direction           => 'ASC', 
+    view_list_order_by                     => 'timestamp', 
+    view_list_order_by_direction           => 'DESC', 
 
     # add list prefs
     use_add_list_import_limit              => 1, 
