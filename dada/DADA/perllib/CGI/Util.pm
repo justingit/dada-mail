@@ -1,19 +1,18 @@
 package CGI::Util;
-use base 'Exporter';
+use parent 'Exporter';
 require 5.008001;
 use strict;
-use if $] >= 5.019, 'deprecate';
 our @EXPORT_OK = qw(rearrange rearrange_header make_attributes unescape escape
         expires ebcdic2ascii ascii2ebcdic);
 
-our $VERSION = '4.13';
+our $VERSION = '4.53';
 
-use constant EBCDIC => "\t" ne "\011";
+our $_EBCDIC = "\t" ne "\011";
 
-# This option is not documented and may change or go away.
-# The HTML spec does not require attributes to be sorted,
-# but it's useful for testing to get a predictable order back.
-our $SORT_ATTRIBUTES;
+my $appease_cpants_kwalitee = q/
+use strict;
+use warnings;
+#/;
 
 # (ord('^') == 95) for codepage 1047 as on os390, vmesa
 our @A2E = (
@@ -53,7 +52,7 @@ our @E2A = (
   48, 49, 50, 51, 52, 53, 54, 55, 56, 57,179,219,220,217,218,159
      );
 
-if (EBCDIC && ord('^') == 106) { # as in the BS2000 posix-bc coded character set
+if ($_EBCDIC && ord('^') == 106) { # as in the BS2000 posix-bc coded character set
      $A2E[91] = 187;   $A2E[92] = 188;  $A2E[94] = 106;  $A2E[96] = 74;
      $A2E[123] = 251;  $A2E[125] = 253; $A2E[126] = 255; $A2E[159] = 95;
      $A2E[162] = 176;  $A2E[166] = 208; $A2E[168] = 121; $A2E[172] = 186;
@@ -66,7 +65,7 @@ if (EBCDIC && ord('^') == 106) { # as in the BS2000 posix-bc coded character set
      $E2A[221] = 219; $E2A[224] = 217; $E2A[251] = 123; $E2A[253] = 125;
      $E2A[255] = 126;
    }
-elsif (EBCDIC && ord('^') == 176) { # as in codepage 037 on os400
+elsif ($_EBCDIC && ord('^') == 176) { # as in codepage 037 on os400
   $A2E[10] = 37;  $A2E[91] = 186;  $A2E[93] = 187; $A2E[94] = 176;
   $A2E[133] = 21; $A2E[168] = 189; $A2E[172] = 95; $A2E[221] = 173;
 
@@ -150,10 +149,7 @@ sub make_attributes {
 
     my $quote = $do_not_quote ? '' : '"';
 
-    my @attr_keys= keys %$attr;
-    if ($SORT_ATTRIBUTES) {
-        @attr_keys= sort @attr_keys;
-    }
+    my @attr_keys= sort keys %$attr;
     my(@att);
     foreach (@attr_keys) {
     my($key) = $_;
@@ -195,7 +191,7 @@ sub unescape {
   my $todecode = shift;
   return undef unless defined($todecode);
   $todecode =~ tr/+/ /;       # pluses become spaces
-    if (EBCDIC) {
+    if ($_EBCDIC) {
       $todecode =~ s/%([0-9a-fA-F]{2})/chr $A2E[hex($1)]/ge;
     } else {
     # handle surrogate pairs first -- dankogai. Ref: http://unicode.org/faq/utf_bom.html#utf16-2
@@ -236,7 +232,7 @@ sub escape {
   my $toencode = shift;
   return undef unless defined($toencode);
   utf8::encode($toencode) if utf8::is_utf8($toencode);
-    if (EBCDIC) {
+    if ($_EBCDIC) {
       $toencode=~s/([^a-zA-Z0-9_.~-])/uc sprintf("%%%02x",$E2A[ord($1)])/eg;
     } else {
       $toencode=~s/([^a-zA-Z0-9_.~-])/uc sprintf("%%%02x",ord($1))/eg;
@@ -335,7 +331,7 @@ no public subroutines
 =head1 AUTHOR INFORMATION
 
 The CGI.pm distribution is copyright 1995-2007, Lincoln D. Stein. It is
-distributed under GPL and the Artistic License 2.0. It is currently
+distributed under the Artistic License 2.0. It is currently
 maintained by Lee Johnson with help from many contributors.
 
 Address bug reports and comments to: https://github.com/leejo/CGI.pm/issues
