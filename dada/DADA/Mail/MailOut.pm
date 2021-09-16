@@ -6,6 +6,13 @@ $SIG{ __DIE__ } = sub { Carp::confess( @_ ) };
 
 use lib qw(../../ ../../DADA ../../perllib);
 
+
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
+
 use CGI::Carp qw(croak carp);
 
 use Fcntl qw(
@@ -1267,6 +1274,12 @@ sub _integrity_check {
 
     # Special Case: If the counter is returning... well, NOT a number, we're in trouble...
     my $test_counter = _poll( $self->dir . '/' . $file_names->{counter} );
+	
+	warn '$test_counter: ' . $test_counter; 
+	warn 'length $test_counter ' . length($test_counter);
+	
+	
+	
     if (
         !defined($test_counter)
       )
@@ -2660,10 +2673,27 @@ sub monitor_mailout {
                 $r .= "\t\t\tMass Mailing appears to be in good health.\n";
             }
 
-            if (   exists( $status->{total_sent_out} )
+            if (   
+			
+			(
+				exists( $status->{total_sent_out} )
                 && exists( $status->{total_sending_out_num} )
-                && ( $status->{total_sent_out} < $status->{total_sending_out_num} ) )
-            {
+                && ( $status->{total_sent_out} < $status->{total_sending_out_num} ) 
+			)
+			|| 
+			
+			# Oy - this is a weird bug - if we're sending to no one, a queued 
+			# mass mailing will become forever stuck, so we have to unstick it, like this: 
+			
+			(
+				   exists( $status->{total_sent_out} )
+                && exists( $status->{total_sending_out_num})
+                && $status->{total_sent_out} == 0 
+				&& $status->{total_sending_out_num} == 0 
+				
+			)
+			
+			) {
                 my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
                 my $li = $ls->get;
