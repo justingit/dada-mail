@@ -87,6 +87,15 @@ jQuery(document).ready(function($){
 			$( "a" ).removeClass( "menu_selected" );
 		});
 
+		$("body").on("click", ".change_login", function(event) {
+			$("#lsw_change_to_list").val(
+				$(this).attr("data-change_to_list")
+			); 
+			$("#lsw_location").val(
+				$(this).attr("data-location")
+			); 
+			$("#lsw").submit();
+		});
 	}
 
 	
