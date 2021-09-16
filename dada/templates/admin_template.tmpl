@@ -228,9 +228,10 @@
 								<!-- /tmpl_if -->
 							<!-- /tmpl_if -->
 							<li class="has-form">
-								<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout" class="button alert">
-									Log Out
-								</a>
+								<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+									<input type="hidden" name="flavor" value="logout">
+								 	<input type="submit" class="button alert" value="Log Out">
+								</form>
 							</li>
 						</ul>
 					</section>

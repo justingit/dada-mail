@@ -13781,6 +13781,11 @@ sub logout {
     my $headers = {};
     my $body    = undef;
 
+
+	if($q->request_method() !~ m/POST/i){
+		return $self->status_405(); 
+	}
+	
     my %args = (
         -redirect               => 1,
         -redirect_url           => $DADA::Config::DEFAULT_LOGOUT_SCREEN,
