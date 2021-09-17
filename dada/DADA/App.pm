@@ -13793,6 +13793,11 @@ sub logout {
     my $headers = {};
     my $body    = undef;
 
+
+	if($q->request_method() !~ m/POST/i){
+		return $self->status_405(); 
+	}
+	
     my %args = (
         -redirect               => 1,
         -redirect_url           => $DADA::Config::DEFAULT_LOGOUT_SCREEN,
@@ -13900,6 +13905,11 @@ sub change_login {
     my $self = shift;
     my $q    = $self->query();
 
+
+	if($q->request_method() !~ m/POST/i){
+		return $self->status_405(); 
+	}
+	
     my ( $admin_list, $root_login, $checksout, $error_msg ) =
       check_list_security(
         -cgi_obj  => $q,

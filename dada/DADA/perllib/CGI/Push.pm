@@ -1,13 +1,16 @@
 package CGI::Push;
-use if $] >= 5.019, 'deprecate';
 
-$CGI::Push::VERSION='4.13';
+my $appease_cpants_kwalitee = q/
+use strict;
+use warnings;
+#/;
+
+$CGI::Push::VERSION='4.53';
 use CGI;
 use CGI::Util 'rearrange';
 @ISA = ('CGI');
 
 $CGI::DefaultClass = 'CGI::Push';
-$CGI::Push::AutoloadClass = 'CGI';
 
 # add do_push() and push_delay() to exported tags
 push(@{$CGI::EXPORT_TAGS{':standard'}},'do_push','push_delay');
@@ -83,6 +86,7 @@ sub do_sleep {
         sleep($delay);
     } else {
         select(undef,undef,undef,$delay);
+		return $delay;
     }
 }
 
@@ -100,27 +104,26 @@ CGI::Push - Simple Interface to Server Push
 
 =head1 SYNOPSIS
 
+    use strict;
+    use warnings;
+
     use CGI::Push qw(:standard);
 
-    do_push(-next_page=>\&next_page,
-            -last_page=>\&last_page,
-            -delay=>0.5);
+    do_push(
+        -next_page => \&next_page,
+        -last_page => \&last_page,
+        -delay     => 0.5
+    );
 
     sub next_page {
         my($q,$counter) = @_;
         return undef if $counter >= 10;
-        return start_html('Test'),
-               h1('Visible'),"\n",
-               "This page has been called ", strong($counter)," times",
-               end_html();
+        ....
     }
 
     sub last_page {
         my($q,$counter) = @_;
-        return start_html('Done'),
-               h1('Finished'),
-               strong($counter - 1),' iterations.',
-               end_html;
+        return ...
     }
 
 =head1 DESCRIPTION
@@ -179,9 +182,7 @@ redrawing loop and print out the final page (if any)
     sub my_draw_routine {
         my($q,$counter) = @_;
         return undef if $counter > 100;
-        return start_html('testing'),
-               h1('testing'),
-               "This page called $counter times";
+        ...
     }
 
 You are of course free to refer to create and use global variables
@@ -235,9 +236,7 @@ look like this:
     sub my_draw_routine {
         my($q,$counter) = @_;
         return header('text/html'),   # note we're producing the header here
-               start_html('testing'),
-               h1('testing'),
-               "This page called $counter times";
+        ....
     }
 
 You can add any header fields that you like, but some (cookies and
@@ -251,19 +250,13 @@ as shown below:
         my($q,$counter) = @_;
         return undef if $counter > 10;
         return header('text/html'),   # note we're producing the header here
-               start_html('testing'),
-               h1('testing'),
-               "This page called $counter times";
+        ...
     }
 
     sub my_last_page {
         return header(-refresh=>'5; URL=http://somewhere.else/finished.html',
                       -type=>'text/html'),
-               start_html('Moved'),
-               h1('This is the last page'),
-               'Goodbye!'
-               hr,
-               end_html; 
+        ...
     }
 
 =head2 Changing the Page Delay on the Fly
@@ -292,7 +285,7 @@ NPH script.
 =head1 AUTHOR INFORMATION
 
 The CGI.pm distribution is copyright 1995-2007, Lincoln D. Stein. It is
-distributed under GPL and the Artistic License 2.0. It is currently
+distributed under the Artistic License 2.0. It is currently
 maintained by Lee Johnson with help from many contributors.
 
 Address bug reports and comments to: https://github.com/leejo/CGI.pm/issues

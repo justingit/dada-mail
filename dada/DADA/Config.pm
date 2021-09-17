@@ -249,9 +249,10 @@ $PROFILE_OPTIONS //= {
         delete_profile             => 0,
     },
     cookie_params => {
-        -name    => 'dada_profile',
-        -path    => '/',
-        -expires => '+1y',
+        -name     => 'dada_profile',
+        -path     => '/',
+        -expires  => '+1y',
+		-SameSite => 'Lax',
     },
 
 };
@@ -462,8 +463,9 @@ $ALLOW_ROOT_LOGIN       //= 1;
 $LOGIN_COOKIE_NAME //= 'dadalogin';
 
 %COOKIE_PARAMS = (
-	-path    => '/',
-	-expires => '+7d',
+	-path     => '/',
+	-expires  => '+7d',
+	-samesite => 'Lax',
 ) unless keys %COOKIE_PARAMS; 
 
 $CP_SESSION_PARAMS //= { 
