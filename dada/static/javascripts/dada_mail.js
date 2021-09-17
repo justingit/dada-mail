@@ -39,6 +39,14 @@ jQuery(document).ready(function($){
 	}
 	*/
 	
+	$("<input>").attr({
+	                name:  "_csrf_token",
+	                type:  "hidden",
+					value:  $.cookie("_csrf_token") 
+	}).appendTo("form");
+	$('body').append('<form id="csrf_token_form" style="display:none"><input type="hidden" name="_csrf_token" id="_csrf_token" value="' + $.cookie("_csrf_token") +'"></form>'); 
+
+	
 	// Bounce Handler, Mostly. 
 	$('body').on('click', 'a.modalbox', function(event){
 		event.preventDefault();
@@ -1058,7 +1066,19 @@ jQuery(document).ready(function($){
 	}
 	
 	if ($("#web_services").length) {
- 	   new Clipboard('.copy_button');		
+ 	   new Clipboard('.copy_button');
+	   
+	   
+		$("body").on("submit", "#reset_keys_form", function(event) {
+			if (confirm('Resetting API Keys will log you out of this mailing list, and require you to log back in, Continue?')) {
+				return true;
+			}
+			else {
+				alert("Cancelled.");
+				return false;
+			}	
+		}); 
+
 	}
 
 	function toggle_sub_notice_to(){
@@ -1647,7 +1667,8 @@ jQuery(document).ready(function($){
 					list: '_all',
 					schedule: '_all',
 					output_mode: '_verbose',
-					for_colorbox: 1
+					for_colorbox: 1,
+					_csrf_token:  $('#_csrf_token').val()
 				},
 				opacity: 0.50,
 				maxWidth: '640px',
@@ -2081,7 +2102,7 @@ function admin_menu_notifications(outer_no_loop){
 		
 			var request = $.ajax({
 				url: $('#navcontainer').attr("data-s_program_url"),
-				type: "POST",
+				method: 'GET',
 				cache: false,
 				data: {
 					flavor: 'admin_menu_notifications'
@@ -2290,7 +2311,8 @@ function manually_run_all_scheduled_mass_mailings() {
 			list:           $("#list").val(),
 			schedule:       'scheduled_mass_mailings',
 			output_mode:    '_verbose',
-			for_colorbox:   1
+			for_colorbox:   1, 
+			_csrf_token:    $('#_csrf_token').val() 
 		},
 		onComplete: function(){
 			mass_mailing_schedules_preview(1);
@@ -2312,7 +2334,8 @@ function update_scheduled_mass_mailings_options() {
 			flavor:        'draft_message_values',
 			draft_id:     $("#draft_id").val(),
 			draft_role:   $("#draft_role").val(),
-			draft_screen: $("#flavor").val()
+			draft_screen: $("#flavor").val(), 
+			_csrf_token:    $('#_csrf_token').val() 
 		},
 		dataType: "json",
 		async: true,
@@ -2472,7 +2495,7 @@ function update_sending_monitor_interface(message_id, draft_id, type, target_id,
 	var refresh_loop = function(no_loop) {
 			var request = $.ajax({
 				url: $("#s_program_url").val(),
-				type: "POST",
+				method: "GET",
 				cache: false,
 				data: {
 					flavor: 'sending_monitor',
@@ -2553,7 +2576,7 @@ function view_list_viewport(initial) {
 
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'view_list',
@@ -2823,7 +2846,7 @@ function user_agent_chart(type, target_div) {
 		$("#" + target_div + "_loading").html(loading_str);
 		$.ajax({
 			url: $("#s_program_url").val(),
-			type: "POST",
+			type: "GET",
 			data: {
 				flavor: 'plugins',
 				plugin: 'tracker',
@@ -3006,7 +3029,7 @@ function recent_subscription_activity(days) {
 
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'recent_subscription_activity',
@@ -3037,7 +3060,7 @@ function mailing_list_history() {
 	}
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'mailing_list_history',
@@ -3057,7 +3080,7 @@ function membership_activity() {
 	$("#membership_activity_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'membership_activity',
@@ -3229,7 +3252,7 @@ function membership_bouncing_address_information() {
 	$("#membership_bouncing_address_information").hide().html(loading_str).show('fade');
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor:          'view_bounce_history',
@@ -3511,7 +3534,8 @@ function amazon_verify_email(email) {
 		href: $("#s_program_url").val(),
 		data: {
 			flavor: 'amazon_ses_verify_email',
-			amazon_ses_verify_email: email
+			amazon_ses_verify_email: email, 
+			_csrf_token:  $('#_csrf_token').val()  
 		}
 	});
 	$(window).resize(function(){
@@ -3543,7 +3567,7 @@ function previewBatchSendingSpeed() {
 
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'previewBatchSendingSpeed',
@@ -3569,7 +3593,7 @@ function amazon_ses_get_stats() {
 	$("#amazon_ses_get_stats_loading").hide().html(loading_str).show('fade');
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'amazon_ses_get_stats'
@@ -3610,7 +3634,7 @@ function bounce_handler_show_scorecard() {
 	$("#bounce_scorecard_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'plugins',
@@ -3654,7 +3678,8 @@ function bounce_handler_parse_bounces() {
 			plugin:      'bounce_handler',
 			prm:         'ajax_parse_bounces_results',
 			parse_amount: $('#parse_amount').val(),
-			test:         isa_test
+			test:         isa_test, 
+			_csrf_token:  $('#_csrf_token').val()  
 		},
 		dataType: "html"
 	});
@@ -3694,7 +3719,8 @@ function ajax_parse_bounces_results() {
 			plugin: 'bounce_handler',
 			prm: 'ajax_parse_bounces_results',
 			parse_amount: $('#parse_amount').val(),
-			test:         isa_test
+			test:         isa_test, 
+			_csrf_token:  $('#_csrf_token').val()  
 		},
 		onComplete:function(){
 			bounce_handler_show_scorecard();
@@ -3722,7 +3748,8 @@ function bounce_handler_manually_enter_bounces() {
 			plugin: 'bounce_handler',
 			prm: 'manually_enter_bounces',
 			process: $('#process').val(),
-			msg: $('#msg').val()
+			msg: $('#msg').val(), 
+			_csrf_token:  $('#_csrf_token').val()
 		},
 		dataType: "html"
 	});
@@ -3822,7 +3849,8 @@ function plugins_bridge_test_pop3() {
 			auth_mode: $("#discussion_pop_auth_mode option:selected").val(),
 			use_ssl: use_ssl,
 			use_starttls: discussion_pop_use_starttls, 
-			ssl_verify_mode: discussion_pop_ssl_verify_mode
+			ssl_verify_mode: discussion_pop_ssl_verify_mode, 
+			_csrf_token:  $('#_csrf_token').val()  
 		},
 		opacity: 0.50,
 		maxWidth: '640px',
@@ -3851,7 +3879,8 @@ function plugins_bridge_manually_check_messages() {
 		data: {
 			flavor: 'plugins',
 			plugin: 'bridge',
-			prm:    'admin_cgi_manual_start_ajax'
+			prm:    'admin_cgi_manual_start_ajax', 
+			_csrf_token:  $('#_csrf_token').val()  
 		},
 		opacity: 0.50,
 		maxWidth: '640px',
@@ -3999,7 +4028,7 @@ function country_geoip_table(type, label, target_div) {
 	$("#" + target_div + "_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		method: "GET",
 		cache: false,
 		data: {
 			flavor: 'plugins',
@@ -4065,7 +4094,7 @@ function country_geoip_map(type, target_div) {
 	
 		$.ajax({
 			url: $("#s_program_url").val(),
-			type: "POST",
+			method: "GET",
 			data: {
 				flavor: 'plugins',
 				plugin: 'tracker',
@@ -4348,7 +4377,7 @@ function message_email_report_table(type, target_div) {
 		$("#" + target_div + "_loading").html(loading_str);	
 		var request = $.ajax({
 			url: $("#s_program").val(),
-			type: "POST",
+			method: "GET",
 			cache: false,
 			data: {
 				flavor: 'plugins',
@@ -4381,7 +4410,7 @@ function tracker_message_email_activity_listing_table(target_div) {
 		$("#" + target_div + "_loading").html(loading_str);
 		var request = $.ajax({
 			url: $("#s_program_url").val(),
-			type: "POST",
+			method: "GET",
 			cache: false,
 			data: {
 				flavor: 'plugins',
@@ -4539,7 +4568,8 @@ function tracker_change_record_view() {
 			flavor: 'plugins',
 			plugin: 'tracker',
 			prm: 'save_view_count_prefs',
-			tracker_record_view_count: $('#tracker_record_view_count option:selected').val()
+			tracker_record_view_count: $('#tracker_record_view_count option:selected').val(), 
+			_csrf_token:  $('#_csrf_token').val()
 		},
 		dataType: "html"
 	});
@@ -4605,7 +4635,8 @@ function tracker_delete_msg_id_data(message_id){
 				flavor: 'plugins',
 				plugin: 'tracker',
 				prm: 'delete_msg_id_data',
-				mid: message_id
+				mid: message_id, 
+				_csrf_token:  $('#_csrf_token').val()
 			},
 			dataType: "html"
 		});
@@ -4625,7 +4656,7 @@ function view_logs_results() {
 	$("#refresh_button").val('Loading....');
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		method: "GET",
 		cache: false,
 		data: {
 			flavor: 'plugins',
@@ -4654,7 +4685,8 @@ function delete_log() {
 				flavor: 'plugins',
 				plugin: 'log_viewer',
 				prm: 'ajax_delete_log',
-				log_name: $('#log_name').val()
+				log_name: $('#log_name').val(), 
+				_csrf_token:  $('#_csrf_token').val()
 			},
 			dataType: "html"
 		});
@@ -4690,7 +4722,7 @@ function message_history_html(initial) {
 		
 		var request = $.ajax({
 			url: $("#s_program_url").val(),
-			type: "POST",
+			method: "GET",
 			cache: false,
 			data: {
 				flavor: 'plugins',
@@ -4711,7 +4743,7 @@ function message_history_html(initial) {
 				
 				var request2 = $.ajax({
 					url: $("#s_program_url").val(),
-					type: "POST",
+					method: "GET",
 					cache: false,
 					data: {
 						flavor: 'plugins',
@@ -4883,7 +4915,8 @@ function tracker_purge_log() {
 			data: {
 				flavor: 'plugins',
 				plugin: 'tracker',
-				prm: 'ajax_delete_log'
+				prm: 'ajax_delete_log', 
+				_csrf_token:  $('#_csrf_token').val()
 			},
 			dataType: "html"
 		});
@@ -4962,6 +4995,8 @@ function preview_message_receivers() {
 
 	f_params.flavor                  = 'preview_message_receivers';
 
+	f_params._csrf_token = $('#_csrf_token').val();
+
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
@@ -5016,6 +5051,7 @@ function ChangeMassMailingButtonLabel(first_run) {
 			flavor: 'send_email_button_widget',
 			draft_role: $("#draft_role").val(),
 			archive_no_send: archive_no_send,
+			_csrf_token:  $('#_csrf_token').val()
 		},
 		success: function(content) {
 			$(".button_toolbar").fadeTo(200, 0, function() {

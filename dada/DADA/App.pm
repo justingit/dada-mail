@@ -4383,6 +4383,18 @@ sub web_services {
     my $keys_reset = 0;
     if ( $process eq 'reset_keys' ) {
         $keys_reset = 1;
+		
+        my ( $headers, $body ) = $self->logout(
+            -no_list_security_check => 1,
+            -redirect_url           => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=web_services'
+              . '&list='
+              . $list,
+        );
+        if ( keys %$headers ) {
+            $self->header_props(%$headers);
+        }
+        return $body;
     }
 
     my $scrn = DADA::Template::Widgets::wrap_screen(

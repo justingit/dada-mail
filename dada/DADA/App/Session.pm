@@ -3,12 +3,19 @@ package DADA::App::Session;
 use strict;
 use lib qw(../../ ../../DADA/perllib);
 
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
 use DADA::Config qw(!:DEFAULT);
 use DADA::Security::Password;
 use DADA::MailingList::Settings;
 use DADA::App::Guts;
 use Carp qw(carp croak);
 use Try::Tiny;
+use Digest::SHA qw(hmac_sha256_base64);
+
 my $dbi_obj;
 
 my $t; 
@@ -98,9 +105,14 @@ sub login_cookies {
     my $session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
       or carp $!;
 
+	my $random_token = $self->random_token(); 
+	  
+
     $session->param( 'Admin_List',     $args{-list} );
     $session->param( 'Admin_Password', $cipher_pass );
     $session->param( 'ip_address',     $ENV{REMOTE_ADDR} );
+	
+	$session->param( 'csrf_token', $random_token );
 	
     $session->expire( $DADA::Config::COOKIE_PARAMS{-expires} );
     $session->expire( 'Admin_Password', $DADA::Config::COOKIE_PARAMS{-expires} );
@@ -130,9 +142,41 @@ sub login_cookies {
 		}
     }
 
+	push(@$cookies, 
+		$q->cookie(
+		-name  => '_csrf_token',
+		-value => 'hmac ' . $ls->param('public_api_key') . ':' . $self->authorization_string($random_token, $ls) 
+		)
+	);
 
     return $cookies;
 }
+
+sub random_token { 
+	my $self = shift; 
+	return generate_rand_string_md5(); 
+}
+
+sub authorization_string {
+
+    my $self           = shift;
+    my $message        = shift;
+	my $ls             = shift; 
+
+    warn '$message ' . $message
+      if $t;
+
+    my $n_digest = hmac_sha256_base64( $message, $ls->param('private_api_key') );
+    while ( length($n_digest) % 4 ) {
+        $n_digest .= '=';
+    }
+
+    warn '$n_digest:' . $n_digest
+      if $t;
+
+    return $n_digest;
+}
+
 
 sub kcfinder_session_begin {
 
@@ -397,10 +441,10 @@ sub logout_cookie {
 
             $self->kcfinder_session_end;
         }
-    }
-    catch {
+    } catch {
        carp "ending kcfinder/rich filemanager session return an error: $_";
-    }
+    };
+	
     return $cookie;
 
 }
@@ -421,7 +465,8 @@ sub check_session_list_security {
     );
 
     die 'no CGI Object (-cgi_obj)' if !$args{-cgi_obj};
-    my $q = $args{-cgi_obj};
+    
+	my $q = $args{-cgi_obj};
 
     my $session = undef;
  
@@ -432,16 +477,21 @@ sub check_session_list_security {
     $session = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
       or carp $!;
 
+	  #?!
 	  my $sess_args = {
 	  	Admin_List     => $session->param('Admin_List'),
 	  	Admin_Password => $session->param('Admin_Password'),
 	  	ip_address     => $session->param('ip_address'),
+		csrf_token     => $session->param('csrf_token'),
+		
 	  };
 
     my ( $problems, $flags, $root_logged_in ) = $self->check_admin_cgi_security(
         -Admin_List     => $sess_args->{'Admin_List'},
         -Admin_Password => $sess_args->{'Admin_Password'},
 		-ip_address     => $sess_args->{'ip_address'},
+		-csrf_token     => $sess_args->{'csrf_token'}, 
+		-cgi_obj        => $q, 
         -Function       => $args{-Function},
     );
     if ($problems) {
@@ -483,6 +533,7 @@ sub check_admin_cgi_security {
         -Admin_Password => undef,
         -ip_address     => undef,
         -Function       => undef,
+		-cgi_obj        => undef, 
         @_
     );
 
@@ -502,8 +553,11 @@ sub check_admin_cgi_security {
         return ( $problems, \%flags, 0 );
 
     }
-
 	
+	
+	
+	
+
 	if($DADA::Config::CP_SESSION_PARAMS->{check_matching_ip_addresses} == 1) {
 		if($ENV{REMOTE_ADDR} ne $args{-ip_address}){
 			warn 'Current IP address (via $ENV{REMOTE_ADDR):'
@@ -615,12 +669,72 @@ sub check_admin_cgi_security {
           $problems++;
           $flags{no_admin_permissions} = 1;
       }
+	  
+	  
+	 
+	  
+	  warn '$args{-cgi_obj}->param(\'_csrf_token\')' . $args{-cgi_obj}->param('_csrf_token'); 
+	  
+	  
+	  my $passed_csrf_token = $args{-cgi_obj}->param('_csrf_token');
+	     $passed_csrf_token =~ s/^hmac //;
+	  
+     # my ( $pi_public_key, $pi_digest ) = split( ':', $passed_csrf_token);
+	  
+	  #warn '$pi_digest: ' . $pi_digest; 
+	  
+	  if($args{-cgi_obj}->request_method() =~ m/POST/i) {
+		  warn 'checking csrf...';
+		  require Data::Dumper; 
+		  warn Data::Dumper::Dumper($args{-cgi_obj}); 
+		  my $d_status = $self->check_digest(
+		  	$passed_csrf_token, 
+			$args{-csrf_token},
+			$ls,
+			); 
+		
+			warn '$d_status: ' . $d_status;
+			
+			if($d_status == 0){ 
+	            $problems++;
+	            $flags{invalid_password} = 1;
+				return ( $problems, \%flags, 0 );
+			}
+		}
 	  																					
     }
 
     return ( $problems, \%flags, $root_logged_in );
 
 }
+
+
+sub check_digest { 
+	my $self = shift; 
+	my $passed_csrf_token = shift; 
+	my $saved_csrf_token  = shift; 
+	my $ls                = shift; 
+	
+	warn '$passed_csrf_token: ' . $passed_csrf_token; 
+	warn '$saved_csrf_token: '  . $saved_csrf_token; 
+	
+	my ( $pi_public_key, $pi_digest ) = split( ':', $passed_csrf_token);
+	
+	warn '$self->authorization_string($saved_csrf_token, $ls)' . $self->authorization_string($saved_csrf_token, $ls); 
+	warn '$pi_digest: ' . $pi_digest; 
+	
+	 if(
+	 	$self->authorization_string($saved_csrf_token, $ls) eq $pi_digest
+	  ){ 
+		  return 1; 
+	  }
+	  else { 
+	  	  return 0; 
+	  }
+	
+	
+}
+
 
 sub enforce_admin_cgi_security {
 
