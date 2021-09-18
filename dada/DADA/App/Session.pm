@@ -145,7 +145,8 @@ sub login_cookies {
 	push(@$cookies, 
 		$q->cookie(
 		-name  => '_csrf_token',
-		-value => 'hmac ' . $ls->param('public_api_key') . ':' . $self->authorization_string($random_token, $ls) 
+		-value => 'hmac ' . $ls->param('public_api_key') . ':' . $self->authorization_string($random_token, $ls), 
+        %DADA::Config::COOKIE_PARAMS
 		)
 	);
 
@@ -321,10 +322,9 @@ sub change_login {
         @_
     );
 
-    die "no list!" if !$args{-list};
+    die "no list!" if ! $args{-list};
 
     my $q = $args{-cgi_obj};
-    my $cookie;
 
     require CGI::Session;
 
@@ -352,15 +352,42 @@ sub change_login {
 
     $old_session->param( 'Admin_List',     $args{-list} );
     $old_session->param( 'Admin_Password', $cipher_pass );
+	
+	
+	my $random_token = $self->random_token(); 
+	$old_session->param( 'csrf_token',     $random_token );
+
 
     $old_session->flush();
 
-    $cookie = $q->cookie(
-        -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-        -value => $old_session->id,
-        %DADA::Config::COOKIE_PARAMS
-    );
-    return $cookie;
+	my $cookies = []; 
+	
+    push(@$cookies, 
+		$q->cookie(
+	        -name  => $DADA::Config::LOGIN_COOKIE_NAME,
+	        -value => $old_session->id,
+	        %DADA::Config::COOKIE_PARAMS
+   		)
+	);
+	
+	push(@$cookies, 
+		$q->cookie(
+			-name  => '_csrf_token',
+			-value => 
+				'hmac ' 
+				. $ls->param('public_api_key') 
+				. ':' 
+				. $self->authorization_string($random_token, $ls), 
+		    %DADA::Config::COOKIE_PARAMS	
+		));
+		
+#	use Data::Dumper; 
+#	warn Data::Dumper::Dumper($cookies);
+
+		
+	
+	
+    return $cookies;
 }
 
 sub logged_into_diff_list {
@@ -415,8 +442,6 @@ sub logout_cookie {
     die 'no CGI Object (-cgi_obj)' if !$args{-cgi_obj};
     my $q = $args{-cgi_obj};
 
-    my $cookie;
-
     require CGI::Session;
 
     CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
@@ -424,14 +449,25 @@ sub logout_cookie {
       or carp $!;
 
     $session->delete();
+	$session->flush();
+	
+	my $cookies = []; 
+	
+    push(@$cookies, $q->cookie(
+        -name    => $DADA::Config::LOGIN_COOKIE_NAME,
+        -value   => '',
+        -path    => $DADA::Config::COOKIE_PARAMS{-path},
+		-expires => '-10y',
+    ));
+	
+    push(@$cookies, $q->cookie(
+		-name    => '_csrf_token',
+        -value   => '',
+        -path    => $DADA::Config::COOKIE_PARAMS{-path},
+		-expires => '-10y',
+    ));
 
-    $cookie = $q->cookie(
-        -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-        -value => undef,
-        -path  => '/'
-    );
-
-    $session->flush();
+    
 
     try {
 	    if ( 
@@ -445,7 +481,7 @@ sub logout_cookie {
        carp "ending kcfinder/rich filemanager session return an error: $_";
     };
 	
-    return $cookie;
+    return $cookies;
 
 }
 

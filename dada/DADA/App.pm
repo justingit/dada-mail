@@ -120,7 +120,7 @@ sub setup {
         'report_abuse'             => \&report_abuse,
         'login'                    => \&login,
         'logout'                   => \&logout,
-        'log_into_another_list'    => \&log_into_another_list,
+        #'log_into_another_list'    => \&log_into_another_list,
         'change_login'             => \&change_login,
         'new_list'                 => \&new_list,
         'change_info'              => \&change_info,
@@ -352,7 +352,7 @@ sub setup {
             unsubscribe                        => $pm_prefs,
             unsubscription_request             => $pm_prefs,
             login                              => $pm_prefs,
-            log_into_another_list              => $pm_prefs,
+            #log_into_another_list              => $pm_prefs,
             pass_gen                           => $pm_prefs,
             file_attachment                    => $pm_prefs,
             profile_activate                   => $pm_prefs,
@@ -13705,11 +13705,11 @@ sub login {
 
         require DADA::Security::Password;
 
-        my $dumb_cookie = $q->cookie(
-            -name  => 'blankpadding',
-            -value => 'blank',
-            %DADA::Config::COOKIE_PARAMS,
-        );
+        #my $dumb_cookie = $q->cookie(
+        #    -name  => 'blankpadding',
+        #    -value => 'blank',
+        #    %DADA::Config::COOKIE_PARAMS,
+        #);
 
         require DADA::App::Session;
         my $dada_session = DADA::App::Session->new();
@@ -13737,9 +13737,9 @@ sub login {
                     'remote_host:' . $rh . ', ip_address:' . $ra );
             }
 
-            my $cookies = [ $dumb_cookie, @$login_cookies ];
+           # my $cookies = [ $dumb_cookie, @$login_cookies ];
             my $headers = {
-                -cookie  => $cookies,
+                -cookie  => $login_cookies,
                 -nph     => $DADA::Config::NPH,
                 -Refresh => '0; URL=' . $referer
             };
@@ -13844,16 +13844,14 @@ sub logout {
 
     }
 
-    my $logout_cookie;
-
     require DADA::App::Session;
     my $dada_session = DADA::App::Session->new( -List => $l_list );
-    $logout_cookie = $dada_session->logout_cookie( -cgi_obj => $q );
+    my $logout_cookies = $dada_session->logout_cookie( -cgi_obj => $q );
 
     if ( $args{-redirect} == 1 ) {
 
         $headers = {
-            -COOKIE  => $logout_cookie,
+            -cookie  => $logout_cookies,
             -nph     => $DADA::Config::NPH,
             -Refresh => '0; URL=' . $location,
         };
@@ -13873,32 +13871,34 @@ sub logout {
         );
 
         # Probably not setting up the header_props here, yey?
+		$self->header_props({});
         $self->header_props(%$headers);
-        return ( $headers, $scrn );
+		return $scrn; 
+        #return ( $headers, $scrn );
     }
     else {
-        return $logout_cookie;    #DEV: not sure about this one...
+        return $logout_cookies;    #DEV: not sure about this one...
     }
 
 }
 
-sub log_into_another_list {
-
-    my $self = shift;
-    my $q    = $self->query();
-
-    my ( $admin_list, $root_login, $checksout, $error_msg ) =
-      check_list_security(
-        -cgi_obj  => $q,
-        -Function => 'log_into_another_list'
-      );
-    if ( !$checksout ) { return $error_msg; }
-
-    $self->logout( -redirect_url => $DADA::Config::PROGRAM_URL
-          . '?flavor='
-          . $DADA::Config::SIGN_IN_FLAVOR_NAME, );
-
-}
+#sub log_into_another_list {
+#
+#    my $self = shift;
+#    my $q    = $self->query();
+#
+#    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+#      check_list_security(
+#        -cgi_obj  => $q,
+#        -Function => 'log_into_another_list'
+#      );
+#    if ( !$checksout ) { return $error_msg; }
+#
+#    $self->logout( -redirect_url => $DADA::Config::PROGRAM_URL
+#          . '?flavor='
+#          . $DADA::Config::SIGN_IN_FLAVOR_NAME, );
+#
+#}
 
 sub change_login {
 
@@ -13929,8 +13929,6 @@ sub change_login {
         $location = 'http' . $location;
     }
 
-    $q->delete_all();
-
     # DEV: Ooh. This is messy.
     $location =~ s/(\;|\&)done\=1$//;
     $location =~ s/(\;|\&)delete_email_count\=(.*?)$//;
@@ -13938,16 +13936,22 @@ sub change_login {
 
     $location =~ s/f\=add_email\&fn\=(.*?)(\&)/f\=add\2/;
 
-    my $new_cookie =
-      $dada_session->change_login( -cgi_obj => $q, -list => $change_to_list );
+    my $new_cookies = $dada_session->change_login(
+		-cgi_obj => $q, 
+		-list    => $change_to_list
+	);
 
     # not cached atm
     # require DADA::App::ScreenCache;
     # my $c = DADA::App::ScreenCache->new;
     # $c->remove( 'login_switch_widget.' . $change_to_list . '.scrn' );
 
+	#$q->delete_all();
+
+
+	
     my $headers = {
-        -cookie  => [$new_cookie],
+        -cookie  => $new_cookies,
         -nph     => $DADA::Config::NPH,
         -Refresh => '0; URL=' . $location
     };
@@ -13965,7 +13969,7 @@ sub change_login {
             },
         }
     );
-
+	$self->header_props({});
     $self->header_props(%$headers);
     return $scrn;
 }
