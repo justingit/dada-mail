@@ -142,6 +142,45 @@ sub login_cookies {
 		}
     }
 
+	# create if necessary 
+	if ( 
+		!defined( $ls->param('public_api_key')) 
+	 || length($ls->param('public_api_key') <= 0 ) 
+	 ) {
+        require DADA::Security::Password;
+        $ls->save(
+            {
+                -settings => {
+                    public_api_key => DADA::Security::Password::generate_rand_string(undef, 21),
+                }
+            }
+        );
+		$ls = DADA::MailingList::Settings->new( { -list => $list } );
+	}
+	
+	if ( 
+		!defined( $ls->param('private_api_key')) 
+	 || length($ls->param('private_api_key') <= 0 ) 
+	 ) {
+        require DADA::Security::Password;
+        $ls->save(
+            {
+                -settings => {
+                    private_api_key => DADA::Security::Password::generate_rand_string(undef, 41),
+                }
+            }
+        );
+		$ls = DADA::MailingList::Settings->new( { -list => $list } );		
+	}
+	#/ create if necessary 
+	
+
+
+
+
+
+
+
 	push(@$cookies, 
 		$q->cookie(
 		-name  => '_csrf_token',
@@ -149,6 +188,11 @@ sub login_cookies {
         %DADA::Config::COOKIE_PARAMS
 		)
 	);
+
+
+
+
+
 
     return $cookies;
 }
@@ -381,12 +425,6 @@ sub change_login {
 		    %DADA::Config::COOKIE_PARAMS	
 		));
 		
-#	use Data::Dumper; 
-#	warn Data::Dumper::Dumper($cookies);
-
-		
-	
-	
     return $cookies;
 }
 
@@ -706,38 +744,21 @@ sub check_admin_cgi_security {
           $flags{no_admin_permissions} = 1;
       }
 	  
-	  
-	 
-	  
-	  warn '$args{-cgi_obj}->param(\'_csrf_token\')' . $args{-cgi_obj}->param('_csrf_token'); 
-	  
-	  
 	  my $passed_csrf_token = $args{-cgi_obj}->param('_csrf_token');
 	     $passed_csrf_token =~ s/^hmac //;
 	  
-     # my ( $pi_public_key, $pi_digest ) = split( ':', $passed_csrf_token);
-	  
-	  #warn '$pi_digest: ' . $pi_digest; 
-	  
 	  if($args{-cgi_obj}->request_method() =~ m/POST/i) {
-		  warn 'checking csrf...';
-		  require Data::Dumper; 
-		  warn Data::Dumper::Dumper($args{-cgi_obj}); 
 		  my $d_status = $self->check_digest(
 		  	$passed_csrf_token, 
 			$args{-csrf_token},
 			$ls,
 			); 
-		
-			warn '$d_status: ' . $d_status;
-			
 			if($d_status == 0){ 
 	            $problems++;
 	            $flags{invalid_password} = 1;
 				return ( $problems, \%flags, 0 );
 			}
-		}
-	  																					
+		}																		
     }
 
     return ( $problems, \%flags, $root_logged_in );
@@ -751,13 +772,7 @@ sub check_digest {
 	my $saved_csrf_token  = shift; 
 	my $ls                = shift; 
 	
-	warn '$passed_csrf_token: ' . $passed_csrf_token; 
-	warn '$saved_csrf_token: '  . $saved_csrf_token; 
-	
 	my ( $pi_public_key, $pi_digest ) = split( ':', $passed_csrf_token);
-	
-	warn '$self->authorization_string($saved_csrf_token, $ls)' . $self->authorization_string($saved_csrf_token, $ls); 
-	warn '$pi_digest: ' . $pi_digest; 
 	
 	 if(
 	 	$self->authorization_string($saved_csrf_token, $ls) eq $pi_digest
