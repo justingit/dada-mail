@@ -14,7 +14,6 @@ use DADA::MailingList::Settings;
 use DADA::App::Guts;
 use Carp qw(carp croak);
 use Try::Tiny;
-use Digest::SHA qw(hmac_sha256_base64);
 
 my $dbi_obj;
 
@@ -211,19 +210,46 @@ sub authorization_string {
     warn '$message ' . $message
       if $t;
 
-    my $n_digest = hmac_sha256_base64( $message, $ls->param('private_api_key') );
-    while ( length($n_digest) % 4 ) {
-        $n_digest .= '=';
-    }
-
-    warn '$n_digest:' . $n_digest
-      if $t;
-
+    my $n_digest = $self->_hmac_sha256_base64( $message, $ls->param('private_api_key') );
     return $n_digest;
 }
 
+sub _hmac_sha256_base64 { 
+	my $self    = shift; 
+	my $message = shift; 
+	my $key     = shift; 
+	my $digest  = shift; 
+	
+	my $can_use_Digest_SHA = 1; 
+	
+	try { 
+		require Digest::SHA;
+	} catch { 
+		$can_use_Digest_SHA = 0; 
+	};
+	
+	if($can_use_Digest_SHA == 1){ 
+		$digest = Digest::SHA::hmac_sha256_base64( $message, $key );
+	}
+	else { 
+		require Digest::SHA::PurePerl; 
+		$digest = Digest::SHA::PurePerl::hmac_sha256_base64( $message, $key );
+		
+	}
+     while ( length($digest) % 4 ) {
+         $digest .= '=';
+     }
 
-sub kcfinder_session_begin {
+     warn '$digest:' . $digest
+       if $t;
+
+     return $digest;
+}
+ 
+ 
+ 
+ 
+ sub kcfinder_session_begin {
 
     my $self       = shift;
 	my $session_id = shift; 
