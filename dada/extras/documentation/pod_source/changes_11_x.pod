@@ -3,6 +3,26 @@
 
 =encoding utf-8
 
+=head1 11.16.0
+
+=head3 Enhanced Cross-Site Request Forgery Prevention (CSRF)
+
+Here's an overview of CSRF: 
+
+L<https://owasp.org/www-community/attacks/csrf>
+
+Prior to v11.16.0, Dada Mail didn't have any protection against CSRF while logged into the list control panel, so if this is a concern for you, B<we absolutely suggest an upgrade> to prevent this vector of attack to v11.16.0 (and later versions). 
+
+=head4 Details
+
+v11.16.0 comes with Cross-Site Request Forgery prevention using the B<Double Submit Cookie> pattern: (L<https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#double-submit-cookie>). 
+
+To enhance this, we also "HMAC the token with a secret key known only by the server and place this value in a cookie" (as described in the above doc), and set cookies to have, B<SameSite> set to, B<Lax> (instead of not setting SameSite at all), (L<https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#samesite-cookie-attribute>), 
+
+We also suggest running the site you have Dada Mail installed on run under B<https> as well as enable B<Google reCAPTCHA> (v2 or v3 are both fine).
+
+Although we know of no known CSRF exploits that have happened in the wild, this vulnerability has been confirmed. 
+
 =head1 11.15.1
 
 =head2 Focus
