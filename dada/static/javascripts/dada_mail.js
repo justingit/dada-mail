@@ -2040,7 +2040,8 @@ jQuery(document).ready(function($){
 			href: $("#s_program_url").val(),
 			data: {
 				flavor: 'also_save_for_settings', 
-				form_id: $(this).closest("form").prop('id')  
+				form_id: $(this).closest("form").prop('id'), 
+				_csrf_token:    $('#_csrf_token').val()
 			},
 		});
 		$(window).resize(function(){
@@ -3514,7 +3515,8 @@ function test_mail_sending_options() {
 			sasl_smtp_username: $('#sasl_smtp_username').val(),
 			sasl_smtp_password: $('#sasl_smtp_password').val(),
 			set_smtp_sender: set_smtp_sender,
-			process: $('#process').val()
+			process: $('#process').val(), 
+			_csrf_token:  $('#_csrf_token').val()  
 		}
 	});
 	$(window).resize(function(){
@@ -3523,7 +3525,7 @@ function test_mail_sending_options() {
 	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
 	    });		
 	});
-}
+} 
 
 
 

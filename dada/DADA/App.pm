@@ -13873,8 +13873,8 @@ sub logout {
         # Probably not setting up the header_props here, yey?
 		$self->header_props({});
         $self->header_props(%$headers);
-		return $scrn; 
-        #return ( $headers, $scrn );
+		#return $scrn; 
+        return ( $headers, $scrn );
     }
     else {
         return $logout_cookies;    #DEV: not sure about this one...

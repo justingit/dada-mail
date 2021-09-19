@@ -744,23 +744,29 @@ sub check_admin_cgi_security {
           $flags{no_admin_permissions} = 1;
       }
 	  
-	  my $passed_csrf_token = $args{-cgi_obj}->param('_csrf_token');
-	     $passed_csrf_token =~ s/^hmac //;
-	  
+
+	  	  
 	  if($args{-cgi_obj}->request_method() =~ m/POST/i) {
+
+		  my $passed_csrf_token = $args{-cgi_obj}->param('_csrf_token');
+		     $passed_csrf_token =~ s/^hmac //;
+		  			 
 		  my $d_status = $self->check_digest(
 		  	$passed_csrf_token, 
 			$args{-csrf_token},
 			$ls,
 			); 
+			
 			if($d_status == 0){ 
 	            $problems++;
 	            $flags{invalid_password} = 1;
 				return ( $problems, \%flags, 0 );
 			}
 		}																		
-    }
 
+
+
+	}
     return ( $problems, \%flags, $root_logged_in );
 
 }
