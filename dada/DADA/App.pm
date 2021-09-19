@@ -3767,7 +3767,8 @@ sub change_password {
     my $self = shift;
     my $q    = $self->query();
 
-    my $process = $q->param('process') || undef;
+    my $process          = $q->param('process')          || undef;
+	my $recaptcha_failed = $q->param('recaptcha_failed') || 0;
 
     my ( $admin_list, $root_login, $checksout, $error_msg ) =
       check_list_security(
@@ -3797,12 +3798,33 @@ sub change_password {
                 -vars => {
                     screen     => 'change_password',
                     root_login => $root_login,
+					recaptcha_failed => $recaptcha_failed, 
+					
                 },
             }
         );
         return $scrn;
     }
     else {
+		
+		
+		if (can_use_Google_reCAPTCHA() == 1 ) {
+	        my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
+			my $captcha_status = validate_recaptcha(
+				{
+					 -response    => $crf, 
+					 -remote_addr => $ENV{'REMOTE_ADDR'},
+				}
+			);
+			if($captcha_status == 0){ 
+	            $q->delete('process');
+				$q->param('recaptcha_failed', 1);
+				return $self->change_password; 
+			}
+			else { 
+				#...
+			}
+		}
 
         my $old_password       = $q->param('old_password');
         my $new_password       = $q->param('new_password');
@@ -3920,7 +3942,6 @@ sub delete_list {
 			if($captcha_status == 0){ 
 	            $q->delete('process');
 				$q->param('recaptcha_failed', 1);
-				warn 'here1';
 				return $self->delete_list; 
 			}
 			else { 
