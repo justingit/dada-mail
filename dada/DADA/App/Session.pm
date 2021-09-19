@@ -121,7 +121,10 @@ sub login_cookies {
     $cookies->[0] = $q->cookie(
         -name     => $DADA::Config::LOGIN_COOKIE_NAME,
         -value    => $session->id,
-        %DADA::Config::COOKIE_PARAMS
+        %DADA::Config::COOKIE_PARAMS, 
+		($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+			-secure  => 1,
+		) : ()
     );
 
     $session->flush();
@@ -173,18 +176,15 @@ sub login_cookies {
 	}
 	#/ create if necessary 
 	
-
-
-
-
-
-
-
 	push(@$cookies, 
 		$q->cookie(
 		-name  => '_csrf_token',
 		-value => 'hmac ' . $ls->param('public_api_key') . ':' . $self->authorization_string($random_token, $ls), 
-        %DADA::Config::COOKIE_PARAMS
+        %DADA::Config::COOKIE_PARAMS,
+		($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+			-secure  => 1,
+		) : ()
+		
 		)
 	);
 
@@ -332,6 +332,10 @@ sub _hmac_sha256_base64 {
             -name => $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_name},
             -value => $sess_id, 
 			%DADA::Config::COOKIE_PARAMS,
+			($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+				-secure  => 1,
+			) : ()
+			
         );
         return $cookie;
     }
@@ -436,7 +440,10 @@ sub change_login {
 		$q->cookie(
 	        -name  => $DADA::Config::LOGIN_COOKIE_NAME,
 	        -value => $old_session->id,
-	        %DADA::Config::COOKIE_PARAMS
+	        %DADA::Config::COOKIE_PARAMS,
+			($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+				-secure  => 1,
+			) : ()
    		)
 	);
 	
@@ -448,7 +455,11 @@ sub change_login {
 				. $ls->param('public_api_key') 
 				. ':' 
 				. $self->authorization_string($random_token, $ls), 
-		    %DADA::Config::COOKIE_PARAMS	
+		    %DADA::Config::COOKIE_PARAMS,
+			($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+				-secure  => 1,
+			) : ()
+				
 		));
 		
     return $cookies;
@@ -522,6 +533,10 @@ sub logout_cookie {
         -value   => '',
         -path    => $DADA::Config::COOKIE_PARAMS{-path},
 		-expires => '-10y',
+		($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+			-secure  => 1,
+		) : ()
+		
     ));
 	
     push(@$cookies, $q->cookie(
@@ -529,6 +544,9 @@ sub logout_cookie {
         -value   => '',
         -path    => $DADA::Config::COOKIE_PARAMS{-path},
 		-expires => '-10y',
+		($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+			-secure  => 1,
+		) : ()
     ));
 
     
