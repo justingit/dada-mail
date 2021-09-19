@@ -13704,13 +13704,6 @@ sub login {
     if ( check_if_list_exists( -List => $list ) >= 1 ) {
 
         require DADA::Security::Password;
-
-        #my $dumb_cookie = $q->cookie(
-        #    -name  => 'blankpadding',
-        #    -value => 'blank',
-        #    %DADA::Config::COOKIE_PARAMS,
-        #);
-
         require DADA::App::Session;
         my $dada_session = DADA::App::Session->new();
 
