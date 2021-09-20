@@ -4,10 +4,10 @@ use lib qw (../../ ../../../DADA/perllib);
 use strict;
 use Carp qw(carp croak);
 use DADA::Config;
-use DADA::App::Guts; 
+use DADA::App::Guts;
 use CGI::Session;
 CGI::Session->name('dada_profile');
-use Carp qw(carp croak); 
+use Carp qw(carp croak);
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_Profile_Session};
 
@@ -27,55 +27,53 @@ sub _init {
 
     my $self = shift;
     my ($args) = @_;
-    $self->{list} = $args->{ -list };
-	my $dbh     = undef; 
-	my $dbi_obj = undef; 
-		
+    $self->{list} = $args->{-list};
+    my $dbh     = undef;
+    my $dbi_obj = undef;
+
     require DADA::App::DBIHandle;
-       $dbi_obj = DADA::App::DBIHandle->new;
-       $dbh     = $dbi_obj->dbh_obj; 
-	
+    $dbi_obj = DADA::App::DBIHandle->new;
+    $dbh     = $dbi_obj->dbh_obj;
+
     # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session.pm
 
-
-        if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
+    if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
 
 # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/postgresql.pm
-            $self->{dsn}      = 'driver:PostgreSQL';
-            $self->{dsn_args} = {
+        $self->{dsn}      = 'driver:PostgreSQL';
+        $self->{dsn_args} = {
 
-                Handle    => $dbh,
-                TableName => $DADA::Config::SQL_PARAMS{session_table},
+            Handle    => $dbh,
+            TableName => $DADA::Config::SQL_PARAMS{session_table},
 
-            };
+        };
 
-        }
-        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
+    }
+    elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
 
   # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/mysql.pm
-            $self->{dsn}      = 'driver:mysql';
-            $self->{dsn_args} = {
+        $self->{dsn}      = 'driver:mysql';
+        $self->{dsn_args} = {
 
-                Handle    => $dbh,
-                TableName => $DADA::Config::SQL_PARAMS{session_table},
+            Handle    => $dbh,
+            TableName => $DADA::Config::SQL_PARAMS{session_table},
 
-            };
+        };
 
-        }
-        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
+    }
+    elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
 
-            # http://search.cpan.org/~bmoyles/CGI-Session-SQLite/SQLite.pm
-            $self->{dsn} =
-              'driver:SQLite:'
-              ;    # . ':' . $DADA::Config::FILES . '/' . $database;;
-            $self->{dsn_args} = {
+        # http://search.cpan.org/~bmoyles/CGI-Session-SQLite/SQLite.pm
+        $self->{dsn} =
+          'driver:SQLite:';   # . ':' . $DADA::Config::FILES . '/' . $database;;
+        $self->{dsn_args} = {
 
-                Handle => $dbh,
-				TableName => $DADA::Config::SQL_PARAMS{session_table},
+            Handle    => $dbh,
+            TableName => $DADA::Config::SQL_PARAMS{session_table},
 
-            };
+        };
 
-        }
+    }
 }
 
 sub _login_cookie {
@@ -83,36 +81,35 @@ sub _login_cookie {
     my $self = shift;
     my ($args) = @_;
 
-	require CGI; 
-    my $q = new CGI; 
+    require CGI;
+    my $q = new CGI;
 
     my $cookie;
 
     require CGI::Session;
 
-	use DADA::Security::Password; 
+    use DADA::Security::Password;
 
-	my $token = DADA::Security::Password::generate_rand_string(undef, 41); 
+    my $token = DADA::Security::Password::generate_rand_string( undef, 41 );
 
     my $session = new CGI::Session( $self->{dsn}, $q, $self->{dsn_args} );
 
-       $session->param( 'email',      cased($args->{ -email }) );
-       $session->param( '_logged_in', 1 );
-       $session->param( 'token',      $token);
-	
+    $session->param( 'email',      cased( $args->{-email} ) );
+    $session->param( '_logged_in', 1 );
+    $session->param( 'token',      $token );
 
-	    $session->expire( $DADA::Config::COOKIE_PARAMS{ -expires } );
-	    $session->expire( '_logged_in', $DADA::Config::COOKIE_PARAMS{ -expires } );
-	    $session->expire( 'token', $DADA::Config::COOKIE_PARAMS{ -expires } );
+    $session->expire( $DADA::Config::COOKIE_PARAMS{-expires} );
+    $session->expire( '_logged_in', $DADA::Config::COOKIE_PARAMS{-expires} );
+    $session->expire( 'token',      $DADA::Config::COOKIE_PARAMS{-expires} );
 
-    $cookie = $q->cookie( 
-		%{$DADA::Config::PROFILE_OPTIONS->{cookie_params}},
-		-value => $session->id, 
-		($DADA::Config::PROGRAM_URL =~ m/^https/) ? (
-			-secure  => 1,
-		) : ()
-		
-		);
+    $cookie = $q->cookie(
+        %{ $DADA::Config::PROFILE_OPTIONS->{cookie_params} },
+        -value => $session->id,
+        ( $DADA::Config::PROGRAM_URL =~ m/^https/ )
+        ? ( -secure => 1, )
+        : ()
+
+    );
     $session->flush();
 
     return $cookie;
@@ -120,23 +117,22 @@ sub _login_cookie {
 
 sub login {
 
-
     my $self = shift;
     my ($args) = @_;
 
-	require CGI; 
-	my $q = new CGI; 
+    require CGI;
+    my $q = new CGI;
 
-	my ($status, $errors);
-	
-	if($args->{-skip_validation} == 0){ 
-	    ( $status, $errors ) = $self->validate_profile_login($args);
-	}
-	else { 
-		$status = 1; 
-		$errors = {};
-	}
-	
+    my ( $status, $errors );
+
+    if ( $args->{-skip_validation} == 0 ) {
+        ( $status, $errors ) = $self->validate_profile_login($args);
+    }
+    else {
+        $status = 1;
+        $errors = {};
+    }
+
     if ( $status == 0 ) {
         croak "login failed.";
     }
@@ -151,8 +147,8 @@ sub logout {
     my $self = shift;
     my ($args) = @_;
 
-	require CGI; 
-	my $q = new CGI; 
+    require CGI;
+    my $q = new CGI;
 
     if ( $self->is_logged_in($args) ) {
         my $s = new CGI::Session( $self->{dsn}, $q, $self->{dsn_args} );
@@ -166,34 +162,32 @@ sub logout {
     }
 }
 
-sub logout_cookie { 
+sub logout_cookie {
 
-	my $self = shift; 
-	
-	require CGI; 
-	my $q = new CGI;
-	
-	my $cookie = $q->cookie(
-				-name    =>  $DADA::Config::PROFILE_OPTIONS->{cookie_params}->{-name},
-				-value   =>  '',
-				-path    =>  '/',
-	);
-	return $cookie;
+    my $self = shift;
+
+    require CGI;
+    my $q = new CGI;
+
+    my $cookie = $q->cookie(
+        -name  => $DADA::Config::PROFILE_OPTIONS->{cookie_params}->{-name},
+        -value => '',
+        -path  => '/',
+    );
+    return $cookie;
 }
-
 
 sub validate_profile_login {
     my $self = shift;
     my ($args) = @_;
-	
-	$args->{ -email } = cased($args->{ -email });
-	
+
+    $args->{-email} = cased( $args->{-email} );
+
     my $status = 1;
     my $errors = {
         unknown_user   => 0,
         incorrect_pass => 0,
     };
-
 
     require DADA::Security::SimpleAuthStringState;
     my $sast       = DADA::Security::SimpleAuthStringState->new;
@@ -201,87 +195,86 @@ sub validate_profile_login {
 
     if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
         if ( $sast->check_state($auth_state) != 1 ) {
-	        $status = 0;
-	        $errors->{invalid_form} = 1;
+            $status = 0;
+            $errors->{invalid_form} = 1;
         }
 
     }
 
-
     require DADA::Profile;
     my $prof = DADA::Profile->new(
-		{ 
-			-email => $args->{ -email } 
-		} 
-	);
-    
-    
-	if ( $prof->exists == 1 ) {
+        {
+            -email => $args->{-email}
+        }
+    );
+
+    if ( $prof->exists == 1 ) {
+
         # ...
     }
     else {
         $status = 0;
         $errors->{unknown_user} = 1;
     }
-	
-	if($args->{-no_pass} == 1){ 
-		# ... 
-	}
-	else { 
- 	   if ( $prof->is_valid_password($args) ) {
 
-	        # ...
-	    }
-	    else {
-	        $status = 0;
-	        $errors->{incorrect_pass} = 1;
-	
-	    }
-	}
+    if ( $args->{-no_pass} == 1 ) {
+
+        # ...
+    }
+    else {
+        if ( $prof->is_valid_password($args) ) {
+
+            # ...
+        }
+        else {
+            $status = 0;
+            $errors->{incorrect_pass} = 1;
+
+        }
+    }
 
     return ( $status, $errors );
 
 }
 
-sub check_csrf { 
-	my $self = shift; 
-	my $q    = shift; 
-	
+sub check_csrf {
+    my $self = shift;
+    my $q    = shift;
+
     my $s = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
       or croak 'failed to load session: ' . CGI::Session->errstr();
-	
-      if ( $s->is_expired ) {
-          return 0;
-      }
 
-      if ( $s->is_empty ) {
-          return 0;
-      }
-	
-	  if($q->param('csrf_token') eq $s->param('token') ){ 
-		  return 1; 
-	  }
-	  else { 
-		  return 0; 
-	  }
-	
+    if ( $s->is_expired ) {
+        return 0;
+    }
+
+    if ( $s->is_empty ) {
+        return 0;
+    }
+
+    if ( $q->param('csrf_token') eq $s->param('token') ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 
 }
+
 sub is_logged_in {
 
     my $self = shift;
     my ($args) = @_;
     my $q;
-    if ( exists( $args->{ -cgi_obj } ) ) {
-        $q = $args->{ -cgi_obj };
+    if ( exists( $args->{-cgi_obj} ) ) {
+        $q = $args->{-cgi_obj};
     }
     else {
         require CGI;
         $q = new CGI;
 
     }
-	
-	
+
     my $s = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
       or croak 'failed to load session: ' . CGI::Session->errstr();
 
@@ -294,19 +287,19 @@ sub is_logged_in {
     }
 
     if ( $s->param('_logged_in') == 1 ) {
-	
-		# Something's wrong with this, but I don't know yet, yet: 
-		# 
-		#require DADA::Profile;
-	    #my $prof = DADA::Profile->new( { -email => $self->get }  );
-		#
-	    #if ( $prof->exists == 1 ) {
-	    #   return 1;
-	    #}
-	    #else {
-	    #     return 0;
-	    #}
-		return 1; 
+
+        # Something's wrong with this, but I don't know yet, yet:
+        #
+        #require DADA::Profile;
+        #my $prof = DADA::Profile->new( { -email => $self->get }  );
+        #
+        #if ( $prof->exists == 1 ) {
+        #   return 1;
+        #}
+        #else {
+        #     return 0;
+        #}
+        return 1;
     }
     else {
         return 0;
@@ -325,16 +318,15 @@ sub get {
 
     my $session = new CGI::Session( $self->{dsn}, $q, $self->{dsn_args} );
     return {
-		email => $session->param('email'), 
-		token => $session->param('token'),
-	}; 
+        email => $session->param('email'),
+        token => $session->param('token'),
+    };
 
 }
 
-sub reset_password {} # ??? 
+sub reset_password { }    # ???
 
 1;
-
 
 =pod
 
@@ -460,5 +452,4 @@ Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA  02111-1307, USA.
 
 =cut 
-
 
