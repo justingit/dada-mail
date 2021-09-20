@@ -15086,14 +15086,11 @@ sub profile_login {
         }
     }
 
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1) {
+    if ( $DADA::Config::PROFILE_OPTIONS->{enabled} != 1) {
         return $self->default();
 
     }
-
-    if ( $DADA::Config::PROFILE_OPTIONS->{enabled} != 1 ) {
-        return $self->default();
-    }
+	
     require DADA::Profile;
     ###
     my $all_errors = [];
@@ -15109,7 +15106,6 @@ sub profile_login {
     my $prof_sess = DADA::Profile::Session->new;
 
     if ( $q->param('process') != 1 ) {
-
         if (   $prof_sess->is_logged_in( { -cgi_obj => $q } )
             && $q->param('logged_out') != 1 )
         {
@@ -15118,12 +15114,19 @@ sub profile_login {
                 -url => $DADA::Config::PROGRAM_URL . '/profile/' );
         }
         else {
-            my $scrn              = '';
+			my $scrn              = '';
             my $using_captcha     = 0;
 
             if ( $DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1 ) {
                 $using_captcha = can_use_Google_reCAPTCHA();
             }
+
+			my $auth_state;
+		    if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
+		        require DADA::Security::SimpleAuthStringState;
+		        my $sast = DADA::Security::SimpleAuthStringState->new;
+		        $auth_state = $sast->make_state;
+		    }
 
             $scrn = DADA::Template::Widgets::wrap_screen(
                 {
@@ -15167,6 +15170,9 @@ sub profile_login {
                         removal         => scalar $q->param('removal') || '',
                         WHOLE_URL       => $whole_url,
 						
+		                auth_state      => $auth_state,
+						
+						
 						# This should probably be deprecated, as I'm handling this in 
 						# DADA::Template::Widgets, now
                         %{ DADA::Profile::feature_enabled() }
@@ -15180,8 +15186,9 @@ sub profile_login {
     else {
         my ( $status, $errors ) = $prof_sess->validate_profile_login(
             {
-                -email    => xss_filter( scalar $q->param('login_email') ),
-                -password => xss_filter( scalar $q->param('login_password') ),
+                -email      => xss_filter( scalar $q->param('login_email') ),
+                -password   => xss_filter( scalar $q->param('login_password') ),
+				-auth_state => xss_filter( scalar $q->param('auth_state') ),
 
             },
         );
@@ -15189,10 +15196,10 @@ sub profile_login {
         if ( $status == 1 ) {
             my $cookie = $prof_sess->login(
                 {
-                    -email => xss_filter( scalar $q->param('login_email') ),
-                    -password =>
-                      xss_filter( scalar $q->param('login_password') ),
-                },
+                    -email           => xss_filter( scalar $q->param('login_email') ),
+                    -password        => xss_filter( scalar $q->param('login_password') ),					
+                	-skip_validation => 1, 
+				},
             );
 
             #DEV: encoding?
@@ -15397,18 +15404,31 @@ sub profile {
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1) {
         return $self->default();
     }
+	
+	
+	
 
     require DADA::Profile::Session;
     my $prof_sess = DADA::Profile::Session->new;
 
-    if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
-        my $email = $prof_sess->get( { -cgi_obj => $q } );
+    if ($prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
+		
+		if(length($q->param('process')) > 0) { 
+		
+			if($prof_sess->check_csrf($q) == 0){
+				$prof_sess->logout;
+				$q->param('flavor', 'profile_login');
+				return $self->profile_login();
+			}
+		}
+		
+        my $prof_data = $prof_sess->get( { -cgi_obj => $q } );
 
         require DADA::Profile::Fields;
         require DADA::Profile;
 
-        my $prof = DADA::Profile->new( { -email => $email } );
-        my $dpf = DADA::Profile::Fields->new( { -email => $email } );
+        my $prof = DADA::Profile->new( { -email => $prof_data->{email} } );
+        my $dpf = DADA::Profile::Fields->new( { -email => $prof_data->{email} } );
         my $subscriber_fields =
           $dpf->{manager}->fields( { -show_hidden_fields => 0, } );
         my $field_attr   = $dpf->{manager}->get_all_field_attributes;
@@ -15614,7 +15634,7 @@ sub profile {
             my $dps = DADA::Profile::Settings->new({-list => $list});
             my $r   = $dps->save(
                 {
-                    -email   => $email,
+                    -email   => $prof_data->{email},
                     -setting => 'delivery_prefs',
                     -value   => $delivery_prefs,
                 }
@@ -15682,7 +15702,7 @@ sub profile {
                 my $dasu = DADA::App::Subscriptions::Unsub->new(
                     { -list => $i->{list} } );
                 my $unsub_link = $dasu->unsub_link(
-                    { -email => $email, -mid => '00000000000000' } );
+                    { -email => $prof_data->{email}, -mid => '00000000000000' } );
 
                 my $digest_timeframe =
                   formatted_runtime( $ls->param('digest_schedule') );
@@ -15695,7 +15715,7 @@ sub profile {
 				);
                 my $s   = $dps->fetch(
                     {
-                        -email => $email,
+                        -email => $prof_data->{email},
                     }
                 );
                 my $delivery_prefs = $s->{delivery_prefs} || 'individual';
@@ -15722,7 +15742,8 @@ sub profile {
                     -vars   => {
                         errors => scalar $q->param('errors')
                           || 0,
-                        'profile.email'   => $email,
+                        'profile.email'   => $prof_data->{email},
+						csrf_token        => $prof_data->{token},
                         subscriber_fields => $fields,
                         subscriptions     => $filled,
                         has_subscriptions => $has_subscriptions,
@@ -15749,7 +15770,7 @@ sub profile {
                           $DADA::Config::PROFILE_OPTIONS->{gravatar_options}
                           ->{enable_gravators},
                         gravatar_img_url =>
-                          gravatar_img_url( { -email => $email, } ),
+                          gravatar_img_url( { -email => $prof_data->{email}, } ),
                         protected_directories => $protected_directories,
                         WHOLE_URL             => $whole_url,
                         %{ DADA::Profile::feature_enabled() },
@@ -16014,8 +16035,10 @@ sub profile_update_email {
             my $prof_sess = DADA::Profile::Session->new;
             my $cookie    = $prof_sess->login(
                 {
-                    -email   => $profile_info->{'profile.update_email'},
-                    -no_pass => 1,
+                    -email           => $profile_info->{'profile.update_email'},
+                    -no_pass         => 1,
+                	-skip_validation => 1, 
+					
                 }
             );
 

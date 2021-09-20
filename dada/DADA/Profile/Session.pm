@@ -90,13 +90,20 @@ sub _login_cookie {
 
     require CGI::Session;
 
+	use DADA::Security::Password; 
+
+	my $token = DADA::Security::Password::generate_rand_string(undef, 41); 
+
     my $session = new CGI::Session( $self->{dsn}, $q, $self->{dsn_args} );
 
-    $session->param( 'email',      cased($args->{ -email }) );
-    $session->param( '_logged_in', 1 );
+       $session->param( 'email',      cased($args->{ -email }) );
+       $session->param( '_logged_in', 1 );
+       $session->param( 'token',      $token);
+	
 
-    $session->expire( $DADA::Config::COOKIE_PARAMS{ -expires } );
-    $session->expire( '_logged_in', $DADA::Config::COOKIE_PARAMS{ -expires } );
+	    $session->expire( $DADA::Config::COOKIE_PARAMS{ -expires } );
+	    $session->expire( '_logged_in', $DADA::Config::COOKIE_PARAMS{ -expires } );
+	    $session->expire( 'token', $DADA::Config::COOKIE_PARAMS{ -expires } );
 
     $cookie = $q->cookie( 
 		%{$DADA::Config::PROFILE_OPTIONS->{cookie_params}},
@@ -106,10 +113,6 @@ sub _login_cookie {
 		) : ()
 		
 		);
-
-    # My proposal to address the situation is quit relying on flush() happen
-    # automatically, and recommend that people use an explicit flush()
-    # instead, which works reliably for everyone.
     $session->flush();
 
     return $cookie;
@@ -124,7 +127,16 @@ sub login {
 	require CGI; 
 	my $q = new CGI; 
 
-    my ( $status, $errors ) = $self->validate_profile_login($args);
+	my ($status, $errors);
+	
+	if($args->{-skip_validation} == 0){ 
+	    ( $status, $errors ) = $self->validate_profile_login($args);
+	}
+	else { 
+		$status = 1; 
+		$errors = {};
+	}
+	
     if ( $status == 0 ) {
         croak "login failed.";
     }
@@ -182,6 +194,20 @@ sub validate_profile_login {
         incorrect_pass => 0,
     };
 
+
+    require DADA::Security::SimpleAuthStringState;
+    my $sast       = DADA::Security::SimpleAuthStringState->new;
+    my $auth_state = $args->{-auth_state};
+
+    if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
+        if ( $sast->check_state($auth_state) != 1 ) {
+	        $status = 0;
+	        $errors->{invalid_form} = 1;
+        }
+
+    }
+
+
     require DADA::Profile;
     my $prof = DADA::Profile->new(
 		{ 
@@ -217,6 +243,30 @@ sub validate_profile_login {
 
 }
 
+sub check_csrf { 
+	my $self = shift; 
+	my $q    = shift; 
+	
+    my $s = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
+      or croak 'failed to load session: ' . CGI::Session->errstr();
+	
+      if ( $s->is_expired ) {
+          return 0;
+      }
+
+      if ( $s->is_empty ) {
+          return 0;
+      }
+	
+	  if($q->param('csrf_token') eq $s->param('token') ){ 
+		  return 1; 
+	  }
+	  else { 
+		  return 0; 
+	  }
+	
+
+}
 sub is_logged_in {
 
     my $self = shift;
@@ -230,6 +280,8 @@ sub is_logged_in {
         $q = new CGI;
 
     }
+	
+	
     my $s = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
       or croak 'failed to load session: ' . CGI::Session->errstr();
 
@@ -272,7 +324,10 @@ sub get {
     require CGI::Session;
 
     my $session = new CGI::Session( $self->{dsn}, $q, $self->{dsn_args} );
-    return $session->param('email');
+    return {
+		email => $session->param('email'), 
+		token => $session->param('token'),
+	}; 
 
 }
 

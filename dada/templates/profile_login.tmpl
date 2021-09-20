@@ -194,6 +194,15 @@
 						<input type="hidden" name="flavor" value="profile_login" > 
 						<input type="hidden" name="process" value="1" > 
 						
+						<!-- tmpl_if DISABLE_OUTSIDE_LOGINS --> 
+							<input 
+								type="hidden" 
+								name="auth_state" 
+								value="<!-- tmpl_var auth_state -->"
+							> 
+						<!--/tmpl_if--> 
+						
+						
 						<div class="row">
 							<div class="small-12 columns">
 								<label for="login_email">
