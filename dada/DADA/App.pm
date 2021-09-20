@@ -15405,9 +15405,6 @@ sub profile {
         return $self->default();
     }
 	
-	
-	
-
     require DADA::Profile::Session;
     my $prof_sess = DADA::Profile::Session->new;
 
