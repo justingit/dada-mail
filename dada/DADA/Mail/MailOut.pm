@@ -2684,7 +2684,7 @@ sub monitor_mailout {
 			
 			# Oy - this is a weird bug - if we're sending to no one, a queued 
 			# mass mailing will become forever stuck, so we have to unstick it, like this: 
-			
+			# https://github.com/justingit/dada-mail/issues/1064
 			(
 				   exists( $status->{total_sent_out} )
                 && exists( $status->{total_sending_out_num})
