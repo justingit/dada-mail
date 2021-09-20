@@ -5,23 +5,98 @@
 
 =head1 11.16.0
 
-=head3 Enhanced Cross-Site Request Forgery Prevention (CSRF)
+=head2 Focus 
+
+This version of Dada Mail has been released primarily to fix a security vulnerability dealing with B<Enhanced Cross-Site Request Forgery (CSRF)>.
+
+=head3 Enhanced Cross-Site Request Forgery (CSRF) Prevention 
+
+In theory (and confirmed), a bad actor could give someone a carefully crafted web page via email, SMS, etc, that - when visited, could allow them control of the list control panel as if the bad actor was logged in themselves. This includes changing any mailing list password, as well as the Dada Mail Root Password - which could effectively shut out actual list owners of the mailing list and allow the bad actor complete and unfettered control of your mailing list. This vulnerability also affects profile logins. 
+
+For this vulnerability to work, the target of the bad actor would need to be logged into the list control panel themselves. This CSRF vulnerability in Dada Mail affects all versions of Dada Mail v11.15.1 and below. Although we know of no known CSRF exploits that have happened in the wild, this vulnerability has been confirmed by our testing, and by a third party. 
+
+Security enhancements added to v11.16.0: 
+
+=over
+
+=item * CSRF protection to all list control panel screens (including plugins) when logged in
+
+=item * Initial CSRF protection on the actual list control panel login form is enabled by default
+
+This feature was available in Dada Mail, but was not enabled by default
+
+=item * CSRF protection for any a user who logs into their profile would be able to do when logged in
+
+=item * CSRF protection for the initial profile login form
+
+=item * Login cookies for both the list control panel and profiles have the, "SameSite" flag added, and set to, "Lax"
+
+=item * Login cookies for both the list control panel and profiles have the, "secure" flag added, and set to, "1", if the connection is under https
+
+=item * Google reCAPTCHA added to the Change List Password, Change Dada Mail Root Password, Profile login, and Profile Registration 
+
+You'll want to set up Google reCAPTCHA in the included Dada Mail installer. 
+
+=back
+
+=head3 More Details
 
 Here's an overview of CSRF: 
 
 L<https://owasp.org/www-community/attacks/csrf>
 
-Prior to v11.16.0, Dada Mail didn't have any protection against CSRF while logged into the list control panel, so if this is a concern for you, B<we absolutely suggest an upgrade> to prevent this vector of attack to v11.16.0 (and later versions). 
-
-=head4 Details
-
 v11.16.0 comes with Cross-Site Request Forgery prevention using the B<Double Submit Cookie> pattern: (L<https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#double-submit-cookie>). 
 
 To enhance this, we also "HMAC the token with a secret key known only by the server and place this value in a cookie" (as described in the above doc), and set cookies to have, B<SameSite> set to, B<Lax> (instead of not setting SameSite at all), (L<https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#samesite-cookie-attribute>), 
 
-We also suggest running the site you have Dada Mail installed on run under B<https> as well as enable B<Google reCAPTCHA> (v2 or v3 are both fine).
+=head3 Additional Suggestions to Help Harden Security 
 
-Although we know of no known CSRF exploits that have happened in the wild, this vulnerability has been confirmed. 
+=over
+
+=item * Run Dada Mail under https
+
+Running Dada Mail under https will protect sensitive data from being able to read in transmission. 
+
+=item * Set up Google reCAPTCHA
+
+Google reCAPTCHA helps stop automated submission of forms in Dada Mail. 
+
+=back
+
+=head2 Features
+
+=head3 RESTFUL API supports Global Public/Private Keys, Creating New Mailing Lists
+
+Please see:
+
+
+L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Global-API-Options>
+
+and,
+
+L<https://dadamailproject.com/d/features-restful_web_services.pod.html#Global-Public-and-Private-Keys>
+
+
+=head2 Changes
+
+=head3 Default Membership: View address order is now Date Added/Subscription Date/Descending
+
+Previous order was email address alphabetically/descending
+
+=head2 Bugfixes
+
+=head3 Switching between lists accepts "GET" requests
+
+L<https://github.com/justingit/dada-mail/issues/1067>
+
+=head3 "logout" accepts "GET" requests
+
+L<https://github.com/justingit/dada-mail/issues/1066>
+
+=head3 You can send a mass mailing to no one
+
+L<https://github.com/justingit/dada-mail/issues/1064>
+
 
 =head1 11.15.1
 
