@@ -13,12 +13,13 @@ The best way to do that, is to try it out!
 
 =head2 Introduction
 
-Dada Mail's web services reveal some of the administrative features you'll find in Dada Mail's List Control Panel. Currently, there are services to allow you to verify subscriptions, subscribe addresses, as well as send mass mailings. 
+Dada Mail's web services reveal some of the administrative features you'll find in Dada Mail's List Control Panel. Currently, there are services to allow you to create a new list, verify subscriptions, subscribe addresses, as well as send mass mailings. 
 
 These services are authenticated using an HMAC-with-Public/Private Hashes scheme. Data sent is not encrypted, so we suggest always to connect to the web service with an SSL connection. 
 
 Example clients are currently available in B<Perl> and B<php> and allow you to 
 access the services available remotely.
+
 
 =head2 Public and Private Keys
 
@@ -27,6 +28,15 @@ Both the public and private keys for your mailing list can be accessed in the ma
 I<Mailing List - Web Services API>
 
 You may also reset your keys. Doing so will invalidate any other key pairs for the mailing list you're currently working with. 
+
+
+=head2 Global Public and Private Keys
+
+Global key pairs can also be found under, I<Mailing List - Web Services API>. These key pairs can be enabled and the keys can be reset using the Dada Mail Installer. More information: 
+
+L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Global-API-Options>
+
+Global keys can be used for anything you would use mailing list-specific keys, as well when creating a new mailing list. 
 
 =head3 Perl Client
 
@@ -171,6 +181,10 @@ The C<request> method will make the request for the service you want, see the Sy
 
 =over
 
+=item * create_new_list
+
+(using Global API Keypairs only)
+
 =item * validate_subscription
 
 =item * subscription
@@ -308,6 +322,10 @@ The C<request> method will make the request for the service you want, see the Sy
 
 =over
 
+=item * create_new_list
+
+(using Global API Keypairs only)
+
 =item * validate_subscription
 
 =item * subscription
@@ -390,6 +408,85 @@ All web services, except, C<settings> for Dada Mail only support using the POST 
 C<settings> has no paramaters to pass, so is send using B<GET>. The C<nonce> (explained below), still needes to be passed, but is don so, in a http header named, C<X-DADA-NONCE> header. 
 
 =head3 Services
+
+=head4 create_new_list
+
+C<create_new_list> creates a new list. 
+
+The following paramaters are required to be passed:
+
+=over
+
+=item * settings
+
+Holds the settings that will make up the new mailing list. Example: 
+
+             "settings" : {
+                "list" :              "list",
+                "list_name" :         "List Name"
+                "list_owner_email" :  "user@example.com",
+                "password" :          "Password"
+                "info" :              "List Description",
+                "privacy_policy" :    "Privacy Policy"
+                "physical_address" :  "Physical Address",
+                "consent" :           "Consent for Mailing List"
+             },
+
+=item * options
+
+Holds any options you would like for your mailing list. The following options are supported: 
+
+=over
+
+=item * send_new_list_welcome_email
+
+Boolean, B<default: 0>. If B<1> is passed, an email will be sent to the list owner with information about the new mailing list 
+
+
+=item * send_new_list_welcome_email_with_list_pass
+
+Boolean, B<default: 0>. If B<1> is passed (and B<send_new_list_welcome_email> is passed and set to B<1>), an email will be sent to the list owner with information about the new mailing list, including the mailing list password. 
+
+=item * clone_settings_from_list
+
+String, B<default: undef>. If a valid list short name is password, list settings will be cloned from the host list, towards this new list. 
+
+=back
+
+=back
+
+B<Note>: Pass a blank/undefined value for the, "list" in the C<request> method for both the Perl and PHP clients! The C<list> you want the new list to have will be passed in the C<settings> paramaters.
+
+Here's an example of using the php client to create a new list: 
+
+	# List is undefined
+	# public and private key are GLOBAL
+	$ws = new DadaMailWebService(
+	  $server,
+	  $public_key,
+	  $private_key
+	);
+	$params = [
+	       'settings' => [
+	           'list'              => 'newlistname', 
+			   'privacy_policy'    => "privacy_policy",
+	            'list_name'        => "New List Name",
+				'list_owner_email' => 'listowner@example.com',
+	            'password'         => "password" ,
+	            'info'             => "this is my list info",
+	            'physical_address' => "This is the physical address",
+	       ],
+	       'options' => [
+			   'send_new_list_welcome_email'                => 1, 
+			   'send_new_list_welcome_email_with_list_pass' => 1, 
+			   'clone_settings_from_list'                   => 'existinglist',
+	       ] 
+	];
+	$results  = $ws->request(
+	  $list,
+	  'create_new_list',
+	  $params
+	); 
 
 =head4 validate_subscription
 
