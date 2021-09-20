@@ -456,7 +456,7 @@ $SIGN_IN_FLAVOR_NAME    //= 'sign_in';
 $DEFAULT_SCREEN         //= '';
 $DEFAULT_ADMIN_SCREEN   //= $S_PROGRAM_URL . '?flavor=drafts';
 $DEFAULT_LOGOUT_SCREEN  //= $S_PROGRAM_URL . '?flavor=' . $ADMIN_FLAVOR_NAME . '&logged_out=1';
-$DISABLE_OUTSIDE_LOGINS //= 0;
+$DISABLE_OUTSIDE_LOGINS //= 1;
 $LOGIN_WIDGET           //= 'popup_menu';
 $ALLOW_ROOT_LOGIN       //= 1;
   
