@@ -21,6 +21,7 @@ var spinner_opts = {
 	, hwaccel: false // Whether to use hardware acceleration
 	, position: 'absolute' // Element positioning
 }
+
 jQuery(document).ready(function($){
 	/*
 	if($("#footer").length) {
@@ -1745,6 +1746,9 @@ jQuery(document).ready(function($){
 	// Plugins/Extensions >> Bridge
 	if ($("#plugins_bridge_default").length) {
 
+		// all alone? 
+		new Clipboard('.copy_button');	
+		
 		$("body").on("click", ".plugins_bridge_test_pop3", function(event) {
 			event.preventDefault();
 			plugins_bridge_test_pop3();
@@ -1761,9 +1765,7 @@ jQuery(document).ready(function($){
 		});
 
 
- 	   $("body")
-		
-		new Clipboard('.copy_button');		
+			
 		
 		$("body").on("click", '.plugins_bridge_manually_check_messages', function(event) {
 			event.preventDefault();
@@ -2436,7 +2438,6 @@ function auto_save_as_draft(no_loop) {
 
 	var refresh_loop = function() {
 		
-		$("#save_draft_role").val($("#draft_role").val());
 		
 		if ($("#using_ckeditor").length) {
 			if(CKEDITOR.instances['html_message_body']) {
@@ -2448,6 +2449,8 @@ function auto_save_as_draft(no_loop) {
 				tinyMCE.triggerSave();
 			}
 		}
+		$("#save_draft_role").val($("#draft_role").val());
+		
 		
 		// if we're saving, no need to harass anyone. 
 		$('.changed-input').removeClass('changed-input');
@@ -2490,7 +2493,8 @@ function auto_save_as_draft(no_loop) {
 			setTimeout(refresh_loop, r);
 		}	
 	}
-	refresh_loop();
+	// This is correct - we want to wait a bit before hitting this refresh loop: 
+	setTimeout(refresh_loop, r);
 }
 
 
@@ -2513,7 +2517,8 @@ function update_sending_monitor_interface(message_id, draft_id, type, target_id,
 				id: message_id,
 				draft_id: draft_id,
 				type: type,
-				process: 'ajax'
+				process: 'ajax',
+				_csrf_token:  $('#_csrf_token').val()  
 			},
 			dataType: "html"
 		});
@@ -2549,15 +2554,12 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 				prm: "m",
 				mid: message_id, 
 				_csrf_token:  $('#_csrf_token').val()  
-				
 			},
 			success: function(content) {
 				$("#" + target_id).html(content);
-			}
+				update_plugins_tracker_message_report();
+			} 
 		});
-		//			done: function(content) {
-		//				// update_plugins_tracker_message_report();
-		//			}
 		
 		if (no_loop == 1) {
 			//...
@@ -3945,8 +3947,7 @@ function plugins_bridge_hide_change_pop3_password_form() {
 // Plugins/Extensions >> Tracker
 
 function update_plugins_tracker_message_report() {
-	
-	
+		
 	$("body").on("click", '.message_individual_email_activity', function(event) {
 		event.preventDefault();
 		message_individual_email_activity_table($(this).attr("data-email"), "message_individual_email_activity_report_table");
@@ -4398,7 +4399,9 @@ function data_over_time_graph(type, label, target_div) {
 
 function message_email_report_table(type, target_div) {
 
+	
 	console.log('type:' + type + ' target_div:' + target_div);
+	
 
 	if (
 		   $("#" + target_div + "_loading").length
@@ -4407,23 +4410,22 @@ function message_email_report_table(type, target_div) {
 		$("#" + target_div + "_loading").html(loading_str);	
 		var request = $.ajax({
 			url: $("#s_program").val(),
-			method: "GET",
+			method: "POST",
 			cache: false,
 			data: {
 				flavor: 'plugins',
 				plugin: 'tracker',
 				prm: 'message_email_report_table',
 				mid: $('#tracker_message_id').val(),
-				type: type
+				type: type, 
+				_csrf_token:  $('#_csrf_token').val()
 			},
 			dataType: "html"
 		});
 		request.done(function(content) {
-
 			$("#" + target_div).hide();
 			$("#" + target_div).html(content);
 			$("#" + target_div).show('fade');
-
 			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 		});
 	}
