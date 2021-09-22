@@ -2542,7 +2542,8 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 				flavor: 'plugins',
 				plugin: 'tracker',
 				prm: "m",
-				mid: message_id
+				mid: message_id, 
+				_csrf_token:  $('#_csrf_token').val()  
 			}, function() {
 				update_plugins_tracker_message_report();
 			});
