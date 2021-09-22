@@ -3,9 +3,22 @@
 
 =encoding utf-8
 
+=head1 11.16.1
+
+=head2 Focus 
+
+This is a small bugfix release.
+
+=head2 Bugfixes
+
+=head3 Tracker reports in mailing monitor causes logout from list control panel
+
+L<https://github.com/justingit/dada-mail/issues/1068>
+
 =head1 11.16.0
 
 =head2 Focus 
+
 
 This version of Dada Mail has been released primarily to fix a security vulnerability dealing with B<Enhanced Cross-Site Request Forgery (CSRF)>.
 
