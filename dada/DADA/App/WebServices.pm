@@ -4,7 +4,7 @@ use strict;
 use lib qw(./ ../ ../../ ../../DADA ../perllib);
 
 use Carp qw(carp croak);
-$CARP::Verbose = 1;
+#$CARP::Verbose = 1;
 
 use DADA::Config qw(!:DEFAULT);
 use JSON;
