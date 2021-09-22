@@ -1275,11 +1275,6 @@ sub _integrity_check {
     # Special Case: If the counter is returning... well, NOT a number, we're in trouble...
     my $test_counter = _poll( $self->dir . '/' . $file_names->{counter} );
 	
-	warn '$test_counter: ' . $test_counter; 
-	warn 'length $test_counter ' . length($test_counter);
-	
-	
-	
     if (
         !defined($test_counter)
       )
