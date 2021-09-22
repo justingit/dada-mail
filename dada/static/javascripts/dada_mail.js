@@ -3681,9 +3681,16 @@ function bounce_handler_show_scorecard() {
 			$("#bounce_scorecard").html(content);
 			$("#bounce_scorecard").show('fade');
 			$("#bounce_scorecard_loading").html('<p>&nbsp;</p>');
+			
+			// this is less than ideal, since we'll get more and more forms
+			$("<input>").attr({
+			                name:  "_csrf_token",
+			                type:  "hidden",
+							value:  $.cookie("_csrf_token") 
+			}).appendTo("form");
+			
 		});
-
-
+		
 	});
 }
 
