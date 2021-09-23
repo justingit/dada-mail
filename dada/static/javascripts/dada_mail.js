@@ -40,13 +40,24 @@ jQuery(document).ready(function($){
 	}
 	*/
 	
-	$("<input>").attr({
-	                name:  "_csrf_token",
-	                type:  "hidden",
-					value:  $.cookie("_csrf_token") 
-	}).appendTo("form");
-	$('body').append('<form id="csrf_token_form" style="display:none"><input type="hidden" name="_csrf_token" id="_csrf_token" value="' + $.cookie("_csrf_token") +'"></form>'); 
-
+	
+	add_csrf_token(); 
+	add_csrf_token_form();
+	
+	function add_csrf_token() {
+		$("<input>").attr({
+		                name:  "_csrf_token",
+				        class:  "_csrf_token",
+		                type:  "hidden",
+						value:  $.cookie("_csrf_token") 
+		}).appendTo("form");
+	}
+	function remove_csrf_token() {
+		$( "input" ).remove( "._csrf_token" );
+	}
+	function add_csrf_token_form() {
+		$('body').append('<form id="csrf_token_form" style="display:none"><input type="hidden" name="_csrf_token" id="_csrf_token" value="' + $.cookie("_csrf_token") +'"></form>'); 
+	}
 	
 	// Bounce Handler, Mostly. 
 	$('body').on('click', 'a.modalbox', function(event){
@@ -2653,6 +2664,9 @@ function view_list_viewport(initial) {
 
 		//$("#view_list_viewport_loading").html('<p>&nbsp;</p>');
 
+		remove_csrf_token();
+		add_csrf_token();
+		
 		datetimesetupstuff();
 		set_up_advanced_search_form();
 
@@ -3682,12 +3696,8 @@ function bounce_handler_show_scorecard() {
 			$("#bounce_scorecard").show('fade');
 			$("#bounce_scorecard_loading").html('<p>&nbsp;</p>');
 			
-			// this is less than ideal, since we'll get more and more forms
-			$("<input>").attr({
-			                name:  "_csrf_token",
-			                type:  "hidden",
-							value:  $.cookie("_csrf_token") 
-			}).appendTo("form");
+			remove_csrf_token();
+			add_csrf_token();
 			
 		});
 		
