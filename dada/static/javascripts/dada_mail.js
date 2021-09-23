@@ -56,7 +56,7 @@ jQuery(document).ready(function($){
 		$( "input" ).remove( "._csrf_token" );
 	}
 	function add_csrf_token_form() {
-		$('body').append('<form id="csrf_token_form" style="display:none"><input type="hidden" name="_csrf_token" id="_csrf_token" value="' + $.cookie("_csrf_token") +'"></form>'); 
+		$('body').append('<form id="csrf_token_form" style="display:none"><input type="hidden" name="_csrf_token" class="_csrf_token" id="_csrf_token" value="' + $.cookie("_csrf_token") +'"></form>'); 
 	}
 	
 	// Bounce Handler, Mostly. 
