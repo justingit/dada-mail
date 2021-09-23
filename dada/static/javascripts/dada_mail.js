@@ -980,8 +980,8 @@ jQuery(document).ready(function($){
 					flavor: 'transform_to_pro',
 					process: 'verify',
 					pro_dada_username: $("#pro_dada_username").val(), 
-					pro_dada_password: $("#pro_dada_password").val()
-
+					pro_dada_password: $("#pro_dada_password").val(),
+					_csrf_token:  $('#_csrf_token').val()  	
 				},
 				opacity: 0.50,
 				maxWidth: '640px',
@@ -1845,7 +1845,8 @@ jQuery(document).ready(function($){
 					flavor: 'plugins',
 					plugin: 'change_list_shortname',
 					prm: $('#prm').val(),
-					new_name: $('#new_name').val()
+					new_name: $('#new_name').val(),
+					_csrf_token:  $('#_csrf_token').val()
 				},
 				opacity: 0.50,
 				maxWidth: '640px',
@@ -2842,9 +2843,10 @@ function drawTrackerDomainBreakdownChart() {
 	$.ajax({
 		url: $("#s_program_url").val(),
 		dataType: "json",
+		method: 'GET',
 		data: {
 			flavor: 'domain_breakdown_json',
-			type: $("#type").val()
+			type: $("#type").val(),
 		},
 		async: true,
 		success: function(jsonData) {
@@ -3217,6 +3219,11 @@ function validate_add_email() {
 			method:         $("#add_method").val(),
 			return_to:      $("#add_return_to").val(),
 			return_address: $("#add_return_address").val(),
+			_csrf_token:  $('#_csrf_token').val()
+		}, 
+		onComplete:function(){
+			remove_csrf_token();
+			add_csrf_token();    
 		}
 	});
 	$(window).resize(function(){
@@ -3248,9 +3255,16 @@ function validate_update_email(is_for_all_lists) {
 			flavor: 'validate_update_email',
 			updated_email: $("#updated_email").val(),
 			email:         $("#original_email").val(),
-			for_all_lists: is_for_all_lists
+			for_all_lists: is_for_all_lists,
+			_csrf_token:  $('#_csrf_token').val(), 
+		}, 
+		onComplete:function(){
+			remove_csrf_token();
+			add_csrf_token();    
 		}
 	});
+	
+	
 	$(window).resize(function(){
 	    $.colorbox.resize({
 	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
@@ -3281,7 +3295,13 @@ function validate_remove_email(for_multiple_lists) {
 			flavor:             'validate_remove_email',
 			email:              $("#email").val(),
 			type:               $("#type_remove option:selected").val(),
-			for_multiple_lists: for_multiple_lists
+			for_multiple_lists: for_multiple_lists,
+			_csrf_token:        $('#_csrf_token').val()  
+			
+		}, 
+		onComplete:function(){
+			remove_csrf_token();
+			add_csrf_token();    
 		}
 	});
 	$(window).resize(function(){
