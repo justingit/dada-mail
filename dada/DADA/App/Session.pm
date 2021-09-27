@@ -803,6 +803,9 @@ sub check_admin_cgi_security {
 			
 			if($d_status == 0){ 
 	            $problems++;
+				
+				warn 'invalid csrf for flavor, ' . $args{-cgi_obj}->param('flavor');
+				
 	            $flags{invalid_password} = 1;
 				return ( $problems, \%flags, 0 );
 			}
