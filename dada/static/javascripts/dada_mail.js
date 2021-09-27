@@ -47,16 +47,16 @@ jQuery(document).ready(function($){
 	function add_csrf_token() {
 		$("<input>").attr({
 		                name:  "_csrf_token",
-				        class:  "_csrf_token",
+				        class:  "_csrf_token _refresh",
 		                type:  "hidden",
 						value:  $.cookie("_csrf_token") 
 		}).appendTo("form");
 	}
 	function remove_csrf_token() {
-		$( "input" ).remove( "._csrf_token" );
+		$( "input" ).remove( "._csrf_token._refresh" );
 	}
 	function add_csrf_token_form() {
-		$('body').append('<form id="csrf_token_form" style="display:none"><input type="hidden" name="_csrf_token" class="_csrf_token" id="_csrf_token" value="' + $.cookie("_csrf_token") +'"></form>'); 
+		$('body').append('<form id="csrf_token_form" style="display:none"><input type="hidden" name="_csrf_token" class="_csrf_token _no_refresh" id="_csrf_token" value="' + $.cookie("_csrf_token") +'"></form>'); 
 	}
 	
 	// Bounce Handler, Mostly. 
@@ -3241,6 +3241,7 @@ function validate_update_email(is_for_all_lists) {
 	  maxWidth: '640px',
 	  maxHeight: '480px'
 	};
+	
 	$.colorbox({
 		top: 0,
 		fixed: true,
@@ -3256,7 +3257,7 @@ function validate_update_email(is_for_all_lists) {
 			updated_email: $("#updated_email").val(),
 			email:         $("#original_email").val(),
 			for_all_lists: is_for_all_lists,
-			_csrf_token:  $('#_csrf_token').val(), 
+			_csrf_token:  $('#_csrf_token').val() 
 		}, 
 		onComplete:function(){
 			remove_csrf_token();
