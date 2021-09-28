@@ -2754,7 +2754,14 @@ sub gravatar_img_url {
     catch {
         $can_use_gravatar_url = 0;
     };
-
+	
+	if(
+		   ! exists ($args->{-email}) 
+		|| ! defined($args->{-email})
+		|| length($args->{-email}) <= 0
+	){ 
+		return undef; 
+	}
     if ( $can_use_gravatar_url == 1 ) {
         if ( isa_url( $args->{-default_gravatar_url} ) ) {
             $url = Gravatar::URL::gravatar_url(
