@@ -881,11 +881,17 @@ sub enforce_admin_cgi_security {
 				# We can also check to see if -Admin_List and list are the same, 
 				# and if not, log out, and ask for the login for list (or do the switch login if needed...)
 				
-				
+								 
 				$add_vars->{referer}         = $ENV{HTTP_REFERER};
 				$add_vars->{url}             = $ENV{SCRIPT_URI} || $args{-cgi_obj}->url(); 
 				$add_vars->{query_string}    = $ENV{QUERY_STRING}; 
 				$add_vars->{path_info}       = $ENV{PATH_INFO}; 
+				
+				my $pi = $add_vars->{path_info}; 
+				
+				$add_vars->{url} =~ s/$pi$//; 
+				$add_vars->{path_info} =~ s/^\///; 
+				
 				
 				require DADA::Template::Widgets; 
 				my $error_msg = DADA::Template::Widgets::admin(
