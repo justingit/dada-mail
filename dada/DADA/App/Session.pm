@@ -3,12 +3,18 @@ package DADA::App::Session;
 use strict;
 use lib qw(../../ ../../DADA/perllib);
 
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
 use DADA::Config qw(!:DEFAULT);
 use DADA::Security::Password;
 use DADA::MailingList::Settings;
 use DADA::App::Guts;
 use Carp qw(carp croak);
 use Try::Tiny;
+
 my $dbi_obj;
 
 my $t; 
@@ -98,19 +104,27 @@ sub login_cookies {
     my $session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
       or carp $!;
 
+	my $random_token = $self->random_token(); 
+	  
+
     $session->param( 'Admin_List',     $args{-list} );
     $session->param( 'Admin_Password', $cipher_pass );
-    $session->param( 'ip_address',     $ENV{REMOTE_ADDR} );
-	
-    $session->expire( $DADA::Config::COOKIE_PARAMS{-expires} );
+    $session->param( 'ip_address',     $ENV{REMOTE_ADDR} );	
+	$session->param( 'csrf_token',     $random_token );
+
+    $session->expire('csrf_token',      $DADA::Config::COOKIE_PARAMS{-expires} );
     $session->expire( 'Admin_Password', $DADA::Config::COOKIE_PARAMS{-expires} );
     $session->expire( 'Admin_List',     $DADA::Config::COOKIE_PARAMS{-expires} );
     $session->expire( 'ip_address',     $DADA::Config::COOKIE_PARAMS{-expires} );
 
+
     $cookies->[0] = $q->cookie(
-        -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-        -value => $session->id,
-        %DADA::Config::COOKIE_PARAMS
+        -name     => $DADA::Config::LOGIN_COOKIE_NAME,
+        -value    => $session->id,
+        %DADA::Config::COOKIE_PARAMS, 
+		($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+			-secure  => 1,
+		) : ()
     );
 
     $session->flush();
@@ -130,11 +144,112 @@ sub login_cookies {
 		}
     }
 
+	# create if necessary 
+	if ( 
+		!defined( $ls->param('public_api_key')) 
+	 || length($ls->param('public_api_key') <= 0 ) 
+	 ) {
+        require DADA::Security::Password;
+        $ls->save(
+            {
+                -settings => {
+                    public_api_key => DADA::Security::Password::generate_rand_string(undef, 21),
+                }
+            }
+        );
+		$ls = DADA::MailingList::Settings->new( { -list => $list } );
+	}
+	
+	if ( 
+		!defined( $ls->param('private_api_key')) 
+	 || length($ls->param('private_api_key') <= 0 ) 
+	 ) {
+        require DADA::Security::Password;
+        $ls->save(
+            {
+                -settings => {
+                    private_api_key => DADA::Security::Password::generate_rand_string(undef, 41),
+                }
+            }
+        );
+		$ls = DADA::MailingList::Settings->new( { -list => $list } );		
+	}
+	#/ create if necessary 
+	
+	push(@$cookies, 
+		$q->cookie(
+		-name  => '_csrf_token',
+		-value => 'hmac ' . $ls->param('public_api_key') . ':' . $self->authorization_string($random_token, $ls), 
+        %DADA::Config::COOKIE_PARAMS,
+		($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+			-secure  => 1,
+		) : ()
+		
+		)
+	);
+
+
+
+
+
 
     return $cookies;
 }
 
-sub kcfinder_session_begin {
+sub random_token { 
+	my $self = shift; 
+	return generate_rand_string_md5(); 
+}
+
+sub authorization_string {
+
+    my $self           = shift;
+    my $message        = shift;
+	my $ls             = shift; 
+
+    warn '$message ' . $message
+      if $t;
+
+    my $n_digest = $self->_hmac_sha256_base64( $message, $ls->param('private_api_key') );
+    return $n_digest;
+}
+
+sub _hmac_sha256_base64 { 
+	my $self    = shift; 
+	my $message = shift; 
+	my $key     = shift; 
+	my $digest  = shift; 
+	
+	my $can_use_Digest_SHA = 1; 
+	
+	try { 
+		require Digest::SHA;
+	} catch { 
+		$can_use_Digest_SHA = 0; 
+	};
+	
+	if($can_use_Digest_SHA == 1){ 
+		$digest = Digest::SHA::hmac_sha256_base64( $message, $key );
+	}
+	else { 
+		require Digest::SHA::PurePerl; 
+		$digest = Digest::SHA::PurePerl::hmac_sha256_base64( $message, $key );
+		
+	}
+     while ( length($digest) % 4 ) {
+         $digest .= '=';
+     }
+
+     warn '$digest:' . $digest
+       if $t;
+
+     return $digest;
+}
+ 
+ 
+ 
+ 
+ sub kcfinder_session_begin {
 
     my $self       = shift;
 	my $session_id = shift; 
@@ -217,6 +332,10 @@ sub kcfinder_session_begin {
             -name => $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_name},
             -value => $sess_id, 
 			%DADA::Config::COOKIE_PARAMS,
+			($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+				-secure  => 1,
+			) : ()
+			
         );
         return $cookie;
     }
@@ -277,10 +396,9 @@ sub change_login {
         @_
     );
 
-    die "no list!" if !$args{-list};
+    die "no list!" if ! $args{-list};
 
     my $q = $args{-cgi_obj};
-    my $cookie;
 
     require CGI::Session;
 
@@ -308,15 +426,43 @@ sub change_login {
 
     $old_session->param( 'Admin_List',     $args{-list} );
     $old_session->param( 'Admin_Password', $cipher_pass );
+	
+	
+	my $random_token = $self->random_token(); 
+	$old_session->param( 'csrf_token',     $random_token );
+
 
     $old_session->flush();
 
-    $cookie = $q->cookie(
-        -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-        -value => $old_session->id,
-        %DADA::Config::COOKIE_PARAMS
-    );
-    return $cookie;
+	my $cookies = []; 
+	
+    push(@$cookies, 
+		$q->cookie(
+	        -name  => $DADA::Config::LOGIN_COOKIE_NAME,
+	        -value => $old_session->id,
+	        %DADA::Config::COOKIE_PARAMS,
+			($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+				-secure  => 1,
+			) : ()
+   		)
+	);
+	
+	push(@$cookies, 
+		$q->cookie(
+			-name  => '_csrf_token',
+			-value => 
+				'hmac ' 
+				. $ls->param('public_api_key') 
+				. ':' 
+				. $self->authorization_string($random_token, $ls), 
+		    %DADA::Config::COOKIE_PARAMS,
+			($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+				-secure  => 1,
+			) : ()
+				
+		));
+		
+    return $cookies;
 }
 
 sub logged_into_diff_list {
@@ -371,8 +517,6 @@ sub logout_cookie {
     die 'no CGI Object (-cgi_obj)' if !$args{-cgi_obj};
     my $q = $args{-cgi_obj};
 
-    my $cookie;
-
     require CGI::Session;
 
     CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
@@ -380,14 +524,32 @@ sub logout_cookie {
       or carp $!;
 
     $session->delete();
+	$session->flush();
+	
+	my $cookies = []; 
+	
+    push(@$cookies, $q->cookie(
+        -name    => $DADA::Config::LOGIN_COOKIE_NAME,
+        -value   => '',
+        -path    => $DADA::Config::COOKIE_PARAMS{-path},
+		-expires => '-10y',
+		($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+			-secure  => 1,
+		) : ()
+		
+    ));
+	
+    push(@$cookies, $q->cookie(
+		-name    => '_csrf_token',
+        -value   => '',
+        -path    => $DADA::Config::COOKIE_PARAMS{-path},
+		-expires => '-10y',
+		($DADA::Config::S_PROGRAM_URL =~ m/^https/) ? (
+			-secure  => 1,
+		) : ()
+    ));
 
-    $cookie = $q->cookie(
-        -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-        -value => undef,
-        -path  => '/'
-    );
-
-    $session->flush();
+    
 
     try {
 	    if ( 
@@ -397,11 +559,11 @@ sub logout_cookie {
 
             $self->kcfinder_session_end;
         }
-    }
-    catch {
+    } catch {
        carp "ending kcfinder/rich filemanager session return an error: $_";
-    }
-    return $cookie;
+    };
+	
+    return $cookies;
 
 }
 
@@ -421,7 +583,8 @@ sub check_session_list_security {
     );
 
     die 'no CGI Object (-cgi_obj)' if !$args{-cgi_obj};
-    my $q = $args{-cgi_obj};
+    
+	my $q = $args{-cgi_obj};
 
     my $session = undef;
  
@@ -432,16 +595,21 @@ sub check_session_list_security {
     $session = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
       or carp $!;
 
+	  #?!
 	  my $sess_args = {
 	  	Admin_List     => $session->param('Admin_List'),
 	  	Admin_Password => $session->param('Admin_Password'),
 	  	ip_address     => $session->param('ip_address'),
+		csrf_token     => $session->param('csrf_token'),
+		
 	  };
 
     my ( $problems, $flags, $root_logged_in ) = $self->check_admin_cgi_security(
         -Admin_List     => $sess_args->{'Admin_List'},
         -Admin_Password => $sess_args->{'Admin_Password'},
 		-ip_address     => $sess_args->{'ip_address'},
+		-csrf_token     => $sess_args->{'csrf_token'}, 
+		-cgi_obj        => $q, 
         -Function       => $args{-Function},
     );
     if ($problems) {
@@ -483,6 +651,7 @@ sub check_admin_cgi_security {
         -Admin_Password => undef,
         -ip_address     => undef,
         -Function       => undef,
+		-cgi_obj        => undef, 
         @_
     );
 
@@ -502,8 +671,11 @@ sub check_admin_cgi_security {
         return ( $problems, \%flags, 0 );
 
     }
-
 	
+	
+	
+	
+
 	if($DADA::Config::CP_SESSION_PARAMS->{check_matching_ip_addresses} == 1) {
 		if($ENV{REMOTE_ADDR} ne $args{-ip_address}){
 			warn 'Current IP address (via $ENV{REMOTE_ADDR):'
@@ -615,12 +787,58 @@ sub check_admin_cgi_security {
           $problems++;
           $flags{no_admin_permissions} = 1;
       }
-	  																					
-    }
+	  
 
+	  	  
+	  if($args{-cgi_obj}->request_method() =~ m/POST/i) {
+
+		  my $passed_csrf_token = $args{-cgi_obj}->param('_csrf_token');
+		     $passed_csrf_token =~ s/^hmac //;
+		  			 
+		  my $d_status = $self->check_digest(
+		  	$passed_csrf_token, 
+			$args{-csrf_token},
+			$ls,
+			); 
+			
+			if($d_status == 0){ 
+	            $problems++;
+				
+				warn 'invalid csrf for flavor, ' . $args{-cgi_obj}->param('flavor');
+				
+	            $flags{invalid_password} = 1;
+				return ( $problems, \%flags, 0 );
+			}
+		}																		
+
+
+
+	}
     return ( $problems, \%flags, $root_logged_in );
 
 }
+
+
+sub check_digest { 
+	my $self = shift; 
+	my $passed_csrf_token = shift; 
+	my $saved_csrf_token  = shift; 
+	my $ls                = shift; 
+	
+	my ( $pi_public_key, $pi_digest ) = split( ':', $passed_csrf_token);
+	
+	 if(
+	 	$self->authorization_string($saved_csrf_token, $ls) eq $pi_digest
+	  ){ 
+		  return 1; 
+	  }
+	  else { 
+	  	  return 0; 
+	  }
+	
+	
+}
+
 
 sub enforce_admin_cgi_security {
 
@@ -663,11 +881,17 @@ sub enforce_admin_cgi_security {
 				# We can also check to see if -Admin_List and list are the same, 
 				# and if not, log out, and ask for the login for list (or do the switch login if needed...)
 				
-				
+								 
 				$add_vars->{referer}         = $ENV{HTTP_REFERER};
 				$add_vars->{url}             = $ENV{SCRIPT_URI} || $args{-cgi_obj}->url(); 
 				$add_vars->{query_string}    = $ENV{QUERY_STRING}; 
 				$add_vars->{path_info}       = $ENV{PATH_INFO}; 
+				
+				my $pi = $add_vars->{path_info}; 
+				
+				$add_vars->{url} =~ s/$pi$//; 
+				$add_vars->{path_info} =~ s/^\///; 
+				
 				
 				require DADA::Template::Widgets; 
 				my $error_msg = DADA::Template::Widgets::admin(

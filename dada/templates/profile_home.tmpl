@@ -254,10 +254,11 @@
         <legend>Delivery Preferences:</legend>
         <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
 
-            <input type="hidden" name="flavor"        value="profile" > 
-            <input type="hidden" name="process"  value="profile_delivery_preferences" > 
-            <input type="hidden" name="list"     value="<!-- tmpl_var list_settings.list -->" > 
-
+            <input type="hidden" name="flavor"     value="profile" > 
+            <input type="hidden" name="process"    value="profile_delivery_preferences" > 
+            <input type="hidden" name="list"       value="<!-- tmpl_var list_settings.list -->" > 
+			<input type="hidden" name="csrf_token" value="<!-- tmpl_var csrf_token -->">
+			
 			<div class="row">
 				<div class="small-10 medium-5 large-4 columns">	 
 					
@@ -346,8 +347,10 @@
 							<div class="content-box section-box">
 
 				                <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="membership_profile_fields"> 
-				                    <input type="hidden" name="flavor"        value="profile" > 
+				                    <input type="hidden" name="flavor"   value="profile" > 
 				                    <input type="hidden" name="process"  value="edit_subscriber_fields" > 
+									<input type="hidden" name="csrf_token" value="<!-- tmpl_var csrf_token -->">
+									
 				                    <!-- tmpl_loop subscriber_fields --> 
 
 										<div class="row">
@@ -425,6 +428,8 @@
 				            <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 				                <input type="hidden" name="flavor"        value="profile" > 
 				                <input type="hidden" name="process"  value="update_email" >
+								<input type="hidden" name="csrf_token" value="<!-- tmpl_var csrf_token -->">
+								
 			                    <!-- tmpl_if errors_update_email --> 
 			                        <!-- tmpl_if error_invalid_email --> 
 			                            <p class="error"> 
@@ -471,6 +476,7 @@
 							<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 				                <input type="hidden" name="flavor"        value="profile" > 
 				                <input type="hidden" name="process"  value="change_password" >
+								<input type="hidden" name="csrf_token" value="<!-- tmpl_var csrf_token -->">
 
 				                <!-- tmpl_if errors_change_password --> 
 				                        <p class="error">
@@ -513,6 +519,7 @@
 				            <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 				                <input type="hidden" name="flavor"        value="profile" > 
 				                <input type="hidden" name="process"  value="delete_profile" >
+								<input type="hidden" name="csrf_token" value="<!-- tmpl_var csrf_token -->">
         
 								<div class="alert-box info radius">
 							        Deleting your profile will remove all your profile information, but 

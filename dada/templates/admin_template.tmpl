@@ -24,9 +24,13 @@
 <!-- /tmpl_if --> 
 
 <!-- jQuery -->
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery-2.2.4.min.js"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery-3.6.0.min.js"></script>
 <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.tablesorter.js?v=<!-- tmpl_var VER escape=URL -->"></script>
 <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.tablesorter.widgets.js?v=<!-- tmpl_var VER escape=URL -->"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.cookie.js?v=<!-- tmpl_var VER escape=URL -->"></script>
+
+
+
 <link rel="stylesheet" type="text/css" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/jquery/tablesorter/theme.default.css?v=<!-- tmpl_var VER escape=URL -->"/ >
 
 
@@ -228,9 +232,10 @@
 								<!-- /tmpl_if -->
 							<!-- /tmpl_if -->
 							<li class="has-form">
-								<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout" class="button alert">
-									Log Out
-								</a>
+								<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+									<input type="hidden" name="flavor" value="logout">
+								 	<input type="submit" class="button alert" value="Log Out">
+								</form>
 							</li>
 						</ul>
 					</section>

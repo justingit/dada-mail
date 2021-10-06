@@ -110,7 +110,7 @@ sub reset_globals {
 }
 sub init_vars {
 
-    # DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
+    # DEV: This NEEDS to be in its own  module - perhaps DADA::App::PluginHelper or something?
     while ( my $key = each %$Plugin_Config ) {
         if ( exists( $DADA::Config::PLUGIN_CONFIGS->{'Bridge'}->{$key} ) ) {
             if ( defined( $DADA::Config::PLUGIN_CONFIGS->{'Bridge'}->{$key} ) ) {
@@ -406,7 +406,34 @@ sub admin_cgi_manual_start_ajax {
     return ( {}, $r );
 }
 
-sub mod {
+
+sub mod { 
+	my $q = shift; 
+	
+	if($q->request_method() =~ m/POST/i){
+		return post_mod($q); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'plugins/bridge/postify_mod_get.tmpl',
+				-vars => { 
+					flavor               => $q->param('flavor'),
+					plugin               => $q->param('plugin'),
+					prm                  => $q->param('prm'),
+					list                 => $q->param('list'),
+					process              => $q->param('process'),
+					msg_id               => $q->param('msg_id'),
+					acting_email_address => $q->param('acting_email_address'),
+					rand_string          => $q->param('rand_string'),
+				}
+	        }
+	    );
+	    return ( {}, $scrn );
+	}
+}
+
+sub post_mod {
 
     my $q = shift; 
     

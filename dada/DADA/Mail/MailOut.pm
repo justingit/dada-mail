@@ -6,6 +6,13 @@ $SIG{ __DIE__ } = sub { Carp::confess( @_ ) };
 
 use lib qw(../../ ../../DADA ../../perllib);
 
+
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
+
 use CGI::Carp qw(croak carp);
 
 use Fcntl qw(
@@ -1267,6 +1274,7 @@ sub _integrity_check {
 
     # Special Case: If the counter is returning... well, NOT a number, we're in trouble...
     my $test_counter = _poll( $self->dir . '/' . $file_names->{counter} );
+	
     if (
         !defined($test_counter)
       )
@@ -2660,10 +2668,27 @@ sub monitor_mailout {
                 $r .= "\t\t\tMass Mailing appears to be in good health.\n";
             }
 
-            if (   exists( $status->{total_sent_out} )
+            if (   
+			
+			(
+				exists( $status->{total_sent_out} )
                 && exists( $status->{total_sending_out_num} )
-                && ( $status->{total_sent_out} < $status->{total_sending_out_num} ) )
-            {
+                && ( $status->{total_sent_out} < $status->{total_sending_out_num} ) 
+			)
+			|| 
+			
+			# Oy - this is a weird bug - if we're sending to no one, a queued 
+			# mass mailing will become forever stuck, so we have to unstick it, like this: 
+			# https://github.com/justingit/dada-mail/issues/1064
+			(
+				   exists( $status->{total_sent_out} )
+                && exists( $status->{total_sending_out_num})
+                && $status->{total_sent_out} == 0 
+				&& $status->{total_sending_out_num} == 0 
+				
+			)
+			
+			) {
                 my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
                 my $li = $ls->get;
@@ -2682,8 +2707,17 @@ sub monitor_mailout {
 
                             $r .=
 "\t\t\t\t\tMass Mailing seems too stale to automatically be reloaded - Not restarting automatically.\n";
-                            $r .= "\t\t\t\t\tTo restart, visit this mailout's individual sending monitor screen.\n";
 
+							if ( 
+								(int(time) - int($status->{last_access}) ) 
+									>= ($DADA::Config::MAILOUT_STALE_AFTER *2 ) 
+								) {
+									$r .= "\t\t\t\t\tMass Mailing is so stale, we're automatically cleaning it up\n";
+									$mailout->clean_up;		
+							}
+							else { 
+								$r .= "\t\t\t\t\tTo restart, visit this mailout's individual sending monitor screen.\n";
+							}
                         }
                         else {
 
@@ -2770,6 +2804,18 @@ sub monitor_mailout {
             }
             else {
                 $r .= "\t\tMass Mailing is finished.\n";
+				
+				if ( $status->{mailout_stale} ) {
+	                $r .= "\t\tMass Mailing is reported being stale, but also finished?\n";	
+					
+	                if(
+						$status->{total_sent_out} >= $status->{total_sending_out_num} 
+						&& $status->{percent_done} >= 100
+					){
+		                $r .= "\t\tMass Mailing is reported to have been sent to everyone - cleaning up!\n";
+						$mailout->clean_up;		
+	                } 
+				}
             }
         }
     }

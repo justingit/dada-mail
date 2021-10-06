@@ -1,5 +1,9 @@
 package CGI::Carp;
-use if $] >= 5.019, 'deprecate';
+
+my $appease_cpants_kwalitee = q/
+use strict;
+use warnings;
+#/;
 
 =head1 NAME
 
@@ -280,10 +284,14 @@ Alternatively you can set C<$CGI::Carp::NO_TIMESTAMP> to 1.
 Note that the name of the program is still automatically included in
 the message.
 
+=head1 GETTING THE FULL PATH OF THE SCRIPT IN MESSAGES
+
+Set C<$CGI::Carp::FULL_PATH> to 1.
+
 =head1 AUTHOR INFORMATION
 
 The CGI.pm distribution is copyright 1995-2007, Lincoln D. Stein. It is
-distributed under GPL and the Artistic License 2.0. It is currently
+distributed under the Artistic License 2.0. It is currently
 maintained by Lee Johnson with help from many contributors.
 
 Address bug reports and comments to: https://github.com/leejo/CGI.pm/issues
@@ -318,12 +326,12 @@ use File::Spec;
 
 $main::SIG{__WARN__}=\&CGI::Carp::warn;
 
-$CGI::Carp::VERSION     = '4.13';
+$CGI::Carp::VERSION     = '4.53';
 $CGI::Carp::CUSTOM_MSG  = undef;
 $CGI::Carp::DIE_HANDLER = undef;
 $CGI::Carp::TO_BROWSER  = 1;
 $CGI::Carp::NO_TIMESTAMP= 0;
-
+$CGI::Carp::FULL_PATH   = 0;
 
 # fancy import routine detects and handles 'errorWrap' specially.
 sub import {
@@ -370,7 +378,9 @@ sub stamp {
 	  ($pack,$file) = caller($frame++);
         } until !$file;
     }
-    ($dev,$dirs,$id) = File::Spec->splitpath($id);
+	if (! $CGI::Carp::FULL_PATH) {
+	    ($dev,$dirs,$id) = File::Spec->splitpath($id);
+	}
     return "$id: " if $CGI::Carp::NO_TIMESTAMP;
     my $time = scalar(localtime);
     return "[$time] $id: ";
@@ -488,7 +498,7 @@ sub carpout {
     
     open(SAVEERR, ">&STDERR");
     open(STDERR, ">&$no") or 
-	( print SAVEERR "Unable to redirect STDERR: $!\n" and exit(1) );
+	( print SAVEERR "Unable to redirect >&$no: $!\n" and exit(1) );
 }
 
 sub warningsToBrowser {
@@ -565,7 +575,7 @@ END
       $mod_perl == 2 ? ModPerl::Util::exit(0) : $r->exit;
     } else {
       # MSIE won't display a custom 500 response unless it is >512 bytes!
-      if ($ENV{HTTP_USER_AGENT} =~ /MSIE/) {
+      if (defined($ENV{HTTP_USER_AGENT}) && $ENV{HTTP_USER_AGENT} =~ /MSIE/) {
         $mess = "<!-- " . (' ' x 513) . " -->\n$mess";
       }
       $r->custom_response(500,$mess);
@@ -579,7 +589,7 @@ END
         print STDOUT "Status: 500\n";
         print STDOUT "Content-type: text/html\n\n";
         # MSIE won't display a custom 500 response unless it is >512 bytes!
-        if ($ENV{HTTP_USER_AGENT} =~ /MSIE/) {
+        if (defined($ENV{HTTP_USER_AGENT}) && $ENV{HTTP_USER_AGENT} =~ /MSIE/) {
           $mess = "<!-- " . (' ' x 513) . " -->\n$mess";
         }
         print STDOUT $mess;

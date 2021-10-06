@@ -5,6 +5,11 @@ use lib qw(
 	../../../perllib
 );
 
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
 use DADA::Config qw(!:DEFAULT);
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions}; 
 
@@ -27,15 +32,20 @@ BEGIN {
 use base "DADA::App::Subscriptions::ConfirmationTokens::$backend";
 
 sub token { 
+	
 	my $self = shift; 
 	
 	require DADA::Security::Password; 
-	my $str = DADA::Security::Password::generate_rand_string(undef, 40);
+	my $str = DADA::Security::Password::generate_rand_string(undef, 40);		
+	
+	my $shaworks = 1; 
 	try { 
-		# Entirely unneeded: 
 		require Digest::SHA1;
-		$str = Digest::SHA1->new->add('blob '.length($str)."\0".$str)->hexdigest(), "\n";
-	}
+		$str = Digest::SHA1->new->add('blob '.length($str)."\0".$str)->hexdigest();
+	} catch { 
+		$shaworks = 0; 
+	};
+		
 	return $str; 
 }
 

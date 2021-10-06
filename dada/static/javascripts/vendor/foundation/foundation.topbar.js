@@ -239,7 +239,9 @@
 
       S(window).off('.topbar').on('resize.fndtn.topbar', self.throttle(function () {
           self.resize.call(self);
-      }, 50)).trigger('resize').trigger('resize.fndtn.topbar').load(function () {
+      
+	  /* CHANGE to make Foundation 5 compatible with jQuery 3 */
+	  }, 50)).trigger('resize').trigger('resize.fndtn.topbar').on("load", function () {
           // Ensure that the offset is calculated after all of the pages resources have loaded
           S(this).trigger('resize.fndtn.topbar');
       });

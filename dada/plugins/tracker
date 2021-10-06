@@ -911,6 +911,7 @@ sub edit_prefs {
 				tracker_send_analytics_email_notification       => 0, 
 				tracker_data_auto_remove                        => 0, 
 				tracker_data_auto_remove_after_timespan         => undef, 
+				tracker_protect_tracked_links_from_prefetching  => 0, 
             },
 			-also_save_for => $also_save_for_list,
         }

@@ -21,6 +21,7 @@ var spinner_opts = {
 	, hwaccel: false // Whether to use hardware acceleration
 	, position: 'absolute' // Element positioning
 }
+
 jQuery(document).ready(function($){
 	/*
 	if($("#footer").length) {
@@ -38,6 +39,25 @@ jQuery(document).ready(function($){
 		});
 	}
 	*/
+	
+	
+	add_csrf_token(); 
+	add_csrf_token_form();
+	
+	function add_csrf_token() {
+		$("<input>").attr({
+		                name:  "_csrf_token",
+				        class:  "_csrf_token _refresh",
+		                type:  "hidden",
+						value:  $.cookie("_csrf_token") 
+		}).appendTo("form");
+	}
+	function remove_csrf_token() {
+		$( "input" ).remove( "._csrf_token._refresh" );
+	}
+	function add_csrf_token_form() {
+		$('body').append('<form id="csrf_token_form" style="display:none"><input type="hidden" name="_csrf_token" class="_csrf_token _no_refresh" id="_csrf_token" value="' + $.cookie("_csrf_token") +'"></form>'); 
+	}
 	
 	// Bounce Handler, Mostly. 
 	$('body').on('click', 'a.modalbox', function(event){
@@ -89,6 +109,15 @@ jQuery(document).ready(function($){
 			$( "a" ).removeClass( "menu_selected" );
 		});
 
+		$("body").on("click", ".change_login", function(event) {
+			$("#lsw_change_to_list").val(
+				$(this).attr("data-change_to_list")
+			); 
+			$("#lsw_location").val(
+				$(this).attr("data-location")
+			); 
+			$("#lsw").submit();
+		});
 	}
 
 
@@ -959,8 +988,8 @@ jQuery(document).ready(function($){
 					flavor: 'transform_to_pro',
 					process: 'verify',
 					pro_dada_username: $("#pro_dada_username").val(), 
-					pro_dada_password: $("#pro_dada_password").val()
-
+					pro_dada_password: $("#pro_dada_password").val(),
+					_csrf_token:  $('#_csrf_token').val()  	
 				},
 				opacity: 0.50,
 				maxWidth: '640px',
@@ -1066,7 +1095,19 @@ jQuery(document).ready(function($){
 	}
 	
 	if ($("#web_services").length) {
- 	   new Clipboard('.copy_button');		
+ 	   new Clipboard('.copy_button');
+	   
+	   
+		$("body").on("submit", "#reset_keys_form", function(event) {
+			if (confirm('Resetting API Keys will log you out of this mailing list, and require you to log back in, Continue?')) {
+				return true;
+			}
+			else {
+				alert("Cancelled.");
+				return false;
+			}	
+		}); 
+
 	}
 
 	function toggle_sub_notice_to(){
@@ -1236,6 +1277,7 @@ jQuery(document).ready(function($){
 			          data: {
 			            check_url: function() { return $( "#logo_image_url" ).val() },
 						flavor: 'is_valid_url',
+						_csrf_token:  $('#_csrf_token').val(),  
   						enabled: function() {
   							if ($("#validate_urls").prop("checked") === true){ 	
   								return 1; 
@@ -1255,6 +1297,7 @@ jQuery(document).ready(function($){
 			          data: {
 			            check_url: function() { return $( "#website_url" ).val() },
 						flavor: 'is_valid_url', 
+						_csrf_token:  $('#_csrf_token').val(),
 						enabled: function() {
 							if ($("#validate_urls").prop("checked") === true){ 	
 								return 1; 
@@ -1274,6 +1317,7 @@ jQuery(document).ready(function($){
 			          data: {
 			            check_url: function() { return $( "#facebook_page_url" ).val() },
 						flavor: 'is_valid_url',
+						_csrf_token:  $('#_csrf_token').val(),
   						enabled: function() {
   							if ($("#validate_urls").prop("checked") === true){ 	
   								return 1; 
@@ -1293,6 +1337,7 @@ jQuery(document).ready(function($){
 			          data: {
 			            check_url: function() { return $( "#youtube_url" ).val() },
 						flavor: 'is_valid_url',
+						_csrf_token:  $('#_csrf_token').val(),
   						enabled: function() {
   							if ($("#validate_urls").prop("checked") === true){ 	
   								return 1; 
@@ -1312,6 +1357,7 @@ jQuery(document).ready(function($){
 			          data: {
 			            check_url: function() { return $( "#twitter_url" ).val() },
 						flavor: 'is_valid_url',
+						_csrf_token:  $('#_csrf_token').val(),
   						enabled: function() {
   							if ($("#validate_urls").prop("checked") === true){ 	
   								return 1; 
@@ -1331,6 +1377,7 @@ jQuery(document).ready(function($){
 			          data: {
 			            check_url: function() { return $( "#instagram_url" ).val() },
 						flavor: 'is_valid_url',
+						_csrf_token:  $('#_csrf_token').val(),
   						enabled: function() {
   							if ($("#validate_urls").prop("checked") === true){ 	
   								return 1; 
@@ -1655,7 +1702,8 @@ jQuery(document).ready(function($){
 					list: '_all',
 					schedule: '_all',
 					output_mode: '_verbose',
-					for_colorbox: 1
+					for_colorbox: 1,
+					_csrf_token:  $('#_csrf_token').val()
 				},
 				opacity: 0.50,
 				maxWidth: '640px',
@@ -1717,6 +1765,9 @@ jQuery(document).ready(function($){
 	// Plugins/Extensions >> Bridge
 	if ($("#plugins_bridge_default").length) {
 
+		// all alone? 
+		new Clipboard('.copy_button');	
+		
 		$("body").on("click", ".plugins_bridge_test_pop3", function(event) {
 			event.preventDefault();
 			plugins_bridge_test_pop3();
@@ -1733,9 +1784,7 @@ jQuery(document).ready(function($){
 		});
 
 
- 	   $("body")
-		
-		new Clipboard('.copy_button');		
+			
 		
 		$("body").on("click", '.plugins_bridge_manually_check_messages', function(event) {
 			event.preventDefault();
@@ -1804,7 +1853,8 @@ jQuery(document).ready(function($){
 					flavor: 'plugins',
 					plugin: 'change_list_shortname',
 					prm: $('#prm').val(),
-					new_name: $('#new_name').val()
+					new_name: $('#new_name').val(),
+					_csrf_token:  $('#_csrf_token').val()
 				},
 				opacity: 0.50,
 				maxWidth: '640px',
@@ -2012,7 +2062,8 @@ jQuery(document).ready(function($){
 			href: $("#s_program_url").val(),
 			data: {
 				flavor: 'also_save_for_settings', 
-				form_id: $(this).closest("form").prop('id')  
+				form_id: $(this).closest("form").prop('id'), 
+				_csrf_token:    $('#_csrf_token').val()
 			},
 		});
 		$(window).resize(function(){
@@ -2081,67 +2132,63 @@ jQuery(document).ready(function($){
 
 
 // Admin Menu
-function admin_menu_notifications(outer_no_loop){ 
+function admin_menu_notifications(no_loop){ 
 	
 	var r = 60 * 5 * 1000; // Every 5 minutes.
-	
-	var refresh_loop = function(no_loop) {
 		
-			var request = $.ajax({
-				url: $('#navcontainer').attr("data-s_program_url"),
-				type: "POST",
-				cache: false,
-				data: {
-					flavor: 'admin_menu_notifications'
-				},
-				dataType: "json"
-			});
-			request.done(function(jsondoc) {				
-				 var targets = [
-					"drafts",            
-					"sending_monitor",    
-					"view_list",   
-					"change_info",
-					"view_archive",    
-					"mail_sending_options",
-					"mailing_sending_mass_mailing_options",
-					"email_themes",
-					"profile_fields",
-					"bounce_handler",     
-					"tracker",            
-					"bridge"            
-				 ]; 
-				 tlen = targets.length;
-				  for (i = 0; i < tlen; i++) {	
-					 target_class = targets[i];			 
-					if ($('.admin_menu_' + target_class + '_notification').length) {
-						$('.admin_menu_' + target_class + '_notification').remove();
-					}
-					
-					content = jsondoc[target_class];
-					/*
-						console.log('target_class:' + target_class);
-						console.log('jsondoc[target_class] (content): ' + jsondoc[target_class]);
-						console.log('content.length:' + content.length);
-					*/
-					if (typeof content !== "undefined") {
-						if(content.length) {
-							$('.admin_menu_' + target_class + ' a').append('<span class="admin_menu_' + target_class + '_notification round alert label"> ' + content + '</span>');
-						}
+	var refresh_loop = function() {
+		var request = $.ajax({
+			url: $('#navcontainer').attr("data-s_program_url"),
+			method: 'GET',
+			cache: false,
+			data: {
+				flavor: 'admin_menu_notifications'
+			},
+			dataType: "json"
+		});
+		request.done(function(jsondoc) {				
+			 var targets = [
+				"drafts",            
+				"sending_monitor",    
+				"view_list",   
+				"change_info",
+				"view_archive",    
+				"mail_sending_options",
+				"mailing_sending_mass_mailing_options",
+				"email_themes",
+				"profile_fields",
+				"bounce_handler",     
+				"tracker",            
+				"bridge"            
+			 ]; 
+			 tlen = targets.length;
+			  for (i = 0; i < tlen; i++) {	
+				 target_class = targets[i];			 
+				if ($('.admin_menu_' + target_class + '_notification').length) {
+					$('.admin_menu_' + target_class + '_notification').remove();
+				}
+			
+				content = jsondoc[target_class];
+				/*
+					console.log('target_class:' + target_class);
+					console.log('jsondoc[target_class] (content): ' + jsondoc[target_class]);
+					console.log('content.length:' + content.length);
+				*/
+				if (typeof content !== "undefined") {
+					if(content.length) {
+						$('.admin_menu_' + target_class + ' a').append('<span class="admin_menu_' + target_class + '_notification round alert label"> ' + content + '</span>');
 					}
 				}
-			});
-			if (no_loop != 1) {
-				setTimeout(refresh_loop, r);
 			}
-		}
-		if (outer_no_loop != 1) {	
-			setTimeout(refresh_loop, r);
-			refresh_loop(1);
+		});		
+		if (no_loop == 1) {
+			//...
 		}
 		else { 
-			refresh_loop(1);
-		}
+			setTimeout(refresh_loop, r);
+		}	
+	}
+	refresh_loop();
 }
 
 
@@ -2298,7 +2345,8 @@ function manually_run_all_scheduled_mass_mailings() {
 			list:           $("#list").val(),
 			schedule:       'scheduled_mass_mailings',
 			output_mode:    '_verbose',
-			for_colorbox:   1
+			for_colorbox:   1, 
+			_csrf_token:    $('#_csrf_token').val() 
 		},
 		onComplete: function(){
 			mass_mailing_schedules_preview(1);
@@ -2320,7 +2368,8 @@ function update_scheduled_mass_mailings_options() {
 			flavor:        'draft_message_values',
 			draft_id:     $("#draft_id").val(),
 			draft_role:   $("#draft_role").val(),
-			draft_screen: $("#flavor").val()
+			draft_screen: $("#flavor").val(), 
+			_csrf_token:    $('#_csrf_token').val() 
 		},
 		dataType: "json",
 		async: true,
@@ -2389,7 +2438,7 @@ function save_msg(async) {
 				$('#draft_notice').text($("#draft_role").val() + ' saved: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
 				r = true;
 				
-				admin_menu_notifications();
+				admin_menu_notifications(1);
 				
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
@@ -2403,24 +2452,25 @@ function save_msg(async) {
 
 }
 
-function auto_save_as_draft() {
-	
-	if ($("#using_ckeditor").length) {
-		if(CKEDITOR.instances['html_message_body']) {
-			CKEDITOR.instances['html_message_body'].updateElement();
-		}
-	}
-	else if($("#using_tinymce").length) {
-		if($("#html_message_body_ifr").length) {
-			tinyMCE.triggerSave();
-		}
-	}
-
-	$("#save_draft_role").val($("#draft_role").val());
+function auto_save_as_draft(no_loop) {	
 		
 	var r = 60 * 1000; // Every 1 minute.
-	//var r = 10 * 1000; // Every 10 seconds
-	var refresh_loop = function(no_loop) {
+
+	var refresh_loop = function() {
+		
+		
+		if ($("#using_ckeditor").length) {
+			if(CKEDITOR.instances['html_message_body']) {
+				CKEDITOR.instances['html_message_body'].updateElement();
+			}
+		}
+		else if($("#using_tinymce").length) {
+			if($("#html_message_body_ifr").length) {
+				tinyMCE.triggerSave();
+			}
+		}
+		$("#save_draft_role").val($("#draft_role").val());
+		
 		
 		// if we're saving, no need to harass anyone. 
 		$('.changed-input').removeClass('changed-input');
@@ -2430,7 +2480,6 @@ function auto_save_as_draft() {
 		else if($("#using_tinymce").length) {
 			tinymce.isNotDirty = 1;
 		}
-		
 		
 		$('#draft_notice').text('auto-saving...');
 		var request = $.ajax({
@@ -2448,7 +2497,7 @@ function auto_save_as_draft() {
 
 				$("#draft_id").val(content.id);
 				
-				admin_menu_notifications();
+				admin_menu_notifications(1);
 				
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
@@ -2457,13 +2506,15 @@ function auto_save_as_draft() {
 				console.log('thrownError:' + thrownError);
 			}
 		});
-		if (no_loop != 1) {
-			setTimeout(
-			refresh_loop, r);
+		if (no_loop == 1) {
+			//...
 		}
+		else { 
+			setTimeout(refresh_loop, r);
+		}	
 	}
+	// This is correct - we want to wait a bit before hitting this refresh loop: 
 	setTimeout(refresh_loop, r);
-	//refresh_loop(1);
 }
 
 
@@ -2472,57 +2523,72 @@ function auto_save_as_draft() {
 
 function update_sending_monitor_interface(message_id, draft_id, type, target_id, refresh_after) {
 	
-	// alert('message_id: ' + message_id);
-	// alert('draft_id: '   + draft_id);
-	
+	no_loop = 0; 
 	
 	var r = refresh_after * 1000;
-	var refresh_loop = function(no_loop) {
-			var request = $.ajax({
-				url: $("#s_program_url").val(),
-				type: "POST",
-				cache: false,
-				data: {
-					flavor: 'sending_monitor',
-					id: message_id,
-					draft_id: draft_id,
-					type: type,
-					process: 'ajax'
-				},
-				dataType: "html"
-			});
-			request.done(function(content) {
-				$("#" + target_id).html(content);
-			});
-			if (no_loop != 1) {
-				setTimeout(
-				refresh_loop, r);
-			}
+	
+	var refresh_loop = function() {
+		var request = $.ajax({
+			url: $("#s_program_url").val(),
+			method: "GET",
+			cache: false,
+			data: {
+				flavor: 'sending_monitor',
+				id: message_id,
+				draft_id: draft_id,
+				type: type,
+				process: 'ajax',
+				_csrf_token:  $('#_csrf_token').val()  
+			},
+			dataType: "html"
+		});
+		request.done(function(content) {
+			//alert('sending_monitor!' + refresh_after);
+			$("#" + target_id).html(content);
+		});
+		if (no_loop == 1) {
+			//...
 		}
-	setTimeout(
-	refresh_loop, r);
-	refresh_loop(1);
+		else { 
+			setTimeout(refresh_loop, r);
+		}	
+	}
+	refresh_loop();
 }
 
 function refresh_tracker_plugin(tracker_url, message_id, target_id) {
-	var tracker_refresh_loop = function(no_loop) {
-			$("#tracker_reports_container").load(tracker_url, {
+	
+	r = 180000;
+	no_loop = 0; 
+	
+	var refresh_loop = function() {
+		var request = $.ajax({
+			url: tracker_url,
+			type: "POST",
+			dataType: "html",
+			cache: false,
+			data: {
 				chrome: 0,
 				flavor: 'plugins',
 				plugin: 'tracker',
 				prm: "m",
-				mid: message_id
-			}, function() {
+				mid: message_id, 
+				_csrf_token:  $('#_csrf_token').val()  
+			},
+			success: function(content) {
+				$("#" + target_id).html(content);
 				update_plugins_tracker_message_report();
-			});
-			if (no_loop != 1) {
-				setTimeout(
-				tracker_refresh_loop, 180000);
-			}
+			} 
+		});
+		
+		if (no_loop == 1) {
+			//...
 		}
-	setTimeout(
-	tracker_refresh_loop, 180000);
-	tracker_refresh_loop(1);
+		else { 
+			setTimeout(refresh_loop, r);
+		}	
+	}
+	refresh_loop();	
 }
 
 
@@ -2561,7 +2627,7 @@ function view_list_viewport(initial) {
 
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'view_list',
@@ -2607,6 +2673,9 @@ function view_list_viewport(initial) {
 
 		//$("#view_list_viewport_loading").html('<p>&nbsp;</p>');
 
+		remove_csrf_token();
+		add_csrf_token();
+		
 		datetimesetupstuff();
 		set_up_advanced_search_form();
 
@@ -2782,9 +2851,10 @@ function drawTrackerDomainBreakdownChart() {
 	$.ajax({
 		url: $("#s_program_url").val(),
 		dataType: "json",
+		method: 'GET',
 		data: {
 			flavor: 'domain_breakdown_json',
-			type: $("#type").val()
+			type: $("#type").val(),
 		},
 		async: true,
 		success: function(jsonData) {
@@ -2831,7 +2901,7 @@ function user_agent_chart(type, target_div) {
 		$("#" + target_div + "_loading").html(loading_str);
 		$.ajax({
 			url: $("#s_program_url").val(),
-			type: "POST",
+			type: "GET",
 			data: {
 				flavor: 'plugins',
 				plugin: 'tracker',
@@ -3014,7 +3084,7 @@ function recent_subscription_activity(days) {
 
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'recent_subscription_activity',
@@ -3045,7 +3115,7 @@ function mailing_list_history() {
 	}
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'mailing_list_history',
@@ -3065,7 +3135,7 @@ function membership_activity() {
 	$("#membership_activity_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'membership_activity',
@@ -3157,6 +3227,11 @@ function validate_add_email() {
 			method:         $("#add_method").val(),
 			return_to:      $("#add_return_to").val(),
 			return_address: $("#add_return_address").val(),
+			_csrf_token:  $('#_csrf_token').val()
+		}, 
+		onComplete:function(){
+			remove_csrf_token();
+			add_csrf_token();    
 		}
 	});
 	$(window).resize(function(){
@@ -3174,6 +3249,7 @@ function validate_update_email(is_for_all_lists) {
 	  maxWidth: '640px',
 	  maxHeight: '480px'
 	};
+	
 	$.colorbox({
 		top: 0,
 		fixed: true,
@@ -3188,9 +3264,16 @@ function validate_update_email(is_for_all_lists) {
 			flavor: 'validate_update_email',
 			updated_email: $("#updated_email").val(),
 			email:         $("#original_email").val(),
-			for_all_lists: is_for_all_lists
+			for_all_lists: is_for_all_lists,
+			_csrf_token:  $('#_csrf_token').val() 
+		}, 
+		onComplete:function(){
+			remove_csrf_token();
+			add_csrf_token();    
 		}
 	});
+	
+	
 	$(window).resize(function(){
 	    $.colorbox.resize({
 	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
@@ -3221,7 +3304,13 @@ function validate_remove_email(for_multiple_lists) {
 			flavor:             'validate_remove_email',
 			email:              $("#email").val(),
 			type:               $("#type_remove option:selected").val(),
-			for_multiple_lists: for_multiple_lists
+			for_multiple_lists: for_multiple_lists,
+			_csrf_token:        $('#_csrf_token').val()  
+			
+		}, 
+		onComplete:function(){
+			remove_csrf_token();
+			add_csrf_token();    
 		}
 	});
 	$(window).resize(function(){
@@ -3237,7 +3326,7 @@ function membership_bouncing_address_information() {
 	$("#membership_bouncing_address_information").hide().html(loading_str).show('fade');
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor:          'view_bounce_history',
@@ -3484,7 +3573,8 @@ function test_mail_sending_options() {
 			sasl_smtp_username: $('#sasl_smtp_username').val(),
 			sasl_smtp_password: $('#sasl_smtp_password').val(),
 			set_smtp_sender: set_smtp_sender,
-			process: $('#process').val()
+			process: $('#process').val(), 
+			_csrf_token:  $('#_csrf_token').val()  
 		}
 	});
 	$(window).resize(function(){
@@ -3493,7 +3583,7 @@ function test_mail_sending_options() {
 	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
 	    });		
 	});
-}
+} 
 
 
 
@@ -3519,7 +3609,8 @@ function amazon_verify_email(email) {
 		href: $("#s_program_url").val(),
 		data: {
 			flavor: 'amazon_ses_verify_email',
-			amazon_ses_verify_email: email
+			amazon_ses_verify_email: email, 
+			_csrf_token:  $('#_csrf_token').val()  
 		}
 	});
 	$(window).resize(function(){
@@ -3551,7 +3642,7 @@ function previewBatchSendingSpeed() {
 
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'previewBatchSendingSpeed',
@@ -3577,7 +3668,7 @@ function amazon_ses_get_stats() {
 	$("#amazon_ses_get_stats_loading").hide().html(loading_str).show('fade');
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'amazon_ses_get_stats'
@@ -3618,7 +3709,7 @@ function bounce_handler_show_scorecard() {
 	$("#bounce_scorecard_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		type: "GET",
 		cache: false,
 		data: {
 			flavor: 'plugins',
@@ -3633,9 +3724,12 @@ function bounce_handler_show_scorecard() {
 			$("#bounce_scorecard").html(content);
 			$("#bounce_scorecard").show('fade');
 			$("#bounce_scorecard_loading").html('<p>&nbsp;</p>');
+			
+			remove_csrf_token();
+			add_csrf_token();
+			
 		});
-
-
+		
 	});
 }
 
@@ -3662,7 +3756,8 @@ function bounce_handler_parse_bounces() {
 			plugin:      'bounce_handler',
 			prm:         'ajax_parse_bounces_results',
 			parse_amount: $('#parse_amount').val(),
-			test:         isa_test
+			test:         isa_test, 
+			_csrf_token:  $('#_csrf_token').val()  
 		},
 		dataType: "html"
 	});
@@ -3702,7 +3797,8 @@ function ajax_parse_bounces_results() {
 			plugin: 'bounce_handler',
 			prm: 'ajax_parse_bounces_results',
 			parse_amount: $('#parse_amount').val(),
-			test:         isa_test
+			test:         isa_test, 
+			_csrf_token:  $('#_csrf_token').val()  
 		},
 		onComplete:function(){
 			bounce_handler_show_scorecard();
@@ -3730,7 +3826,8 @@ function bounce_handler_manually_enter_bounces() {
 			plugin: 'bounce_handler',
 			prm: 'manually_enter_bounces',
 			process: $('#process').val(),
-			msg: $('#msg').val()
+			msg: $('#msg').val(), 
+			_csrf_token:  $('#_csrf_token').val()
 		},
 		dataType: "html"
 	});
@@ -3830,7 +3927,8 @@ function plugins_bridge_test_pop3() {
 			auth_mode: $("#discussion_pop_auth_mode option:selected").val(),
 			use_ssl: use_ssl,
 			use_starttls: discussion_pop_use_starttls, 
-			ssl_verify_mode: discussion_pop_ssl_verify_mode
+			ssl_verify_mode: discussion_pop_ssl_verify_mode, 
+			_csrf_token:  $('#_csrf_token').val()  
 		},
 		opacity: 0.50,
 		maxWidth: '640px',
@@ -3859,7 +3957,8 @@ function plugins_bridge_manually_check_messages() {
 		data: {
 			flavor: 'plugins',
 			plugin: 'bridge',
-			prm:    'admin_cgi_manual_start_ajax'
+			prm:    'admin_cgi_manual_start_ajax', 
+			_csrf_token:  $('#_csrf_token').val()  
 		},
 		opacity: 0.50,
 		maxWidth: '640px',
@@ -3894,8 +3993,7 @@ function plugins_bridge_hide_change_pop3_password_form() {
 // Plugins/Extensions >> Tracker
 
 function update_plugins_tracker_message_report() {
-	
-	
+		
 	$("body").on("click", '.message_individual_email_activity', function(event) {
 		event.preventDefault();
 		message_individual_email_activity_table($(this).attr("data-email"), "message_individual_email_activity_report_table");
@@ -4007,7 +4105,7 @@ function country_geoip_table(type, label, target_div) {
 	$("#" + target_div + "_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		method: "GET",
 		cache: false,
 		data: {
 			flavor: 'plugins',
@@ -4073,7 +4171,7 @@ function country_geoip_map(type, target_div) {
 	
 		$.ajax({
 			url: $("#s_program_url").val(),
-			type: "POST",
+			method: "GET",
 			data: {
 				flavor: 'plugins',
 				plugin: 'tracker',
@@ -4347,7 +4445,9 @@ function data_over_time_graph(type, label, target_div) {
 
 function message_email_report_table(type, target_div) {
 
+	
 	console.log('type:' + type + ' target_div:' + target_div);
+	
 
 	if (
 		   $("#" + target_div + "_loading").length
@@ -4356,23 +4456,22 @@ function message_email_report_table(type, target_div) {
 		$("#" + target_div + "_loading").html(loading_str);	
 		var request = $.ajax({
 			url: $("#s_program").val(),
-			type: "POST",
+			method: "POST",
 			cache: false,
 			data: {
 				flavor: 'plugins',
 				plugin: 'tracker',
 				prm: 'message_email_report_table',
 				mid: $('#tracker_message_id').val(),
-				type: type
+				type: type, 
+				_csrf_token:  $('#_csrf_token').val()
 			},
 			dataType: "html"
 		});
 		request.done(function(content) {
-
 			$("#" + target_div).hide();
 			$("#" + target_div).html(content);
 			$("#" + target_div).show('fade');
-
 			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 		});
 	}
@@ -4389,7 +4488,7 @@ function tracker_message_email_activity_listing_table(target_div) {
 		$("#" + target_div + "_loading").html(loading_str);
 		var request = $.ajax({
 			url: $("#s_program_url").val(),
-			type: "POST",
+			method: "GET",
 			cache: false,
 			data: {
 				flavor: 'plugins',
@@ -4547,7 +4646,8 @@ function tracker_change_record_view() {
 			flavor: 'plugins',
 			plugin: 'tracker',
 			prm: 'save_view_count_prefs',
-			tracker_record_view_count: $('#tracker_record_view_count option:selected').val()
+			tracker_record_view_count: $('#tracker_record_view_count option:selected').val(), 
+			_csrf_token:  $('#_csrf_token').val()
 		},
 		dataType: "html"
 	});
@@ -4613,7 +4713,8 @@ function tracker_delete_msg_id_data(message_id){
 				flavor: 'plugins',
 				plugin: 'tracker',
 				prm: 'delete_msg_id_data',
-				mid: message_id
+				mid: message_id, 
+				_csrf_token:  $('#_csrf_token').val()
 			},
 			dataType: "html"
 		});
@@ -4633,7 +4734,7 @@ function view_logs_results() {
 	$("#refresh_button").val('Loading....');
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
+		method: "GET",
 		cache: false,
 		data: {
 			flavor: 'plugins',
@@ -4662,7 +4763,8 @@ function delete_log() {
 				flavor: 'plugins',
 				plugin: 'log_viewer',
 				prm: 'ajax_delete_log',
-				log_name: $('#log_name').val()
+				log_name: $('#log_name').val(), 
+				_csrf_token:  $('#_csrf_token').val()
 			},
 			dataType: "html"
 		});
@@ -4698,7 +4800,7 @@ function message_history_html(initial) {
 		
 		var request = $.ajax({
 			url: $("#s_program_url").val(),
-			type: "POST",
+			method: "GET",
 			cache: false,
 			data: {
 				flavor: 'plugins',
@@ -4719,7 +4821,7 @@ function message_history_html(initial) {
 				
 				var request2 = $.ajax({
 					url: $("#s_program_url").val(),
-					type: "POST",
+					method: "GET",
 					cache: false,
 					data: {
 						flavor: 'plugins',
@@ -4891,7 +4993,8 @@ function tracker_purge_log() {
 			data: {
 				flavor: 'plugins',
 				plugin: 'tracker',
-				prm: 'ajax_delete_log'
+				prm: 'ajax_delete_log', 
+				_csrf_token:  $('#_csrf_token').val()
 			},
 			dataType: "html"
 		});
@@ -4970,6 +5073,8 @@ function preview_message_receivers() {
 
 	f_params.flavor                  = 'preview_message_receivers';
 
+	f_params._csrf_token = $('#_csrf_token').val();
+
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
@@ -5024,6 +5129,7 @@ function ChangeMassMailingButtonLabel(first_run) {
 			flavor: 'send_email_button_widget',
 			draft_role: $("#draft_role").val(),
 			archive_no_send: archive_no_send,
+			_csrf_token:  $('#_csrf_token').val()
 		},
 		success: function(content) {
 			$(".button_toolbar").fadeTo(200, 0, function() {

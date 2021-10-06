@@ -3,9 +3,7 @@ package CGI::Cookie;
 use strict;
 use warnings;
 
-use if $] >= 5.019, 'deprecate';
-
-our $VERSION='4.13';
+our $VERSION='4.53';
 
 use CGI::Util qw(rearrange unescape escape);
 use overload '""' => \&as_string, 'cmp' => \&compare, 'fallback' => 1;
@@ -106,13 +104,13 @@ sub new {
   # Ignore mod_perl request object--compatibility with Apache::Cookie.
   shift if ref $params[0]
         && eval { $params[0]->isa('Apache::Request::Req') || $params[0]->isa('Apache') };
-  my ( $name, $value, $path, $domain, $secure, $expires, $max_age, $httponly )
+  my ( $name, $value, $path, $domain, $secure, $expires, $max_age, $httponly, $samesite )
    = rearrange(
     [
       'NAME', [ 'VALUE', 'VALUES' ],
       'PATH',   'DOMAIN',
       'SECURE', 'EXPIRES',
-      'MAX-AGE','HTTPONLY'
+      'MAX-AGE','HTTPONLY','SAMESITE'
     ],
     @params
    );
@@ -128,6 +126,7 @@ sub new {
   $self->expires( $expires )   if defined $expires;
   $self->max_age( $max_age )   if defined $max_age;
   $self->httponly( $httponly ) if defined $httponly;
+  $self->samesite( $samesite ) if defined $samesite;
   return $self;
 }
 
@@ -141,12 +140,13 @@ sub as_string {
     my $value = join "&", map { escape($_) } $self->value;
     my @cookie = ( "$name=$value" );
 
-    push @cookie,"domain=".$self->domain   if $self->domain;
-    push @cookie,"path=".$self->path       if $self->path;
-    push @cookie,"expires=".$self->expires if $self->expires;
-    push @cookie,"max-age=".$self->max_age if $self->max_age;
-    push @cookie,"secure"                  if $self->secure;
-    push @cookie,"HttpOnly"                if $self->httponly;
+    push @cookie,"domain=".$self->domain     if $self->domain;
+    push @cookie,"path=".$self->path         if $self->path;
+    push @cookie,"expires=".$self->expires   if $self->expires;
+    push @cookie,"max-age=".$self->max_age   if $self->max_age;
+    push @cookie,"secure"                    if $self->secure;
+    push @cookie,"HttpOnly"                  if $self->httponly;
+    push @cookie,"SameSite=".$self->samesite if $self->samesite;
 
     return join "; ", @cookie;
 }
@@ -165,7 +165,7 @@ sub bake {
           : Apache->request
   } if $MOD_PERL;
   if ($r) {
-      $r->headers_out->add('Set-Cookie' => $self->as_string);
+      $r->err_headers_out->add('Set-Cookie' => $self->as_string);
   } else {
       require CGI;
       print CGI::header(-cookie => $self);
@@ -222,11 +222,18 @@ sub path {
     return $self->{'path'};
 }
 
-
 sub httponly { # HttpOnly
     my ( $self, $httponly ) = @_;
     $self->{'httponly'} = $httponly if defined $httponly;
     return $self->{'httponly'};
+}
+
+my %_legal_samesite = ( Strict => 1, Lax => 1, None => 1 );
+sub samesite { # SameSite
+    my $self = shift;
+    my $samesite = ucfirst lc +shift if @_; # Normalize casing.
+    $self->{'samesite'} = $samesite if $samesite and $_legal_samesite{$samesite};
+    return $self->{'samesite'};
 }
 
 1;
@@ -328,6 +335,14 @@ See these URLs for more information:
     http://msdn.microsoft.com/en-us/library/ms533046.aspx
     http://www.browserscope.org/?category=security&v=top
 
+=item B<6. samesite flag>
+
+Allowed settings are C<Strict>, C<Lax> and C<None>.
+
+As of June 2016, support is limited to recent releases of Chrome and Opera.
+
+L<https://tools.ietf.org/html/draft-west-first-party-cookies-07>
+
 =back
 
 =head2 Creating New Cookies
@@ -338,7 +353,8 @@ See these URLs for more information:
                            '-max-age' =>  '+3M',
                              -domain  =>  '.capricorn.com',
                              -path    =>  '/cgi-bin/database',
-                             -secure  =>  1
+                             -secure  =>  1,
+                             -samesite=>  "Lax"
 	                    );
 
 Create cookies from scratch with the B<new> method.  The B<-name> and
@@ -373,6 +389,10 @@ cookie only when a cryptographic protocol is in use.
 
 B<-httponly> if set to a true value, the cookie will not be accessible
 via JavaScript.
+
+B<-samesite> may be C<Lax>, C<Strict>, or C<None> and is an evolving part
+of the standards for cookies. Please refer to current documentation
+regarding it.
 
 For compatibility with Apache::Cookie, you may optionally pass in
 a mod_perl request object as the first argument to C<new()>. It will
@@ -418,7 +438,7 @@ argument to the header() method:
 Mod_perl users can set cookies using the request object's header_out()
 method:
 
-  $r->headers_out->set('Set-Cookie' => $c);
+  $r->err_headers_out->add('Set-Cookie' => $c);
 
 Internally, Cookie overloads the "" operator to call its as_string()
 method when incorporated into the HTTP header.  as_string() turns the
@@ -512,7 +532,7 @@ Get or set the cookie's max_age value.
 =head1 AUTHOR INFORMATION
 
 The CGI.pm distribution is copyright 1995-2007, Lincoln D. Stein. It is
-distributed under GPL and the Artistic License 2.0. It is currently
+distributed under the Artistic License 2.0. It is currently
 maintained by Lee Johnson with help from many contributors.
 
 Address bug reports and comments to: https://github.com/leejo/CGI.pm/issues

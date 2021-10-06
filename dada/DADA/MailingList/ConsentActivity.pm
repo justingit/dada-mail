@@ -2,6 +2,11 @@ package DADA::MailingList::ConsentActivity;
 
 use lib qw(./ ../DADA ../ ../../ ../../DADA ../perllib); 
 
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
 use Carp qw(carp croak);
 use Try::Tiny; 
 
@@ -81,15 +86,17 @@ sub start_consent {
 }
 
 sub token { 
-	my $self = shift; 
 	
-	require DADA::Security::Password; 
-	my $str = DADA::Security::Password::generate_rand_string(undef, 40);
+	my $self = shift; 
+	my $str = DADA::Security::Password::generate_rand_string(undef, 40);		
+	
 	try { 
-		# Entirely unneeded: 
 		require Digest::SHA1;
-		$str = Digest::SHA1->new->add('blob '.length($str)."\0".$str)->hexdigest(), "\n";
-	}
+		$str = Digest::SHA1->new->add('blob '.length($str)."\0".$str)->hexdigest();
+	} catch {
+		
+	};
+	
 	return $str; 
 }
 

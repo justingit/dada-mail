@@ -1250,7 +1250,7 @@ sub profile_widget {
 	
 	
     my $scr              = '';
-    my $email            = '';
+    my $prof_data        = {};
     my $is_logged_in     = 0;
     my $profiles_enabled = $DADA::Config::PROFILE_OPTIONS->{enabled};
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1)
@@ -1261,7 +1261,7 @@ sub profile_widget {
 		if(defined($prof_sess_obj)){ 
 			if ( $prof_sess_obj->is_logged_in( { -cgi_obj => $q } ) ) {
                 $is_logged_in = 1;
-                $email = $prof_sess_obj->get( { -cgi_obj => $q } );
+                $prof_data = $prof_sess_obj->get( { -cgi_obj => $q } );
 			}
 		}
 		else {
@@ -1273,7 +1273,7 @@ sub profile_widget {
 	            my $prof_sess = DADA::Profile::Session->new;
 	            if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
 	                $is_logged_in = 1;
-	                $email = $prof_sess->get( { -cgi_obj => $q } );
+					$prof_data = $prof_sess->get( { -cgi_obj => $q } );
 	            }
 	        }
 		}
@@ -1285,11 +1285,11 @@ sub profile_widget {
             -vars   => {
                 profiles_enabled  => $profiles_enabled,
                 is_logged_in      => $is_logged_in,
-                'profile.email'   => $email,
+                'profile.email'   => $prof_data->{email},
                 gravators_enabled => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{enable_gravators},
                 gravatar_img_url => gravatar_img_url(
                     {
-                        -email                => $email,
+                        -email                => $prof_data->{email},
                         -size => 45,
                     }
                 ),

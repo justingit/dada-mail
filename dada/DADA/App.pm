@@ -113,13 +113,14 @@ sub setup {
 		'modal_subscribe_landing'  => \&modal_subscribe_landing, 
         'api'                      => \&api,
         'token'                    => \&token,
+		'post_token'               => \&post_token, 
         'unsubscribe'              => \&unsubscribe,
         'unsubscription_request'   => \&unsubscription_request,
         'unsubscribe_email_lookup' => \&unsubscribe_email_lookup,
         'report_abuse'             => \&report_abuse,
         'login'                    => \&login,
         'logout'                   => \&logout,
-        'log_into_another_list'    => \&log_into_another_list,
+        #'log_into_another_list'    => \&log_into_another_list,
         'change_login'             => \&change_login,
         'new_list'                 => \&new_list,
         'change_info'              => \&change_info,
@@ -156,6 +157,7 @@ sub setup {
         'add'                            => \&add,
         'check_status'                   => \&check_status,
         'email_password'                 => \&email_password,
+		'post_email_password'            => \&post_email_password, 
         'add_email'                      => \&add_email,
         'delete_email'                   => \&delete_email,
         'subscription_options'           => \&subscription_options,
@@ -229,7 +231,8 @@ sub setup {
         'reset_cipher_keys'             => \&reset_cipher_keys,
         'restore_lists'                 => \&restore_lists,
         'r'                             => \&redirection,
-        'subscriber_help'               => \&subscriber_help,
+        'post_redirection'              => \&post_redirection, 
+		'subscriber_help'               => \&subscriber_help,
         'show_img'                      => \&show_img,
         'file_attachment'               => \&file_attachment,
         'm_o_c'                         => \&m_o_c,
@@ -241,8 +244,10 @@ sub setup {
         'show_error'                    => \&show_error,
         'subscription_form_html'        => \&subscription_form_html,
         'profile_activate'              => \&profile_activate,
+		'post_profile_activate'         => \&post_profile_activate, 
         'profile_register'              => \&profile_register,
         'profile_reset_password'        => \&profile_reset_password,
+		'post_profile_reset_password'   => \&post_profile_reset_password, 
         'profile_update_email'          => \&profile_update_email,
         'profile_login'                 => \&profile_login,
         'profile_logout'                => \&profile_logout,
@@ -251,6 +256,7 @@ sub setup {
         'transform_to_pro'              => \&transform_to_pro,
         'yikes'                         => \&yikes,
         'rate_limit_reached'            => \&rate_limit_reached,
+		'status_405'                    => \&status_405, 
 
 # These handled the oldstyle confirmation. For some backwards compat, I've changed
 # them so that there's at least a shim to the new system,
@@ -340,11 +346,16 @@ sub setup {
             $sched_flavor                      => $pm_prefs,
             subscribe                          => $pm_prefs,
             restful_subscribe                  => $pm_prefs,
-            token                              => $pm_prefs,
+            
+			token                              => $pm_prefs,
+			post_token                         => $pm_prefs,
+			
+			email_password                     => $pm_prefs,
+			profile_reset_password             => $pm_prefs,
             unsubscribe                        => $pm_prefs,
             unsubscription_request             => $pm_prefs,
             login                              => $pm_prefs,
-            log_into_another_list              => $pm_prefs,
+            #log_into_another_list              => $pm_prefs,
             pass_gen                           => $pm_prefs,
             file_attachment                    => $pm_prefs,
             profile_activate                   => $pm_prefs,
@@ -465,6 +476,56 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 };
 
 }
+
+
+
+
+sub status_405 {
+
+    my $self  = shift;
+    my $error = shift;
+
+    warn $error;
+
+    my $TIME = scalar( localtime() );
+
+    $self->header_props( -status => '500' );
+
+    return qq{
+<html>
+<head></head>
+<body>
+<div style="padding:5px;border:3px dotted #ccc; font-family:helvetica; font-size:.7em; line-height:150%; width:600px;margin-left:auto;margin-right:auto;margin-top:100px;">
+<img alt="Dada Mail" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAC
+WCAMAAAAL34HQAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAxQTFRFCAgIXV
+1dp6en/f39XG2aJgAAAqpJREFUeNrs3OGO4yAMBOB0+/7vvFWRLMtjjAkEqDT5dddyy1fJNwSH7vU+8
+rrIWsX6+15k/TTr+l6v12s6jqxlrA/oUtdEHFm7WKXOyPotltZ8CmuijKw1LCks7ZiVFGQtYOlocF8n
+63CWZAGWkbxF1uGsYGEW1mBGkPUoyw13fJesY1k6GuKyWxoQZM0I9ya6t9TIeojV3KPWsqNwydrOisP
+duKWSPn+4l/tkTWc1w702Rm+QyNrIaoZ7HB/3GkxkzWVl2rW1lgRZJ7Ay4a6Lzx1G1kZWJtx18XVth8
+oqrh+R6iffZE1hJcM9sxgj64KrTCf1R9YUVibcm9Ggb5qFheMxhsgaZwVLr2tyh5UBWiYv4mcoY8iax
+cr8nzcmd5ihaGLtB5I1yJK1sxkNGZOulQyrfAyyBll4jieYT48pk5lTlfqD6c0PWY+ycNZaN0EPKOML
+SGK9ycIP3MgtsjpTHnG1w3baoUsK+w7mmNeEOwiyOnc+meDQ9WFYZhssAl2R2Xt5snpYZv02/YKgIkv
+cByxcKrDmyJrIynTtyw/VT8Jilukc+TfcZC1hmfN2+q8Bq3yAaU9fyRpjmcR3tzqi1JVH1mks3KCaZq
+IkSNfXSMhaw9IpgEeZcQdF1oGs2taldivcdQaIrC2sN3yfGXdK+W/JkrWLFfeG+pYQss5gjVxk3WaZj
+oNOcPf15ADsYtQmImucVfvVAKYb2OwbmplqveDgOTdZt1lB8z1o6WLX3sxE1kaWbqPXWLX2vXvjRdbT
+LHcCt27co1c4mKz1rGAC8wr+Agi3EN1FAlmNpZqsuyw32bEa8EGXW4LN2sKnLGTdY8Xh7tbN1bqSrOh
+ZNVlpFpYOHkw3LPNPZBuD05C1niXvmeM4Zkwt94NmrjnpRdZcFvtbv8z6F2AA/5G8jEIpBJoAAAAASU
+VORK5CYII=" style="float:left;padding:10px"/></p>
+<h1>405 Method Not Allowed</h1>
+<p>&nbsp;</p>
+<p>More information about this error may be available in the <em>program's own error log</em>.</p> 
+<p><a href="mailto:$ENV{SERVER_ADMIN}">Contact the Server Admin</a></p>
+<p>Time of error: <strong>$TIME</strong></p> 	
+
+
+
+</div>
+</body> 
+</html> 
+};
+
+}
+
 
 sub rate_limit_reached {
 
@@ -3746,7 +3807,8 @@ sub change_password {
     my $self = shift;
     my $q    = $self->query();
 
-    my $process = $q->param('process') || undef;
+    my $process          = $q->param('process')          || undef;
+	my $recaptcha_failed = $q->param('recaptcha_failed') || 0;
 
     my ( $admin_list, $root_login, $checksout, $error_msg ) =
       check_list_security(
@@ -3776,12 +3838,33 @@ sub change_password {
                 -vars => {
                     screen     => 'change_password',
                     root_login => $root_login,
+					recaptcha_failed => $recaptcha_failed, 
+					
                 },
             }
         );
         return $scrn;
     }
     else {
+		
+		
+		if (can_use_Google_reCAPTCHA() == 1 ) {
+	        my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
+			my $captcha_status = validate_recaptcha(
+				{
+					 -response    => $crf, 
+					 -remote_addr => $ENV{'REMOTE_ADDR'},
+				}
+			);
+			if($captcha_status == 0){ 
+	            $q->delete('process');
+				$q->param('recaptcha_failed', 1);
+				return $self->change_password; 
+			}
+			else { 
+				#...
+			}
+		}
 
         my $old_password       = $q->param('old_password');
         my $new_password       = $q->param('new_password');
@@ -3899,7 +3982,6 @@ sub delete_list {
 			if($captcha_status == 0){ 
 	            $q->delete('process');
 				$q->param('recaptcha_failed', 1);
-				warn 'here1';
 				return $self->delete_list; 
 			}
 			else { 
@@ -4362,6 +4444,18 @@ sub web_services {
     my $keys_reset = 0;
     if ( $process eq 'reset_keys' ) {
         $keys_reset = 1;
+		
+        my ( $headers, $body ) = $self->logout(
+            -no_list_security_check => 1,
+            -redirect_url           => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=web_services'
+              . '&list='
+              . $list,
+        );
+        if ( keys %$headers ) {
+            $self->header_props(%$headers);
+        }
+        return $body;
     }
 
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -8546,7 +8640,7 @@ sub subscription_options {
                 -associate => $q,
                 -settings  => {
                     view_list_subscriber_number                      => undef,
-                    view_list_show_timestamp_col                     => 0,
+                    #view_list_show_timestamp_col                     => 0,
                     view_list_order_by                               => undef,
                     view_list_order_by_direction                     => undef,
                     view_list_show_sub_confirm_list                  => 0,
@@ -11042,6 +11136,13 @@ sub subscribe {
     my $self = shift;
     my $q    = $self->query();
 
+
+	# We're not going to accept GET requests:
+	if($q->request_method() !~ m/POST/i){
+		return $self->subscribe_landing(); 
+	}
+	
+	
     my %args = ( -html_output => 1, @_ );
 
 	my $skip_tests = [];
@@ -11342,7 +11443,38 @@ sub outdated_subscription_urls {
     return $scrn;
 }
 
-sub token {
+
+sub token { 
+
+    my $self = shift;
+    my $q    = $self->query();
+
+    my %args = ( -html_output => 1, @_ );
+
+	# I'm fine with this check, as the whole reason for this is to 
+	# ONLY accept request via POST: 
+	#
+	# There are some exceptions, where "token" is used as a flavor of the form - this 
+	# should handle those exceptions as well, so long as the form's action is, "POST":
+	
+	if($q->request_method() =~ m/POST/i){
+		# is this ever called with args?
+		return $self->post_token(%args); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_token_get.tmpl',
+				-vars => { 
+					token => $q->param('token'), 
+				}
+	        }
+	    );
+		return $scrn; 
+	}
+	
+}
+sub post_token {
 
     my $self = shift;
     my $q    = $self->query();
@@ -11883,32 +12015,41 @@ sub text_list {
     $self->header_props(%$headers);
     return $body;
 }
+
+
+
+
+
 sub new_list {
 
     my $self = shift;
     my $q    = $self->query();
 
+	# GET request not allowed. 
+	if($q->request_method() !~ m/POST/i){
+		return $self->status_405(); 
+	}
+	
     require DADA::Security::Password;
     my $root_password    = $q->param('root_password');
     my $agree            = $q->param('agree');
     my $process          = $q->param('process');
     my $help             = $q->param('help');
     my $list             = $q->param('list');
-    my $list_name        = $q->param('list_name') || undef;
+    my $list_name        = $q->param('list_name')        || undef;
     my $list_owner_email = $q->param('list_owner_email') || undef;
-    my $admin_email      = $q->param('admin_email') || undef;
-    my $privacy_policy   = $q->param('privacy_policy') || undef;
-    my $consent          = $q->param('consent') || undef;
-    my $info             = $q->param('info') || undef;
+    my $admin_email      = $q->param('admin_email')      || undef;
+    my $privacy_policy   = $q->param('privacy_policy')   || undef;
+    my $consent          = $q->param('consent')          || undef;
+    my $info             = $q->param('info')             || undef;
     my $physical_address = $q->param('physical_address') || undef;
-    my $password         = $q->param('password') || undef;
-    my $retype_password  = $q->param('retype_password') || undef;
-	
-	my $send_new_list_welcome_email                = $q->param('send_new_list_welcome_email') || 0;
-	my $send_new_list_welcome_email_with_list_pass = $q->param('send_new_list_welcome_email_with_list_pass') || 0;
-	
-	
-	
+    my $password         = $q->param('password')         || undef;
+    my $retype_password  = $q->param('retype_password')  || undef;
+
+    my $send_new_list_welcome_email =
+      $q->param('send_new_list_welcome_email') || 0;
+    my $send_new_list_welcome_email_with_list_pass =
+      $q->param('send_new_list_welcome_email_with_list_pass') || 0;
 
     if ( !$process ) {
 
@@ -11927,26 +12068,26 @@ sub new_list {
             }
 
         }
-		
-		if (!$errors && can_use_Google_reCAPTCHA() == 1 ) {
 
-	        my $crf = xss_filter( scalar $q->param('g-recaptcha-response')) || undef;
-			my $captcha_status = validate_recaptcha(
-				{
-					 -response    => $crf, 
-					 -remote_addr => $ENV{'REMOTE_ADDR'},
-				}
-			);
-			if($captcha_status == 0){ 
-	            return user_error(
-	                {
-	                    -list  => $list,
-	                    -error => 'list_cp_login_recaptcha_failed',
-	                }
-	            );
-			}
-		}
-		
+        if ( !$errors && can_use_Google_reCAPTCHA() == 1 ) {
+
+            my $crf =
+              xss_filter( scalar $q->param('g-recaptcha-response') ) || undef;
+            my $captcha_status = validate_recaptcha(
+                {
+                    -response    => $crf,
+                    -remote_addr => $ENV{'REMOTE_ADDR'},
+                }
+            );
+            if ( $captcha_status == 0 ) {
+                return user_error(
+                    {
+                        -list  => $list,
+                        -error => 'list_cp_login_recaptcha_failed',
+                    }
+                );
+            }
+        }
 
         if ( !$DADA::Config::PROGRAM_ROOT_PASSWORD ) {
             return user_error(
@@ -11979,14 +12120,15 @@ sub new_list {
                     -url => $DADA::Config::S_PROGRAM_URL . '?agree=no' );
             }
 
-			if(strip($DADA::Config::LIST_QUOTA) eq '') {
-				$DADA::Config::LIST_QUOTA = undef;
-            } 
-			# Special: 
-			if($DADA::Config::LIST_QUOTA == 0){ 
-				$DADA::Config::LIST_QUOTA = undef;
-			}
-            if (   defined($DADA::Config::LIST_QUOTA)
+            if ( strip($DADA::Config::LIST_QUOTA) eq '' ) {
+                $DADA::Config::LIST_QUOTA = undef;
+            }
+
+            # Special:
+            if ( $DADA::Config::LIST_QUOTA == 0 ) {
+                $DADA::Config::LIST_QUOTA = undef;
+            }
+            if ( defined($DADA::Config::LIST_QUOTA)
                 && ( ( $#t_lists + 1 ) >= $DADA::Config::LIST_QUOTA ) )
             {
                 return user_error(
@@ -12003,7 +12145,7 @@ sub new_list {
             if ($errors) {
                 $ending   = '';
                 $err_word = 'was';
-                $ending   = 's' if $errors > 1;
+                $ending   = 's'    if $errors > 1;
                 $err_word = 'were' if $errors > 1;
             }
 
@@ -12025,15 +12167,15 @@ sub new_list {
                         -Use_Custom => 0,
                     },
                     -vars => {
-                        errors            => $errors,
-                        ending            => $ending,
-                        err_word          => $err_word,
-                        help              => $help,
-                        root_password     => $root_password,
-                        flags_list_name   => $flags->{list_name},
-                        list_name         => $list_name,
-                        flags_list_exists => $flags->{list_exists},
-                        flags_list        => $flags->{list},
+                        errors                   => $errors,
+                        ending                   => $ending,
+                        err_word                 => $err_word,
+                        help                     => $help,
+                        root_password            => $root_password,
+                        flags_list_name          => $flags->{list_name},
+                        list_name                => $list_name,
+                        flags_list_exists        => $flags->{list_exists},
+                        flags_list               => $flags->{list},
                         flags_shortname_too_long =>
                           $flags->{shortname_too_long},
                         flags_slashes_in_name  => $flags->{slashes_in_name},
@@ -12049,18 +12191,18 @@ sub new_list {
                         flags_retype_password => $flags->{retype_password},
                         flags_password_ne_retype_password =>
                           $flags->{password_ne_retype_password},
-                        retype_password => $retype_password,
+                        retype_password                => $retype_password,
                         flags_invalid_list_owner_email =>
                           $flags->{invalid_list_owner_email},
-                        list_owner_email       => $list_owner_email,
-                        flags_list_info        => $flags->{list_info},
-                        info                   => $info,
-                        flags_privacy_policy   => $flags->{privacy_policy},
-                        privacy_policy         => $privacy_policy,
-						
-						consent                => $consent,
-						flags_consent          =>  $flags->{consent},
-						
+                        list_owner_email     => $list_owner_email,
+                        flags_list_info      => $flags->{list_info},
+                        info                 => $info,
+                        flags_privacy_policy => $flags->{privacy_policy},
+                        privacy_policy       => $privacy_policy,
+
+                        consent       => $consent,
+                        flags_consent => $flags->{consent},
+
                         flags_physical_address => $flags->{physical_address},
                         physical_address       => $physical_address,
                         flags_list_name_bad_characters =>
@@ -12069,33 +12211,40 @@ sub new_list {
                         lists_exist     => $lists_exist,
                         list_popup_menu => $list_popup_menu,
                         auth_state      => $sast->make_state,
-						
+
                     },
                 }
             );
-			
-			if($errors){ 
-				
-				# This fills in the advanced options form fields. Above also fills in other fields just
-				# by setting the vars in via HTML::Template - so we have a mix of two techniques. 
-				# If there is another pass to this, it's probably best to consilidate on the below technique. 
-				
-			    require CGI;
-			    my $fif_q = CGI->new;
-			    $fif_q->charset($DADA::Config::HTML_CHARSET);
-			    $fif_q->delete_all;
-				
-				$fif_q->param('clone_settings',                             scalar $q->param('clone_settings'));
-				$fif_q->param('clone_settings_from_this_list',              scalar $q->param('clone_settings_from_this_list'));
-				$fif_q->param('send_new_list_welcome_email',                $send_new_list_welcome_email);
-				$fif_q->param('send_new_list_welcome_email_with_list_pass', $send_new_list_welcome_email_with_list_pass);
-				
-		        require HTML::FillInForm::Lite;
-		        my $h = HTML::FillInForm::Lite->new();
-		        $scrn = $h->fill( \$scrn, $fif_q );
-			}
-			
-			
+
+            if ($errors) {
+
+# This fills in the advanced options form fields. Above also fills in other fields just
+# by setting the vars in via HTML::Template - so we have a mix of two techniques.
+# If there is another pass to this, it's probably best to consilidate on the below technique.
+
+                require CGI;
+                my $fif_q = CGI->new;
+                $fif_q->charset($DADA::Config::HTML_CHARSET);
+                $fif_q->delete_all;
+
+                $fif_q->param( 'clone_settings',
+                    scalar $q->param('clone_settings') );
+                $fif_q->param( 'clone_settings_from_this_list',
+                    scalar $q->param('clone_settings_from_this_list') );
+                $fif_q->param(
+                    'send_new_list_welcome_email',
+                    $send_new_list_welcome_email
+                );
+                $fif_q->param(
+                    'send_new_list_welcome_email_with_list_pass',
+                    $send_new_list_welcome_email_with_list_pass
+                );
+
+                require HTML::FillInForm::Lite;
+                my $h = HTML::FillInForm::Lite->new();
+                $scrn = $h->fill( \$scrn, $fif_q );
+            }
+
             return $scrn;
 
         }
@@ -12105,7 +12254,7 @@ sub new_list {
                 {
                     -cgi_obj => $q,
                     -vars    => {
-                        errors => [ { error => 'invalid_root_password' } ],
+                        errors     => [ { error => 'invalid_root_password' } ],
                         error_with => 'new_list',
                     }
                 }
@@ -12114,7 +12263,6 @@ sub new_list {
         }
     }
     else {
-
         chomp($list);
         $list =~ s/^\s+//;
         $list =~ s/\s+$//;
@@ -12132,7 +12280,7 @@ sub new_list {
                 info             => $info,
                 privacy_policy   => $privacy_policy,
                 physical_address => $physical_address,
-				consent          => $consent,
+                consent          => $consent,
             }
         );
 
@@ -12154,7 +12302,7 @@ sub new_list {
         else {
 
             $list_owner_email = lc_email($list_owner_email);
-            
+
             my $new_info = {
 
                 #	list             =>   $list,
@@ -12162,10 +12310,10 @@ sub new_list {
                 list_name        => $list_name,
                 password         => $password,
                 info             => $info,
-				physical_address => $physical_address,
-				privacy_policy   => $privacy_policy,
-                consent          => $consent, 
-				
+                physical_address => $physical_address,
+                privacy_policy   => $privacy_policy,
+                consent          => $consent,
+
             };
 
             require DADA::MailingList;
@@ -12212,42 +12360,43 @@ sub new_list {
                 my $sast = DADA::Security::SimpleAuthStringState->new;
                 $auth_state = $sast->make_state;
             }
-			
-			if ( $q->param('send_new_list_welcome_email') == 1 ) {
-				try { 
-			        require DADA::App::Messages;
-			        my $dap = DADA::App::Messages->new(
-						{
-							-list => $ls->param('list'),
-						}
-					);
-					# seems dumb to be passing this around, if we don't need to: 
-					my $send_new_list_created_notification_vars = {}; 
-					
-					if($send_new_list_welcome_email_with_list_pass == 1){ 
-						$send_new_list_created_notification_vars = { 
-							send_new_list_welcome_email_with_list_pass => 1, 
-							list_password                              => $password,
-						} 
-					}
-					else { 
-						$send_new_list_created_notification_vars = { 
-							send_new_list_welcome_email_with_list_pass => 0, 
-							list_password                              => undef,
-						} 
-					}
-					
-			        $dap->send_new_list_created_notification(
-						{ 
-							-vars => $send_new_list_created_notification_vars
-						}
-			        ); 
-				} catch { 
-					warn 'problems sending send_new_list_created_notification: ' . $_; 
-				};
-			}
-			
-			
+
+            if ( $q->param('send_new_list_welcome_email') == 1 ) {
+                try {
+                    require DADA::App::Messages;
+                    my $dap = DADA::App::Messages->new(
+                        {
+                            -list => $ls->param('list'),
+                        }
+                    );
+
+                    # seems dumb to be passing this around, if we don't need to:
+                    my $send_new_list_created_notification_vars = {};
+
+                    if ( $send_new_list_welcome_email_with_list_pass == 1 ) {
+                        $send_new_list_created_notification_vars = {
+                            send_new_list_welcome_email_with_list_pass => 1,
+                            list_password => $password,
+                        };
+                    }
+                    else {
+                        $send_new_list_created_notification_vars = {
+                            send_new_list_welcome_email_with_list_pass => 0,
+                            list_password                              => undef,
+                        };
+                    }
+
+                    $dap->send_new_list_created_notification(
+                        {
+                            -vars => $send_new_list_created_notification_vars
+                        }
+                    );
+                }
+                catch {
+                    warn 'problems sending send_new_list_created_notification: '
+                      . $_;
+                };
+            }
 
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
@@ -12257,12 +12406,11 @@ sub new_list {
                         -Use_Custom => 0,
                     },
                     -vars => {
-						
-                        login_widget     => 'hidden_field',
-                        selected_list    => $ls->param('list'),
-                        auth_state       => $auth_state,
-						
-						
+
+                        login_widget  => 'hidden_field',
+                        selected_list => $ls->param('list'),
+                        auth_state    => $auth_state,
+
                         list_name        => $ls->param('list_name'),
                         list             => $ls->param('list'),
                         escaped_list     => $escaped_list,
@@ -12279,6 +12427,7 @@ sub new_list {
     }
 }
 
+
 sub list_archive {
 
     my $self  = shift;
@@ -12293,6 +12442,7 @@ sub list_archive {
 
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::PROGRAM_URL );
+		return;
 
     }
 
@@ -13053,6 +13203,12 @@ sub send_archive {
     my $note       = xss_filter( scalar $q->param('note') );
     my $list       = $q->param('list');
 
+
+	# We're not going to accept GET requests:
+	if($q->request_method() !~ m/POST/i){
+		return $self->default();
+	}
+
     my $errors = 0;
 
     my $list_exists = check_if_list_exists( -List => $list );
@@ -13366,7 +13522,37 @@ sub archive_atom {
     return $self->archive_rss( -type => 'atom' );
 }
 
-sub email_password {
+
+
+
+
+
+sub email_password { 
+    my $self = shift;
+    my $q    = $self->query();
+		
+	if($q->request_method() =~ m/POST/i){
+		return $self->post_email_password(); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_email_password.tmpl',
+				-vars => { 
+					list         => $q->param('list'),
+					pass_auth_id => $q->param('pass_auth_id'),
+				}
+	        }
+	    );
+		return $scrn; 	
+	}
+
+}
+
+
+
+
+sub post_email_password {
 
     my $self = shift;
     my $q    = $self->query();
@@ -13533,6 +13719,11 @@ sub login {
     }
 
     my $list = $admin_list;
+	
+	# GET request not allowed. 
+	if($q->request_method() !~ m/POST/i){
+		return $self->status_405(); 
+	}
 
     if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
         require DADA::Security::SimpleAuthStringState;
@@ -13574,13 +13765,6 @@ sub login {
     if ( check_if_list_exists( -List => $list ) >= 1 ) {
 
         require DADA::Security::Password;
-
-        my $dumb_cookie = $q->cookie(
-            -name  => 'blankpadding',
-            -value => 'blank',
-            %DADA::Config::COOKIE_PARAMS,
-        );
-
         require DADA::App::Session;
         my $dada_session = DADA::App::Session->new();
 
@@ -13607,9 +13791,9 @@ sub login {
                     'remote_host:' . $rh . ', ip_address:' . $ra );
             }
 
-            my $cookies = [ $dumb_cookie, @$login_cookies ];
+           # my $cookies = [ $dumb_cookie, @$login_cookies ];
             my $headers = {
-                -cookie  => $cookies,
+                -cookie  => $login_cookies,
                 -nph     => $DADA::Config::NPH,
                 -Refresh => '0; URL=' . $referer
             };
@@ -13663,6 +13847,11 @@ sub logout {
     my $headers = {};
     my $body    = undef;
 
+
+	if($q->request_method() !~ m/POST/i){
+		return $self->status_405(); 
+	}
+	
     my %args = (
         -redirect               => 1,
         -redirect_url           => $DADA::Config::DEFAULT_LOGOUT_SCREEN,
@@ -13709,16 +13898,14 @@ sub logout {
 
     }
 
-    my $logout_cookie;
-
     require DADA::App::Session;
     my $dada_session = DADA::App::Session->new( -List => $l_list );
-    $logout_cookie = $dada_session->logout_cookie( -cgi_obj => $q );
+    my $logout_cookies = $dada_session->logout_cookie( -cgi_obj => $q );
 
     if ( $args{-redirect} == 1 ) {
 
         $headers = {
-            -COOKIE  => $logout_cookie,
+            -cookie  => $logout_cookies,
             -nph     => $DADA::Config::NPH,
             -Refresh => '0; URL=' . $location,
         };
@@ -13738,38 +13925,45 @@ sub logout {
         );
 
         # Probably not setting up the header_props here, yey?
+		$self->header_props({});
         $self->header_props(%$headers);
+		#return $scrn; 
         return ( $headers, $scrn );
     }
     else {
-        return $logout_cookie;    #DEV: not sure about this one...
+        return $logout_cookies;    #DEV: not sure about this one...
     }
 
 }
 
-sub log_into_another_list {
-
-    my $self = shift;
-    my $q    = $self->query();
-
-    my ( $admin_list, $root_login, $checksout, $error_msg ) =
-      check_list_security(
-        -cgi_obj  => $q,
-        -Function => 'log_into_another_list'
-      );
-    if ( !$checksout ) { return $error_msg; }
-
-    $self->logout( -redirect_url => $DADA::Config::PROGRAM_URL
-          . '?flavor='
-          . $DADA::Config::SIGN_IN_FLAVOR_NAME, );
-
-}
+#sub log_into_another_list {
+#
+#    my $self = shift;
+#    my $q    = $self->query();
+#
+#    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+#      check_list_security(
+#        -cgi_obj  => $q,
+#        -Function => 'log_into_another_list'
+#      );
+#    if ( !$checksout ) { return $error_msg; }
+#
+#    $self->logout( -redirect_url => $DADA::Config::PROGRAM_URL
+#          . '?flavor='
+#          . $DADA::Config::SIGN_IN_FLAVOR_NAME, );
+#
+#}
 
 sub change_login {
 
     my $self = shift;
     my $q    = $self->query();
 
+
+	if($q->request_method() !~ m/POST/i){
+		return $self->status_405(); 
+	}
+	
     my ( $admin_list, $root_login, $checksout, $error_msg ) =
       check_list_security(
         -cgi_obj  => $q,
@@ -13789,8 +13983,6 @@ sub change_login {
         $location = 'http' . $location;
     }
 
-    $q->delete_all();
-
     # DEV: Ooh. This is messy.
     $location =~ s/(\;|\&)done\=1$//;
     $location =~ s/(\;|\&)delete_email_count\=(.*?)$//;
@@ -13798,16 +13990,22 @@ sub change_login {
 
     $location =~ s/f\=add_email\&fn\=(.*?)(\&)/f\=add\2/;
 
-    my $new_cookie =
-      $dada_session->change_login( -cgi_obj => $q, -list => $change_to_list );
+    my $new_cookies = $dada_session->change_login(
+		-cgi_obj => $q, 
+		-list    => $change_to_list
+	);
 
     # not cached atm
     # require DADA::App::ScreenCache;
     # my $c = DADA::App::ScreenCache->new;
     # $c->remove( 'login_switch_widget.' . $change_to_list . '.scrn' );
 
+	#$q->delete_all();
+
+
+	
     my $headers = {
-        -cookie  => [$new_cookie],
+        -cookie  => $new_cookies,
         -nph     => $DADA::Config::NPH,
         -Refresh => '0; URL=' . $location
     };
@@ -13825,7 +14023,7 @@ sub change_login {
             },
         }
     );
-
+	$self->header_props({});
     $self->header_props(%$headers);
     return $scrn;
 }
@@ -14746,7 +14944,49 @@ sub file_attachment {
 
 }
 
-sub redirection {
+
+
+
+sub redirection { 
+    my $self = shift;
+    my $q    = $self->query();
+	
+
+    if ( check_if_list_exists( -List => $q->param('list') ) == 0 ) {
+		return $self->default();
+    }
+	require DADA::MailingList::Settings; 
+	my $ls = DADA::MailingList::Settings->new({-list => $q->param('list')});
+	
+	 
+	if(
+		   $q->request_method() =~ m/POST/i
+		|| $ls->param('tracker_protect_tracked_links_from_prefetching') != 1
+	){
+		return $self->post_redirection(); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_redirection.tmpl',
+				-vars => { 
+					
+					list   => $q->param('list'),
+					key    => $q->param('key'),
+					email  => $q->param('email'),
+					
+				}
+	        }
+	    );
+		return $scrn; 	
+	}
+
+}
+
+
+
+
+sub post_redirection {
 
     my $self = shift;
     my $q    = $self->query();
@@ -14886,14 +15126,11 @@ sub profile_login {
         }
     }
 
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1) {
+    if ( $DADA::Config::PROFILE_OPTIONS->{enabled} != 1) {
         return $self->default();
 
     }
-
-    if ( $DADA::Config::PROFILE_OPTIONS->{enabled} != 1 ) {
-        return $self->default();
-    }
+	
     require DADA::Profile;
     ###
     my $all_errors = [];
@@ -14909,7 +15146,6 @@ sub profile_login {
     my $prof_sess = DADA::Profile::Session->new;
 
     if ( $q->param('process') != 1 ) {
-
         if (   $prof_sess->is_logged_in( { -cgi_obj => $q } )
             && $q->param('logged_out') != 1 )
         {
@@ -14918,12 +15154,19 @@ sub profile_login {
                 -url => $DADA::Config::PROGRAM_URL . '/profile/' );
         }
         else {
-            my $scrn              = '';
+			my $scrn              = '';
             my $using_captcha     = 0;
 
             if ( $DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1 ) {
                 $using_captcha = can_use_Google_reCAPTCHA();
             }
+
+			my $auth_state;
+		    if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
+		        require DADA::Security::SimpleAuthStringState;
+		        my $sast = DADA::Security::SimpleAuthStringState->new;
+		        $auth_state = $sast->make_state;
+		    }
 
             $scrn = DADA::Template::Widgets::wrap_screen(
                 {
@@ -14967,6 +15210,9 @@ sub profile_login {
                         removal         => scalar $q->param('removal') || '',
                         WHOLE_URL       => $whole_url,
 						
+		                auth_state      => $auth_state,
+						
+						
 						# This should probably be deprecated, as I'm handling this in 
 						# DADA::Template::Widgets, now
                         %{ DADA::Profile::feature_enabled() }
@@ -14980,8 +15226,9 @@ sub profile_login {
     else {
         my ( $status, $errors ) = $prof_sess->validate_profile_login(
             {
-                -email    => xss_filter( scalar $q->param('login_email') ),
-                -password => xss_filter( scalar $q->param('login_password') ),
+                -email      => xss_filter( scalar $q->param('login_email') ),
+                -password   => xss_filter( scalar $q->param('login_password') ),
+				-auth_state => xss_filter( scalar $q->param('auth_state') ),
 
             },
         );
@@ -14989,10 +15236,10 @@ sub profile_login {
         if ( $status == 1 ) {
             my $cookie = $prof_sess->login(
                 {
-                    -email => xss_filter( scalar $q->param('login_email') ),
-                    -password =>
-                      xss_filter( scalar $q->param('login_password') ),
-                },
+                    -email           => xss_filter( scalar $q->param('login_email') ),
+                    -password        => xss_filter( scalar $q->param('login_password') ),					
+                	-skip_validation => 1, 
+				},
             );
 
             #DEV: encoding?
@@ -15104,7 +15351,34 @@ sub profile_register {
     }
 }
 
-sub profile_activate {
+
+
+
+sub profile_activate { 
+    my $self = shift;
+    my $q    = $self->query();
+	
+	if($q->request_method() =~ m/POST/i){
+		return $self->post_redirection(); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_profile_activate.tmpl',
+				-vars => { 
+					email => $q->param('email'),
+					auth_code => $q->param('auth_code'),
+				}
+	        }
+	    );
+		return $scrn; 	
+	}
+}
+
+
+
+
+sub post_profile_activate {
 
     my $self = shift;
     my $q    = $self->query();
@@ -15117,8 +15391,9 @@ sub profile_activate {
     if ( !DADA::Profile::feature_enabled('register') == 1 ) {
         return $self->default();
     }
-
-    my $email     = strip( cased( xss_filter( scalar $q->param('email') ) ) );
+	
+	
+	my $email     = strip( cased( xss_filter( scalar $q->param('email') ) ) );
     my $auth_code = xss_filter( scalar $q->param('auth_code') );
 
     my $prof = DADA::Profile->new( { -email => $email } );
@@ -15169,18 +15444,28 @@ sub profile {
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1) {
         return $self->default();
     }
-
+	
     require DADA::Profile::Session;
     my $prof_sess = DADA::Profile::Session->new;
 
-    if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
-        my $email = $prof_sess->get( { -cgi_obj => $q } );
+    if ($prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
+		
+		if(length($q->param('process')) > 0) { 
+		
+			if($prof_sess->check_csrf($q) == 0){
+				$prof_sess->logout;
+				$q->param('flavor', 'profile_login');
+				return $self->profile_login();
+			}
+		}
+		
+        my $prof_data = $prof_sess->get( { -cgi_obj => $q } );
 
         require DADA::Profile::Fields;
         require DADA::Profile;
 
-        my $prof = DADA::Profile->new( { -email => $email } );
-        my $dpf = DADA::Profile::Fields->new( { -email => $email } );
+        my $prof = DADA::Profile->new( { -email => $prof_data->{email} } );
+        my $dpf = DADA::Profile::Fields->new( { -email => $prof_data->{email} } );
         my $subscriber_fields =
           $dpf->{manager}->fields( { -show_hidden_fields => 0, } );
         my $field_attr   = $dpf->{manager}->get_all_field_attributes;
@@ -15386,7 +15671,7 @@ sub profile {
             my $dps = DADA::Profile::Settings->new({-list => $list});
             my $r   = $dps->save(
                 {
-                    -email   => $email,
+                    -email   => $prof_data->{email},
                     -setting => 'delivery_prefs',
                     -value   => $delivery_prefs,
                 }
@@ -15454,7 +15739,7 @@ sub profile {
                 my $dasu = DADA::App::Subscriptions::Unsub->new(
                     { -list => $i->{list} } );
                 my $unsub_link = $dasu->unsub_link(
-                    { -email => $email, -mid => '00000000000000' } );
+                    { -email => $prof_data->{email}, -mid => '00000000000000' } );
 
                 my $digest_timeframe =
                   formatted_runtime( $ls->param('digest_schedule') );
@@ -15467,7 +15752,7 @@ sub profile {
 				);
                 my $s   = $dps->fetch(
                     {
-                        -email => $email,
+                        -email => $prof_data->{email},
                     }
                 );
                 my $delivery_prefs = $s->{delivery_prefs} || 'individual';
@@ -15494,7 +15779,8 @@ sub profile {
                     -vars   => {
                         errors => scalar $q->param('errors')
                           || 0,
-                        'profile.email'   => $email,
+                        'profile.email'   => $prof_data->{email},
+						csrf_token        => $prof_data->{token},
                         subscriber_fields => $fields,
                         subscriptions     => $filled,
                         has_subscriptions => $has_subscriptions,
@@ -15521,7 +15807,7 @@ sub profile {
                           $DADA::Config::PROFILE_OPTIONS->{gravatar_options}
                           ->{enable_gravators},
                         gravatar_img_url =>
-                          gravatar_img_url( { -email => $email, } ),
+                          gravatar_img_url( { -email => $prof_data->{email}, } ),
                         protected_directories => $protected_directories,
                         WHOLE_URL             => $whole_url,
                         %{ DADA::Profile::feature_enabled() },
@@ -15575,7 +15861,35 @@ sub profile_logout {
     return $body;
 }
 
-sub profile_reset_password {
+
+
+
+
+sub profile_reset_password { 
+    my $self = shift;
+    my $q    = $self->query();
+	
+	if($q->request_method() =~ m/POST/i){
+		return $self->post_profile_reset_password(); 
+	}
+	else { 
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'postify_profile_reset_password.tmpl',
+				-vars => { 
+					email     => $q->param('email'),
+					auth_code => $q->param('auth_code'),
+				}
+	        }
+	    );
+		return $scrn; 	
+	}
+}
+
+
+
+
+sub post_profile_reset_password {
 
     my $self  = shift;
     my $q     = $self->query();
@@ -15758,8 +16072,10 @@ sub profile_update_email {
             my $prof_sess = DADA::Profile::Session->new;
             my $cookie    = $prof_sess->login(
                 {
-                    -email   => $profile_info->{'profile.update_email'},
-                    -no_pass => 1,
+                    -email           => $profile_info->{'profile.update_email'},
+                    -no_pass         => 1,
+                	-skip_validation => 1, 
+					
                 }
             );
 

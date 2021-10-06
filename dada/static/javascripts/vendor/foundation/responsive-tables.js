@@ -16,7 +16,11 @@ $(document).ready(function() {
     }
   };
    
-  $(window).load(updateTables);
+   
+  /* CHANGE to make Foundation 5 compatible with jQuery 3
+  /* $(window).load(updateTables); */
+  $(window).on("load", updateTables ); 
+	   
   $(window).on("redraw",function(){switched=false;updateTables();}); // An event to listen for
   $(window).on("resize", updateTables);
    

@@ -4,7 +4,7 @@ use strict;
 use lib qw(./ ../ ../../ ../../DADA ../perllib);
 
 use Carp qw(carp croak);
-$CARP::Verbose = 1;
+#$CARP::Verbose = 1;
 
 use DADA::Config qw(!:DEFAULT);
 use JSON;
@@ -116,21 +116,13 @@ sub request {
         $self->r_digest( $args->{-digest} );
         $self->r_cgi_obj( $args->{-cgi_obj} );
     }
-
-    warn '$self->check_list(): ' . $self->check_list();
-    warn '$self->r_list: ' . $self->r_list;
-    warn '$self->r_public_key: ' . $self->r_public_key;
-    warn '$DADA::Config::GLOBAL_API_OPTIONS->{public_key}: '
-      . $DADA::Config::GLOBAL_API_OPTIONS->{public_key};
-
+	  
     if (
         ( $self->check_list() == 1 )
         && ( $self->r_public_key eq
             $DADA::Config::GLOBAL_API_OPTIONS->{public_key} )
       )
     {
-
-        warn 'here.';
 
         $self->ls_obj(
             DADA::MailingList::Settings->new( { -list => $self->r_list } ) );
@@ -148,7 +140,10 @@ sub request {
     else {
        # If there's a list that's passed, but it's invalid, this shouldn't workL
         if (
-            ( $self->r_list eq undef )
+             
+			($self->r_list eq undef) || (length($self->r_list) <= 0)
+			
+			
             && ( $self->r_public_key eq
                 $DADA::Config::GLOBAL_API_OPTIONS->{public_key} )
           )
@@ -545,8 +540,6 @@ sub update_profile_fields {
         my $profile_fields = $self->r_cgi_obj->param('profile_fields');
         $profile_fields = $json->decode($profile_fields);
 
-        #warn 'pf:' . $profile_fields;
-
         # check to see if profiles exist?
         # Actually, it doesnm't matter to me if the profile exists or not,
 
@@ -604,11 +597,20 @@ sub create_new_list {
 
     my $status = 0;
     my $errors = {};
+	
+	if($self->global_level() == 0){ 
+        return {
+            status  => 0,
+            results => {
+                error => 'requires_global_keys',
+            }
+        };
+	}
 
-=pod
 
 	# OK, so remember we need to do a list quota check: 
 	
+    my @t_lists = available_lists();
 	if(strip($DADA::Config::LIST_QUOTA) eq '') {
 		$DADA::Config::LIST_QUOTA = undef;
     } 
@@ -619,27 +621,24 @@ sub create_new_list {
     if (   defined($DADA::Config::LIST_QUOTA)
         && ( ( $#t_lists + 1 ) >= $DADA::Config::LIST_QUOTA ) )
     {
-        return user_error(
-            { -list => $list, -error => "over_list_quota" } );
+	    return {
+	        status  => 0,
+	        results => {
+	            error => 'over_list_quota',
+	        }
+	    };
     }
 
     
     my @available_lists = DADA::App::Guts::available_lists();
     my $lists_exist     = $#available_lists + 1;
 
-=cut
 
     my $settings = $self->r_cgi_obj->param('settings');
     $settings = $json->decode($settings);
 
-    warn '$self->r_cgi_obj->param(\'options\'): '
-      . $self->r_cgi_obj->param('options');
-
     my $options = $self->r_cgi_obj->param('options');
-    $options = $json->decode($options);
-
-    use Data::Dumper;
-    warn '$options: ' . Dumper($options);
+    $options = $json->decode($options) // {};
 
     my $list_exists = check_if_list_exists( -List => $settings->{list} );
     my ( $list_errors, $flags ) = check_list_setup(
@@ -712,21 +711,13 @@ sub create_new_list {
         my $ls;
 
         if ( exists( $options->{clone_settings_from_list} ) ) {
-            warn 'yes.';
-
-            warn
-'check_if_list_exists(-List => $options->{clone_settings_from_list}: '
-              . check_if_list_exists(
-                -List => $options->{clone_settings_from_list} );
-
+			
             if (
                 check_if_list_exists(
                     -List => $options->{clone_settings_from_list}
                 ) <= 0
               )
             {
-
-                warn 'yes.';
 
                 $status = 0;
                 $errors = { clone_list_no_exists => 1 };
@@ -738,8 +729,6 @@ sub create_new_list {
                 };
             }
             else {
-
-                warn 'yes.';
 
                 $ls = DADA::MailingList::Create(
                     {
@@ -753,8 +742,6 @@ sub create_new_list {
             }
         }
         else {
-
-            warn 'yes.';
 
             $ls = DADA::MailingList::Create(
                 {
@@ -814,12 +801,10 @@ sub create_new_list {
             };
         }
 
-        use Data::Dumper;
-
         return {
             status  => 1,
             results => {
-                settings => Dumper($settings),
+                settings => $settings,
             }
         };
     }
@@ -845,23 +830,17 @@ sub check_request {
         $errors->{invalid_digest} = 1;
     }
 
-    warn '$self->check_list(): ' . $self->check_list();
-
     if ( $self->check_list() == 0 ) {
 
-        warn '$self->global_level: ' . $self->global_level;
-        warn '$self->r_list: ' . $self->r_list;
-        warn '$self->r_service: ' . $self->r_service;
-
         if (   $self->global_level == 1
-            && $self->r_list eq undef
+            && (
+				($self->r_list eq undef) || (length($self->r_list) <= 0)
+			)
             && $self->r_service eq 'create_new_list' )
         {
             # Special Case - this is fine.
         }
         else {
-
-            warn 'nope.';
 
             $status = 0;
             $errors->{invalid_list} = 1;
@@ -877,9 +856,6 @@ sub check_request {
 
 sub check_nonce {
     my $self = shift;
-
-    warn '$self->r_cgi_obj->param(\'nonce\'): '
-      . $self->r_cgi_obj->param('nonce');
 
     my ( $timestamp, $nonce ) = split( ':', $self->r_cgi_obj->param('nonce') );
 
@@ -907,8 +883,6 @@ sub check_public_key {
     # $self->r_public_key
     # is what's passed in the request, so I guess this sort of makes sense:
     #
-
-    warn '$self->global_level : ' . $self->global_level;
 
     my $tmp_public_key = undef;
     if ( $self->global_level == 1 ) {

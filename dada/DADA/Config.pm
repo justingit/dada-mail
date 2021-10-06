@@ -249,9 +249,10 @@ $PROFILE_OPTIONS //= {
         delete_profile             => 0,
     },
     cookie_params => {
-        -name    => 'dada_profile',
-        -path    => '/',
-        -expires => '+1y',
+        -name     => 'dada_profile',
+        -path     => '/',
+        -expires  => '+1y',
+		-SameSite => 'Lax',
     },
 
 };
@@ -455,15 +456,16 @@ $SIGN_IN_FLAVOR_NAME    //= 'sign_in';
 $DEFAULT_SCREEN         //= '';
 $DEFAULT_ADMIN_SCREEN   //= $S_PROGRAM_URL . '?flavor=drafts';
 $DEFAULT_LOGOUT_SCREEN  //= $S_PROGRAM_URL . '?flavor=' . $ADMIN_FLAVOR_NAME . '&logged_out=1';
-$DISABLE_OUTSIDE_LOGINS //= 0;
+$DISABLE_OUTSIDE_LOGINS //= 1;
 $LOGIN_WIDGET           //= 'popup_menu';
 $ALLOW_ROOT_LOGIN       //= 1;
   
 $LOGIN_COOKIE_NAME //= 'dadalogin';
 
 %COOKIE_PARAMS = (
-	-path    => '/',
-	-expires => '+7d',
+	-path     => '/',
+	-expires  => '+7d',
+	-samesite => 'Lax',
 ) unless keys %COOKIE_PARAMS; 
 
 $CP_SESSION_PARAMS //= { 
@@ -1453,8 +1455,8 @@ $MIME_TOOLS_PARAMS //= {
     view_list_show_timestamp_col           => 1, 
 	view_list_show_sub_confirm_list        => 1, 
 	view_list_enable_delete_all_button     => 0,
-    view_list_order_by                     => 'email', 
-    view_list_order_by_direction           => 'ASC', 
+    view_list_order_by                     => 'timestamp', 
+    view_list_order_by_direction           => 'DESC', 
 
     # add list prefs
     use_add_list_import_limit              => 1, 
@@ -1674,12 +1676,13 @@ $MIME_TOOLS_PARAMS //= {
     tracker_clean_up_reports                        => 1,
     tracker_show_message_reports_in_mailing_monitor => 0,
 
-    tracker_update_profiles_w_geo_ip_data            => 0,
-    tracker_update_profile_fields_ip_dada_meta       => undef, 
+	tracker_protect_tracked_links_from_prefetching  => 1, 
+    tracker_update_profiles_w_geo_ip_data           => 0,
+    tracker_update_profile_fields_ip_dada_meta      => undef, 
 
-	tracker_send_analytics_email_notification        => 1, 
-	tracker_data_auto_remove                         => 0,
-	tracker_data_auto_remove_after_timespan          => '1y', 
+	tracker_send_analytics_email_notification       => 1, 
+	tracker_data_auto_remove                        => 0,
+	tracker_data_auto_remove_after_timespan         => '1y', 
 
     #	tracker_enable_data_cache                           => 1,
     #	tracker_dada_cache_expires                          => 1, # in hours
@@ -1782,8 +1785,8 @@ $ATTACHMENT_TEMPFILE //= 0;
 $MAIL_VERP_SEPARATOR //= '-';
 
 
-$VERSION = 11.14.2;
-$VER     = '11.14.2 07/24/21';
+$VERSION = 11.16.3;
+$VER     = '11.16.3 09/27/21';
 
 #
 #

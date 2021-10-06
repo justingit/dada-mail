@@ -42,7 +42,7 @@
 <!-- /tmpl_if -->
 
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="reset_keys_form"> 
     <input type="hidden" name="flavor"  value="web_services" >
     <input type="hidden" name="process" value="reset_keys" >
 
@@ -93,7 +93,7 @@
         
 		<div class="clearfix">
 	        <ul class="button-group right">    
-	             <li><input type="submit" class="button warning" value="Reset Keys..." ></li>
+	             <li><input type="submit" class="button warning reset_keys" value="Reset Keys..." ></li>
 	        </ul>
 		</div>
     </fieldset> 

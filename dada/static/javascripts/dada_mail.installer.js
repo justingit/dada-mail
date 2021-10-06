@@ -469,34 +469,27 @@ function test_CAPTCHA_configuration() {
 	}
 	
 	var flavor = 'google_recaptcha'; 
-		var request = $.ajax({
-			url: $("#self_url").val(),
-			type: "POST",
-			cache: false,
-			data: {
-				flavor: 'cgi_test_CAPTCHA_Google_reCAPTCHA',
-				captcha_params_v2_public_key:  $("#captcha_params_v2_public_key").val(),
-				captcha_params_v2_private_key: $("#captcha_params_v2_private_key").val()
-			},
-			dataType: "html"
-		});
-		
-		request.done(function(content) {
-			
+	var request = $.ajax({
+		url: $("#self_url").val(),
+		type: "POST",
+		cache: false,
+		data: {
+			flavor: 'cgi_test_CAPTCHA_Google_reCAPTCHA',
+			captcha_params_v2_public_key:  $("#captcha_params_v2_public_key").val(),
+			captcha_params_v2_private_key: $("#captcha_params_v2_private_key").val()
+		},
+		dataType: "html",
+		success: function(content) {
 			$("#" + target_div).html(content);
-			
 			var captchaWidgetId = grecaptcha.render( 'google_recaptcha_example', {
 			  'sitekey' : $("#captcha_params_v2_public_key").val()
 			});
-			
-			
-		});
-		request.error(function(xhr, ajaxOptions, thrownError) {
+		},
+		error: function(xhr, ajaxOptions, thrownError) {
 			console.log('status: ' + xhr.status);
 			console.log('thrownError:' + thrownError);
-		}); 
-		//}
-
+		}, 
+	});
 }
 
 

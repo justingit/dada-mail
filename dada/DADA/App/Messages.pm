@@ -1397,10 +1397,7 @@ sub send_unsubscription_request_denied_message {
 
 }
 
-# This is interesting: 
-sub send_send_list_password_reset_confirmation { 
 
-}
 
 
 sub send_new_list_created_notification {

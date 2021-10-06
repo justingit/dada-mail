@@ -397,6 +397,32 @@ Use this button to check if Dada Mail will be able to retrieve your template. If
 
 B<Config Variable:> C<$TEMPLATE_OPTIONS>. 
 
+=head2 	Configure Global API Options
+
+Dada Mail provides a RESTful API to many of the functions of the app. 
+Public/Private keys are available for each mailing list, 
+and Global Public/Private API keys can be configured through the installer. 
+Global key pairs can do whatever the list key pairs can, as well as create new mailing lists. 
+
+For more information on Dada Mail's RESTful API, see the following docs: 
+
+L<https://dadamailproject.com/d/features-restful_web_services.pod.html>
+
+
+=head3 Enable Global API 
+
+Check this option to enable the Global API (disabled by B<default>).
+
+=head3 Public Key, Private Key
+
+Below are listed your Global Public and Private Keys. 
+These keys aren't editable within the installer, 
+but you may reset them by clicking the button labeled, 
+B<Reset Global API Keys>. 
+
+Copy these keys down! They'll also be available when you log into a list using your B<Dada Mail Root Password> 
+and then going to, B<Mailing List: Web Services API> under, B<Global Key Pairs>.
+
 
 =head2 Configure Security Options 
 

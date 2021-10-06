@@ -6,6 +6,12 @@ use lib qw(
   ../../../../DADA/perllib
 );
 
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
+
 use vars qw($AUTOLOAD);
 use DADA::Config qw(!:DEFAULT);
 
@@ -19,6 +25,8 @@ use DADA::App::Guts;
 
 use MIME::Parser;
 use MIME::Entity;
+
+use Try::Tiny; 
 
 my $parser = new MIME::Parser;
 $parser = optimize_mime_parser($parser);
@@ -319,18 +327,24 @@ sub _sha1_hex {
 
     my $self = shift;
     my $str  = shift;
-    require Digest::SHA1;
-
+	
+	
+	my $shaworks = 1; 
+	
     require DADA::Security::Password;
-    eval {
+    try {
         # Entirely unneeded:
         require Digest::SHA1;
         $str = Digest::SHA1->new->add($str)->hexdigest();
+    } catch { 
+		$shaworks = 0; 
     };
-
-    if ($@) {
-        $str = DADA::Security::Password::generate_rand_string( undef, 8 ) . $self->time_stamp;
-    }
+	
+	if($shaworks == 0){
+		$str = DADA::Security::Password::generate_rand_string( undef, 8 ) . $self->time_stamp;
+	}
+	
+		
     return $str;
 
 }

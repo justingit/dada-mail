@@ -1,5 +1,13 @@
 <!-- begin login_switch_widget.tmpl -->
 
+
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="lsw" style="display:none">
+		<input type="hidden" name="flavor"         id="lsw_flavor" value="change_login">
+		<input type="hidden" name="change_to_list" id="lsw_change_to_list" value="">
+		<input type="hidden" name="location"       id="lsw_location" value="">
+	</form>
+
+
     <li class="has-dropdown"> 
         <a href="#">Switch...</a>
         <ul class="dropdown">        
@@ -12,9 +20,14 @@
                     </li>                
                 <!-- tmpl_else --> 
                     <li>
-                        <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=change_login&change_to_list=<!-- tmpl_var list_settings.list escape="URL" -->&location=<!-- tmpl_var location escape="URL" -->">
-                           <!-- tmpl_var list_settings.list_name --> (<em><!-- tmpl_var list_settings.list --></em>)
-                        </a>
+                        <a 
+							href="#" 
+							class="change_login"
+							data-change_to_list="<!-- tmpl_var list_settings.list escape="HTML" -->"
+							data-location="<!-- tmpl_var location escape="HTML" -->"	
+						>
+                            <!-- tmpl_var list_settings.list_name --> (<em><!-- tmpl_var list_settings.list --></em>)
+						</a>
                     </li>
                  <!-- /tmpl_if -->
             <!-- /tmpl_loop -->
@@ -22,4 +35,5 @@
     </li>
 
 <!-- end login_switch_widget.tmpl -->
+
 

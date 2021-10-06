@@ -1,4 +1,6 @@
 <!-- tmpl_set name="title" value="Plugins/Extensions &#187; Change Your <!-- tmpl_var PROGRAM_NAME --> Root Password" -->
+<!-- tmpl_set name="load_captcha_js" value="1" -->
+
 <div class="row">
 	<div class="medium-10 large-9 columns">
 	   	<nav class="breadcrumbs">	
@@ -25,6 +27,13 @@
     <input type="hidden" name="plugin"  value="change_root_password" >
     <input type="hidden" name="prm"     value="change_password" >
     <input type="hidden" name="process" value="true" >
+
+<!-- tmpl_if recaptcha_failed -->
+	<div class="alert-box warning radius">
+		reCAPTCHA Failed.
+	</div>
+<!-- /tmpl_if -->
+
 
 <!--tmpl_if old_root_pass_incorrect --> 
 	<div class="alert-box alert radius">
@@ -64,6 +73,32 @@
 		<input type="password" name="again_new_password" id="again_new_password" size="16" maxlength="24">
 	</div>
 </div>
+
+		 <div class="row">
+			<div class="small-12 columns">
+				<!-- tmpl_if can_use_Google_reCAPTCHA_v2 --> 
+					<div class="form-group">
+						<div 
+							class="g-recaptcha" 
+							id="delete_list_gr"
+						></div>
+					</div>
+				<!-- /tmpl_if --> 
+
+				<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->			
+					<input 
+						type="hidden"
+						id="g-recaptcha-response_delete_list"
+						class="g-recaptcha-response"
+						name="g-recaptcha-response"
+					>
+				<!-- /tmpl_if -->
+			</div> 
+		</div>
+		
+		
+
+
 
 <div class="clearfix">
 	<ul class="button-group right">

@@ -87,6 +87,7 @@ require Exporter;
   scrub_js
   md5_checksum
   can_use_LWP_Simple
+  can_use_LWP_Protocol_https
   
   can_use_Google_reCAPTCHA
   can_use_Google_reCAPTCHA_v2
@@ -2753,7 +2754,14 @@ sub gravatar_img_url {
     catch {
         $can_use_gravatar_url = 0;
     };
-
+	
+	if(
+		   ! exists ($args->{-email}) 
+		|| ! defined($args->{-email})
+		|| length($args->{-email}) <= 0
+	){ 
+		return undef; 
+	}
     if ( $can_use_gravatar_url == 1 ) {
         if ( isa_url( $args->{-default_gravatar_url} ) ) {
             $url = Gravatar::URL::gravatar_url(
@@ -3223,8 +3231,14 @@ sub can_use_Google_reCAPTCHA {
 
 sub can_use_Google_reCAPTCHA_v2 { 
 	
+	
 	if(exists($can_use_cache->{Google_reCAPTCHA_v2})){ 
 		return $can_use_cache->{Google_reCAPTCHA_v2}; 
+	}
+	
+	if(can_use_LWP_Protocol_https() == 0){ 
+		warn 'LWP::Protocol::https needs to be installed for Google reCAPTCHA support';
+		return 0; 
 	}
 	
 	my $can_use_captcha = 1; 
@@ -3267,6 +3281,11 @@ sub can_use_Google_reCAPTCHA_v3 {
 	
 	if(exists($can_use_cache->{Google_reCAPTCHA_v3})){ 
 		return $can_use_cache->{Google_reCAPTCHA_v3}; 
+	}
+	
+	if(can_use_LWP_Protocol_https() == 0){ 
+		warn 'LWP::Protocol::https needs to be installed for Google reCAPTCHA support';
+		return 0; 
 	}
 	
 	my $can_use_captcha = 1; 
@@ -3345,11 +3364,13 @@ sub validate_recaptcha {
                 -remoteip => $args->{-remote_addr},
             }
         );
-		my $success = $r->{success};
+		my $success = $r->{success}; 
 		my $score   = $r->{score}; 
-        if (   $$success == 1
-            && $score >=
-            $DADA::Config::RECAPTCHA_PARAMS->{v3}->{score_threshold} )
+		
+        if (   
+			($success)
+            && ($score >= $DADA::Config::RECAPTCHA_PARAMS->{v3}->{score_threshold})
+			 )
         {
             return 1;
         }
@@ -3479,6 +3500,19 @@ sub can_use_IO_Socket_SSL {
     };
     return $can_use_IO_Socket_SSL;
 }
+
+sub can_use_LWP_Protocol_https { 
+    my $can_use = 1; 
+    try { 
+        require LWP::Protocol::https;        
+    } catch { 
+		warn 'IO::Socket::SSL is not supported:' . $_
+			if $t;
+        $can_use = 0;
+    };
+    return $can_use;
+}
+
 
 sub formatted_runtime {
 
