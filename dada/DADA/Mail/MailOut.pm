@@ -2707,8 +2707,17 @@ sub monitor_mailout {
 
                             $r .=
 "\t\t\t\t\tMass Mailing seems too stale to automatically be reloaded - Not restarting automatically.\n";
-                            $r .= "\t\t\t\t\tTo restart, visit this mailout's individual sending monitor screen.\n";
 
+							if ( 
+								(int(time) - int($status->{last_access}) ) 
+									>= ($DADA::Config::MAILOUT_STALE_AFTER *2 ) 
+								) {
+									$r .= "\t\t\t\t\tMass Mailing is so stale, we're automatically cleaning it up\n";
+									$mailout->clean_up;		
+							}
+							else { 
+								$r .= "\t\t\t\t\tTo restart, visit this mailout's individual sending monitor screen.\n";
+							}
                         }
                         else {
 
@@ -2795,6 +2804,18 @@ sub monitor_mailout {
             }
             else {
                 $r .= "\t\tMass Mailing is finished.\n";
+				
+				if ( $status->{mailout_stale} ) {
+	                $r .= "\t\tMass Mailing is reported being stale, but also finished?\n";	
+					
+	                if(
+						$status->{total_sent_out} >= $status->{total_sending_out_num} 
+						&& $status->{percent_done} >= 100
+					){
+		                $r .= "\t\tMass Mailing is reported to have been sent to everyone - cleaning up!\n";
+						$mailout->clean_up;		
+	                } 
+				}
             }
         }
     }
