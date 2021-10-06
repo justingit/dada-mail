@@ -1,4 +1,5 @@
-var loading_str = '<p class="label info">Loading...</p>';
+var loading_str  = '<p class="label info">Loading...</p>';
+var do_updates   = 1; 
 var spinner_opts = {
 	  lines: 13 // The number of lines to draw
 	, length: 28 // The length of each line
@@ -40,25 +41,35 @@ jQuery(document).ready(function($){
 	}
 	*/
 	
-	
 	add_csrf_token(); 
 	add_csrf_token_form();
 	
 	function add_csrf_token() {
+		var token = $.cookie("_csrf_token"); 
+		if (typeof token !== 'undefined') {
+			return false;
+		}
 		$("<input>").attr({
 		                name:  "_csrf_token",
 				        class:  "_csrf_token _refresh",
 		                type:  "hidden",
-						value:  $.cookie("_csrf_token") 
+						value:  token 
 		}).appendTo("form");
 	}
 	function remove_csrf_token() {
 		$( "input" ).remove( "._csrf_token._refresh" );
 	}
 	function add_csrf_token_form() {
-		$('body').append('<form id="csrf_token_form" style="display:none"><input type="hidden" name="_csrf_token" class="_csrf_token _no_refresh" id="_csrf_token" value="' + $.cookie("_csrf_token") +'"></form>'); 
+		var token = $.cookie("_csrf_token"); 
+		if (typeof token !== 'undefined') {
+			return false;
+		}
+		
+		$('body').append('<form id="csrf_token_form" style="display:none"><input type="hidden" name="_csrf_token" class="_csrf_token _no_refresh" id="_csrf_token" value="' + token +'"></form>'); 
 	}
 	
+	admin_check_login_status();
+		
 	// Bounce Handler, Mostly. 
 	$('body').on('click', 'a.modalbox', function(event){
 		event.preventDefault();
@@ -124,12 +135,8 @@ jQuery(document).ready(function($){
 	
 	
 	//Mail Sending >> Send a Message
-		if ($("#send_email").length || $("#list_invite").length) {
-		
-//		alert("start");	
-		admin_check_login_status('send_email');
-//		alert("finish");		
-        
+	if ($("#send_email").length || $("#list_invite").length) {
+		        
 		var stickyHeader = $('#buttons').offset().top;
         $(window).scroll(function(){
             if( $(window).scrollTop() > stickyHeader && $('#buttons').width() >= 640) {
@@ -2136,6 +2143,10 @@ function admin_menu_notifications(no_loop){
 	
 	var r = 60 * 5 * 1000; // Every 5 minutes.
 		
+	if ( do_updates == 0){ 
+		return false; 
+	}
+	
 	var refresh_loop = function() {
 		var request = $.ajax({
 			url: $('#navcontainer').attr("data-s_program_url"),
@@ -2399,10 +2410,9 @@ function save_msg(async) {
 	
 	var r = false;
 
-	//	console.log(
-	//	$("#mass_mailing").serialize()
-	//	 + '&process=save_as_draft'
-	//	);
+	if ( do_updates == 0){ 
+		return false; 
+	}
 
 	if ($("#using_ckeditor").length) {
 		if(CKEDITOR.instances['html_message_body']) {
@@ -2433,13 +2443,15 @@ function save_msg(async) {
 			async:     async,
 			data: $("#mass_mailing").serialize() + '&process=save_as_draft&json=1',
 			success: function(content) {
-				//alert('content.id ' + content.id);
-				$("#draft_id").val(content.id);
-				$('#draft_notice').text($("#draft_role").val() + ' saved: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
-				r = true;
-				
-				admin_menu_notifications(1);
-				
+				if (content.status === 0){ 
+					alert('Error Saving ' + $("#draft_role").val() + ': ' + ' Internal Error, has your session expired?');
+				}
+				else { 
+					$("#draft_id").val(content.id);
+					$('#draft_notice').text($("#draft_role").val() + ' saved: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
+					r = true;				
+					admin_menu_notifications(1);
+				}
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
 				alert('Error Saving ' + $("#draft_role").val() + ': ' + thrownError);
@@ -2489,15 +2501,18 @@ function auto_save_as_draft(no_loop) {
 			cache: false,
 			data: $("#mass_mailing").serialize() + '&process=save_as_draft&json=1',
 			success: function(content) {
-				$('#draft_notice').text('Last auto-save: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
-				console.log('Saving Draft Successful - content.id: ' + content.id);
-				console.log('$("#draft_role").val(): '               + $("#draft_role").val());
-				console.log('$("#save_draft_role").val(): '          + $("#save_draft_role").val());
-
-
-				$("#draft_id").val(content.id);
 				
-				admin_menu_notifications(1);
+				if (content.status === 0){ 
+					alert('Error Saving ' + $("#draft_role").val() + ': ' + ' Internal Error, has your session expired?');
+				}
+				else { 
+					$('#draft_notice').text('Last auto-save: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
+					console.log('Saving Draft Successful - content.id: ' + content.id);
+					console.log('$("#draft_role").val(): '               + $("#draft_role").val());
+					console.log('$("#save_draft_role").val(): '          + $("#save_draft_role").val());
+					$("#draft_id").val(content.id);
+					admin_menu_notifications(1);
+				}
 				
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
@@ -5405,19 +5420,39 @@ function SetUrl(url, width, height, alt) {
 
 function admin_check_login_status(screen_name) {
 	
-	alert("admin_check_login_status!");
+	if (
+		   $("#installer_configure_dada_mail").length 
+		|| $("#install_or_upgrade").length 
+		|| $("#installer_install_dada_mail").length
+	) {
+		return false; 
+	}
+	if (do_updates == 0){
+		return false; 
+	}
 	
-	var r = 60 * 1000; // Every 5 minutes. * 5
-	
-	var the_screen_name = screen_name;
-	
-	setTimeout(function() { cls_refresh_loop(the_screen_name) }, 10000);
+	var flavor = $.url('?flavor');
+	if (flavor.length){ 
+		var r = 60 * 1000; // every 5 minutes
+		var the_screen_name = screen_name;
+		setTimeout(function() { cls_refresh_loop(flavor) }, r);
+	} 
 }
 
-
 function cls_refresh_loop(screen_name) {
+		
+	// we can do other checks, like: is the session cookie around? 
+	var crsf_cookie = $.cookie("_csrf_token"); 
+	if (typeof crsf_cookie !== 'undefined') {
+		//
+	}
+	else {
+		do_updates = 0; 
+		alert("session is invalid - logging out.");
+		window.location.href = $.url('protocol') + '://' + $.url('hostname') + $.url('path');
+	}
+
 	
-	alert("screen_name: " + screen_name);
 	var request = $.ajax({
 		url:       $("#s_program_url").val(),
 		type:      "POST",
@@ -5425,23 +5460,30 @@ function cls_refresh_loop(screen_name) {
 		cache:     false,
 		data:     { 
 			flavor: 'admin_check_login_status', 
+			_csrf_token: $('#_csrf_token').val(), 
 			screen: screen_name
 		},
 		success: function(content) {
 			if (content.status === 1){ 
-				alert("checks out");
+				// then do nothing!
 			}
 			else { 
-				alert("nope!");
+				alert("session has expired - logging out.");
+				do_updates = 0; 
+				window.location.href = $.url('protocol') + '://' + $.url('hostname') + $.url('path');
 			}
 		}, 
 		error: function(xhr, ajaxOptions, thrownError) {
-			alert("well that didn't work");
+			alert('error checking login status');
 		}
 	});
-	admin_check_login_status(screen_name);
-}
 
+	if (do_updates == 0){
+		//
+	} else {
+		admin_check_login_status(screen_name);
+	}
+}
 
 
 

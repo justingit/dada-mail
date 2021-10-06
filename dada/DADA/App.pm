@@ -3146,7 +3146,25 @@ sub send_email {
         -cgi_obj  => $q,
         -Function => 'send_email'
       );
-    if ( !$checksout ) { return $error_msg; }
+    if ( !$checksout ) { 
+		# I want a more granular reason there's problems, but at least I know if
+		# we want a json doc back - perhaps I can do that in check_list_security 
+		if($q->param('json') == 1){ 
+		    require JSON;
+		    my $json    = JSON->new->allow_nonref;
+		    my $headers = { -type => 'application/json' };
+		    my $body    = $json->encode(
+		        {
+		            status => 0,
+		        }
+		    );
+		    $self->header_props(%$headers);
+		    return $body;
+		}
+		else {
+			return $error_msg;
+		}
+	}
 
     my $list = $admin_list;
 
