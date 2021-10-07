@@ -5433,7 +5433,7 @@ function admin_check_login_status(screen_name) {
 	
 	var flavor = $.url('?flavor');
 	if (flavor.length){ 
-		var r = 60 * 1000; // every 5 minutes
+		var r = 60 * 1000 * 5; // every 5 minutes
 		var the_screen_name = screen_name;
 		setTimeout(function() { cls_refresh_loop(flavor) }, r);
 	} 
