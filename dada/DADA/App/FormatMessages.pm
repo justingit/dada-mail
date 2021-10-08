@@ -3487,7 +3487,12 @@ sub resize_images {
 }
 
 sub resized_image_entity {
-
+	
+	# I think there's a problem with the filename and escaping strange characters. For example, this may fail: 
+	# <image007.jpg@01D7BC7D.50CFD290>
+	# We need to remove the <'s and >'s, at the very least. 
+	
+	
     warn 'in resized_image_entity' if $t;
 
     my $self   = shift;
