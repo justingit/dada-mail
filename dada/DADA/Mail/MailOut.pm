@@ -2717,7 +2717,7 @@ sub monitor_mailout {
                 #return $r;
             }
             else {
-                $r .= "\t\t\tMass Mailing appears to be in good health.\n";
+                $r .= "\t\tMass Mailing appears to be in good health.\n";
             }
 
             if (   
