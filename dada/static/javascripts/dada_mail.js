@@ -46,7 +46,7 @@ jQuery(document).ready(function($){
 	
 	function add_csrf_token() {
 		var token = $.cookie("_csrf_token"); 
-		if (typeof token !== 'undefined') {
+		if (typeof token === 'undefined') {
 			return false;
 		}
 		$("<input>").attr({
@@ -60,8 +60,8 @@ jQuery(document).ready(function($){
 		$( "input" ).remove( "._csrf_token._refresh" );
 	}
 	function add_csrf_token_form() {
-		var token = $.cookie("_csrf_token"); 
-		if (typeof token !== 'undefined') {
+		var token = $.cookie("_csrf_token"); 		
+		if (typeof token === 'undefined') {
 			return false;
 		}
 		
@@ -5432,7 +5432,7 @@ function admin_check_login_status(screen_name) {
 	}
 	
 	var flavor = $.url('?flavor');
-	if (flavor.length){ 
+	if (typeof flavor !== 'undefined') {
 		var r = 60 * 1000 * 5; // every 5 minutes
 		var the_screen_name = screen_name;
 		setTimeout(function() { cls_refresh_loop(flavor) }, r);
@@ -5452,7 +5452,6 @@ function cls_refresh_loop(screen_name) {
 		window.location.href = $.url('protocol') + '://' + $.url('hostname') + $.url('path');
 	}
 
-	
 	var request = $.ajax({
 		url:       $("#s_program_url").val(),
 		type:      "POST",
