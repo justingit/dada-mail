@@ -2796,8 +2796,8 @@ sub subscription_form {
 				my $mls = DADA::MailingList::Settings->new({-list => $mlist}); 
 				if($mls->param('enable_captcha_on_initial_subscribe_form') == 1){
 					 $enable_captcha_on_initial_subscribe_form = 1; 
+					 last; 
 				}
-				last; 
 			}
 		}
 		
