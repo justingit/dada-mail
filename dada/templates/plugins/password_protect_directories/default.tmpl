@@ -63,7 +63,14 @@
 					<tr> 
 					<td width="200px">
 					<strong>Default Password</strong></td><td><!-- tmpl_if default_password --><em>********</em><!-- tmpl_else --><em>(None Set)</em><!-- /tmpl_if --></td>
-				</tr>
+					</tr>
+					
+					<tr> 
+					<td><strong>Always using Default Password?</strong></td><td><!-- tmpl_if always_use_default_password -->Yes.<!-- tmpl_else -->No.<!-- /tmpl_if --></td>
+					</tr>
+					
+					
+					
 			</table> 
 	
 			<ul class="button-group right">
@@ -137,9 +144,9 @@
 
 <fieldset> 
 <!-- tmpl_unless edit --> 
-<legend>New Password Protected Directory</legend> 
+	<legend>New Password Protected Directory</legend> 
 <!-- tmpl_else --> 
-<legend>Edit Password Protected Directory</legend> 
+	<legend>Edit Password Protected Directory</legend> 
 <!-- /tmpl_unless --> 
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
@@ -183,12 +190,12 @@
 
 <tr>
 <td width="200px">
- <label>
+ <label for="use_custom_error_page">
   Use a Custom Error Page? 
  </label>
 </td>
 <td >
- <input type="checkbox" name="use_custom_error_page" value="1" >
+ <input type="checkbox" name="use_custom_error_page" id="use_custom_error_page" value="1" >
 </td>
 </tr>
 
@@ -230,7 +237,7 @@ Custom Error Page (Path):
 	  Default Password
 	 </label>
 	</td>
-	<td >
+	<td>
 	 <input type="text" name="default_password" value=""  >
 	</td>
 </tr>
@@ -238,14 +245,27 @@ Custom Error Page (Path):
 <!-- /tmpl_if --> 
 
 
+<tr>
+<td width="200px">
+	 <label for="always_use_default_password">
+	  Always use Default Password (instead of Profile Password)
+	 </label>
+	</td>
+	<td>
+	    <input type="checkbox" name="always_use_default_password" id="always_use_default_password" value="1" >
+		
+	</td>
+</tr>
+
+
+
 </table>
 
 <!-- tmpl_unless edit --> 
-<input type="hidden" name="prm" value="new_dir" > 
+	<input type="hidden" name="prm" value="new_dir" > 
 <!-- tmpl_else --> 
-<input type="hidden" name="id" value="<!-- tmpl_var id -->" > 
-<input type="hidden" name="prm" value="process_edit_dir" > 
-
+	<input type="hidden" name="id" value="<!-- tmpl_var id -->">
+	<input type="hidden" name="prm" value="process_edit_dir">
 <!-- /tmpl_unless --> 
 
 			<ul class="button-group right">

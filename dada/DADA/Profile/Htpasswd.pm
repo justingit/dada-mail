@@ -113,36 +113,41 @@ sub create {
 }
 
 sub insert {
-	my $self = shift; 
-	my ($args) = @_; 
+    my $self = shift;
+    my ($args) = @_;
 
-	my $query =
-      'INSERT INTO '
-      .  $self->{sql_params}->{password_protect_directories_table}
-      . '(list, name, url, path, use_custom_error_page, custom_error_page, default_password) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    my $query =
+        'INSERT INTO '
+      . $self->{sql_params}->{password_protect_directories_table}
+      . '(list, name, url, path, use_custom_error_page, custom_error_page, default_password, always_use_default_password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
 
     warn 'QUERY: ' . $query
       if $t;
 
-    my $sth = $self->{dbh}->prepare($query);
-	my $password = undef; 
-	if(exists($args->{ -default_password }) && defined($args->{ -default_password }) && length($args->{ -default_password }) > 0){ 
-		$password = DADA::Security::Password::encrypt_passwd($args->{ -default_password } )
-	}
+    my $sth      = $self->{dbh}->prepare($query);
+    my $password = undef;
+    if (   exists( $args->{-default_password} )
+        && defined( $args->{-default_password} )
+        && length( $args->{-default_password} ) > 0 )
+    {
+        $password =
+          DADA::Security::Password::encrypt_passwd( $args->{-default_password} );
+    }	
+	
     $sth->execute(
-		$self->{list}, 
-        $args->{ -name },
-		$args->{ -url },
-        $args->{ -path },
-		$args->{ -use_custom_error_page },
-		$args->{ -custom_error_page },
-		$password, 
-      )
-      or croak "cannot do statement (at insert)! $DBI::errstr\n";
+        $self->{list}, 
+		$args->{-name}, 
+		$args->{-url}, 
+		$args->{-path},
+        $args->{-use_custom_error_page},
+        $args->{-custom_error_page}, 
+		$password,
+		$args->{-always_use_default_password}, 
+    ) or croak "cannot do statement (at insert)! $DBI::errstr\n";
     $sth->finish;
 
-	
 }
+
 
 
 sub update {
@@ -158,7 +163,7 @@ sub update {
 	my $query =
       'UPDATE '
       . $self->{sql_params}->{password_protect_directories_table}
-      . ' SET name = ?, url = ?, path = ?, use_custom_error_page = ?, custom_error_page = ?, default_password = ? where id = ?';
+      . ' SET name = ?, url = ?, path = ?, use_custom_error_page = ?, custom_error_page = ?, default_password = ?, always_use_default_password = ? where id = ?';
 
     warn 'QUERY: ' . $query
       if $t;
@@ -172,6 +177,7 @@ sub update {
 		$args->{ -use_custom_error_page },
 		$args->{ -custom_error_page },
 		$password, 
+		$args->{ -always_use_default_password },
 		$args->{ -id }, 
       )
       or croak "cannot do statement (at insert)! $DBI::errstr\n";
@@ -430,7 +436,6 @@ sub write_htpasswd {
       or croak "cannot do statement! $DBI::errstr\n";
 
 	 while ( my ( $email, $password ) = $sth->fetchrow_array ) {
-		
 		if(defined($password)){ 
 			print $htpasswd $email . ':' . $password . "\n";
 		}
@@ -438,7 +443,6 @@ sub write_htpasswd {
 			print $htpasswd $email . ':' . $entry->{default_password} . "\n";
 		}
 	}
-
 	close $htpasswd; 
 	
 	$sth->finish;
