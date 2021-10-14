@@ -76,7 +76,7 @@
 			<ul class="button-group right">
 			    <li>
 					
-					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 						<input type="hidden" name="flavor" value="plugins" > 
 						<input type="hidden" name="plugin" value="password_protect_directories" > 
 						<input type="hidden" name="prm" value="edit_dir" > 
@@ -88,12 +88,12 @@
 				</li>
 				<li>
 					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-				<input type="hidden" name="flavor" value="plugins" > 
-				<input type="hidden" name="plugin" value="password_protect_directories" > 				
-				<input type="hidden" name="prm" value="delete_dir" > 
-				<input type="hidden" name="id" value="<!-- tmpl_var id -->" > 
-				<input type="submit" class="alert button" value="Delete " >
-			</form> 
+						<input type="hidden" name="flavor" value="plugins" > 
+						<input type="hidden" name="plugin" value="password_protect_directories" > 				
+						<input type="hidden" name="prm" value="delete_dir" > 
+						<input type="hidden" name="id" value="<!-- tmpl_var id -->" > 
+						<input type="submit" class="alert button" value="Delete" >
+					</form> 
 			</li>
 		</ul>
 			
@@ -108,7 +108,7 @@
 
 <!-- tmpl_if problems --> 
 
-	<div class="alert-box info radius">
+	<div class="alert-box warning radius">
 
 	<p><strong>Problems were found with the information you just submitted:</strong></p> 
 	<ul>
@@ -269,11 +269,19 @@ Custom Error Page (Path):
 <!-- /tmpl_unless --> 
 
 			<ul class="button-group right">
+				
+				<!-- tmpl_if edit --> 				
+					<li>
+						<a class="warning button" href="<!-- tmpl_var S_PROGRAM_URL -->/plugins/password_protect_directories">
+							Cancel
+						</a>
+					</li>
+				<!-- /tmpl_if -->
 			    <li>
-					<input type="reset"  class="warning button" value="Clear All Changes" >
+					<input type="reset"  class="alert button" value="Reset" >
 				</li>
 				<li>
-					<input type="submit" class="success button" value="Save All Changes" >
+					<input type="submit" class="success button" value="Save">
 				</li>
 			</ul>
 </form> 

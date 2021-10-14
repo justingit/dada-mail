@@ -158,38 +158,68 @@ sub insert {
 sub update {
     my $self = shift;
     my ($args) = @_;
-
+	
     my $password = undef;
     if (   exists( $args->{-default_password} )
         && defined( $args->{-default_password} )
         && length( $args->{-default_password} ) > 0 )
     {
         $password =
-          DADA::Security::Password::encrypt_passwd( $args->{-default_password} );
+          DADA::Security::Password::encrypt_passwd(
+            $args->{-default_password} );
     }
 
-    my $query =
-        'UPDATE '
-      . $self->{sql_params}->{password_protect_directories_table}
-      . ' SET name = ?, url = ?, path = ?, use_custom_error_page = ?, custom_error_page = ?, default_password = ?, always_use_default_password = ? where id = ?';
+    my $query;
 
-    warn 'QUERY: ' . $query
-      if $t;
+    if (   exists( $args->{-default_password} )
+        && defined( $args->{-default_password} )
+        && length( $args->{-default_password} ) > 0 )
+    {
 
-    my $sth = $self->{dbh}->prepare($query);
+        $query =
+            'UPDATE '
+          . $self->{sql_params}->{password_protect_directories_table}
+          . ' SET name = ?, url = ?, path = ?, use_custom_error_page = ?, custom_error_page = ?, default_password = ?, always_use_default_password = ? where id = ?';
 
-    $sth->execute(
-        $args->{-name},
-        $args->{-url},
-        $args->{-path},
-        $args->{-use_custom_error_page},
-        $args->{-custom_error_page},
-        $password,
-        $args->{-always_use_default_password},
-        $args->{-id},
-    ) or croak "cannot do statement (at insert)! $DBI::errstr\n";
-    $sth->finish;
+        warn 'QUERY: ' . $query
+          if $t;
 
+        my $sth = $self->{dbh}->prepare($query);
+
+        $sth->execute(
+            $args->{-name},
+            $args->{-url},
+            $args->{-path},
+            $args->{-use_custom_error_page},
+            $args->{-custom_error_page},
+            $password,
+            $args->{-always_use_default_password},
+            $args->{-id},
+        ) or croak "cannot do statement (at insert)! $DBI::errstr\n";
+        $sth->finish;
+    }
+    else {
+        $query =
+            'UPDATE '
+          . $self->{sql_params}->{password_protect_directories_table}
+          . ' SET name = ?, url = ?, path = ?, use_custom_error_page = ?, custom_error_page = ?, always_use_default_password = ? where id = ?';
+
+        warn 'QUERY: ' . $query
+          if $t;
+
+        my $sth = $self->{dbh}->prepare($query);
+
+        $sth->execute(
+            $args->{-name},
+            $args->{-url},
+            $args->{-path},
+            $args->{-use_custom_error_page},
+            $args->{-custom_error_page},
+            $args->{-always_use_default_password},
+            $args->{-id},
+        ) or croak "cannot do statement (at insert)! $DBI::errstr\n";
+        $sth->finish;
+    }
 }
 
 sub id_exists {
