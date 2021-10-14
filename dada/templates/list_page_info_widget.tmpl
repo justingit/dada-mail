@@ -13,8 +13,10 @@
 		<!-- tmpl_else -->
 			<div id="modal_subscribe_form_disabled">
 		<!-- /tmpl_if -->
-		
-			<!-- tmpl_var subscription_form --> 
+			
+			<!-- tmpl_if list_settings.show_subscription_form --> 
+				<!-- tmpl_var subscription_form --> 
+			<!-- /tmpl_if -->
 		</div>
 	</div>
 	<div class="large-6 large-pull-6 columns panel"  data-equalizer-watch>

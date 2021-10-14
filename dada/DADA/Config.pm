@@ -1291,6 +1291,9 @@ $MIME_TOOLS_PARAMS //= {
     hide_list                  => 0,
     show_request_removal_links => 1, 
     
+	show_subscription_form     => 1, 
+	
+	
 
     # Mass Mailing Options
     mass_mailing_convert_plaintext_to_html      => 1,

@@ -4167,6 +4167,9 @@ sub list_options {
                     alt_send_unsubscription_notice_to                       => undef,
                     alt_send_subscription_notice_to                         => undef,
                     alt_send_admin_unsubscription_notice_to                 => undef,
+					
+					show_subscription_form                                  => 0, 
+					
                 },
                 -also_save_for => $also_save_for_list,
             }
