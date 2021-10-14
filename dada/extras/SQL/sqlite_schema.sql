@@ -112,8 +112,8 @@ url text,
 path text,
 use_custom_error_page char(1),
 custom_error_page text,
-default_password text
-always_use_default_password char(1),
+default_password text,
+always_use_default_password char(1)
 );
 
 CREATE TABLE IF NOT EXISTS dada_message_drafts (
