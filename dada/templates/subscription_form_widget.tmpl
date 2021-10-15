@@ -124,6 +124,29 @@
 					</div>
 			    <!-- /tmpl_loop --> 
 			<!-- /tmpl_if --> 
+			
+			
+			<!-- tmpl_if insert_hidden_fields -->
+				<!-- tmpl_if hidden_subscriber_fields --> 
+				    <!-- tmpl_loop hidden_subscriber_fields -->
+						<!-- tmpl_if given_value -->
+					        <input 
+								type="hidden" 
+								name="<!-- tmpl_var name escape=HTML -->" 
+								id="ddm_<!-- tmpl_var name escape=HTML -->" 
+								value="<!-- tmpl_var given_value escape=HTML -->"  
+							>
+						<!-- /tmpl_if -->
+				    <!-- /tmpl_loop --> 
+				<!-- /tmpl_if -->
+			<!-- /tmpl_if -->
+			
+			
+			
+			
+			
+			
+			
 			</div> 
 		<!-- /tmpl_if -->
 		
