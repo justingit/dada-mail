@@ -701,10 +701,10 @@ sub default {
     }
     require DADA::MailingList::Settings;
     my @available_lists;
+
     try {
         @available_lists = available_lists( -In_Order => 1 );
-    }
-    catch {
+    } catch {
         return user_error(
             {
                 -error         => 'sql_connect_error',
@@ -712,8 +712,6 @@ sub default {
             }
         );
     };
-
-    @available_lists = available_lists( -In_Order => 1 );
 
     if (   ( $DADA::Config::DEFAULT_SCREEN ne '' )
         && ( $q->param('flavor') ne 'default' )
@@ -723,6 +721,27 @@ sub default {
         $self->header_props( -url => $DADA::Config::DEFAULT_SCREEN );
         return;
     }
+
+
+	
+	# If there's only one mailing list, show the mailing list screen as the default, 
+	# Rather than a list of one mailing list: 
+	
+	
+    my @only_on_list_check = available_lists(
+		-In_Order            => 1, 
+		-return_hidden_lists => 0,
+	);
+
+	warn '$only_on_list_check[0]: ' . $only_on_list_check[0]; 
+	warn '$#only_on_list_check' . $#only_on_list_check; 
+
+	
+	if( $#only_on_list_check == 0 ){ 
+		$q->param('flavor', 'list');
+		$q->param('list', $only_on_list_check[0]);
+		return $self->list_page();
+	}
 
     if ( !$available_lists[0] ) {
         my $auth_state;

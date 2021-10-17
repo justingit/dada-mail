@@ -131,9 +131,6 @@
 		<!-- /tmpl_if -->
 	</div> 
 </div>
-
-	
-	
 	
 	 <div class="row">
  		<div class="small-12 columns">
@@ -145,3 +142,11 @@
 		</div>
 	</div>
 </form> 
+
+<!-- tmpl_if SHOW_ADMIN_LINK -->
+	<!-- tmpl_if flavor_sign_in -->
+		<a href="<!-- tmpl_var name="PROGRAM_URL" -->?flavor=<!-- tmpl_var ADMIN_FLAVOR_NAME -->">
+			Login into a different list/Create a New List
+		</a>
+	<!-- /tmpl_if -->
+<!-- /tmpl_if -->
