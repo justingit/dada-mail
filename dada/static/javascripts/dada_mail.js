@@ -65,7 +65,7 @@ jQuery(document).ready(function($){
 		var responsive_options = {
 			width: '95%',
 			height: '95%',
-			maxWidth: '640px',
+			maxWidth: '720px',
 			maxHeight: '480px'
 
 		};
@@ -75,7 +75,7 @@ jQuery(document).ready(function($){
 			initialHeight: 50,
 			opacity: 0.50,
 			href: $(this).attr("href"),
-			maxWidth: '640px',
+			maxWidth: '720px',
 			maxHeight: '480px',
 			width: '95%',
 			height: '95%'
@@ -371,7 +371,7 @@ jQuery(document).ready(function($){
 						var responsive_options = {
 						  width: '95%',
 						  height: '95%',
-						  maxWidth: '640px',
+						  maxWidth: '720px',
 						};
 						
 						if (content.status === 0){ 
@@ -383,7 +383,7 @@ jQuery(document).ready(function($){
 								$.colorbox({
 									html: return_this,
 									opacity: 0.50,
-									maxWidth: '640px',
+									maxWidth: '720px',
 									width: '95%',
 									height: '95%'					
 								});
@@ -409,7 +409,7 @@ jQuery(document).ready(function($){
 									fastIframe: false,
 									href: $("#s_program_url").val() + '?flavor=email_message_preview&id=' + content.preview_draft_id,
 									opacity: 0.50,
-									maxWidth: '640px',
+									maxWidth: '720px',
 									width: '95%',
 									height: '95%'					
 								});
@@ -431,7 +431,7 @@ jQuery(document).ready(function($){
 						var responsive_options = {
 						  width: '95%',
 						  height: '95%',
-						  maxWidth: '640px',
+						  maxWidth: '720px',
 						};
 						
 							
@@ -440,7 +440,7 @@ jQuery(document).ready(function($){
 						$.colorbox({
 							html: return_this,
 							opacity: 0.50,
-							maxWidth: '640px',
+							maxWidth: '720px',
 							width: '95%',
 							height: '95%'					
 						});
@@ -614,7 +614,7 @@ jQuery(document).ready(function($){
 			var responsive_options = {
 			  width: '95%',
 			  height: '95%',
-			  maxWidth: '640px',
+			  maxWidth: '720px',
 			  maxHeight: '480px'
 			};
 			$.colorbox({
@@ -626,7 +626,7 @@ jQuery(document).ready(function($){
 				iframe: true,
 				fastIframe: false,
 				opacity: 0.50,
-				maxWidth: '640px',
+				maxWidth: '720px',
 				maxHeight: '480px',
 				width: '95%',
 				height: '95%'				
@@ -971,7 +971,7 @@ jQuery(document).ready(function($){
 			var responsive_options = {
 			  width: '95%',
 			  height: '95%',
-			  maxWidth: '640px',
+			  maxWidth: '720px',
 			  maxHeight: '480px'
 			};
 			$.colorbox({
@@ -984,7 +984,7 @@ jQuery(document).ready(function($){
 					_csrf_token:  $('#_csrf_token').val()  	
 				},
 				opacity: 0.50,
-				maxWidth: '640px',
+				maxWidth: '720px',
 				maxHeight: '480px',
 				width: '95%',
 				height: '95%'				
@@ -1684,7 +1684,7 @@ jQuery(document).ready(function($){
 			var responsive_options = {
 			  width: '95%',
 			  height: '95%',
-			  maxWidth: '640px',
+			  maxWidth: '720px',
 			  maxHeight: '480px'
 			};
 			$.colorbox({
@@ -1698,7 +1698,7 @@ jQuery(document).ready(function($){
 					_csrf_token:  $('#_csrf_token').val()
 				},
 				opacity: 0.50,
-				maxWidth: '640px',
+				maxWidth: '720px',
 				maxHeight: '480px',
 				width: '95%',
 				height: '95%', 
@@ -1836,7 +1836,7 @@ jQuery(document).ready(function($){
 			var responsive_options = {
 			  width: '95%',
 			  height: '95%',
-			  maxWidth: '640px',
+			  maxWidth: '720px',
 			  maxHeight: '480px'
 			};
 			$.colorbox({
@@ -1849,7 +1849,7 @@ jQuery(document).ready(function($){
 					_csrf_token:  $('#_csrf_token').val()
 				},
 				opacity: 0.50,
-				maxWidth: '640px',
+				maxWidth: '720px',
 				maxHeight: '480px',
 				width: '95%',
 				height: '95%'				
@@ -2039,7 +2039,7 @@ jQuery(document).ready(function($){
 		var responsive_options = {
 		  width: '95%',
 		  height: '95%',
-		  maxWidth: '640px',
+		  maxWidth: '720px',
 		  maxHeight: '480px'
 		};
 		$.colorbox({
@@ -2048,7 +2048,7 @@ jQuery(document).ready(function($){
 			initialHeight: 50,
 			width: '95%',
 			height: '95%',
-			maxWidth: '640px',
+			maxWidth: '720px',
 			maxHeight: '480px',
 			opacity: 0.50,
 			href: $("#s_program_url").val(),
@@ -2319,7 +2319,7 @@ function manually_run_all_scheduled_mass_mailings() {
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
-	  maxWidth: '640px',
+	  maxWidth: '720px',
 	  maxHeight: '480px'
 	};
 	$.colorbox({
@@ -2328,7 +2328,7 @@ function manually_run_all_scheduled_mass_mailings() {
 		initialHeight: 50,
 		width: '95%',
 		height: '95%',
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px',
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
@@ -2709,7 +2709,7 @@ function show_update_profile_form(){
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
-	  maxWidth: '640px',
+	  maxWidth: '720px',
 	  maxHeight: '480px'
 	};
 	$.colorbox({
@@ -2718,7 +2718,7 @@ function show_update_profile_form(){
 		top: 0,
 		fixed: true,
 		initialHeight: 50,
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px',
 		width: '95%',
 		height: '95%',		
@@ -2744,7 +2744,7 @@ function show_export_options(){
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
-	  maxWidth: '640px',
+	  maxWidth: '720px',
 	  maxHeight: '480px'
 	};
 	$.colorbox({
@@ -2753,7 +2753,7 @@ function show_export_options(){
 		top: 0,
 		fixed: true,
 		initialHeight: 50,
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px',
 		width: '95%',
 		height: '95%',		
@@ -3195,7 +3195,7 @@ function validate_add_email() {
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
-	  maxWidth: '640px',
+	  maxWidth: '720px',
 	  maxHeight: '480px'
 	};
 	
@@ -3203,7 +3203,7 @@ function validate_add_email() {
 		top: 0,
 		fixed: true,
 		initialHeight: 50,
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px',
 		width: '95%',
 		height: '95%',		
@@ -3238,7 +3238,7 @@ function validate_update_email(is_for_all_lists) {
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
-	  maxWidth: '640px',
+	  maxWidth: '720px',
 	  maxHeight: '480px'
 	};
 	
@@ -3248,7 +3248,7 @@ function validate_update_email(is_for_all_lists) {
 		initialHeight: 50,
 		width: '95%',
 		height: '95%',
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px',
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
@@ -3279,7 +3279,7 @@ function validate_remove_email(for_multiple_lists) {
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
-	  maxWidth: '640px',
+	  maxWidth: '720px',
 	  maxHeight: '480px'
 	};
 	$.colorbox({
@@ -3288,7 +3288,7 @@ function validate_remove_email(for_multiple_lists) {
 		initialHeight: 50,
 		width: '95%',
 		height: '95%',
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px',
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
@@ -3537,7 +3537,7 @@ function test_mail_sending_options() {
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
-	  maxWidth: '640px',
+	  maxWidth: '720px',
 	  maxHeight: '480px'
 	};
 	
@@ -3547,7 +3547,7 @@ function test_mail_sending_options() {
 		initialHeight: 50,
 		width: '95%',
 		height: '95%',
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px',
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
@@ -3586,7 +3586,7 @@ function amazon_verify_email(email) {
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
-	  maxWidth: '640px',
+	  maxWidth: '720px',
 	  maxHeight: '480px'
 	};
 	$.colorbox({
@@ -3595,7 +3595,7 @@ function amazon_verify_email(email) {
 		initialHeight: 50,
 		width: '95%',
 		height: '95%',
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px',
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
@@ -3771,7 +3771,7 @@ function ajax_parse_bounces_results() {
 	var responsive_options = {
 		width: '95%',
 		height: '95%',
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px'
 	};
 	$.colorbox({
@@ -3780,7 +3780,7 @@ function ajax_parse_bounces_results() {
 		initialHeight: 50,
 		width: '95%',
 		height: '95%',
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px',
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
@@ -3902,7 +3902,7 @@ function plugins_bridge_test_pop3() {
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
-	  maxWidth: '640px',
+	  maxWidth: '720px',
 	  maxHeight: '480px'
 	};
 	
@@ -3923,7 +3923,7 @@ function plugins_bridge_test_pop3() {
 			_csrf_token:  $('#_csrf_token').val()  
 		},
 		opacity: 0.50,
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px',
 		width: '95%',
 		height: '95%'				
@@ -3941,7 +3941,7 @@ function plugins_bridge_manually_check_messages() {
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
-	  maxWidth: '640px',
+	  maxWidth: '720px',
 	  maxHeight: '480px'
 	};
 	$.colorbox({
@@ -3953,7 +3953,7 @@ function plugins_bridge_manually_check_messages() {
 			_csrf_token:  $('#_csrf_token').val()  
 		},
 		opacity: 0.50,
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px',
 		width: '95%',
 		height: '95%', 
@@ -5070,14 +5070,14 @@ function preview_message_receivers() {
 	var responsive_options = {
 	  width: '95%',
 	  height: '95%',
-	  maxWidth: '640px',
+	  maxWidth: '720px',
 	  maxHeight: '480px'
 	};
 	$.colorbox({
 	    href: $("#s_program_url").val(),
 		data: f_params,
 		opacity: 0.50,
-		maxWidth: '640px',
+		maxWidth: '720px',
 		maxHeight: '480px',
 		width: '95%',
 		height: '95%'				

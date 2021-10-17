@@ -929,7 +929,8 @@ sub list_template {
 				
 				include_jquery_lib   =>  $header_options->{include_jquery_lib},
                 include_app_user_js  =>  $header_options->{include_app_user_js},
-				load_lity            => 1,
+				
+				load_colorbox        => 1, 
 				
                 add_app_css          =>  $header_options->{add_app_css},
 				
