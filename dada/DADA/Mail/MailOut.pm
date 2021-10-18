@@ -31,7 +31,7 @@ use Fcntl qw(
 my $dbi_obj;
 
 use DADA::Config qw(!:DEFAULT);
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Mail_MailOut};
+my $t =  $DADA::Config::DEBUG_TRACE->{DADA_Mail_MailOut};
 
 use DADA::App::Guts;
 use DADA::Logging::Usage;
@@ -2198,9 +2198,10 @@ sub current_mailouts {
 
        # And now, we have to split THAT up, so that unpaused messages are at the TOP, paused messages are at the bottom:
 
-        my @unpaused = ();
-        my @paused   = ();
-        my @stale    = ();
+        my @unpaused          = ();
+        my @unpaused_but_done = ();
+        my @paused            = ();
+        my @stale             = ();
 
         for my $test_m (@mailouts) {
 
@@ -2213,6 +2214,43 @@ sub current_mailouts {
                 push( @paused, $test_m );
             }
             else {
+				
+				
+				
+				
+				# This figures out how much of the mass mailing has completed - it stops us (again) from 
+				# calling status(). The code is copypasta'd, so if it's changed there, this will
+				# need to be changed (sad face)
+				
+				my $ts = {}; #$ts = test status
+				
+                my $counter_file =
+                  $DADA::Config::TMP . '/' . $test_m->{sendout_dir} . '/' . $file_names->{counter};
+				my $num_sending_to_file =  
+                	$DADA::Config::TMP . '/' . $test_m->{sendout_dir} . '/' . $file_names->{num_sending_to};
+					
+			    $ts->{total_sent_out}        = _poll( $counter_file );
+			    $ts->{total_sending_out_num} = _poll( $num_sending_to_file );
+				$ts->{percent_done}          = 0; 
+				
+			    if ( $ts->{total_sent_out} > 0 ) {
+					# why not Try::Tiny?
+			        eval {
+			            $ts->{percent_done} =
+			              int( int( $ts->{total_sent_out} ) / int( $ts->{total_sending_out_num} ) * 100 );
+			        };
+			        if ($@) {
+			            $ts->{percent_done} = 0;
+			        }
+			    }
+			    else {
+			        $ts->{percent_done} = 0;
+			    }
+				
+				#/ Ok, done with how much percent is done. 
+				
+				
+				
 
                 # DEV: 2203220  	 3.0.0 - Stale Mass Mailing can still clog up mail queue
                 # https://sourceforge.net/tracker2/?func=detail&aid=2203220&group_id=13002&atid=113002
@@ -2231,19 +2269,33 @@ sub current_mailouts {
                     }
                     else {
                         $test_m->{unpaused} = 1; 
-                        push( @unpaused, $test_m );
+						if($ts->{percent_done} >= 100){
+							push( @unpaused_but_done, $test_m );
+						}
+						else { 
+							push( @unpaused, $test_m );
+						}
                     }
                 }
                 else {
                     $test_m->{unpaused} = 1; 
-                    push( @unpaused, $test_m );
+					if($ts->{percent_done} >= 100){
+						push( @unpaused_but_done, $test_m );
+					}
+					else { 
+						push( @unpaused, $test_m );
+					}
                 }
             }
         }
 
         # Now, put it back together:
-        # @mailouts = (@unpaused, @paused, @stale);
-        @mailouts = ( @unpaused, @paused, @stale );
+        @mailouts = ( 
+			@unpaused, 
+			@unpaused_but_done, 
+			@paused, 
+			@stale
+		);
     }
 
     # And done.
@@ -2276,7 +2328,7 @@ sub mailout_exists {
 		undef($real_id);
 	}
 	
-	warn '$id: '   . $id if $t;
+	warn '$id: '   . $id   if $t;
     warn '$list: ' . $list if $t;
 	warn '$type: ' . $type if $t;
 	
@@ -2665,7 +2717,7 @@ sub monitor_mailout {
                 #return $r;
             }
             else {
-                $r .= "\t\t\tMass Mailing appears to be in good health.\n";
+                $r .= "\t\tMass Mailing appears to be in good health.\n";
             }
 
             if (   
@@ -3270,7 +3322,7 @@ See: https://dadamailproject.com/contact
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2006 - 2015 Justin Simoni All rights reserved. 
+Copyright (c) 2006 - 2021 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
