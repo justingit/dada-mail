@@ -3510,16 +3510,154 @@ sub setup_support_files_dir {
 
     my $theme_source_package = make_safer('../extras/packages/themes');
     my $theme_target_loc     = make_safer( $install_path . '/themes' );
-    if ( -d $theme_target_loc ) {
+	
+	my $tmp_custom_theme_dir = undef; 
+	
+     if ( -d $theme_target_loc ) {
+	 	$tmp_custom_theme_dir = $self->tmp_move_custom_themes();		
         backup_dir($theme_target_loc);
-    }
+	}
     installer_dircopy( $theme_source_package, $theme_target_loc );
 	
+	if(defined($tmp_custom_theme_dir)){ 
+		$self->tmp_move_back_custom_themes($tmp_custom_theme_dir);
+		 
+		warn '$tmp_custom_theme_dir: ' . $tmp_custom_theme_dir; 
+		
+		require File::Path; 
+		File::Path::remove_tree( make_safer($tmp_custom_theme_dir));
+
+	}
 	
     unlink( make_safer( $target_loc . '/README.txt' ) );
 	
     return 1;
 }
+
+
+
+sub tmp_move_custom_themes {
+
+    my $self = shift;
+    my $ip   = $self->param('install_params');
+
+    # First, we need a list of the themes we ship,
+    my $theme_names = {};
+
+    my $theme_source_package = make_safer('../extras/packages/themes/email');
+
+    opendir( BUNDLED_THEMES, make_safer($theme_source_package) )
+      or croak "Can't open '" . $theme_source_package . "' to read because: $!";
+    my $f;
+    while ( defined( $f = readdir BUNDLED_THEMES ) ) {
+
+        #don't read '.' or '..'
+        next if $f =~ /^\.\.?$/;
+        $f =~ s(^.*/)();
+        $theme_names->{$f} = 1;
+    }
+    closedir(BUNDLED_THEMES);
+
+    # Make a tmp directory if not already there:
+    require DADA::Security::Password;
+    my $ran_dir_name =
+      'tmpdir-' . DADA::Security::Password::generate_rand_string() . '.' . time;
+    my $tmp_dir_path =
+      make_safer( $ip->{-support_files_dir_path} . '/'
+          . $Support_Files_Dir_Name . '/'
+          . $ran_dir_name );
+
+    $self->installer_mkdir( $tmp_dir_path, $DADA::Config::DIR_CHMOD, );
+
+    # Now, we'll go through any theme dir names already there -
+    # if they don't match up with what we bundle, we'll move them:
+
+    my $theme_installed_dir =
+        $ip->{-support_files_dir_path} . '/'
+      . $Support_Files_Dir_Name . '/'
+      . 'themes/email';
+
+    opendir( INSTALLED_THEMES, make_safer($theme_installed_dir) )
+      or croak "Can't open '" . $theme_installed_dir . "' to read because: $!";
+
+    my $have_custom_theme = 0;
+    my $f;
+    while ( defined( $f = readdir INSTALLED_THEMES ) ) {
+
+        #don't read '.' or '..'
+        next if $f =~ /^\.\.?$/;
+        $f =~ s(^.*/)();
+
+        if ( exists( $theme_names->{$f} ) ) {
+
+            # Well, good! That's a bundled theme
+        }
+        else {
+            $have_custom_theme = 1;
+
+            # This is something we need to move into our tmp dir:
+            warn 'saving theme, ' . $f . 'for later';
+
+ # And I'm going to copy, rather than move, since if someone moves the dir back,
+ # they'll forget that they're custom theme was moved
+            installer_dircopy( make_safer( $theme_installed_dir . '/' . $f ),
+                $tmp_dir_path . '/' . $f );
+        }
+    }
+    closedir(INSTALLED_THEMES);
+
+    if ( $have_custom_theme == 1 ) {
+
+        # Hey you know: I'll need that:
+        return $tmp_dir_path;
+    }
+    else {
+        return undef;
+    }
+}
+
+sub tmp_move_back_custom_themes {
+
+    my $self = shift;
+    my $dir  = shift;
+    return if !defined $dir;
+
+    my $ip = $self->param('install_params');
+
+    opendir( CUSTOM_THEMES, make_safer($dir) )
+      or croak "Can't open '" . $dir . "' to read because: $!";
+    my $f;
+    while ( defined( $f = readdir CUSTOM_THEMES ) ) {
+
+        #don't read '.' or '..'
+        next if $f =~ /^\.\.?$/;
+        $f =~ s(^.*/)();
+
+        warn 'moving back, ' . $f;
+        installer_dircopy(
+            make_safer( $dir . '/' . $f ),
+            make_safer(
+                    $ip->{-support_files_dir_path} 
+				  . '/'
+                  . $Support_Files_Dir_Name 
+				  . '/'
+                  . 'themes' 
+				  . '/'
+                  . 'email' 
+				  . '/'
+                  . $f
+            )
+        );
+    }
+    closedir(INSTALLED_THEMES);
+
+    return 1;
+
+}
+
+
+
+
 
 sub setup_deployment {
 
@@ -5496,7 +5634,6 @@ sub installer_rmdir {
 	
 	warn "installer_rmdir, dir: '$dir'"
 		if $t; 
-	
 	
     my $r    = rmdir($dir);
     return $r;

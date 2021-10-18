@@ -4,6 +4,11 @@ use lib qw(
 	../../../DADA/perllib
 ); 
 
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
 use Encode; 
 use Try::Tiny; 
 use Carp qw(croak carp); 
@@ -2650,6 +2655,11 @@ sub subscription_form {
 		$args->{-show_fields} = 1; 
 	}
 	
+	if(! exists($args->{-insert_hidden_fields})){ 
+		$args->{-insert_hidden_fields} = 1; 
+	}
+	
+	
 	if(! exists($args->{-magic_form})){
     	$args->{-magic_form} = 1; 
 	}
@@ -2678,14 +2688,25 @@ sub subscription_form {
     
     require DADA::ProfileFieldsManager; 
     my $pfm               = DADA::ProfileFieldsManager->new; 
-	my $subscriber_fields = $pfm->fields(
+	my $all_fields = $pfm->fields(
 		{
-			-show_hidden_fields => 0,
+			-show_hidden_fields => 1,
 		}
 	);
-		
-	my $field_attrs       = $pfm->get_all_field_attributes;
 	
+	my $subscriber_fields = []; 
+	my $hidden_subscriber_fields = [];
+	for(@$all_fields){ 
+		if($_ =~ m/^\_/){
+			push(@$hidden_subscriber_fields, {name => $_, given_value => undef});
+		}
+		else { 
+			push(@$subscriber_fields, $_);
+		}
+	}
+	
+	
+	my $field_attrs       = $pfm->get_all_field_attributes;
 	my $named_subscriber_fields = [];
 
 	foreach(@$subscriber_fields){ 
@@ -2708,11 +2729,25 @@ sub subscription_form {
         }
         
         my $i = 0; 
-        foreach my $sf(@$subscriber_fields){ 
+		my $ii = 0;
+        #foreach my $sf(@$subscriber_fields){ 
+		foreach my $sf(@$all_fields){ 
+			warn "$sf: " . $sf; 
+			
             if(defined($q->param($sf))){ 
-                $named_subscriber_fields->[$i]->{given_value} = xss_filter($q->param($sf));
-            }
-            $i++;
+				warn q{$q->param($sf)} . $q->param($sf); 
+				if($sf =~ m/^\_/){ 		
+					warn 'here1';			
+					$hidden_subscriber_fields->[$i]->{given_value} = xss_filter($q->param($sf));
+					$i++;
+				}
+				else {
+					warn 'here2';
+					$named_subscriber_fields->[$i]->{given_value} = xss_filter($q->param($sf));
+					$ii++;
+            	}
+			}
+            
         }
         undef($i);
 
@@ -2762,19 +2797,21 @@ sub subscription_form {
         return screen({
             -screen => $tmpl_name, 
             -vars   => {
-							form_target              => $args->{-form_target},  
-							can_use_JSON             => scalar DADA::App::Guts::can_use_JSON(), 
-                            single_list              => 1, 
-                            subscriber_fields        => $named_subscriber_fields,
-                            list                     => $list, 
-                            email                    => $args->{-email},
-                            script_url               => $args->{-script_url}, 
-							show_fields              => $args->{-show_fields}, 
-							profile_logged_in        => $args->{-profile_logged_in}, 
-							subscription_form_id     => $args->{-subscription_form_id}, 
-							show_fieldset            => $args->{-show_fieldset}, 
-							add_recaptcha_js         => $args->{-add_recaptcha_js}, 
-							list_consents            => $list_consents, 					
+							form_target               => $args->{-form_target},  
+							can_use_JSON              => scalar DADA::App::Guts::can_use_JSON(), 
+                            single_list               => 1, 
+                            subscriber_fields         => $named_subscriber_fields,                            
+							hidden_subscriber_fields  => $hidden_subscriber_fields, 
+							insert_hidden_fields      => $args->{-insert_hidden_fields},
+							list                      => $list, 
+                            email                     => $args->{-email},
+                            script_url                => $args->{-script_url}, 
+							show_fields               => $args->{-show_fields}, 
+							profile_logged_in         => $args->{-profile_logged_in}, 
+							subscription_form_id      => $args->{-subscription_form_id}, 
+							show_fieldset             => $args->{-show_fieldset}, 
+							add_recaptcha_js          => $args->{-add_recaptcha_js}, 
+							list_consents             => $list_consents, 					
 							
                         },
 						-list_settings_vars_param => {
@@ -2804,20 +2841,22 @@ sub subscription_form {
 		return screen({
             -screen => 'subscription_form_widget.tmpl', 
             -vars   => {
-				form_target              => $args->{-form_target},  
-	            single_list              => 0, 
-	            subscriber_fields        => $named_subscriber_fields,
-	            list                     => $list, 
-	            email                    => $args->{-email},
-	            list_popup_menu          => list_popup_menu(-disable_invite_only => 1),
-	            list_checkbox_menu       => list_popup_menu(-as_checkboxes => 1), 
-	            multiple_lists           => $args->{-multiple_lists}, 
-	            script_url               => $args->{-script_url}, 
-				show_fields              => $args->{-show_fields}, 
-				profile_logged_in        => $args->{-profile_logged_in}, 
-				subscription_form_id     => $args->{-subscription_form_id}, 
-				show_fieldset            => $args->{-show_fieldset}, 
-				add_recaptcha_js         => $args->{-add_recaptcha_js}, 
+				form_target               => $args->{-form_target},  
+	            single_list               => 0, 
+	            subscriber_fields         => $named_subscriber_fields,
+				hidden_subscriber_fields  => $hidden_subscriber_fields, 
+				insert_hidden_fields      => $args->{-insert_hidden_fields},
+	            list                      => $list, 
+	            email                     => $args->{-email},
+	            list_popup_menu           => list_popup_menu(-disable_invite_only => 1),
+	            list_checkbox_menu        => list_popup_menu(-as_checkboxes => 1), 
+	            multiple_lists            => $args->{-multiple_lists}, 
+	            script_url                => $args->{-script_url}, 
+				show_fields               => $args->{-show_fields}, 
+				profile_logged_in         => $args->{-profile_logged_in}, 
+				subscription_form_id      => $args->{-subscription_form_id}, 
+				show_fieldset             => $args->{-show_fieldset}, 
+				add_recaptcha_js          => $args->{-add_recaptcha_js}, 
 				'list_settings.enable_captcha_on_initial_subscribe_form' 
 					=> $enable_captcha_on_initial_subscribe_form, 
 			}

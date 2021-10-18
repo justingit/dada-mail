@@ -16,6 +16,12 @@ This module basically has error messages in HTML and spits 'em back at ya.
 
 use lib qw(../../ ../perllib);
 
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
+
 use DADA::Config;
 use DADA::App::Guts;
 use DADA::Template::HTML;
@@ -150,8 +156,9 @@ sub cgi_user_error {
         if ( $args->{-list} ) {
             $subscription_form = DADA::Template::Widgets::subscription_form(
                 {
-                    -list       => $args->{-list},
-                    -email      => $args->{-email},
+                    -list                      => $args->{-list},
+                    -email                     => $args->{-email},
+					-insert_hidden_fields      => 1, 
                 }
             );
             if ( $list_exists > 0 ) {
@@ -164,13 +171,17 @@ sub cgi_user_error {
             }
         }
         else {
+			#hmm, so no list?
             $subscription_form =
-              DADA::Template::Widgets::subscription_form( { -email => $args->{-email}} )
-              ;    # -show_hidden =>1 ?!?!?!
+              DADA::Template::Widgets::subscription_form(
+			  	{
+					-email                => $args->{-email},
+					-insert_hidden_fields => 1, 
+				} 
+			);
             if ( $list_exists > 0 ) {
                 $unsubscription_form =
-                  DADA::Template::Widgets::unsubscription_form( { -email => $args->{-email}} )
-                  ;    # -show_hidden => 1?!?!?!
+                  DADA::Template::Widgets::unsubscription_form( { -email => $args->{-email}} ); 
             }
         }
     }

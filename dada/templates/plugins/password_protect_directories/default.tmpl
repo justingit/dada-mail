@@ -63,13 +63,20 @@
 					<tr> 
 					<td width="200px">
 					<strong>Default Password</strong></td><td><!-- tmpl_if default_password --><em>********</em><!-- tmpl_else --><em>(None Set)</em><!-- /tmpl_if --></td>
-				</tr>
+					</tr>
+					
+					<tr> 
+					<td><strong>Always using Default Password?</strong></td><td><!-- tmpl_if always_use_default_password -->Yes.<!-- tmpl_else -->No.<!-- /tmpl_if --></td>
+					</tr>
+					
+					
+					
 			</table> 
 	
 			<ul class="button-group right">
 			    <li>
 					
-					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 						<input type="hidden" name="flavor" value="plugins" > 
 						<input type="hidden" name="plugin" value="password_protect_directories" > 
 						<input type="hidden" name="prm" value="edit_dir" > 
@@ -81,12 +88,12 @@
 				</li>
 				<li>
 					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-				<input type="hidden" name="flavor" value="plugins" > 
-				<input type="hidden" name="plugin" value="password_protect_directories" > 				
-				<input type="hidden" name="prm" value="delete_dir" > 
-				<input type="hidden" name="id" value="<!-- tmpl_var id -->" > 
-				<input type="submit" class="alert button" value="Delete " >
-			</form> 
+						<input type="hidden" name="flavor" value="plugins" > 
+						<input type="hidden" name="plugin" value="password_protect_directories" > 				
+						<input type="hidden" name="prm" value="delete_dir" > 
+						<input type="hidden" name="id" value="<!-- tmpl_var id -->" > 
+						<input type="submit" class="alert button" value="Delete" >
+					</form> 
 			</li>
 		</ul>
 			
@@ -101,7 +108,7 @@
 
 <!-- tmpl_if problems --> 
 
-	<div class="alert-box info radius">
+	<div class="alert-box warning radius">
 
 	<p><strong>Problems were found with the information you just submitted:</strong></p> 
 	<ul>
@@ -137,9 +144,9 @@
 
 <fieldset> 
 <!-- tmpl_unless edit --> 
-<legend>New Password Protected Directory</legend> 
+	<legend>New Password Protected Directory</legend> 
 <!-- tmpl_else --> 
-<legend>Edit Password Protected Directory</legend> 
+	<legend>Edit Password Protected Directory</legend> 
 <!-- /tmpl_unless --> 
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
@@ -183,12 +190,12 @@
 
 <tr>
 <td width="200px">
- <label>
+ <label for="use_custom_error_page">
   Use a Custom Error Page? 
  </label>
 </td>
 <td >
- <input type="checkbox" name="use_custom_error_page" value="1" >
+ <input type="checkbox" name="use_custom_error_page" id="use_custom_error_page" value="1" >
 </td>
 </tr>
 
@@ -230,7 +237,7 @@ Custom Error Page (Path):
 	  Default Password
 	 </label>
 	</td>
-	<td >
+	<td>
 	 <input type="text" name="default_password" value=""  >
 	</td>
 </tr>
@@ -238,22 +245,43 @@ Custom Error Page (Path):
 <!-- /tmpl_if --> 
 
 
+<tr>
+<td width="200px">
+	 <label for="always_use_default_password">
+	  Always use Default Password (instead of Profile Password)
+	 </label>
+	</td>
+	<td>
+	    <input type="checkbox" name="always_use_default_password" id="always_use_default_password" value="1" >
+		
+	</td>
+</tr>
+
+
+
 </table>
 
 <!-- tmpl_unless edit --> 
-<input type="hidden" name="prm" value="new_dir" > 
+	<input type="hidden" name="prm" value="new_dir" > 
 <!-- tmpl_else --> 
-<input type="hidden" name="id" value="<!-- tmpl_var id -->" > 
-<input type="hidden" name="prm" value="process_edit_dir" > 
-
+	<input type="hidden" name="id" value="<!-- tmpl_var id -->">
+	<input type="hidden" name="prm" value="process_edit_dir">
 <!-- /tmpl_unless --> 
 
 			<ul class="button-group right">
+				
+				<!-- tmpl_if edit --> 				
+					<li>
+						<a class="warning button" href="<!-- tmpl_var S_PROGRAM_URL -->/plugins/password_protect_directories">
+							Cancel
+						</a>
+					</li>
+				<!-- /tmpl_if -->
 			    <li>
-					<input type="reset"  class="warning button" value="Clear All Changes" >
+					<input type="reset"  class="alert button" value="Reset" >
 				</li>
 				<li>
-					<input type="submit" class="success button" value="Save All Changes" >
+					<input type="submit" class="success button" value="Save">
 				</li>
 			</ul>
 </form> 
