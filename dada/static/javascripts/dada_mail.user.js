@@ -1,7 +1,39 @@
 (function( $ ) {
   "use strict";
- 
-  $(function() {
+
+	$(function() {
+		
+var responsive_options = {
+  width: '95%',
+  height: '95%',
+  maxWidth: '720px',
+  maxHeight: '480px'
+};
+
+	  
+$('.colorbox_open').click(function(e) {
+
+	e.preventDefault();
+	$.colorbox({
+		href: this.href,
+		iframe: true, 
+		opacity: 0.50,
+		maxWidth: '720px',
+		maxHeight: '480px',
+		width: '95%',
+		height: '95%'
+	}); 
+
+	$(window).resize(function(){
+		$.colorbox.resize({
+			width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+			height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+		});		
+	});
+
+});
+
+
 
   	if ($("#list_unsubscribe").length) {
 		if(

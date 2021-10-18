@@ -795,6 +795,12 @@ sub available_lists {
 	if(!exists($args{-clear_cache})){ 
 		$args{-clear_cache} = 0; 
 	}
+		
+	
+	if(!exists($args{-return_hidden_lists})){ 
+		$args{-return_hidden_lists} = 1; 
+	}
+	
 	
     my $in_order        = $args{-In_Order};
     my $want_ref        = $args{-As_Ref};
@@ -817,7 +823,8 @@ sub available_lists {
         $cache = undef;
         $cache = {};
     }
-    if ( $in_order == 1 ) {
+    
+	if ( $in_order == 1 && $args{-return_hidden_lists} != 0) {
         if ( exists( $cache->{available_lists_in_order} ) ) {
             #$ic++; carp "CACHE! $ic++";
             $want_ref == "1"
@@ -825,6 +832,9 @@ sub available_lists {
               : return @{ $cache->{available_lists_in_order} };
         }
     }
+	elsif($args{-return_hidden_lists} == 0){ 
+		# ...
+	}
     else {
         if ( exists( $cache->{available_lists} ) ) {
 			my $copy = $cache->{available_lists};
@@ -844,124 +854,66 @@ sub available_lists {
         }
     }
 
-    # /Caching.
+# /Caching.
 
-    # DEV: This is really bad form - do not emulate!
 
-    if ( $DADA::Config::SETTINGS_DB_TYPE =~ /SQL/i ) {
+    my $dbi_handle = undef;
+	my $sth        = undef; 
+    eval {
+		require DADA::App::DBIHandle;
+        $dbi_handle = DADA::App::DBIHandle->new;
+        my $dbh     = $dbi_handle->dbh_obj;
 
-        ######################################################################
-        my $dbi_handle = undef;
-		my $sth        = undef; 
-        eval {
-			require DADA::App::DBIHandle;
-	        $dbi_handle = DADA::App::DBIHandle->new;
-	        my $dbh     = $dbi_handle->dbh_obj;
-	        ######################################################################
+        my $query = 'SELECT DISTINCT list from '
+          . $DADA::Config::SQL_PARAMS{settings_table} 
+		  . " WHERE list != ? AND setting = 'list'";
 
-	        my $query = 'SELECT DISTINCT list from '
-	          . $DADA::Config::SQL_PARAMS{settings_table} 
-			  . " WHERE list != ? AND setting = 'list'";
+        if ( $in_order == 1 ) {
+            $query .= ' ORDER BY list ASC';
+        }
+        $sth = $dbh->prepare($query);
+        $sth->execute('') or croak; 
+	};
 
-	        if ( $in_order == 1 ) {
-	            $query .= ' ORDER BY list ASC';
-	        }
-	        $sth = $dbh->prepare($query);
-	        $sth->execute('') or croak; 
-		};
-
-# BUGFIX:
-# 2219954  	 3.0.0 - Guts.pm sub available_lists param, -Dont_Die broken
-# https://sourceforge.net/tracker2/?func=detail&aid=2219954&group_id=13002&atid=113002
-        if ($@) {
-            if ( $args{-Dont_Die} == 1 ) {
-                carp $DBI::errstr;
-                $want_ref == "1" ? return [] : return ();
-            }
-            else {
-                croak $DBI::errstr;
-            }
+	# BUGFIX:
+	# 2219954  	 3.0.0 - Guts.pm sub available_lists param, -Dont_Die broken
+	# https://sourceforge.net/tracker2/?func=detail&aid=2219954&group_id=13002&atid=113002
+    if ($@) {
+        if ( $args{-Dont_Die} == 1 ) {
+            carp $DBI::errstr;
+            $want_ref == "1" ? return [] : return ();
         }
         else {
-
-            while ( ( my $l ) = $sth->fetchrow_array ) {
-                push( @available_lists, $l );
-            }
-            $sth->finish;
+            croak $DBI::errstr;
         }
-
     }
     else {
 
-  	
-        my $path = $DADA::Config::FILES;
-        $path = make_safer($path);
-        $path =~ /(.*)/;
-        $path = $1;
-
-        if ( opendir( LISTS, $DADA::Config::FILES ) ) {
-            while ( defined( $present_list = readdir LISTS ) ) {
-                next if $present_list =~ /^\.\.?$/;
-                $present_list =~ s(^.*/)();
-                next if $present_list !~ /^mj-.*$/;
-
-                $present_list =~ s/mj-//;
-                $present_list =~ s/(\.dir|\.pag|\.db)$//;
-                $present_list =~ s/(\.list|\.template)$//;
-
-                next if $present_list eq "";
-
-                if (   defined($present_list)
-                    && $present_list ne ""
-                    && $present_list !~ m/^\s+$/ )
-                {
-                    push( @dbs, $present_list );
-                }
-            }    #/while
-
-            for my $all_those (@dbs) {
-                if ( $all_those !~ m/\-archive.*|\-schedules.*/ ) {
-                    push( @available_lists, $all_those );
-                }
-            }
-
-            #give me just one occurence of each name
-            my %seen = ();
-            my @unique = grep { !$seen{$_}++ } @available_lists;
-
-            my @clean_unique;
-
-            for (@unique) {
-                if (   defined($_)
-                    && $_ ne ""
-                    && $_ !~ m/^\s+$/ )
-                {
-                    push( @clean_unique, $_ );
-                }
-
-            }
-			@available_lists = @clean_unique;
+        while ( ( my $l ) = $sth->fetchrow_array ) {
+            push( @available_lists, $l );
         }
-        else {
-
-            # DON'T rely on this...
-            if ( $args{-Dont_Die} == 1 ) {
-                $want_ref == "1" ? return [] : return ();
-            }
-            else {
-                croak(
-"$DADA::Config::PROGRAM_NAME $DADA::Config::VER error, please MAKE SURE that '$path' is a directory (NOT a file) and that Dada Mail has enough permissions to write into this directory: $!"
-                );
-
-            }
-        }
-
+        $sth->finish;
     }
 
-    if ( $in_order == 1 ) {
+
+	
+	
+	
+	if($args{-return_hidden_lists} == 0){ 
+        my @no_hidden = (); 
+		for my $l (@available_lists) {
+		 require DADA::MailingList::Settings; 
+			my $ls = DADA::MailingList::Settings->new( { -list => $l } );
+			if($ls->param('hide_list') == 0){ 
+				push(@no_hidden, $l);
+			}
+		}
+		@available_lists = @no_hidden; 
+	}
+
+    if ( $in_order == 1) {
          my $labels = {};
          for my $l (@available_lists) {
-			 
 			 require DADA::MailingList::Settings; 
              my $ls =
                DADA::MailingList::Settings->new( { -list => $l } );
@@ -971,14 +923,21 @@ sub available_lists {
          @available_lists =
            sort { uc( $labels->{$a} ) cmp uc( $labels->{$b} ) }
            keys %$labels;
-		 $cache->{available_lists_in_order} = \@available_lists;
-         $cache->{available_lists}          = \@available_lists;
-	  	 $want_ref == "1" ? return \@available_lists : return @available_lists;
+		  
+		  if($args{-return_hidden_lists} != 0){
+			 $cache->{available_lists_in_order} = \@available_lists;
+	         $cache->{available_lists}          = \@available_lists;
+	  	 }
+		
+		 $want_ref == "1" ? return \@available_lists : return @available_lists;
      }
 	else { 
-		$cache->{available_lists} = \@available_lists;
+	    
+		if($args{-return_hidden_lists} != 0){
+			$cache->{available_lists} = \@available_lists;
+		}
 		if($args{-In_Random_Order} == 1) {
-			my $copy = $cache->{available_lists};
+			my $copy = \@available_lists;
 			fisher_yates_shuffle($copy); 
 			$want_ref == "1" ? return $copy : return @$copy;
 		}
@@ -994,7 +953,6 @@ sub num_file_lines {
 
     $filename = uriescape($filename);
     $filename =~ s/\s/%20/g;
-
 
     my $count = 0;
 
