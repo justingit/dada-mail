@@ -21,16 +21,16 @@
 			</a>
 		</h2>
 
-		<p>
-			<a href="<!-- tmpl_var PROGRAM_URL -->/modal_subscribe_landing/<!-- tmpl_var list_settings.list -->/" class="expand button success colorbox_open">
-			    Subscribe
-			</a>
-		</p>
-
+		<!-- tmpl_if list_settings.show_subscription_form --> 
+			<p>
+				<a href="<!-- tmpl_var PROGRAM_URL -->/modal_subscribe_landing/<!-- tmpl_var list_settings.list -->/" class="expand button success colorbox_open">
+				    Subscribe
+				</a>
+			</p>
+		<!-- /tmpl_if -->
 
 		<!-- tmpl_var list_settings.info -->
 		
-
 		<!-- tmpl_if list_settings.show_archives -->
 			<!-- tmpl_unless list_settings.archives_available_only_to_subscribers -->
 				<!-- tmpl_if latest_archive_blurb -->
