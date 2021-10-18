@@ -5473,7 +5473,7 @@ function cls_refresh_loop(screen_name) {
 			}
 		}, 
 		error: function(xhr, ajaxOptions, thrownError) {
-			alert('error checking login status');
+			console.log('error checking login status:' + thrownError);
 		}
 	});
 
