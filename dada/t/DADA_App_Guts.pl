@@ -43,6 +43,36 @@ is_deeply([sort(@{available_lists(-As_Ref => 1)})], [sort($list, $list3, $list2)
 # in order as ref
 is_deeply(available_lists(-In_Order => 1, -As_Ref => 1), [$list2, $list, $list3] );
 
+
+
+
+
+# only return non-hidden lists: 
+my $ls2 = DADA::MailingList::Settings->new({-list => $list2}); 
+   $ls2->param('hide_list', 1);
+
+my $ls3 = DADA::MailingList::Settings->new({-list => $list3}); 
+   $ls3->param('hide_list', 1);
+
+is_deeply(available_lists(-return_hidden_lists => 0, -As_Ref => 1), [$list] );
+
+$ls3->param('hide_list', 0);
+is_deeply([sort(@{available_lists(-As_Ref => 1, -return_hidden_lists => 0,)})], [sort($list, $list3)]); #sort is used, so that the sorting is the same - 
+
+$ls2->param('hide_list', 0);
+
+is_deeply([sort(@{available_lists(-As_Ref => 1, -return_hidden_lists => 0,)})], [sort($list2, $list, $list3)]); #sort is used, so that the sorting is the same - 
+
+undef $ls2; 
+undef $ls3; 
+
+
+
+
+
+
+
+
 dada_test_config::remove_test_list({-name => $list2});
 dada_test_config::remove_test_list({-name => $list3});
 
