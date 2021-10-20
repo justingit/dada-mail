@@ -666,6 +666,38 @@ sub create_from_stationery {
 }
 
 
+sub schedule_to_draft {
+
+    my $self    = shift;
+    my ($args)  = @_;
+	
+	if(!defined($args->{-save_role})){ 
+		$args->{-save_role} = 'draft';
+	}
+	
+	# -screen => $args->{-screen},
+    my $q_draft = $self->fetch(
+        {
+            -id     => $args->{-id},
+            -role   => 'schedule',
+        }
+    );
+
+	#  -screen    => $args->{-screen},
+    my $saved_draft_id = $self->save(
+        {
+            -cgi_obj   => $q_draft,
+            -role      => $args->{-save_role},
+            -save_role => $args->{-save_role}, 
+        }
+    );
+    warn '$saved_draft_id' . $saved_draft_id
+		if $t; 
+    return $saved_draft_id;
+}
+
+
+
 sub count {
     my $self = shift;
     my ($args) = @_;
