@@ -296,8 +296,9 @@ my %Global_Template_Options = (
 								'../DADA/Templates/templates',
 								'../../DADA/Templates/templates',
 							],
-		die_on_bad_params => 0,	
-		loop_context_vars => 1, 									
+		die_on_bad_params      => 0,	
+		loop_context_vars      => 1, 	
+		search_path_on_include => 1, 								
 );
 
 my %_ht_tmpl_set_params = (); 
