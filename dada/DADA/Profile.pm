@@ -95,7 +95,8 @@ sub _init {
 			else { 
 					
 	            if ( $sess->is_logged_in ) {
-	                $args->{ -email } = $sess->get;
+	                my $sess_info =  $sess->get;
+					$args->{ -email } = $sess_info->{email};
 	            }
 	            else {
 	                $args->{ -email } = undef;
@@ -112,9 +113,16 @@ sub _init {
         croak "you must pass an email address in, '-email'";
     }
     else {
+		warn '$args->{ -email }: ' . $args->{ -email } 
+			if $t; 
+			
         $self->{email} = cased(
 			$args->{ -email }
 		);
+		
+		warn '$args->{ -email }: ' . $args->{ -email } 
+			if $t; 
+			
     }
 
 	if(exists($self->{email})){ 
@@ -131,8 +139,14 @@ sub _init {
 
 sub exists {
 	
+	warn 'in exists'
+		if $t; 
+		
     my $self = shift;
 
+	warn '$self->{email}: ' . $self->{email} 
+		if $t; 
+		
     my $query =
       'SELECT COUNT(*) FROM '
       . $DADA::Config::SQL_PARAMS{profile_table}
@@ -147,6 +161,9 @@ sub exists {
       or croak "cannot do statement (at exists)! $DBI::errstr\n";
 
       my $count = $sth->fetchrow_array;
+	  
+	  warn '$count: ' . $count 
+	  	if $t; 
 
     $sth->finish;
     
@@ -771,16 +788,21 @@ sub activate {
 
 sub allowed_to_view_archives {
 
+	warn 'in, allowed_to_view_archives' 
+		if $t; 
+	
 	my $self = shift; 
     my ($args) = @_;
 
-
-	
-	
     if ( !exists( $args->{ -list } ) ) {
         croak "You must pass a list in the, '-list' param!";
     }
  
+ 	warn '$self->{override_profile_enable_check}: ' . $self->{override_profile_enable_check}
+		if $t; 
+	warn '$DADA::Config::PROFILE_OPTIONS->{enabled}: ' . $DADA::Config::PROFILE_OPTIONS->{enabled}
+		if $t;  
+	
 	if (
 		$self->{override_profile_enable_check} != 1 
 		&& $DADA::Config::PROFILE_OPTIONS->{enabled} != 1  
@@ -790,15 +812,27 @@ sub allowed_to_view_archives {
     else {
 		require DADA::MailingList::Settings; 
 		my $ls = DADA::MailingList::Settings->new({-list => $args->{ -list }}); 
+		
+		warn q{$ls->param('archives_available_only_to_subscribers'): } . $ls->param('archives_available_only_to_subscribers')
+			if $t;
+			 
         if ( $ls->param('archives_available_only_to_subscribers') == 1 )
         {
 	
 
+			warn '$self->exists: ' . $self->exists
+				if $t; 
 			
             if ($self->exists) {
+				warn q{$self->subscribed_to_list( { -list => $args->{ -list } } ) :}
+				. $self->subscribed_to_list( { -list => $args->{ -list } } ) 
+					if $t; 
+				
                 if (
                     $self->subscribed_to_list( { -list => $args->{ -list } } ) )
                 {
+					warn 'returning 1' 
+						if $t; 
                     return 1;
                 }
                 else {
@@ -810,6 +844,8 @@ sub allowed_to_view_archives {
             }
         }
         else {
+			warn 'returning 1'
+				if $t; 
             return 1;
         }
     }
