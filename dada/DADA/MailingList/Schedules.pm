@@ -64,6 +64,59 @@ sub _init {
 
 
 
+sub mass_send_schedule_as_draft { 
+		
+    my $self = shift;
+    my ($args) = @_;
+	
+	if(!exists($args->{-id})){ 
+		die "need to pass -id!";
+	}
+	
+	# All I'm passing really is the draft_id of the schedule: 
+	my $new_id = $self->{d_obj}->schedule_to_draft(
+		{ 
+			-id => $args->{-id},
+		}
+	); 
+	
+	# now $new_id has the id of the DRAFT, so let's send that: 
+    my $c_r = $self->{ms_obj}->construct_and_send(
+        {
+            -draft_id => $new_id,
+            -role     => 'draft',            
+            -process => 1,
+        }
+    );
+
+    if ( $c_r->{status} == 0 ) {
+		
+		# This returns a status and if the status has errors, errors: 
+		return { 
+			status => 0, 
+			errors => $c_r->{errors}, 
+		}
+		
+	}
+	else { 
+		# if the status is 1, 
+		# Remove the newly created draft: 
+		$self->{d_obj}->remove($new_id);
+		
+		# And we'll get back a uri to redirect to: 
+	    my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=list&id=' . uriescape($c_r->{mid});
+
+		return { 
+			status       => 1, 
+			redirect_uri => $uri, 
+		};		
+	}
+	
+	# And, that's it! 
+}
+
+
+
 
 sub run_schedules {
 
@@ -103,13 +156,33 @@ sub run_schedules {
 
     my $count = $self->{d_obj}->count( { -role => 'schedule' } );
 
+
+	
+	# This kind only makes sense if we're running all the scheds: 
     if ( $count <= 0 ) {
         $r .= "* No Schedules currently saved\n";
     }
     else {
         $r .= "* $count Schedule(s)\n";
     }
+
+	
+
+
     my $index = $self->{d_obj}->draft_index( { -role => 'schedule' } );
+
+	# If we're passed a draft_id, we can pull it out of the index, and just use that
+	# as the sole schedule we loop through. 
+	# This emulates that idea: 
+	#my $index_of_one = []; 
+	#for my $sched (@$index) {
+	#	if($sched->{id} == 57){ 
+	#		push(@$index_of_one, $sched);
+	#		last;
+	#	}
+	#}
+	#$index = $index_of_one; 
+	
 
     my $rb = '';
 	SCHEDULES: for my $sched (@$index) {
@@ -120,6 +193,8 @@ sub run_schedules {
 
         $rb .= "\t* Subject: " . $sched->{Subject} . "\n";
 
+		# Forcing a schedule, we're going to bypass this check, 
+		# We'll say something of that effect (in an elsif)
         if ( $sched->{schedule_activated} != 1 ) {
             $rb .= "\t* Schedule is NOT Activated.\n";
             next SCHEDULES;
@@ -128,10 +203,13 @@ sub run_schedules {
             $rb .= "\t* Schedule is Activated!\n";
         }
 
+
+		# This is also something we're going to bypass, we're going to send the schedule NOW: 
+		#
+		#
+		#
         my $schedule_times = [];
-
         my $can_use_datetime = DADA::App::Guts::can_use_datetime();
-
         if ( $sched->{schedule_type} eq 'recurring' && $can_use_datetime == 0 )
         {
             $rb .=
@@ -145,9 +223,9 @@ sub run_schedules {
 			
             # This is weird validation buuuuuuut
             if (   length( $sched->{schedule_recurring_ctime_start} ) == 0
-                || length( $sched->{schedule_recurring_ctime_end} ) == 0
+                || length( $sched->{schedule_recurring_ctime_end} )   == 0
                 || length( $sched->{schedule_recurring_display_hms} ) == 0
-                || length( $sched->{schedule_recurring_days} ) == 0 )
+                || length( $sched->{schedule_recurring_days} )        == 0 )
             {
                 $rb .=
                   "\t*DateTime information is missing from this schedule\n";
@@ -241,7 +319,6 @@ sub run_schedules {
 				);
 				next SCHEDULES;
 			}
-		
 
             my ( $status, $errors, $recurring_scheds ) =
               $self->recurring_schedule_times(
@@ -305,18 +382,26 @@ sub run_schedules {
             }
         }
         else {
+			#
+			# We'll have to emulate this for a force send too: 
+			#
             $rb .= "\t* Schedule Type: One-Time\n";
             push( @$schedule_times, $sched->{schedule_single_ctime} );
         }
+		
+		# Well alright. 
 
 
         my $rc = '';
 		
 		SPECIFIC_SCHEDULES: for my $specific_time (@$schedule_times) {
 			
+			# Again, we can skip all this: 
+			# We just need $specific_time to be time(). 
+			#
+			#
 			
             my $end_time;
-
             # This is sort of awkwardly placed validation...
             if ( $sched->{schedule_type} eq 'recurring' ) {
                 $end_time = $sched->{schedule_recurring_ctime_end};
@@ -382,6 +467,12 @@ sub run_schedules {
 			if ( $specific_time >=
                 $self->{ls_obj}->param('schedule_last_checked_time') )
             {
+				#
+				# I want to bypass this too - good change a sched didn't go out because of this issue, 
+				# And someone wants to force it out, anyways: 
+				# We could just set, "schedule_recurring_only_mass_mail_if_primary_diff" to, "0"
+				# And call that good. 
+				#
                 if (   $sched->{schedule_type} eq 'recurring'
                     && $sched
                     ->{schedule_recurring_only_mass_mail_if_primary_diff} == 1 )

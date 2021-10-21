@@ -232,19 +232,50 @@ jQuery(document).ready(function($){
 		$("body").on("change", ".schedule_field", function(event) {
 			mass_mailing_schedules_preview();
 		});
+		
 		$("body").on("click", ".manually_run_all_scheduled_mass_mailings", function(event) {
 			var mrasmm = $.Callbacks();
+				
+				// perhaps weird to use just a string, but I can't see this being anything other than schedule:
+				$("#save_draft_role").val('schedule'); 
+
 				mrasmm.add(save_msg(false));
 				mrasmm.add(manually_run_all_scheduled_mass_mailings());
 				mrasmm.fire();
 		});
+
+
+		// "Send Mass Mailing Now" button
+		$("body").on("click", ".schedule_send_as_mass_mailing", function(event) {
+			var mrasmm = $.Callbacks();			
+			$("#button_action_notice").html('Working...');
+			
+			// We have to explicitly set the role of the draft to, "schedule"
+			// I think that's a little weird, but that's how it's been done! 
+			var confirm_msg = "Send Mass Mailing?\nThis schedule and its options will remain unchanged for any later scheduled mailings.";
+			if (!confirm(confirm_msg)) {
+				return false;
+			} else {
+				$("#save_draft_role").val($(this).attr("data-save_draft_role"));
+				// Save it as a schedule				
+				mrasmm.add(save_msg(false));
+				// then this calls DDM to copy this over to a draft, then send out: 
+				mrasmm.add(schedule_send_as_mass_mailing());
+				mrasmm.fire();
+			}				
+		});
+		
+		
+		
+
 		
 		$("body").on("click", ".preview_calendar", function(event) {
 			
 			event.preventDefault();
 			
-			// alert("preview_calendar");
-		
+			// perhaps weird to use just a string, but I can't see this being anything other than schedule:
+			$("#save_draft_role").val('schedule'); 
+
 			var mrasmm = $.Callbacks();
 				mrasmm.add(save_msg(false));
 				mrasmm.add(
@@ -285,7 +316,6 @@ jQuery(document).ready(function($){
 				console.log('.save_msg');
 				
 				$("#button_action_notice").html('Working...');
-
 				$("#save_draft_role").val($(this).attr("data-save_draft_role"));
 
 				var ds = save_msg(false);
@@ -2370,6 +2400,37 @@ function manually_run_all_scheduled_mass_mailings() {
 	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
 	    });		
 	});
+}
+
+function schedule_send_as_mass_mailing() { 
+	alert('draft_id!' + $("#draft_id").val());
+	
+	$.ajax({
+		url: $("#s_program_url").val(),
+		method: "POST",
+		data: {
+			flavor:        'mass_send_schedule_as_draft',
+			draft_id:     $("#draft_id").val(),
+			_csrf_token:    $('#_csrf_token').val()
+		},
+		dataType: "json",
+		async: false,
+		success: function(content) {
+			alert('status: ' + content.status);
+						
+			if (content.status === 0){ 
+				alert('Problems sending mass mailing: ' + content.errors);
+			}
+			else if (content.status === 1){
+				window.location.replace(content.redirect_uri);
+			}
+			else { 
+				alert('something is very wrong');
+			}
+		}
+	});
+	
+	
 }
 
 function update_scheduled_mass_mailings_options() {

@@ -180,8 +180,7 @@ sub setup {
 		'preview_draft'                   => \&preview_draft, 
         'delete_drafts'                   => \&delete_drafts,
         'create_from_stationery'          => \&create_from_stationery,
-       # 'message_body_help'               => \&message_body_help,
-        #'url_message_body_help'           => \&url_message_body_help,
+		'mass_send_schedule_as_draft'     => \&mass_send_schedule_as_draft, 
         'preview_message_receivers'       => \&preview_message_receivers,
         'sending_monitor'                 => \&sending_monitor,
         'print_mass_mailing_log'          => \&print_mass_mailing_log,
@@ -2426,6 +2425,9 @@ sub delete_drafts {
 
 }
 
+
+
+
 sub create_from_stationery {
 
     my $self = shift;
@@ -2453,34 +2455,44 @@ sub create_from_stationery {
 
 }
 
-#sub message_body_help {
-#
-#    my $self = shift;
-#    my $q    = $self->query();
-#
-#    my ( $admin_list, $root_login, $checksout, $error_msg ) =
-#      check_list_security( -cgi_obj => $q, );
-#    if ( !$checksout ) { return $error_msg; }
-#
-#    my $body = DADA::Template::Widgets::screen(
-#        { -screen => 'send_email_message_body_help_widget.tmpl', } );
-#    return $body;
-# }
-#sub url_message_body_help {
-#
-#    my $self = shift;
-#    my $q    = $self->query();
-#
-#    my ( $admin_list, $root_login, $checksout, $error_msg ) =
-#      check_list_security( -cgi_obj => $q );
-#    if ( !$checksout ) { return $error_msg; }
-#    return (
-#        {},
-#        DADA::Template::Widgets::screen(
-#            { -screen => 'send_url_email_message_body_help_widget.tmpl', }
-#        )
-#    );
-#}
+
+sub mass_send_schedule_as_draft { 
+    
+	my $self = shift;
+    my $q    = $self->query();
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+      check_list_security( -cgi_obj => $q, );
+    if ( !$checksout ) { return $error_msg; }
+
+    my $list     = $admin_list;
+    my $draft_id = $q->param('draft_id');
+	
+	require DADA::MailingList::Schedules; 
+	my $dmls = DADA::MailingList::Schedules->new({-list => $list});
+	
+	my $r = $dmls->mass_send_schedule_as_draft(
+		{ 
+			-id   => $draft_id,
+			-list => $list,
+		}
+	);
+	
+	
+	# This is usually done by an AJAX call, 
+	# so we want a JSON doc back. 
+	# If everything checks out, JS will do a redirect: 
+	# 
+    require JSON;
+    my $json = JSON->new->allow_nonref;
+
+    $self->header_props( -type => 'application/json' );
+    return $json->encode($r);
+	
+}
+
+
+
 
 sub preview_message_receivers {
 
