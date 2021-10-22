@@ -3492,10 +3492,6 @@ sub resize_images {
 
 sub resized_image_entity {
 	
-	# I think there's a problem with the filename and escaping strange characters. For example, this may fail: 
-	# <image007.jpg@01D7BC7D.50CFD290>
-	# We need to remove the <'s and >'s, at the very least. 
-	
     warn 'in resized_image_entity' 
 		if $t;
 
@@ -3534,11 +3530,23 @@ sub resized_image_entity {
       . 'images';
 
     create_dir($image_upload_dir);
+	# Is it writable? Being overly cautious, here:
+	unless(-w $image_upload_dir){ 
+		warn "can't write into, " . $image_upload_dir; 
+		 return $entity;
+	}
+
 
     my $resized_image_upload_dir = $image_upload_dir . '/' . 'tmp_resized';
-
+	
     create_dir($resized_image_upload_dir);
-
+	
+	# Is it writable? Being overly cautious, here:
+	unless(-w $resized_image_upload_dir){ 
+		warn "can't write into, " . $resized_image_upload_dir; 
+		 return $entity;
+	}
+	
     my $og_saved_fn =
       new_image_file_path( uriescape($og_fn), $resized_image_upload_dir );
 
@@ -3547,20 +3555,33 @@ sub resized_image_entity {
 
     $og_saved_fn = make_safer($og_saved_fn);
 
-    if ( defined $entity->bodyhandle ) {
-
-        warn '$entity->bodyhandle defined'
-          if $t;
-
-        require File::Slurper;
-        File::Slurper::write_binary( $og_saved_fn,
-            $entity->bodyhandle->as_string );
-    }
-    else {
-        warn '$entity->bodyhandle NOT defined'
-          if $t;
-    }
-
+	# again, overly cautious: 
+	my $saved_file = 1; 
+	try { 
+	    if ( defined $entity->bodyhandle ) {
+	        warn '$entity->bodyhandle defined'
+	          if $t;
+			  
+	        require File::Slurper;
+	        File::Slurper::write_binary( $og_saved_fn, $entity->bodyhandle->as_string );
+			$saved_file = 1; 
+	    
+		}
+	    else {
+	        warn '$entity->bodyhandle NOT defined'
+	          if $t;
+			  $saved_file = 0; 
+	    }
+	} catch { 
+		warn $_; 
+		$saved_file = 0; 
+	};
+	if($saved_file == 0){ 
+		warn 'problems saving file, ' . $og_saved_fn; 
+		return $entity; 
+	}
+	
+	
     require DADA::App::ResizeImages;
     my ( $rs_status, $rs_path, $rs_width, $rs_height ) =
       DADA::App::ResizeImages::resize_image(
@@ -3578,25 +3599,48 @@ sub resized_image_entity {
       if $t;
     warn '$rs_height: ' . $rs_height
       if $t;
-
+	
 	if($rs_status == 1){
 		
-	    my $n_entity = new MIME::Entity->build(
-	        Path        => $rs_path,
-	        Encoding    => 'base64',
-	        Disposition => "inline",
-	        Type        => $type,
-	        Filename    => uriescape($og_fn),
-	        Id          => $entity->head->get('content-id'),
-	    );
+		my $n_entity = undef; 
+		
+		# Super overly cautious: 
+		my $new_entity_created = undef; 
+	    try {
+			
+			$n_entity = new MIME::Entity->build(
+		        Path        => $rs_path,
+		        Encoding    => 'base64',
+		        Disposition => "inline",
+		        Type        => $type,
+		        Filename    => uriescape($og_fn),
+		        Id          => $entity->head->get('content-id'),
+		    );
+			
+			$new_entity_created = 1; 
 
+		} catch { 
+			
+			warn 'problem creating new entity for resized image: ' . $_; 
+			$new_entity_created = 0; 
+		
+		};
+		
 	    push( @{ $self->{tmp_files_to_delete} }, $og_saved_fn );
 	    push( @{ $self->{tmp_files_to_delete} }, $rs_path );
-
-	    return $n_entity;
+		
+		if($new_entity_created == 1){ 
+			return $n_entity;
+		}
+		else { 
+			warn 'could not build new entity for resized image'; 
+			return $entity; 
+		}
 	}
 	else { 
 
+		warn 'could not build new entity for resized image'; 
+		
 	    push( @{ $self->{tmp_files_to_delete} }, $og_saved_fn );
 	    push( @{ $self->{tmp_files_to_delete} }, $rs_path );
 		
