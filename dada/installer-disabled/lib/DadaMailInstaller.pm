@@ -1304,7 +1304,7 @@ sub grab_former_config_vals {
         
 		# I'm not sure why I want explicitly, "1" or, "anything else" but here you go: 
 		
-		if (defined($BootstrapConfig::SHOW_ADMIN_LINK == 1 )) {
+		if (defined($BootstrapConfig::SHOW_ADMIN_LINK)) {
 			if ( $BootstrapConfig::SHOW_ADMIN_LINK == 1 ) {
 	            $opt->{'security_no_show_admin_link'} = 0;
 	        }
@@ -1312,6 +1312,18 @@ sub grab_former_config_vals {
 	            $opt->{'security_no_show_admin_link'} = 1;			
 	        }
 		}
+
+		
+		if (defined($BootstrapConfig::LIST_PASSWORD_RESET)) {
+			if ( $BootstrapConfig::LIST_PASSWORD_RESET == 1 ) {
+	            $opt->{'security_disable_list_password_reset'} = 0;
+	        }
+	        else {
+	            $opt->{'security_disable_list_password_reset'} = 1;			
+	        }
+		}	
+			
+		
 		
 		if(defined($BootstrapConfig::DISABLE_OUTSIDE_LOGINS)){
 			$opt->{'security_DISABLE_OUTSIDE_LOGINS'} = $BootstrapConfig::DISABLE_OUTSIDE_LOGINS;
@@ -1813,6 +1825,8 @@ sub query_params_to_install_params {
 
       configure_security
       security_no_show_admin_link
+	  security_disable_list_password_reset
+	  
       security_DISABLE_OUTSIDE_LOGINS
       security_ADMIN_FLAVOR_NAME
       security_SIGN_IN_FLAVOR_NAME	  
@@ -2752,14 +2766,28 @@ sub create_dada_config_file {
     my $security_params = {};
     if ( $ip->{-configure_security} == 1 ) {
         $security_params->{configure_security} = 1;
+		
 		# Switcheroo
-        if ( $ip->{-security_no_show_admin_link} == 1 ) {
+        
+		if ( $ip->{-security_no_show_admin_link} == 1 ) {
             $security_params->{security_SHOW_ADMIN_LINK} = 0;
         }
         else {
             $security_params->{security_SHOW_ADMIN_LINK} = 1;
         }
-        $security_params->{security_DISABLE_OUTSIDE_LOGINS} =
+        
+		
+		if ( $ip->{-security_disable_list_password_reset} == 1 ) {
+            $security_params->{security_LIST_PASSWORD_RESET} = 0;
+        }
+        else {
+            $security_params->{security_LIST_PASSWORD_RESET} = 1;
+        }
+        
+		
+		
+		
+		$security_params->{security_DISABLE_OUTSIDE_LOGINS} =
           clean_up_var( $ip->{-security_DISABLE_OUTSIDE_LOGINS} );
         if ( length( $ip->{-security_ADMIN_FLAVOR_NAME} ) > 0 ) {
             $security_params->{security_ADMIN_FLAVOR_NAME} = clean_up_var( $ip->{-security_ADMIN_FLAVOR_NAME} );

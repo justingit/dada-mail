@@ -180,6 +180,7 @@ GOOGLE_MAPS_API_PARAMS_api_key                => $DADA::Config::GOOGLE_MAPS_API_
 PII_OPTIONS_ip_address_logging_style          => $DADA::Config::PII_OPTIONS->{ip_address_logging_style}, 
 PII_OPTIONS_allow_logging_emails_in_analytics => $DADA::Config::PII_OPTIONS->{allow_logging_emails_in_analytics}, 
 
+LIST_PASSWORD_RESET                           => $DADA::Config::LIST_PASSWORD_RESET,
 
 
 

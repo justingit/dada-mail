@@ -155,17 +155,6 @@
 		<!-- tmpl_if expr="(draft_role eq 'schedule')" -->
 			
 			
-			<li>
-				<input 
-					type="submit"
-					class="button small warning schedule_send_as_mass_mailing" 
-					name="process" 
-					id="submit_mass_mailing"
-					data-save_draft_role="schedule"
-					value="Send Mass Mailing Now"
-				>
-			</li>
-			
 			
 			<li>
 				<input
@@ -188,6 +177,19 @@
 			</li>
 			
 			<li>
+				<input 
+					type="submit"
+					class="button small warning schedule_send_as_mass_mailing" 
+					name="process" 
+					id="submit_mass_mailing"
+					data-save_draft_role="schedule"
+					value="Send Mass Mailing Now"
+				>
+			</li>
+			
+			
+			
+			<li>
 				<input
 					type="submit"
 					class="button small success save_msg"
@@ -196,6 +198,9 @@
 					value="Save Schedule"
 				>
 			</li>
+			
+			
+		
 		<!-- /tmpl_if -->
 	<!-- /tmpl_if --> 
 </ul> 

@@ -13579,6 +13579,12 @@ sub email_password {
     my $self = shift;
     my $q    = $self->query();
 		
+	if($DADA::Config::LIST_PASSWORD_RESET == 0){
+		return $self->status_405(); 
+	}
+	
+		
+		
 	if($q->request_method() =~ m/POST/i){
 		return $self->post_email_password(); 
 	}
@@ -13603,6 +13609,11 @@ sub email_password {
 sub post_email_password {
 
     my $self = shift;
+	
+	if($DADA::Config::LIST_PASSWORD_RESET == 0){
+		return $self->status_405(); 
+	}
+	
     my $q    = $self->query();
     my $list = $q->param('list');
 

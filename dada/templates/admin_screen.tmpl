@@ -43,66 +43,72 @@
 						</div>
 					<!-- /tmpl_if --> 
 					
+					
 					<!-- tmpl_if expr="(error eq 'invalid_password')" -->
 						<div class="alert-box alert radius">
-							Invalid Password. Please try logging in again, 
+							Invalid Password. Please try logging in again,
+						<!-- tmpl_if LIST_PASSWORD_RESET -->
 							or reset the List Password below:
-						</div>
-						<form 
-							action="<!-- tmpl_var S_PROGRAM_URL -->" 
-							method="post" 
-							accept-charset="<!-- tmpl_var HTML_CHARSET -->"
-						> 
-						<input 
-							type="hidden" 
-							name="flavor" 
-							value="email_password"
-						>
-						<input 
-							type="hidden" 
-							name="list" 
-							value="<!-- tmpl_var selected_list -->"
-						>
-				
-						<div clas="row">
-							<div class="small-12 columns">							 	
-							    <!-- tmpl_if invalid_captcha --> 
-						            <div class="alert-box info radius"> 
-						    			reCAPTCHA failed, please try again:
-						    		</div> 
-						        <!-- /tmpl_if -->
-							</div>
-						</div> 
-				
-						<!-- tmpl_if can_use_Google_reCAPTCHA_v2 --> 
-							<div class="form-group">
-								<div 
-									class="g-recaptcha" 
-									id="reset_pass_gr"
-								></div>
-							</div>
 						<!-- /tmpl_if --> 
-				
-						<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->			
+						</div>
+						<!-- tmpl_if LIST_PASSWORD_RESET -->
+							<form 
+								action="<!-- tmpl_var S_PROGRAM_URL -->" 
+								method="post" 
+								accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+							> 
 							<input 
-								type="hidden"
-								id="g-recaptcha-response_reset_pass"
-								class="g-recaptcha-response"
-								name="g-recaptcha-response"
+								type="hidden" 
+								name="flavor" 
+								value="email_password"
 							>
-						<!-- /tmpl_if -->
-						
+							<input 
+								type="hidden" 
+								name="list" 
+								value="<!-- tmpl_var selected_list -->"
+							>
+				
 							<div clas="row">
-								<div class="small-12 columns">
-									<input 
-										type="submit" 
-										class="warning button expand"
-										value="Reset List Password"
-									>
+								<div class="small-12 columns">							 	
+								    <!-- tmpl_if invalid_captcha --> 
+							            <div class="alert-box info radius"> 
+							    			reCAPTCHA failed, please try again:
+							    		</div> 
+							        <!-- /tmpl_if -->
 								</div>
-							</div> 			
-						</form>	
+							</div> 
+				
+							<!-- tmpl_if can_use_Google_reCAPTCHA_v2 --> 
+								<div class="form-group">
+									<div 
+										class="g-recaptcha" 
+										id="reset_pass_gr"
+									></div>
+								</div>
+							<!-- /tmpl_if --> 
+				
+							<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->			
+								<input 
+									type="hidden"
+									id="g-recaptcha-response_reset_pass"
+									class="g-recaptcha-response"
+									name="g-recaptcha-response"
+								>
+							<!-- /tmpl_if -->
+								<div clas="row">
+									<div class="small-12 columns">
+										<input 
+											type="submit" 
+											class="warning button expand"
+											value="Reset List Password"
+										>
+									</div>
+								</div> 	
+							</form>	
+						<!-- /tmpl_if -->
+					
 					<!-- /tmpl_if -->
+						
 					
 					<!-- tmpl_if expr="(error eq 'invalid_login')" -->
 						<div class="alert-box alert radius">
