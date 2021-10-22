@@ -3,6 +3,49 @@
 
 =encoding utf-8
 
+=head1 11.17.0
+
+
+=head2 Features
+
+=head3 Only one mailing list? The default screen is now the List's screen
+
+Dada Mail supports an arbitrary number of lists, but many people just run one mailing list. 
+If this is the case, Dada Mail will show on the default screen what it usually shows in the list's own screen. 
+This saves user's a click to view relevant information of this one list. 
+
+=head3 Multiple mailing lists? Subscription buttons for each mailing list
+
+If you're running Dada Mail with multiple mailing lists, a button to allow a user to subscribe to each mailing list will be available. 
+
+=head3 Schedule Mass Mailings now have an option to send right away
+
+There's a few instances where you have a scheduled mass mailing, and you would like to just send that mass mailing right away. 
+Now you can!
+
+=head3 Periodic Login/Session Status Check 
+
+Dada Mail now will check your login/session status periodically (every 5 minutes) to make sure it's valid. 
+If it's not, you'll be automatically logged out.  
+
+=head3 New option to show/hide a subscription form in the default, list, and archive screens
+
+If you don't want to show a subscription form in your default/list/archives screens, now you don't have to. 
+This option is per-list, find it in Mailing List: Options. 
+
+=head3 plugin: password_protect_directories - option to always use the default passowrd
+
+=head3 Custom email themes are now automatically kept during upgrading
+
+
+=head2 Changes
+
+The thing with the mailing monitor and down, but not finished(?!) mass mailing being put farther down the queue
+
+=head3 plugin: password_protect_directories works (again)
+
+This plugin seemed broken beyond all comprehension. It should work, again!
+
 =head1 11.16.3
 
 =head2 Focus 
