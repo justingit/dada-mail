@@ -735,10 +735,6 @@ sub default {
 		-return_hidden_lists => 0,
 	);
 
-	warn '$only_on_list_check[0]: ' . $only_on_list_check[0]; 
-	warn '$#only_on_list_check' . $#only_on_list_check; 
-
-	
 	if( $#only_on_list_check == 0 ){ 
 		$q->param('flavor', 'list');
 		$q->param('list', $only_on_list_check[0]);

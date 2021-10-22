@@ -2414,21 +2414,20 @@ sub upgrade_tables {
 	
 
 
-    # dada_privacy_policies_table
+    # password_protect_directories_table
     my $table_cols = table_cols( $dbh, 'password_protect_directories_table' );
     if ( exists( $table_cols->{always_use_default_password} ) ) {
-		warn 'yes!';
+		
         # good to go.
     }
     else {
-		warn 'no.';
 		
 		my $query =
 			'ALTER TABLE '
 			. $DADA::Config::SQL_PARAMS{password_protect_directories_table}
 			. ' ADD always_use_default_password char(1)';
 
-			warn '$query: ' . $query; 
+			# warn '$query: ' . $query; 
 			
         my $sth = $dbh->do($query)
           or croak $dbh->errstr;

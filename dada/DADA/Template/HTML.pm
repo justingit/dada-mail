@@ -891,7 +891,7 @@ sub list_template {
 				# I don't know why you have to all this atm
 				load_colorbox        => 1, 
 				load_captcha_js      => 1, 
-				load_lity            => 1,
+				#load_lity            => 1,
 				include_jquery_lib   =>  $header_options->{include_jquery_lib},
                 include_app_user_js  =>  $header_options->{include_app_user_js},
                 add_app_css          =>  $header_options->{add_app_css},
