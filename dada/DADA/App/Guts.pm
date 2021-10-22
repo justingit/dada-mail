@@ -3820,7 +3820,9 @@ sub new_image_file_path {
 	my $limit        = 100; 
 	my $tries        = 0; 
 	
-	
+	$path =~ s/\/$//;
+	$fn   =~ s/^\///;
+	 
 	if (! -e $path . '/' . $fn ) {
 		
 		# It's unique already!

@@ -140,7 +140,7 @@ sub resize_image_via_Image_Scale {
 
             my ( $u_path, $u_filename ) = path_and_file( $args->{-file_path} );
             my $new_file_path =
-              new_image_file_path('resized-' . $u_filename,  $u_path );
+            new_image_file_path('resized-' . $u_filename,  $u_path );
             make_safer($new_file_path);
 
             my $h   = $img->height;
@@ -166,8 +166,12 @@ sub resize_image_via_Image_Scale {
                 $img->save_png($new_file_path);
             }
 
-            return ( 1, $new_file_path, $n_w, $n_h );
-
+			if(-e $new_file_path){ 
+				return ( 1, $new_file_path, $n_w, $n_h );
+			}
+			else { 
+				return ( 0, undef, undef, undef );
+			}
         }
         else {
             return ( 0, $args->{-file_path}, $img->width, $img->height );
@@ -228,9 +232,13 @@ sub resize_image_via_Image_Resize {
             elsif ( $u_filename =~ m/\.(png)$/ ) {
 		        File::Slurper::write_binary( $new_file_path, $gd->png() );
             }
-
-            return ( 1, $new_file_path, $n_w, $n_h );
-
+			
+			if(-e $new_file_path){ 
+				return ( 1, $new_file_path, $n_w, $n_h );
+			}
+			else { 
+				return ( 0, undef, undef, undef );
+			}
         }
         else {
             return ( 0, $args->{-file_path}, $img->width, $img->height );
@@ -308,8 +316,13 @@ sub resize_image_via_Image_Magick {
 			my $error = $img->Write($new_file_path); 
 			die $error if $error; 
 			undef $error; 
-			
-            return ( 1, $new_file_path, $n_w, $n_h );
+						
+			if(-e $new_file_path){ 
+				return ( 1, $new_file_path, $n_w, $n_h );
+			}
+			else { 
+				return ( 0, undef, undef, undef );
+			}
 
         }
         else {

@@ -5,6 +5,10 @@ use lib qw(
   ../../
   ../../DADA/perllib
 );
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
 
 use DADA::Config qw(!:DEFAULT);
 
@@ -3492,8 +3496,8 @@ sub resized_image_entity {
 	# <image007.jpg@01D7BC7D.50CFD290>
 	# We need to remove the <'s and >'s, at the very least. 
 	
-	
-    warn 'in resized_image_entity' if $t;
+    warn 'in resized_image_entity' 
+		if $t;
 
     my $self   = shift;
     my $entity = shift;
@@ -3575,20 +3579,29 @@ sub resized_image_entity {
     warn '$rs_height: ' . $rs_height
       if $t;
 
-    my $n_entity = new MIME::Entity->build(
-        Path        => $rs_path,
-        Encoding    => 'base64',
-        Disposition => "inline",
-        Type        => $type,
-        Filename    => uriescape($og_fn),
-        Id          => $entity->head->get('content-id'),
-    );
+	if($rs_status == 1){
+		
+	    my $n_entity = new MIME::Entity->build(
+	        Path        => $rs_path,
+	        Encoding    => 'base64',
+	        Disposition => "inline",
+	        Type        => $type,
+	        Filename    => uriescape($og_fn),
+	        Id          => $entity->head->get('content-id'),
+	    );
 
-    push( @{ $self->{tmp_files_to_delete} }, $og_saved_fn );
-    push( @{ $self->{tmp_files_to_delete} }, $rs_path );
+	    push( @{ $self->{tmp_files_to_delete} }, $og_saved_fn );
+	    push( @{ $self->{tmp_files_to_delete} }, $rs_path );
 
-    return $n_entity;
+	    return $n_entity;
+	}
+	else { 
 
+	    push( @{ $self->{tmp_files_to_delete} }, $og_saved_fn );
+	    push( @{ $self->{tmp_files_to_delete} }, $rs_path );
+		
+		return $entity; 
+	}
 }
 
 sub tweak_image_size_attrs {

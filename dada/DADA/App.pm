@@ -1600,13 +1600,22 @@ sub drag_and_drop_file_upload {
 				}	
 			);
 
-            $message = 'Image resized and saved at, ' . $rs_path;
+
+			if($rs_status == 1){ 
+							
+	            $message = 'Image resized and saved at, ' . $rs_path;
 			
-			my ($n_filepath, $n_filename) = path_and_file($rs_path);				
+				my ($n_filepath, $n_filename) = path_and_file($rs_path);				
 			
-			$n_filename = uriescape($n_filename);
+				$n_filename = uriescape($n_filename);
 			
-            return ( 1, $message, $n_filename, $rs_width, $rs_height );	
+	            return ( 1, $message, $n_filename, $rs_width, $rs_height );	
+			}
+			else { 
+				# No Resize
+				$filename = uriescape($filename);
+		        return ( 1, $message, $filename );
+			}
         } 
 		else { 
 		
