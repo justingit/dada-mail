@@ -254,6 +254,7 @@ jQuery(document).ready(function($){
 			// I think that's a little weird, but that's how it's been done! 
 			var confirm_msg = "Send Mass Mailing?\nThis schedule and its options will remain unchanged for any later scheduled mailings.";
 			if (!confirm(confirm_msg)) {
+				$("#button_action_notice").html('');
 				return false;
 			} else {
 				$("#save_draft_role").val($(this).attr("data-save_draft_role"));
@@ -5481,6 +5482,8 @@ function SetUrl(url, width, height, alt) {
 
 function admin_check_login_status(screen_name) {
 	
+	//console.log('admin_check_login_status');
+	
 	if (
 		   $("#installer_configure_dada_mail").length 
 		|| $("#install_or_upgrade").length 
@@ -5497,11 +5500,14 @@ function admin_check_login_status(screen_name) {
 		var r = 60 * 1000 * 5; // every 5 minutes
 		var the_screen_name = screen_name;
 		setTimeout(function() { cls_refresh_loop(flavor) }, r);
+		//console.log('set the timeout for, ' + r);
 	} 
 }
 
 function cls_refresh_loop(screen_name) {
 		
+	// console.log('in, cls_refresh_loop');
+	
 	// we can do other checks, like: is the session cookie around? 
 	var crsf_cookie = $.cookie("_csrf_token"); 
 	if (typeof crsf_cookie !== 'undefined') {
@@ -5524,10 +5530,26 @@ function cls_refresh_loop(screen_name) {
 			screen: screen_name
 		},
 		success: function(content) {
+			
+			// console.log('request is successful');
+			
 			if (content.status === 1){ 
-				// then do nothing!
+
+				// console.log('status is 1');
+				
+				// console.log('do_updates:' + do_updates);
+				if (do_updates == 0){
+					//
+				} else {
+					
+					//console.log('and again!');
+		
+					admin_check_login_status(screen_name);
+				}
+
 			}
 			else { 
+				// console.log('status is 0');
 				alert("session has expired - logging out.");
 				do_updates = 0; 
 				window.location.href = $.url('protocol') + '://' + $.url('hostname') + $.url('path');
@@ -5538,11 +5560,6 @@ function cls_refresh_loop(screen_name) {
 		}
 	});
 
-	if (do_updates == 0){
-		//
-	} else {
-		admin_check_login_status(screen_name);
-	}
 }
 
 
