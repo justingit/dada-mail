@@ -971,11 +971,11 @@ sub sign_in {
                         -Use_Custom => 0,
                     },
                     -vars => {
-                        flavor_sign_in      => 1,
-                        auth_state          => $auth_state,
-                        login_widget        => 'hidden_field',
-                        selected_list       => $list,
-                        list_password_reset => $list_password_reset,
+                        flavor_sign_in               => 1,
+                        auth_state                   => $auth_state,
+                        login_widget                 => 'hidden_field',
+                        selected_list                => $list,
+                        list_password_has_been_reset => $list_password_reset,
                     },
                     -list_settings_vars_param => {
                         -list   => $list,
