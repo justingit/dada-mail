@@ -186,6 +186,9 @@ The directory holds all the email themes for your installation.
 There should be a directory already present called,
 C<default>. 
 Create a new directory - the name of the directory will become the name of your email theme. 
+We suggest making the new theme name unique. When you upgrade, 
+Dada Mail will look for this unique name, 
+and move over your theme automatically. 
 In this new directory,
 move the C<dist> directory you have compiled. 
 Your theme is now ready to be used! 

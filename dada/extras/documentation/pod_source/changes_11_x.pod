@@ -8,20 +8,21 @@
 
 =head2 Features
 
-=head3 Only one mailing list? The default screen is now the List's screen
+=head3 Only one mailing list? The default screen is now the list screen
 
 Dada Mail supports an arbitrary number of lists, but many people just run one mailing list. 
-If this is the case, Dada Mail will show on the default screen what it usually shows in the list's own screen. 
+If this is the case, Dada Mail will show what is usually shows in the list's own screen on the default screen. 
 This saves user's a click to view relevant information of this one list. 
 
 =head3 Multiple mailing lists? Subscription buttons for each mailing list
 
 If you're running Dada Mail with multiple mailing lists, a button to allow a user to subscribe to each mailing list will be available. 
+This saves the user a screen refresh to subscribe to the actual mailing list. 
 
 =head3 Schedule Mass Mailings now have an option to send right away
 
 There's a few instances where you have a scheduled mass mailing, and you would like to just send that mass mailing right away. 
-Now you can!
+Now you can! Look for the button on the top bar labeled, B<Send Mass Mailing Now> in your schedule mailing. 
 
 =head3 Periodic Login/Session Status Check 
 
@@ -31,20 +32,19 @@ If it's not, you'll be automatically logged out.
 =head3 New option to show/hide a subscription form in the default, list, and archive screens
 
 If you don't want to show a subscription form in your default/list/archives screens, now you don't have to. 
-This option is per-list, find it in Mailing List: Options. 
-
-=head3 plugin: password_protect_directories - option to always use the default passowrd
+This option is per-list, find it in B<Mailing List: Options>. Look for the option labeled, B<Show subscription form>. Any subscription forms that are available to users will still work. 
 
 =head3 Custom email themes are now automatically kept during upgrading
 
+Maintaining a custom email theme can be a chore, but now it's a little easier. If you have a custom email theme, make sure it's name is also something unique to your organization. Now, when you upgrade, your custom theme will be copied over to the new installation automatically. You'll no longer have to do this task manually. 
+
+=head3 plugin: password_protect_directories - option to always use the default password
 
 =head2 Changes
 
-The thing with the mailing monitor and down, but not finished(?!) mass mailing being put farther down the queue
-
 =head3 plugin: password_protect_directories works (again)
 
-This plugin seemed broken beyond all comprehension. It should work, again!
+This plugin seemed broken beyond all comprehension. It should work again!
 
 =head2 Bugfixes
 
@@ -70,6 +70,9 @@ L<https://github.com/justingit/dada-mail/issues/1075>
 
 L<https://github.com/justingit/dada-mail/issues/1073>
 
+=head3 Bridge: Errors with auto image resizing causes message not to be delivered
+
+L<https://github.com/justingit/dada-mail/issues/1072> 
 
 =head1 11.16.3
 
