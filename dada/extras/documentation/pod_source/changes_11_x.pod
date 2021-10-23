@@ -46,6 +46,31 @@ The thing with the mailing monitor and down, but not finished(?!) mass mailing b
 
 This plugin seemed broken beyond all comprehension. It should work, again!
 
+=head2 Bugfixes
+
+=head3 Public archives only viewed when logged in with a profile password fails to work 
+
+L<https://github.com/justingit/dada-mail/issues/1078>
+
+This was a regression caused by the changes introduced in v11.16.x
+
+=head3 Custom templates aren't used if used in a, <!-- tmpl_include --> tag 
+
+L<https://github.com/justingit/dada-mail/issues/1077>
+
+=head3  Clicking, "Manually Run All Scheduled Mass Mailings" in a schedule without first saving this schedule will save it as a draft
+
+L<https://github.com/justingit/dada-mail/issues/1076>
+
+=head3 Scheduled Mailings: Looking at Recurring Schedules Calendar for an unsaved schedule will save the schedule as a draft 
+
+L<https://github.com/justingit/dada-mail/issues/1075>
+
+=head3 Potential hidden profile field data lost from subscription form if submitted from captcha-protected form that doesn't have a captcha
+
+L<https://github.com/justingit/dada-mail/issues/1073>
+
+
 =head1 11.16.3
 
 =head2 Focus 
