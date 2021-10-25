@@ -443,6 +443,12 @@ This option controls whether login information posted to Dada Mail can only be a
 
 More so than any other option, this variable attempts to stop attempts of logging into a list by automated means. 
 
+By default, this option is enabled. 
+
+=head3 Disable List Password Reset 
+
+Dada Mail has support to reset the B<List Password> via a confirmation email. This functionality can be disabled by unchecking this option. 
+
 =head3 Admin Flavor Name
 
 Complementary to B<Hide Administration Link>, B<Admin Flavor Name> allows you to set the URL needed to access the screen that has the form to log into all the mailing lists administrated by Dada Mail and to the form to create a new mailing list. 

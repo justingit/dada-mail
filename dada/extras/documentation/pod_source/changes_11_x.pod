@@ -5,14 +5,17 @@
 
 =head1 11.17.0
 
+=head2 Focus 
+
+This version of Dada Mail has been released with some new features and a few small bug fixes. 
 
 =head2 Features
 
-=head3 Only one mailing list? The default screen is now the list screen
+=head3 Only one mailing list? The default screen is now that list screen
 
 Dada Mail supports an arbitrary number of lists, but many people just run one mailing list. 
 If this is the case, Dada Mail will show what is usually shows in the list's own screen on the default screen. 
-This saves user's a click to view relevant information of this one list. 
+This saves user's a click to view relevant information of that one list. 
 
 =head3 Multiple mailing lists? Subscription buttons for each mailing list
 
@@ -36,7 +39,12 @@ This option is per-list, find it in B<Mailing List: Options>. Look for the optio
 
 =head3 Custom email themes are now automatically kept during upgrading
 
-Maintaining a custom email theme can be a chore, but now it's a little easier. If you have a custom email theme, make sure it's name is also something unique to your organization. Now, when you upgrade, your custom theme will be copied over to the new installation automatically. You'll no longer have to do this task manually. 
+Maintaining a custom email theme can be a chore, but now it's a little easier. If you have a custom email theme, make sure it's name is also something unique to your organization. Now when you upgrade, your custom theme will be copied over to the new installation automatically. You'll no longer have to do this task manually. 
+
+=head3 Disable List Password Reset 
+
+Dada Mail has support to reset the B<List Password> via a confirmation email after an incorrect login. 
+You can now disable this functionality in the Dada Mail Installer. 
 
 =head3 plugin: password_protect_directories - option to always use the default password
 
