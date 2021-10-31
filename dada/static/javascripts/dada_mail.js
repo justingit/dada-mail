@@ -560,13 +560,16 @@ jQuery(document).ready(function($){
 			}).on( 'fileUploadRequest', function( evt ) {
 				
 			
-				
-			evt.data.requestData.flavor = 'image_drag_and_drop';
+			var crsf_cookie = $.cookie("_csrf_token"); 
+			evt.data.requestData.flavor      = 'image_drag_and_drop';
+			evt.data.requestData._csrf_token = crsf_cookie; 
 			
+						
 		 // Copy contents of 'upload' image field to a new field with 'drag_and_dropped_image'
 		    var requestDataObject = evt.data.requestData;
 		    requestDataObject['file_were_uploading']=requestDataObject['upload'];
 		    delete requestDataObject['upload'];
+			
 		}); 
 		
 			CKEDITOR.on('dialogDefinition', function (event) {
