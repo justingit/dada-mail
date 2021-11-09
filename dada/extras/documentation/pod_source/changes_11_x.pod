@@ -3,6 +3,22 @@
 
 =encoding utf-8
 
+=head1 11.17.1
+
+=head2 Focus 
+
+This version of Dada Mail has some minor bug fixes found in the v11.17.0 release of Dada Mail. 
+
+=head2 Bugfixes
+
+=head3 Image Drag and Drop into the message editor window will invalidate the session 
+
+L<https://github.com/justingit/dada-mail/issues/1079>
+
+=head3 Core5FileManager does not work with current CSRF enhancements
+
+L<https://github.com/justingit/dada-mail/issues/1080>
+
 =head1 11.17.0
 
 =head2 Focus 
