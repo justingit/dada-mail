@@ -3029,6 +3029,9 @@ sub slurp {
 
 }
 
+
+
+
 sub grab_url {
 
 	# DEV: time to return a hashref, I'm thinking. 
@@ -3036,7 +3039,7 @@ sub grab_url {
     my $url = $args->{-url}; 
     
     try {
-        require LWP;
+        require LWP::Protocol::Net::Curl;;
     }
     catch {
         carp "LWP not installed?" . $_
@@ -3049,12 +3052,12 @@ sub grab_url {
 	    }
     };
 
-    require LWP;
+    use LWP::Protocol::Net::Curl;
     require LWP::UserAgent;
     require HTTP::Message;
 
     my $ua = LWP::UserAgent->new;
-       $ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' );
+    $ua->agent( 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:94.0) Gecko/20100101 Firefox/94.0' );
 
     if ( can_use_compress_zlib() == 1 ) {
         my $can_accept = HTTP::Message::decodable();
