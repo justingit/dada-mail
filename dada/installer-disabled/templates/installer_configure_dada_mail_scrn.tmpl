@@ -1597,7 +1597,65 @@
 
 		<!-- /tmpl_if --> 
 
+		
+		<label for="configure_www_engine">
+			<input 
+				type="checkbox" 
+				name="configure_www_engine" 
+				id="configure_www_engine" 
+				value="1"
+			>			
+			Configure WWW Engine
+		</label>
 
+		<div id="www_engine_options">
+			<div class="panel"> 
+		
+				<div class="row">
+					<div class="small-12 columns">	
+						<label for="www_engine_options_www_engine">
+							WWW Engine
+						</label>
+					</div> 
+				</div> 
+				
+				
+				<div class="row">
+					<div class="small-12 columns">
+						<select name="www_engine_options_www_engine" id="www_engine_options_www_engine"> 
+							<option value="LWP" selected="selected">LWP</option>
+							<option value="curl">curl</option>
+						</select> 
+					</div> 
+				</div>
+				
+				<label  for="www_engine_options_user_agent">
+					User Agent String
+				</label> 
+				<input 
+					type="text"
+					name="www_engine_options_user_agent"
+					id="www_engine_options_user_agent"
+					value=""
+				>
+				
+				<label for="www_engine_options_verify_hostname">
+					<input 
+						type="checkbox" 
+						name="www_engine_options_verify_hostname" 
+						id="www_engine_options_verify_hostname" 
+						value="1"
+						checked="checked"
+					>			
+					Verify Hostname
+				</label>
+				
+				
+			</div> 
+		</div>
+		
+		
+		
 			<label for="configure_mime_tools">
 				<input 
 					type="checkbox" 

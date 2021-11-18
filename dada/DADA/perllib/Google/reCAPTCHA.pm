@@ -66,11 +66,24 @@ sub siteverify {
                     sub { $_[0] =~ /^$IPv4_re$/ || $_[0] =~ /^$IPv6_re$/ }
             },
         },
-    } );
-    
+        user_agent_obj => {
+            optional  => 1,
+        },		
+    });
+	
+	
     $pd->{secret} = $self->{secret};
     
-    my $ua = LWP::UserAgent->new;
+	my $ua;
+	
+	if(exists($pd->{user_agent_obj})){ 
+		$ua = $pd->{user_agent_obj};
+	}
+	else { 
+		$ua = LWP::UserAgent->new;
+	}
+	
+    
     $ua->ssl_opts( verify_hostname => 0 );
 
     my $response = $ua->post( URL , $pd );

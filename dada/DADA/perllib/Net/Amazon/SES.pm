@@ -26,6 +26,7 @@ our @EXPORT = qw();
 use Digest::SHA qw (hmac_sha1_base64 hmac_sha256_base64 sha256);
 use URI::Escape qw (uri_escape_utf8);
 use LWP;
+# I don't know if you need this - although it would throw an error if it's not found (I may remove)
 use LWP::Protocol::https;
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
@@ -128,6 +129,7 @@ sub reset_browser {
         carp "creating a new browser";
     }
     my $browser = LWP::UserAgent->new(
+		# Hmm! 
         agent      => "SES-Perl-$tools_version/$service_version",
         keep_alive => 5,
     );

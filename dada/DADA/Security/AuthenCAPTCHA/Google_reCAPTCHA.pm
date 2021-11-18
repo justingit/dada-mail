@@ -55,8 +55,9 @@ sub check_answer {
 		
 			# Verifying the user's response 
 			my $success = $c->siteverify( 
-				response => $response, 
-				remoteip => $remoteip,
+				response       => $response, 
+				remoteip       => $remoteip,
+				user_agent_obj => make_ua(),
 			);
 			if( $success ) {
 			    $result->{is_valid} = 1;

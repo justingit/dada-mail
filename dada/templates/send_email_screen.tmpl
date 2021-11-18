@@ -80,13 +80,15 @@
 	
 	<div id="entire_form">
 		<div id="form_widgets"> 	
-			<!-- tmpl_unless can_use_lwp_simple -->
+			<!-- tmpl_unless can_use_www_engine -->
 				<div class="alert-box alert radius">
 					<p>
-						Disabled. The 'LWP' Perl Library needs to be installed. More information below: 
+						Disabled. 
+						The 'LWP' or 'LWP::Protocol::Net::Curl' Perl Library needs to be installed. 
+						More information below: 
 					</p>
 					<code> 
-						<!-- tmpl_var lwp_simple_error --> 
+						<!-- tmpl_var www_engine_error --> 
 					</code> 
 				</div> 
 			<!-- tmpl_else-->

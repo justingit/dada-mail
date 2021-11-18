@@ -16,7 +16,7 @@ use Try::Tiny;
 use Fcntl qw(
 O_WRONLY 
 O_TRUNC 
-O_CREAT 
+O_CREAT
 O_RDWR
 O_RDONLY
 LOCK_EX
@@ -83,6 +83,7 @@ require Exporter;
   safely_decode
   safely_encode
   slurp
+  make_ua
   grab_url
   scrub_js
   md5_checksum
@@ -3031,33 +3032,54 @@ sub slurp {
 
 
 
+sub make_ua { 
+    
+	my ($www_engine_status, $www_engine_error) = can_use_www_engine(); 
+	if($www_engine_status == 0){ 
+        carp "WWW engine not installed?" . $www_engine_error
+			if $t; 
+		return undef; 
+	}
+   
+	# I don't think I have to do this twice: 
+	if($WWW_ENGINE_OPTIONS->{engine} eq 'curl'){
+		require LWP::Protocol::Net::Curl;
+	    LWP::Protocol::implementor($_ => 'LWP::Protocol::Net::Curl')
+	    for @LWP::Protocol::Net::Curl::implements;
+	}
+	else { 
+		require LWP;
+	}
+	
+    require LWP::UserAgent;
+    my $ua = LWP::UserAgent->new;
+    $ua->agent( $WWW_ENGINE_OPTIONS->{user_agent} );
+	
+	return $ua; 
+	
+}
+
+
+
 
 sub grab_url {
 
 	# DEV: time to return a hashref, I'm thinking. 
     my ($args) = @_; 
     my $url = $args->{-url}; 
-    
-    try {
-        require LWP::Protocol::Net::Curl;;
-    }
-    catch {
-        carp "LWP not installed?" . $_
-			if $t; 
-		if(wantarray){ 
+
+    require HTTP::Message;
+	
+	my $ua = make_ua();
+	
+	if(!defined($ua){ 
+    	if(wantarray){ 
             return (undef, undef, undef, undef); 
         }
         else { 
 		    return undef; 
 	    }
-    };
-
-    use LWP::Protocol::Net::Curl;
-    require LWP::UserAgent;
-    require HTTP::Message;
-
-    my $ua = LWP::UserAgent->new;
-    $ua->agent( 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:94.0) Gecko/20100101 Firefox/94.0' );
+	}
 
     if ( can_use_compress_zlib() == 1 ) {
         my $can_accept = HTTP::Message::decodable();
@@ -3200,6 +3222,27 @@ sub can_use_LWP_Simple {
 	return $can_use_lwp_simple;
 }
 
+
+sub can_use_www_engine { 
+
+	my $can_use_www_engine = 1; 
+	my $error              = undef;
+    try {
+
+		if($WWW_ENGINE_OPTIONS->{engine} eq 'curl'){
+			require LWP::Protocol::Net::Curl;
+		}
+		else { 
+			require LWP;
+		}
+    }
+    catch {
+		$can_use_www_engine = 0;
+		$error              = $_;  
+	};
+	return ($can_use_www_engine, $error); 
+}
+
 sub can_use_Google_reCAPTCHA { 
 	
 	if($DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} eq 'v2'){
@@ -3335,9 +3378,10 @@ sub validate_recaptcha {
         && length( $DADA::Config::RECAPTCHA_PARAMS->{v3}->{score_threshold} ) > 0 )
     {
         require Google::reCAPTCHA::v3;
-        my $rec = Google::reCAPTCHA::v3->new(
+		my $rec = Google::reCAPTCHA::v3->new(
             {
-                -secret => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key},
+                -secret         => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key},
+				-user_agent_obj => make_ua(), 
             }
         );
         my $r = $rec->request(

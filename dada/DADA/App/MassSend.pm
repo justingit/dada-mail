@@ -1270,19 +1270,6 @@ sub send_email {
     }
 
     my $li = $self->{ls_obj}->get( -all_settings => 1 );
-
-	my $can_use_lwp_simple = 0;
-	my $lwp_simple_error   = undef; 
-	eval { require LWP::Simple };
-    if ( !$@ ) {
-        $can_use_lwp_simple = 1;
-    }
-    else {
-        $lwp_simple_error = $@;
-    }
-
-	# end lwp simple stuff
-
     my $naked_fields = $self->{lh_obj}->subscriber_fields( { -dotted => 0 } );
     my $fields = [];
 
@@ -1386,7 +1373,9 @@ sub send_email {
 			. commify($self->{ls_obj}->param('test_list_address_limit')) 
 			. ' address(es)'; 
 		}
-
+		
+		my ($can_use_www_engine, $www_engine_error) = can_use_www_engine(); 
+		
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'send_email_screen.tmpl',
@@ -1432,10 +1421,11 @@ sub send_email {
 					rich_filemanager_url        => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{url},
                     rich_filemanager_upload_dir => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{upload_dir},
                     rich_filemanager_upload_url => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{upload_url},
+
+					can_use_www_engine         => $can_use_www_engine, 
+                    www_engine_error           => $www_engine_error,
 					
-                    can_use_lwp_simple         => $can_use_lwp_simple,
 					can_use_XML_FeedPP         => scalar can_use_XML_FeedPP(),
-                    lwp_simple_error           => $lwp_simple_error,
                     
 					can_display_attachments    => $self->{ah_obj}->can_display_attachments,
                     SERVER_ADMIN               => $ENV{SERVER_ADMIN},

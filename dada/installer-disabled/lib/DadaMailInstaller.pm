@@ -1,6 +1,10 @@
 #!/usr/bin/perl 
 package DadaMailInstaller;
+
+
+use CGI::Carp qw(fatalsToBrowser);
 use base 'CGI::Application';
+
 
 my $installer_error_log = './installer_errors.txt';
 BEGIN {
@@ -1506,6 +1510,30 @@ sub grab_former_config_vals {
               $BootstrapConfig::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage};
         }
     }
+	
+	if(keys %$BootstrapConfig::WWW_ENGINE_OPTIONS){ 
+		
+		$opt->{'configure_www_engine'} = 1; 
+
+        $opt->{'www_engine_options_www_engine'} 
+			= $BootstrapConfig::WWW_ENGINE_OPTIONS->{engine};
+        $opt->{'www_engine_options_user_agent'} 
+			= $BootstrapConfig::WWW_ENGINE_OPTIONS->{user_agent};
+        $opt->{'www_engine_options_verify_hostname'} 
+			= $BootstrapConfig::WWW_ENGINE_OPTIONS->{verify_hostname};
+		
+	}
+	else { 
+		$opt->{'configure_www_engine'} = 0; 
+
+        $opt->{'www_engine_options_www_engine'} 
+			= 'LWP';
+        $opt->{'www_engine_options_user_agent'} 
+			= 'Mozilla/5.0 (compatible; ' . $DADA::Config::PROGRAM_NAME . ')';
+        $opt->{'www_engine_options_verify_hostname'} 
+			= 1;
+	
+	}
 	
 	if(keys %$BootstrapConfig::MIME_TOOLS_PARAMS){ 
 		
