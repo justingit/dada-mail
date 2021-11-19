@@ -4808,7 +4808,7 @@ sub test_can_use_SQLite {
 }
 
 sub test_can_use_CAPTCHA_Google_reCAPTCHA_v2 {
-    eval { require Google::reCAPTCHA; };
+    eval { require DADA::App::Support::Google::reCAPTCHA; };
     if ($@) {
         carp $@;
         $Big_Pile_Of_Errors .= $@;
@@ -5115,8 +5115,8 @@ sub cgi_test_CAPTCHA_Google_reCAPTCHA {
     my $captcha = '';
     my $errors  = undef;
     eval {
-        require Google::reCAPTCHA;
-        my $c = Google::reCAPTCHA->new(
+        require DADA::App::Support::Google::reCAPTCHA;
+        my $c = DADA::App::Support::Google::reCAPTCHA->new(
 			secret => $private_key
 		);
     };
