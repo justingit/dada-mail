@@ -79,7 +79,7 @@ sub request {
 	}
 	else { 
 		require LWP::UserAgent;
-		$ua = LWP::UserAgent->new;
+		$ua =   LWP::UserAgent->new;
 	}
 		
 	if(!exists($args->{-response})){ 
@@ -104,8 +104,6 @@ sub request {
 	return $json->decode(
 		$ua->request($req)->decoded_content
 	);
-	
-	#$decoded_json
 	
 }
 
