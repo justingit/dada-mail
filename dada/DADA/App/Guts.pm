@@ -130,6 +130,9 @@ require Exporter;
 	simple_printout_file
   new_image_file_path
   
+  can_use_www_engine
+  
+  
 );
 
 
@@ -3060,7 +3063,7 @@ sub make_ua {
 	
 	if(exists($args->{-keep_alive})){ 
 		$ua = LWP::UserAgent->new(
-		keep_alive => $args->{-keep_alive},
+			keep_alive => $args->{-keep_alive},
 		);
 	}
 	else { 
