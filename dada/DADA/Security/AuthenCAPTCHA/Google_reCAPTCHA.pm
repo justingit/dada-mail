@@ -50,8 +50,8 @@ sub check_answer {
 	}
 	else {
 		try {
-			require Google::reCAPTCHA;
-			my $c = Google::reCAPTCHA->new(
+			require DADA::App::Support::Google::reCAPTCHA;
+			my $c = DADA::App::Support::Google::reCAPTCHA->new(
 				secret =>  $DADA::Config::RECAPTCHA_PARAMS->{v2}->{private_key},
 			);
 		
