@@ -16521,9 +16521,8 @@ sub contact_mothership {
         require JSON;
         require HTTP::Request;
         require HTTP::Request::Common;
-        require LWP::UserAgent;
 
-        my $ua = LWP::UserAgent->new;
+        my $ua = make_ua(); 
 
         my $json = JSON->new->allow_nonref;
 
