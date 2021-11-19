@@ -140,18 +140,11 @@ sub reset_browser {
         carp "creating a new browser";
     }
 
-    #my $browser = LWP::UserAgent->new(
-	#	# Hmm! 
-    #    agent      => "SES-Perl-$tools_version/$service_version",
-    #    keep_alive => 5,
-    #);
-    #return $browser;
-	
 	return make_ua(
 		{
 			-keep_alive => 5,
 		}
-	) ;
+	);
 }
 
 
