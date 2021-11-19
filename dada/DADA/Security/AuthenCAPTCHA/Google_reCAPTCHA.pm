@@ -5,6 +5,8 @@ use DADA::Config qw(!:DEFAULT);
 use strict; 
 use Carp qw(croak); 
 use Try::Tiny; 
+use DADA::App::Guts; 
+
 
 
 sub new {

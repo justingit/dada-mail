@@ -1,8 +1,8 @@
 package DADA::Mail::MailOut;
 
 
-use Carp;
-$SIG{ __DIE__ } = sub { Carp::confess( @_ ) };
+#use Carp;
+#$SIG{ __DIE__ } = sub { Carp::confess( @_ ) };
 
 use lib qw(../../ ../../DADA ../../perllib);
 

@@ -1021,7 +1021,7 @@ L<https://raw.githubusercontent.com/justingit/dada-mail/master/dada/DADA/perllib
 
 L<https://raw.githubusercontent.com/justingit/dada-mail/master/dada/DADA/perllib/AWS/Signature4.pm>
 
-As a better alternative for, C<Signature4.pm>, you can install it via your favorite CPAN module installer under it's proper name, C<AWS::Signature4>. C<Net::Amazon::SES> is specific to Dada Mail. 
+As a better alternative for, C<Signature4.pm>, you can install it via your favorite CPAN module installer under it's proper name, C<AWS::Signature4>. C<DADA::App::Support::Net::Amazon::SES> is specific to Dada Mail. 
 
 =back
 

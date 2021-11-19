@@ -84,7 +84,7 @@ sub siteverify {
 	}
 	
     
-    $ua->ssl_opts( verify_hostname => 0 );
+    # $ua->ssl_opts( verify_hostname => 0 );
 
     my $response = $ua->post( URL , $pd );
     

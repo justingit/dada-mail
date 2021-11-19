@@ -857,13 +857,16 @@ sub scrn_configure_dada_mail {
                 can_use_SQLite                        => scalar test_can_use_SQLite(),
                 can_use_CAPTCHA_Google_reCAPTCHA_v2   => scalar test_can_use_CAPTCHA_Google_reCAPTCHA_v2(),
                 can_use_CAPTCHA_Google_reCAPTCHA_v3   => scalar test_can_use_CAPTCHA_Google_reCAPTCHA_v3(),
-                can_use_Net_IMAP_Simple            => scalar test_can_use_Net_IMAP_Simple(),
-                can_use_HTML_Tree                  => scalar can_use_HTML_Tree(), 
-                error_cant_read_config_dot_pm      => scalar $self->test_can_read_config_dot_pm(),
-                error_cant_write_config_dot_pm     => scalar $self->test_can_write_config_dot_pm(),
-                cgi_test_FastCGI                   => scalar $self->cgi_test_FastCGI,
-                home_dir_guess                     => scalar $self->guess_home_dir(),
-                install_dada_files_dir_at          => scalar $install_dada_files_dir_at,
+                can_use_Net_IMAP_Simple               => scalar test_can_use_Net_IMAP_Simple(),
+                can_use_HTML_Tree                     => scalar can_use_HTML_Tree(), 
+				can_use_net_curl                      => scalar can_use_net_curl(),
+				can_use_mozilla_ca                    => scalar can_use_mozilla_ca(),
+				can_use_LWP_Protocol_https            => scalar can_use_LWP_Protocol_https(),
+                error_cant_read_config_dot_pm         => scalar $self->test_can_read_config_dot_pm(),
+                error_cant_write_config_dot_pm        => scalar $self->test_can_write_config_dot_pm(),
+                cgi_test_FastCGI                      => scalar $self->cgi_test_FastCGI,
+                home_dir_guess                        => scalar $self->guess_home_dir(),
+                install_dada_files_dir_at             => scalar $install_dada_files_dir_at,
                 test_complete_dada_files_dir_structure_exists => scalar $self->test_complete_dada_files_dir_structure_exists($install_dada_files_dir_at),
                 dada_files_dir_setup                     => scalar $q->param('dada_files_dir_setup')                     || '',
                 dada_files_loc                           => scalar $q->param('dada_files_loc')                           || '',
@@ -1516,7 +1519,7 @@ sub grab_former_config_vals {
 		$opt->{'configure_www_engine'} = 1; 
 
         $opt->{'www_engine_options_www_engine'} 
-			= $BootstrapConfig::WWW_ENGINE_OPTIONS->{engine};
+			= $BootstrapConfig::WWW_ENGINE_OPTIONS->{www_engine};
         $opt->{'www_engine_options_user_agent'} 
 			= $BootstrapConfig::WWW_ENGINE_OPTIONS->{user_agent};
         $opt->{'www_engine_options_verify_hostname'} 
@@ -1854,6 +1857,11 @@ sub query_params_to_install_params {
       configure_security
       security_no_show_admin_link
 	  security_disable_list_password_reset
+	  
+	  configure_www_engine
+	  www_engine_options_www_engine
+	  www_engine_options_user_agent
+	  www_engine_options_verify_hostname
 	  
       security_DISABLE_OUTSIDE_LOGINS
       security_ADMIN_FLAVOR_NAME
@@ -2780,7 +2788,33 @@ sub create_dada_config_file {
             $cache_options_params->{cache_options_DATA_CACHE} = 2;
         }
     }
+	
+	
+	
+	
+	
+	
+    my $www_engine_options_params = {};
+    if ( $ip->{-configure_www_engine} == 1 ) {
+        $www_engine_options_params->{configure_www_engine} = 1;
+	   
+		$www_engine_options_params->{www_engine_options_www_engine} =
+		clean_up_var( $ip->{-www_engine_options_www_engine} );
 
+		$www_engine_options_params->{www_engine_options_user_agent} =
+		clean_up_var( $ip->{-www_engine_options_user_agent} );
+	   
+	    if ( clean_up_var( $ip->{-www_engine_options_verify_hostname} ) == 1 ) {
+            $www_engine_options_params->{www_engine_options_verify_hostname} = 1;
+        }
+        else {
+            $www_engine_options_params->{www_engine_options_verify_hostname} = 0;
+        }
+    }
+	
+	use Data::Dumper; 
+	warn '$www_engine_options_params: ' . Dumper($www_engine_options_params);
+	
     my $debugging_options_params = {};
     if ( $ip->{-configure_debugging} == 1 ) {
         $debugging_options_params->{configure_debugging} = 1;
@@ -2988,6 +3022,7 @@ sub create_dada_config_file {
                 %{$extensions_params}, 
                 %{$profiles_params},
                 %{$security_params},
+				%{$www_engine_options_params},
 				%{$global_api_params},
                 %{$captcha_params},
 				%{$google_maps_params},

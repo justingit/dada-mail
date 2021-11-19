@@ -5,6 +5,12 @@ use lib qw(
   ../../DADA/perllib
 );
 
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
+
+
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
 use DADA::Template::HTML;

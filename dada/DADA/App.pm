@@ -467,7 +467,7 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 <p><a href="mailto:$ENV{SERVER_ADMIN}">Contact the Server Admin</a></p>
 <p>Time of error: <strong>$TIME</strong></p> 	
 
-
+$error
 
 </div>
 </body> 
@@ -3211,6 +3211,9 @@ sub send_email {
 
     require DADA::App::MassSend;
     my $ms = DADA::App::MassSend->new( { -list => $list } );
+	
+	#use Data::Dumper; 
+	#die Dumper($ms);
     my ( $headers, $body ) = $ms->send_email(
         {
             -cgi_obj     => $q,

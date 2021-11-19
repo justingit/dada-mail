@@ -1611,6 +1611,22 @@
 		<div id="www_engine_options">
 			<div class="panel"> 
 		
+				<!-- tmpl_unless can_use_net_curl -->
+					<div class="alert-box info radius"> 
+						The, <code>LWP::Protocol::Net::Curl</code> CPAN module
+						will need to be installed, to utilize the 
+						<strong>curl</strong> WWW Engine
+					</div>
+				<!-- /tmpl_unless -->
+				
+				<!-- tmpl_unless can_use_LWP_Protocol_https -->
+					<div class="alert-box info radius"> 
+						The, <code>LWP::Protocol::https</code> CPAN module
+						will most likley need to be installed for https connections 
+						to succeed when using the LWP WWW engine. 
+					</div>
+				<!-- /tmpl_unless -->
+				
 				<div class="row">
 					<div class="small-12 columns">	
 						<label for="www_engine_options_www_engine">
@@ -1618,7 +1634,6 @@
 						</label>
 					</div> 
 				</div> 
-				
 				
 				<div class="row">
 					<div class="small-12 columns">
@@ -1637,7 +1652,17 @@
 					name="www_engine_options_user_agent"
 					id="www_engine_options_user_agent"
 					value=""
+					placeholder="Mozilla/5.0 (compatible; <!-- tmpl_var PROGRAM_NAME escape="HTML" -->)"
 				>
+				
+				<!-- tmpl_unless can_use_mozilla_ca -->
+					<div class="alert-box info radius"> 
+						The, <code>Mozilla::CA</code> 
+						will most likley need to be installed, to utilize, "Verify Hostname". 
+						Unchecking the below option will allow https connections to work, without verification. 
+					</div>
+				<!-- /tmpl_unless -->
+				
 				
 				<label for="www_engine_options_verify_hostname">
 					<input 
