@@ -1,4 +1,4 @@
-package Google::reCAPTCHA;
+package DADA::App::Support::Google::reCAPTCHA;
 
 use strict;
 use warnings;
