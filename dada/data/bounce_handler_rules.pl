@@ -244,7 +244,7 @@ qr/not been delivered to the recipient's BlackBerry Handheld/
                     ],
                     'Diagnostic-Code_regex' => [
                         (
-qr/552|quota exceeded|exceeded storage allocation|over quota|storage full|mailbox full|disk quota exceeded|Mail quota exceeded|Quota violation/
+qr/quota exceeded|exceeded storage allocation|over quota|storage full|mailbox full|disk quota exceeded|Mail quota exceeded|Quota violation/
                         )
                     ]
                 },
@@ -666,11 +666,11 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
             Examine => {
                 Message_Fields => {
                     Action                  => [qw(failed)],
-                    Status                  => [qw(5.1.1)],
+                    Status                  => [qw(5.1.1 5.0.0)],
                     'Final-Recipient_regex' => [ (qr/822/) ],
                     'Diagnostic-Code_regex' => [
                         (
-qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User unknown|No such mail drop/
+qr/SMTP\; 550|550 MAILBOX NOT FOUND|mailbox not found|550 5\.1\.1 unknown or illegal alias|User unknown|No such mail drop/
                         )
                     ],
                 },
@@ -1228,7 +1228,7 @@ qr/551 not our customer|User unknown|ecipient no longer/
         generic_mailbox_unavailable => {
             Examine => {
                 Message_Fields =>
-                  { 'Notification_regex' => [qr/mailbox unavailable/], },
+                  { 'Notification_regex' => [qr/mailbox unavailable|mailbox not found/], },
                 Data => {
                     Email => 'is_valid',
                     List  => 'is_valid',
