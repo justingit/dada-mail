@@ -2695,6 +2695,7 @@ sub sending_monitor {
     my $id = DADA::App::Guts::strip( scalar $q->param('id') );
     $id =~ s/\@/_at_/g;
     $id =~ s/\>|\<//g;
+	$id =~ s/\-/_/g;
 
     if ( !$q->param('id') ) {
         return $self->sending_monitor_index();
