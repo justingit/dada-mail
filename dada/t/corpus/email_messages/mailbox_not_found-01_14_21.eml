@@ -140,8 +140,8 @@ Received: from example.com ([127.0.0.1])
 Received: by example.com (Postfix, from userid 10008)
 	id E7CC21FE18C7; Tue,  4 Jan 2022 20:42:22 -0700 (MST)
 Date: Tue, 04 Jan 2022 20:42:22 -0700
-From: "The Paracast Newsletter" <news@example.com>
-To: "The Paracast Newsletter Subscriber" <bouncingemail@subscriberdomain.com>
+From: "Test List" <news@example.com>
+To: "Test List Subscriber" <bouncingemail@subscriberdomain.com>
 X-Priority: 3
 Precedence: list
 List: dadatest

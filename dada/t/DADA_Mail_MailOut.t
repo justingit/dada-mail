@@ -23,7 +23,7 @@ my $list_params = {
 
         list             =>  $list, 
         list_name        => 'Justin!', 
-        list_owner_email => 'user@example.com',  
+        list_owner_email => 'user@exa-mple.com',  
         password         => 'abcd', 
         retype_password  => 'abcd', 
         info             => 'info', 
@@ -35,8 +35,8 @@ my $list_params = {
 
 
 my $test_msg_fields = {
-    From     => 'me@example.com',
-    To       => 'you@example.com',
+    From     => 'me@exa-mple.com',
+    To       => 'you@exa-mple.com',
     Subject  => 'hey!',
     Body     => 'This is my body!', 
 };
@@ -95,7 +95,7 @@ undef $mailout;
 # pretty hairy testing of a correct message id header - note!
 require DADA::Security::Password; 	
 my $ran_number = DADA::Security::Password::generate_rand_string('1234567890');
-$test_msg_fields->{'Message-ID'} = '<' .  DADA::App::Guts::message_id() . '.'. $ran_number . '@' . 'example.com' . '>'; 
+$test_msg_fields->{'Message-ID'} = '<' .  DADA::App::Guts::message_id() . '.'. $ran_number . '@' . 'exa-mple.com' . '>'; 
 
 $mailout = DADA::Mail::MailOut->new({ -list => $list });
 eval { $mailout->create({ -fields => $test_msg_fields, -list_type => 'list' }) }; 
