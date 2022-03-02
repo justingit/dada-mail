@@ -5,7 +5,7 @@ use strict;
 
 use Carp qw(croak carp);
 use Try::Tiny;
-use LWP; 
+# use LWP; 
 use HTTP::Request::Common qw(POST);
 use JSON qw( decode_json );
 
@@ -72,9 +72,16 @@ sub request {
 	my $self = shift; 
 	my ($args) = @_; 
 	
+	my $ua = undef; 
 	
-	my $ua = LWP::UserAgent->new;
-	
+	if(exists($args->{-user_agent_obj})){ 
+		$ua = $args->{-ua_object};
+	}
+	else { 
+		require LWP::UserAgent;
+		$ua =   LWP::UserAgent->new;
+	}
+		
 	if(!exists($args->{-response})){ 
 		carp 'you will need to pass your response in -response to request()';
 		return undef; 
@@ -92,15 +99,11 @@ sub request {
 	}
 	my $req = POST $self->request_url(), [%{$req_params}];
 	
-	#return $ua->request($req)->as_string;
-	
 	my $json = JSON->new->allow_nonref;
 	
 	return $json->decode(
 		$ua->request($req)->decoded_content
 	);
-	
-	#$decoded_json
 	
 }
 

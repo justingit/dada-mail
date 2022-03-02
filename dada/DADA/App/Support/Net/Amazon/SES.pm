@@ -15,7 +15,14 @@
 # command line.  To learn more about this code sample, see the AWS Simple Email
 # Service Developer Guide.
 
-package Net::Amazon::SES;
+package DADA::App::Support::Net::Amazon::SES;
+
+
+
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
 
 use strict;
 use warnings;
@@ -26,12 +33,17 @@ our @EXPORT = qw();
 use Digest::SHA qw (hmac_sha1_base64 hmac_sha256_base64 sha256);
 use URI::Escape qw (uri_escape_utf8);
 use LWP;
+# I don't know if you need this - although it would throw an error if it's not found (I may remove)
 use LWP::Protocol::https;
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
 use Encode qw(encode);
 use XML::LibXML; 
 use AWS::Signature4;
+
+
+use DADA::App::Guts; 
+
 
 #use Time::HiRes qw(gettimeofday);
 
@@ -127,12 +139,12 @@ sub reset_browser {
     if ( $self->trace ) {
         carp "creating a new browser";
     }
-    my $browser = LWP::UserAgent->new(
-        agent      => "SES-Perl-$tools_version/$service_version",
-        keep_alive => 5,
-    );
-    return $browser;
 
+	return make_ua(
+		{
+			-keep_alive => 5,
+		}
+	);
 }
 
 

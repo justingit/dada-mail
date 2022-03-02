@@ -3,6 +3,11 @@ use strict;
 
 use lib qw(../../ ../../DADA/perllib);
 
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib './';
+use lib './DADA/perllib';
+
 use Fcntl qw(
   LOCK_SH
   O_RDONLY
@@ -777,7 +782,7 @@ sub send {
         );
 		
         my $ses_obj = undef;
-        require Net::Amazon::SES;
+        require DADA::App::Support::Net::Amazon::SES;
 
         if ( defined( $self->ses_obj )
             && $self->im_mass_sending == 1 )
@@ -787,9 +792,9 @@ sub send {
 
         }
         else {
-            warn 'creating a new  Net::Amazon::SES ses_obj'
+            warn 'creating a new  DADA::App::Support::Net::Amazon::SES ses_obj'
 				if $t;
-            $ses_obj = Net::Amazon::SES->new($DADA::Config::AMAZON_SES_OPTIONS);
+            $ses_obj = DADA::App::Support::Net::Amazon::SES->new($DADA::Config::AMAZON_SES_OPTIONS);
             $self->ses_obj($ses_obj);
         }
         my $msg = '';

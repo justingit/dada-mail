@@ -453,6 +453,46 @@ undef $entity;
 
 
 
+
+
+$msg    = dada_test_config::slurp('t/corpus/email_messages/mailbox_not_found-01_14_21.eml'); 
+$entity = $parser->parse_data($msg);
+( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+$parser->filer->purge;
+ok($email eq 'bouncingemail@subscriberdomain.com'); 
+ok($found_list eq 'dadatest', 'found list');
+$rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+ok($rule eq 'delivery_error_550', "rule is: $rule"); 
+
+undef $msg; 
+undef $email; 
+undef $found_list; 
+undef $diag; 
+undef $entity;
+
+
+
+
+
+
+$msg    = dada_test_config::slurp('t/corpus/email_messages/mailbox_not_found-01_18_21.eml'); 
+$entity = $parser->parse_data($msg);
+( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+$parser->filer->purge;
+ok($email eq 'bouncingemail@subscriberdomain.com'); 
+ok($found_list eq 'dadatest', 'found list');
+$rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+ok($rule eq 'delivery_error_550', "rule is: $rule"); 
+
+undef $msg; 
+undef $email; 
+undef $found_list; 
+undef $diag; 
+undef $entity;
+
+
+
+
 dada_test_config::remove_test_list;
 dada_test_config::destroy_SQLite_db();
 dada_test_config::wipe_out;

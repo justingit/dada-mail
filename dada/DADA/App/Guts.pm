@@ -16,7 +16,7 @@ use Try::Tiny;
 use Fcntl qw(
 O_WRONLY 
 O_TRUNC 
-O_CREAT 
+O_CREAT
 O_RDWR
 O_RDONLY
 LOCK_EX
@@ -83,6 +83,7 @@ require Exporter;
   safely_decode
   safely_encode
   slurp
+  make_ua
   grab_url
   scrub_js
   md5_checksum
@@ -97,6 +98,8 @@ require Exporter;
   can_use_JSON
   can_use_datetime
   can_use_HTML_Tree
+  can_use_net_curl
+  can_use_mozilla_ca
   can_use_StopForumSpam
   can_use_Image_Scale
   can_use_Image_Resize
@@ -126,6 +129,9 @@ require Exporter;
 	path_and_file
 	simple_printout_file
   new_image_file_path
+  
+  can_use_www_engine
+  
   
 );
 
@@ -3029,32 +3035,86 @@ sub slurp {
 
 }
 
+
+
+sub make_ua { 
+    	
+	my ($args) = @_; 
+	
+	my ($www_engine_status, $www_engine_error) = can_use_www_engine(); 
+	if($www_engine_status == 0){ 
+        carp "WWW engine not set up correctly?" . $www_engine_error
+			if $t; 
+		return undef; 
+	}
+   	
+	# I don't think I have to do this twice: 
+	if($DADA::Config::WWW_ENGINE_OPTIONS->{www_engine} eq 'curl'){		
+		require LWP::Protocol::Net::Curl;
+	    LWP::Protocol::implementor($_ => 'LWP::Protocol::Net::Curl')
+	    for @LWP::Protocol::Net::Curl::implements;
+	}
+	else { 
+		require LWP;
+	}
+	
+    require LWP::UserAgent;
+	my $ua; 
+	
+	if(exists($args->{-keep_alive})){ 
+		$ua = LWP::UserAgent->new(
+			keep_alive => $args->{-keep_alive},
+		);
+	}
+	else { 
+		$ua = LWP::UserAgent->new;
+	}
+	
+	if(defined($ua)){
+		if(exists($DADA::Config::WWW_ENGINE_OPTIONS->{user_agent} )){ 
+			if(length($DADA::Config::WWW_ENGINE_OPTIONS->{user_agent}) > 0){
+				 $ua->agent( $DADA::Config::WWW_ENGINE_OPTIONS->{user_agent} );
+			}
+			else { 
+				$ua->agent('');
+			}
+		}
+		else { 
+			$ua->agent('');
+		}
+	
+		if($DADA::Config::WWW_ENGINE_OPTIONS->{verify_hostname} == 1){ 
+			$ua->ssl_opts( verify_hostname => 1 ); 
+		}
+	 	else { 
+			$ua->ssl_opts( verify_hostname => 0 ); 
+		}
+	}
+	return $ua; 
+	
+}
+
+
+
+
 sub grab_url {
 
 	# DEV: time to return a hashref, I'm thinking. 
     my ($args) = @_; 
     my $url = $args->{-url}; 
-    
-    try {
-        require LWP;
-    }
-    catch {
-        carp "LWP not installed?" . $_
-			if $t; 
-		if(wantarray){ 
+
+    require HTTP::Message;
+	
+	my $ua = make_ua();
+	
+	if(!defined($ua)){ 
+    	if(wantarray){ 
             return (undef, undef, undef, undef); 
         }
         else { 
 		    return undef; 
 	    }
-    };
-
-    require LWP;
-    require LWP::UserAgent;
-    require HTTP::Message;
-
-    my $ua = LWP::UserAgent->new;
-       $ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' );
+	}
 
     if ( can_use_compress_zlib() == 1 ) {
         my $can_accept = HTTP::Message::decodable();
@@ -3197,7 +3257,37 @@ sub can_use_LWP_Simple {
 	return $can_use_lwp_simple;
 }
 
+
+sub can_use_www_engine { 
+
+	my $can_use_www_engine = 1; 
+	my $error              = undef;
+    try {
+
+		if($DADA::Config::WWW_ENGINE_OPTIONS->{www_engine} eq 'curl'){
+			require LWP::Protocol::Net::Curl;
+		}
+		else { 
+			require LWP;
+		}
+    }
+    catch {
+		$can_use_www_engine = 0;
+		$error              = $_;  
+	};
+	return ($can_use_www_engine, $error); 
+}
+
 sub can_use_Google_reCAPTCHA { 
+	
+	# This works, although if we do this, recaptcha shows, but the results don't matter, 
+	# effectively making the captcha useless: 
+	#
+	#my ($can_use_www_engine, $can_use_www_engine_errors) = can_use_www_engine;
+	#if($can_use_www_engine == 0){ 
+	#	return 0; 
+	#}
+	
 	
 	if($DADA::Config::RECAPTCHA_PARAMS->{recaptcha_type} eq 'v2'){
 		return can_use_Google_reCAPTCHA_v2(); 
@@ -3319,7 +3409,10 @@ sub validate_recaptcha {
         require DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA;
         my $cap = DADA::Security::AuthenCAPTCHA::Google_reCAPTCHA->new;
         my $result =
-          $cap->check_answer( $args->{-remote_addr}, $args->{-response}, );
+          $cap->check_answer( 
+			  	$args->{-remote_addr}, 
+				$args->{-response}, 
+			);
         if ( $result->{is_valid} == 1 ) {
             return 1;
         }
@@ -3332,9 +3425,10 @@ sub validate_recaptcha {
         && length( $DADA::Config::RECAPTCHA_PARAMS->{v3}->{score_threshold} ) > 0 )
     {
         require Google::reCAPTCHA::v3;
-        my $rec = Google::reCAPTCHA::v3->new(
+		my $rec = Google::reCAPTCHA::v3->new(
             {
-                -secret => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key},
+                -secret         => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key},
+				-user_agent_obj => make_ua(), 
             }
         );
         my $r = $rec->request(
@@ -3404,10 +3498,36 @@ sub can_use_HTML_Tree {
     return $can_use_HTML_Tree;
 }
 
+sub can_use_net_curl {
+    my $net_curl = 1; 
+    try { 
+        require LWP::Protocol::Net::Curl;      
+    } catch { 
+		carp 'Can\'t use, LWP::Protocol::Net::Curl: ' . $_
+			if $t; 
+        $net_curl = 0;
+    };
+    return $net_curl;
+}
+
+sub can_use_mozilla_ca { 
+    my $m_ca = 1; 
+    try { 
+        require Mozilla::CA;      
+    } catch { 
+		carp 'Can\'t use, Mozilla::CA: ' . $_
+			if $t; 
+        $m_ca = 0;
+    };
+    return $m_ca;
+}
+
+
+
 sub can_use_Amazon_SES {
     my $can_use_Amazon_SES = 1; 
     try { 
-        require Net::Amazon::SES;        
+        require DADA::App::Support::Net::Amazon::SES;        
     } catch { 
 		carp 'Amazon SES is not supported:' . $_
 			if $t; 

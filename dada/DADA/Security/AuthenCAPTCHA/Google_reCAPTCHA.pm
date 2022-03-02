@@ -5,6 +5,8 @@ use DADA::Config qw(!:DEFAULT);
 use strict; 
 use Carp qw(croak); 
 use Try::Tiny; 
+use DADA::App::Guts; 
+
 
 
 sub new {
@@ -48,15 +50,16 @@ sub check_answer {
 	}
 	else {
 		try {
-			require Google::reCAPTCHA;
-			my $c = Google::reCAPTCHA->new(
+			require DADA::App::Support::Google::reCAPTCHA;
+			my $c = DADA::App::Support::Google::reCAPTCHA->new(
 				secret =>  $DADA::Config::RECAPTCHA_PARAMS->{v2}->{private_key},
 			);
 		
 			# Verifying the user's response 
 			my $success = $c->siteverify( 
-				response => $response, 
-				remoteip => $remoteip,
+				response       => $response, 
+				remoteip       => $remoteip,
+				user_agent_obj => make_ua(),
 			);
 			if( $success ) {
 			    $result->{is_valid} = 1;

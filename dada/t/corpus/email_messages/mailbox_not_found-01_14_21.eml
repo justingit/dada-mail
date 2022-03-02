@@ -1,0 +1,168 @@
+Return-Path: <bounces@example.com>
+Delivered-To: example.com-gene@example.com
+Received: (qmail 39991 invoked by uid 89); 5 Jan 2022 05:33:13 -0000
+Received: from unknown (HELO mx.emailarray.com) (MTkyLjE2OC4xLjk1) 
+  by mx11.emailarray.com with ESMTPS (ECDHE-RSA-AES256-GCM-SHA384 encrypted); 5 Jan 2022 05:33:13 -0000
+Authentication-Results: mx.emailarray.com; iprev=pass; spf=pass smtp.mailfrom=example.com
+Received-SPF: Pass (mx.emailarray.com: domain of example.com designates 74.208.33.57 as permitted sender) receiver=mx.emailarray.com; identity=mailfrom; client-ip=74.208.33.57; helo=example.com; envelope-from=<bounces@example.com>
+Received-SPF: None (mx.emailarray.com: domain of example.com does not designate 74.208.33.57 as permitted sender) receiver=mx.emailarray.com; identity=helo; client-ip=74.208.33.57; helo=example.com; envelope-from=<bounces@example.com>
+Received: from example.com (example.com [74.208.33.57])
+	by mx.emailarray.com (Haraka/2.8.21) with ESMTPS id BEB5F7D5-F99E-4166-A3B0-8F0CEBB19155.1
+	envelope-from <bounces@example.com>
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 verify=FAIL);
+	Wed, 05 Jan 2022 00:33:12 -0500
+Received: from example.com (localhost.localdomain [127.0.0.1])
+	by example.com (Postfix) with ESMTP id 3D1801FE1943
+	for <news@example.com>; Tue,  4 Jan 2022 22:33:12 -0700 (MST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com;
+	s=default; t=1641360792;
+	bh=VMaCd+azyFcS70vbJ7Nmm57KMYGgzKRgXX3zrjpcRWM=;
+	h=Received:Received:From:To:Subject;
+	b=Svte3ldfcfLf12ujEBOEkvKNBCV5srpTWk6Mgbrt0qy6+gMth62N0A/ykquNwE7LO
+	 nMQtwIhdNiHJS6bCcxzTSdEsmPk4r2I+K8N289rCxePmLJgjYQHeCIp8/9xkmUEWBh
+	 ZXupYrGI5BmwUHefYlt7zglPz2JL/BMOTtDsQSxk=
+Received-SPF: pass (example.com: localhost is always allowed.) client-ip=127.0.0.1; envelope-from=bounces@example.com; helo=example.com;
+X-Virus-Scanned: amavisd-new at example.com
+Received: from example.com ([127.0.0.1])
+	by example.com (example.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OOXrwwSvciPX for <news@example.com>;
+	Tue,  4 Jan 2022 22:33:11 -0700 (MST)
+Received: by example.com (Postfix, from userid 10008)
+	id A3B871FE1940; Tue,  4 Jan 2022 22:33:11 -0700 (MST)
+Date: Tue, 04 Jan 2022 22:33:11 -0700
+From: news@example.com
+To: news@example.com
+X-Priority: 3
+Precedence: list
+List: dadatest
+List-Archive: <https://www.example.com/cgi-bin/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.example.com>
+List-Owner: <news@example.com>
+List-Post: NO
+List-URL: <<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list
+ -->/>
+X-BeenThere: "Bounce Handler" <bounces@example.com>
+Message-ID: <20220104223311.74293993@example.com>
+X-Mailer: Pro Dada 11.17.0 10/25/21
+Content-type: multipart/report; report-type=delivery-status;
+ boundary="CDBB21FE18BF.1641354144/example.com"; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+Subject: Undelivered Mail Returned to Sender
+X-PPP-Message-ID: <20220105053311.23757.40209@example.com>
+X-PPP-Vhost: example.com
+Original-Authentication-Results: example.com;
+	spf=pass (sender IP is 127.0.0.1) smtp.mailfrom=bounces@example.com smtp.helo=example.com
+Original-Authentication-Results: example.com (amavisd-new); dkim=neutral
+	reason="invalid (public key: not available)" header.d=example.com
+X-Rspamd-Spam: Yes
+X-Rspamd-Bar: +++++++++++++++++
+X-Rspamd-Report: LUCABODY_MAP(15) MX_GOOD(-0.01) MAILLIST(-0.125) BAYES_HAM(-3) MIME_GOOD(-0.1) BAD_REP_POLICIES(0.1) BL_REPEAT(6)
+X-Rspamd-Score: 17.865
+X-EmailArray-EnvFrom: bounces@example.com
+X-EmailArray-Remote-IP: 74.208.33.57
+X-EmailArray-UID: BEB5F7D5-F99E-4166-A3B0-8F0CEBB19155.1
+X-EmailArray-TO: news@example.com
+X-PolarisMail-Flags: z
+X-PolarisMail-Spam: Whitelisted
+
+This is a MIME-encapsulated message.
+--CDBB21FE18BF.1641354144/example.com
+Content-Description: Notification
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+This is the mail system at host example.com.
+
+I'm sorry to have to inform you that your message could not
+be delivered to one or more recipients. It's attached below.
+
+For further assistance, please send mail to postmaster.
+
+If you do so, please include this problem report. You can
+delete your own text from the attached returned message.
+
+                   The mail system
+
+<bouncingemail@subscriberdomain.com>: host mta7.am0.exampledns.net[98.136.96.74] said: 552
+    1 Requested mail action aborted, mailbox not found (in reply to end of DATA
+    command)
+
+--CDBB21FE18BF.1641354144/example.com
+Content-Description: Delivery report
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; example.com
+X-Postfix-Queue-ID: CDBB21FE18BF
+X-Postfix-Sender: rfc822; bounces@example.com
+Arrival-Date: Tue,  4 Jan 2022 20:42:23 -0700 (MST)
+
+Final-Recipient: rfc822; bouncingemail@subscriberdomain.com
+Original-Recipient: rfc822;bouncingemail@subscriberdomain.com
+Action: failed
+Status: 5.0.0
+Remote-MTA: dns; mta7.am0.exampledns.net
+Diagnostic-Code: smtp; 552 1 Requested mail action aborted, mailbox not found
+
+--CDBB21FE18BF.1641354144/example.com
+Content-Description: Undelivered Message Headers
+Content-Type: text/rfc822-headers
+Content-Transfer-Encoding: 8bit
+
+Return-Path: <bounces@example.com>
+Received: from example.com (localhost.localdomain [127.0.0.1])
+	by example.com (Postfix) with ESMTP id CDBB21FE18BF
+	for <bouncingemail@subscriberdomain.com>; Tue,  4 Jan 2022 20:42:23 -0700 (MST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com;
+	s=default; t=1641354144;
+	bh=89bhb4Nmx8Z3nC9/h5eRalfasbgqQGYx/P6jnQerfDw=;
+	h=Received:Received:From:To:Subject;
+	b=L6bPtg6VKwCsaoYalGCI55TR4VXuwK29m535IsWcWXa+qPelm1r8/Jj6P7KOQHp3o
+	 PNKir+fHhgmevo+wYCSB/RATwAGWbAS+zhhmLiWQzeccV5tJkIDtovAy1EXaaQV1oq
+	 jNmnn5sQKhn94I35rGOrwRldALMeSRPlKfmFSMBE=
+Authentication-Results: example.com;
+	spf=pass (sender IP is 127.0.0.1) smtp.mailfrom=bounces@example.com smtp.helo=example.com
+Received-SPF: pass (example.com: localhost is always allowed.) client-ip=127.0.0.1; envelope-from=bounces@example.com; helo=example.com;
+X-Virus-Scanned: amavisd-new at example.com
+X-Spam-Flag: NO
+X-Spam-Score: -0.122
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.122 tagged_above=-9999 required=3
+	tests=[BAYES_00=-1.9, DEAR_FRIEND=2.577, DKIM_INVALID=0.1,
+	DKIM_SIGNED=0.1, HTML_MESSAGE=0.001, MAILING_LIST_MULTI=-1,
+	NO_RELAYS=-0.001, URIBL_BLOCKED=0.001] autolearn=no autolearn_force=no
+Authentication-Results: example.com (amavisd-new); dkim=neutral
+	reason="invalid (public key: not available)" header.d=example.com
+Received: from example.com ([127.0.0.1])
+	by example.com (example.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SldIIIoLwapw for <bouncingemail@subscriberdomain.com>;
+	Tue,  4 Jan 2022 20:42:22 -0700 (MST)
+Received: by example.com (Postfix, from userid 10008)
+	id E7CC21FE18C7; Tue,  4 Jan 2022 20:42:22 -0700 (MST)
+Date: Tue, 04 Jan 2022 20:42:22 -0700
+From: "Test List" <news@example.com>
+To: "Test List Subscriber" <bouncingemail@subscriberdomain.com>
+X-Priority: 3
+Precedence: list
+List: dadatest
+List-Archive: <https://www.example.com/cgi-bin/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.example.com>
+List-Owner: <news@example.com>
+List-Post: NO
+List-Subscribe: <https://www.example.com/cgi-bin/dada/mail.cgi/s/dadatest/bouncingemail/example.com/>
+List-Unsubscribe: <mailto:news@example.com?Subject=Unsubscribe%20bouncingemail%40example.com%20from%20dadatest&Body=Unsubscripton%20Link%20for%20bouncingemail%40example.com%3A%20%0A%0Ahttps%3A%2F%2Fwww.example.com%2Fcgi-bin%2Fdada%2Fmail.cgi%2Ft%2F6b4c36e6102a138521bd91b26276067a53e5b5ec%2Ffrom_email_header%2F>,
+ <https://www.example.com/cgi-bin/dada/mail.cgi/t/6b4c36e6102a138521bd91b26276067a53e5b5ec/from_email_header/>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+List-URL: <https://www.example.com/cgi-bin/dada/mail.cgi/list/dadatest/>
+X-BeenThere: https://www.example.com/cgi-bin/dada/mail.cgi
+Message-ID: <20220104204006.89971960@example.com>
+X-Mailer: Pro Dada 11.17.0 10/25/21
+Content-type: multipart/alternative; boundary="----------=_1641354006-12745-0";
+ charset=UTF-8
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+Subject: Heart Odyssey =?UTF-8?Q?=E2=80=94?= Take 9
+X-PPP-Message-ID: <20220105034222.23357.59010@example.com>
+X-PPP-Vhost: example.com
+
+--CDBB21FE18BF.1641354144/example.com--

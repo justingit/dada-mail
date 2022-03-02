@@ -467,7 +467,7 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 <p><a href="mailto:$ENV{SERVER_ADMIN}">Contact the Server Admin</a></p>
 <p>Time of error: <strong>$TIME</strong></p> 	
 
-
+$error
 
 </div>
 </body> 
@@ -2707,6 +2707,7 @@ sub sending_monitor {
     my $id = DADA::App::Guts::strip( scalar $q->param('id') );
     $id =~ s/\@/_at_/g;
     $id =~ s/\>|\<//g;
+	$id =~ s/\-/_/g;
 
     if ( !$q->param('id') ) {
         return $self->sending_monitor_index();
@@ -3223,6 +3224,9 @@ sub send_email {
 
     require DADA::App::MassSend;
     my $ms = DADA::App::MassSend->new( { -list => $list } );
+	
+	#use Data::Dumper; 
+	#die Dumper($ms);
     my ( $headers, $body ) = $ms->send_email(
         {
             -cgi_obj     => $q,
@@ -16530,9 +16534,8 @@ sub contact_mothership {
         require JSON;
         require HTTP::Request;
         require HTTP::Request::Common;
-        require LWP::UserAgent;
 
-        my $ua = LWP::UserAgent->new;
+        my $ua = make_ua(); 
 
         my $json = JSON->new->allow_nonref;
 

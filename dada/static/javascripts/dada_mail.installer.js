@@ -133,6 +133,7 @@ jQuery(document).ready(function($){
 			"profiles",
 			"templates", 
 			"cache",
+			"www_engine",
 			"mime_tools",
 			"debugging", 
 			"google_maps",
@@ -143,8 +144,7 @@ jQuery(document).ready(function($){
 			"mass_mailing", 
 			"confirmation_token", 
 		];
-		$.each(o, function(index, value) {
-		
+		$.each(o, function(index, value) {			
 			$("body").on('click', "#configure_" + value, function(event) {
 				installer_checkbox_toggle_option_groups('configure_' + value, value +'_options');			
 			});

@@ -1,0 +1,169 @@
+Return-Path: <bounces@example.com>
+Delivered-To: macradio.net-gene@macradio.net
+Received: (qmail 1411 invoked by uid 89); 18 Jan 2022 05:34:07 -0000
+Received: from unknown (HELO mx.emailarray.com) (MTkyLjE2OC4xLjk1) 
+  by mx12.emailarray.com with SMTP; 18 Jan 2022 05:34:07 -0000
+Authentication-Results: mx.emailarray.com; iprev=pass; spf=pass smtp.mailfrom=example.com
+Received-SPF: Pass (mx.emailarray.com: domain of example.com designates 74.208.33.57 as permitted sender) receiver=mx.emailarray.com; identity=mailfrom; client-ip=74.208.33.57; helo=server.example.com; envelope-from=<bounces@example.com>
+Received-SPF: None (mx.emailarray.com: domain of server.example.com does not designate 74.208.33.57 as permitted sender) receiver=mx.emailarray.com; identity=helo; client-ip=74.208.33.57; helo=server.example.com; envelope-from=<bounces@example.com>
+Received: from server.example.com (server.example.com [74.208.33.57])
+	by mx.emailarray.com (Haraka/2.8.21) with ESMTPS id 67493F61-88CA-4412-B3EE-EB40B3F2EF5A.1
+	envelope-from <bounces@example.com>
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 verify=FAIL);
+	Tue, 18 Jan 2022 00:34:06 -0500
+Received: from server.example.com (localhost.localdomain [127.0.0.1])
+	by server.example.com (Postfix) with ESMTP id D20CF1FE11C8
+	for <messages@example.com>; Mon, 17 Jan 2022 22:34:05 -0700 (MST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com;
+	s=default; t=1642484045;
+	bh=pYvhG+YHNCkzUWKvpJZo27+TpZSzgFSGOajjL5GL2lk=;
+	h=Received:Received:From:To:Subject;
+	b=jxvlcXqE31nHHM4fVHEniW+CgqvrmKZm6GzTLD53+FWXVi2SaoECJFrDUrm+wRAQY
+	 gQ+iAGpNvldX8n2vIOsHa7eniShETln5N35KHg1BW33+ERpOZEnIC8TejdfW3x/59o
+	 x9xhcYT/Vy7bc7DEl+va2XgbCd+rx4kIxtrb+jW8=
+Received-SPF: pass (server.example.com: localhost is always allowed.) client-ip=127.0.0.1; envelope-from=bounces@example.com; helo=server.example.com;
+X-Virus-Scanned: amavisd-new at example.com
+Received: from server.example.com ([127.0.0.1])
+	by server.example.com (server.example.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LYu3JoPSRXTB for <messages@example.com>;
+	Mon, 17 Jan 2022 22:34:05 -0700 (MST)
+Received: by server.example.com (Postfix, from userid 10008)
+	id 402611FE11CD; Mon, 17 Jan 2022 22:34:05 -0700 (MST)
+Date: Mon, 17 Jan 2022 22:34:05 -0700
+From: messages@example.com
+To: messages@example.com
+X-Priority: 3
+Precedence: list
+List: dadatest
+List-Archive: <https://www.example.com/cgi-bin/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.server.example.com>
+List-Owner: <messages@example.com>
+List-Post: NO
+List-URL: <<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list
+ -->/>
+X-BeenThere: "Bounce Handler" <bounces@example.com>
+Message-ID: <20220117223405.16419555@example.com>
+X-Mailer: Pro Dada 11.17.0 10/25/21
+Content-type: multipart/report; report-type=delivery-status;
+ boundary="B4E5F1FE11E8.1642484011/server.example.com"; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+Subject: Undelivered Mail Returned to Sender
+X-PPP-Message-ID: <20220118053405.11918.50300@server.example.com>
+X-PPP-Vhost: example.com
+Original-Authentication-Results: server.example.com;
+	spf=pass (sender IP is 127.0.0.1) smtp.mailfrom=bounces@example.com smtp.helo=server.example.com
+Original-Authentication-Results: server.example.com (amavisd-new); dkim=neutral
+	reason="invalid (public key: not available)" header.d=example.com
+X-Rspamd-Spam: Yes
+X-Rspamd-Bar: +++++++++++++++++
+X-Rspamd-Report: LUCABODY_MAP(15) MX_GOOD(-0.01) MAILLIST(-0.125) BAYES_HAM(-3) MIME_GOOD(-0.1) BAD_REP_POLICIES(0.1) BL_REPEAT(6)
+X-Rspamd-Score: 17.865
+X-EmailArray-EnvFrom: bounces@example.com
+X-EmailArray-Remote-IP: 74.208.33.57
+X-EmailArray-UID: 67493F61-88CA-4412-B3EE-EB40B3F2EF5A.1
+X-EmailArray-TO: messages@example.com
+X-PolarisMail-Flags: z
+X-PolarisMail-Spam: Whitelisted
+
+This is a MIME-encapsulated message.
+--B4E5F1FE11E8.1642484011/server.example.com
+Content-Description: Notification
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+This is the mail system at host server.example.com.
+
+I'm sorry to have to inform you that your message could not
+be delivered to one or more recipients. It's attached below.
+
+For further assistance, please send mail to postmaster.
+
+If you do so, please include this problem report. You can
+delete your own text from the attached returned message.
+
+                   The mail system
+
+<bouncingemail@subscriberdomain.com>: host mx-aol.mail.gm0.yahoodns.net[98.136.96.93] said:
+    552 1 Requested mail action aborted, mailbox not found (in reply to end of
+    DATA command)
+
+--B4E5F1FE11E8.1642484011/server.example.com
+Content-Description: Delivery report
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; server.example.com
+X-Postfix-Queue-ID: B4E5F1FE11E8
+X-Postfix-Sender: rfc822; bounces@example.com
+Arrival-Date: Mon, 17 Jan 2022 20:04:20 -0700 (MST)
+
+Final-Recipient: rfc822; bouncingemail@subscriberdomain.com
+Original-Recipient: rfc822;bouncingemail@subscriberdomain.com
+Action: failed
+Status: 5.0.0
+Remote-MTA: dns; mx-aol.mail.gm0.yahoodns.net
+Diagnostic-Code: smtp; 552 1 Requested mail action aborted, mailbox not found
+
+--B4E5F1FE11E8.1642484011/server.example.com
+Content-Description: Undelivered Message Headers
+Content-Type: text/rfc822-headers
+Content-Transfer-Encoding: 8bit
+
+Return-Path: <bounces@example.com>
+Received: from server.example.com (localhost.localdomain [127.0.0.1])
+	by server.example.com (Postfix) with ESMTP id B4E5F1FE11E8
+	for <bouncingemail@subscriberdomain.com>; Mon, 17 Jan 2022 20:04:20 -0700 (MST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com;
+	s=default; t=1642475060;
+	bh=SnnnKGHzKRyS7aLIREXswRQCPMIfsdeTlhJf5lYnLSM=;
+	h=Received:Received:From:To:Subject;
+	b=O9QyAXzMGHVStvflx+77wARarnCIp8srUnuQq/ckreJoZa6FljBgIRYQRdtT5bT9W
+	 aVjkCwciVLu+2GXs+qu+QMeKMDi5AJ/vrtxI2vZjdDZQYOLeiY43MA17/brwqRisIV
+	 OvtNXxYlv2rHrEtVhOGt2vj3DUSwTEX8bGEohjlc=
+Authentication-Results: server.example.com;
+	spf=pass (sender IP is 127.0.0.1) smtp.mailfrom=bounces@example.com smtp.helo=server.example.com
+Received-SPF: pass (server.example.com: localhost is always allowed.) client-ip=127.0.0.1; envelope-from=bounces@example.com; helo=server.example.com;
+X-Virus-Scanned: amavisd-new at example.com
+X-Spam-Flag: NO
+X-Spam-Score: -2.699
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.699 tagged_above=-9999 required=3
+	tests=[BAYES_00=-1.9, DKIM_INVALID=0.1, DKIM_SIGNED=0.1,
+	HTML_MESSAGE=0.001, MAILING_LIST_MULTI=-1, NO_RELAYS=-0.001,
+	URIBL_BLOCKED=0.001] autolearn=unavailable autolearn_force=no
+Authentication-Results: server.example.com (amavisd-new); dkim=neutral
+	reason="invalid (public key: not available)" header.d=example.com
+Received: from server.example.com ([127.0.0.1])
+	by server.example.com (server.example.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id lfrfU6TwWKx2 for <bouncingemail@subscriberdomain.com>;
+	Mon, 17 Jan 2022 20:04:18 -0700 (MST)
+Received: by server.example.com (Postfix, from userid 10008)
+	id 5B7AD1FE11ED; Mon, 17 Jan 2022 20:04:17 -0700 (MST)
+Date: Mon, 17 Jan 2022 20:04:17 -0700
+From: "Gene Steinberg's Mac Radio Newsletter" <messages@example.com>
+To: "Test List" <bouncingemail@subscriberdomain.com>
+X-Priority: 3
+Precedence: list
+List: dadatest
+List-Archive: <https://www.example.com/cgi-bin/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.server.example.com>
+List-Owner: <messages@example.com>
+List-Post: NO
+List-Subscribe: <https://www.example.com/cgi-bin/dada/mail.cgi/s/dadatest/coulsonadxgtpt/aol.com/>
+List-Unsubscribe: <mailto:messages@example.com?Subject=Unsubscribe%20coulsonadxgtpt%40aol.com%20from%20dadatest&Body=Unsubscripton%20Link%20for%20coulsonadxgtpt%40aol.com%3A%20%0A%0Ahttps%3A%2F%2Fwww.example.com%2Fcgi-bin%2Fdada%2Fmail.cgi%2Ft%2Ffd2856f772277c3df63404e5a121d512a4ff218d%2Ffrom_email_header%2F>,
+ <https://www.example.com/cgi-bin/dada/mail.cgi/t/fd2856f772277c3df63404e5a121d512a4ff218d/from_email_header/>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+List-URL: <https://www.example.com/cgi-bin/dada/mail.cgi/list/dadatest/>
+X-BeenThere: https://www.example.com/cgi-bin/dada/mail.cgi
+Message-ID: <20220117200355.13944791@example.com>
+X-Mailer: Pro Dada 11.17.0 10/25/21
+Content-type: multipart/alternative; boundary="----------=_1642475035-11869-0";
+ charset=UTF-8
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+Subject: Gene Steinberg's Mac Radio Newsletter =?UTF-8?Q?=E2=80=94?= Issue
+ #1030
+X-PPP-Message-ID: <20220118030417.13547.80138@server.example.com>
+X-PPP-Vhost: example.com
+
+--B4E5F1FE11E8.1642484011/server.example.com--

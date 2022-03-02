@@ -58,8 +58,8 @@ sub verify_sender {
 	my $result = undef; 
 	
 	try { 
-		require Net::Amazon::SES; 
-		my $ses_obj = Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
+		require DADA::App::Support::Net::Amazon::SES; 
+		my $ses_obj = DADA::App::Support::Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
 		($status, $result) = $ses_obj->verify_sender($args);
 	}
 	catch { 
@@ -79,8 +79,8 @@ sub sender_verified {
 	my $result = undef; 
 
 	try { 
-		require Net::Amazon::SES; 
-		my $ses_obj = Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
+		require DADA::App::Support::Net::Amazon::SES; 
+		my $ses_obj = DADA::App::Support::Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
 		($status, $result) = $ses_obj->sender_verified($email);
 	}
 	catch { 
@@ -110,8 +110,8 @@ sub get_stats {
 	my $status   = undef; 
 	my $result   = undef; 
 	try { 
-		require Net::Amazon::SES; 
-		$ses_obj = Net::Amazon::SES->new( $args ); 
+		require DADA::App::Support::Net::Amazon::SES; 
+		$ses_obj = DADA::App::Support::Net::Amazon::SES->new( $args ); 
 		($status, $result) = $ses_obj->get_stats();
 	}
 	catch { 

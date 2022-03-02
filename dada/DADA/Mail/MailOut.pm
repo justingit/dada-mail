@@ -1,8 +1,8 @@
 package DADA::Mail::MailOut;
 
 
-use Carp;
-$SIG{ __DIE__ } = sub { Carp::confess( @_ ) };
+#use Carp;
+#$SIG{ __DIE__ } = sub { Carp::confess( @_ ) };
 
 use lib qw(../../ ../../DADA ../../perllib);
 
@@ -631,6 +631,7 @@ sub associate {
 
     $id =~ s/\@/_at_/g;
     $id =~ s/\>|\<//g;
+	$id =~ s/\-/_/g;
 
     # This kinda sucks:
     $self->_internal_message_id($id);
@@ -776,6 +777,8 @@ sub mailout_directory_name {
     my $letter_id = $tmp;
     $letter_id =~ s/\@/_at_/g;
     $letter_id =~ s/\>|\<//g;
+	$letter_id =~ s/\-/_/g;
+	
 
     $letter_id = DADA::App::Guts::strip($letter_id);
 
@@ -1943,6 +1946,7 @@ sub clean_up {
         my $letter_id = $self->_internal_message_id;
         $letter_id =~ s/\@/_at_/g;
         $letter_id =~ s/\>|\<//g;
+		$letter_id =~ s/\-/_/g;
 
         my $save_log_file =
           make_safer( $DADA::Config::LOGS . '/'
@@ -2318,6 +2322,7 @@ sub mailout_exists {
 	
     $id =~ s/\@/_at_/g;
     $id =~ s/\>|\<//g;
+	$id =~ s/\-/_/g;
 
 	#This smells... 
 	if($id =~ m/\-/){ 
@@ -2487,10 +2492,12 @@ sub line_in_queue {
 
         $check_id =~ s/\@/_at_/g;
         $check_id =~ s/\>|\<//g;
+		$check_id =~ s/\-/_/g;
 
         # and hell, do it for our internal id, since i don't trust it...
         $internal_id =~ s/\@/_at_/g;
         $internal_id =~ s/\>|\<//g;
+		$internal_id =~ s/\-/_/g;
 
         # carp '$check_id after transformation ' . $check_id;
         # carp '$internal_id after transformation ' . $internal_id;
