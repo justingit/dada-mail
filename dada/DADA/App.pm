@@ -1323,21 +1323,33 @@ sub admin_menu_email_themes_notification {
 sub admin_menu_bounce_handler_notification {
     my $self = shift;
     my $q    = $self->query();
+	my $num_bouncing = 0; 
 
     try {
         my ( $admin_list, $root_login, $checksout, $error_msg ) =
           check_list_security( -cgi_obj => $q, );
         if ($checksout) {
             my $list = $admin_list;
+			
+            require DADA::MailingList::Settings;
+            my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+			
             require DADA::App::BounceHandler::ScoreKeeper;
             my $bsk =
               DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
             my $num = $bsk->num_scorecard_rows;
             if ( $num > 0 ) {
-                return commify($num);
+                $num_bouncing = commify($num);
             }
+			
+			if($DADA::Config::PLUGINS_ENABLED->{bounce_handler} == 0){ 
+				return '(plugin disabled)';
+			}
+			elsif ($ls->param('admin_email') ne $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Address}){ 
+				return '! not configured?'; 
+			}
 			else { 
-				return '0'; 
+				return $num_bouncing . ' / ' . $ls->param('admin_email'); 				
 			}
         }
     }
