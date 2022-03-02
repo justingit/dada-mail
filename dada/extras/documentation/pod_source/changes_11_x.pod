@@ -5,7 +5,6 @@
 
 =head1 11.18.0
 
-
 =head2 Focus 
 
 This version of Dada Mail is a major feature release. 
@@ -14,7 +13,8 @@ This version of Dada Mail is a major feature release.
 
 =head3 Support for libcurl via LWP::Protocol::Net::Curl as the WWW Engine
 
-Dada Mail use the LWP CPAN Perl module for many of functionality, from grabbing webpages to send, to calling web services, like Amazon SES. We've added the ability to change the actual WWW Engine from LWP to libcurl via the C<LWP::Protocol::Net::Curl> module. 
+Dada Mail use the LWP CPAN Perl module for many of functionality, from grabbing webpages to send, to calling web services, like Amazon SES. 
+We've added the ability to change the actual WWW Engine from LWP to libcurl via the C<LWP::Protocol::Net::Curl> module. 
 
 In some cases C<LWP> is not configured correctly to allow https connections, but if there's support for C<libcurl>, it could be. 
 
@@ -24,9 +24,22 @@ L<https://metacpan.org/pod/LWP::Protocol::Net::Curl>
 
 L<https://curl.se/>
 
+=head4 Support to set User Agent
+
 =head4 Support to enable/disable hostname verification
 
-=head4 Support to set User Agent
+
+Both these options may be set within the Dada Mail installer.
+
+=head2 Bugfixes
+
+=head3  "mailbox not found" bounce not parsed correctly #1087
+
+L<https://github.com/justingit/dada-mail/issues/1087>
+
+=head3  Ambiguous Date in Version #1084
+
+L<https://github.com/justingit/dada-mail/issues/1087>
 
 =head1 11.17.1
 

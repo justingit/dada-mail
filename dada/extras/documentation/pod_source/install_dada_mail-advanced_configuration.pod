@@ -242,6 +242,26 @@ The Data Cache caches mostly JSON data created by Dada Mail for the graphs and c
 
 B<Config Variable:> C<$DATA_CACHE>
 
+=head2 Configure WWW Engine
+
+The WWW Engine is used to access resoures outside of Dada Mail including webpages and images, 
+as well as used when connecting to web services like Amazon SES. 
+
+=head3 WWW Engine
+
+By default, Dada Mail uses the LWP WWW Engine, which is mature and robust. 
+As an alternative you also have the option to use curl (L<https://curl.se/>)
+via the C<LWP::Protocol::Net::Curl> CPAN Perl module, which you will need to install separately. 
+
+=head4 User Agent String
+
+The User Agent String is what's sent in the, C<User-Agent> header. 
+Customizing this string can help you track requests from Dada Mail. 
+
+=head4 Verify Hostname
+
+Disabling B<Verify Hostname> may help connect to https resources, if you cannot correctly verify hostnames.  
+
 =head2 Configure Email Parsing Engine 
 
 Dada Mail uses the, C<MIME::Tools> collection of Perl CPAN modules to do much of it's email creation and parsing. More information on MIME::Tools: 
