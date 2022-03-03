@@ -258,9 +258,9 @@ via the C<LWP::Protocol::Net::Curl> CPAN Perl module, which you will need to ins
 The User Agent String is what's sent in the, C<User-Agent> header. 
 Customizing this string can help you track requests from Dada Mail. 
 
-=head4 Verify Hostname
+=head4 Verify Hostnames
 
-Disabling B<Verify Hostname> may help connect to https resources, if you cannot correctly verify hostnames.  
+Disabling B<Verify Hostnames> may help connect to https resources, if you cannot correctly verify hostnames.  
 
 =head2 Configure Email Parsing Engine 
 
