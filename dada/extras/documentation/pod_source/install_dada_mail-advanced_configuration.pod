@@ -24,7 +24,109 @@ You may also install many of the plugins and extensions that come with Dada Mail
 
 Some of the plugins/extensions have additional configuration that will need to done, before they work completely.
 
-One plugin, B<Bounce Handler>, also requires you to fill out the credentials for the Bounce Handler email account you need to set up to capture bounced emails. See the documentation on the Bounce Handler for more information: 
+=head3 Bounce Handler
+
+Bounce Handler takes care of messages bounced back to you from your mass mailings from email addresses that cannot be delivered.
+These include messages sent to addresses that no longer exist, 
+or from addresses that block messages coming from your mailing lists. 
+Without this plugin installed and correctly configured, 
+these bounced messages are delivered to the List Owner, which can be inconvenient, 
+or even overwhelming. 
+
+It's utility is almost essential. 
+
+Before you configure Bounce Handler, 
+you will need to create an email account that Dada Mail can access via POP3 (or optionally IMAP). 
+A mail forward or alias will not suffice. 
+This email account should probably be administrated by the same system that's used by your mailing list's List Owner email address.
+We also suggest you use a very obvious name for the email address. 
+Example, "B<bounces>@yourdomain.com" usually drives the point home. 
+Once created, 
+make sure not to check this email address yourself, 
+as you'll get in the way of the plugin functioning correctly. 
+Note the Bounce Handler's email address login information, 
+as we'll be inputting that information into this section of the installer. 
+Every mailing list you make in your Dada Mail installation will use the same Bounce Handler email address. 
+
+Enter in the following, 
+
+=over
+
+=item * Bounce Handler Email Address
+
+=item * Mail Server
+
+=item * Username
+
+=item * Password
+
+=back 
+
+Bounce Handler also has the option to connect to the mail server using the credentials you just added using B<POP3> (the default) or B<IMAP> (a newer option). IMAP was added for accounts that are administrated by a third party service like Office365 or Gmail, 
+neither which we suggest, but it is an option. 
+
+The last option you will want to fill in is the, B<Port>. Set to B<Auto> by default, Bounce Handler will use, B<110> as the default, unless you're using a secure connection. If so: it will use port B<995>. 
+
+Other options are available for Bounce Handler, 
+which are revealed if you click the link labeled, 
+B<+/- Additional Configuration Options >.
+
+=head4 Additional Configuration Options
+
+B<Use Secure Sockets Layer> 
+
+Check this if you want to connect to your mail server over a secure connection. 
+You may have to adjust the B<Port> above to reflect the correct port to connect to. 
+Usually this is port B<995> for secure POP3 connections. 
+
+B<Upgrade from an insecure connection> 
+
+Some servers can switch between an insecure to a secure connection.
+If that's your server, check this option. 
+
+B<Verify SSL Certificate (POP3-only)> 
+
+Sometimes the client engine that Bounce Handler uses isn't set up to properly verify hostnames. 
+If that's you, uncheck this option.
+
+B<POP3 Authentication Type> 
+
+There's various ways POP3 credentials can be authenticated when talking to the POP3 server.
+If you have a preference, set it here. 
+
+B<Enable POP3 File Locking> 
+
+When enabled, only one connection to the POP3 server will happen at a time. 
+This is most likely what you want. 
+Sometimes the locking mechanism doesn't play nice with your specific hosting setup. 
+If that's you, uncheck this option. 
+
+B<Messages to Check at Once> 
+
+By default, Dada Mail will process 100 messages on each connection it makes, 
+and makes a connection every time the scheduled tasks are run by the cronjob you'll want to set up. 
+Processing messages takes time and if you process too many messages at once, 
+you won't finish all the scheduled tasks the app need to do, 
+before they're run again. 
+That scenariop can lead to problems. 
+There's also a chance that processing too many messages is too intense for the server to handle, 
+and you'll blow it up (figuratively). 
+For either of these scenarios, you'll want to B<lower> this number. 
+If you want to push the envelop on what can be done, B<raise> the number. 
+
+=head4 Test Bounce Handler Connection 
+
+Once you've inputted in all the options, 
+click the button labeled B<Test Bounce Handler Connection> to test that everything is working. 
+No bounced email messsages that may be awaiting will be processed, 
+but you'll be able to see if the connection is working, and that's a very important thing to verify. 
+You do not want bounced messages to be received, and not processed.  
+Make adjustments to the options above if you would like, 
+and retest. 
+
+=head4 More Information 
+
+See the documentation on the Bounce Handler for more information: 
 
 L<https://dadamailproject.com/d/bounce_handler.html>
 
