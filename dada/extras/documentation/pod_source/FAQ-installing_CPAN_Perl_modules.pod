@@ -21,7 +21,9 @@ L<https://metacpan.org/pod/Bundle::DadaMailXXL>
 
 In this FAQ, we're going to focus on using the cPanel Perl Module Installer, which may be available to you, if you're running a hosting account powered by cPanel.  
 
-=head1 Using the cPanel Perl Module Installer to install Bundle::DadaMail
+=head1 Method #1: Using the cPanel Perl Module Installer to install Bundle::DadaMail
+
+B<Note:> I<you may need a B<VPS or Dedicated hosting> plan to be allowed to install CPAN Perl Modules from your cPanel. You may get a report that C compiler support is not available on an inexpensive shared hosting account> 
 
 We're going to go ahead and install C<Bundle::DadaMail> which will give us all 
 the optional modules that Dada Mail uses. 
@@ -56,6 +58,32 @@ The process of fetching the module and installing it will then commence. Prepare
 A lot of diagnostics will be printed out, much of which you may ignore, unless the install doesn't work correctly. One reason the installation of a module will fail is because a compiler is not available. If you're on a shared host, you may be out of luck, unless your hosting support can help. If you have more control over your account, like access to WHM, you can turn on complier support in there. 
 
 Once the process is completed, click the button labeled, B<Go Back> at the bottom of the screen (or generally: go back to the B<Perl Modules> screen), and scroll below the, B<Install a Perl Module> form, where the table of B<Installed Perl Module(s)> is located. It should now be populated with many of the different Perl modules Dada Mail can now use. 
+
+=head1 Method #2: use cpanm to install CPAN Perl Modules
+
+C<cpanm> is a command line CPAN Perl module installer. If you have ssh access to your account (this may require you to contact support to enable this). You can install C<cpanm>, then install CPAN Perl modules this way. Here's how: 
+
+First, ssh into your hosting account. In this example, I'll be ssh'ing into a Bluehost shared hosting account. I had to contact support first to enable ssh access: 
+
+	ssh myuser@mywebsite.com
+
+B<myuser> is the main username for my account; B<mywebsite.com> is the name of my website associated with my account.
+
+You will be asked to enter your password. Once you've successfully done that, you will be logged in and should see a prompt to issue further commands.  
+
+Install C<cpanm> by issuing the following command: 
+
+	curl -L https://cpanmin.us | perl - App::cpanminus
+
+Once installed, you're ready to use C<cpanm>. 
+
+To install C<Bundle::DadaMail> type in the following command: 
+
+	cpanm Bundle::DadaMail
+
+This may take a little time to complete. You may get errors when running this about some modules not being able to be installed. You can try to install these modules individually to debug specific problems. 
+
+Use C<cpanm> to also install individual modules - just replaced, C<Bundle::DadaMail> with whatever module you would like to install. 
 
 =head1 Other ways to install CPAN Perl Modules
 
