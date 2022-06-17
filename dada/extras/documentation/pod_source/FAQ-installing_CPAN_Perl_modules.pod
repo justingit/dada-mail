@@ -23,7 +23,7 @@ In this FAQ, we're going to focus on using the cPanel Perl Module Installer, whi
 
 =head1 Method #1: Using the cPanel Perl Module Installer to install Bundle::DadaMail
 
-B<Note:> you may need a B<VPS or Dedicated hosting> plan to be allowed to install CPAN Perl Modules from your cPanel. You may get a report that C compiler support is not available on an inexpensive shared hosting account. You may be able to contact your hosting account support to have them enable the B<C compiler>, but putting you in the, B<Compiler group> (which is terminology used by companies such as Bluehost).
+B<Note:> you may need a B<VPS or Dedicated hosting> plan to be allowed to install CPAN Perl Modules from your cPanel. You may get a report that C compiler support is not available on an inexpensive shared hosting account. You may be able to contact your hosting account support to have them enable the B<C compiler>, by putting you in the, B<Compiler group> (which is terminology used by companies such as Bluehost).
 
 We're going to go ahead and install C<Bundle::DadaMail> which will give us all 
 the optional modules that Dada Mail uses. 
