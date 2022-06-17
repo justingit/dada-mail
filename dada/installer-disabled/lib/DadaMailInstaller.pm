@@ -5763,7 +5763,12 @@ sub backup_dir {
 
     require File::Copy::Recursive;
     File::Copy::Recursive::dirmove( $source, $target )
-      or die $!;
+      or die 'could not move from, ' 
+	  . $source 
+	  . ' to, ' 
+	  .  $target 
+	  . 'because, ' 
+	  .  $!;
 	  
     installer_chmod( $DADA::Config::FILE_CHMOD, $target );
 	  
