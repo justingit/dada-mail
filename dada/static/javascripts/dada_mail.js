@@ -422,8 +422,11 @@ jQuery(document).ready(function($){
 						
 						if (content.status === 0){ 
 							
-							var return_this = '<p><strong>Problems found:</strong></p><pre>' 
-								+ content.errors 
+							var encoded_errors = encode_html_entities(content.errors);
+							
+							alert(encoded_errors);
+							var return_this = '<p><strong>Could not render preview:</strong></p><pre>' 
+							+ encoded_errors
 								+ '</pre>';
 								
 								$.colorbox({
@@ -5593,3 +5596,10 @@ function rand_string() {
 	return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
+
+
+function encode_html_entities(r) {
+  return r.replace(/[\x26\x0A\x3c\x3e\x22\x27]/g, function(r) {
+	return "&#" + r.charCodeAt(0) + ";";
+  });
+}

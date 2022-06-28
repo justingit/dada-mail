@@ -2677,10 +2677,13 @@ sub message_size_check {
 
 
 sub valid_template_markup_check { 
+
     my $self   = shift;
 	my $str    = shift; 
 	my $expr   = shift || 1; # probably just going to be 1...
 	my $error_str = undef; 
+	
+	
 	
 	require DADA::Template::Widgets;
     my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
@@ -2724,6 +2727,74 @@ sub valid_template_markup_check {
           . $str;
     	  return (0, $errors);
 	}
+	
+	
+	
+	
+	undef $valid; 
+	undef $errors; 
+	
+	# HTML::Tree does some funky things in the pipeline: 
+	my $n_html; 
+	my $html_tree = 1; 
+	
+    try {
+        require HTML::Tree;
+        require HTML::Element;
+        require HTML::TreeBuilder;
+
+        my $root = HTML::TreeBuilder->new(
+            ignore_unknown      => 0,
+            no_space_compacting => 1,
+            store_comments      => 1,
+			no_expand_entities  => 1, 
+			
+        );
+		
+		my $html = $str;
+		
+        $root->parse($html);
+        $root->eof();
+        $root->elementify();
+ 	   
+	    # no actual manipulation
+ 
+        $n_html = $root->as_HTML( undef, '  ');
+		undef $root;
+    }
+    catch {
+		$html_tree = 0;
+    };
+	
+	if($html_tree == 1){
+		require DADA::Template::Widgets;
+	    my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
+	        {
+	            -data => \$n_html,
+	            -expr => $expr,
+	        }
+	    );
+	    if ( $valid == 0 ) {
+	        my $munge = quotemeta('/fake/path/for/non/file/template');
+	        $errors =~ s/$munge/line/;
+	        $error_str = $errors . "\n"
+	          . '-' x 72 . "\n"
+	          . $str;
+	    	  return (0, $errors);
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	# Or, everything is cool, 
 	return (1, undef)
@@ -2783,7 +2854,7 @@ sub report_mass_mail_errors {
 	            },
 	            -screen => 'report_mass_mailing_errors_screen.tmpl',
 	            -vars   => {
-					 errors     => plaintext_to_html({-str => $errors}), 
+					 errors     => encode_html_entities($errors), 
 	                 draft_id   => $args->{-draft_id},
 	                 draft_role => $args->{-draft_role},
 					 wrap       => 1, 
