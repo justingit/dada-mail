@@ -311,8 +311,72 @@ my ( $total_num, $subscribers ) = $lh->search_list(
         -partial_listing  => $partial_listing, 
     }
 );
+#diag '$total_num: ' . $total_num; 
 ok($total_num == $lh->num_subscribers, "everyone is returned!"); 
 ##############################################################################
+
+
+
+
+#diag('$lh->num_subscribers: ' . $lh->num_subscribers);
+# We're going to remove the actual Profiles, then see if searching returns results that we would like: 
+my $b4_total_num = $total_num;
+
+#diag '$b4_total_num: ' . $b4_total_num; 
+require DADA::Profile; 
+( $total_num, $subscribers ) = $lh->search_list(
+    {
+        -type            => 'list',
+        '-length'  => 100,
+    }
+);
+for(@$subscribers){ 
+	my $dp = DADA::Profile->new( { -email => $_ } );
+	$dp->remove; 
+}
+
+
+
+
+$partial_listing = { 
+    'new_field' => {
+        -operator => '!=',
+        -value    => 'something',
+    }, 
+};  
+undef $lh; 
+my    $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+my ( $total_num, $subscribers ) = $lh->search_list(
+    {
+        -partial_listing  => $partial_listing, 
+    }
+);
+#diag('$total_num: ' . $total_num);
+ok($total_num == $lh->num_subscribers, "everyone is returned! 1"); 
+ok($total_num == $b4_total_num, 'total is the same 1');
+
+
+
+$partial_listing = { 
+    'new_field' => {
+        -operator => 'NOT LIKE',
+        -value    => 'something',
+    }, 
+};  
+undef $lh; 
+my    $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+my ( $total_num, $subscribers ) = $lh->search_list(
+    {
+        -partial_listing  => $partial_listing, 
+    }
+);
+#diag('$total_num: ' . $total_num);
+ok($total_num == $lh->num_subscribers, "everyone is returned! 2"); 
+ok($total_num == $b4_total_num, 'total is the same 2');
+
+
+
+
 
 
 

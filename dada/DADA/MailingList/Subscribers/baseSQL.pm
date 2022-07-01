@@ -435,7 +435,8 @@ sub SQL_subscriber_profile_join_statement {
             my $search_pre       = '';
             my $search_app       = '';
             my $search_binder    = '';
-
+			my $add_is_null      = 0; 
+			
             if($field ne 'subscriber.timestamp') { 
                 if ( $args->{-partial_listing}->{$field}->{-operator} eq '=' ) {
                     $search_op     = '=';
@@ -454,28 +455,40 @@ sub SQL_subscriber_profile_join_statement {
                     $search_pre    = '';
                     $search_app    = '';
                     $search_binder = 'AND';
+					$add_is_null   = 1; 
                 }
                 elsif ( $args->{-partial_listing}->{$field}->{-operator} eq 'NOT LIKE' ) {
                     $search_op     = 'NOT LIKE';
                     $search_pre    = '%';
                     $search_app    = '%';
                     $search_binder = 'AND';
+					$add_is_null   = 1;
                 }
-
+									
                 my @terms = split(',', $args->{-partial_listing}->{$field}->{-value} );
                 foreach my $term(@terms) {
     				$term = strip($term); 
-                    push(
-                        @s_snippets,
-                        $table . '.'
-                          . $field . ' '
-                          . $search_op . ' '
-                          . $self->{dbh}->quote(
-                                $search_pre
-                              . $term
-                              . $search_app
-                          )
-                    );
+					
+					my $query_snippet = 					
+	                    $table . '.'
+	                      . $field . ' '
+	                      . $search_op . ' '
+	                      . $self->{dbh}->quote(
+	                            $search_pre
+	                          . $term
+	                          . $search_app
+	                      );
+					if($add_is_null == 1){ 
+						
+						$query_snippet .= 
+							' OR ' 
+							. $table 
+							. '.'
+							. $field 
+							. ' IS NULL ' 
+					}  
+					  
+                    push( @s_snippets, $query_snippet);
                 }
     			 push( @add_q, '(' . join( ' ' . $search_binder . ' ', @s_snippets ) . ')' );
     		}
