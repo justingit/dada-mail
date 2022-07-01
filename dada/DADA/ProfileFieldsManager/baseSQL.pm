@@ -137,7 +137,8 @@ sub add_field {
 		carp $err; 
         return undef;
     }
-
+	
+	# Probably a good idea to add, "NOT NULL" here. 
     my $query =
       'ALTER TABLE '
       . $self->{sql_params}->{profile_fields_table}

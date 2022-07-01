@@ -336,7 +336,7 @@ DADA::MailingList::Settings
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2020 Justin Simoni 
+Copyright (c) 1999 - 2022 Justin Simoni 
 https://justinsimoni.com 
 All rights reserved. 
 

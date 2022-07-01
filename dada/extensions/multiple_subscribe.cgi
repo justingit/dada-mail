@@ -478,7 +478,7 @@ happening behind the curtains.
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2020 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2022 Justin Simoni All rights reserved. 
 
 To contact info, please see: 
 
