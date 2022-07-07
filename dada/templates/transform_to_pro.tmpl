@@ -1,5 +1,4 @@
 <!-- begin transform_to_pro.tmpl -->
-
 <div id="transform_to_pro"></div>
 
 <h1>Pro Dada makes Dada Mail <em>Awesome</em></h1>
@@ -21,6 +20,7 @@
 	<p>
 		<a 
 			href="https://dadamailproject.com/purchase/pro.html"
+			target="_blank"
 		>
 			Click the button below
 		</a>
@@ -42,6 +42,17 @@
 <p> Most Excellent! Please enter your Pro Dada username and password below, 
 	and we'll start the transformation process:
 </p>
+
+<!-- tmpl_unless can_use_LWP_Protocol_https -->
+	<div class="alert-box warning radius">
+		The, <code>LWP::Protocol::https</code> CPAN module
+		will most need to be installed for the below to work correctly.
+	</div>
+<!-- /tmpl_unless--> 
+	
+	
+
+
 <form>
 	
 	<div class="row">

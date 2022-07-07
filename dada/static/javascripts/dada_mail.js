@@ -1039,7 +1039,11 @@ jQuery(document).ready(function($){
 				maxWidth: '720px',
 				maxHeight: '480px',
 				width: '95%',
-				height: '95%'				
+				height: '95%',				
+				onComplete:function(){
+					remove_csrf_token();
+					add_csrf_token();    
+				}
 			});
 			$(window).resize(function(){
 			    $.colorbox.resize({

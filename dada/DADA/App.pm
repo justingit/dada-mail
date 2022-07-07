@@ -16299,14 +16299,13 @@ sub transform_to_pro {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-
                 -expr => 1,
                 -vars => {
-                    screen => 'transform_to_pro',
-                    title  => 'Transform into Pro Dada',
-                    list   => $list,
-                    done   => $done,
-
+                    screen                     => 'transform_to_pro',
+                    title                      => 'Transform into Pro Dada',
+                    list                       => $list,
+                    done                       => $done,
+					can_use_LWP_Protocol_https => scalar(can_use_LWP_Protocol_https()), 
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -16330,6 +16329,9 @@ sub transform_to_pro {
         my $ht_errors = {};
         if ( keys %$cerrors ) {
             $ht_errors->{ 'error_' . $_ } = 1;
+			if(can_use_LWP_Protocol_https() == 0){ 
+	            $ht_errors->{ 'error_WP_Protocol_https_not_installed' } = 1;
+			}
         }
 
         my $scrn = DADA::Template::Widgets::screen(
@@ -16986,7 +16988,7 @@ __END__
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2022Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2022 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
