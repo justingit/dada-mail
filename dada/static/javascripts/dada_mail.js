@@ -1631,7 +1631,8 @@ jQuery(document).ready(function($){
 				flavor: 'admin_profile_delivery_preferences',
 				email: dp_email, 
 				delivery_prefs: $(this).val(),
-				process: 'ajax'
+				process: 'ajax', 
+				_csrf_token:  $('#_csrf_token').val()
 			},
 			success: function(content) {
 				
