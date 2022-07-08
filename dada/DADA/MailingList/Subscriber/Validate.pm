@@ -609,6 +609,9 @@ sub sfs_check {
 
 sub suspicious_activity_by_ip {
 	 
+	warn 'in, suspicious_activity_by_ip()'
+		if $t; 
+
 	my $self = shift; 
 	my ($args) = @_; 
 	my $ip = undef; 
@@ -621,7 +624,7 @@ sub suspicious_activity_by_ip {
 	}
 	
 	if(! defined($ip) || length($ip) == 0) {
-		warn 'no ip found.';
+		warn 'no ip found for suspicious_activity_by_ip';
 		return 1; 
 	}
 	
@@ -636,7 +639,7 @@ sub suspicious_activity_by_ip {
 	
 	#require Data::Dumper; 
 	#warn '$tokens' . Data::Dumper::Dumper($tokens);
-	warn (scalar @$tokens) . " returned"
+	warn scalar(@$tokens) . " token returned"
 		if $t; 
 	
 	my $r = {}; 
@@ -644,9 +647,9 @@ sub suspicious_activity_by_ip {
 	foreach my $t(@$tokens){ 
 			
 		my $data = $ct->fetch($t->{token});
-		#warn '$data->{data}->{flavor}' . $data->{data}->{flavor}; 
 		next 
 			if $data->{data}->{flavor} ne 'sub_confirm'; 
+			
 		push(
 			@{
 				$r->{
@@ -657,7 +660,8 @@ sub suspicious_activity_by_ip {
 		); 
 	}
 
-	# warn '$r' . Data::Dumper::Dumper($r);
+	warn '$r' . Data::Dumper::Dumper($r) 
+	 	if $t; 
 	
 	for my $c(keys %$r){ 
 		my $unique_count = 0; 
@@ -675,20 +679,22 @@ sub suspicious_activity_by_ip {
 		# warn '$tmp_l' . Data::Dumper::Dumper($tmp_l);
 		$unique_count = scalar keys %$tmp_l;
 		
-		# warn '$unique_count' . $unique_count; 
+		 warn '$unique_count' . $unique_count
+		 	if $t; 
 		
 		next if($unique_count < 3);
-		#warn '$c'  . $c; 
-		#warn '$ip' . $ip; 
-		if($c eq $ip) { 
+		warn '$c'  . $c  if $t; 
+		warn '$ip' . $ip if $t; 
+		if($c eq ip_address_logging_filter($ip)) { 
 			warn 'IP Address: ' 
-			. $ip 
+			. ip_address_logging_filter($ip) 
 			. ' flagged for suspicious activity in, suspicious_activity_by_ip(), email: ' 
 			. $args->{-email};
 			return 0;
 		}
 		else { 
-			# warn 'IP Address: ' . $ip . ' check out!';
+			 warn 'IP Address: ' . ip_address_logging_filter($ip) . ' checks out!'
+			 	if $t; 
 		}
 	}
 	return 1; 
