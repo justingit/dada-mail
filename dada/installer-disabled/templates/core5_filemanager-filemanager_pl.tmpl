@@ -52,6 +52,8 @@ sub check_security {
 	# I bet this now has to be a json, something or other...
 	require DADA::App::Guts; 
 
+	$q->param('_csrf_token', $q->cookie('_csrf_token'));
+	
     my ( $admin_list, $root_login, $checksout, $error_msg ) = DADA::App::Guts::check_list_security(
         -cgi_obj         => $q,
         -Function        => 'send_email send_url_email',
