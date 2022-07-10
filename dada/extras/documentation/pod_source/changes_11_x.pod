@@ -3,6 +3,38 @@
 
 =encoding utf-8
 
+=head1 11.18.1
+
+=head2 Focus 
+
+This version of Dada Mail is a minor bug release. 
+
+=head2 Bugfixes
+
+=head3 Core 5 File Manager Perl connector/upload script fails to work correctly if you set additional Perl libaries
+
+L<https://github.com/justingit/dada-mail/issues/1108>
+
+=head3 Changing Delivery Preferences (individual, digest, vacation) in Membership: View causes csrf issue
+
+L<https://github.com/justingit/dada-mail/issues/1107>
+
+=head3 "Transform to Pro" feature doesn't work
+
+L<https://github.com/justingit/dada-mail/issues/1106>
+
+=head3  Search Results (including Partial Mailing List Sending) are incorrect if subscriber doesn't have a profile
+
+L<https://github.com/justingit/dada-mail/issues/1105>
+
+=head3 Template sanity check for Send a Webpage
+
+L<https://github.com/justingit/dada-mail/issues/1103>
+
+=head3  suspicious_activity_by_ip_check not working correctly
+
+L<https://github.com/justingit/dada-mail/issues/1100>
+
 =head1 11.18.0
 
 =head2 Focus 
