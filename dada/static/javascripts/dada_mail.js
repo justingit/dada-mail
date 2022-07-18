@@ -1897,6 +1897,12 @@ jQuery(document).ready(function($){
 			  maxHeight: '480px'
 			};
 			$.colorbox({
+				
+				opacity: 0.50,
+				maxWidth: '720px',
+				maxHeight: '480px',
+				width: '95%',
+				height: '95%',	
 			    href: $("#s_program_url").val(),
 				data: {
 					flavor: 'plugins',
@@ -1905,11 +1911,10 @@ jQuery(document).ready(function($){
 					new_name: $('#new_name').val(),
 					_csrf_token:  $('#_csrf_token').val()
 				},
-				opacity: 0.50,
-				maxWidth: '720px',
-				maxHeight: '480px',
-				width: '95%',
-				height: '95%'				
+				onComplete:function(){
+					remove_csrf_token();
+					add_csrf_token();    
+				}			
 			});
 			$(window).resize(function(){
 			    $.colorbox.resize({
@@ -1917,9 +1922,6 @@ jQuery(document).ready(function($){
 			      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
 			    });		
 			});
-			
-			
-			
 		});
 	}
 

@@ -280,9 +280,10 @@ require DADA::App::ScreenCache;
 my $c = DADA::App::ScreenCache->new; 
    $c->flush;
 
-return (
-    {-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?flavor=logout&login_url='. $DADA::Config::S_PROGRAM_URL . '?flavor=' . $DADA::Config::ADMIN_FLAVOR_NAME}, undef); 
 
+my $dadamail = new DADA::App( QUERY => $q, );
+   $dadamail->logout();
+   
 }
 
 sub cgi_obj { 
