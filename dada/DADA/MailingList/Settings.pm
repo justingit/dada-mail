@@ -2,20 +2,16 @@ package DADA::MailingList::Settings;
 use strict;
 use lib qw(./ ../ ../../ ../../DADA ../perllib); 
 
-
-my $t = 0; 
-
-use Carp qw(croak carp); 
-
-my $type; 
-my $backend; 
 use DADA::Config qw(!:DEFAULT); 	
 use DADA::App::Guts; 
 use DADA::Template::Widgets; 
 use Try::Tiny; 
 use Carp qw(croak carp); 
 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_Settings};
 
+my $type; 
+my $backend; 
 my $dbi_obj = undef; 
 
 sub _init  { 
