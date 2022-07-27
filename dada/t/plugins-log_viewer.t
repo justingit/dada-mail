@@ -25,7 +25,8 @@ $DADA::Config::PROGRAM_USAGE_LOG = $DADA::Config::FILES . '/dada_usage.txt';
 
 use DADA::Logging::Usage; 
 
-my $log =  new DADA::Logging::Usage;;
+my $log =  new DADA::Logging::Usage;
+
    $log->trace('<found>');
 
 
@@ -46,13 +47,19 @@ ok(log_viewer::test_sub() eq q{Hello, World!});
 
 $q->param('query', 'found'); 
 
+# I do not know why this is needed: 
+`chmod 644 $DADA::Config::PROGRAM_USAGE_LOG`;
+
 my $results   = log_viewer::search_logs(
     $q,
     [$DADA::Config::PROGRAM_USAGE_LOG], 
     'found',
     1, 
     $list
-);			
+);		
+
+diag "$results: " . $results; 
+	
 				
 my $find_this = quotemeta('<em class="dm_highlighted">found</em>'); 
 like($results, qr/$find_this/, "found the stuff, escaped."); 
