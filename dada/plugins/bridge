@@ -94,6 +94,11 @@ my $check_deletions;
 my $root_login;
 my $checksums;
 
+my $dont_test_age_of_messages = 0;
+sub dont_test_age_of_messages { 
+	$dont_test_age_of_messages = 1; 
+}
+
 init_vars();
 sub reset_globals {
     $parser          = new MIME::Parser;
@@ -2292,17 +2297,17 @@ sub validate_msg {
     else {
         $r .= "\t* SpamAssassin check is disabled.\n";
     }
-
-
-	# Message too old test
-	my ($too_old_check, $too_old_r) = test_msg_is_too_old($entity);
-	if($too_old_check == 1){ 
-		$status = 0; 
-		$errors->{message_too_old} = 1; 
-		 $r .= "\t* Message is more than 7 days old, will not process/send\n";
-	}	
-	#/Message too old test 
 	
+	if($dont_test_age_of_messages != 1) {
+		# Message too old test
+		my ($too_old_check, $too_old_r) = test_msg_is_too_old($entity);
+		if($too_old_check == 1){ 
+			$status = 0; 
+			$errors->{message_too_old} = 1; 
+			 $r .= "\t* Message is more than 7 days old, will not process/send\n";
+		}	
+		#/Message too old test 
+	}
 	
     $r .= "\n";
 

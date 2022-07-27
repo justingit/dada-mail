@@ -28,8 +28,15 @@ use Test::More qw(no_plan);
 my $list = dada_test_config::create_test_list;
 
 my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+   $ls->param('bridge_list_email_type',         'mail_forward_pipe');
+   undef $ls; 
+my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+   
+
 my $li = $ls->get; 
 require 'plugins/bridge';
+bridge::dont_test_age_of_messages(); 
+
 use CGI; 
 my $q = new CGI; 
 
@@ -102,7 +109,13 @@ ok($ls->param('disable_discussion_sending') == 0, "we've enabled this crazy thin
 $errors = {}; 
 undef $status; 
  
-
+# First, we actually have to set everything up, so it'll work: 
+$ls->param('disable_discussion_sending',  0                     );
+$ls->param('discussion_pop_email',       'listemail@example.com'); 
+$ls->param('list_owner_email',           'listowner@example.com'); 
+$ls->param('rewrite_anounce_from_header', 0                     ); 
+$ls->param('enable_bulk_batching',        0                     ); 
+$ls->param('get_finished_notification',   0                     ); 
 
 ( $status, $errors, $r ) = bridge::inject(
 	{ 
@@ -112,6 +125,8 @@ undef $status;
 		-test_mail => 1, 
 	}
 );
+
+
 
 ok($status == 0, "inject returning 0 - it's not disabled, but we've got an improper email message"); 
 use Data::Dumper; 
@@ -127,13 +142,11 @@ ok($errors->{blank_message} == 1, "Error Produced is that the message is blank. 
 my $msg = slurp('t/corpus/email_messages/simple_utf8_subject.txt'); 
 #diag $msg; 
 
-# First, we actually have to set everything up, so it'll work: 
-$ls->param('disable_discussion_sending',  0                     );
-$ls->param('discussion_pop_email',       'listemail@example.com'); 
-$ls->param('list_owner_email',           'listowner@example.com'); 
-$ls->param('rewrite_anounce_from_header', 0                     ); 
-$ls->param('enable_bulk_batching',        0                     ); 
-$ls->param('get_finished_notification',   0                     ); 
+
+
+undef $ls; 
+my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+
 
 bridge::reset_globals(); 
 ( $status, $errors, $r ) = bridge::inject(
@@ -153,7 +166,11 @@ wait_for_msg_sending();
 
 
 
+
 my $mh = DADA::Mail::Send->new({-list => $list}); 
+
+#diag 'test_send_file: ' . $mh->test_send_file; 
+
 my $sent_msg =  slurp($mh->test_send_file); 
    $sent_msg = safely_decode($sent_msg); 
    
@@ -323,6 +340,10 @@ diag "NOW WE START.";
 
 $msg = slurp('t/corpus/email_messages/simple_utf8_msg.eml'); 
 ($status, $errors) = bridge::validate_msg($ls, \$msg);
+
+use Data::Dumper; 
+diag Dumper($errors);
+
 
 ok($status == 1, "status returning 1"); 
 
