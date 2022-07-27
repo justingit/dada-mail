@@ -105,7 +105,7 @@ BEGIN{ use_ok('DADA::Mail::MailOut'); }
 SKIP: {
     eval { require DBI;};
      skip "DBI not installed", 1 if $@;
-     use_ok('DADA::MailingList::Archives::baseSQL'); 
+     use_ok('DADA::MailingList::Archives'); 
 }
 
 
@@ -116,7 +116,7 @@ SKIP: {
 
      skip "DBI not installed", 1 if $@;
 
-     use_ok('DADA::MailingList::Archives::MySQL'); 
+     use_ok('DADA::MailingList::Archives'); 
 }
 
 SKIP: {
@@ -124,7 +124,7 @@ SKIP: {
 
      skip "DBI not installed", 1 if $@;
 
-     use_ok('DADA::MailingList::Archives::PostgreSQL'); 
+     use_ok('DADA::MailingList::Archives'); 
 }
 
 
@@ -136,7 +136,7 @@ SKIP: {
 
      skip "DBI not installed", 1 if $@;
 
-     use_ok('DADA::MailingList::Settings::baseSQL'); 
+     use_ok('DADA::MailingList::Settings'); 
 }
 
 
@@ -147,7 +147,7 @@ SKIP: {
 
      skip "DBI not installed", 1 if $@;
 
-    use_ok('DADA::MailingList::Settings::MySQL'); 
+    use_ok('DADA::MailingList::Settings'); 
 
 }
 
@@ -156,7 +156,7 @@ SKIP: {
 
      skip "DBI not installed", 1 if $@;
 
-    use_ok('DADA::MailingList::Settings::PostgreSQL'); 
+    use_ok('DADA::MailingList::Settings'); 
 }
 
 
@@ -169,7 +169,7 @@ SKIP: {
 
      skip "DBI not installed", 1 if $@;
 
-    use_ok('DADA::MailingList::Subscribers::baseSQL'); 
+    use_ok('DADA::MailingList::Subscribers'); 
 
 }
 
@@ -178,7 +178,7 @@ SKIP: {
 
      skip "DBI not installed", 1 if $@;
 
-    use_ok('DADA::MailingList::Subscribers::MySQL'); 
+    use_ok('DADA::MailingList::Subscribers'); 
 
 }
 
@@ -187,7 +187,7 @@ SKIP: {
 
      skip "DBI not installed", 1 if $@;
 
-    use_ok('DADA::MailingList::Subscribers::PostgreSQL');
+    use_ok('DADA::MailingList::Subscribers');
 
 }
 
