@@ -49,8 +49,8 @@ SKIP: {
 	
     my $ls2 = DADA::MailingList::Settings->new({-list => $list2}); 
     
-       $ls2->save({black_list => 1}); 
-    
+       $ls2->save({ -settings => {black_list => 1}}); 
+       
     my $li2 = $ls2->get(); 
     
     ok($li2->{black_list} == 1, "black list enabled."); 
