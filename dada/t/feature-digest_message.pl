@@ -22,7 +22,7 @@ use       DADA::App::Guts;
 
 my $lh  = DADA::MailingList::Subscribers->new({-list => $list}); 
 my $ls  = DADA::MailingList::Settings->new({-list => $list}); 
-my $dps = DADA::Profile::Settings->new(); 
+my $dps = DADA::Profile::Settings->new({-list => $list}); 
 
 my $s = $lh->subscription_list();
 ok(scalar(@$s) == 0); 
