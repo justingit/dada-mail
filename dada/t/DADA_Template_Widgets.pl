@@ -822,15 +822,23 @@ $scalar = '<!-- tmpl_strftime %p -->';
 $r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
 ok($r eq 'AM');
 
-# This doesn't seem to work... 
-## %P 	lower-case 'am' or 'pm' based on the given time 	Example: am for 00:31, pm for 22:23
-#$scalar = '<!-- tmpl_strftime %P -->'; 
-#$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
-#ok($r eq 'am');
+
+
+SKIP: {
+    skip('No work on Mac OS', 1)
+		if $^O =~ m/MacOS|darwin/;
+
+	# %P 	lower-case 'am' or 'pm' based on the given time 	Example: am for 00:31, pm for 22:23
+	$scalar = '<!-- tmpl_strftime %P -->'; 
+	$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+	diag('$r:' . $r);
+	ok($r eq 'am');
+}
 
 # %r 	Same as "%I:%M:%S %p" 	Example: 09:34:17 PM for 21:34:17
 $scalar = '<!-- tmpl_strftime %r -->'; 
 $r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+
 ok($r eq '01:22:15 AM');
 
 # %R 	Same as "%H:%M" 	Example: 00:35 for 12:35 AM, 16:44 for 4:44 PM
@@ -874,20 +882,19 @@ $scalar = '<!-- tmpl_strftime %s -->';
 $r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
 ok($r eq '1359102135');
 
-TODO: {
-    local $TODO = 'No idea why, "%x" gives "01/25/2013" and not, 01/25/13';	
-
-	# %x 	Preferred date representation based on locale, without the time 	Example: 02/05/09 for February 5, 2009
-	$scalar = '<!-- tmpl_strftime %x -->'; 
-	$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
-	ok($r eq '01/25/13'); #?!?!
-}; 
+# This is different based on locale so hard to test. 
+# %x 	Preferred date representation based on locale, without the time 	Example: 02/05/09 for February 5, 2009
+#$scalar = '<!-- tmpl_strftime %x -->'; 
+#$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+#diag '$r: ' . $r; 
+#ok($r eq '01/25/2013'); #?!?!
 
 
 # Miscellaneous 	--- 	---
 # %n 	A newline character ("\n") 	---
 $scalar = '<!-- tmpl_strftime %n -->'; 
 $r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+
 ok($r eq "\n");
 
 # %t 	A Tab character ("\t") 	---
