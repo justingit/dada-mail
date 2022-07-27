@@ -81,6 +81,10 @@ sub search {
 
     croak "A List of Files to search have not been passed. "
         if !exists( $args->{-files});
+		
+    croak "A List of Files to search have not been passed. "
+        if scalar(@{$args->{-files}}) <= 0; 
+	
         
     my @terms = split(' ', $args->{-query}); 
     for(@terms){ 
