@@ -16,16 +16,6 @@ use Test::More qw(no_plan);
 
 BEGIN{ use_ok('DADA::App::BounceHandler::ScoreKeeper'); }
 
-SKIP: {
-
-eval { require DBI };
-     skip "DBI not installed", 1 if $@;     
-     use_ok('DADA::App::BounceHandler::ScoreKeeper::baseSQL'); 
-}
-
-
-
-
 BEGIN{ use_ok('DADA::App::BounceHandler'); }
 
 BEGIN{ use_ok('DADA::App::DataCache'); }
