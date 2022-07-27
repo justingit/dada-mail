@@ -148,53 +148,6 @@ sub reset_browser {
 }
 
 
-=cut 
-
-useless. 
-
-sub list_identities {  
-    my $self   = shift; 
-	my ($args) = @_; 
-	
-	my $params = {
-	    Action       => 'ListIdentities', 
-	};
-	my ($response_code, $response_content) = $self->call_ses($params, {});
-
-        use Data::Dumper; 
-        print '$response_content ' . Dumper($response_content); 
-        
-	if ( $self->trace ) {
-		print $response_code . "\n"; 
-        print $response_content . "\n"; 
-	}
-
-	if($response_code eq '200') { 
-		#if ( $self->trace ) {
-		#	$self->print_response($response_content);
-    	#}    
-	#	return ($response_code, $self->get_response($response_content));
-#	    return ($response_code, $response_content); 
-        my $r; 
-        my $parser = XML::LibXML->new();
-        my $dom = $parser->parse_string($response_content);
-        my $xpath = XML::LibXML::XPathContext->new($dom);
-        $xpath->registerNs('ns', $aws_email_ns);
-
-        my @nodes = $xpath->findnodes('/ns:ListIdentitiesResponse' . '/ns:ListIdentitiesResult'  . '/ns:Identities');
-        my @a = (); 
-        foreach my $node (@nodes) {
-            my $text = $node->textContent();
-        	push(@a, $text);
-        }
-		return ($response_code, \@a);
-	}
-	else { 
-		return ($response_code, $response_content);
-	}
-}
-
-=cut
 
 sub sender_verified { 
 
@@ -289,24 +242,7 @@ sub verify_sender {
 	else { 
 		return ($response_code, $response_content);
 	}
-	
-=cut
-	switch ($response_code) {
-	    case '200' {              # OK
-			if ( $self->trace ) {
-				print $response_code . "\n"; 
-		        print $response_content . "\n"; 
-		        $self->print_response($response_content);
-			}
-			return 0;
-	    }
-	    case '400' { return  1; }   # BAD_INPUT
-	    case '403' { return 31; }   # SERVICE_ACCESS_ERROR
-	    case '500' { return 32; }   # SERVICE_EXECUTION_ERROR
-	    case '503' { return 30; }   # SERVICE_ERROR
-	    else       { return -1; }
-	}
-=cut
+
 
 }
 
@@ -333,22 +269,7 @@ sub get_stats {
 		return ($response_code, $response_content);
 	}
 
-=cut	
-	switch ($response_code) {
-	    case '200' {              # OK
-		
-			if ( $self->trace ) {
-		        print $self->get_stats_response($response_content);
-			}	
-	        return  0;
-	    }
-	    case '400' { return  1; }   # BAD_INPUT
-	    case '403' { return 31; }   # SERVICE_ACCESS_ERROR
-	    case '500' { return 32; }   # SERVICE_EXECUTION_ERROR
-	    case '503' { return 30; }   # SERVICE_ERROR
-	    else       { return -1; }
-	}	
-=cut
+
 
 }
 # Calculates the optimal number of tabs per column for best display style.
@@ -435,27 +356,9 @@ sub get_stats_response {
     my $first_column;
     my @nodes;
 
-=cut
-    if ($opts{'s'}) {
-        @nodes = $xpath->findnodes('/ns:GetSendStatisticsResponse' .
-                                   '/ns:GetSendStatisticsResult' .
-                                   '/ns:SendDataPoints' .
-                                   '/ns:member');
-        @nodes = sort {
-            my ($x) = $a->getChildrenByLocalName('Timestamp');
-            my ($y) = $b->getChildrenByLocalName('Timestamp');
-            $x->textContent() cmp $y->textContent();
-        } @nodes;
-	$first_column = 'Timestamp';
-    } elsif ($opts{'q'}) {
-=cut
-
-        @nodes = $xpath->findnodes('/ns:GetSendQuotaResponse' .
+    @nodes = $xpath->findnodes('/ns:GetSendQuotaResponse' .
                                    '/ns:GetSendQuotaResult');
 
-=cut
-    }
-=cut
     if ($#nodes != -1) {
         my $tab_size = 8;
         my @tabs = compute_tabs(\@nodes, $xpath, $tab_size);
@@ -467,7 +370,6 @@ sub get_stats_response {
 
 	return $r; 
 }
-
 
 
 
@@ -500,13 +402,6 @@ sub send_msg {
 
 	return ($response_code, $response_content);
 
-#	if($response_code eq '200') { 
-#		return ($response_code, $self->get_send_response($response_content));
-#	}
-#	else { 
-#		return ($response_code, $response_content);
-#	}
-}
 
 # Read the credentials from $AWS_CREDENTIALS_FILE file.
 sub read_credentials {
