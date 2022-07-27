@@ -2507,7 +2507,7 @@ sub filter_time_piece {
 			};
 		}
 		if($can_use_time_piece == 0 && $can_use_posix == 0){ 
-			croak '<!-- tmpl_var tmpl_strftime [...] --> tags unsupported! Install Time::Piece!'; 
+			carp '<!-- tmpl_var tmpl_strftime [...] --> tags unsupported! Install Time::Piece!'; 
 		}
 		
 		while (@taglist) {
@@ -2516,12 +2516,12 @@ sub filter_time_piece {
 			
 			my $formatted_time = undef; 
 			
-			if($can_use_time_piece) { 
-				$formatted_time = $t->strftime($format);
-			}
-			else { 
+			if($can_use_posix) { 
 				my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($time);
 				$formatted_time = POSIX::strftime($format, $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst );
+		 	}
+			elsif($can_use_time_piece) { 
+				$formatted_time = $t->strftime($format);
 			}
 			my $formatted_match = quotemeta("<!-- tmpl_strftime $format -->");
 			$$text_ref =~ s/$formatted_match/$formatted_time/gi;
