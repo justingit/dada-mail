@@ -54,7 +54,7 @@ ok($ms->test ==  1, "testing has been turned on.");
 # Hmm, where to start? 
 $q->param('process', 1); 
 $q->param('text_message_body',     'This is the text message body!'); 
-
+$q->param('plaintext_content_from', 'text'); 
 
 $ms->send_email(
 	{
@@ -63,9 +63,12 @@ $ms->send_email(
 	}
 ); 
 
-sleep(1); 
+#warn '$mh->test_send_file: ' . $mh->test_send_file; 
+
+sleep(1);
+ 
 $msg = slurp($mh->test_send_file); 
-diag $msg; 
+#diag $msg; 
 # TODO like($msg, qr/Subject\: \(no subject\)/, "no subject set correctly!"); 
 undef $msg; 
 
@@ -83,6 +86,7 @@ $q->param('Reply-To',   '"Changed Reply-To" <reply@example.com>');
 $q->param('X-Priority',  1); 
 $q->param('Subject',     'Changed Subject'); 
 $q->param('text_message_body',     'This is the text message body!'); 
+$q->param('plaintext_content_from', 'text'); 
 $ms->send_email(
 	{
 		-cgi_obj => $q, 
@@ -98,7 +102,7 @@ $msg = slurp($mh->test_send_file);
 like($msg, qr/Subject\: Changed Subject/, "Subject set Correctly."); 
 like($msg, qr/X\-Priority\: 1/, "X-Priority set correctly."); 
 like($msg, qr/Reply\-To\: \"Changed Reply\-To\" \<reply\@example\.com\>/, "Reply-To set correctly."); 
-like($msg, qr/Content-type\: multipart\/alternative/, "Content-Type set correctly."); 
+like($msg, qr/Content-type\: multipart\/related/, "Content-Type set correctly."); 
 undef $msg; 
 ok(unlink($mh->test_send_file)); 
 
@@ -115,7 +119,7 @@ $ms->send_email(
 
 sleep(1); 
 $msg = slurp($mh->test_send_file);
-like($msg, qr/Content-type: multipart\/alternative\;/, "Multipart/alternative header set!"); 
+like($msg, qr/Content-type: multipart\/related\;/, "Multipart/related header set!"); 
 
 my $parser; 
 my $entity; 
@@ -125,17 +129,17 @@ $parser = optimize_mime_parser($parser);
 $entity = $parser->parse_data($msg);
 @parts  = $entity->parts; 
 ok(
-	$ls->param('charset_value') eq $parts[0]->head->mime_attr('content-type.charset'), 
-	"Charset Match " . $parts[0]->head->mime_attr('content-type.charset')
-); 
+	$ls->param('charset_value') eq $entity->parts(0)->parts(0)->head->mime_attr('content-type.charset'), 
+	"Charset Match " . $entity->parts(0)->parts(0)->head->mime_attr('content-type.charset')
+);
+
 ok(
-	$ls->param('charset_value') eq $parts[1]->parts(0)->head->mime_attr('content-type.charset'), 
-	"Charset Match(2) " . $parts[1]->parts(0)->head->mime_attr('content-type.charset')
+	$ls->param('charset_value') eq $entity->parts(0)->parts(0)->head->mime_attr('content-type.charset'), 
+	"Charset Match(2) " . $entity->parts(0)->parts(0)->head->mime_attr('content-type.charset')
 );
 undef $parser; 
 undef $entity; 
 undef @parts;
-
 
 undef $msg; 
 ok(unlink($mh->test_send_file));
@@ -156,7 +160,7 @@ sleep(1);
 
 $msg = slurp($mh->test_send_file);
 
-like($msg, qr/Content-type: multipart\/alternative\;/, "Multipart/alternative header set!"); 
+like($msg, qr/Content-type: multipart\/related\;/, "multipart/related header set!"); 
 # We'll also find these: 
 like($msg, qr/Content-type: text\/html/i, "text/html header set!"); 
 like($msg, qr/Content-type: text\/plain/i, "text/plain header set!"); 
@@ -174,22 +178,22 @@ $parser = optimize_mime_parser($parser);
 $entity = $parser->parse_data($msg);
 @parts  = $entity->parts; 
 ok(
-	$ls->param('charset_value') eq $parts[0]->head->mime_attr('content-type.charset'), 
-	"Charset Match " . $parts[0]->head->mime_attr('content-type.charset')
+	$ls->param('charset_value') eq $entity->parts(0)->parts(0)->head->mime_attr('content-type.charset'), 
+	"Charset Match " . $entity->parts(0)->parts(0)->head->mime_attr('content-type.charset')
 ); 
 
-diag '$msg' . $msg; 
+#diag '$msg' . $msg; 
 #use Data::Dumper; 
 #diag '@parts' . Dumper([@parts]);
-$entity->dump_skeleton;
+#$entity->dump_skeleton;
 
-diag q{$ls->param('charset_value')} . $ls->param('charset_value'); 
-diag q{$parts[1]->head->mime_attr('content-type.charset')} . $parts[1]->parts(0)->head->mime_attr('content-type.charset'); 
+#diag q{$ls->param('charset_value')} . $ls->param('charset_value'); 
 
 ok(
-	$ls->param('charset_value') eq $parts[1]->parts(0)->head->mime_attr('content-type.charset'), 
-	"Charset Match(2) " . $parts[1]->parts(0)->head->mime_attr('content-type.charset')
+	$ls->param('charset_value') eq $entity->parts(0)->parts(0)->head->mime_attr('content-type.charset'), 
+	"Charset Match(2) " . $entity->parts(0)->parts(0)->head->mime_attr('content-type.charset')
 );
+
 undef $parser; 
 undef $entity; 
 undef @parts; 

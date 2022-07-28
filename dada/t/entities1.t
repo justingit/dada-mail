@@ -76,6 +76,8 @@ is(decode_entities("&apos;"), "'");
 is(encode_entities("'", "'"), "&#39;");
 
 
+dada_test_config::wipe_out;
+
 __END__
 # Quoted from rfc1866.txt
 

@@ -33,7 +33,7 @@ $DADA::Config::PROGRAM_USAGE_LOG        = $DADA::Config::FILES . '/dada.txt';
 	    url => undef,
 	};
 
-
+	`rm -rf static/themes`;
 	`mkdir static/themes`;
 	`mkdir static/themes/email`;
 	`mkdir static/themes/email/default`;

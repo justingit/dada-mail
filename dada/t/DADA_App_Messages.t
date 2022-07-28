@@ -8,7 +8,7 @@ use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib
 	); 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 
-warn q{$DADA::Config::SUPPORT_FILES->{dir}} . $DADA::Config::SUPPORT_FILES->{dir}; 
+#warn q{$DADA::Config::SUPPORT_FILES->{dir}} . $DADA::Config::SUPPORT_FILES->{dir}; 
 
 
 use dada_test_config; 
@@ -87,7 +87,17 @@ $dap->send_confirmation_message(
 	}
 );
 $msg = slurp($mh->test_send_file); 
-diag 'length of $msg: ' . length($msg);
+
+
+#diag 'length of $msg: ' . length($msg);
+
+
+#diag '$msg: ' . $msg; 
+
+
+
+
+
 my $entity = $parser->parse_data(safely_encode($msg)); 
 #diag 'defined $entity' . (defined($entity));
 #warn '$entity->body->as_string' . $entity->body->as_string; 
@@ -100,7 +110,7 @@ my $pt_body    = safely_decode($entity->parts(0)->parts(0)->bodyhandle->as_strin
 
 my $html_body = safely_decode($entity->parts(0)->parts(1)->bodyhandle->as_string);
 
-diag q{$entity->head->get('From', 0)} . decode_header($entity->head->get('From', 0)); 
+#diag q{$entity->head->get('From', 0)} . decode_header($entity->head->get('From', 0)); 
 
 ok(
 	decode_header($entity->head->get('From', 0))
@@ -138,14 +148,32 @@ undef($privacy_policy);
 
 my $physical_address = $ls->param('physical_address');
 
+#sdiag '$physical_address: ' . $physical_address; 
+#diag '$pt_body: ' . $pt_body; 
+
+
+#diag '$pt_body: ' . $pt_body; 
+ 
+ 
+ 
+ 
+ 
 like($pt_body, qr/$physical_address/, "Physical Address Found"); 
-like($html_body, qr/$physical_address/, "Physical Address Found"); 
+like($html_body, qr/$physical_address/, "Physical Address Found (2)"); 
+
+
+
+
 
 undef($physical_address); 
 
+
 my $list_owner_email = $ls->param('list_owner_email'); 
 
-like($pt_body, qr/$list_owner_email/, "List Owner (" . $ls->param('list_owner_email') . ") Found"); 
+# Why would this be here? 
+#like($pt_body, qr/$list_owner_email/, "List Owner (" . $ls->param('list_owner_email') . ") Found"); 
+
+
 like($html_body, qr/$list_owner_email/, "List Owner (" . $ls->param('list_owner_email') . ") Found"); 
 
 
@@ -186,10 +214,12 @@ my $msg = slurp($mh->test_send_file);
 my $entity = $parser->parse_data(safely_encode($msg)); 
 my $msg_str = safely_decode($entity->parts(0)->parts(0)->bodyhandle->as_string);
 
+
+#diag q{decode_header($entity->head->get('From', 0)): } . decode_header($entity->head->get('From', 0)); 
 ok(
 	decode_header($entity->head->get('From', 0))
 	eq
-	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . ' Owner' . "\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 	); 
 like(
@@ -242,7 +272,7 @@ ok(
 	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 );
-diag q{decode_header($entity->head->get('To', 0))} . decode_header($entity->head->get('To', 0)); 
+#diag q{decode_header($entity->head->get('To', 0))} . decode_header($entity->head->get('To', 0)); 
 ok(
 	decode_header($entity->head->get('To', 0))
 	eq
@@ -252,8 +282,8 @@ ok(
 my   $sub = $entity->head->get('Subject', 0); 
 chomp $sub; 
 
-diag "'" . decode_header($sub) ."'"; 
-diag "'" . "Subscribed $email_name\@$email_domain" . "'"; 
+#diag "'" . decode_header($sub) ."'"; 
+#diag "'" . "Subscribed $email_name\@$email_domain" . "'"; 
 ok(
 	decode_header($sub)
 	eq
@@ -295,7 +325,7 @@ $msg_str = safely_decode($entity->parts(0)->parts(0)->bodyhandle->as_string);
 ok(
 	decode_header($entity->head->get('From', 0))
 	eq
-	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . ' Owner' . "\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 );
 #diag "set to this: " . decode_header($entity->head->get('To', 0)); 
@@ -320,8 +350,8 @@ undef $sub;
 $sub = $entity->head->get('Subject', 0);
 chomp $sub;
  
-diag '"' . decode_header($sub) . '"'; 
-diag '"' . $ls->param('list_name') . "- You Are Already Subscribed" . '"';
+#diag '"' . decode_header($sub) . '"'; 
+#diag '"' . $ls->param('list_name') . "- You Are Already Subscribed" . '"';
 ok(
 	decode_header($sub)
 	eq
@@ -352,38 +382,40 @@ $dap->send_unsubscribed_message(
 	}	
 );
 
-diag "here."; 
+#diag "here."; 
 
 $msg     = slurp($mh->test_send_file); 
 
-diag "here."; 
+#diag "here."; 
 
 $entity  = $parser->parse_data(safely_encode($msg)); 
 
-diag "here."; 
+#diag "here."; 
 
 $msg_str = safely_decode($entity->parts(0)->parts(0)->bodyhandle->as_string);
 
+
+#diag '$entity->as_string: ' . $entity->as_string;
+#diag q{ $entity->head->get('From', 0) } . $entity->head->get('From', 0); 
+
+diag '$entity->as_string: ' . $entity->as_string; 
 
 
 ok(
 	decode_header($entity->head->get('From', 0))
 	eq
-	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . ' Owner' . "\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 );
 
-diag "here."; 
-diag q{decode_header($entity->head->get('To', 0))} . safely_encode(decode_header($entity->head->get('To', 0))); 
+#diag q{decode_header($entity->head->get('To', 0))} . safely_encode(decode_header($entity->head->get('To', 0))); 
 
 ok(
 	decode_header($entity->head->get('To', 0))
 	eq
-	"\"" . $ls->param('list_name') . "\" \<$email_name\@$email_domain\>", 
+	"\"" . $ls->param('list_name') . ' Subscriber' . "\" \<$email_name\@$email_domain\>", 
 	"To: Set Correctly 6"
 );
-
-diag "here."; 
 
 
 diag "Subject: " . safely_encode(decode_header($entity->head->get('Subject', 0)));
@@ -395,7 +427,7 @@ ok(
 	"Subject: Set Correctly (1)"
 );
 
-diag "here."; 
+
 
 
 
@@ -442,8 +474,8 @@ undef $sub;
 $sub = $entity->head->get('Subject', 0);
 chomp $sub;
  
-diag '"' . decode_header($sub) . '"'; 
-diag '"' . "Unsubscribed $email_name\@$email_domain" . '"';
+#diag '"' . decode_header($sub) . '"'; 
+#diag '"' . "Unsubscribed $email_name\@$email_domain" . '"';
 ok(
 	decode_header($sub)
 	eq
@@ -451,7 +483,10 @@ ok(
 	"Subject: Set Correctly"
 );
 
-like($msg_str, qr/There are now a total of: 0 subscribers./, "Misc. Body stuff found (2)"); 
+#diag '$msg_str: ' . $msg_str; 
+
+my $mbs = quotemeta('There are now a total of: 0 subscribers.');
+like($msg_str, qr//, "Misc. Body stuff found (2)"); 
 
 ok(unlink($mh->test_send_file));
 undef $msg; 

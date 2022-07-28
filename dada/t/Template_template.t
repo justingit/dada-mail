@@ -2,10 +2,6 @@
 
 use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib); 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
-use dada_test_config; 
-dada_test_config::create_SQLite_db(); 
-
-
 
 
 use Test::More;
@@ -13,6 +9,10 @@ use Test::More;
 # Think about using Test::HTML::Tidy, instead for at least some of these. 
 eval "use Test::HTML::Lint qw(no_plan)";
 plan skip_all => "Test::HTML::Lint required for testing Templates." if $@;
+
+
+require dada_test_config; 
+   dada_test_config::create_SQLite_db(); 
 
 use HTML::Template::MyExpr; 
 use DADA::Config; 
@@ -151,8 +151,9 @@ for(keys %$template_strings){
 		undef $template; 
 	
 }
+
 dada_test_config::destroy_SQLite_db();
-dada_test_config::wipe_out;
+dada_test_config::wipe_out();
 
 
 sub open_file { 

@@ -17,7 +17,7 @@ use DADA::App::FormatMessages;
 
 use DADA::MailingList::Subscribers; 
 use DADA::MailingList::Settings; 
-
+use DADA::App::Guts; 
 
 my $list = dada_test_config::create_test_list;
 my $ls   = DADA::MailingList::Settings->new({-list => $list}); 
@@ -356,7 +356,7 @@ undef $fm;
 my $fm = DADA::App::FormatMessages->new(-List => $list);
 
 
-my $prefix = quotemeta('['.$ls->param('list_name').']'); 
+my $prefix = '['.$ls->param('list_name').']'; 
 my $og_s           =                     'Subject';
 my        $subject = $fm->_encode_header('Subject', $og_s); 
 my $prefix_subject = $fm->_encode_header('Subject', $prefix . ' ' . $og_s); 
@@ -364,6 +364,13 @@ my $prefix_subject = $fm->_encode_header('Subject', $prefix . ' ' . $og_s);
 $subject = $fm->_list_name_subject($subject); 
 #diag '$subject' . $subject; 
 #diag '$prefix_subject' . $prefix_subject; 
+
+diag safely_encode($fm->_decode_header($subject));
+
+diag safely_encode($fm->_decode_header($prefix_subject));
+
+
+$prefix_subject = quotemeta($prefix_subject); 
 like($subject, qr/$prefix_subject/, "Subject set correctly (list name)");
 undef $fm; 
 
@@ -374,7 +381,7 @@ $ls->param('prefix_discussion_list_subjects_with', 'list_shortname');
 $fm = DADA::App::FormatMessages->new(-List => $list);
 
 
-$prefix = quotemeta('['.$ls->param('list').']'); 
+my $prefix = quotemeta('['.$ls->param('list').']'); 
 my $og_s           =                     'Subject';
 my        $subject = $fm->_encode_header('Subject', $og_s); 
 my $prefix_subject = $fm->_encode_header('Subject', $prefix . ' ' . $og_s); 
@@ -386,14 +393,14 @@ like($subject, qr/$prefix_subject/, "Subject set correctly (list name)");
 undef $fm; 
 
 
-
-
-
 $fm = DADA::App::FormatMessages->new(-List => $list);
  
-# This one is most likey broken: 
-$subject = 'Re: [' . $ls->param('list') . '] Subject';
-my $new_subject = quotemeta('[' . $ls->param('list') . '] Re: Subject'); 
+        $subject = 'Re: [' . $ls->param('list') . '] Subject';
+my $new_subject = quotemeta('Re: [' . $ls->param('list') . '] Subject'); 
+
+
+#diag q{$fm->_list_name_subject($subject)} . $fm->_list_name_subject($subject); 
+#diag q{'[' . $ls->param('list') . '] Re: Subject'} . '[' . $ls->param('list') . '] Re: Subject'; 
 
 like($fm->_list_name_subject($subject), qr/$new_subject/, "Subject set correctly with reply 1"); 
 undef $fm; 

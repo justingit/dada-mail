@@ -8,3 +8,4 @@ use Test::Simple qw(no_plan);
 
 ok(1 == 1, "hey! We're alive! aaahhh!!!"); 
 
+dada_test_config::wipe_out;
