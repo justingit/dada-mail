@@ -34,13 +34,13 @@ $TEST_SQL_PARAMS = {
 
 	MySQL => { 
 	
-		test_enabled     => 0, 
+		test_enabled     => 1, 
 	    database         => 'test',
 	    dbserver         => 'localhost',
 	    port             => '3306',     
 	    dbtype           => 'mysql',   
 	    user             => 'test',          
-	    pass             => '',
+	    pass             => 'test',
 		%{$shared_params},
 	}, 
 
