@@ -217,6 +217,8 @@ $DBI_PARAMS //= {
     # perlunicode. The default is for the UTF-8 flag to be turned off.
     #
     sqlite_unicode => 1,
+	
+	AutoInactiveDestroy => 1, 
 
 };
 

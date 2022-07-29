@@ -2702,13 +2702,13 @@ sub _clarify_dbi_stuff {
     #   copy will still be around.
     ##################################################################
 
-    require DBI;
-    if ( $DBI::VERSION >= 1.49 ) {
-        my %drivers = DBI->installed_drivers;
-        for my $drh ( values %drivers ) {
-            map { $drh->{InactiveDestroy} = 1 } @{ $drh->{ChildHandles} };
-        }
-    }
+    #require DBI;
+    #if ( $DBI::VERSION >= 1.49 ) {
+    #    my %drivers = DBI->installed_drivers;
+    #    for my $drh ( values %drivers ) {
+    #        map { $drh->{InactiveDestroy} = 1 } @{ $drh->{ChildHandles} };
+    #    }
+    #}
 
     # Our own DBI handle:
     require DADA::App::DBIHandle;
@@ -2717,7 +2717,7 @@ sub _clarify_dbi_stuff {
 
     # Let's get rid of the ones that are known:
     # DADA::MailingList::Settings
-    $self->{ls}->{dbh}->{InactiveDestroy} = 1;
+    #$self->{ls}->{dbh}->{InactiveDestroy} = 1;
     $self->{ls}->{dbh}                    = undef;
     $self->{ls}->{dbh}                    = $dbh;
 
