@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 package DADA::App;
-use base 'CGI::Application';
+use parent 'CGI::Application';
 
 use CGI::Application::Plugin::RateLimit;
 

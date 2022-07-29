@@ -3,7 +3,7 @@ package DadaMailInstaller;
 
 
 use CGI::Carp qw(fatalsToBrowser);
-use base 'CGI::Application';
+use parent 'CGI::Application';
 
 
 my $installer_error_log = './installer_errors.txt';

@@ -18,7 +18,7 @@ LOCK_SH
 LOCK_NB); 
 
 
-use base qw(DADA::App::GenericDBFile);
+use parent qw(DADA::App::GenericDBFile);
 
 sub new {
 	my $class = shift;

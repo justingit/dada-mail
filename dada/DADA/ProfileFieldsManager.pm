@@ -13,7 +13,7 @@ BEGIN {
     }
 }
 
-use base "DADA::ProfileFieldsManager::$type";
+use parent "DADA::ProfileFieldsManager::$type";
 use strict;
 
 use DADA::Logging::Usage;

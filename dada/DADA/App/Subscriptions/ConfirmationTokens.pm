@@ -29,7 +29,7 @@ BEGIN {
 		die "Unknown \$BACKEND_DB_TYPE: '$type' Supported types: 'SQL', 'Default'"; 
 	}
 }
-use base "DADA::App::Subscriptions::ConfirmationTokens::$backend";
+use parent "DADA::App::Subscriptions::ConfirmationTokens::$backend";
 
 sub token { 
 	

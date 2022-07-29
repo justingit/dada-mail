@@ -8,7 +8,7 @@ use lib qw(
 
 use strict; 
 
-use base qw(DADA::App::GenericDBFile::Backup);
+use parent qw(DADA::App::GenericDBFile::Backup);
 
 use Fcntl qw(
 O_WRONLY 

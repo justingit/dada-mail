@@ -24,7 +24,7 @@ BEGIN {
 "Unknown \$MARKDOWN_TYPE: '$type' Supported types: 'TextMarkdown'";
     }
 }
-use base "DADA::App::Markdown::$markdown_module";
+use parent "DADA::App::Markdown::$markdown_module";
 
 sub new {
 
