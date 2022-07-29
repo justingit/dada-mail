@@ -101,9 +101,15 @@ my $msg_id =  $mh->mass_send({
 	} 	
 }); 	
 
+diag '$msg_id: ' . $msg_id; 
+
+
 #
 # This is actually, really whacky - I don't know why there's a DADA::Mail::Send
 # method, to control the DADA::Mail::MailOut method, 
+
+diag 'restart_mass_send';
+
 eval { 
 $mh->restart_mass_send(
 		$msg_id,
@@ -111,8 +117,9 @@ $mh->restart_mass_send(
 	);
 };
 
-ok(defined($@)); 
-diag $@; 
+ok(defined($@), 'errors are found'); 
+
+diag 'catched errors: ' . $@; 
 
 
 
@@ -130,7 +137,7 @@ eval {
 	$mailout->reload;
 };
 
-ok(defined($@)); 
+ok(defined($@), 'errors are found(2)'); 
 diag $@;
 
 # The other thing we can try, is unlocking the batch lock ourselves: 
@@ -138,6 +145,8 @@ diag $@;
 $mailout->unlock_batch_lock;
 #
 # We'll also have to muck about with the last_access file, to reset it to something whacky: 
+my $md = $mailout->dir . '/last_access.txt'; 
+chmod `644 $md`;
 open(my $la, ">", $mailout->dir . '/last_access.txt') or die $!; 
 print $la (time - 500) or die $!; 
 close ($la) or die; 
