@@ -364,19 +364,23 @@ my @statements = split(';', $sql);
 		my $email_message_previews_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{email_message_previews_table}; 
 		my $privacy_policies_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{privacy_policies_table};
 		my $consents_table                      = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{consents_table};
+		
+	#	warn '$consents_table: ' . $consents_table; 
+		
 		my $consent_activity_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{consent_activity_table};
 		
+		#warn 'QUERY BEFORE: ' . $_; 
 		
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE $settings_table}; 
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE $subscribers_table}; 
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_archives}{CREATE TABLE $archives_table}; 
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_sessions}{CREATE TABLE $session_table}; 
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_bounce_scores}{CREATE TABLE $bounce_scores_table};
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profiles}{CREATE TABLE $profile_table};
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields}{CREATE TABLE $profile_fields_table};
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};	
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_settings}{CREATE TABLE $profile_settings_table};	
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE IF NOT EXISTS $settings_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE IF NOT EXISTS $subscribers_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_archives}{CREATE TABLE IF NOT EXISTS $archives_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_sessions}{CREATE TABLE IF NOT EXISTS $session_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_bounce_scores}{CREATE TABLE IF NOT EXISTS $bounce_scores_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profiles}{CREATE TABLE IF NOT EXISTS $profile_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields}{CREATE TABLE IF NOT EXISTS $profile_fields_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes}{CREATE TABLE IF NOT EXISTS $profile_fields_attributes_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_settings}{CREATE TABLE IF NOT EXISTS $profile_settings_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_urls}{CREATE TABLE IF NOT EXISTS $clickthrough_urls_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE IF NOT EXISTS $settings_table}; 
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE IF NOT EXISTS $subscribers_table}; 
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_archives}{CREATE TABLE IF NOT EXISTS $archives_table}; 
@@ -396,12 +400,21 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_consents}{CREATE TABLE IF NOT EXISTS $consents_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_consent_activity}{CREATE TABLE IF NOT EXISTS $consent_activity_table};	
 
-
-		#print 'query: ' . $_; 
+		$_ =~ s{REFERENCES dada_consents}{REFERENCES test_dada_consents};
+		$_ =~ s{REFERENCES dada_privacy_policies}{REFERENCES test_dada_privacy_policies};
+		
+		
+		$_ =~ s/CREATE INDEX dada/CREATE INDEX test_dada/g;
+		$_ =~ s/ON dada/ON test_dada/g;
+		 
+		
+		#if($_ =~ m/consents/){ 
+		#	warn "consents query: " . $_; 
+		#}
 			
 		if(length($_) > 10){ 
 
-			#warn 'QUERY: ' . $_; 
+		#	warn 'QUERY AFTER: ' . $_; 
 			
 			my $sth = $dbh->prepare($_); 
 	       	$sth->execute;#or die $DBI::errstr; 
@@ -440,9 +453,12 @@ sub destroy_MySQL_db {
 		message_drafts_table
 		rate_limit_hits_table
 		email_message_previews_table
-		privacy_policies_table 
-		consents_table         
+     
 		consent_activity_table 
+		
+		consents_table    
+		
+		privacy_policies_table
 		)){ 
 			
 #			carp "removing: " . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{$_}; 
@@ -538,7 +554,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 		$_ =~ s{CREATE TABLE dada_rate_limit_hits}{CREATE TABLE IF NOT EXISTS $rate_limit_hits_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_email_message_previews}{CREATE TABLE IF NOT EXISTS $email_message_previews_table};	
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_privacy_policies}{CREATE TABLE IF NOT EXISTS $privacy_policies_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_privacy_policies}{CREATE TABLE IF NOT EXISTS $privacy_policies_table};			
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_consents}{CREATE TABLE IF NOT EXISTS $consents_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_consent_activity}{CREATE TABLE IF NOT EXISTS $consent_activity_table};	
 

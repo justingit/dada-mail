@@ -12,7 +12,7 @@ BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
 my $list = dada_test_config::create_test_list;
 
-do "plugins/password_protect_directories.cgi";
+do "plugins/password_protect_directories";
 
 
 
