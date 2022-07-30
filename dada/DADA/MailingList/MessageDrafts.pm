@@ -141,14 +141,14 @@ sub id_exists {
 
 sub save {
 
-    warn 'save'
+    warn 'in save()'
       if $t;
 
     my $self   = shift;
     my ($args) = @_;
 
-#    require Data::Dumper; 
-#    warn 'save $args:' . Data::Dumper::Dumper($args); 
+    #require Data::Dumper; 
+    #warn 'save $args:' . Data::Dumper::Dumper($args); 
     
     if ( !exists( $args->{-cgi_obj} ) ) {
         croak "You MUST pass a, '-cgi_obj' parameter!";
@@ -158,17 +158,29 @@ sub save {
 #        croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
 #    }
     
+	
     if ( !exists( $args->{-role} ) ) {
+		warn 'role does not exist, setting to draft' if $t; 
         $args->{-role} = 'draft';
     }
+	else { 
+		warn 'role exists: ' . $args->{-role} if $t; 
+	}
     
     if ( !exists( $args->{-save_role} ) ) {
+		warn 'save_role does not exist, setting to role' if $t; 
         $args->{-save_role} = $args->{-role};
     }
+	else { 
+		warn 'save_role exists: ' . $args->{-save_role} if $t; 
+	}
 
 
 #    warn '$args->{-role}'      . $args->{-role}; 
 #    warn '$args->{-save_role}' . $args->{-save_role}; 
+#    warn '$args->{-id}'        . $args->{-id}; 
+
+
 
     my $id = undef;
     if ( exists( $args->{-id} ) ) {
@@ -191,6 +203,8 @@ sub save {
 
     my $query; 
     
+	warn '$id: ' . $id if $t; 
+	
     if ( !defined($id) ) {
 
         warn 'id undefined.'
@@ -362,6 +376,10 @@ sub save {
 
 
 sub change_role { 
+	
+	warn 'in change_role()' 
+		if $t; 
+	
 	my $self   = shift; 
 	my ($args) = @_; 
 	

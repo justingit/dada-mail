@@ -1362,6 +1362,8 @@ sub send_email {
             }
         );
 		
+		warn '$draft_id: ' . $draft_id if $t; 
+		
 		# hmm, wonder what no_draft_available is? 
 		if($draft_id == -1){ 
 			my $uri = $DADA::Config::S_PROGRAM_URL . '?f=no_draft_available';
@@ -1460,6 +1462,8 @@ sub send_email {
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
+#		warn '$draft_id: ' . $draft_id; 
+		
         if ( $draft_id > 0) {
             $scrn = $self->fill_in_draft_msg(
                 {
@@ -1762,14 +1766,21 @@ sub preview_draft {
 
 sub find_draft_id {
 
+	warn 'in find_draft_id' if $t; 
+	
     my $self = shift;
     my ($args) = @_;
 
     my $q = $args->{-cgi_obj};
 	my $draft_id           = $q->param('draft_id')           || undef; 
+	
+	warn '$draft_id: ' . $draft_id 
+		if $t; 
+	
     my $role               = $args->{-role}                  || undef; 	
 
-
+	warn '$role: ' . $role if $t; 
+	
 	# This check short circuits all the searching below. If we're given all
 	# this information, let's trust it, eh? 
 	if(
@@ -1781,13 +1792,16 @@ sub find_draft_id {
 			$role, 
 			)
 		){ 
+			warn 'draft exists' if $t; 
 			return $draft_id; 
 		}
 		else{ 
+			warn 'nope.' if $t; 
 			return -1; 
 		}
 	}
 	else {
+		warn 'returning 0' if $t; 
 		return 0; 
 	}
 }
@@ -1885,18 +1899,17 @@ sub save_as_draft {
 
     my $draft_id        = $q->param('draft_id')        || undef;
     my $draft_role      = $q->param('draft_role')      || 'draft';
-    my $save_draft_role = $q->param('save_draft_role') || 'draft';
+    my $save_draft_role = $q->param('save_draft_role') || $draft_role;
  
  
  	if($t == 1){ 
 		require Data::Dumper; 
 		warn Data::Dumper::Dumper({
-		draft_id      => $draft_id, 
-		draft_role    => $draft_role,   
+		draft_id        => $draft_id, 
+		draft_role      => $draft_role,   
 		save_draft_role => $save_draft_role, 
 	});
 	}
- 
  
  
     # I wanna that we do it, here! 
