@@ -1209,7 +1209,7 @@ sub start {
                     $r .= "\tMessage did not pass verification.\n";
                     $r .= handle_errors( $ls, $errors, $full_msg );
                 }
-                append_message_to_file( $ls, $errors, $full_msg );
+                append_message_to_file( $ls, $full_msg );
 
             } catch { 
                 cluck "bridge - irrecoverable error processing message. Skipping message: $_";
