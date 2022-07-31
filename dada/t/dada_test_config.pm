@@ -24,6 +24,9 @@ $DADA::Config::PROGRAM_USAGE_LOG        = $DADA::Config::FILES . '/dada.txt';
 	if(! -e './test_only_dada_files'){ 
 		# carp "no ./test_only_dada_files exists... (making one!)"; 
 		mkdir './test_only_dada_files'; 
+		
+		`chmod 755 ./test_only_dada_files`;
+		
 		if(! -e './test_only_dada_files'){ 
 				croak "I couldn't make a tmp directory - heavens!"; 
 		}		

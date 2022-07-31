@@ -164,6 +164,10 @@ ok($mh->restart_mass_send(
 $mailout->pause;
 $mailout->clean_up;
 
+wait_for_msg_sending(); 
+
+
+
 
 
 	
@@ -197,6 +201,31 @@ sub slurp {
         return @r;
 
 }
+
+sub  wait_for_msg_sending { 
+	
+	my @mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
+	my $timeout = 0; 
+	
+	diag "number of mailouts: " . scalar(@mailouts);
+	
+	while($mailouts[0] ){ 
+		diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
+		sleep(5); 
+		if($timeout >= 30){ 
+			die "something's wrong with the testing - dying."	
+		}
+		@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
+	}
+	undef @mailouts;
+
+	
+}
+
+
+
+
+
 
 
 
