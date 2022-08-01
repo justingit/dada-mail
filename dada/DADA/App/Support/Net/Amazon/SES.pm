@@ -401,7 +401,7 @@ sub send_msg {
 		}	
 
 	return ($response_code, $response_content);
-
+}
 
 # Read the credentials from $AWS_CREDENTIALS_FILE file.
 sub read_credentials {
@@ -570,7 +570,7 @@ sub get_response {
 
 
 
-#sub DESTORY {}
+sub DESTORY {}
 	
 
 1;
