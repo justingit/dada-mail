@@ -487,9 +487,17 @@ sub send {
 
         my $smtp_msg = '';
         for my $field (@default_headers) {
-            $smtp_msg .= "$field: $fields{$field}\n"
-              if ( ( defined $fields{$field} )
-                && ( $fields{$field} ne "" ) );
+						
+			if($self->{ls}->param('mass_mailing_use_list_headers') == 0){ 
+				if($DADA::Config::LIST_HEADERS->{$field} == 1){ 
+					next; 
+				}
+			}
+			
+			
+	        $smtp_msg .= "$field: $fields{$field}\n"
+	          if ( ( defined $fields{$field} )
+	            && ( $fields{$field} ne "" ) );
         }
         $smtp_msg .= "\n";
         $smtp_msg .= $fields{Body} . "\n";
@@ -719,6 +727,13 @@ sub send {
         }
 
         for my $field (@default_headers) {
+			
+			if($self->{ls}->param('mass_mailing_use_list_headers') == 0){ 
+				if($DADA::Config::LIST_HEADERS->{$field} == 1){ 
+					next; 
+				}
+			}
+			
             print MAIL "$field: $fields{$field}\n"
               if ( exists( $fields{$field} )
                 && defined $fields{$field}
@@ -803,7 +818,15 @@ sub send {
             if (   exists( $fields{$field} )
                 && defined $fields{$field}
                 && $fields{$field} ne "" )
-            {
+            {	
+				
+				if($self->{ls}->param('mass_mailing_use_list_headers') == 0){ 
+					if($DADA::Config::LIST_HEADERS->{$field} == 1){ 
+						next; 
+					}
+				}
+			
+			
                 $msg .= "$field: $fields{$field}\n";
 			}
         }
@@ -3092,6 +3115,12 @@ sub list_headers {
 
     if ( defined( $self->{list} ) ) {
 
+
+		if($self->{ls}->param('mass_mailing_use_list_headers') == 0){ 
+			return (); 
+		}
+		
+		
         my %lh;
 
         # List
