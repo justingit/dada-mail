@@ -1906,6 +1906,7 @@ $PROGRAM_NAME //= "Dada Mail";
   
 
 $LIST_HEADERS //= { 
+	'Precedence'                => undef,
 	'List'                      => undef,
 	'List-Archive'              => undef,
 	'List-Digest'               => undef,
@@ -1918,6 +1919,7 @@ $LIST_HEADERS //= {
 	'List-Unsubscribe'          => undef,
 	'List-Unsubscribe-Post'     => undef, 
 	'List-URL'                  => undef,
+	'X-Mailer'                  => undef, 
 };
   
 

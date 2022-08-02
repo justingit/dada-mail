@@ -489,7 +489,7 @@ sub send {
         for my $field (@default_headers) {
 						
 			if($self->{ls}->param('mass_mailing_use_list_headers') == 0){ 
-				if($DADA::Config::LIST_HEADERS->{$field} == 1){ 
+				if(exists($DADA::Config::LIST_HEADERS->{$field})){ 
 					next; 
 				}
 			}
@@ -729,7 +729,7 @@ sub send {
         for my $field (@default_headers) {
 			
 			if($self->{ls}->param('mass_mailing_use_list_headers') == 0){ 
-				if($DADA::Config::LIST_HEADERS->{$field} == 1){ 
+				if(exists($DADA::Config::LIST_HEADERS->{$field})){ 
 					next; 
 				}
 			}
@@ -821,7 +821,7 @@ sub send {
             {	
 				
 				if($self->{ls}->param('mass_mailing_use_list_headers') == 0){ 
-					if($DADA::Config::LIST_HEADERS->{$field} == 1){ 
+					if(exists($DADA::Config::LIST_HEADERS->{$field})){ 
 						next; 
 					}
 				}
