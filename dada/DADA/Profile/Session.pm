@@ -238,27 +238,33 @@ sub validate_profile_login {
 }
 
 sub check_csrf {
+	
+	
     my $self = shift;
     my $q    = shift;
+	
+	if($DADA::Config::ENABLE_CSRF_PROTECTION == 1){  	  
+	    my $s = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
+	      or croak 'failed to load session: ' . CGI::Session->errstr();
 
-    my $s = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
-      or croak 'failed to load session: ' . CGI::Session->errstr();
+	    if ( $s->is_expired ) {
+	        return 0;
+	    }
 
-    if ( $s->is_expired ) {
-        return 0;
-    }
+	    if ( $s->is_empty ) {
+	        return 0;
+	    }
 
-    if ( $s->is_empty ) {
-        return 0;
-    }
-
-    if ( $q->param('csrf_token') eq $s->param('token') ) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
-
+	    if ( $q->param('csrf_token') eq $s->param('token') ) {
+	        return 1;
+	    }
+	    else {
+	        return 0;
+	    }
+	}
+	else { 
+		return 1; 
+	}
 }
 
 sub is_logged_in {

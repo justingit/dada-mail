@@ -1305,6 +1305,7 @@ sub grab_former_config_vals {
         || defined($BootstrapConfig::RATE_LIMITING) 
 		|| defined($BootstrapConfig::FILE_CHMOD)
 		|| defined($BootstrapConfig::DIR_CHMOD) 
+		|| defined($BootstrapConfig::DIR_CHMOD)  
 	)
     {
         $opt->{'configure_security'} = 1;
@@ -1361,6 +1362,15 @@ sub grab_former_config_vals {
         if ( defined($BootstrapConfig::DIR_CHMOD) ) {
 			$opt->{'security_default_directory_permissions'} = int(sprintf("%o", $BootstrapConfig::DIR_CHMOD));
 		}
+		
+		
+        if ( defined($BootstrapConfig::ENABLE_CSRF_PROTECTION) ) {
+			$opt->{'security_enable_csrf_protection'} = $BootstrapConfig::ENABLE_CSRF_PROTECTION;
+		}
+		
+		
+		
+		
 
 	#	use Data::Dumper; 
 	#	die Dumper($opt)
@@ -1858,6 +1868,7 @@ sub query_params_to_install_params {
       security_no_show_admin_link
 	  security_disable_list_password_reset
 	  
+	  
 	  configure_www_engine
 	  www_engine_options_www_engine
 	  www_engine_options_user_agent
@@ -1873,6 +1884,8 @@ sub query_params_to_install_params {
 	  
 	  security_default_file_permissions
 	  security_default_directory_permissions
+	  
+	  security_enable_csrf_protection
 
 	  configure_mime_tools
 	  mime_tools_options_tmp_to_core
@@ -2870,6 +2883,23 @@ sub create_dada_config_file {
 
         $security_params->{security_default_file_permissions}      = '0' . clean_up_var( $ip->{-security_default_file_permissions} ) || undef;
         $security_params->{security_default_directory_permissions} = '0' . clean_up_var( $ip->{-security_default_directory_permissions} ) || undef;
+		
+        if ( length( $ip->{-security_enable_csrf_protection } ) > 0 ) {
+			warn '$ip->{-security_enable_csrf_protection }: ' . $ip->{-security_enable_csrf_protection }; 
+			if($ip->{-security_enable_csrf_protection } == 1){
+				warn 'it 1';
+				$security_params->{security_enable_csrf_protection} = "1";
+			}
+			elsif($ip->{-security_enable_csrf_protection } == 0){ 
+				$security_params->{security_enable_csrf_protection} = "0";
+					warn 'it 0';
+			}
+			else { 
+				delete($security_params->{security_enable_csrf_protection});
+				warn 'it nothing';
+			}
+        }
+		
 		
     }
 
