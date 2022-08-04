@@ -56,7 +56,10 @@ my $Dada_Files_Dir_Name = '.dada_files';
 my $Config_LOC             = '../DADA/Config.pm';
 my $Support_Files_Dir_Name = 'dada_mail_support_files';
 my $File_Upload_Dir        = 'file_uploads';
-my $Server_TMP_dir          = $ENV{TMP} // '/tmp';
+my $Server_TMP_dir         = $ENV{TMP} // '/tmp';
+#my $alt_perl_interpreter   = '/usr/local/cpanel/3rdparty/bin/perl'; 
+
+my $alt_perl_interpreter   = '/usr/bin/perl'; 
 
 # Save the errors this creates in a variable
 #
@@ -281,6 +284,7 @@ sub setup {
 	$self->error_mode('yikes');
     $self->run_modes(
         install_or_upgrade                => \&install_or_upgrade,
+		switch_perl_interpreter           => \&switch_perl_interpreter,
         check_install_or_upgrade          => \&check_install_or_upgrade,
         install_dada                      => \&install_dada,
         scrn_configure_dada_mail          => \&scrn_configure_dada_mail,
@@ -648,6 +652,7 @@ sub install_or_upgrade {
                 found_existing_dada_files_dir       => $found_existing_dada_files_dir,
                 current_dada_files_parent_location  => scalar $q->param('current_dada_files_parent_location'),
                 error_cant_find_dada_files_location => scalar $q->param('error_cant_find_dada_files_location'),
+				has_alt_perl_interpreter            => scalar($self->has_alt_perl_interpreter()),
                 Self_URL                            => $Self_URL,
             },
         }
@@ -666,6 +671,52 @@ sub install_or_upgrade {
     }
 
     return $scrn;
+}
+
+
+
+sub switch_perl_interpreter { 
+
+    my $self = shift;
+    my $q    = $self->query();
+	
+	if($self->has_alt_perl_interpreter()){ 
+		my @files_to_change = (
+			'./install.cgi',
+			'../mail.cgi',
+			'./templates/mail.cgi.tmpl', 
+			'./templates/app.psgi.tmpl',
+			'./templates/mail.fcgi.tmpl',
+			'./templates/core5_filemanager-filemanager_pl.tmpl',
+		);
+		
+		
+		for my $ftc(@files_to_change){
+			
+			open my $in_fh, '<', $ftc
+			  or die "Cannot open $ftc for reading: $!";
+			my $first_line = <$in_fh>;
+			close($in_fh); 
+			
+			# round two
+			my $content = slurp($ftc); 
+			
+			my $new_first = '#!' . $alt_perl_interpreter . "\n";
+			$content =~ s{$first_line}{$new_first};
+			
+			open my $out_fh, '>', $ftc or die $!; 
+
+			print $out_fh $content; 
+
+			close ($out_fh); 
+				
+		}
+	}
+	
+    $self->header_type('redirect');
+    $self->header_props(
+        -url => $Self_URL, );
+	
 }
 
 sub check_install_or_upgrade {
@@ -5920,6 +5971,17 @@ sub guess_home_dir_via_getpwuid_call {
     return $home_dir_guess;
 }
 
+sub has_alt_perl_interpreter { 
+	my $self = shift; 
+	my $look_for = shift || $alt_perl_interpreter; 
+	
+	if(-e $look_for){ 
+		if($^X ne $look_for){ 
+			return 1; 
+		}	
+	}
+}
+
 sub clean_up_var {
     my $var = shift;
     $var =~ s/\'/\\\'/g;
@@ -6019,3 +6081,4 @@ sub guess_config_file {
 }
 
 1;
+
