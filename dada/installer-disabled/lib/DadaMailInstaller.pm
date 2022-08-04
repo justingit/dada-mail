@@ -1,4 +1,3 @@
-#!/usr/bin/perl 
 package DadaMailInstaller;
 
 
@@ -57,9 +56,9 @@ my $Config_LOC             = '../DADA/Config.pm';
 my $Support_Files_Dir_Name = 'dada_mail_support_files';
 my $File_Upload_Dir        = 'file_uploads';
 my $Server_TMP_dir         = $ENV{TMP} // '/tmp';
-#my $alt_perl_interpreter   = '/usr/local/cpanel/3rdparty/bin/perl'; 
+my $alt_perl_interpreter   = '/usr/local/cpanel/3rdparty/bin/perl'; 
 
-my $alt_perl_interpreter   = '/usr/bin/perl'; 
+#my $alt_perl_interpreter   = '/usr/bin/perl'; 
 
 # Save the errors this creates in a variable
 #
@@ -653,6 +652,8 @@ sub install_or_upgrade {
                 current_dada_files_parent_location  => scalar $q->param('current_dada_files_parent_location'),
                 error_cant_find_dada_files_location => scalar $q->param('error_cant_find_dada_files_location'),
 				has_alt_perl_interpreter            => scalar($self->has_alt_perl_interpreter()),
+				alt_perl_interpreter                => $alt_perl_interpreter, 
+				alt_perl_interpreter_ver            => scalar($self->alt_perl_interpreter_ver()), 
                 Self_URL                            => $Self_URL,
             },
         }
@@ -5975,11 +5976,31 @@ sub has_alt_perl_interpreter {
 	my $self = shift; 
 	my $look_for = shift || $alt_perl_interpreter; 
 	
+	open my $in_fh, '<', './install.cgi'
+	  or warn "Cannot open ./install.cgi for reading: $!" and return 0;
+	my $first_line = <$in_fh>;
+	close($in_fh); 
+	
 	if(-e $look_for){ 
-		if($^X ne $look_for){ 
+		
+		chomp($first_line);
+		$first_line =~ s/^\#\!//;
+		#if($^X ne $look_for){  # that won't work as the alt may be a symlink to the ACTUALLY one. 
+		if($first_line ne $look_for){			
 			return 1; 
+		}
+		else { 
+			return 0;
 		}	
 	}
+}
+
+sub alt_perl_interpreter_ver { 
+	my $self = shift; 
+	
+	my $ver = `$alt_perl_interpreter -e 'print \$\]'`; 
+	
+
 }
 
 sub clean_up_var {
