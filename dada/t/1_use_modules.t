@@ -1,6 +1,6 @@
 #!/usr/bin/perl 
 
-use lib qw(./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib ./t); 
+use lib qw(./ ./DADA/perllib ./DADA/App/Support ../ ../DADA/perllib ../../ ../../DADA/perllib ./t); 
 
 use dada_test_config;
 dada_test_config::create_SQLite_db(); 
@@ -288,7 +288,6 @@ BEGIN{ use_ok('MIME::EncWords'); }
 
 BEGIN{ use_ok('MIME::Type'); }
 BEGIN{ use_ok('MIME::Types'); }
-BEGIN{ use_ok('MIME::Lite'); }
 
 # Huh! This actually needs LWP - it may fail on a few systems...
 # This too: 
