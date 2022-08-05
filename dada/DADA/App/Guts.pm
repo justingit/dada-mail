@@ -3008,18 +3008,12 @@ sub safely_decode {
 	return $str;
 }
 
-sub safely_encode { 
-
-	my $str = shift; 
-	# warn 'og: ' . $str; 
-	
-	if(utf8::is_utf8($str)){ 
-		#warn 'encode: ' . Encode::encode($DADA::Config::HTML_CHARSET, $str); 
-		return Encode::encode($DADA::Config::HTML_CHARSET, $str); 
+sub safely_encode { 	
+	if(utf8::is_utf8($_[0])){ 
+		return Encode::encode($DADA::Config::HTML_CHARSET, $_[0]); 
 	}
 	else { 
-		#warn 'nope: ' . Encode::encode($DADA::Config::HTML_CHARSET, $str); 
-		return $str;
+		return $_[0];
 	}	
 }
 
