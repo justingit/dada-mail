@@ -231,7 +231,6 @@ BEGIN{ use_ok('File::Spec'); }
 
 # This is all for the Captcha::reCAPTCHA stuff...
 BEGIN{ use_ok('Best') }; 
-#BEGIN{ use_ok('Crypt::Rijndael_PP'); 
 BEGIN{ use_ok('HTML::Tiny') }; 
 #BEGIN{ use_ok('Captcha::reCAPTCHA') };
 
@@ -250,7 +249,7 @@ SKIP: {
 
 BEGIN{ use_ok('HTML::TextToHTML'); }
 BEGIN{ use_ok('HTML::Template'); }
-BEGIN{ use_ok('HTML::Template::Expr'); }
+#BEGIN{ use_ok('HTML::Template::Expr'); }
 
 # I wish I could subclass this a little nicer: 
 BEGIN{ use_ok('HTML::Template::MyExpr'); }
