@@ -1,3 +1,5 @@
+die "this feature has been disabled.";
+
 package DADA::App::FormatMessages::Filters::CleanUpReplies;
 use strict; 
 
