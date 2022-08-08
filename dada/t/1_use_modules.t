@@ -42,11 +42,17 @@ BEGIN{ use_ok('DADA::App::EmailThemes'); }
 
 BEGIN{ use_ok('DADA::App::FormatMessages'); }
 BEGIN{ use_ok('DADA::App::FormatMessages::Filters::BodyContentOnly'); }
-BEGIN{ use_ok('DADA::App::FormatMessages::Filters::CleanUpReplies'); }
+
+
+# Not used, since v5
+#BEGIN{ use_ok('DADA::App::FormatMessages::Filters::CleanUpReplies'); }
+
 BEGIN{ use_ok('DADA::App::FormatMessages::Filters::CSSInliner'); }
 BEGIN{ use_ok('DADA::App::FormatMessages::Filters::HTMLMinifier'); }
 BEGIN{ use_ok('DADA::App::FormatMessages::Filters::InjectThemeStylesheet'); }
-BEGIN{ use_ok('DADA::App::FormatMessages::Filters::InlineEmbeddedImages'); }
+
+# This requires HTML::Parser which is XS not PP. There is HTML::Parser::Simple, but I don't know if that'll work for us
+# BEGIN{ use_ok('DADA::App::FormatMessages::Filters::InlineEmbeddedImages'); }
 BEGIN{ use_ok('DADA::App::FormatMessages::Filters::RemoveTokenLinks'); }
 BEGIN{ use_ok('DADA::App::FormatMessages::Filters::UnescapeTemplateTags'); }
 
