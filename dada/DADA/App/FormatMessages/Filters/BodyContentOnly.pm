@@ -14,9 +14,6 @@ use DADA::App::Guts;
 
 use Carp qw(croak carp);
 use Try::Tiny;
-use HTML::Parser; # Weird that HTML Parser is listed here, but also try()'d before using. EEK! 
-# This line needs ot be removed, and HTML::Parser added as an option module 
-
 
 my $t    = 0;
 my $body = undef;
