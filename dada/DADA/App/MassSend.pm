@@ -811,7 +811,7 @@ sub construct_from_url {
     use MIME::Parser;
     my $parser = new MIME::Parser;
        $parser = optimize_mime_parser($parser);
-    my $entity = $parser->parse_data($source);
+    my $entity = $parser->parse_data(safely_encode($source));
 	
 	if($num_attachments > 0) {
 		$entity = $self->_add_attachments(
