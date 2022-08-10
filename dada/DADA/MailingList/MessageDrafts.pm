@@ -1083,15 +1083,14 @@ sub params_to_save {
 	$params->{feed_url_post_html}     = 1; 
 	
 	$params->{feed_url_most_recent_entry} = 1; 
-	
-    # These aren't used atm. 
-    #$params->{url_username}          = 1;
-    #$params->{url_password}          = 1;
-    #$params->{proxy}                 = 1;
     
     $params->{crop_html_content}                = 1;
     $params->{crop_html_content_selector_type}  = 1;
     $params->{crop_html_content_selector_label} = 1;
+	
+	$params->{remove_html_content}                = 1, 
+	$params->{remove_html_content_selector_type}  = 1, 
+	$params->{remove_html_content_selector_label} = 1,  
 
 	$params->{remove_rss_content}                = 1;
 	$params->{remove_rss_content_selector_type}  = 1;

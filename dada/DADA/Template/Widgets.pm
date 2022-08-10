@@ -2,6 +2,7 @@ package DADA::Template::Widgets;
 use lib qw(
 	../../../ 
 	../../../DADA/perllib
+	../../../DADA/App/Support
 ); 
 
 use lib "../../";

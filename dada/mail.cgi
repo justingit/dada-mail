@@ -6,6 +6,7 @@
 use FindBin;
 use lib "$FindBin::Bin/";
 use lib "$FindBin::Bin/DADA/perllib";
+use lib "$FindBin::Bin/DADA/App/Support";
 
 BEGIN {
     my $b__dir = ( getpwuid($>) )[7] . '/perl';

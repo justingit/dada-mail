@@ -431,6 +431,12 @@ sub format_mlm {
         $args->{-crop_html_options} = { enabled => 0, };
     }
 	
+    if ( !exists( $args->{-remove_html_options} ) ) {
+		
+		warn 'no exists?!';
+		
+        $args->{-remove_html_options} = { enabled => 0, };
+    }
 	
     if ( $type eq 'text/html' ) {
 
@@ -440,6 +446,8 @@ sub format_mlm {
               $self->rel_to_abs( $content, $args->{-rel_to_abs_options}->{base},
               );
         }
+		
+		
 
         # Crop HTML:
         if ( $args->{-crop_html_options}->{enabled} == 1 ) {
@@ -455,6 +463,27 @@ sub format_mlm {
 				#?: croak $errors;
 			}
         }
+		
+		
+		use Data::Dumper; 
+		warn '$args->{-remove_html_options}: ' . Dumper($args->{-remove_html_options});
+		
+		
+        # Remove HTML:
+        if ( $args->{-remove_html_options}->{enabled} == 1 ) {
+			$args->{-remove_html_options}->{-html} = $content;
+            my ($status, $removed_content, $errors) = $self->remove_html($args->{-remove_html_options});
+			
+			if($status == 1){ 
+				# uhuh.
+				$content = $removed_content;
+			}
+			else { 
+				warn $errors; 
+				#?: croak $errors;
+			}
+        }
+		
        
 		if($args->{-utm_options}->{-enabled} == 1){
 			 try {
@@ -898,6 +927,119 @@ sub crop_html {
 	return @r; 
 	
 }
+
+
+
+
+sub remove_html { 
+	
+	warn 'in remove_html'
+		if $t; 
+		
+	warn 'in remove_html'; 
+	
+    my $self   = shift;
+    my ($args) = @_;
+	
+    my $html   = $args->{-html};
+	my @r = (); 
+    my $root; 
+	my $r; 
+		
+	my $og_html = $html; 	
+	
+	try {
+        require HTML::Tree;
+        require HTML::Element;
+        require HTML::TreeBuilder;
+
+        $root = HTML::TreeBuilder->new(
+            ignore_unknown      => 0,
+            no_space_compacting => 1,
+            store_comments      => 1,
+			no_expand_entities  => 1, 
+        );
+		
+		my $html = $self->shield_tags_in_hrefs($html); 
+        $root->parse($html);
+        $root->eof();
+        $root->elementify();
+        my $replace_tag = undef;
+        my $crop        = undef;
+		my $continue    = 0; 
+		
+		my $labels = []; 
+		
+				
+		if($args->{remove_html_content_selector_label} =~ m/\"/){ 
+			
+			warn 'here 1';
+			
+            require Text::CSV;
+            my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+            if ( $csv->parse($args->{remove_html_content_selector_label}) ) {
+              	 my @csv_fields = $csv->fields;
+				 # warn '@csv_fields: ' . Dumper([@csv_fields]);
+				 for(@csv_fields){ 
+					 push(@$labels, $_); 
+				 }
+            }
+		}
+		else { 
+			
+			warn 'here 2';
+			warn '$args->{remove_html_content_selector_label}: ' 
+				. $args->{remove_html_content_selector_label}; 
+			$labels->[0] = $args->{remove_html_content_selector_label}; 
+		}
+
+		
+		for my $label(@$labels){
+			
+			warn '$label: ' . $label; 
+			
+	        if ( $args->{remove_html_content_selector_type} eq 'id' ) {
+				foreach my $e ($root->look_down( "id", $label)) {
+					$e->delete();
+				}
+	        }
+	        elsif ( $args->{remove_html_content_selector_type} eq 'class' ) {
+				foreach my $e ($root->look_down("class", $label)){
+	               $e->delete();
+	            }
+	        }
+			
+			foreach my $e ($root->look_down("loading", 'lazy')){
+               $e->delete();
+            }
+			
+		    foreach my $e ($root->look_down("_tag" => "footer")) {
+		        $e->delete();
+		    }
+			
+			
+			
+		}
+		
+		$r = $root->as_HTML;
+		$r = $self->unshield_tags_in_hrefs($r); 
+
+		$r =~ s!^.*?<body>(.*)</body>.*!$1!s;
+		
+		$root = $root->delete; 
+		
+    } catch {
+        my $e = 'cannot remove html: ' . substr($_, 0, 100) . '...';
+        @r = (0, undef, $e);
+		return @r; 
+    };
+	
+	@r = (1, $r, undef); 
+	
+
+	return @r; 
+}
+
 
 
 

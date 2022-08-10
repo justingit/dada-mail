@@ -673,7 +673,7 @@ sub construct_from_url {
 	if($draft_q->param('crop_html_content') == 1){ 
 		my($status, $cropped_html, $errors) = $fm->crop_html(
 			{
-				-html              => $html_message,
+				-html                            => $html_message,
 				crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
 		   	 	crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
 			}
@@ -700,6 +700,11 @@ sub construct_from_url {
 			        crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
 			        crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
 				}, 
+				-remove_html_options => { 
+					enabled                              => scalar $draft_q->param('remove_html_content'),
+					remove_html_content_selector_type    => scalar $draft_q->param('remove_html_content_selector_type'),
+					remove_html_content_selector_label   => scalar $draft_q->param('remove_html_content_selector_label'),
+				},
 				-rel_to_abs_options => { 
 					enabled => 1, 
 					base    => $base, 
