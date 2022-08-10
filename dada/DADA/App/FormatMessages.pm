@@ -448,9 +448,8 @@ sub format_mlm {
         }
 		
 		
-
-        # Crop HTML:
-        if ( $args->{-crop_html_options}->{enabled} == 1 ) {
+		# Crop HTML:
+        if ($args->{-crop_html_options}->{enabled} == 1 ) {
 			$args->{-crop_html_options}->{-html} = $content;
             my ($status, $cropped_content, $errors) = $self->crop_html($args->{-crop_html_options});
 			
@@ -463,7 +462,8 @@ sub format_mlm {
 				#?: croak $errors;
 			}
         }
-		
+
+				
 		
 		use Data::Dumper; 
 		warn '$args->{-remove_html_options}: ' . Dumper($args->{-remove_html_options});
@@ -969,58 +969,35 @@ sub remove_html {
 		my $continue    = 0; 
 		
 		my $labels = []; 
-		
-				
-		if($args->{remove_html_content_selector_label} =~ m/\"/){ 
-			
-			warn 'here 1';
-			
-            require Text::CSV;
-            my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
-            if ( $csv->parse($args->{remove_html_content_selector_label}) ) {
-              	 my @csv_fields = $csv->fields;
-				 # warn '@csv_fields: ' . Dumper([@csv_fields]);
-				 for(@csv_fields){ 
-					 push(@$labels, $_); 
-				 }
-            }
-		}
-		else { 
-			
-			warn 'here 2';
-			warn '$args->{remove_html_content_selector_label}: ' 
-				. $args->{remove_html_content_selector_label}; 
-			$labels->[0] = $args->{remove_html_content_selector_label}; 
-		}
 
+		 $args->{remove_html_content_selector_label} =~ s/\r\n/\n/g;
+		
+		my @sel = split("\n", $args->{remove_html_content_selector_label});
+		foreach(@sel){ 
+			my ($a, $l) = split('=', $_);
+			chomp($a);
+			chomp($l);
+			
+			$l =~ s/\"//g;
+			push(@$labels, 
+				{ 
+					attr  => $a, 
+					label => $l, 
+				}
+			);
+		}
 		
 		for my $label(@$labels){
 			
-			warn '$label: ' . $label; 
+			warn '$label->{attr}: "'  . $label->{attr} . '"'; 
+			warn '$label->{label}: "' . $label->{label} . '"'; 
 			
-	        if ( $args->{remove_html_content_selector_type} eq 'id' ) {
-				foreach my $e ($root->look_down( "id", $label)) {
-					$e->delete();
-				}
-	        }
-	        elsif ( $args->{remove_html_content_selector_type} eq 'class' ) {
-				foreach my $e ($root->look_down("class", $label)){
-	               $e->delete();
-	            }
-	        }
-			
-			foreach my $e ($root->look_down("loading", 'lazy')){
-               $e->delete();
-            }
-			
-		    foreach my $e ($root->look_down("_tag" => "footer")) {
-		        $e->delete();
-		    }
-			
-			
+			foreach my $e ($root->look_down( $label->{attr}, $label->{label})) {
+				$e->delete();
+			}
 			
 		}
-		
+
 		$r = $root->as_HTML;
 		$r = $self->unshield_tags_in_hrefs($r); 
 
