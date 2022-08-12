@@ -433,8 +433,6 @@ sub format_mlm {
 	
     if ( !exists( $args->{-remove_html_options} ) ) {
 		
-		warn 'no exists?!';
-		
         $args->{-remove_html_options} = { enabled => 0, };
     }
 	
@@ -463,10 +461,8 @@ sub format_mlm {
 			}
         }
 
-				
-		
-		use Data::Dumper; 
-		warn '$args->{-remove_html_options}: ' . Dumper($args->{-remove_html_options});
+		# use Data::Dumper; 
+		# warn '$args->{-remove_html_options}: ' . Dumper($args->{-remove_html_options});
 		
 		
         # Remove HTML:
@@ -970,7 +966,7 @@ sub remove_html {
 		
 		my $labels = []; 
 
-		 $args->{remove_html_content_selector_label} =~ s/\r\n/\n/g;
+		$args->{remove_html_content_selector_label} =~ s/\r\n/\n/g;
 		
 		my @sel = split("\n", $args->{remove_html_content_selector_label});
 		foreach(@sel){ 
@@ -989,8 +985,10 @@ sub remove_html {
 		
 		for my $label(@$labels){
 			
-			warn '$label->{attr}: "'  . $label->{attr} . '"'; 
-			warn '$label->{label}: "' . $label->{label} . '"'; 
+			warn '$label->{attr}: "'  . $label->{attr} . '"'
+				if $t;
+			warn '$label->{label}: "' . $label->{label} . '"'
+				if $t;
 			
 			foreach my $e ($root->look_down( $label->{attr}, $label->{label})) {
 				$e->delete();
@@ -1098,7 +1096,6 @@ sub _format_body {
                             -type              => $entity->head->mime_type,
                             -rel_to_abs_options => {
                                 enabled => 0,
-
                                 #base    => $base,
                             }
                         }

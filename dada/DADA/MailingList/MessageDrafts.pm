@@ -1089,11 +1089,9 @@ sub params_to_save {
     $params->{crop_html_content_selector_label} = 1;
 	
 	$params->{remove_html_content}                = 1, 
-	$params->{remove_html_content_selector_type}  = 1, 
 	$params->{remove_html_content_selector_label} = 1,  
 
 	$params->{remove_rss_content}                = 1;
-	$params->{remove_rss_content_selector_type}  = 1;
 	$params->{remove_rss_content_selector_label} = 1;
 	
 
