@@ -747,6 +747,30 @@ jQuery(document).ready(function($){
 
 	}
 	
+	// Mail Sending >> Mailing Monitor Index
+	if ($("#mass_mailing_options").length) {
+		
+		toggle_mass_mailing_use_list_headers();
+		
+		$('body').on('click', '#mass_mailing_use_list_headers', function(event){
+			toggle_mass_mailing_use_list_headers();
+		});
+	}
+	
+	function toggle_mass_mailing_use_list_headers() {
+		if ($("#mass_mailing_use_list_headers").prop("checked") === true) {
+			if($("#mass_mailing_use_list_unsubscribe_headers_div").is(':hidden')) {
+				$("#mass_mailing_use_list_unsubscribe_headers_div").show('blind');
+			}
+		}
+		else {
+			if($("#mass_mailing_use_list_unsubscribe_headers_div").is(':visible')) {
+				$("#mass_mailing_use_list_unsubscribe_headers_div").hide('blind');
+			}
+		}
+	}
+	
+	
 	if ($("#manage_list_consent").length) {
 		$("body").on("click", ".remove_list_consent", function(event) {
 			event.preventDefault();
