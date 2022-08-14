@@ -2,6 +2,57 @@
 <!-- tmpl_set name="title" value="Install <!-- tmpl_var PROGRAM_NAME -->" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
+<!-- tmpl_if has_alt_perl_interpreter -->
+
+	<div class="row">
+		<div class="small-12 medium-8 large-8 medium-centered large-centered columns">
+
+
+			<div class="alert-box info radius">
+				<h3>
+					Found an alternative Perl interpreter:
+				</h3>
+					
+					<p>
+						<ul>
+							<li>
+								 <strong>Location:</strong><!-- tmpl_var alt_perl_interpreter -->
+							</li>
+						<li>
+							<strong>Version:</strong> <!-- tmpl_var alt_perl_interpreter_ver  -->
+					</li>
+				</ul>
+			</p>
+			
+			<p>Here are reasons you may want to do this</p>
+	
+	
+			<form 
+				action="<!-- tmpl_var Self_URL -->" 
+				method="post" 
+			>
+			<input 
+				type="hidden" 
+				name="flavor" 
+				value="switch_perl_interpreter"
+			>
+				<input 
+					type="submit" 
+					name="submitbutton" 
+					value="Switch and Reload" 
+					class="alert large button expand"
+				>
+				
+			</form>
+			</div>
+		</div>
+	</div> 	
+<!-- /tmpl_if -->
+
+
+
+
+
 <div id="install_or_upgrade"></div> 
 
 <!-- tmpl_if found_existing_dada_files_dir --> 
