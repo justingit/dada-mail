@@ -1,17 +1,22 @@
 package DADA::Template::Widgets;
+
 use lib qw(
 	../../../ 
 	../../../DADA/perllib
 	../../../DADA/App/Support
 ); 
 
-use lib "../../";
-use lib "../../DADA/perllib";
-use lib "../../DADA/App/Support";
+use lib qw(
+	../../
+	../../DADA/perllib
+	../../DADA/App/Support
+); 
 
-use lib './';
-use lib './DADA/perllib';
-use lib './DADA/App/Support';
+use lib qw(
+	./
+	./DADA/perllib
+	./DADA/App/Support
+); 
 
 
 use Encode; 

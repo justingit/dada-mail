@@ -473,11 +473,19 @@ the desired precedence.
 
 Here's a list of supported comparison operators:
 
+<<<<<<< HEAD
 =over
 
 =item * Numeric Comparisons
 
 =over
+=======
+=over 4
+
+=item * Numeric Comparisons
+
+=over 4
+>>>>>>> features-remove_content_from_css_selector
 
 =item * E<lt>
 
@@ -493,11 +501,19 @@ Here's a list of supported comparison operators:
 
 =item * E<lt>=E<gt>
 
+<<<<<<< HEAD
 =back
 
 =item * String Comparisons
 
 =over
+=======
+=back 4
+
+=item * String Comparisons
+
+=over 4
+>>>>>>> features-remove_content_from_css_selector
 
 =item * gt
 
@@ -513,15 +529,25 @@ Here's a list of supported comparison operators:
 
 =item * cmp
 
+<<<<<<< HEAD
 =back
 
 =back
+=======
+=back 4
+
+=back 4
+>>>>>>> features-remove_content_from_css_selector
 
 =head1 MATHEMATICS
 
 The basic operators are supported:
 
+<<<<<<< HEAD
 =over
+=======
+=over 4
+>>>>>>> features-remove_content_from_css_selector
 
 =item * +
 
@@ -533,7 +559,11 @@ The basic operators are supported:
 
 =item * %
 
+<<<<<<< HEAD
 =back
+=======
+=back 4
+>>>>>>> features-remove_content_from_css_selector
 
 There are also some mathy functions.  See the FUNCTIONS section below.
 
@@ -541,20 +571,32 @@ There are also some mathy functions.  See the FUNCTIONS section below.
 
 Boolean logic is available:
 
+<<<<<<< HEAD
 =over
+=======
+=over 4
+>>>>>>> features-remove_content_from_css_selector
 
 =item * && (synonym: and)
 
 =item * || (synonym: or)
 
+<<<<<<< HEAD
 =back
+=======
+=back 4
+>>>>>>> features-remove_content_from_css_selector
 
 =head1 FUNCTIONS
 
 The following functions are available to be used in expressions.  See
 perldoc perlfunc for details.
 
+<<<<<<< HEAD
 =over
+=======
+=over 4
+>>>>>>> features-remove_content_from_css_selector
 
 =item * sprintf
 
@@ -596,7 +638,11 @@ perldoc perlfunc for details.
 
 =item * srand
 
+<<<<<<< HEAD
 =back
+=======
+=back 4
+>>>>>>> features-remove_content_from_css_selector
 
 All functions must be called using full parenthesis.  For example,
 this is a syntax error:

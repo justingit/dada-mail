@@ -11209,18 +11209,25 @@ sub subscribe {
     my $q    = $self->query();
 
 
-	# We're not going to accept GET requests:
-	if($q->request_method() !~ m/POST/i){
-		return $self->subscribe_landing(); 
-	}
-	
-	
     my %args = ( -html_output => 1, @_ );
 
 	my $skip_tests = [];
 	if(exists($args{-skip_tests})){ 
 		$skip_tests = $args{-skip_tests};
 	}
+	if(!exists($args{-resend_conf_mode})){ 
+		$args{-resend_conf_mode} = 0; 
+	}
+	
+	
+	# We're not going to accept GET requests:
+	if(
+		   $q->request_method()       !~ m/POST/i 
+		&& $args{-resend_conf_mode} == 0
+	){
+		return $self->subscribe_landing(); 
+	}
+	
 	
     require DADA::App::Subscriptions;
     my $das = DADA::App::Subscriptions->new;
@@ -11786,10 +11793,14 @@ sub resend_conf_captcha {
 			my $skip_tests = [
 				'captcha_challenge_failed', 
 				'list_consent_check', 
+				'suspicious_activity_by_ip_check_failed'
 			];
 			
 			
-            $self->subscribe(-skip_tests => $skip_tests);
+            $self->subscribe(
+				-skip_tests       => $skip_tests,
+				-resend_conf_mode => 1, 
+			);
 
         }
         elsif ( $q->param('rm') eq 'unsubscription_request' ) {
@@ -11942,8 +11953,13 @@ sub resend_conf_no_captcha {
           	
 			my $skip_tests = [
 				'list_consent_check', 
+				'suspicious_activity_by_ip_check_failed',
+				
 			];
-            $self->subscribe(-skip_tests => $skip_tests);
+            $self->subscribe(
+				-skip_tests       => $skip_tests, 
+				-resend_conf_mode => 1, 
+			);
 			
         }
         elsif ( $q->param('rm') eq 'u' ) {

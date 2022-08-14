@@ -431,6 +431,10 @@ sub format_mlm {
         $args->{-crop_html_options} = { enabled => 0, };
     }
 	
+    if ( !exists( $args->{-remove_html_options} ) ) {
+		
+        $args->{-remove_html_options} = { enabled => 0, };
+    }
 	
     if ( $type eq 'text/html' ) {
 
@@ -440,9 +444,10 @@ sub format_mlm {
               $self->rel_to_abs( $content, $args->{-rel_to_abs_options}->{base},
               );
         }
-
-        # Crop HTML:
-        if ( $args->{-crop_html_options}->{enabled} == 1 ) {
+		
+		
+		# Crop HTML:
+        if ($args->{-crop_html_options}->{enabled} == 1 ) {
 			$args->{-crop_html_options}->{-html} = $content;
             my ($status, $cropped_content, $errors) = $self->crop_html($args->{-crop_html_options});
 			
@@ -455,6 +460,26 @@ sub format_mlm {
 				#?: croak $errors;
 			}
         }
+
+		# use Data::Dumper; 
+		# warn '$args->{-remove_html_options}: ' . Dumper($args->{-remove_html_options});
+		
+		
+        # Remove HTML:
+        if ( $args->{-remove_html_options}->{enabled} == 1 ) {
+			$args->{-remove_html_options}->{-html} = $content;
+            my ($status, $removed_content, $errors) = $self->remove_html($args->{-remove_html_options});
+			
+			if($status == 1){ 
+				# uhuh.
+				$content = $removed_content;
+			}
+			else { 
+				warn $errors; 
+				#?: croak $errors;
+			}
+        }
+		
        
 		if($args->{-utm_options}->{-enabled} == 1){
 			 try {
@@ -901,6 +926,98 @@ sub crop_html {
 
 
 
+
+sub remove_html { 
+	
+	warn 'in remove_html'
+		if $t; 
+		
+	warn 'in remove_html'; 
+	
+    my $self   = shift;
+    my ($args) = @_;
+	
+    my $html   = $args->{-html};
+	my @r = (); 
+    my $root; 
+	my $r; 
+		
+	my $og_html = $html; 	
+	
+	try {
+        require HTML::Tree;
+        require HTML::Element;
+        require HTML::TreeBuilder;
+
+        $root = HTML::TreeBuilder->new(
+            ignore_unknown      => 0,
+            no_space_compacting => 1,
+            store_comments      => 1,
+			no_expand_entities  => 1, 
+        );
+		
+		my $html = $self->shield_tags_in_hrefs($html); 
+        $root->parse($html);
+        $root->eof();
+        $root->elementify();
+        my $replace_tag = undef;
+        my $crop        = undef;
+		my $continue    = 0; 
+		
+		my $labels = []; 
+
+		$args->{remove_html_content_selector_label} =~ s/\r\n/\n/g;
+		
+		my @sel = split("\n", $args->{remove_html_content_selector_label});
+		foreach(@sel){ 
+			my ($a, $l) = split('=', $_);
+			chomp($a);
+			chomp($l);
+			
+			$l =~ s/\"//g;
+			push(@$labels, 
+				{ 
+					attr  => $a, 
+					label => $l, 
+				}
+			);
+		}
+		
+		for my $label(@$labels){
+			
+			warn '$label->{attr}: "'  . $label->{attr} . '"'
+				if $t;
+			warn '$label->{label}: "' . $label->{label} . '"'
+				if $t;
+			
+			foreach my $e ($root->look_down( $label->{attr}, $label->{label})) {
+				$e->delete();
+			}
+			
+		}
+
+		$r = $root->as_HTML;
+		$r = $self->unshield_tags_in_hrefs($r); 
+
+		$r =~ s!^.*?<body>(.*)</body>.*!$1!s;
+		
+		$root = $root->delete; 
+		
+    } catch {
+        my $e = 'cannot remove html: ' . substr($_, 0, 100) . '...';
+        @r = (0, undef, $e);
+		return @r; 
+    };
+	
+	@r = (1, $r, undef); 
+	
+
+	return @r; 
+}
+
+
+
+
 sub _format_body {
 
     my $self   = shift;
@@ -979,7 +1096,6 @@ sub _format_body {
                             -type              => $entity->head->mime_type,
                             -rel_to_abs_options => {
                                 enabled => 0,
-
                                 #base    => $base,
                             }
                         }

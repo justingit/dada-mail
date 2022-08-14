@@ -1000,7 +1000,8 @@ sub create_image_part {
 		}
 		else { 
 			# "Yeah, OK successful: ";; 
-			$buff1 = $res2->decoded_content;
+			#$buff1 = $res2->decoded_content;
+			$buff1 = $res2->content;
 		}
     }
 	
@@ -1008,6 +1009,7 @@ sub create_image_part {
 	my $filename = filename_from_url($ur);
 	
 	%entity_args = (
+		#Data        => safely_encode($buff1), # this should be binary, so no need for this,
 		Data        => $buff1,
 		Encoding    => 'base64',
 		Disposition => "inline",

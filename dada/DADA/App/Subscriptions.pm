@@ -588,6 +588,7 @@ sub subscribe {
                   invalid_profile_fields
 				  captcha_challenge_failed
 				  list_consent_check_failed
+				  suspicious_activity_by_ip_check_failed
                   undefined
                 );
 

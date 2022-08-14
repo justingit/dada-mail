@@ -538,10 +538,7 @@ sub construct_from_url {
 						-pre_html                           => scalar $draft_q->param('feed_url_pre_html'), 
 						-post_html                          => scalar $draft_q->param('feed_url_post_html'), 
 						-remove_rss_content                 => scalar $draft_q->param('remove_rss_content'), 
-						-remove_rss_content_selector_type   => scalar $draft_q->param('remove_rss_content_selector_type'), 
-						-remove_rss_content_selector_label  => scalar $draft_q->param('remove_rss_content_selector_label'), 
-						
-						(($pass_last_read_entry == 1) ?(
+						-remove_rss_content_selector_label  => scalar $draft_q->param('remove_rss_content_selector_label'), 						(($pass_last_read_entry == 1) ?(
 							-last_read_entry => scalar $draft_q->param('feed_url_most_recent_entry'),
 						) : ())
 					}
@@ -673,7 +670,7 @@ sub construct_from_url {
 	if($draft_q->param('crop_html_content') == 1){ 
 		my($status, $cropped_html, $errors) = $fm->crop_html(
 			{
-				-html              => $html_message,
+				-html                            => $html_message,
 				crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
 		   	 	crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
 			}
@@ -700,6 +697,11 @@ sub construct_from_url {
 			        crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
 			        crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
 				}, 
+				-remove_html_options => { 
+					enabled                              => scalar $draft_q->param('remove_html_content'),
+					remove_html_content_selector_type    => scalar $draft_q->param('remove_html_content_selector_type'),
+					remove_html_content_selector_label   => scalar $draft_q->param('remove_html_content_selector_label'),
+				},
 				-rel_to_abs_options => { 
 					enabled => 1, 
 					base    => $base, 
@@ -806,7 +808,7 @@ sub construct_from_url {
     use MIME::Parser;
     my $parser = new MIME::Parser;
        $parser = optimize_mime_parser($parser);
-    my $entity = $parser->parse_data($source);
+    my $entity = $parser->parse_data(safely_encode($source));
 	
 	if($num_attachments > 0) {
 		$entity = $self->_add_attachments(
@@ -957,8 +959,6 @@ sub content_from_feed_url {
 	my $status = 1; 
 	my $error  = {};
 	
-	
-	
 	my ( $rtc, $res, $md5, $e_m ) = grab_url({-url => $feed_url });
 	
 	if(!$rtc){ 
@@ -1045,10 +1045,11 @@ sub content_from_feed_url {
 			$content = $description; 
 		}
 		
+		
 		if($args->{-remove_rss_content} == 1){
+			
 			my ($n_status, $n_content, $n_errors) = $self->redact_html({ 
 				-html                              => $content, 
-				-remove_rss_content_selector_type  => $args->{-remove_rss_content_selector_type}, 
 				-remove_rss_content_selector_label => $args->{-remove_rss_content_selector_label}, 
 			}); 
 			if($n_status == 1){ 
@@ -1078,7 +1079,6 @@ sub content_from_feed_url {
 		if($args->{-remove_rss_content} == 1){
 			my ($n_status, $n_content, $n_errors) = $self->redact_html({ 
 				-html                              => $description, 
-				-remove_rss_content_selector_type  => $args->{-remove_rss_content_selector_type}, 
 				-remove_rss_content_selector_label => $args->{-remove_rss_content_selector_label}, 
 			}); 
 			if($n_status == 1){ 
@@ -1190,38 +1190,37 @@ sub redact_html {
 		my $continue    = 0; 
 		
 		my $labels = []; 
-		
-				
-		if($args->{-remove_rss_content_selector_label} =~ m/\"/){ 
-			
-            require Text::CSV;
-            my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
-            if ( $csv->parse($args->{-remove_rss_content_selector_label}) ) {
-              	 my @csv_fields = $csv->fields;
-				 # warn '@csv_fields: ' . Dumper([@csv_fields]);
-				 for(@csv_fields){ 
-					 push(@$labels, $_); 
-				 }
-            }
-		}
-		else { 
-			$labels->[0] = $args->{-remove_rss_content_selector_label}; 
-		}
 
+		$args->{-remove_rss_content_selector_label} =~ s/\r\n/\n/g;
+		
+		my @sel = split("\n", $args->{-remove_rss_content_selector_label});
+		foreach(@sel){ 
+			my ($a, $l) = split('=', $_);
+			chomp($a);
+			chomp($l);
+			
+			$l =~ s/\"//g;
+			push(@$labels, 
+				{ 
+					attr  => $a, 
+					label => $l, 
+				}
+			);
+		}
 		
 		for my $label(@$labels){
-	        if ( $args->{-remove_rss_content_selector_type} eq 'id' ) {
-				foreach my $e ($root->look_down( "id", $label)) {
-					$e->delete();
-				}
-	        }
-	        elsif ( $args->{-remove_rss_content_selector_type} eq 'class' ) {
-				foreach my $e ($root->look_down("class", $label)){
-	               $e->delete();
-	            }
-	        }
+			
+			warn '$label->{attr}: "'  . $label->{attr} . '"'
+				if $t;
+			warn '$label->{label}: "' . $label->{label} . '"'
+				if $t;
+			
+			foreach my $e ($root->look_down( $label->{attr}, $label->{label})) {
+				$e->delete();
+			}
+			
 		}
-		
+
 		$r = $root->as_HTML;
 		$r = $fm->unshield_tags_in_hrefs($r); 
 
