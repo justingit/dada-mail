@@ -1,6 +1,6 @@
 #!/usr/bin/perl 
 
-use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib); 
+use lib qw(./t ./ ./DADA/perllib ./DADA/App/Support ../ ../DADA/perllib  ../DADA/App/Support ../../ ../../DADA/perllib ./../DADA/App/Support); 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 
 

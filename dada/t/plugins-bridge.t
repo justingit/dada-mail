@@ -2,6 +2,17 @@
 use strict; 
 use Carp; 
 
+
+#BEGIN {
+#	my $PROGRAM_ERROR_LOG = './errors.txt';
+#
+#        open( STDERR, ">>$PROGRAM_ERROR_LOG" )
+#          || warn
+#"Error: Cannot redirect STDERR, it's possible that Dada Mail does not have write permissions to this file ($PROGRAM_ERROR_LOG) or it #doesn't exist! If Dada Mail cannot make this file for you, create it yourself and give it enough permissions so it may write to it: $!";
+#}
+
+
+
 use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib 
 	
 	/Users/justin/Documents/DadaMail/build/bundle/perllib
@@ -129,8 +140,8 @@ $ls->param('get_finished_notification',   0                     );
 
 
 ok($status == 0, "inject returning 0 - it's not disabled, but we've got an improper email message"); 
-use Data::Dumper; 
-diag Dumper([$status, $errors, $r]); 
+#use Data::Dumper; 
+#diag Dumper([$status, $errors, $r]); 
 ok($errors->{blank_message} == 1, "Error Produced is that the message is blank. Good! ($errors->{blank_message})"); 
 
 
@@ -149,6 +160,10 @@ my $ls = DADA::MailingList::Settings->new({-list => $list});
 
 
 bridge::reset_globals(); 
+
+#diag '$msg: ' . $msg; 
+
+
 ( $status, $errors, $r ) = bridge::inject(
 	{ 
 		-msg       => $msg, 
@@ -158,8 +173,12 @@ bridge::reset_globals();
 	}
 );
 
-
-
+#use Data::Dumper; 
+#warn Dumper(
+#{ 
+#status => $status, errors => $errors, r => $r
+#}		
+#); 
 
 wait_for_msg_sending(); 
 
@@ -182,7 +201,7 @@ my $sent_msg =  slurp($mh->test_send_file);
 
 
 my $orig_entity = $parser->parse_data($msg);
-use Data::Dumper; 
+#use Data::Dumper; 
 # diag 'og_entity: ' . Data::Dumper::Dumper($orig_entity); 
 my $sent_entity = undef; 
 #eval { 
@@ -288,10 +307,17 @@ undef $test_msg;
 
 
 $test_msg = slurp('t/corpus/email_messages/from_header_phrase_spoof.eml'); 
-($status, $errors) = bridge::validate_msg($ls, \$test_msg);
 
-#use Data::Dumper; 
-#diag Data::Dumper::Dumper($errors); 
+my $r = undef; 
+
+($status, $errors, $r) = bridge::validate_msg($ls, \$test_msg);
+
+use Data::Dumper; 
+diag Data::Dumper::Dumper({
+	status => $status, 
+	errors => $errors,
+	r      => $r, 
+}); 
 
 
 ok($status == 0, "spoof test is returning 0?"); 
@@ -409,8 +435,9 @@ sub  wait_for_msg_sending {
 	my $timeout = 0; 
 	while($mailouts[0] ){ 
 		diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
+		$timeout++; 
 		sleep(5); 
-		if($timeout >= 30){ 
+		if($timeout >= 10){ 
 			die "something's wrong with the testing - dying."	
 		}
 		@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});

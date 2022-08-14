@@ -225,6 +225,7 @@ sub _hmac_sha256_base64 {
 	try { 
 		require Digest::SHA;
 	} catch { 
+		warn $_; 
 		$can_use_Digest_SHA = 0; 
 	};
 	
@@ -232,6 +233,8 @@ sub _hmac_sha256_base64 {
 		$digest = Digest::SHA::hmac_sha256_base64( $message, $key );
 	}
 	else { 
+		# Digest::SHA should be in core, so this shouldn't be needed. 
+		warn 'Digest::SHA not in core?';
 		require Digest::SHA::PurePerl; 
 		$digest = Digest::SHA::PurePerl::hmac_sha256_base64( $message, $key );
 		

@@ -1851,6 +1851,7 @@ sub validate_msg {
 #    use Data::Dumper; 
 #    warn '$parser ' . Dumper($parser); 
     
+	my $ntr = 0; 
     try {
         $entity = $parser->parse_data($msg); 
         #warn 'still here...'; 
@@ -1858,12 +1859,12 @@ sub validate_msg {
         $r .= "\t\tProblems with parsing message: $_\n";
         cluck "Problems with parsing message: $_\n";
         cluck '$msg:' . $msg; 
-        
-        $errors->{invalid_msg} = 1;
-        return ( 0, $errors, $r );        
+        $errors->{invalid_msg} = 1;  
+		$ntr = 1;   
     };
-    
-    #warn '$entity->as_string' . $entity->as_string; 
+	if($ntr == 1){ 
+		return ( 0, $errors, $r );        
+	}
         
     # These checks make sure that multiple From: headers and addresses don't exist
     if ( $Plugin_Config->{Check_Multiple_From_Addresses} == 1 ) {
@@ -1943,20 +1944,29 @@ sub validate_msg {
     }
 
     my $rough_from = $entity->head->get( 'From', 0 );
+	
+	warn '$rough_from: ' . $rough_from; 
+	
     my $from_address = '';
 
     if ( defined($rough_from) ) {
         try {
             # This correct ?
             $from_address = ( Email_Address_parse($rough_from) )[0]->address;
+			warn '$from_address: ' . $from_address; 
+		#	warn 'Email_Address_parse($rough_from) )[0]->address: ' . (Email_Address_parse($rough_from) )[1]->address; 
+			
 	    } catch { 
 	         $r .= '\t*Warning! Something\'s wrong with the From address - ' . $_;
+			 warn '\t*Warning! Something\'s wrong with the From address - ' . $_;
 	    };
 	}
 	
     $from_address = lc_email($from_address);
 
-    $r .= "* Checking Recipient: $from_address\n";
+	warn '$from_address: ' . $from_address; 
+	
+	$r .= "* Checking Recipient: $from_address\n";
 
     if ( lc_email($from_address) eq lc_email( $ls->param('list_owner_email') ) ) {
         $r .= "\t* From List Owner: Yes.\n";
@@ -2385,17 +2395,19 @@ sub test_Check_List_Owner_Return_Path_Header {
 
     if ( defined($rough_from) ) {
 
-        try { $from_address = ( Email_Address_parse($rough_from) )[0]->address; };
-    } catch { 
-        $notice .= '\t\tWarning! Something\'s wrong with the From address - ' . $_
-    };
+	    try { 
+			$from_address = ( Email_Address_parse($rough_from) )[0]->address;
+		} catch { 
+	        $notice .= '\t\tWarning! Something\'s wrong with the From address - ' . $_
+	    };
     
-    $from_address = lc_email($from_address);
+		$from_address = lc_email($from_address);
 
-    # $notice .= '$from_address:  ' . $from_address;
+		# $notice .= '$from_address:  ' . $from_address;
 
-    # /This has been copied from the main thingy,
-
+		# /This has been copied from the main thingy,
+	}
+	
     my $rough_return_path = undef;
 
     if ( $entity->head->get( 'Return-Path', 0 ) ) {
@@ -3706,9 +3718,9 @@ sub inject {
     my $r   = '';
     my $msg = $args->{-msg};
 
+	
     # We're taking a guess, on this one:
-    $msg = safely_decode($msg);
-
+    $msg = safely_decode($msg);	
     my $send_test = 0;
 
     my $test_mail = 0;

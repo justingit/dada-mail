@@ -1,6 +1,6 @@
 #!/usr/bin/perl 
 
-use lib qw(./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib ./t); 
+use lib qw(./ ./DADA/perllib ./DADA/App/Support ../ ../DADA/perllib ../../ ../../DADA/perllib ./t); 
 
 use dada_test_config;
 dada_test_config::create_SQLite_db(); 
@@ -42,11 +42,17 @@ BEGIN{ use_ok('DADA::App::EmailThemes'); }
 
 BEGIN{ use_ok('DADA::App::FormatMessages'); }
 BEGIN{ use_ok('DADA::App::FormatMessages::Filters::BodyContentOnly'); }
-BEGIN{ use_ok('DADA::App::FormatMessages::Filters::CleanUpReplies'); }
+
+
+# Not used, since v5
+#BEGIN{ use_ok('DADA::App::FormatMessages::Filters::CleanUpReplies'); }
+
 BEGIN{ use_ok('DADA::App::FormatMessages::Filters::CSSInliner'); }
 BEGIN{ use_ok('DADA::App::FormatMessages::Filters::HTMLMinifier'); }
 BEGIN{ use_ok('DADA::App::FormatMessages::Filters::InjectThemeStylesheet'); }
-BEGIN{ use_ok('DADA::App::FormatMessages::Filters::InlineEmbeddedImages'); }
+
+# This requires HTML::Parser which is XS not PP. There is HTML::Parser::Simple, but I don't know if that'll work for us
+# BEGIN{ use_ok('DADA::App::FormatMessages::Filters::InlineEmbeddedImages'); }
 BEGIN{ use_ok('DADA::App::FormatMessages::Filters::RemoveTokenLinks'); }
 BEGIN{ use_ok('DADA::App::FormatMessages::Filters::UnescapeTemplateTags'); }
 
@@ -231,7 +237,6 @@ BEGIN{ use_ok('File::Spec'); }
 
 # This is all for the Captcha::reCAPTCHA stuff...
 BEGIN{ use_ok('Best') }; 
-#BEGIN{ use_ok('Crypt::Rijndael_PP'); 
 BEGIN{ use_ok('HTML::Tiny') }; 
 #BEGIN{ use_ok('Captcha::reCAPTCHA') };
 
@@ -250,7 +255,7 @@ SKIP: {
 
 BEGIN{ use_ok('HTML::TextToHTML'); }
 BEGIN{ use_ok('HTML::Template'); }
-BEGIN{ use_ok('HTML::Template::Expr'); }
+#BEGIN{ use_ok('HTML::Template::Expr'); }
 
 # I wish I could subclass this a little nicer: 
 BEGIN{ use_ok('HTML::Template::MyExpr'); }
@@ -288,7 +293,6 @@ BEGIN{ use_ok('MIME::EncWords'); }
 
 BEGIN{ use_ok('MIME::Type'); }
 BEGIN{ use_ok('MIME::Types'); }
-BEGIN{ use_ok('MIME::Lite'); }
 
 # Huh! This actually needs LWP - it may fail on a few systems...
 # This too: 

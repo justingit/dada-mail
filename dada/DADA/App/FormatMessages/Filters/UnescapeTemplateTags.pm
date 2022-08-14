@@ -10,9 +10,7 @@ use vars qw($AUTOLOAD);
 use DADA::Config qw(!:DEFAULT);
 
 use Carp qw(croak carp); 
-use HTML::LinkExtor; 
-use URI::file; 
-use URI; 
+
 
 # Need to ship with: 
 use DADA::App::Guts; 

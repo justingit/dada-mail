@@ -3115,6 +3115,7 @@ sub _find_email_addresses {
 	
 	# parse out the addresses sent to us:
 	my @recipients = (); 
+	# This seems laaaazy: 
 	require Email::Find;
 	# Simply print out all the addresses found leaving the text undisturbed.
 	my $finder = Email::Find->new(sub {

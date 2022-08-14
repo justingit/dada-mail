@@ -14,7 +14,6 @@ use DADA::App::Guts;
 
 use Carp qw(croak carp);
 use Try::Tiny;
-use HTML::Parser;
 
 my $t    = 0;
 my $body = undef;

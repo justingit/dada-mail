@@ -381,22 +381,23 @@ sub auto_redirect_tag {
 	my $self = shift; 
 	my $s    = shift; 
 	my $type = shift; 
-	
+	my $need_to_return = 0; 
 	try { 
 		require URI::Find; 
 		require HTML::LinkExtor;
 	} catch { 
 		warn "Cannot auto redirect links. Missing perl module? $_"; 
-		return $s; 
+		$need_to_return = 1; 
 	};
+	if($need_to_return == 1){ 
+		return $s; 
+	}
 	
 	my @a;
 	if($type eq 'HTML'){ 
 		$s =  $self->HTML_auto_redirect_w_link_ext($s); 		
-		
 		# This won't work, as it'll escape out the redirect tag. DOH!
-		# $s =  $self->HTML_auto_redirect_w_HTML_TokeParser($s); 
-		
+		# $s =  $self->HTML_auto_redirect_w_HTML_TokeParser($s); 	
 	}
 	else { 
 		

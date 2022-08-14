@@ -2,8 +2,10 @@ package DADA::App::Guts;
 
 use lib "../../";
 use lib "../../DADA/perllib";
+use lib "../../DADA/App/Support";
 use lib './';
 use lib './DADA/perllib';
+use lib './DADA/App/Support';
 
 use Carp qw(carp croak);
 use DADA::Config qw(!:DEFAULT);  
@@ -148,8 +150,8 @@ my $can_use_cache = {};
 use constant HAS_URI_ESCAPE_XS => eval { require URI::Escape::XS; 1; }; # Much faster, but requires C compiler.
 use constant HAS_URI_ESCAPE    => eval { require URI::Escape; 1; };
 
-use constant HAS_EMAIL_ADDRESS_XS => eval { require Email::Address::XS; 1; };
-use constant HAS_EMAIL_ADDRESS    => eval { require Email::Address; 1; };
+#use constant HAS_EMAIL_ADDRESS_XS => eval { require Email::Address::XS; 1; };
+#use constant HAS_EMAIL_ADDRESS    => eval { require Email::Address; 1; };
 
 =pod
 
@@ -3006,8 +3008,7 @@ sub safely_decode {
 	return $str;
 }
 
-sub safely_encode { 
-
+sub safely_encode { 	
 	if(utf8::is_utf8($_[0])){ 
 		return Encode::encode($DADA::Config::HTML_CHARSET, $_[0]); 
 	}
@@ -3834,14 +3835,14 @@ sub list_types {
 
 
 sub Email_Address_parse { 
-	if(HAS_EMAIL_ADDRESS_XS){
-		require Email::Address::XS; 
-		return (Email::Address::XS->parse($_[0]));
-	}
-	if(HAS_EMAIL_ADDRESS){ 
+	#if(HAS_EMAIL_ADDRESS_XS){
+	#	require Email::Address::XS; 
+	#	return (Email::Address::XS->parse($_[0]));
+	#}
+	#if(HAS_EMAIL_ADDRESS){ 
 		require Email::Address; 
 		return (Email::Address->parse($_[0]));	
-	}
+	#}
 }
 
 
