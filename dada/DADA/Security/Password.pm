@@ -2,7 +2,15 @@ package DADA::Security::Password;
 
 use strict; 
 
+use lib qw(./ ./DADA ./DADA/perllib); 
+
+
 use lib qw(./ ../ ../perllib ../../ ../../perllib); 
+
+use lib qw(
+	../../../
+	../../../DADA/perllib
+);
 
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts;
