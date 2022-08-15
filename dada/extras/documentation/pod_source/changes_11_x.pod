@@ -3,6 +3,74 @@
 
 =encoding utf-8
 
+=head1 11.19.0
+
+=head2 Focus 
+
+This version of Dada Mail is a major feature release.
+
+=head2 Features
+
+=head3 Enable/Disable mailing list specific email headers
+
+Mailing list headers help mail readers categorize the messages you send as being from a mailing list, as well as provide meta information about your mailing list. Sometimes, they can get in the way of deliverability. We've made the use of them optional. 
+
+Find this feature in, Mailing List: Options labeled, B<Use mailing list headers> (enabled by default).
+
+The list headers you can enable/disable is found in the Config.pm file in the variable, C<LIST_HEADERS>. Here are the headers that can be enabled/disabled, 
+
+
+	Precedence      
+	List         
+	List-Archive        
+	List-Digest         
+	List-Help           
+	List-ID           
+	List-Owner        
+	List-Post       
+	List-Subscribe     
+	List-Unsubscribe    
+	List-Unsubscribe    
+	List-Unsubscribe-Post
+	List-URL            
+	X-Mailer
+
+=head3 Enhanced HTML editing via "Grab content from a URL "
+
+Dada Mail can grab content for a mailing list message just by giving it a URL. 
+
+You can also crop the webpage to only send the content found in a specific HTML id or class attribute, 
+and remove content found within that by an HTML id or class attribute. 
+
+We've enhanced that last feature, by allowing you to set multiple attributes, 
+be they HTML ids, classes, or any other HTML attribute found in a tag. 
+You can also just remove all instances of any HTML tag. 
+
+Find this option where you edit your draft mailing list messages, under B<Grab content from a URL>. 
+The feature itself is labeled, 
+B<Remove content found between the following ids, classes, or other attributes:>
+
+If you wanted to remove all instances of tags with the class of, "example", you would add in, 
+
+	class="example"
+
+for an id of the same name: 
+
+	id="example"
+
+To remove all <img> tags, 
+
+	_tag="img"
+
+Experiment with other HTML attributes!
+
+This same feature is also available for fetching content from an RSS/Atom Feed. 
+
+=head3 Installer: Ability to Switch the path to the Perl interpreter
+
+
+
+
 =head1 11.18.2
 
 =head2 Focus 
