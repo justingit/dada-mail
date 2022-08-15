@@ -1178,10 +1178,8 @@ sub html_to_plaintext {
         if ( $formatted = $f->parse($tmp_str) ) {
             $formatted =~ s/$mask_beginning_comment_qm/</g;
             $formatted =~ s/$mask_ending_comment_qm/>/g;
-			
-			warn '$formatted (this shiuld look wonky): ' . $formatted; 
 
-			
+			# These are bad: 
 			$formatted =~ s/(\n|\r)\s+\-\-\>/-->/gi;
 			$formatted =~ s/\<\!\-\-(\n|\r)\s+/<!--/gi; 
 			$formatted =~ s/tmpl_if\n(\s+)expr/tmpl_if expr/gi; 

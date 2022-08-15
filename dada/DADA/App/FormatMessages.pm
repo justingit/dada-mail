@@ -406,12 +406,16 @@ sub format_phrase_address {
 
 sub format_mlm {
 
-	carp 'format_mlm()' 
-		if $t; 
+ 
+
+    carp 'format_mlm()'
+      if $t;
     my $self = shift;
     my ($args) = shift;
 
-	 
+ #   use Data::Dumper;
+ #   warn 'args: ' . Dumper($args);
+
     if ( !exists( $args->{-content} ) ) {
         warn 'Please pass -content with the content of your message.';
         return undef;
@@ -430,12 +434,12 @@ sub format_mlm {
     if ( !exists( $args->{-crop_html_options} ) ) {
         $args->{-crop_html_options} = { enabled => 0, };
     }
-	
+
     if ( !exists( $args->{-remove_html_options} ) ) {
-		
+
         $args->{-remove_html_options} = { enabled => 0, };
     }
-	
+
     if ( $type eq 'text/html' ) {
 
         # Relative to Absolute URL links:
@@ -444,107 +448,116 @@ sub format_mlm {
               $self->rel_to_abs( $content, $args->{-rel_to_abs_options}->{base},
               );
         }
-		
-		
-		# Crop HTML:
-        if ($args->{-crop_html_options}->{enabled} == 1 ) {
-			$args->{-crop_html_options}->{-html} = $content;
-            my ($status, $cropped_content, $errors) = $self->crop_html($args->{-crop_html_options});
-			
-			if($status == 1){ 
-				# uhuh.
-				$content = $cropped_content;
-			}
-			else { 
-				warn $errors; 
-				#?: croak $errors;
-			}
+
+        # Crop HTML:
+        if ( $args->{-crop_html_options}->{enabled} == 1 ) {
+            $args->{-crop_html_options}->{-html} = $content;
+            my ( $status, $cropped_content, $errors ) =
+              $self->crop_html( $args->{-crop_html_options} );
+
+            if ( $status == 1 ) {
+
+                # uhuh.
+                $content = $cropped_content;
+            }
+            else {
+                warn $errors;
+
+                #?: croak $errors;
+            }
         }
 
-		# use Data::Dumper; 
-		# warn '$args->{-remove_html_options}: ' . Dumper($args->{-remove_html_options});
-		
-		
         # Remove HTML:
         if ( $args->{-remove_html_options}->{enabled} == 1 ) {
-			$args->{-remove_html_options}->{-html} = $content;
-            my ($status, $removed_content, $errors) = $self->remove_html($args->{-remove_html_options});
-			
-			if($status == 1){ 
-				# uhuh.
-				$content = $removed_content;
-			}
-			else { 
-				warn $errors; 
-				#?: croak $errors;
-			}
+            $args->{-remove_html_options}->{-html} = $content;
+            my ( $status, $removed_content, $errors ) =
+              $self->remove_html( $args->{-remove_html_options} );
+
+            if ( $status == 1 ) {
+
+                # uhuh.
+                $content = $removed_content;
+            }
+            else {
+                warn $errors;
+
+                #?: croak $errors;
+            }
         }
-		
-       
-		if($args->{-utm_options}->{-enabled} == 1){
-			 try {
-		        require DADA::App::FormatMessages::Filters::UTM;
-		        my $utm = DADA::App::FormatMessages::Filters::UTM->new($args->{-utm_options}); 
-		        $content = $utm->filter(
-					{ 
-						-type => $args->{-type},
-						-data => $content, 
-				    } 
-				);		
-		    } catch {
-		        carp 'Problems with filter:' . $_ if 
-					$t;
-		    };
-		}
-		
-		
 
+        if ( $args->{-layout} eq 'absolutely_nothing' ) {
+            return $content;
+        }
 
-		unless ($self->layout_choice($args) eq 'none') {
-	        # Should custom need this, too? 
-			$content = $self->body_content_only($content); 
-		}
-			
-		unless ($self->layout_choice($args) =~ m/^(none|mailing_list_message\-custom)$/) {
-			try {
-	            require DADA::App::FormatMessages::Filters::InjectThemeStylesheet;
-	            my $its =
-	              DADA::App::FormatMessages::Filters::InjectThemeStylesheet->new;
-	            $content = $its->filter( 
-					{ 
-						-html_msg => $content, 
-						-list     => $self->{list}, 
-					} 
-				);
-	        }
-	        catch {
-	            carp 'Problems with filter:' . $_ if 
-					$t;
-	        };
-		}
-		
-		if ($self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1) {
-			
-			# CSS Inlining
-	        try {
-	            require DADA::App::FormatMessages::Filters::CSSInliner;
-	            my $css_inliner =
-	              DADA::App::FormatMessages::Filters::CSSInliner->new;
-	            $content = $css_inliner->filter( { -html_msg => $content } );
-	        }
-	        catch {
-	            carp 'Problems with filter:' . $_ if 
-					$t;
-	        };
-		}
+        if ( $args->{-utm_options}->{-enabled} == 1 ) {
+            try {
+                require DADA::App::FormatMessages::Filters::UTM;
+                my $utm = DADA::App::FormatMessages::Filters::UTM->new(
+                    $args->{-utm_options} );
+                $content = $utm->filter(
+                    {
+                        -type => $args->{-type},
+                        -data => $content,
+                    }
+                );
+            }
+            catch {
+                carp 'Problems with filter:' . $_
+                  if $t;
+            };
+        }
 
-		
+        unless ( $self->layout_choice($args) eq 'none' ) {
+
+            # Should custom need this, too?
+            $content = $self->body_content_only($content);
+        }
+
+        unless ( $self->layout_choice($args) =~
+            m/^(none|mailing_list_message\-custom)$/ )
+        {
+            try {
+                require
+                  DADA::App::FormatMessages::Filters::InjectThemeStylesheet;
+                my $its =
+                  DADA::App::FormatMessages::Filters::InjectThemeStylesheet
+                  ->new;
+                $content = $its->filter(
+                    {
+                        -html_msg => $content,
+                        -list     => $self->{list},
+                    }
+                );
+            }
+            catch {
+                carp 'Problems with filter:' . $_
+                  if $t;
+            };
+        }
+
+        if ( $self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1 ) {
+
+            # CSS Inlining
+            try {
+                require DADA::App::FormatMessages::Filters::CSSInliner;
+                my $css_inliner =
+                  DADA::App::FormatMessages::Filters::CSSInliner->new;
+                $content = $css_inliner->filter( { -html_msg => $content } );
+            }
+            catch {
+                carp 'Problems with filter:' . $_
+                  if $t;
+            };
+        }
+
         # Change inlined images into separate files we'll link
         # (and hopefully embed later down the chain)
         if (   $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1
-            || $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1
-            || $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 
-			){
+            || $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}
+            ->{enabled} == 1
+            || $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}
+            ->{enabled} == 1 )
+        {
             try {
                 require
                   DADA::App::FormatMessages::Filters::InlineEmbeddedImages;
@@ -553,8 +566,8 @@ sub format_mlm {
                 $content = $iei->filter( { -html_msg => $content } );
             }
             catch {
-	            carp 'Problems with filter:' . $_ if 
-					$t;
+                carp 'Problems with filter:' . $_
+                  if $t;
             };
         }
 
@@ -564,75 +577,77 @@ sub format_mlm {
             my $utt =
               DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
             $content = $utt->filter( { -html_msg => $content } );
-        } catch {
-            carp 'Problems with filter:' . $_ if 
-				$t;
+        }
+        catch {
+            carp 'Problems with filter:' . $_
+              if $t;
         };
-		
-		
+
+        # This means, we've got a discussion list:
+        if (   $self->no_list != 1
+            && $self->mass_mailing == 1
+            && $self->list_type eq 'list'
+            && $self->{ls}->param('disable_discussion_sending') != 1
+            && $self->{ls}->param('group_list') == 1 )
+        {
+            if ( $type eq 'text/html' ) {
+                try {
+                    $content =
+                      $self->_remove_opener_image( { -data => $content } );
+                }
+                catch {
+                    carp "Problem removing existing opener images: $_";
+                };
+            }
+
+            # This attempts to strip any unsubscription links in messages
+            # (think: replying)
+            try {
+                require DADA::App::FormatMessages::Filters::RemoveTokenLinks;
+                my $rul =
+                  DADA::App::FormatMessages::Filters::RemoveTokenLinks->new;
+                $content = $rul->filter( { -data => $content } );
+            }
+            catch {
+                carp 'Problems with filter:' . $_
+                  if $t;
+            };
+
+            # I am doing this, twice?
+            try {
+                require
+                  DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
+                my $utt =
+                  DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
+                $content = $utt->filter( { -html_msg => $content } );
+            }
+            catch {
+                carp 'Problems with filter:' . $_
+                  if $t;
+            };
+
+            if ( $self->{ls}->param('discussion_template_defang') == 1 ) {
+                try {
+                    $content = $self->template_defang( { -data => $content } );
+                }
+                catch {
+                    carp "Problem defanging template: $_"
+                      if $t;
+                };
+            }
+
+        }    #/ discussion lists
+             # End filtering done before the template is applied
     }
-
-    # This means, we've got a discussion list:
-    if (   $self->no_list != 1
-        && $self->mass_mailing == 1
-        && $self->list_type eq 'list'
-        && $self->{ls}->param('disable_discussion_sending') != 1
-        && $self->{ls}->param('group_list') == 1 )
-    {
-        if ( $type eq 'text/html' ) {
-            try {
-                $content = $self->_remove_opener_image( { -data => $content } );
-            }
-            catch {
-                carp "Problem removing existing opener images: $_";
-            };
-        }
-
-        # This attempts to strip any unsubscription links in messages
-        # (think: replying)
-        try {
-            require DADA::App::FormatMessages::Filters::RemoveTokenLinks;
-            my $rul = DADA::App::FormatMessages::Filters::RemoveTokenLinks->new;
-            $content = $rul->filter( { -data => $content } );
-        }
-        catch {
-            carp 'Problems with filter:' . $_ if 
-				$t;
-        };
-
-        # I am doing this, twice?
-        try {
-            require DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
-            my $utt =
-              DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
-            $content = $utt->filter( { -html_msg => $content } );
-        }
-        catch {
-            carp 'Problems with filter:' . $_ if 
-				$t;
-        };
-
-        if ( $self->{ls}->param('discussion_template_defang') == 1 ) {
-            try {
-                $content = $self->template_defang( { -data => $content } );
-            }
-            catch {
-                carp "Problem defanging template: $_" 
-					if $t;
-            };
-        }
-
-    }    #/ discussion lists
-         # End filtering done before the template is applied
-
-    # Apply our own mailing list template:
+	
     $content = $self->_apply_template(
-		{
-	        -content => $content,
-	        -type => $type,
-			-layout => $args->{-layout},
-		}
-	);
+        {
+            -content => $content,
+            -type    => $type,
+            -layout  => $args->{-layout},
+        }
+    );
+	
 
     # Begin filtering done after the template is applied
     if ( $self->mass_mailing == 1 ) {
@@ -653,34 +668,31 @@ sub format_mlm {
             );
         }
     }
-	
+
     if ( $self->no_list != 1 ) {
         $content = $self->_expand_macro_tags(
             -data => $content,
             -type => $type,
-        );		
+        );
     }
-	
-	
 
-		
-	if($type eq 'text/html') { 
-		# Minify
-		warn 'minifying'
-			if $t;
-	    try {
-	        require DADA::App::FormatMessages::Filters::HTMLMinifier;
-	        my $minifier =
-	          DADA::App::FormatMessages::Filters::HTMLMinifier->new;
-	        $content = $minifier->filter( { -html_msg => $content } );
-	    } catch {
-            carp 'Problems with filter:' . $_ if 
-				$t;
-	    };	
-	}	
-	
-	
-	
+    if ( $type eq 'text/html' ) {
+
+        # Minify
+        warn 'minifying'
+          if $t;
+        try {
+            require DADA::App::FormatMessages::Filters::HTMLMinifier;
+            my $minifier =
+              DADA::App::FormatMessages::Filters::HTMLMinifier->new;
+            $content = $minifier->filter( { -html_msg => $content } );
+        }
+        catch {
+            carp 'Problems with filter:' . $_
+              if $t;
+        };
+    }
+
     # End filtering done after the template is applied
 
     # simple validation
@@ -689,16 +701,16 @@ sub format_mlm {
 
     my $expr = 1;
 
-#  it's always 1
-#    if ( $self->no_list == 1 ) {
-#        $expr = 1;
-#    }
-#    elsif ( $self->override_validation_type eq 'expr' ) {
-#        $expr = 1;
-#    }
-#    else {
-#        $expr = $self->{ls}->param('enable_email_template_expr');
-#    }
+    #  it's always 1
+    #    if ( $self->no_list == 1 ) {
+    #        $expr = 1;
+    #    }
+    #    elsif ( $self->override_validation_type eq 'expr' ) {
+    #        $expr = 1;
+    #    }
+    #    else {
+    #        $expr = $self->{ls}->param('enable_email_template_expr');
+    #    }
 
     ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
         {
@@ -717,6 +729,7 @@ sub format_mlm {
     return $content;
 
 }
+
 
 sub rel_to_abs {
 

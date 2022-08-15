@@ -626,6 +626,7 @@ sub construct_from_url {
 	
 	# We then do all this, which applies the 
 	if(length($html_message) > 0) {
+		$html_for_text_message = $html_message;
 		$html_message = $fm->format_mlm( 
 			{
 				-content => $html_message, 
@@ -662,7 +663,7 @@ sub construct_from_url {
 		# This isn't my favorite idea, but, 
 		$html_for_text_message = $fm->format_mlm( 
 			{
-				-content => $html_message, 
+				-content => $html_for_text_message, 
 				-type  => 'text/html', 
 				-crop_html_options => {	
 			        enabled                          => scalar $draft_q->param('crop_html_content'),
@@ -678,7 +679,7 @@ sub construct_from_url {
 					enabled => 1, 
 					base    => $base, 
 				},
-				-layout => 'none',
+				-layout => 'absolutely_nothing',
 				# we'll do this later, 
 				-utm_options   => { 
 					-enabled    => 0
@@ -755,10 +756,49 @@ sub construct_from_url {
 		&& length($text_message) > 0
 		&& $ls->param('mass_mailing_convert_plaintext_to_html') == 1){ 
 			$html_message = markdown_to_html( { -str => $text_message } );	
+
+			# I hate this, but we have to format again (for the first time)
+			
+			$html_message = $fm->format_mlm( 
+				{
+					-content => $html_message, 
+					-type  => 'text/html', 
+					-crop_html_options => {	
+				        enabled                          => scalar $draft_q->param('crop_html_content'),
+				        crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
+				        crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
+					}, 
+					-remove_html_options => { 
+						enabled                              => scalar $draft_q->param('remove_html_content'),
+						remove_html_content_selector_type    => scalar $draft_q->param('remove_html_content_selector_type'),
+						remove_html_content_selector_label   => scalar $draft_q->param('remove_html_content_selector_label'),
+					},
+					-rel_to_abs_options => { 
+						enabled => 1, 
+						base    => $base, 
+					},
+					-layout => scalar $draft_q->param('layout'),
+					-utm_options   => { 
+						-enabled    => scalar $draft_q->param('mass_mailing_utm_params_add'),
+						-domains    => scalar $draft_q->param('mass_mailing_utm_domains'),
+						-utm => {
+							source  => scalar $draft_q->param('mass_mailing_utm_source'),
+							medium  => scalar $draft_q->param('mass_mailing_utm_medium'),
+							term    => scalar $draft_q->param('mass_mailing_utm_term'),
+							content => scalar $draft_q->param('mass_mailing_utm_content'),
+							name    => scalar $draft_q->param('mass_mailing_utm_name'),						
+						}
+					}
+				}
+			);	
+			
+			
+
 	}
 	
 	
 	if( length($text_message) > 0){
+		
 		$text_message = $fm->format_mlm(
 			{
 				-content => $text_message, 
