@@ -1138,16 +1138,20 @@ sub date_this {
 sub html_to_plaintext {
 
     my ($args) = @_;
+
+
+	# warn 'in html_to_plaintext';
+    #warn '$args->{-str}:' . $args->{-str}; 
+	
     if ( !exists( $args->{-str} ) ) {
         croak
 "You need to pass the string you want to convert in the, '-str' param!";
     }
     if ( !exists( $args->{-formatter_params} ) ) {
         $args->{-formatter_params} = {
-            before_link =>
-              '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
-            footnote =>
-'<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET --> %l',
+            before_link =>  '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
+            footnote    => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET --> %l',
+			    leftmargin => 0, rightmargin => 1000000000000
         };
     }
 
@@ -1157,11 +1161,14 @@ sub html_to_plaintext {
     my $hftwl     = 1;
 
 # Removing comments is a good thing, removing template tags that look like comments is a bad thing:
+
     my ( $mask_beginning_comment, $mask_ending_comment, $tmp_str ) =
       _hide_tmpl_tags( $args->{-str} );
     my $mask_beginning_comment_qm = quotemeta($mask_beginning_comment);
     my $mask_ending_comment_qm    = quotemeta($mask_ending_comment);
 
+
+	
     try {
 
         require HTML::FormatText::WithLinks;
@@ -1171,8 +1178,19 @@ sub html_to_plaintext {
         if ( $formatted = $f->parse($tmp_str) ) {
             $formatted =~ s/$mask_beginning_comment_qm/</g;
             $formatted =~ s/$mask_ending_comment_qm/>/g;
+			
+			warn '$formatted (this shiuld look wonky): ' . $formatted; 
+
+			
+			$formatted =~ s/(\n|\r)\s+\-\-\>/-->/gi;
+			$formatted =~ s/\<\!\-\-(\n|\r)\s+/<!--/gi; 
+			$formatted =~ s/tmpl_if\n(\s+)expr/tmpl_if expr/gi; 
+			$formatted =~ s/\|\|\n(\s+)/||/gi; 
+			
+			
         }
         else {
+			
             carp $DADA::Config::PROGRAM_NAME . ' '
               . $DADA::Config::VER
               . ' warning: Something went wrong with the HTML to PlainText conversion: '
@@ -1181,25 +1199,30 @@ sub html_to_plaintext {
             $formatted =~ s/$mask_beginning_comment_qm/</g;
             $formatted =~ s/$mask_ending_comment_qm/>/g;
         }
-    }
-    catch {
+    } catch {
         $hftwl = 0;
-        carp 'HTML to Plaintext conversion with HTML::FormatText::WithLinks not successful - falling back to convert_to_ascii()'
-			if $t; 
+        warn 'HTML to Plaintext conversion with HTML::FormatText::WithLinks not successful - falling back to convert_to_ascii()' if $t; 
     };
+	
+	
+	
 
     if ( $hftwl == 0 ) {
+		
         my $pt = _chomp_off_body( $args->{-str} );
-           $pt = convert_to_ascii($pt);
-           $pt =~ s/$mask_beginning_comment_qm/</g;
-           $pt =~ s/$mask_ending_comment_qm/>/g;
+        $pt = convert_to_ascii($pt);
+		$pt =~ s/$mask_beginning_comment_qm/</g;
+        $pt =~ s/$mask_ending_comment_qm/>/g;
+		
         return $pt;
     }
     else {
+		
         return $formatted;
     }
-	
+
 }
+
 
 
 

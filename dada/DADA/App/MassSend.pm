@@ -469,8 +469,9 @@ sub construct_from_url {
 		) : () ),
     );
 
-    my $text_message = undef; #'This email message requires that your mail reader support HTML'; 
-    my $html_message = undef; 
+    my $text_message          = undef;
+    my $html_message          = undef; 
+	my $html_for_text_message = undef; 
 	
     my $MIME_Entity;
     my $md5; 
@@ -496,14 +497,16 @@ sub construct_from_url {
 		}
 				
         # Redirect tag check
-        my ( $status, $errors ) = $self->message_tag_check($rtc);
+        my ( $status, $errors ) = $self->message_tag_check({
+			-str      => $rtc
+			-is_html => 1, 
+		});
         if ( $status == 0 ) {
 			return { 
 				status       => 0, 
 				errors       => $errors,
 			};
         }
-		
 		$html_message = $rtc;
 		$base         = $res->base || $url; 
 		
@@ -587,11 +590,10 @@ sub construct_from_url {
 		# $content_from_textarea? (default, in any case... )	
 		$html_message = $draft_q->param('html_message_body');
 		
-		# $text_message would be undef, 
 	    $html_message = $fm->pre_process_msg_strings($html_message );
 	}
 		
-    my ( $status, $errors ) = $self->message_tag_check($html_message);
+    my ( $status, $errors ) = $self->message_tag_check({-str => $html_message, -is_html => 1});
     if ( $status == 0 ) {
 		return { 
 			status       => 0, 
@@ -622,7 +624,7 @@ sub construct_from_url {
 	}
 	# /end check HTML cropping
 	
-	
+	# We then do all this, which applies the 
 	if(length($html_message) > 0) {
 		$html_message = $fm->format_mlm( 
 			{
@@ -653,6 +655,33 @@ sub construct_from_url {
 						content => scalar $draft_q->param('mass_mailing_utm_content'),
 						name    => scalar $draft_q->param('mass_mailing_utm_name'),						
 					}
+				}
+			}
+		);	
+		
+		# This isn't my favorite idea, but, 
+		$html_for_text_message = $fm->format_mlm( 
+			{
+				-content => $html_message, 
+				-type  => 'text/html', 
+				-crop_html_options => {	
+			        enabled                          => scalar $draft_q->param('crop_html_content'),
+			        crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
+			        crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
+				}, 
+				-remove_html_options => { 
+					enabled                              => scalar $draft_q->param('remove_html_content'),
+					remove_html_content_selector_type    => scalar $draft_q->param('remove_html_content_selector_type'),
+					remove_html_content_selector_label   => scalar $draft_q->param('remove_html_content_selector_label'),
+				},
+				-rel_to_abs_options => { 
+					enabled => 1, 
+					base    => $base, 
+				},
+				-layout => 'none',
+				# we'll do this later, 
+				-utm_options   => { 
+					-enabled    => 0
 				}
 			}
 		);	
@@ -696,7 +725,7 @@ sub construct_from_url {
 			length($text_message) <= 0  # I kinda get this - if there's no $text_message, make it from the HTML ver. We always want a PlainText Ver... - this could just be an else statement
 		 || $plaintext_content_from eq 'auto'
 	 ) { 		
-		$text_message = $html_message;  
+		$text_message = $html_for_text_message;  		
 		$text_message = $fm->body_content_only($text_message);
     	$text_message = html_to_plaintext(
             {
@@ -708,9 +737,9 @@ sub construct_from_url {
                 }
             }
         );
+		
 	}
-
-    my ( $status, $errors ) = $self->message_tag_check($text_message);
+    my ( $status, $errors ) = $self->message_tag_check({-str => $text_message, -is_html => 0});
     if ( $status == 0 ) {
 		return { 
 			status       => 0, 
@@ -727,7 +756,6 @@ sub construct_from_url {
 		&& $ls->param('mass_mailing_convert_plaintext_to_html') == 1){ 
 			$html_message = markdown_to_html( { -str => $text_message } );	
 	}
-	
 	
 	
 	if( length($text_message) > 0){
@@ -2646,14 +2674,21 @@ sub mass_mailout_info {
 }
 
 sub message_tag_check { 
+   
     my $self   = shift;
-    my $str    = shift; 
+    my ($args) = @_; 
 	
-    my ($status, $errors) = $self->valid_template_markup_check($str); 
+	my $str    = $args->{-str};
+	my $is_html =  $args->{-is_html};
+	
+    my ($status, $errors) = $self->valid_template_markup_check(
+		{
+			-str     => $str,  
+			-is_html => $args->{-is_html}, 
+		}); 
 	if($status == 0){ 
 		return (0, $errors);
 	}
-
     ($status, $errors) = $self->redirect_tag_check($str); 
 	if($status == 0){ 
 		return (0, $errors);
@@ -2700,12 +2735,17 @@ sub message_size_check {
 sub valid_template_markup_check { 
 
     my $self   = shift;
-	my $str    = shift; 
-	my $expr   = shift || 1; # probably just going to be 1...
+
+    my ($args) = @_; 
+	
+	my $str     = $args->{-str};
+	my $is_html =  $args->{-is_html};
+	
+
+	my $expr   =  1; # probably just going to be 1...
 	my $error_str = undef; 
 	
-	
-	
+
 	require DADA::Template::Widgets;
     my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
         {
@@ -2714,6 +2754,7 @@ sub valid_template_markup_check {
         }
     );
     if ( $valid == 0 ) {
+		
         my $munge = quotemeta('/fake/path/for/non/file/template');
         $errors =~ s/$munge/line/;
         $error_str = $errors . "\n"
@@ -2731,6 +2772,7 @@ sub valid_template_markup_check {
 		my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new; 
 		$new_data = $utt->filter({-html_msg => $str});
 	} catch {
+		
 		 return (0, $_);
 	};
 	require DADA::Template::Widgets;
@@ -2741,6 +2783,7 @@ sub valid_template_markup_check {
         }
     );
     if ( $valid == 0 ) {
+		
         my $munge = quotemeta('/fake/path/for/non/file/template');
         $errors =~ s/$munge/line/;
         $error_str = $errors . "\n"
@@ -2755,67 +2798,60 @@ sub valid_template_markup_check {
 	undef $valid; 
 	undef $errors; 
 	
-	# HTML::Tree does some funky things in the pipeline: 
-	my $n_html; 
-	my $html_tree = 1; 
+	if($is_html == 1){ 
+		
+		# Don't run this if its actually plaintext: 
+		
+		# HTML::Tree does some funky things in the pipeline: 
+		my $n_html; 
+		my $html_tree = 1; 
 	
-    try {
-        require HTML::Tree;
-        require HTML::Element;
-        require HTML::TreeBuilder;
+	    try {
+	        require HTML::Tree;
+	        require HTML::Element;
+	        require HTML::TreeBuilder;
 
-        my $root = HTML::TreeBuilder->new(
-            ignore_unknown      => 0,
-            no_space_compacting => 1,
-            store_comments      => 1,
-			no_expand_entities  => 1, 
+	        my $root = HTML::TreeBuilder->new(
+	            ignore_unknown      => 0,
+	            no_space_compacting => 1,
+	            store_comments      => 1,
+				no_expand_entities  => 1, 
 			
-        );
+	        );
 		
-		my $html = $str;
+			my $html = $str;
 		
-        $root->parse($html);
-        $root->eof();
-        $root->elementify();
+	        $root->parse($html);
+	        $root->eof();
+	        $root->elementify();
  	   
-	    # no actual manipulation
+		    # no actual manipulation
  
-        $n_html = $root->as_HTML( undef, '  ');
-		undef $root;
-    }
-    catch {
-		$html_tree = 0;
-    };
+	        $n_html = $root->as_HTML( undef, '  ');
+			undef $root;
+	    }
+	    catch {
+			$html_tree = 0;
+	    };
 	
-	if($html_tree == 1){
-		require DADA::Template::Widgets;
-	    my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
-	        {
-	            -data => \$n_html,
-	            -expr => $expr,
-	        }
-	    );
-	    if ( $valid == 0 ) {
-	        my $munge = quotemeta('/fake/path/for/non/file/template');
-	        $errors =~ s/$munge/line/;
-	        $error_str = $errors . "\n"
-	          . '-' x 72 . "\n"
-	          . $str;
-	    	  return (0, $errors);
+		if($html_tree == 1){
+			require DADA::Template::Widgets;
+		    my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
+		        {
+		            -data => \$n_html,
+		            -expr => $expr,
+		        }
+		    );
+		    if ( $valid == 0 ) {
+		        my $munge = quotemeta('/fake/path/for/non/file/template');
+		        $errors =~ s/$munge/line/;
+		        $error_str = $errors . "\n"
+		          . '-' x 72 . "\n"
+		          . $str;
+		    	  return (0, $errors);
+			}
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	# Or, everything is cool, 
 	return (1, undef)
@@ -2850,14 +2886,16 @@ sub redirect_tag_check {
 
 sub report_mass_mail_errors {
 
-	warn 'report_mass_mail_errors';
-	
+	warn 'report_mass_mail_errors'
+		if $t; 
+		
     my $self       = shift;
 	my ($args)     = @_; 
 	
     my $errors     = $args->{-errors};
     my $root_login = $args->{-root_login};
 	my $wrap = 1; 
+	
 	if(exists($args->{-wrap})){ 
 		$wrap = $args->{-wrap};
 	}

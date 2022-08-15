@@ -102,7 +102,9 @@ $msg = slurp($mh->test_send_file);
 like($msg, qr/Subject\: Changed Subject/, "Subject set Correctly."); 
 like($msg, qr/X\-Priority\: 1/, "X-Priority set correctly."); 
 like($msg, qr/Reply\-To\: \"Changed Reply\-To\" \<reply\@example\.com\>/, "Reply-To set correctly."); 
-like($msg, qr/Content-type\: multipart\/related/, "Content-Type set correctly."); 
+
+# Why WOULD this be multipart/related? 
+like($msg, qr/Content-type\: multipart\/alternative/, "Content-Type set correctly."); 
 undef $msg; 
 ok(unlink($mh->test_send_file)); 
 
@@ -220,7 +222,6 @@ ok($ms->are_we_archiving_based_on_params($q) == 0);
 
 
 sub slurp { 
-	
 		
 		my ($file) = @_;
 
