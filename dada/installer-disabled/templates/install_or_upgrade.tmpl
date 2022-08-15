@@ -16,7 +16,7 @@
 					<p>
 						<ul>
 							<li>
-								 <strong>Location:</strong><!-- tmpl_var alt_perl_interpreter -->
+								 <strong>Location:</strong> <!-- tmpl_var alt_perl_interpreter -->
 							</li>
 						<li>
 							<strong>Version:</strong> <!-- tmpl_var alt_perl_interpreter_ver  -->
@@ -24,7 +24,29 @@
 				</ul>
 			</p>
 			
-			<p>Here are reasons you may want to do this</p>
+				<h3>
+					Current Perl interpreter:
+				</h3>
+					
+					<p>
+						<ul>
+							<li>
+								 <strong>Location:</strong> /usr/bin/perl
+							</li>
+						<li>
+							<strong>Version:</strong> <!-- tmpl_var perl_interpreter_ver  -->
+					</li>
+				</ul>
+			</p>
+			
+			
+			
+			
+			
+			<p>The alternative Perl interpreter may be more up to date, and give you access to additional Perl modules.
+				If you're having trouble enabling some features of Dada Mail, consider switching to the alternative Perl interpreter.
+				<strong>This switch is not easily reversable.</strong>
+			</p>
 	
 	
 			<form 
@@ -40,7 +62,7 @@
 					type="submit" 
 					name="submitbutton" 
 					value="Switch and Reload" 
-					class="alert large button expand"
+					class="warning large button expand"
 				>
 				
 			</form>

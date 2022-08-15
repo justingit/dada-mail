@@ -654,6 +654,7 @@ sub install_or_upgrade {
 				has_alt_perl_interpreter            => scalar($self->has_alt_perl_interpreter()),
 				alt_perl_interpreter                => $alt_perl_interpreter, 
 				alt_perl_interpreter_ver            => scalar($self->alt_perl_interpreter_ver()), 
+				perl_interpreter_ver                => $^V,
                 Self_URL                            => $Self_URL,
             },
         }
@@ -5998,7 +5999,7 @@ sub has_alt_perl_interpreter {
 sub alt_perl_interpreter_ver { 
 	my $self = shift; 
 	
-	my $ver = `$alt_perl_interpreter -e 'print \$\]'`; 
+	my $ver = `$alt_perl_interpreter -e 'print \$\^V'`; 
 	
 
 }

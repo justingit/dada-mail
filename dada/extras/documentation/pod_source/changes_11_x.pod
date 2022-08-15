@@ -19,7 +19,6 @@ Find this feature in, Mailing List: Options labeled, B<Use mailing list headers>
 
 The list headers you can enable/disable is found in the Config.pm file in the variable, C<LIST_HEADERS>. Here are the headers that can be enabled/disabled, 
 
-
 	Precedence      
 	List         
 	List-Archive        
@@ -35,12 +34,12 @@ The list headers you can enable/disable is found in the Config.pm file in the va
 	List-URL            
 	X-Mailer
 
-=head3 Enhanced HTML editing via "Grab content from a URL "
+=head3 Enhanced HTML editing via "Grab content from a URL"
 
 Dada Mail can grab content for a mailing list message just by giving it a URL. 
 
 You can also crop the webpage to only send the content found in a specific HTML id or class attribute, 
-and remove content found within that by an HTML id or class attribute. 
+and remove content found in HTML tags that have specific id or class attributes. 
 
 We've enhanced that last feature, by allowing you to set multiple attributes, 
 be they HTML ids, classes, or any other HTML attribute found in a tag. 
@@ -68,8 +67,39 @@ This same feature is also available for fetching content from an RSS/Atom Feed.
 
 =head3 Installer: Ability to Switch the path to the Perl interpreter
 
+Oftentimes (and especially on cPanel-based hosting accounts) there is a alternative Perl interpreter available to use, 
+but isn't at the default Perl path that Dada Mail is configured to use by default. This alternative Perl interpreter could 
+be more up to date, and also use the modules that are available to the cPanel-based Perl module installer. 
 
+We've made it easy to switch to this alternative Perl interpreter located. Do note, that there's no way to revert to the 
+default Perl interpreter location. You would need to either reinstall Dada Mail from scratch, or manually reset the "shebang lines"
+yourself. 
 
+=head3 Upgraded Included Perl Library! (perllib)
+
+Dada Mail comes with most all of the Perl CPAN Perl modules needed to run the app. These modules are located in the, C<dada/DADA/perllib> directory. This collection of CPAN modules was very much out of date, and the exact list of Perl modules shipped wasn't exactly known. 
+
+This has now been fixed, and steps have been taken to make sure that future releases will have an up to date included Perl library. 
+The exact modules that are included have been removed from the Dada Mail git repo, and have been made into their own repo: 
+
+L<https://github.com/justingit/dada-mail-perllib>
+
+This itself is created using the following Bundle: 
+
+L<https://github.com/justingit/Bundle-DadaMail-IncludedInDistribution>
+
+So you can see which modules are included and install them yourself, rather than use the included perllib. 
+
+This change will most likely be transparent to most users, but the updates of these modules was huge in terms of code line count, 
+and many bug fixes and security fixes within these modules are now bundled with Dada Mail. 
+
+=head3 Cross-Site Request Forgery (CSRF) Prevention can now be disabled
+
+Cross-Site Request Forgery Prevention  is an awesome feature to have, but sometimes can get in the way of working with the app. We've made a way to make it easily optional, so that you can get your job down, before enable it back on. 
+
+Find this within the installer under, B<Configure Security Options: Cross-Site Request Forgery (CSRF) Protection>
+
+We do highly suggest keeping this enabled. 
 
 =head1 11.18.2
 
