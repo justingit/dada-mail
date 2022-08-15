@@ -3481,12 +3481,7 @@ sub pre_process_msg_strings {
 	
 	my $self = shift;
 
-    my $text_ver = shift || undef;
     my $html_ver = shift || undef;
-
-    if ($text_ver) {
-        $text_ver =~ s/\r\n/\n/g;
-    }
 
     if ($html_ver) {
         $html_ver =~ s/\r\n/\n/g;
@@ -3512,7 +3507,7 @@ sub pre_process_msg_strings {
         }
     }	
 	
-    return ( $text_ver, $html_ver );
+    return $html_ver;
 }
 
 sub body_content_only { 

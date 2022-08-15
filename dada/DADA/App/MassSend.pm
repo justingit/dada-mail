@@ -586,7 +586,9 @@ sub construct_from_url {
 	else {
 		# $content_from_textarea? (default, in any case... )	
 		$html_message = $draft_q->param('html_message_body');
-	   ( $text_message, $html_message ) = $fm->pre_process_msg_strings( $text_message, $html_message );
+		
+		# $text_message would be undef, 
+	    $html_message = $fm->pre_process_msg_strings($html_message );
 	}
 		
     my ( $status, $errors ) = $self->message_tag_check($html_message);
@@ -598,72 +600,6 @@ sub construct_from_url {
     }
     undef($status);
     undef($errors);
-
-    if(
-		$plaintext_content_from eq 'text'
-	 && length($draft_q->param('text_message_body')) > 0  
-	 ) {
-		$text_message = $draft_q->param('text_message_body');
-		
-    } elsif ( $plaintext_content_from eq 'url' ) {    
-		if(length($draft_q->param('plaintext_url')) <= 4){ 
-			return { 
-				status       => 0, 
-				errors       => 'PlainText Version is blank in url',
-			};
-		}
-		else {		
-	        my $res; 
-			my $md5; 
-			my $e_m; 
-	        ( $text_message, $res, $md5, $e_m ) = grab_url(
-				{
-					-url => $draft_q->param('plaintext_url') 
-				}
-			);	
-			
-			if($res->is_error){ 
-				return { 
-					status       => 0, 
-					errors       => $e_m,
-				};
-			}
-			
-		}	
-    } elsif (
-			length($text_message) <= 0  # I kinda get this - if there's no $text_message, make it from the HTML ver. We always want a PlainText Ver... - this could just be an else statement
-		 || $plaintext_content_from eq 'auto'
-	 ) { 		
-		$text_message = $html_message;  
-		$text_message = $fm->body_content_only($text_message);
-    	$text_message = html_to_plaintext(
-            {
-                -str              => $text_message,
-                -formatter_params => {
-                    base        => $url,
-                    before_link => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
-                    footnote    => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET --> %l',
-                }
-            }
-        );
-	}
-
-    my ( $status, $errors ) = $self->message_tag_check($text_message);
-    if ( $status == 0 ) {
-		return { 
-			status       => 0, 
-			errors       => $errors,
-		};
-    }
-    undef($status);
-    undef($errors);
-	
-	if(
-		length($html_message) <= 0
-		&& length($text_message) > 0
-		&& $ls->param('mass_mailing_convert_plaintext_to_html') == 1){ 
-			$html_message = markdown_to_html( { -str => $text_message } );	
-	}
 
 
 	# We have to double-check that the HTML cropping is working: 
@@ -722,6 +658,78 @@ sub construct_from_url {
 		);	
 	}
 	
+	
+    if(
+		$plaintext_content_from eq 'text'
+	 && length($draft_q->param('text_message_body')) > 0  
+	 ) {
+	
+		$text_message = $draft_q->param('text_message_body');
+        $text_message =~ s/\r\n/\n/g;
+		
+    } elsif ( $plaintext_content_from eq 'url' ) {    
+		if(length($draft_q->param('plaintext_url')) <= 4){ 
+			return { 
+				status       => 0, 
+				errors       => 'PlainText Version is blank in url',
+			};
+		}
+		else {		
+	        my $res; 
+			my $md5; 
+			my $e_m; 
+	        ( $text_message, $res, $md5, $e_m ) = grab_url(
+				{
+					-url => $draft_q->param('plaintext_url') 
+				}
+			);	
+			
+			if($res->is_error){ 
+				return { 
+					status       => 0, 
+					errors       => $e_m,
+				};
+			}
+			
+		}	
+    } elsif (
+			length($text_message) <= 0  # I kinda get this - if there's no $text_message, make it from the HTML ver. We always want a PlainText Ver... - this could just be an else statement
+		 || $plaintext_content_from eq 'auto'
+	 ) { 		
+		$text_message = $html_message;  
+		$text_message = $fm->body_content_only($text_message);
+    	$text_message = html_to_plaintext(
+            {
+                -str              => $text_message,
+                -formatter_params => {
+                    base        => $url,
+                    before_link => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
+                    footnote    => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET --> %l',
+                }
+            }
+        );
+	}
+
+    my ( $status, $errors ) = $self->message_tag_check($text_message);
+    if ( $status == 0 ) {
+		return { 
+			status       => 0, 
+			errors       => $errors,
+		};
+    }
+    undef($status);
+    undef($errors);
+	
+	# Hopefully this works with moving the plaintext creation around... 
+	if(
+		length($html_message) <= 0
+		&& length($text_message) > 0
+		&& $ls->param('mass_mailing_convert_plaintext_to_html') == 1){ 
+			$html_message = markdown_to_html( { -str => $text_message } );	
+	}
+	
+	
+	
 	if( length($text_message) > 0){
 		$text_message = $fm->format_mlm(
 			{
@@ -742,6 +750,7 @@ sub construct_from_url {
 			}
 		);
 	}
+	
 	if(length($html_message) > 0) {
 	
 		# This is cheating: 
@@ -2136,8 +2145,8 @@ sub list_invite {
 			);
         }
 
-        ( $text_message, $html_message ) = 
-			$fm->pre_process_msg_strings( $text_message, $html_message );
+		
+        $html_message = $fm->pre_process_msg_strings($html_message );
 
 		my $mailHTML = undef; 
 		my ($mlo_status, $mlo_errors, $MIME_Entity, $md5);
