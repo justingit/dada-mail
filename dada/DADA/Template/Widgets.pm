@@ -18,14 +18,13 @@ use lib qw(
 	./DADA/App/Support
 ); 
 
+use DADA::Config qw(!:DEFAULT);  
+use DADA::App::Guts; 
 
+use HTML::Template::MyExpr;
 use Encode; 
 use Try::Tiny; 
 use Carp qw(croak carp); 
-
-use DADA::Config qw(!:DEFAULT);  
-
-use constant HAS_HTML_TEMPLATE_PRO => eval { require HTML::Template::Pro; 1; }; 
 
 my $TMP_TIME = undef; 
 use POSIX; 
@@ -37,8 +36,6 @@ BEGIN {
    }
 }
 
-
-use DADA::App::Guts; 
 my $q; 
 
 lame_init(); 
@@ -1904,8 +1901,6 @@ sub screen {
 			$filters = [];
 		}
 	}
-	
-	require HTML::Template::MyExpr;
 	
 	if(exists($args->{-screen})){ 
 		$template = HTML::Template::MyExpr->new(
