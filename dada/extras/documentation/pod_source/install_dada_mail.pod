@@ -417,7 +417,7 @@ When saving this file, make sure to upload the file in ASCII/Plain Text mode, NO
 
 Dada Mail's capability is greatly enhanced by installing the following CPAN Perl Module Bundle: 
 
-	Bundle::DadaMail
+	Bundle::DadaMailXXL
 
 More Information: Installing CPAN Perl Modules L<https://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
@@ -481,7 +481,7 @@ Dada Mail's abilities can be greatly extended by the additional installation of 
 
 We've bundled a number of these optional modules together, so you just need to install the following Perl module: 
 
-C<Bundle::DadaMail>
+C<Bundle::DadaMailXXL>
 
 to gain many of these optional features. We B<highly recommend this step!>
 

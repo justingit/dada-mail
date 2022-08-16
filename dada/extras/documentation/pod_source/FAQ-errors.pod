@@ -198,13 +198,15 @@ the installer lives in (I<dada/installer>), in a file named, B<installer_errors.
 
 Sometimes, the default system Perl is an old version - v5.8, or even v5.6! 
 
-This will not work with Dada Mail as it currently requires v5.10.1. There is a chance that a more up-to-date version of Perl is available at a different location. 
+This will not work with Dada Mail as it currently requires at least B<v5.10.1>. There is a chance that a more up-to-date version of Perl is available at a different location. 
 
 If you're hosted on a cPanel-based hosting account, a more up-to-date version of Perl may be available at: 
 
 C</usr/local/cpanel/3rdparty/bin/perl>
 
 To use this version, you will need to slightly adjust Dada Mail to use this version of Perl. When installing, after you've run the, C<uncompress_dada.cgi> script (or prepped manually), you will need to change the following files: 
+
+I<dada/mail.cgi>
 
 I<dada/installer/install.cgi>
 
@@ -219,6 +221,15 @@ and change it to,
     #!/usr/local/cpanel/3rdparty/bin/perl
 
 Save your changes, then run the installer. 
+
+As of v11.19.0 of Dada Mail, the installer will detect if this specific alternative version is available, 
+and allow you to perform the steps above on your behalf. 
+Then, it will reload the installer and you can continue with the installation process. 
+
+If you're running at least v5.10.1 of Dada Mail (a very, very old version of Perl), you may still want to run the alternative version of
+Perl. See if there's any issues with connection to your SQL backend. You can use that as an indicator of the freshness and health of the default
+Perl ecosystem. If the required driver isn't available under the default Perl, try using the alternative Perl interpreter location. 
+
 
 =head2 Mass Mailing Messages Are Not Delivered or Are Delivered to Junk/Spam Folder
 

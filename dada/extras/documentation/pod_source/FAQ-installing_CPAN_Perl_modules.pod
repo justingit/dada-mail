@@ -11,13 +11,18 @@ Usually, if a feature is unavailable because of a missing CPAN Perl module: ther
 
 Dada Mail does already ship with many included CPAN Perl modules, but it can't ship with all of them, as they could potentially need additional configuration, a dependency outside of Dada Mail's or Perl's immediate ecosystem, or code compilation. 
 
-A list of these optional modules to install can be found in the C<Bundle::DadaMail> module: 
+Modules usually shipped with Dada Mail are listed in, C<Bundle::DadaMail::IncludedInDistribution>: 
+
+L<https://metacpan.org/pod/Bundle::DadaMail::IncludedInDistribution>
+
+Other modules required for Dada Mail to run (and which we assume are already available) are listed in C<Bundle::DadaMail>: 
 
 L<https://metacpan.org/pod/Bundle::DadaMail>
 
-A fairly exhaustive list of all the CPAN Perl Modules Dada Mail ships with can be found in the, C<Bundle::DadaMailXXL> module:
+Optional modules that enhance Dada Mail are listed in, C<Bundle::DadaMailXXL>: 
 
 L<https://metacpan.org/pod/Bundle::DadaMailXXL>
+
 
 In this FAQ, we're going to focus on using the cPanel Perl Module Installer, which may be available to you, if you're running a hosting account powered by cPanel.  
 
@@ -25,7 +30,7 @@ In this FAQ, we're going to focus on using the cPanel Perl Module Installer, whi
 
 B<Note:> you may need a B<VPS or Dedicated hosting> plan to be allowed to install CPAN Perl Modules from your cPanel. You may get a report that C compiler support is not available on an inexpensive shared hosting account. You may be able to contact your hosting account support to have them enable the B<C compiler>, by putting you in the, B<Compiler group> (which is terminology used by companies such as Bluehost).
 
-We're going to go ahead and install C<Bundle::DadaMail> which will give us all 
+We're going to go ahead and install C<Bundle::DadaMailXXL> which will give us all 
 the optional modules that Dada Mail uses. 
 
 Log into your cPanel. Search for, B<Perl Modules> 
@@ -41,7 +46,7 @@ Log into your cPanel. Search for, B<Perl Modules>
 
 Click this icon. 
 
-Scroll down, and find the form labeled, B<Install a Perl Module>.  In this form field, type in: C<Bundle::DadaMail>, then click: B<Install Now>
+Scroll down, and find the form labeled, B<Install a Perl Module>.  In this form field, type in: C<Bundle::DadaMailXXL>, then click: B<Install Now>
 
 
 =begin html
@@ -77,13 +82,13 @@ Install C<cpanm> by issuing the following command:
 
 Once installed, you're ready to use C<cpanm>. 
 
-To install C<Bundle::DadaMail> type in the following command: 
+To install C<Bundle::DadaMailXXL> type in the following command: 
 
-	cpanm Bundle::DadaMail
+	cpanm Bundle::DadaMailXXL
 
 This may take a little time to complete. You may get errors when running this about some modules not being able to be installed. You can try to install these modules individually to debug specific problems. 
 
-Use C<cpanm> to also install individual modules - just replaced, C<Bundle::DadaMail> with whatever module you would like to install. 
+Use C<cpanm> to also install individual modules - just replaced, C<Bundle::DadaMailXXL> with whatever module you would like to install. 
 
 =head1 Other ways to install CPAN Perl Modules
 

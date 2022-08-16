@@ -594,7 +594,7 @@ Amazon SES requires a few more CPAN Perl modules than the base Dada Mail install
 
 =back
 
-Installing, C<Bundle::DadaMail> alone will install all of the above modules. 
+Installing, C<Bundle::DadaMailXXL> will install all of the above modules. 
 
 See also the FAQ, B<How do you install, "CPAN Perl Modules"> 
 
