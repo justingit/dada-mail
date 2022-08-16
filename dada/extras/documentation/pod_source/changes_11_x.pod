@@ -17,7 +17,7 @@ Mailing list headers help mail readers categorize the messages you send as being
 
 Find this feature in, Mailing List: Options labeled, B<Use mailing list headers> (enabled by default).
 
-The list headers you can enable/disable is found in the Config.pm file in the variable, C<LIST_HEADERS>. Here are the headers that can be enabled/disabled, 
+The list headers you can enable/disable is found in the Config.pm file in the variable, C<$LIST_HEADERS>. Here are the headers that can be enabled/disabled, 
 
 	Precedence      
 	List         
@@ -67,8 +67,8 @@ This same feature is also available for fetching content from an RSS/Atom Feed.
 
 =head3 Installer: Ability to Switch the path to the Perl interpreter
 
-Oftentimes (and especially on cPanel-based hosting accounts) there is a alternative Perl interpreter available to use, 
-but isn't at the default Perl path that Dada Mail is configured to use by default. This alternative Perl interpreter could 
+Oftentimes (and especially on cPanel-based hosting accounts) there is an alternative Perl interpreter available to use, 
+but isn't at the default Perl path that Dada Mail is configured to use. This alternative Perl interpreter could 
 be more up to date, and also use the modules that are available to the cPanel-based Perl module installer. 
 
 We've made it easy to switch to this alternative Perl interpreter located. Do note, that there's no way to revert to the 
@@ -100,6 +100,20 @@ Cross-Site Request Forgery Prevention  is an awesome feature to have, but someti
 Find this within the installer under, B<Configure Security Options: Cross-Site Request Forgery (CSRF) Protection>
 
 We do highly suggest keeping this enabled. 
+
+=head2 Bugfixes
+
+=head3 Grab content from a URL: Auto-generated PlainText version not cropped 
+
+L<https://github.com/justingit/dada-mail/issues/1115>
+
+=head3 Resend Subscription Confirmation via the list control panel broken 
+
+L<https://github.com/justingit/dada-mail/issues/1114> 
+
+=head3 CPAN modules shipped with Dada Mail are outdated and impossible to maintain
+
+L<https://github.com/justingit/dada-mail/issues/1113>
 
 =head1 11.18.2
 
