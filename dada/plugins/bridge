@@ -1963,8 +1963,6 @@ sub validate_msg {
 	}
 	
     $from_address = lc_email($from_address);
-
-	warn '$from_address: ' . $from_address; 
 	
 	$r .= "* Checking Recipient: $from_address\n";
 
