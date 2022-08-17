@@ -1598,14 +1598,13 @@ sub _entity_from_raw_msg {
 	
 	
 	
-	require Number::Bytes::Human; 
-	my $human = Number::Bytes::Human->new(
-		round_style => 'round', 
-		precision   => 2, 
-		bs          => 1024,
-	);
-	my $human_size = $human->format(length($raw_msg));
-	warn '$human_size: ' . $human_size; 
+#	require Number::Bytes::Human; 
+#	my $human = Number::Bytes::Human->new(
+#		round_style => 'round', 
+#		precision   => 2, 
+#		bs          => 1024,
+#	);
+#	my $human_size = $human->format(length($raw_msg));
 	
 	
 	# This is a really great idea that I should revist, 
@@ -1639,7 +1638,7 @@ sub _entity_from_raw_msg {
 		return undef;
 	}
 	else {
-		warn 'returning entity';
+		# warn 'returning entity';
 		return $entity; 
 	}
 }
@@ -2270,7 +2269,6 @@ sub message_blurb {
 	return undef
 		if !$args{-key}; 
 	
-		warn '$args{-key}: ' . $args{-key}; 
 	my $msg = $self->massaged_msg_for_display(
 	    {
     		-key        => $args{-key}, 
@@ -2667,10 +2665,7 @@ sub massaged_msg_for_display {
 		# From what I can figure out, this'll only happen in the 
 		# message blurbs?
         $body = $self->_chomp_out_head_styles($body);
-		
-
-		warn '$body: ' . $body; 
-		
+			
         $body = html_to_plaintext( 
 			{ 
 				-str       => $body,
