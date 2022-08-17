@@ -1008,7 +1008,6 @@ sub html_archive_list {
 	                    }
 	                }
 		                	
-   # die $archive->message_blurb(-key => $entries->[$i]); 
 	                my $entry = { 				
 	                        id               => $entries->[$i], 
     
