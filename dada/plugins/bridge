@@ -6,6 +6,8 @@ use FindBin qw($RealScript);
 
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
+use lib "$FindBin::Bin/../DADA/App/Support";
+
 
 BEGIN {
     my $b__dir = ( getpwuid($>) )[7] . '/perl';
@@ -1945,7 +1947,7 @@ sub validate_msg {
 
     my $rough_from = $entity->head->get( 'From', 0 );
 	
-	warn '$rough_from: ' . $rough_from; 
+	# warn '$rough_from: ' . $rough_from; 
 	
     my $from_address = '';
 
@@ -1953,7 +1955,7 @@ sub validate_msg {
         try {
             # This correct ?
             $from_address = ( Email_Address_parse($rough_from) )[0]->address;
-			warn '$from_address: ' . $from_address; 
+			# warn '$from_address: ' . $from_address; 
 		#	warn 'Email_Address_parse($rough_from) )[0]->address: ' . (Email_Address_parse($rough_from) )[1]->address; 
 			
 	    } catch { 
