@@ -1139,7 +1139,9 @@ sub html_to_plaintext {
 
     my ($args) = @_;
 
-
+	if(! exists($args->{-for_blurb})){ 
+		$args->{-for_blurb} = 0; 
+	}
 	# warn 'in html_to_plaintext';
     #warn '$args->{-str}:' . $args->{-str}; 
 	
@@ -1147,6 +1149,8 @@ sub html_to_plaintext {
         croak
 "You need to pass the string you want to convert in the, '-str' param!";
     }
+	
+	
     if ( !exists( $args->{-formatter_params} ) ) {
         $args->{-formatter_params} = {
             before_link =>  '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
@@ -1166,16 +1170,23 @@ sub html_to_plaintext {
       _hide_tmpl_tags( $args->{-str} );
     my $mask_beginning_comment_qm = quotemeta($mask_beginning_comment);
     my $mask_ending_comment_qm    = quotemeta($mask_ending_comment);
-
-
-	
     try {
 
-        require HTML::FormatText::WithLinks;
-        my $f =
-          HTML::FormatText::WithLinks->new( %{ $args->{-formatter_params} } );
-
+		my $f = undef; 
+		if($args->{-for_blurb} == 1){ 
+	        require HTML::FormatText; 
+			$f = HTML::FormatText->new( %{ $args->{-formatter_params} } );
+		}
+		else { 
+			# This is a memory hog: 
+	       require HTML::FormatText::WithLinks;
+	   	    $f = HTML::FormatText::WithLinks->new( %{ $args->{-formatter_params} } );
+		}
+		  
         if ( $formatted = $f->parse($tmp_str) ) {
+			
+			undef($f);
+			
             $formatted =~ s/$mask_beginning_comment_qm/</g;
             $formatted =~ s/$mask_ending_comment_qm/>/g;
 
@@ -1186,8 +1197,7 @@ sub html_to_plaintext {
 			$formatted =~ s/\|\|\n(\s+)/||/gi; 
 			
 			
-        }
-        else {
+        } else {
 			
             carp $DADA::Config::PROGRAM_NAME . ' '
               . $DADA::Config::VER
@@ -1200,7 +1210,7 @@ sub html_to_plaintext {
     } catch {
         $hftwl = 0;
         warn 'HTML to Plaintext conversion with HTML::FormatText::WithLinks not successful - falling back to convert_to_ascii()' if $t; 
-    };
+   };
 	
 	
 	

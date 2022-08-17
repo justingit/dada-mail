@@ -8813,9 +8813,8 @@ sub view_archive {
 
             my $header_from = undef;
             if ($raw_msg) {
-                $header_from =
-                  $archive->get_header( -header => 'From', -key => $entry );
-
+                $header_from = $archive->get_header( -header => 'From', -key => $entry );
+				  
                 # The SPAM ME NOT Encoding's a little fucked for this, anyways,
                 # We should only encode the actual address, anyways. Hmm...
                 # $header_from    = spam_me_not_encode($header_from);
@@ -8829,10 +8828,9 @@ sub view_archive {
                 -All         => 1
             );
 
-            my $message_blurb = $archive->message_blurb( -key => $entry );
-            $message_blurb =~ s/\n|\r/ /g;
-
-            push(
+           my $message_blurb = $archive->message_blurb( -key => $entry );
+           $message_blurb =~ s/\n|\r/ /g;
+		    push(
                 @$ht_entries,
 
                 {
@@ -12718,15 +12716,14 @@ sub list_archive {
                 }
 
                 my $entry = {
-                    id               => $entries->[$i],
-                    date             => $date,
-                    subject          => $subject,
-                    'format'         => $format,
-                    list             => $list,
-                    uri_escaped_list => uriescape($list),
-                    PROGRAM_URL      => $DADA::Config::PROGRAM_URL,
-                    message_blurb =>
-                      $archive->message_blurb( -key => $entries->[$i] ),
+                    id                   => $entries->[$i],
+                    date                 => $date,
+                    subject              => $subject,
+                    'format'             => $format,
+                    list                 => $list,
+                    uri_escaped_list     => uriescape($list),
+                    PROGRAM_URL          => $DADA::Config::PROGRAM_URL,
+                    message_blurb        => $archive->message_blurb( -key => $entries->[$i] ),
                     show_gravatar        => $show_gravatar,
                     can_use_gravatar_url => $can_use_gravatar_url,
                     gravatar_img_url     => $gravatar_img_url,

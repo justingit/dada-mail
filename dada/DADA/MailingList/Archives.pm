@@ -822,7 +822,16 @@ sub get_header {
 				); 
 
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($args{-key}, 1); 
-	my $entity = $self->_entity_from_raw_msg($raw_msg); 			
+	my $entity = $self->_entity_from_raw_msg($raw_msg); 		
+	
+	if(! defined($entity)){ 
+		warn 'entity is undef';
+		return undef;
+	}
+	
+	
+	
+		
 	my $header = $entity->head->get($args{-header}, 0); 
 
 	# DEV: Decode Header!
@@ -1565,6 +1574,7 @@ sub _highlight_quoted_text {
 
 
 
+
 sub _entity_from_raw_msg { 
 
 	my $self    = shift; 
@@ -1576,27 +1586,63 @@ sub _entity_from_raw_msg {
 		$self->{parser} = optimize_mime_parser($self->{parser}); 
 	}
 
+	#warn 'in _entity_from_raw_msg';
+	#warn '$raw_msg' . length($raw_msg);
+	 
 	my $entity; 
-	try { $entity = $self->{parser}->parse_data(
-			safely_encode( 
-				$raw_msg 
-			)
-		) 
-	} catch { 
-
-		croak "Problems creating entity: $_"; 
-	};
 	
+	#73956
+	
+	# (int($ls->param('email_message_size_limit')) * 1_048_576); 
+	
+	
+	
+	
+	require Number::Bytes::Human; 
+	my $human = Number::Bytes::Human->new(
+		round_style => 'round', 
+		precision   => 2, 
+		bs          => 1024,
+	);
+	my $human_size = $human->format(length($raw_msg));
+	warn '$human_size: ' . $human_size; 
+	
+	
+	# This is a really great idea that I should revist, 
+	# but I'm not going to ship with this as an optiom yet: 
+	#use File::Temp qw(tempfile); 
+	#my ($fh, $filename) = tempfile(); 
+	#use File::Slurper qw(write_binary); 
+	#write_binary($filename, $raw_msg );
+	#$entity = $self->{parser}->parse_open($filename);
+	
+	#warn '$human_size: ' . $human_size; 
+	#if(length($raw_msg) < 10000000){ 
+		try { $entity = $self->{parser}->parse_data(
+				safely_encode( 
+					$raw_msg 
+				)
+			) 
+		} catch { 
+			croak "Problems creating entity: $_"; 
+		};
+		#}
+	#else { 
+#		warn 'raw msg too big, returning undef';
+#		return undef; 
+#	}
+
+	
+		
 	if(!$entity){
-		carp "Couldn't create an entity from this raw_msg:\n$raw_msg";
+		carp "Couldn't create an entity from this raw_msg:"; #\n$raw_msg
 		return undef;
 	}
 	else {
+		warn 'returning entity';
 		return $entity; 
 	}
 }
-
-
 
 
 sub _remove_opener_image { 
@@ -1621,6 +1667,14 @@ sub attachment_list {
 	}
 	
 	my $entity      = $self->_entity_from_raw_msg($raw_msg);
+	
+	if(! defined($entity)){ 
+		warn 'entity is undef';
+		return [];
+	}
+	
+	
+	
 	my $attachments = $self->find_attachment_list($entity, $key); 
 
 	$entity->purge;
@@ -1729,9 +1783,11 @@ sub view_file_attachment {
 	
 	my $entity   = $self->_entity_from_raw_msg($raw_msg);
 	
-	if(!defined($entity)){ 
-		warn '$entity not defined';
+	if(! defined($entity)){ 
+		warn 'entity is undef';
+		return (undef, undef);
 	}
+	
 	# I don't like how this is called thrice.... but, oh well...
 	my $a_entity = undef;
 	
@@ -1935,6 +1991,12 @@ sub view_inline_attachment {
 	}
 	
 	my $entity = $self->_entity_from_raw_msg($raw_msg);
+	
+	
+	if(!defined($entity)){ 
+		return (undef, undef);
+	}
+	
 	
 	my $body; 
 	
@@ -2155,11 +2217,11 @@ sub _faked_oldstyle_message {
 	
 	my $entity = $self->_entity_from_raw_msg($raw_msg);
 	
-	if(!$entity){
+	if(!defined($entity)){
 		warn "Something's wrong $!"; 
 		
- 	   $entity->purge;
- 	   undef($entity); 
+ 	  # $entity->purge;
+ 	  # undef($entity); 
 		
 		return ('', ''); 	
 	}else{ 
@@ -2201,18 +2263,29 @@ sub message_blurb {
 			 	-size      => 525, 
 			    @_); 
 	
+				
 	$args{-key} = $self->newest_entry
 		if !$args{-key};
 		
 	return undef
 		if !$args{-key}; 
-		
+	
+		warn '$args{-key}: ' . $args{-key}; 
 	my $msg = $self->massaged_msg_for_display(
 	    {
     		-key        => $args{-key}, 
+			-for_blurb  => 1, 
     		-plain_text => 1,
     	}	
 	);
+	
+	
+	
+	#return $msg; 
+	
+	#return xss_filter(substr($msg, 0, 50));
+
+	
 					
 	# We'll want to, actually, escape out the entities - I don't know
 	# why this isn't done in, massaged_msg_for_display  
@@ -2268,7 +2341,11 @@ sub massage_msg_for_resending {
 	
 	
 	my $entity = $self->_entity_from_raw_msg($raw_msg); 
-	   
+	 if(!defined($entity)){ 
+		 return undef; 
+	 }
+	 
+	  
 	if($args{-zap_sigs} == 1){
 		$entity = $self->_take_off_sigs($entity); 
 	}
@@ -2419,6 +2496,11 @@ sub massaged_msg_for_display {
     if(!exists($args->{-entity_protect})){ 
         $args->{-entity_protect} = 1;         
     } 
+    if(!exists($args->{-for_blurb})){ 
+        $args->{-for_blurb} = 0;         
+    } 
+	
+	
 
     my $content_type = 'text/html';
 
@@ -2436,9 +2518,14 @@ sub massaged_msg_for_display {
 		$raw_msg
 	);
 	
-    if ( !$entity ) {
+	
+	
+    if ( ! defined($entity) ) {
         carp "Couldn't create entity";
-    }
+	    return wantarray ? ( undef, undef ) : undef;
+	}
+	
+	
 
     my $body;
 
@@ -2449,7 +2536,9 @@ sub massaged_msg_for_display {
     else {
         $b_entity = $entity;
     }
-
+	
+	
+	
     # text?! I dunno - set wrong?
     if (   $b_entity->head->mime_type eq 'text/plain'
         || $b_entity->head->mime_type eq 'text' )
@@ -2493,25 +2582,30 @@ sub massaged_msg_for_display {
 
     }
     elsif ( $b_entity->head->mime_type eq 'text/html' ) {
+	
+	
 		
 		warn 'HTML body' 
 			if $t; 
 		
-        $body = $b_entity->bodyhandle->as_string;
-		$body = safely_decode($body); 
 		
+        $body = $b_entity->bodyhandle->as_string;
+		
+		$body = safely_decode($body); 
 		
         $body = $self->_rearrange_cid_img_tags(
             -key  => $args->{-key},
             -body => $body,
         );		
+		
 			$body = $self->string_between_markers($body);			
-            
+        
 			# This is more backwards compatible stuff:
 			$body = $self->_zap_sig_html($body);
-        
+    
 
         $body = $self->massage($body);
+
 		
         $body = $self->_parse_in_list_info(
             -data => $body,
@@ -2533,6 +2627,7 @@ sub massaged_msg_for_display {
 		  
     }
 
+	
 	$body = $self->_neuter_confirmation_token_links($body);
 
     $body = scrub_js($body)
@@ -2549,32 +2644,51 @@ sub massaged_msg_for_display {
 
     if ( $args->{-body_only} == 1 ) {
         $body = $self->_chomp_off_body($body);
+		
     }
     else {
         if ( $args->{-plain_text} == 1 ) {
+			
             # ...
         }
         else {
             $body = $self->_add_a_body_if_needed($body);
+			
         }
     }
 
   	
+	
     if ( $args->{-plain_text} == 1 ) {
+		
+		
+		
 		# happens when you have a HTML body and need it back in plaintext
 		# From what I can figure out, this'll only happen in the 
 		# message blurbs?
         $body = $self->_chomp_out_head_styles($body);
-        $body = html_to_plaintext( { -str => $body } );
+		
+
+		warn '$body: ' . $body; 
+		
+        $body = html_to_plaintext( 
+			{ 
+				-str       => $body,
+				-for_blurb => $args->{-for_blurb},
+			} );
+		
 		# Total hack: 
 		# I don't want to double-process the $body - perhaps 
 		# that won't do anything weird, but perhaps... it would? 
 		my $opening = quotemeta('<!-- tmpl_var LEFT_BRACKET -->'); 
 		my $closing = quotemeta('<!-- tmpl_var RIGHT_BRACKET -->');
+		
 		$body       =~ s/$opening/\[/g; 
 		$body       =~ s/$closing/\]/g; 
 		
+		
     }
+	
 	
    $entity->purge;
    undef($entity); 

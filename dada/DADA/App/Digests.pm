@@ -421,7 +421,9 @@ sub digest_ht_vars {
         );
 
         my %date_params = DADA::Template::Widgets::date_params( $self->archive_time_2_ctime($id) );
-        my $message_blurb = $self->{a_obj}->message_blurb( -key => $id );
+        
+		# This is probably why digests are so hard to make work correctly
+		my $message_blurb =  $self->{a_obj}->message_blurb( -key => $id );
 
         push(
             @$digest_messages,

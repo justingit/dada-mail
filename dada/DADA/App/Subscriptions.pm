@@ -2952,7 +2952,7 @@ sub fancy_data {
         return ({}, $data_back);
     }
     else {
-		warn 'here.';
+		
         return ({}, $return);
     }
 }
