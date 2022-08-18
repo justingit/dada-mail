@@ -1,8 +1,5 @@
 #!/usr/bin/perl 
 
-# test 
-#test
-
 use FindBin;
 use lib "$FindBin::Bin/";
 use lib "$FindBin::Bin/DADA/perllib";
