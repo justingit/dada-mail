@@ -65,6 +65,12 @@ Experiment with other HTML attributes!
 
 This same feature is also available for fetching content from an RSS/Atom Feed. 
 
+=head4 Breaking Changes!
+
+In past versions of Dada Mail, either "id" or, "class" had to be picked in a separate text box. 
+This text box has been removed now that you can set a id, class, or other attributes in the text box that remains. 
+If you are already using this feature (located only for fetching via a Feed URL), you will need to adjust your draft settings. 
+
 =head3 Installer: Ability to Switch the path to the Perl interpreter
 
 Oftentimes (and especially on cPanel-based hosting accounts) there is an alternative Perl interpreter available to use, 
@@ -118,6 +124,11 @@ L<https://github.com/justingit/dada-mail/issues/1113>
 =head3 List Control Panel Archive Screen: message_blurb() call memory leak?
 
 L<https://github.com/justingit/dada-mail/issues/1116>
+
+=head3 Previews of message drafts always show in modal menu and not in new window in Drafts Index
+
+L<https://github.com/justingit/dada-mail/issues/1117>
+
 
 =head1 11.18.2
 
