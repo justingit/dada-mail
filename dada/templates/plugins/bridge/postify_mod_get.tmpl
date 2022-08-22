@@ -1,10 +1,33 @@
 <html>
 <head> 
+	
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery-3.6.0.min.js"></script>
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.cookie.js?v=<!-- tmpl_var VER escape=URL -->"></script>
+	
+	
 	<script type="text/javascript">
-		function submitform() { 
-			document.getElementById('postify_mod_get').submit();
-		}
-		window.onload=submitform;
+		
+		jQuery(document).ready(function($){
+					
+			function add_csrf_token() {
+				var token = $.cookie("_csrf_token"); 
+				if (typeof token === 'undefined') {
+					return false;
+				}
+				$("<input>").attr({
+				                name:  "_csrf_token",
+						        class:  "_csrf_token _refresh",
+				                type:  "hidden",
+								value:  token 
+				}).appendTo("form");
+			}
+		
+			function submitform() { 
+				add_csrf_token();
+				document.getElementById('postify_mod_get').submit();
+			}
+			submitform();
+		}); 
 		
 	</script> 
 </head>
@@ -21,6 +44,7 @@
 		<input type="hidden" name="acting_email_address" value="<!-- tmpl_var acting_email_address -->" >
 		<input type="hidden" name="rand_string" value="<!-- tmpl_var rand_string -->" >
 
+		
 		<input type="submit" value="Click here to complete request...">
 	</form>
 </body>
