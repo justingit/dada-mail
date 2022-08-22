@@ -2755,9 +2755,7 @@ sub subscription_form {
 		my $ii = 0;
         #foreach my $sf(@$subscriber_fields){ 
 		foreach my $sf(@$all_fields){ 
-
             if(defined($q->param($sf))){ 
-				warn q{$q->param($sf)} . $q->param($sf); 
 				if($sf =~ m/^\_/){ 		
 					$hidden_subscriber_fields->[$i]->{given_value} = xss_filter($q->param($sf));
 					$i++;
