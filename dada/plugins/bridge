@@ -345,23 +345,30 @@ sub cgi_awaiting_msgs {
               . '?flavor=plugins&plugin=bridge&prm=mod&list='
               . DADA::App::Guts::uriescape($list)
               . '&process=confirm&msg_id='
-              . DADA::App::Guts::uriescape($messagename);
-              
-
+              . DADA::App::Guts::uriescape($messagename)
+			  . '&acting_email_address='
+			  . DADA::App::Guts::uriescape('(via list control panel)')
+			  ;
+			  
             my $deny_link =
                 $DADA::Config::S_PROGRAM_URL
               . '?flavor=plugins&plugin=bridge&prm=mod&list='
               . DADA::App::Guts::uriescape($list)
               . '&process=deny&msg_id='
-              . DADA::App::Guts::uriescape($messagename);
+              . DADA::App::Guts::uriescape($messagename)
+			  . '&acting_email_address='
+			  . DADA::App::Guts::uriescape('(via list control panel)')
+			  ;
 			  
-          
 			my $delete_link = 
 				$DADA::Config::S_PROGRAM_URL
               . '?flavor=plugins&plugin=bridge&prm=mod&list='
               . DADA::App::Guts::uriescape($list)
               . '&process=delete&msg_id='
-              . DADA::App::Guts::uriescape($messagename);
+              . DADA::App::Guts::uriescape($messagename)
+			  . '&acting_email_address='
+			  . DADA::App::Guts::uriescape('(via list control panel)')
+			  ;
 			  
 			push(@$msg_entries, { 
 				subject           => $subject, 
