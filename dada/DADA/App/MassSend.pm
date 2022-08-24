@@ -1916,7 +1916,15 @@ sub ses_params {
         $ses_params->{using_ses} = 1;
         $ses_params->{list_owner_ses_verified}     = $ses->sender_verified( $self->{ls_obj}->param('list_owner_email') );
         $ses_params->{list_admin_ses_verified}     = $ses->sender_verified( $self->{ls_obj}->param('admin_email') );
-        $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified( $self->{ls_obj}->param('discussion_pop_email') );
+        
+		# We only need to check this if we're using the discussion_pop_email: 
+		if(
+			   $self->{ls_obj}->param('disable_discussion_sending') != 1
+			&& $self->{ls_obj}->param('group_list') == 1			
+		){ 
+			$ses_params->{discussion_pop_ses_verified} = $ses->sender_verified( $self->{ls_obj}->param('discussion_pop_email') );
+		}
+		
     }
 
     return $ses_params;

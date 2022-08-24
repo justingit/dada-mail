@@ -153,7 +153,7 @@ sub sender_verified {
 
     my $self  = shift; 
     my $email = shift; 
-    
+	
     my ($name, $domain) = split('@', $email, 2); 
 	
 	# This is very limited and contrived
@@ -254,13 +254,13 @@ sub get_stats {
 	my $params = {
         Action => 'GetSendQuota', 
 	};
+	
 
 	my ($response_code, $response_content) = $self->call_ses($params, {});
 		if ( $self->trace ) {
 			print $response_code . "\n"; 
 	        print $response_content . "\n"; 
 		}	
-	
 	
 	if($response_code eq '200') { 
 		return ($response_code, $self->get_stats_response($response_content));
@@ -461,7 +461,7 @@ sub call_ses {
     #my $t0 = gettimeofday();
     my $params = shift;
     my $opts   = shift;
-
+	
     %opts   = %$opts;
     %params = %$params;
     
@@ -510,7 +510,7 @@ sub call_ses {
         if ( $content =~ /<Message>(.*?)<\/Message>/s ) {
             $errmsg = $1;
         }
-        print STDERR $errmsg, "\n";
+        carp $errmsg;
     }
     if ( $self->trace ) {
         carp $response->status_line();
