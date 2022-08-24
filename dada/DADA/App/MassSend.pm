@@ -1038,20 +1038,20 @@ sub content_from_feed_url {
 	
 	my ( $rtc, $res, $md5, $e_m ) = grab_url({-url => $feed_url });
 	
-	if(!$rtc){ 
+	if($res->is_error){
 		return { 
 			status => 0, 
-			errors => "No Content", 
+			errors => $e_m, 
 			html   => undef, 
 			md5    => undef, 
 			vars   => {},
 		};
 	}
 	
-	if($res->is_error){
+	if(!$rtc){ 
 		return { 
 			status => 0, 
-			errors => $e_m, 
+			errors => "No Content", 
 			html   => undef, 
 			md5    => undef, 
 			vars   => {},
@@ -1184,14 +1184,11 @@ sub content_from_feed_url {
 		}
 	}	
 	
-	# This is successful,
-	# there's just no entries to return, 
-	# so we'll return undef on, html
 	# 
 	if(scalar @$entries <= 0){ 
 		return { 
-			status => 1, 
-			errors => undef, 
+			status => 0, 
+			errors => 'No entries were returned, given the paramaters passed.', 
 			html   => undef, 
 			md5    => undef, 
 			vars   => {},
