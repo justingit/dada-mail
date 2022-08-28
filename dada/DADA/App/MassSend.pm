@@ -1188,7 +1188,7 @@ sub content_from_feed_url {
 	if(scalar @$entries <= 0){ 
 		return { 
 			status => 0, 
-			errors => 'No entries were returned, given the paramaters passed.', 
+			errors => 'No feed entries were returned, given the paramaters passed.', 
 			html   => undef, 
 			md5    => undef, 
 			vars   => {},
