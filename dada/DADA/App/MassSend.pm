@@ -1702,9 +1702,9 @@ sub send_email {
                 -json    => 0,
             }
         );
-        # to fetch a draft, I need id, list and role (lame)
-        # my ( $status, $errors, $message_id, $md5 ) =
-		my $construct_r =  $self->construct_and_send(
+    
+	
+		my $construct_r = $self->construct_and_send(
             {
                 -draft_id  => $draft_id,
                 -role      => $draft_role,
@@ -1712,6 +1712,42 @@ sub send_email {
 				-list_type => $test_list_type_label, 
             }
         );
+		
+		
+		
+		
+        if (
+               $construct_r->{status} == 1
+            && $process !~ m/test/i
+
+          )
+        {
+			
+			my $tlist = 'test2';
+            my $saved_draft_id = $self->{md_obj}->clone_to_list(
+                {
+                    -id   => $draft_id,
+                    -role => $draft_role,
+                    -to   => $tlist,
+                }
+            );
+
+            warn '$saved_draft_id: ' . $saved_draft_id;
+			
+			my $dms = DADA::App::MassSend->new({-list => $tlist}); 
+			my $d_construct_r = $dms->construct_and_send(
+	            {
+	                -draft_id  => $saved_draft_id,
+	                -role      => $draft_role,
+	                -process   => 1,
+	            }
+	        );
+			use Data::Dumper; 
+			warn '$d_construct_r: ' . Dumper($d_construct_r);
+        }
+
+
+
 
         if($t) { 
             carp '$construct_r->{mid} ' . $construct_r->{mid};
@@ -1735,7 +1771,7 @@ sub send_email {
 			
             warn 'test sending'
               if $t;			
-			  my $uri = $DADA::Config::S_PROGRAM_URL 
+			my $uri = $DADA::Config::S_PROGRAM_URL 
 			  . '?flavor=sending_monitor'
 			  . '&type=' . uriescape($test_list_type_label)
 			  . '&id=' 

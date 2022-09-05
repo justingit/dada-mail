@@ -12,7 +12,7 @@ use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts; 
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
 
 sub new {
 
@@ -139,6 +139,9 @@ sub id_exists {
 
 }
 
+
+
+
 sub save {
 
     warn 'in save()'
@@ -179,8 +182,13 @@ sub save {
 #    warn '$args->{-role}'      . $args->{-role}; 
 #    warn '$args->{-save_role}' . $args->{-save_role}; 
 #    warn '$args->{-id}'        . $args->{-id}; 
-
-
+	
+	my $list = $self->{list};
+	if($args->{-to}){ 
+		# make sure this is a valid list and not THIS list, etc
+		# die "wrong things!"
+		$list = $args->{-to}; 
+	}
 
     my $id = undef;
     if ( exists( $args->{-id} ) ) {
@@ -239,11 +247,11 @@ sub save {
         if($t == 1) { 
             require Data::Dumper; 
 			# $args->{-screen},
-            warn 'execute params: ' . Data::Dumper::Dumper([$self->{list}, $args->{-save_role}, $draft]); 
+            warn 'execute params: ' . Data::Dumper::Dumper([$list, $args->{-save_role}, $draft]); 
         }
 		# $args->{-screen}, 
         $sth->execute( 
-			$self->{list}, 
+			$list, 
 			$args->{-save_role}, 
 			$draft 
 		) or croak "cannot do statement '$query'! $DBI::errstr\n";
@@ -329,7 +337,7 @@ sub save {
                $sth->execute( 
                    $args->{-save_role}, 
                    $draft, 
-                   $self->{list}, 
+                   $list, 
                    $args->{-id} 
               )
               or croak "cannot do statement '$query'! $DBI::errstr\n";
@@ -372,6 +380,44 @@ sub save {
             return $id; 
         }
     }
+}
+
+
+
+
+sub clone_to_list { 
+	
+    warn 'in clone_to_list()'
+      if $t;
+
+    my $self   = shift;
+    my ($args) = @_;
+	
+	for('-id', '-role', '-to'){ 
+		if(!exists($args->{$_})){ 
+			croak 'arg, ' . $_ . ' required.';
+		}
+	}
+	
+    my $q_draft = $self->fetch(
+	    {
+	        -id     => $args->{-id},
+	        -role   => $args->{-role},
+	    }
+	);
+	
+	
+
+	my $saved_draft_id = $self->save(
+		{ 
+		    -cgi_obj    => $q_draft,
+		    -role       => $args->{-role},
+		    -save_role  => $args->{-role}, 
+			-to         => $args->{-to},
+		}
+	);
+	
+	return $saved_draft_id; 
 }
 
 
