@@ -19,8 +19,12 @@ use LWP::Simple qw(getstore getprint);
 
 my $github_repos = { 
 	perllib => {
-		repo    => '', 
-		branch  => '', 
+		remote         => 'https://github.com/justingit/',
+		repo           => 'dada-mail-perllib',
+		branch         => 'main', 
+		dir_name       => 'perllib',
+		local_dir_path => 'DADA/perllib', 
+
 	},
 	ckeditor => { 
 		remote         => 'https://github.com/justingit/',
@@ -82,6 +86,7 @@ md_dircopy('./app/dada', './tmp/dada');
 md_mkdir('./tmp/dada/extras/packages', $DIR_CHMOD);
 md_mkdir('./tmp/dada/extras/packages/themes', $DIR_CHMOD);
 
+md_pulldown_git_and_copy($github_repos->{perllib});
 md_pulldown_git_and_copy($github_repos->{ckeditor});
 md_pulldown_git_and_copy($github_repos->{tinymce});
 md_pulldown_git_and_copy($github_repos->{kcfinder});
