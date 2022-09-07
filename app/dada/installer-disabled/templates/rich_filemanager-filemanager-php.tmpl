@@ -1,4 +1,6 @@
 <?php
+
+
 ini_set('session.save_path',realpath('<!-- tmpl_var i_rich_filemanager_session_dir -->'));
 
 /**
@@ -13,7 +15,8 @@ ini_set('session.save_path',realpath('<!-- tmpl_var i_rich_filemanager_session_d
 // error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 // ini_set('display_errors', '1');
 
-require 'vendor/autoload.php';
+require_once 'vendor/autoload.php';
+require_once __DIR__ . '/events.php';
 
 // fix display non-latin chars correctly
 // https://github.com/servocoder/RichFilemanager/issues/7
@@ -34,9 +37,6 @@ if(!ini_get('date.timezone')) {
 // This function only authorizes the user to connect and/or load the initial page.
 // Authorization for individual files or dirs is provided by the two functions below.
 //
-// NOTE: If this function returns false, the user will simply see an error. It
-// probably makes more sense to redirect the user to a login page instead.
-//
 // NOTE: If using session variables, the session must be started first (session_start()).
 function fm_authenticate()
 {	
@@ -44,7 +44,6 @@ function fm_authenticate()
     return isset($_SESSION['rfm_authenticated']) && $_SESSION['rfm_session_id'] == $_COOKIE["dadalogin"];
 	
 }
-
 
 // This function is called before any filesystem read operation, where
 // $filepath is the file or directory being read. It must return true,
@@ -106,10 +105,13 @@ $config = [];
 
 $app = new \RFM\Application();
 
+// uncomment to use events
+//$app->registerEventsListeners();
+
 $local = new \RFM\Repository\Local\Storage($config);
 
 // example to setup files root folder
-//$local->setRoot('userfiles', true);
+//$local->setRoot('userfiles', true, true);
 
 $app->setStorage($local);
 
