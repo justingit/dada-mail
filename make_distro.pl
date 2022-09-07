@@ -81,6 +81,15 @@ my $maxmind_dbs =  {
 	city_db        => 'GeoLiteCity.dat',
 };
 
+md_rmdir(
+	'./tmp'
+); 
+
+md_rmdir(
+	'./distribution'
+); 
+
+
 md_mkdir('./tmp', $DIR_CHMOD);
 md_dircopy('./app/dada', './tmp/dada'); 
 md_mkdir('./tmp/dada/extras/packages', $DIR_CHMOD);
@@ -96,6 +105,75 @@ md_pulldown_git_and_copy($github_repos->{RichFilemanager});
 md_email_template($github_releases->{dada_mail_foundation_email_templates}); 
 
 md_maxmind_dbs($maxmind_dbs); 
+
+md_copy_over_static_to_installer(); 
+
+md_create_distro(); 
+
+md_rmdir(
+	'./tmp'
+); 
+
+
+sub md_create_distro { 
+	
+	my $config = md_slurp('./tmp/dada/DADA/Config.pm'); 
+	
+	
+	$config =~ m/\$VERSION \= (\d+\.\d+\.\d+);/gsmi;
+	
+	my $ver = $1;
+	   $ver =~ s/\./_/gi;  
+	
+	chdir "./tmp";
+	`tar -cvf dada_mail-$ver.tar dada`;
+	`gzip dada_mail-$ver.tar`;
+	
+	chdir "../";
+	
+	md_mkdir(
+		'./distribution', 
+		$DIR_CHMOD
+	); 
+	
+	md_cp(
+		'./tmp/dada_mail-' . $ver . '.tar.gz', 
+		'./distribution/dada_mail-' . $ver . '.tar.gz'
+	);
+	
+	md_cp(
+		'./app/uncompress_dada.cgi', 
+		'./distribution/uncompress_dada.cgi'
+	);
+	
+}
+
+
+
+sub md_copy_over_static_to_installer { 
+	
+	md_mkdir(
+		'./tmp/dada/installer-disabled/templates/static', 
+		$DIR_CHMOD
+	); 
+	
+	md_dircopy(
+		'./tmp/dada/static/javascripts',
+		'./tmp/dada/installer-disabled/templates/static/javascripts'
+	);
+	
+	md_dircopy(
+		'./tmp/dada/static/css',
+		'./tmp/dada/installer-disabled/templates/static/css'
+	);
+	
+	md_dircopy(
+		'./tmp/dada/static/images',
+		'./tmp/dada/installer-disabled/templates/static/images'
+	);
+	
+		
+}
 
 sub md_maxmind_dbs { 
 	my ($args) = @_; 
@@ -286,4 +364,24 @@ sub md_dircopy {
 	dircopy( $source, $target )
       or die "can't copy directory from, '$source' to, '$target' because: $!";
 }
+
+sub md_slurp {
+
+    my ($file) = @_;
+
+    local ($/) = wantarray ? $/ : undef;
+    local (*F);
+    my $r;
+    my (@r);
+
+    open( F, '<:encoding(' . $HTML_CHARSET . ')', $file )
+      || croak "open $file: $!";
+    @r = <F>;
+    close(F) || croak "close $file: $!";
+
+    return $r[0] unless wantarray;
+    return @r;
+
+}
+
 
