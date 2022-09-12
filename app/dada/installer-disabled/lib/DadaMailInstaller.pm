@@ -4574,21 +4574,18 @@ sub install_and_configure_core5_filemanager {
     # No Session Dir for Core5 Filemanager
 
     # pl config:
-
     my $uploads_directory = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
-    my $url_path          = $uploads_directory;
-    my $doc_root          = $ENV{DOCUMENT_ROOT};
-    $url_path =~ s/^$doc_root//;    # We use $url_path for the js config, too.
-
-    my $core5_filemanager_config_pl = DADA::Template::Widgets::screen(
+    my $url_path          = $ip->{-support_files_dir_url}  . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
+    my $rich_filemanager_connector_config = DADA::Template::Widgets::screen(
         {
-            -screen => 'core5_filemanager_config_pl.tmpl',
+            -screen => 'rich_filemanager_connector_config_local.tmpl',
             -vars   => {
                 uploads_directory => $uploads_directory,
-                url_path          => $url_path,
+                url_path          => $uploads_url,
             }
         }
     );
+
     my $core5_filemanager_config_loc =
       make_safer( $install_path . '/core5_filemanager/connectors/pl/filemanager_config.pl' );
     installer_chmod( 0777, $core5_filemanager_config_loc );
