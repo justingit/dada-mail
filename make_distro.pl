@@ -1,6 +1,23 @@
 #!/usr/bin/perl -w
 use strict; 
 
+use Getopt::Long;
+my $help         = 0; 
+my $dry_run      = 0; 
+my $run_tests    = 0; 
+my $skip_perllib = 0; 
+my $remove_tests = 0; 
+
+
+Getopt::Long::GetOptions(
+	"remove_tests"  => \$remove_tests,
+	"help"          => \$help,
+	"dry_run"       => \$dry_run, 
+	"skip_perllib"  => \$skip_perllib, 
+	
+);
+		
+
 my $t = 1; 
 my $HTML_CHARSET = 'utf-8';
 my $FILE_CHMOD   = 0644;
@@ -9,7 +26,7 @@ my $DIR_CHMOD    = 0755;
 use 5.010;
 
 use Cwd qw(getcwd);
-use File::Path;
+use File::Path qw(remove_tree);
 use File::Copy; 
 use File::Copy::Recursive qw(rmove dircopy);
 use Carp qw(carp croak);
@@ -81,38 +98,109 @@ my $maxmind_dbs =  {
 	city_db        => 'GeoLiteCity.dat',
 };
 
-md_rmdir(
-	'./tmp'
-); 
 
-md_rmdir(
-	'./distribution'
-); 
+if($help){ 
+	
+	help();
+
+}
+else { 
+	
+	make_distro();
+	
+	if($remove_tests){ 
+		remove_tests(); 
+	}
+	
+	if(!$dry_run){
+		md_create_distro(); 
+	}
+	
+	clean_up(); 
+
+}
 
 
-md_mkdir('./tmp', $DIR_CHMOD);
-md_dircopy('./app/dada', './tmp/dada'); 
-md_mkdir('./tmp/dada/extras/packages', $DIR_CHMOD);
-md_mkdir('./tmp/dada/extras/packages/themes', $DIR_CHMOD);
 
-md_pulldown_git_and_copy($github_repos->{perllib});
-md_pulldown_git_and_copy($github_repos->{ckeditor});
-md_pulldown_git_and_copy($github_repos->{tinymce});
-md_pulldown_git_and_copy($github_repos->{kcfinder});
-md_pulldown_git_and_copy($github_repos->{core5_filemanager});
-md_pulldown_git_and_copy($github_repos->{RichFilemanager});
 
-md_email_template($github_releases->{dada_mail_foundation_email_templates}); 
+sub help { 
+	print "This is where the help goes.\n";
+}
 
-md_maxmind_dbs($maxmind_dbs); 
 
-md_copy_over_static_to_installer(); 
 
-md_create_distro(); 
 
-md_rmdir(
-	'./tmp'
-); 
+sub clean_up { 
+	md_rmdir(
+		'./tmp'
+	); 
+}
+
+
+
+
+sub make_distro { 
+
+	clean_up(); 
+
+	md_rmdir(
+		'./distribution'
+	); 
+
+	md_mkdir('./tmp', $DIR_CHMOD);
+	md_dircopy('./app/dada', './tmp/dada'); 
+	md_mkdir('./tmp/dada/extras/packages', $DIR_CHMOD);
+	md_mkdir('./tmp/dada/extras/packages/themes', $DIR_CHMOD);
+
+	md_rm('./tmp/dada/.gitignore'); 
+	
+	if(!$skip_perllib){
+		md_pulldown_git_and_copy($github_repos->{perllib});
+	}
+	
+	md_pulldown_git_and_copy($github_repos->{ckeditor});
+	md_pulldown_git_and_copy($github_repos->{tinymce});
+	md_pulldown_git_and_copy($github_repos->{kcfinder});
+	md_pulldown_git_and_copy($github_repos->{core5_filemanager});
+	md_pulldown_git_and_copy($github_repos->{RichFilemanager});
+
+	md_email_template($github_releases->{dada_mail_foundation_email_templates}); 
+
+	md_maxmind_dbs($maxmind_dbs); 
+
+	md_copy_over_static_to_installer(); 
+	
+	md_make_cl_installer_help_scrn(); 
+
+	md_copy_core_file_filemanager_pl(); 
+	
+}
+
+sub remove_tests { 
+	md_rmdir('./tmp/dada/t');
+}
+
+
+sub md_make_cl_installer_help_scrn { 
+	`pod2text ./tmp/dada/extras/documentation/pod_source/install_dada_mail_cl.pod  > ./tmp/dada/installer-disabled/templates/cl_help_scrn.tmpl`;
+}
+
+
+
+
+sub md_copy_core_file_filemanager_pl { 
+
+	md_cp(
+	'.tmp/dada/extras/packages/core5_filemanager/connectors/pl/filemanager.pl'
+	,
+	'.tmp/dada/installer-disabled/core5_filemanager-filemanager_pl.tmpl'
+	); 
+}
+
+
+
+
+
 
 
 sub md_create_distro { 
@@ -137,12 +225,14 @@ sub md_create_distro {
 	); 
 	
 	md_cp(
-		'./tmp/dada_mail-' . $ver . '.tar.gz', 
+		'./tmp/dada_mail-' . $ver . '.tar.gz'
+		, 
 		'./distribution/dada_mail-' . $ver . '.tar.gz'
 	);
 	
 	md_cp(
-		'./app/uncompress_dada.cgi', 
+		'./app/uncompress_dada.cgi'
+		, 
 		'./distribution/uncompress_dada.cgi'
 	);
 	
@@ -240,10 +330,14 @@ sub md_pulldown_git_and_copy {
 	
 	chdir "./tmp";
 	
-	`git clone $args->{remote}/$args->{repo}.git`;
-	chdir('./' . $args->{repo});
-	`git checkout $args->{branch}`;
-	chdir('../../'); # oh I'm sure that'll be work...
+	#`git clone $args->{remote}/$args->{repo}.git`;
+	
+	`git clone -b '$args->{branch}' --single-branch --depth 1 $args->{remote}/$args->{repo}.git`;
+	
+	#chdir('./' . $args->{repo});
+	#`git checkout $args->{branch}`;
+	
+	chdir('../'); # oh I'm sure that'll be work...
 	
 	md_mv(
 		'./tmp/' 
@@ -351,7 +445,7 @@ sub md_rmdir {
 	warn "md_rmdir, dir: '$dir'"
 		if $t; 
 	
-    my $r    = rmtree($dir);
+    my $r    = remove_tree($dir);
     return $r;
 }
 
