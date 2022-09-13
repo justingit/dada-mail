@@ -11543,7 +11543,8 @@ sub token {
 	        {
 	            -screen => 'postify_token_get.tmpl',
 				-vars => { 
-					token => $q->param('token'), 
+					token         => $q->param('token'), 
+					token_context => $q->param('token_context'),
 				}
 	        }
 	    );

@@ -74,8 +74,10 @@
 							<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" id="unsubscription_form" > 
 							
 								<input type="hidden" id="program_url"            name="program_url" value="<!-- tmpl_var PROGRAM_URL -->" >
-								<input type="hidden" id="flavor"                 name="flavor" value="u" >
-								<input type="hidden" id="token"                  name="token" value="<!-- tmpl_var token  escape="HTML" -->" > 
+								<input type="hidden" id="flavor"                 name="flavor"        value="u" >
+								<input type="hidden" id="token"                  name="token"         value="<!-- tmpl_var token  escape="HTML" -->" > 
+								<input type="hidden" id="token_context"          name="token_context" value="<!-- tmpl_var token_context  escape="HTML" -->" > 
+
 								<input type="hidden" id="process"                name="process" value="1" > 
 								<input type="hidden" id="auto_attempted"         name="auto_attempted" value="<!-- tmpl_var auto_attempted escape="HTML" -->">
 								<input 

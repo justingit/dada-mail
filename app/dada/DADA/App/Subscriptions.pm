@@ -178,6 +178,8 @@ sub token {
         elsif ( $data->{data}->{flavor} eq 'unsub_confirm' ) {
 			warn '$data->{data}->{flavor}: ' . $data->{data}->{flavor}
 				if $t; 
+				
+			# Why is this explicitely set? 				
             $q->param( 'token', $token );
             $self->unsubscribe(
                 {
@@ -1702,6 +1704,9 @@ sub unsubscribe {
 	if($t == 1){ 
 		warn '$token: '         . $token; 
 		warn '$token_context: ' . $token_context; 	
+		
+		#use Data::Dumper; 
+		#warn Dumper({$q->Vars});
 	}
 	
     require DADA::App::Subscriptions::ConfirmationTokens;
@@ -1780,8 +1785,15 @@ sub unsubscribe {
             $args->{-list}     = $data->{data}->{list};             
             $args->{-mid}      = $data->{data}->{mid};
             $args->{-email}    = $data->{email};
-			$args->{-source}   = $data->{data}->{source};
-            
+			
+			$args->{-consent_vars}->{-source}          = $data->{data}->{source};
+
+			if($token_context){ 
+				$args->{-consent_vars}->{-source} .= ' (' . $token_context . ')';
+			}
+			
+			$args->{-consent_vars}->{-source_location} = $data->{data}->{mid};
+			
 		    require DADA::MailingList::Settings;
 		    my $ls = DADA::MailingList::Settings->new( { -list => $data->{data}->{list} } );
 			
@@ -1841,6 +1853,7 @@ sub unsubscribe {
             -expr   => 1,
             -vars   => {
                 token                         => $token,
+                token_context                 => $token_context,
                 process                       => $process,
                 is_valid                      => $is_valid,
                 list_exists                   => $list_exists,

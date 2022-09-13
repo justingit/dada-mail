@@ -59,13 +59,17 @@ $('.colorbox_open').click(function(e) {
 				success: function(data) {
 					if(data.status === 1 && data.email.length > 0){ 
 						var url = $("#program_url").val() 
-							+ "?flavor=unsubscribe&token="
+							+ "?"
+							+ "flavor=unsubscribe"
+							+ "&token="
 							+ encodeURIComponent($('#token').val())
+							+ "&token_context="
+							+ encodeURIComponent($('#token_context').val())
 							+ "&email="
 							+ encodeURIComponent(data.email)
 							+ '&process=1'
 							+ "&auto_attempted=1";
-							
+							alert(url);
 							window.location.href = url; 
 							// window.location.replace(url); 
 					}
