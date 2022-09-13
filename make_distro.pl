@@ -7,18 +7,18 @@ my $dry_run      = 0;
 my $run_tests    = 0; 
 my $skip_perllib = 0; 
 my $remove_tests = 0; 
-
+my $v            = 0;
 
 Getopt::Long::GetOptions(
 	"remove_tests"  => \$remove_tests,
 	"help"          => \$help,
-	"dry_run"       => \$dry_run, 
+#	"dry_run"       => \$dry_run, 
 	"skip_perllib"  => \$skip_perllib, 
+	"verbose"       => \$v,
 	
 );
 		
 
-my $t = 1; 
 my $HTML_CHARSET = 'utf-8';
 my $FILE_CHMOD   = 0644;
 my $DIR_CHMOD    = 0755;
@@ -112,23 +112,13 @@ else {
 		remove_tests(); 
 	}
 	
-	if(!$dry_run){
-		md_create_distro(); 
-	}
+	# if(!$dry_run){
+	 	create_distro(); 
+	# }
 	
 	clean_up(); 
 
 }
-
-
-
-
-sub help { 
-	print "This is where the help goes.\n";
-}
-
-
-
 
 sub clean_up { 
 	md_rmdir(
@@ -155,24 +145,24 @@ sub make_distro {
 	md_rm('./tmp/dada/.gitignore'); 
 	
 	if(!$skip_perllib){
-		md_pulldown_git_and_copy($github_repos->{perllib});
+		pulldown_git_and_copy($github_repos->{perllib});
 	}
 	
-	md_pulldown_git_and_copy($github_repos->{ckeditor});
-	md_pulldown_git_and_copy($github_repos->{tinymce});
-	md_pulldown_git_and_copy($github_repos->{kcfinder});
-	md_pulldown_git_and_copy($github_repos->{core5_filemanager});
-	md_pulldown_git_and_copy($github_repos->{RichFilemanager});
+	pulldown_git_and_copy($github_repos->{ckeditor});
+	pulldown_git_and_copy($github_repos->{tinymce});
+	pulldown_git_and_copy($github_repos->{kcfinder});
+	pulldown_git_and_copy($github_repos->{core5_filemanager});
+	pulldown_git_and_copy($github_repos->{RichFilemanager});
 
-	md_email_template($github_releases->{dada_mail_foundation_email_templates}); 
+	email_template($github_releases->{dada_mail_foundation_email_templates}); 
 
-	md_maxmind_dbs($maxmind_dbs); 
+	maxmind_dbs($maxmind_dbs); 
 
-	md_copy_over_static_to_installer(); 
+	copy_over_static_to_installer(); 
 	
-	md_copy_core_file_filemanager_pl(); 
+	copy_core_file_filemanager_pl(); 
 	
-	md_make_cl_installer_help_scrn(); 
+	make_cl_installer_help_scrn(); 
 
 	
 }
@@ -182,14 +172,14 @@ sub remove_tests {
 }
 
 
-sub md_make_cl_installer_help_scrn { 
+sub make_cl_installer_help_scrn { 
 	`pod2text ./tmp/dada/extras/documentation/pod_source/install_dada_mail_cl.pod  > ./tmp/dada/installer-disabled/templates/cl_help_scrn.tmpl`;
 }
 
 
 
 
-sub md_copy_core_file_filemanager_pl { 
+sub copy_core_file_filemanager_pl { 
 
 	md_cp(
 	'./tmp/dada/extras/packages/core5_filemanager/connectors/pl/filemanager.pl'
@@ -204,10 +194,14 @@ sub md_copy_core_file_filemanager_pl {
 
 
 
-sub md_create_distro { 
+sub create_distro { 
 	
 	my $config = md_slurp('./tmp/dada/DADA/Config.pm'); 
 	
+	my $v_args = ''; 
+	if($v){ 
+		$v_args = '--verbose';
+	}
 	
 	$config =~ m/\$VERSION \= (\d+\.\d+\.\d+);/gsmi;
 	
@@ -215,7 +209,7 @@ sub md_create_distro {
 	   $ver =~ s/\./_/gi;  
 	
 	chdir "./tmp";
-	`tar -cvf dada_mail-$ver.tar dada`;
+	`tar --create $v_args --file dada_mail-$ver.tar dada`;
 	`gzip dada_mail-$ver.tar`;
 	
 	chdir "../";
@@ -241,7 +235,7 @@ sub md_create_distro {
 
 
 
-sub md_copy_over_static_to_installer { 
+sub copy_over_static_to_installer { 
 	
 	md_mkdir(
 		'./tmp/dada/installer-disabled/templates/static', 
@@ -266,14 +260,20 @@ sub md_copy_over_static_to_installer {
 		
 }
 
-sub md_maxmind_dbs { 
+sub maxmind_dbs { 
+	
 	my ($args) = @_; 
 
+	my $v_args = '--quiet'; 
+	if($v){ 
+		$v_args = '';
+	}
+
 	chdir "./tmp";
-	`git clone $args->{remote}/$args->{repo}.git`;
-	chdir('./' . $args->{repo});
-	`git checkout $args->{branch}`;
-	chdir('../../'); # oh I'm sure that'll be work...
+	
+	`git clone $v_args -b '$args->{branch}' --single-branch --depth 1 $args->{remote}/$args->{repo}.git`;
+	
+	chdir('../');
 	
 	md_mv(
 		'./tmp/' 
@@ -300,15 +300,21 @@ sub md_maxmind_dbs {
 
 
 
-sub md_email_template { 
+sub email_template { 
 	my ($args) = @_; 
 
+
+	my $v_args = ''; 
+	if($v){ 
+		$v_args = '--verbose';
+	}
+	
 	chdir "./tmp";
 	getstore(
 		$args->{url},
 		$args->{filename},
 	); 
-	`tar -xvf $args->{filename}`;
+	`tar --extract $v_args --file $args->{filename}`;
 	
 	chdir "../";
 	
@@ -325,15 +331,22 @@ sub md_email_template {
 	md_rmdir('./tmp/' . $args->{filename} );
 	
 }
-sub md_pulldown_git_and_copy { 
+sub pulldown_git_and_copy { 
 	
 	my ($args) = @_; 
+	
+	
+	my $v_args = '--quiet'; 
+	if($v){ 
+		$v_args = '';
+	}
+	
 	
 	chdir "./tmp";
 	
 	#`git clone $args->{remote}/$args->{repo}.git`;
 	
-	`git clone -b '$args->{branch}' --single-branch --depth 1 $args->{remote}/$args->{repo}.git`;
+	`git clone $v_args -b '$args->{branch}' --single-branch --depth 1 $args->{remote}/$args->{repo}.git`;
 	
 	#chdir('./' . $args->{repo});
 	#`git checkout $args->{branch}`;
@@ -356,27 +369,12 @@ sub md_pulldown_git_and_copy {
 
 
 
-sub md_write_file { 
-
-    my ($str, $fn, $chmod) = @_;
-
-    $fn = make_safer( $fn );
-
-    open my $fh, '>:encoding(' . $HTML_CHARSET . ')', $fn or croak $!;
-    print   $fh $str or croak $!;
-    close   $fh or croak $!;
-    md_chmod( $FILE_CHMOD, $fn );
-    undef   $fh;
-    return 1; 
-    
-}
-
 sub md_cp {
     require File::Copy;
     my ( $source, $dest ) = @_;
 	
 	warn "install_cp: source: '$source', dest: '$dest'\n"
-		if $t; 
+		if $v; 
 	
     my $r = File::Copy::copy( $source, $dest );    # or croak "Copy failed: $!";
     return $r;
@@ -386,7 +384,7 @@ sub md_mv {
     my ( $source, $dest ) = @_;
 	
 	warn "md_mv: source: '$source', dest: '$dest'\n"
-		if $t; 
+		if $v; 
 	
     my $r = File::Copy::move( $source, $dest ) or croak "Copy failed from: '$source', to: '$dest': $!";
     return $r;
@@ -397,7 +395,7 @@ sub md_mvdir {
     my ( $source, $dest ) = @_;
 	
 	warn "md_mv: source: '$source', dest: '$dest'\n"
-		if $t; 
+		if $v; 
 	
     my $r = rmove( $source, $dest ) or croak "Copy failed from: '$source', to: '$dest': $!";
     return $r;
@@ -409,7 +407,7 @@ sub md_rm {
     my $file  = shift;
 	
 	warn "md_rm: file: '$file'"
-		if $t; 
+		if $v; 
 	
     my $count = unlink($file);
     return $count;
@@ -420,7 +418,7 @@ sub md_chmod {
     my ( $octet, $file ) = @_;
 
 	warn 'md_chmod $octet:' . $octet . ', $file:'  . $file
-		if $t; 
+		if $v; 
 	
 	my $r = chmod( $octet, $file );
     return $r;
@@ -432,7 +430,7 @@ sub md_mkdir {
     my $r = mkdir( $dir, $chmod );
 	
 	warn "md_mkdir, dir: '$dir'"
-		if $t; 
+		if $v; 
 
     if(!$r){ 
         warn 'mkdir didn\'t succeed at: ' . $dir . ' because:' . $!; 
@@ -444,7 +442,7 @@ sub md_rmdir {
     my $dir  = shift;
 	
 	warn "md_rmdir, dir: '$dir'"
-		if $t; 
+		if $v; 
 	
     my $r    = remove_tree($dir);
     return $r;
@@ -454,7 +452,7 @@ sub md_dircopy {
     my ( $source, $target ) = @_;
 	
 	warn "md_mv: source: '$source', target: '$target'\n"
-		if $t; 
+		if $v; 
 		
 	dircopy( $source, $target )
       or die "can't copy directory from, '$source' to, '$target' because: $!";
@@ -477,6 +475,39 @@ sub md_slurp {
     return $r[0] unless wantarray;
     return @r;
 
+}
+
+
+sub help { 
+	print <<EOF
+
+Make a Dada Mail Distribution 
+
+This script pulls down all the disparate resources needed to create a working Dada Mail distribution, 
+for you then to install. 
+
+Once run, a copy of the, "uncompress_dada.cgi" script and a .tar.gz distribution of the app 
+will be located in the "distribution" directory. From there, you can follow the directions at, 
+ 
+ 	https://dadamailproject.com/d/install_dada_mail.pod.html
+ 
+and install the app. 
+
+Options 
+
+--help shows this screent
+
+--verbose prints verbose information
+
+--skip_perllib skips bringing down the Perl Library
+
+--remove_tests removes the, dada/t directory
+
+--	
+	
+EOF
+;
+	
 }
 
 
