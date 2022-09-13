@@ -67,7 +67,7 @@ my $github_repos = {
 	core5_filemanager => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'core5-filemanager-for-dada-mail',
-		branch         => 'main', 
+		branch         => 'bugfixes_post_11_19_0', 
 		dir_name       => 'core5_filemanager',
 		local_dir_path => 'extras/packages/core5_filemanager', 
 	},
@@ -170,9 +170,10 @@ sub make_distro {
 
 	md_copy_over_static_to_installer(); 
 	
+	md_copy_core_file_filemanager_pl(); 
+	
 	md_make_cl_installer_help_scrn(); 
 
-	md_copy_core_file_filemanager_pl(); 
 	
 }
 
@@ -191,9 +192,9 @@ sub md_make_cl_installer_help_scrn {
 sub md_copy_core_file_filemanager_pl { 
 
 	md_cp(
-	'.tmp/dada/extras/packages/core5_filemanager/connectors/pl/filemanager.pl'
+	'./tmp/dada/extras/packages/core5_filemanager/connectors/pl/filemanager.pl'
 	,
-	'.tmp/dada/installer-disabled/core5_filemanager-filemanager_pl.tmpl'
+	'./tmp/dada/installer-disabled/templates/core5_filemanager-filemanager_pl.tmpl'
 	); 
 }
 
