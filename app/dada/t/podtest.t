@@ -12,13 +12,20 @@ plan skip_all => "Test::Pod 1.00 required for testing POD" if $@;
 
 my @poddirs = qw(extras/documentation/pod_source
                  extras/developers
-                 extras/Flash
                  extras/scripts
                  DADA
                  plugins
                  extensions
 );
-all_pod_files_ok( all_pod_files( @poddirs ) );
+
+my @pod_files = all_pod_files( @poddirs ); 
+my @screen_pod_files = (); 
+foreach(@pod_files){ 
+	if($_ !~ m/DADA\/perllib/ && $_ !~ m/DADA\/App\/Support/){ 
+		push(@screen_pod_files, $_); 
+	}
+}
+all_pod_files_ok( @screen_pod_files );
 
 
 #system('mv', 'perllib', 'DADA/perllib'); 
