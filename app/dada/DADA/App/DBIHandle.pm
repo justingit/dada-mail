@@ -100,7 +100,7 @@ sub connectdb {
             if ( $DADA::Config::DBI_PARAMS->{dada_connection_method} eq 'connect' )
             {
                 $dbh_stash->{$$} = DBI->connect( "$data_source", "", "" )
-                  || croak("can't connect to db: $!");
+                  || croak("can't connect to db: $DBI::errstr");
             }
             elsif ( $DADA::Config::DBI_PARAMS->{dada_connection_method} eq
                 'connect_cached' )
@@ -109,7 +109,7 @@ sub connectdb {
                 $dbh_stash->{$$} =
                   DBI->connect_cached( "$data_source", "", "",
                     { dada_private_via_process => $$ } )
-                  || croak("can't connect to db: $!");
+                  || croak("can't connect to db: $DBI::errstr");
             }
             else {
                 croak "Incorrect dada_connection_method passed.";
@@ -128,7 +128,7 @@ sub connectdb {
             {
 
                 $dbh_stash->{$$} = DBI->connect( "$data_source", $user, $pass )
-                  || croak("can't connect to db: $!");
+                  || croak("can't connect to db: $DBI::errstr");
             }
             elsif ( $DADA::Config::DBI_PARAMS->{dada_connection_method} eq
                 'connect_cached' )
@@ -137,7 +137,7 @@ sub connectdb {
                 $dbh_stash->{$$} =
                   DBI->connect_cached( "$data_source", $user, $pass,
                     { dada_private_via_process => $$ } )
-                  || croak("can't connect to db: $!");
+                  || croak("can't connect to db: $DBI::errstr");
             }
             else {
                 croak "Incorrect dada_connection_method passed.";
