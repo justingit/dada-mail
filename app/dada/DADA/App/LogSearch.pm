@@ -476,9 +476,9 @@ sub sub_unsub_trends_json {
 		$datatable->add_columns(
 			   { id => 'date',                    label => 'Date',                      type => 'string'}, 
 			   { id => 'cumulative_subscribed',   label => 'Cumulative Subscriptions',  type => 'number',},
-			   { id => 'cumulative_unsubscribed', label => 'Cumulative Unubscriptions', type => 'number',},
+			   { id => 'cumulative_unsubscribed', label => 'Cumulative Unsubscriptions', type => 'number',},
 			   { id => 'subscribed',              label => 'Subscriptions',             type => 'number',},
-			   { id => 'unsubscribed',            label => 'Unubscriptions',            type => 'number',},
+			   { id => 'unsubscribed',            label => 'Unsubscriptions',            type => 'number',},
 		);
 
 		for(@$trends){ 

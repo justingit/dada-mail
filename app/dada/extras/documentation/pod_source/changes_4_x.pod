@@ -561,7 +561,7 @@ This welcome message can be customized in the list control panel in the, B<Appea
 
 As well as sending out a Welcome Message, you may now send out the newest archived message to just the subscribers that were newly added. 
 
-=head3 List Control Panel Unubscriptions Enhancements
+=head3 List Control Panel Unsubscriptions Enhancements
 
 =head4 Send a "Farewell" Message to Addresses Unsubscribed by the List Owner. 
 

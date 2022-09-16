@@ -5920,6 +5920,7 @@ sub view_bounce_history {
     my $list           = $admin_list;
     my $return_to      = $q->param('return_to') || 'view_list';
     my $return_address = $q->param('return_address') || undef;
+    my $only_report    = $q->param('only_report')    || 0;
 
     require DADA::App::BounceHandler::Logs;
     my $bhl     = DADA::App::BounceHandler::Logs->new;
@@ -5941,6 +5942,7 @@ sub view_bounce_history {
                 type           => 'bounced_list',
                 return_to      => $return_to,
                 return_address => $return_address,
+				only_report    => $only_report, 
             }
         }
     );

@@ -8,39 +8,40 @@
 </p>
 
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->"> 
+<!-- tmpl_unless only_report -->
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->"> 
 
 
-<input type="hidden" name="address" value="<!-- tmpl_var email ESCAPE=HTML -->" >
-<input type="hidden" name="flavor"     value="process_bouncing_addresses" >
-<input type="hidden" name="type" value="<!-- tmpl_var type -->" >
+	<input type="hidden" name="address" value="<!-- tmpl_var email ESCAPE=HTML -->" >
+	<input type="hidden" name="flavor"     value="process_bouncing_addresses" >
+	<input type="hidden" name="type" value="<!-- tmpl_var type -->" >
 
-<!-- tmpl_if return_to --> 
-	<input type="hidden" name="return_to" value="<!-- tmpl_var return_to ESCAPE=HTML -->" >
-<!-- /tmpl_if --> 
-<!-- tmpl_if return_address --> 
-	<input type="hidden" name="return_address" value="<!-- tmpl_var return_address ESCAPE=HTML -->" >
-<!-- /tmpl_if --> 
+	<!-- tmpl_if return_to --> 
+		<input type="hidden" name="return_to" value="<!-- tmpl_var return_to ESCAPE=HTML -->" >
+	<!-- /tmpl_if --> 
+	<!-- tmpl_if return_address --> 
+		<input type="hidden" name="return_address" value="<!-- tmpl_var return_address ESCAPE=HTML -->" >
+	<!-- /tmpl_if --> 
 
-<button
-	type="submit" 
-	name="process" 
-	class="success button"
-	value="move"
->
-	&#8594; Move Bouncing Address Back to Subscribers
-</button>
+	<button
+		type="submit" 
+		name="process" 
+		class="success button"
+		value="move"
+	>
+		&#8594; Move Bouncing Address Back to Subscribers
+	</button>
 
-<button 
-	type="submit" 
-	name="process"
-	value="remove" 
-	class="warning button">
-		<i class="fi-x"></i> Remove Bouncing Address 
-</button>
+	<button 
+		type="submit" 
+		name="process"
+		value="remove" 
+		class="warning button">
+			<i class="fi-x"></i> Remove Bouncing Address 
+	</button>
 
-</form>
-
+	</form>
+<!-- /tmpl_unless -->
 
 
 <!-- tmpl_include bouncing_search_results_widget.tmpl --> 

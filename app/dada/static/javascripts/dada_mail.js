@@ -861,6 +861,11 @@ jQuery(document).ready(function($){
 			resend_confirmation_email($("#s_program_url").val(), $(this).attr("data-email"), $(this).attr("data-list")); 
 		});
 		
+
+		if($("#bounces_activity").length) {
+			bounces_activity();
+		}
+
 		
 		if($("#membership_activity").length) {
 			membership_activity();
@@ -3255,6 +3260,28 @@ function mailing_list_history() {
 		$("#mailing_list_history").hide().html(content).show('fade');
 
 		$("#mailing_list_history_loading").html('<p>&nbsp;</p>');
+	});
+}
+
+
+function bounces_activity() { 
+	
+	$("bounces_activity_loading").html(loading_str);
+	
+	var request = $.ajax({
+		url: $("#s_program_url").val(),
+		type: "GET",
+		cache: false,
+		data: {
+			flavor:          'view_bounce_history',
+			email:           $("#email").val(),
+			only_report:     1
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+		$("#bounces_activity").hide().html(content).show('fade');
+		$("#bounces_activity_loading").html('<p>&nbsp;</p>');
 	});
 }
 
