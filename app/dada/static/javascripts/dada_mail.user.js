@@ -69,7 +69,6 @@ $('.colorbox_open').click(function(e) {
 							+ encodeURIComponent(data.email)
 							+ '&process=1'
 							+ "&auto_attempted=1";
-							alert(url);
 							window.location.href = url; 
 							// window.location.replace(url); 
 					}
