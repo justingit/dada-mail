@@ -231,6 +231,18 @@ sub create_distro {
 		'./distribution/uncompress_dada.cgi'
 	);
 	
+	if(-e './distribution/dada_mail-' . $ver . '.tar.gz'){ 
+		print './distribution/dada_mail-' . $ver . '.tar.gz' . "\n";
+	}
+	else { 
+		print 'could not create ' . './distribution/dada_mail-' . $ver . '.tar.gz' . "\n";
+	}
+	if('./distribution/uncompress_dada.cgi'){ 
+		print './distribution/uncompress_dada.cgi' . "\n";
+	}
+	else { 
+		print 'could not create ' . './distribution/uncompress_dada.cgi' . "\n";
+	}
 }
 
 
