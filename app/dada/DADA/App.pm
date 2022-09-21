@@ -11536,6 +11536,29 @@ sub token {
 	# There are some exceptions, where "token" is used as a flavor of the form - this 
 	# should handle those exceptions as well, so long as the form's action is, "POST":
 	
+	my $link_timestamp = $q->param('link_timestamp') // undef;	
+	
+	my $js_disabled = 0; 
+	
+	# if we have an embedded timestamp, 
+	# is that timestap greater or less than 5 minutes 
+	# from present? 
+	
+	if(
+		defined($link_timestamp) 
+	){		
+		if($link_timestamp =~ m/^[+-]?\d+$/
+			&& $link_timestamp < 3_000_000_000
+		) { 
+			if($link_timestamp > (time - 300)){ 
+				$js_disabled = 1; 
+			}
+		}
+		
+		
+	}
+	
+	
 	if($q->request_method() =~ m/POST/i){
 		# is this ever called with args?
 		return $self->post_token(%args); 
@@ -11547,6 +11570,7 @@ sub token {
 				-vars => { 
 					token         => $q->param('token'), 
 					token_context => $q->param('token_context'),
+					js_disabled   => $js_disabled, 
 				}
 	        }
 	    );

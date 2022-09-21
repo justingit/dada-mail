@@ -413,11 +413,12 @@ sub translate {
         }
         elsif ( $info =~ /^t\// ) {
 
-            my ( $pi_flavor, $pi_token, $token_context ) = split( '/', $info, 3 );
+            my ( $pi_flavor, $pi_token, $token_context, $link_timestamp ) = split( '/', $info, 4 );
 
-            $q->param( 'flavor',       'token' );
-            $q->param( 'token',        $pi_token );
-			$q->param('token_context', $token_context );
+            $q->param( 'flavor',        'token' );
+            $q->param( 'token',         $pi_token );
+			$q->param('token_context',  $token_context );
+			$q->param('link_timestamp', $link_timestamp );
 			
 			
 			if(!defined($q->url_param('List-Unsubscribe'))

@@ -1,12 +1,16 @@
+<!-- begin postify_token_get.tmpl -->
+
 <html>
-<head> 
-	<script type="text/javascript">
-		function submitform() { 
-			document.getElementById('post_token_form').submit();
-		}
-		window.onload=submitform;
+<head>
+	<!-- tmpl_unless js_disabled --> 
+		<script type="text/javascript">
+			function submitform() { 
+				document.getElementById('post_token_form').submit();
+			}
+			window.onload=submitform;
 		
-	</script> 
+		</script> 
+	<!-- /tmpl_unless -->
 </head>
 
 <body>
@@ -19,3 +23,5 @@
 </body>
 
 </html>
+
+<!-- end postify_token_get.tmpl -->
