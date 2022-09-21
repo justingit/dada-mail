@@ -1231,9 +1231,21 @@ sub _neuter_confirmation_token_links {
 sub _email_protect { 
 	
 	my $self   = shift; 
-	my $entity = shift; 
+	my $entity = shift || undef; 
 	my $body   = shift || undef; 
 	
+	# This is kinda crazy, but changes SPAM-ME-NOT encoding back, so that we can 
+	# See any email addresses, to then protect them (again)
+	
+	my @smn = $self->_find_spam_me_not($body); 
+    require HTML::Entities;
+	foreach my $smn_str(@smn){ 
+		chomp($smn_str);
+	    my $decoded_smn_str = HTML::Entities::decode_entities($smn_str);
+		my $qm_smn_str = quotemeta($smn_str);
+		$body =~ s/$qm_smn_str/$decoded_smn_str/g; 
+	}
+
 	warn "no body? " if ! $body; 
 	
 	# stray tags...
@@ -1241,16 +1253,20 @@ sub _email_protect {
 	$body =~ s/\[email\]/example\@example.com/g; 
 	
 	# SPAM proof email addresses...
-	for(
-		($self->{ls}->param('list_owner_email')), 
-	    ($self->{ls}->param('admin_email')),
-	    ($self->{ls}->param('discussion_pop_email')),
-	    
-	    $entity->head->get('To',0), 
-	    $entity->head->get('From',0),
-	    $entity->head->get('Reply-To',0),
-	    'example@example.com'
-	){  
+	my @spam_proof_emails = (
+	($self->{ls}->param('list_owner_email')), 
+    ($self->{ls}->param('admin_email')),
+    ($self->{ls}->param('discussion_pop_email')),
+  	 'example@example.com'
+		
+	);
+	if(defined($entity)){
+	    push(@spam_proof_emails, $entity->head->get('To',0)); 
+	    push(@spam_proof_emails, $entity->head->get('From',0)); 
+	    push(@spam_proof_emails, $entity->head->get('Reply-To',0)); 
+	}
+	
+	foreach(@spam_proof_emails){ 
 		
 		next if ! $_; 
 
@@ -1260,6 +1276,11 @@ sub _email_protect {
 		if($self->{ls}->param('archive_protect_email') eq 'break'){ 				
             my $protected_e = break_encode($_); 
               $body =~ s/$look_e/$protected_e/g;
+			  
+			  # Say things were already encoded with spam-me-not, let's look for those: 
+			  my $smn_email = quotemeta(spam_me_not_encode($_)); 
+              $body =~ s/$smn_email/$protected_e/g;
+			  
 		}
 		elsif($self->{ls}->param('archive_protect_email') eq 'spam_me_not'){ 				
             my $protected_e = spam_me_not_encode($_); 
@@ -1300,6 +1321,16 @@ sub _email_protect {
             my $pe = break_encode($fa); 
             my $le = quotemeta($fa); 
 			$body =~ s/$le/$pe/g;
+			
+		  
+		  # Say things were already encoded with spam-me-not, let's look for those: 
+		  
+		  warn 'spam_me_not_encode($fa): ' . spam_me_not_encode($fa); 
+		   
+		  my $smn_email = quotemeta(spam_me_not_encode($fa)); 
+            $body =~ s/$smn_email/$pe/g;
+			
+			
 		}
 		
 		
@@ -1310,14 +1341,58 @@ sub _email_protect {
         }
 	}
  
-	$entity->purge;
- 	undef($entity); 
-	
+ 	if(defined($entity)){
+		$entity->purge;
+	 	undef($entity); 
+	}	
    return $body; 
 
 }
 
+sub _find_spam_me_not { 
 
+	my $self = shift; 
+	my $str = shift; 
+	
+	my @decoded = (); 
+	
+	try { 
+		
+        require HTML::Tree;
+        require HTML::Element;
+        require HTML::TreeBuilder;
+		
+		my $root = HTML::TreeBuilder->new(
+		    ignore_unknown      => 0,
+		    no_space_compacting => 1,
+		    store_comments      => 1,
+			no_expand_entities  => 1, 
+	
+		);
+
+		$root->parse($str);
+		$root->eof();
+		$root->elementify();
+
+		
+		foreach($root->look_down('_tag', 'a')){
+			my $href    = $_->attr('href') . "\n ";
+			my $content = $_->as_text . "\n"; 
+			if(
+				$href =~ m/^mailto\:/
+				&& $content =~/\&/){ 
+				push (@decoded, $content); 			
+			}
+		}
+	
+		$root     = $root->delete;
+		return @decoded; 
+	} catch { 
+		warn $_; 
+		return ();  
+	}
+
+}
 
 
 
@@ -2172,6 +2247,10 @@ sub make_search_summary {
 		}else{ 
 			$message = html_to_plaintext({-str => $message}); 
 		}
+		
+	 	$message = $self->_email_protect( undef, $message); 
+		
+		
 
 		my @message_lines = split("\n", $message);
 		my $line;
