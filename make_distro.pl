@@ -507,15 +507,13 @@ and install the app.
 
 Options 
 
---help shows this screent
+--help shows this screen
 
 --verbose prints verbose information
 
---skip_perllib skips bringing down the Perl Library
+--skip_perllib skips bringing down the Perl Library - you'll then have to install the requisite Perl CPAN libraries, by installing Bundle::DadaMail
 
 --remove_tests removes the, dada/t directory
-
---	
 	
 EOF
 ;

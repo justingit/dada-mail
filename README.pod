@@ -5,7 +5,7 @@
 =head1 Introduction
 
 Dada Mail is a contemporary, mature and intuitive web-based
-e-mail list management system.
+email list management system.
 
 Dada Mail handles Closed-Loop Opt-in subscriptions, sending
 complex announce-only and/or discussion mailing list messages with an
@@ -28,13 +28,27 @@ Mail is free software that you're able to use, modify, share and enhance
 under the terms of the GNU General Public License. Dada Mail is written
 in Perl because we love Perl.
 
-Dada Mail's system requirements are minimal: it runs as a CGI script, requires only Perl 5.10.1, supports multiple SQL backend flavors, bundles all of its CPAN Perl module dependencies, and comes with a web-based installer. Download/Upload the distro, run the installer script. 
+Dada Mail's system requirements are minimal: it runs as a CGI script (running under FastCGI and PSGI are also options), requires only Perl 5.10.1, supports multiple SQL backend flavors, bundles all of its CPAN Perl module dependencies, and comes with a web-based installer. Download/Upload the distro, run the installer script. 
 
-Dada Mail works well in shared hosting environments thanks to its mass sending throttling capabilities. Dada Mail can also work well with large mailing lists that require a third party email service, like Amazon SES. 
+Dada Mail works well in shared hosting environments thanks to its mass sending throttling capabilities. Dada Mail can also work well with large mailing lists that can utilize a third party email service, like Amazon SES. 
 
-By Justin Simoni
+=head1 Building Dada Mail 
 
-And the Dada Mailers 
+If you're pulling Dada Mail from its repository, you'll have to build the app to get it into a shape that will allow you to deploy it. 
+
+First, download the repo, 
+
+	git clone https://github.com/justingit/dada-mail.git
+
+Then, run the bundled, C<make_distro.pl> script, 
+
+	cd dada-mail
+	perl make_distro.pl 
+
+Once the script is done running, two file will be created in the, B<distro> directory. 
+
+Follow the directions at, L<https://dadamailproject.com/d/install_dada_mail.pod.html> to install the app. 
+
 
 =head1 HOMEPAGE
 
@@ -49,12 +63,6 @@ L<https://dadamailproject.com/d/install_dada_mail.pod.html>
 See: 
 
 L<https://dadamailproject.com/d>
-
-Version-specific documentation is located in this distribution, under: 
-
-I<dada/extras/documentation/html_version>
-
-directory. Just open up 'index.html' in a web browser.
 
 =head1 SUPPORT
 
