@@ -652,7 +652,7 @@ sub send_subscribed_message {
 			-source => 'subscription welcome email message'
         }
     );
-    $args->{-vars}->{list_unsubscribe_link} = $unsub_link;
+    $args->{-vars}->{list_unsubscribe_link} = $unsub_link . 'lus/' . time();
 
     my $etp = $self->emt->fetch('subscribed_message');
 

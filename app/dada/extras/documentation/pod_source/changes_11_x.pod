@@ -3,6 +3,41 @@
 
 =encoding utf-8
 
+=head1 11.20.0
+
+=head2 Focus 
+
+This version of Dada Mail is a major feature release.
+
+=head2 Features
+
+=head3 Dada Mail Build Script 
+
+In past versions, the only person who could build a working copy of Dada Mail that can be distributed was the main developer (me!), as many different parts of the app lived only on my own Macbook, which are added using a local build script. As development continued, more additional parts were needed to run Dada Mail, making this problem worse over time. 
+
+This hampers development of others, as no one else can check out Dada Mail, and start developing. It has been my goal to remediate this problem. v11.19.0 solved a very large blocker on this, by decoupling the Perl Library bundled with Dada Mail from the main dada-mail distribution. 
+
+Starting with Dada Mail v11.20.0, all the needed parts to build Dada Mail are now available on Github, along with the build script. This allows you to build a fully working version of Dada Mail and thus allow you to fork the main Dada Mail repo, as well as any of these other parts to do whatever you'd like. Happy hacking! 
+
+See the readme on the Dada Mail github for information on how to build Dada Mail: 
+
+L<https://github.com/justingit/dada-mail>
+
+as well as the source of the build script, 
+
+L<https://github.com/justingit/dada-mail/blob/main/make_distro.pl>
+
+
+=head3 “Bounces” tab in the membership screen
+
+You can now see any bounced message reports have been created for a member, on their own screen, rather than having to search for them on the Bounce Scorecord, or via the Log Viewer. 
+
+=head3 Better Link Pre-fetching protection 
+
+Screens accessed by unsubscription links in mailing list messages that are followed ("clicked") less than 5 minutes after the message are sent will have their JavaScript disabled. The short time between message sent to unsubsription link clicked is usually a sign that a human is not doing the clicking, and such behavior causes false unsubscribes. The software that is following the link seems to also understand JavaScript, which is why we're disabling it. 
+
+The arms race to stop link pre-fetching continues. 
+
 =head1 11.19.0
 
 =head2 Focus 

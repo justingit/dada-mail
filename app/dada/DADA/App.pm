@@ -15862,7 +15862,12 @@ sub profile {
                 my $dasu = DADA::App::Subscriptions::Unsub->new(
                     { -list => $i->{list} } );
                 my $unsub_link = $dasu->unsub_link(
-                    { -email => $prof_data->{email}, -mid => '00000000000000' } );
+                    { 
+						-email => $prof_data->{email}, 
+						-mid => '00000000000000',
+						-source => 'profile',
+					} 
+				);
 
                 my $digest_timeframe =
                   formatted_runtime( $ls->param('digest_schedule') );
