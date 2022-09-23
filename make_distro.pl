@@ -38,7 +38,7 @@ my $github_repos = {
 	perllib => {
 		remote         => 'https://github.com/justingit/',
 		repo           => 'dada-mail-perllib',
-		branch         => 'main', 
+		branch         => 'release-11_20_0', 
 		dir_name       => 'perllib',
 		local_dir_path => 'DADA/perllib', 
 
@@ -46,28 +46,28 @@ my $github_repos = {
 	ckeditor => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'ckeditor-for-dada-mail',
-		branch         => 'main', 
+		branch         => 'release-11_20_0', 
 		dir_name       => 'ckeditor',
 		local_dir_path => 'extras/packages/ckeditor', 
 	},
 	tinymce => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'tiny_mce-for-dada-mail',
-		branch         => 'main', 
+		branch         => 'release-11_20_0', 
 		dir_name       => 'tinymce',
 		local_dir_path => 'extras/packages/tinymce', 
 	},
 	kcfinder => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'kcfinder-for-dada-mail',
-		branch         => 'main', 
+		branch         => 'release-11_20_0', 
 		dir_name       => 'kcfinder',
 		local_dir_path => 'extras/packages/kcfinder', 
 	},
 	core5_filemanager => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'core5-filemanager-for-dada-mail',
-		branch         => 'bugfixes_post_11_19_0', 
+		branch         => 'release-11_20_0', 
 		dir_name       => 'core5_filemanager',
 		local_dir_path => 'extras/packages/core5_filemanager', 
 	},
@@ -283,7 +283,7 @@ sub maxmind_dbs {
 
 	chdir "./tmp";
 	
-	`git clone $v_args -b '$args->{branch}' --single-branch --depth 1 $args->{remote}/$args->{repo}.git`;
+	`git clone $v_args -c advice.detachedHead=false -b '$args->{branch}' --single-branch --depth 1 $args->{remote}/$args->{repo}.git`;
 	
 	chdir('../');
 	
@@ -358,7 +358,7 @@ sub pulldown_git_and_copy {
 	
 	#`git clone $args->{remote}/$args->{repo}.git`;
 	
-	`git clone $v_args -b '$args->{branch}' --single-branch --depth 1 $args->{remote}/$args->{repo}.git`;
+	`git clone -c advice.detachedHead=false $v_args --depth 1 --branch '$args->{branch}' --single-branch $args->{remote}/$args->{repo}.git`;
 	
 	#chdir('./' . $args->{repo});
 	#`git checkout $args->{branch}`;
