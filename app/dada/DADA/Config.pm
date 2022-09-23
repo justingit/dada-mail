@@ -548,6 +548,7 @@ $DEBUG_TRACE //= {
     DADA_App_DBIHandle                 => 0,
     DADA_App_Digests                   => 0, 
     DADA_App_FormatMessages            => 0,
+	DADA_App_HTMLtoMIMEMessage         => 0, 
     DADA_App_Subscriptions             => 0,
     DADA_App_WebServices               => 0,
 	DADA_Logging_Clickthrough          => 0,

@@ -51,13 +51,15 @@ package DADA::App::HTMLtoMIMEMessage;
 #
 # See Changes files for older changes
 
-my $t = 0; 
+
+
 
 use lib qw(../../); 
 
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 
+use DADA::Config; 
 use DADA::App::Guts; 
 use HTML::LinkExtor;
 use URI::URL;
@@ -74,6 +76,8 @@ require Exporter;
 $VERSION = ( '$Revision: 1.23 $ ' =~ /(\d+\.\d+)/ )[0];
 
 my $LOGINDETAILS;
+
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_HTMLtoMIMEMessage};
 
 #------------------------------------------------------------------------------
 # new

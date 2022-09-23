@@ -228,6 +228,7 @@ my @Debug_Option_Names = qw(
   DADA_App_BounceHandler
   DADA_App_DBIHandle
   DADA_App_FormatMessages
+  DADA_App_HTMLtoMIMEMessage
   DADA_App_Subscriptions
   DADA_App_WebServices
   DADA_Logging_Clickthrough
@@ -1927,6 +1928,8 @@ sub query_params_to_install_params {
 	  www_engine_options_user_agent
 	  www_engine_options_verify_hostname
 	  
+	  configure_debugging
+	  
       security_DISABLE_OUTSIDE_LOGINS
       security_ADMIN_FLAVOR_NAME
       security_SIGN_IN_FLAVOR_NAME	  
@@ -2877,14 +2880,14 @@ sub create_dada_config_file {
             $www_engine_options_params->{www_engine_options_verify_hostname} = 0;
         }
     }
-	
-	use Data::Dumper; 
-	warn '$www_engine_options_params: ' . Dumper($www_engine_options_params);
-	
+		
     my $debugging_options_params = {};
+	warn '`here.`';
     if ( $ip->{-configure_debugging} == 1 ) {
+			warn 'here.1';
         $debugging_options_params->{configure_debugging} = 1;
         for my $debug_option (@Debug_Option_Names) {
+			warn '$debug_option: ' . $debug_option;
             $debugging_options_params->{ 'debugging_options_' . $debug_option } =
               clean_up_var( $ip->{ '-debugging_options_' . $debug_option } ) || 0;
         }
@@ -4581,18 +4584,18 @@ sub install_and_configure_core5_filemanager {
             -screen => 'rich_filemanager_connector_config_local.tmpl',
             -vars   => {
                 uploads_directory => $uploads_directory,
-                url_path          => $uploads_url,
+                url_path          => $url_path,
             }
         }
     );
 
-    my $core5_filemanager_config_loc =
+    my $filemanager_config_loc =
       make_safer( $install_path . '/core5_filemanager/connectors/pl/filemanager_config.pl' );
-    installer_chmod( 0777, $core5_filemanager_config_loc );
-    open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $core5_filemanager_config_loc or croak $!;
-    print $config_fh $core5_filemanager_config_pl or croak $!;
+    installer_chmod( 0777, $filemanager_config_loc );
+    open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $filemanager_config_loc or croak $!;
+    print $config_fh $filemanager_config_loc or croak $!;
     close $config_fh or croak $!;
-    installer_chmod( $DADA::Config::FILE_CHMOD, $core5_filemanager_config_loc );
+    installer_chmod( $DADA::Config::FILE_CHMOD, $filemanager_config_loc );
     undef $config_fh;
 	
 	
@@ -4645,7 +4648,8 @@ sub install_and_configure_core5_filemanager {
 		}
 
         installer_chmod( $DADA::Config::DIR_CHMOD, $core5_filemanager_connector_loc );
-        installer_chmod( $DADA::Config::DIR_CHMOD, $core5_filemanager_config_loc );
+		# is this supposed to be $core5_filemanager_config_js_loc
+       # installer_chmod( $DADA::Config::DIR_CHMOD, $core5_filemanager_config_loc );
 
     }
 
