@@ -209,7 +209,13 @@ sub create_distro {
 	   $ver =~ s/\./_/gi;  
 	
 	chdir "./tmp";
-	`tar --create $v_args --file dada_mail-$ver.tar dada`;
+	
+	# Begone! 
+	zap_ds_store('dada');
+	
+	`tar --create $v_args --exclude='.DS_Store' --file dada_mail-$ver.tar dada`;
+	
+	
 	`gzip dada_mail-$ver.tar`;
 	
 	chdir "../";
@@ -244,6 +250,27 @@ sub create_distro {
 		print 'could not create ' . './distribution/uncompress_dada.cgi' . "\n";
 	}
 }
+
+sub zap_ds_store {
+	
+	my $dir = shift; 
+	
+	return if ! $dir; 
+	
+    finddepth( \&dofinddepth, './' . $dir);
+
+    sub dofinddepth {
+
+        if ( $File::Find::name =~ m/\.DS_Store$/ ) {
+            say "deleting $File::Find::name"
+				if $v;
+            unlink('.DS_Store')
+              or die "couldn't delete name '$File::Find::name' !: $!\n";
+        }
+
+    }
+}
+
 
 
 
@@ -322,6 +349,7 @@ sub email_template {
 	}
 	
 	chdir "./tmp";
+	
 	getstore(
 		$args->{url},
 		$args->{filename},
