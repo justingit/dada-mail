@@ -75,7 +75,7 @@ my $github_repos = {
 	RichFilemanager => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'RichFilemanager-for-dada-mail',
-		branch         => 'upgrade_to_v2_7_6', 
+		branch         => 'main', 
 		dir_name       => 'RichFileManager',
 		local_dir_path => 'extras/packages/RichFileManager', 
 	},
