@@ -194,11 +194,8 @@ sub switcheroo {
         my $src = $attr{src};
 
 		# wtf? 
-        my $filemanager = 'kcfinder';
-        if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
-            # ...
-        }
-        elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
+        my $filemanager = 'rich_filemanager';
+        if ( $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
             $filemanager = 'core5_filemanager';
         }
         elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ) {

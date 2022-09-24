@@ -95,20 +95,18 @@ $WYSIWYG_EDITOR_OPTIONS = {
 };
 
 $FILE_BROWSER_OPTIONS = { 
-	kcfinder  => { 
-		enabled      => 0, 
-		url          => '', 
-		upload_dir   => '', 
-		upload_url   => '',
-		session_name => 'PHPSESSID', 
-		session_dir  => '/tmp',
+	rich_filemanager  => { 
+		enabled      => 0
 	},
 	core5_filemanager  => { 
 		enabled      => 0, 
 	},
 	rich_filemanager { 
 		enabled => 0,
-	}
+	},
+	none  => { 
+		enabled      => 1,
+	},
 };
 
 =cut

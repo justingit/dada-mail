@@ -151,11 +151,6 @@ Select this option to use B<Rich Filemanager> (L<https://github.com/servocoder/R
 
 We suggest running Rich Filemanager only if you have version 5.4 or higher of B<php> available. Otherswise, Rich Filemanager may not work correctly.  
 
-=head4 Install KCFinder
-
-
-Select this option to use B<KCFinder> (L<https://kcfinder.sunhater.com>). KCFinder uses PHP Sessions for security, which Dada Mail will provide. If you're having problems utilizing KCFinder, try simply logging out, then back into your list. If you're still having problems, try the B<Core Five FileManager>.
-
 Install Core Five FileManager 	
 
 Select this option to use B<Core Five FileManager> (L<https://github.com/simogeo/Filemanager>). In Dada Mail, Filemanager uses the same sessioning system as Dada Mail itself, which can make for a smoother experience, if KCFinder is not working correctly. 

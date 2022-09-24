@@ -129,18 +129,15 @@ sub login_cookies {
 
     $session->flush();
 
-    if ( 
-	$DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 
-	|| $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 	
-	) {
+    if ( $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1) {
         try {
-            my $kcfinder_cookie = $self->kcfinder_session_begin($session->id);
-            if ( defined($kcfinder_cookie) ) {
-                $cookies->[1] = $kcfinder_cookie;
+            my $rfm_cookie = $self->rfm_session_begin($session->id);
+            if ( defined($rfm_cookie) ) {
+                $cookies->[1] = $rfm_cookie;
             }
 		}
         catch {
-            carp "initializing KCFinder/RichFilemanager session return an error: $_";
+            carp "initializing RichFilemanager session return an error: $_";
 		}
     }
 
@@ -252,7 +249,7 @@ sub _hmac_sha256_base64 {
  
  
  
- sub kcfinder_session_begin {
+ sub rfm_session_begin {
 
     my $self       = shift;
 	my $session_id = shift; 
@@ -267,13 +264,9 @@ sub _hmac_sha256_base64 {
 	
 	
 	my $filemanager_name = undef; 
-	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ){ 
-		$filemanager_name = 'kcfinder';
-	}
-	elsif($DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ){ 
+	if($DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ){ 
 		$filemanager_name = 'rich_filemanager';
 	}
-	
 	
     if (
         $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_name} } )
@@ -309,7 +302,8 @@ sub _hmac_sha256_base64 {
             save_path =>  $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_dir},
         }
     );
-    my $KCFINDER = {
+	
+    my $RFM = {
         disabled =>
           ( !$DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{enabled} ),
         uploadDir =>
@@ -318,9 +312,9 @@ sub _hmac_sha256_base64 {
           $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{upload_url},
     };
 
-    $session->set(KCFINDER           => $KCFINDER);
-    $session->set(rfm_authenticated  => 1); 
-	$session->set(rfm_session_id     => $session_id);
+    $session->set(RFM               => $RFM);
+    $session->set(rfm_authenticated => 1); 
+	$session->set(rfm_session_id    => $session_id);
 	$session->save;
 	
 	chmod(
@@ -347,16 +341,13 @@ sub _hmac_sha256_base64 {
     }
 }
 
-sub kcfinder_session_end {
+sub rfm_session_end {
     my $self = shift;
     require PHP::Session;
     require CGI::Lite;
 	
 	my $filemanager_name = undef; 
-	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ){ 
-		$filemanager_name = 'kcfinder';
-	}
-	elsif($DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ){ 
+	if($DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ){ 
 		$filemanager_name = 'rich_filemanager';
 	}
 	
@@ -381,7 +372,7 @@ sub kcfinder_session_end {
               $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager_name}->{session_dir},
         }
     );
-    $session->unregister('KCFINDER');
+    $session->unregister('RFM');
 	$session->unregister('rfm_authenticated');
 	$session->unregister('rfm_session_id');
     $session->save;
@@ -556,14 +547,13 @@ sub logout_cookie {
 
     try {
 	    if ( 
-		   $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 
-		|| $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 	
+			$DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 	
 		) {
 
-            $self->kcfinder_session_end;
+            $self->rfm_session_end;
         }
     } catch {
-       carp "ending kcfinder/rich filemanager session return an error: $_";
+       carp "ending rich filemanager session return an error: $_";
     };
 	
     return $cookies;

@@ -150,12 +150,10 @@ jQuery(document).ready(function($){
 		if($("#additional_email_headers").length){
 			$("#additional_email_headers").hide();
 		}
-		$("body").on("click", ".kcfinder_open", function(event) {
+		$("body").on("click", ".file_manager_open", function(event) {
 			event.preventDefault();
 
-			if($("#kcfinder_enabled").val() == 1) {
-				attachments_openKCFinder(this);
-			}else if($("#core5_filemanager_enabled").val() == 1){
+			if($("#core5_filemanager_enabled").val() == 1){
 				browsecore5FileManager(this);
 			}else if($("#rich_filemanager_enabled").val() == 1){
 				browserrichFileManager(this);
@@ -5464,8 +5462,8 @@ function datetimesetupstuff() {
 function attachments_openKCFinder(field) {
     window.KCFinder = {
     	callBack: function(url) {
-			var kcfinder_upload_url = escapeRegExp(jQuery("#kcfinder_upload_url").val() + '/');
-			var re = new RegExp(kcfinder_upload_url,'g');
+			var file_manager_upload_url = escapeRegExp(jQuery("#file_manager_upload_url").val() + '/');
+			var re = new RegExp(file_manager_upload_url,'g');
 			var new_val = url.replace(re, '');
 	        
 			jQuery(field).html(
@@ -5479,7 +5477,7 @@ function attachments_openKCFinder(field) {
 			window.KCFinder = null;
 		}
     };
-    window.open(jQuery("#kcfinder_url").val() + '/browse.php?type=files&opener=custom', 'kcfinder_single',
+    window.open(jQuery("#file_manager_url").val() + '/browse.php?type=files&opener=custom', 'file_manager_single',
         'status=0, toolbar=0, location=0, menubar=0, directories=0, ' +
         'resizable=1, scrollbars=0, width=800, height=600'
     );

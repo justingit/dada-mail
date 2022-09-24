@@ -142,7 +142,6 @@ my %Global_Template_Variables = (
 comment                     => 0, 
 
 SUPPORT_FILES_URL           => $DADA::Config::SUPPORT_FILES->{url}, 
-kcfinder_enabled            => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled},
 core5_filemanager_enabled   => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled},
 rich_filemanager_enabled    => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled},
 		

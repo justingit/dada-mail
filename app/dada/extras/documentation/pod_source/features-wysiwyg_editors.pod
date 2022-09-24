@@ -75,10 +75,6 @@ for CKEditor
 
 for saving the files you upload, using KCFinder/FileManager
 
-=item * kcfinder
-
-for KCFinder
-
 =item * core5_filemanager
 
 for FileManager
@@ -119,14 +115,6 @@ C<url> should hold the base URL for the editor itself - make sure to have a full
 Configuration for the file browser/upload for Dada Mail is done in the C<$FILE_BROWSER_OPTIONS> variable, which should look like this: 
 
 	$FILE_BROWSER_OPTIONS ||= { 
-		kcfinder  => { 
-			enabled      => 0, 
-			url          => '', 
-			upload_dir   => '', 
-			upload_url   => '',
-			session_name => 'PHPSESSID', 
-			session_dir  => '/tmp',
-		},
 		core5_filemanager  => { 
 			enabled      => 0, 
 			url          => '', 
@@ -135,40 +123,6 @@ Configuration for the file browser/upload for Dada Mail is done in the C<$FILE_B
 			connector    => '', 
 		},
 	};
-
-=head3 KCFinder
-
-The, C<kcfinder> parameter has additional parameters to configure: 
-
-C<enabled> can be set to C<1> to enable KCFinder, or C<0> to disable. 
-
-C<url> should hold the base URL for KCfinder itself. 
-
-C<upload_dir> should hold the absolute server path to the directory you would like files that are uploaded using KCFinder to be saved at. You will want this path to be under your C<public HTML> directory, so that you can access the files placed within it via your web browser. 
-
-C<upload_url> should hold the corresponding URL to the C<upload_dir> variable - the  C<upload_dir> and C<upload_url> should map to each other. 
-
-C<session_name> and C<session_dir> are used to configure and manage the sessioning information between Dada Mail and KCFinder. KCFinder will only work in Dada Mail, if the correct sessioning information is passed from Dada Mail, to KCFinder. For more information, please see KCFinder's docs on Integration and Sessioning: 
-
-L<http://kcfinder.sunhater.com/docs/integrate>
-
-The default value for C<session_name> should work for the majority of users. 
-
-Dada Mail (when configured using the Installer) will use a directory called, C<php_sessions> located in the, I<.dada_files/.tmp> direcotory, to save its own, local, app-specific PHP session files. 
-
-Additional configuration for all three supported editors will be required to get KCFinder working with Dada Mail and these editors, which is also explained on the above URL. 
-
-There's potential that the values set in C<session_name> and C<session_dir> I<won't work for your environment>. We'd like to know about it and what does work for you. 
-
-This doc does not go over what exactly needs to be configured in Dada Mail, as the best way to configure the WYSIWYG Editor/KCFinder/Dada Mail is still in flux. Best thing to do is to set up these editors and KCFinder with the Dada Mail Installer and study its configuration. We'd love your feedback.
-
-Although Dada Mail ships with these editors and the file upload/browser in the, 
-
-I<dada/extras/packages>
-
-directory. We don't encourage you to either set the C<url> parameters to use editors/etc I<directly> from where they are, or even copy/move the editors/etc to a better location. 
-
-Rather, it's best to download them directly from the editors/etc. own site. The former probably won't work at all if you're installing Dada Mail inside your cgi-bin. 
 
 =head3 FileManager
 
@@ -220,18 +174,6 @@ Below are bare-bone examples of what these configuration files should hold.
 =head3 CKEditor
 
 There is nothing specific that the CKEditor needs in its C<dada_mail_config.js>. You can start by copying the C<config.js> file to a file called, C<dada_mail_config.js> (saved in that same directory) and make any additional changes that you would like in this new file. 
-
-=head2 KCFinder
-
-KCFinder does not require this additional JavaScript file, but it's own default configuration file, C<kcfinder/config.php> will be edited by the Dada Mail Installer. 
-
-When looking over this config file, One thing of particular importance is a variable B<not> changed by Dada Mail, which look like this: 
-
-	$_CONFIG = array(
-	
-	    'disabled' => true,
-
-Setting the, C<disabled> variable to, C<false> (it's confusing, we know!) will circumvent the security of the KCFinder that's afforded by the sessioning system and leave your account open to unauthorized file uploads and potential exploits. So don't do that! 
 
 =head2 Image Drag and Drop Support
 

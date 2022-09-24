@@ -1005,6 +1005,7 @@ sub grab_former_config_vals {
         $opt->{'support_files_dir_path'} = $support_files_dir_path;
     }
     else {
+		# This is getting very ancient: 
         # in v5, there was no $SUPPORT_FILES var, but we're using the same dir as KCFinder, so we can look there:
         ($support_files_dir_path) = $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} =~
           m/^(.*?)\/$Support_Files_Dir_Name\/$File_Upload_Dir$/;
@@ -1156,7 +1157,9 @@ sub grab_former_config_vals {
     # Kinda gotta guess on this one,
     if (   $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled} == 1
         || $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled} == 1
-        || $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1
+		
+		# These are ancient: 
+        || $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1      
         || $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1
         || $BootstrapConfig::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 )
     {
@@ -1177,7 +1180,7 @@ sub grab_former_config_vals {
         }
     }
     if ( $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
-        $opt->{'install_file_browser'} = 'kcfinder';
+        $opt->{'install_file_browser'} = 'rich_filemanager'; #switch from kcfinder to rich_filemanager
     }
     elsif ( $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
         $opt->{'install_file_browser'} = 'core5_filemanager';
@@ -2431,6 +2434,7 @@ sub remove_old_backups {
 		    $f =~ s(^.*/)();
 	
 			# fkceditor and tiny_mce (not tinymce) aren't really used, but are listed to remove ancient directories: 
+			# kcfinder not used anymore, but we should remove it if it's there
 			if($f =~ m/\-backup\-/){ 
 				if($f =~ m/^(core5_filemanager|ckeditor|kcfinder|RichFilemanager|static|themes|tinymce|tiny_mce|fckeditor)/){ 
 					warn "looks good: $f\n";
@@ -2493,11 +2497,7 @@ sub remove_old_backups {
 		}
 		
 		my @fm_to_change_perms = (); 
-		if($ip->{-install_file_browser} eq 'kcfinder'){ 
-			push(@fm_to_change_perms, 'RichFilemanager'); 
-			push(@fm_to_change_perms, 'core5_filemanager'); 			
-		}
-		elsif($ip->{-install_file_browser} eq 'core5_filemanager'){ 
+		if($ip->{-install_file_browser} eq 'core5_filemanager'){ 
 			push(@fm_to_change_perms, 'RichFilemanager'); 
 			push(@fm_to_change_perms, 'kcfinder'); 
 		}
@@ -3970,31 +3970,7 @@ sub install_wysiwyg_editors {
         $tmpl_vars{i_tiny_mce_url}     = $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/tinymce';
     }
 
-    if ( $ip->{-install_file_browser} eq 'kcfinder' ) {
-        $self->install_and_configure_kcfinder();
-        $tmpl_vars{i_kcfinder_enabled} = 1;
-        $tmpl_vars{i_kcfinder_url}     = $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/kcfinder';
-
-        my $upload_dir = make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir );
-        $tmpl_vars{i_kcfinder_upload_dir} = $upload_dir;
-        $tmpl_vars{i_kcfinder_upload_url} =
-          $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
-
-        $tmpl_vars{i_kcfinder_session_dir} = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions';
-
-        if ( !-d $upload_dir ) {
-
-            # No need to backup this.
-            $self->installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
-            create_htaccess_no_script_execution($upload_dir);
-        }
-        else {
-            if ( !-e $upload_dir . '/.htaccess' ) {
-                create_htaccess_no_script_execution($upload_dir);
-            }
-        }
-    }
-    elsif ( $ip->{-install_file_browser} eq 'core5_filemanager' ) {
+    if ( $ip->{-install_file_browser} eq 'core5_filemanager' ) {
         $self->install_and_configure_core5_filemanager();
 
         my $upload_dir = make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir );
@@ -4162,8 +4138,8 @@ sub install_and_configure_ckeditor {
        $create_ckeditor_config_file = 1;  
     }
     elsif(
-        $ip->{-install_file_browser} ne 'kcfinder' 
-	 && $ip->{-install_file_browser} ne 'rich_filemanager' 
+		# what the hell
+	    $ip->{-install_file_browser} ne 'rich_filemanager' 
      && $ip->{-install_file_browser} ne 'core5_filemanager'
      ){ 
         $create_ckeditor_config_file = 1;  
@@ -4377,8 +4353,8 @@ sub install_and_configure_tiny_mce {
        $create_tiny_mce_config_file = 1;  
     }
     elsif(
-        $ip->{-install_file_browser} ne 'kcfinder' 
-     && $ip->{-install_file_browser} ne 'core5_filemanager'
+		# what?
+     	$ip->{-install_file_browser} ne 'core5_filemanager'
      ){ 
         $create_tiny_mce_config_file = 1;  
     }
@@ -4397,116 +4373,8 @@ sub install_and_configure_tiny_mce {
     }    
 }
 
-sub install_and_configure_kcfinder {
 
-    my $self = shift;
-    my $ip   = $self->param('install_params');
 
-    my $install_path   = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name;
-    my $source_package = make_safer('../extras/packages/kcfinder');
-    my $target_loc     = make_safer( $install_path . '/kcfinder' );
-    if ( -d $target_loc ) {
-        backup_dir($target_loc);
-    }
-    installer_dircopy( $source_package, $target_loc );
-
-    my $support_files_dir_url = $ip->{-support_files_dir_url};
-
-    if ( $ip->{-wysiwyg_editor_install_ckeditor} == 1 ) {
-
-        # http://docs.cksource.com/CKEditor_3.x/Developers_Guide/Setting_Configurations
-        # The best way to set the CKEditor configuration is in-page, when creating editor instances.
-        # This method lets you avoid modifying the original distribution files in the CKEditor
-        # installation folder, making the upgrade task easier.
-
-        my $support_files_dir_url = $ip->{-support_files_dir_url};
-
-        my $ckeditor_config_js = DADA::Template::Widgets::screen(
-            {
-                -screen => 'ckeditor_config_js.tmpl',
-                -vars   => {
-                    configure_file_browser => 1, 
-                    file_manager_browse_url => $support_files_dir_url . '/'
-                      . $Support_Files_Dir_Name
-                      . '/kcfinder/browse.php',
-                    file_manager_upload_url => $support_files_dir_url . '/'
-                      . $Support_Files_Dir_Name
-                      . '/kcfinder/upload.php',
-                    support_files_dir_url  => $support_files_dir_url,
-                    Support_Files_Dir_Name => $Support_Files_Dir_Name,
-					
-					PROGRAM_URL            => $ip->{-program_url}, 
-					S_PROGRAM_URL          => $ip->{-program_url}, 
-					
-                }
-            }
-        );
-        my $ckeditor_config_loc = make_safer( $install_path . '/ckeditor/dada_mail_config.js' );
-        installer_chmod( 0777, $ckeditor_config_loc );
-        open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $ckeditor_config_loc or croak $!;
-        print $config_fh $ckeditor_config_js or croak $!;
-        close $config_fh or croak $!;
-        installer_chmod( $DADA::Config::FILE_CHMOD, $ckeditor_config_loc );
-        undef $config_fh;
-
-    }
-
-    if ( $ip->{-wysiwyg_editor_install_tiny_mce} == 1 ) {
-
-        my $kcfinder_enabled = 0;
-
-        $kcfinder_enabled = 1;    # we're in a sub called, "isntall_and_configure_kcfinder", so...
-                                  #if($q->param('install_file_browser') eq 'kcfinder') {
-                                  #	$kcfinder_enabled = 1;
-                                  #}
-
-        my $support_files_dir_url = $ip->{-support_files_dir_url};
-
-        my $tinymce_config_js = DADA::Template::Widgets::screen(
-            {
-                -screen => 'tinymce_config_js.tmpl',
-                -vars   => {
-                    file_manager_browse_url => $support_files_dir_url . '/'
-                      . $Support_Files_Dir_Name
-                      . '/kcfinder/browse.php',
-                    support_files_dir_url  => $support_files_dir_url,
-                    Support_Files_Dir_Name => $Support_Files_Dir_Name,
-                    kcfinder_enabled       => $kcfinder_enabled,
-                }
-            }
-        );
-        my $tinymce_config_loc = make_safer( $install_path . '/tinymce/dada_mail_config.js' );
-        installer_chmod( 0777, $tinymce_config_loc );
-        open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tinymce_config_loc or croak $!;
-        print $config_fh $tinymce_config_js or croak $!;
-        close $config_fh or croak $!;
-        installer_chmod( $DADA::Config::FILE_CHMOD, $tinymce_config_loc );
-        undef $config_fh;
-
-    }
-
-    my $sess_dir = make_safer( $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions' );
-    if ( !-d $sess_dir ) {
-        $self->installer_mkdir( $sess_dir, $DADA::Config::DIR_CHMOD );
-    }
-    my $kcfinder_config_php = DADA::Template::Widgets::screen(
-        {
-            -screen => 'kcfinder_config_php.tmpl',
-            -vars   => {
-                i_tinyMCEPath => $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/tinymce',
-                i_sessionDir  => $sess_dir,
-            }
-        }
-    );
-    my $kcfinder_config_loc = make_safer( $install_path . '/kcfinder/conf/config.php' );
-    installer_chmod( 0777, $kcfinder_config_loc );
-    open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $kcfinder_config_loc or croak $!;
-    print $config_fh $kcfinder_config_php or croak $!;
-    close $config_fh or croak $!;
-    installer_chmod( $DADA::Config::FILE_CHMOD, $kcfinder_config_loc );
-    undef $config_fh;
-
-}
 
 sub install_and_configure_core5_filemanager {
 
@@ -4558,8 +4426,6 @@ sub install_and_configure_core5_filemanager {
     }
 
     if ( $ip->{-wysiwyg_editor_install_tiny_mce} == 1 ) {
-
-        my $kcfinder_enabled = 0;
 
         my $support_files_dir_url = $ip->{-support_files_dir_url};
 

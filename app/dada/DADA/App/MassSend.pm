@@ -1490,11 +1490,7 @@ sub send_email {
 					
 					
                     MAILOUT_AT_ONCE_LIMIT  => $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
-     
-                    kcfinder_url          => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{url},
-                    kcfinder_upload_dir   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir},
-                    kcfinder_upload_url   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url},
-                    
+                         
 					core5_filemanager_url        => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{url},
                     core5_filemanager_upload_dir => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_dir},
                     core5_filemanager_upload_url => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_url},
@@ -2459,10 +2455,7 @@ sub has_attachments {
     my $q = $args->{-cgi_obj};
 
     my $filemanager;
-    if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
-        $filemanager = 'kcfinder';
-    }
-    elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
+	if ( $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
         $filemanager = 'core5_filemanager';
     }
     elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ) {
@@ -2521,10 +2514,7 @@ sub make_attachment {
 
 
     my $filemanager;
-    if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
-        $filemanager = 'kcfinder';
-    }
-    elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
+    if ( $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
         $filemanager = 'core5_filemanager';
     }
 	elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ) {

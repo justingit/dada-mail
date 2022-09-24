@@ -58,13 +58,6 @@ my $github_repos = {
 		dir_name       => 'tinymce',
 		local_dir_path => 'extras/packages/tinymce', 
 	},
-	kcfinder => { 
-		remote         => 'https://github.com/justingit/',
-		repo           => 'kcfinder-for-dada-mail',
-		branch         => 'release-11_20_0', 
-		dir_name       => 'kcfinder',
-		local_dir_path => 'extras/packages/kcfinder', 
-	},
 	core5_filemanager => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'core5-filemanager-for-dada-mail',
@@ -151,7 +144,6 @@ sub make_distro {
 	
 	pulldown_git_and_copy($github_repos->{ckeditor});
 	pulldown_git_and_copy($github_repos->{tinymce});
-	pulldown_git_and_copy($github_repos->{kcfinder});
 	pulldown_git_and_copy($github_repos->{core5_filemanager});
 	pulldown_git_and_copy($github_repos->{RichFilemanager});
 

@@ -113,14 +113,15 @@ $WYSIWYG_EDITOR_OPTIONS //= {
 };
 
 $FILE_BROWSER_OPTIONS //= {
-    kcfinder => {
-        enabled      => 0,
-        url          => '',
-        upload_dir   => '',
-        upload_url   => '',
-        session_name => 'PHPSESSID',
-        session_dir  => '/tmp',
-    },
+	rich_filemanager  => { 
+		enabled      => 0,
+		url          => '',
+		upload_dir   => '',
+		upload_url   => '',
+		connector    => 'php', 
+		session_name => 'PHPSESSID', 
+		session_dir  => '',
+	},
 	core5_filemanager  => { 
 		enabled      => 0, 
 		url          => '', 

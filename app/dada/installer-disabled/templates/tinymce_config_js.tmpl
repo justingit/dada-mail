@@ -1,23 +1,5 @@
 tinymce.init({
 
-<!-- tmpl_if kcfinder_enabled --> 
-    file_browser_callback: function(field_name, url, type, win) { 
-        tinyMCE.activeEditor.windowManager.open({
-            file           : '<!-- tmpl_var file_manager_browse_url -->?opener=tinymce&type=' + type,
-            title          : 'KCFinder',
-            width          : 700,
-            height         : 500,
-            resizable      : "yes",
-            inline         : true,
-            close_previous : "no",
-            popup_css      : false
-        }, {
-            window : win,
-            input  : field_name
-        });
-        return false;        
-    },
-<!-- /tmpl_if -->
 <!-- tmpl_if core5_filemanager_enabled --> 
     file_browser_callback: function(field_name, url, type, win) { 
         // from http://andylangton.co.uk/blog/development/get-viewport-size-width-and-height-javascript
@@ -59,9 +41,6 @@ tinymce.init({
      visual: true, 
      convert_urls: false, 
      relative_urls: false,
-     <!-- tmpl_if kcfinder_enabled --> 
-     document_base_url :     "<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/",
-     <!-- /tmpl_if -->
      <!-- tmpl_if core5_filemanager_enabled --> 
      document_base_url :     "<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/",
      <!-- /tmpl_if -->
