@@ -30,6 +30,7 @@ use File::Path qw(remove_tree);
 use File::Copy; 
 use File::Copy::Recursive qw(rmove dircopy);
 use Carp qw(carp croak);
+use File::Find qw(finddepth);
 
 use LWP::Simple qw(getstore getprint); 
 
@@ -67,7 +68,7 @@ my $github_repos = {
 	core5_filemanager => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'core5-filemanager-for-dada-mail',
-		branch         => 'release-11_20_0', 
+		branch         => 'main', 
 		dir_name       => 'core5_filemanager',
 		local_dir_path => 'extras/packages/core5_filemanager', 
 	},
