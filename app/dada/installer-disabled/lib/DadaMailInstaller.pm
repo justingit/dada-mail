@@ -690,7 +690,7 @@ sub switch_perl_interpreter {
 			'./templates/mail.cgi.tmpl', 
 			'./templates/app.psgi.tmpl',
 			'./templates/mail.fcgi.tmpl',
-			'./templates/core5_filemanager-filemanager_pl.tmpl',
+			'./templates/core5_filemanager_filemanager_pl.tmpl',
 		);
 		
 		
@@ -3955,6 +3955,10 @@ sub install_wysiwyg_editors {
             $DADA::Config::DIR_CHMOD );
     }
 
+
+	
+
+
     if ( $ip->{-wysiwyg_editor_install_ckeditor} == 1 ) {
         $self->install_and_configure_ckeditor();
         $tmpl_vars{i_ckeditor_enabled} = 1;
@@ -4285,12 +4289,13 @@ sub install_and_configure_rich_filemanager {
     );
     my $rich_filemanager_config_loc =
       make_safer( $install_path . '/RichFilemanager/connectors/php/vendor/servocoder/richfilemanager-php/src/config/config.local.php' );
-    installer_chmod( 0777, $rich_filemanager_config_loc );
     
-	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $rich_filemanager_config_loc or croak "$rich_filemanager_config_loc :" . $!;
+	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $rich_filemanager_config_loc or croak ": " . $!;
     print $config_fh $rich_filemanager_connector_config or croak $!;
     close $config_fh or croak $!;
     installer_chmod( $DADA::Config::FILE_CHMOD, $rich_filemanager_config_loc );
+	
+
     undef $config_fh;
 
     # js config:
@@ -4579,9 +4584,9 @@ sub install_and_configure_core5_filemanager {
     # pl config:
     my $uploads_directory = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
     my $url_path          = $ip->{-support_files_dir_url}  . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
-    my $rich_filemanager_connector_config = DADA::Template::Widgets::screen(
+    my $core5_filemanager_config_pl = DADA::Template::Widgets::screen(
         {
-            -screen => 'rich_filemanager_connector_config_local.tmpl',
+            -screen => 'core5_filemanager_config_pl.tmpl',
             -vars   => {
                 uploads_directory => $uploads_directory,
                 url_path          => $url_path,
@@ -4593,7 +4598,7 @@ sub install_and_configure_core5_filemanager {
       make_safer( $install_path . '/core5_filemanager/connectors/pl/filemanager_config.pl' );
     installer_chmod( 0777, $filemanager_config_loc );
     open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $filemanager_config_loc or croak $!;
-    print $config_fh $filemanager_config_loc or croak $!;
+    print $config_fh $core5_filemanager_config_pl or croak $!;
     close $config_fh or croak $!;
     installer_chmod( $DADA::Config::FILE_CHMOD, $filemanager_config_loc );
     undef $config_fh;
@@ -4626,7 +4631,7 @@ sub install_and_configure_core5_filemanager {
 
 		my $additional_perllibs = $self->ht_vars_perllibs;
 
-		if(scalar(@$additional_perllibs) > 0){ 
+		#if(scalar(@$additional_perllibs) > 0){ 
 		
 		
 		    my $core5_filemanager_pl = DADA::Template::Widgets::screen(
@@ -4642,10 +4647,10 @@ sub install_and_configure_core5_filemanager {
 		    open my $core5_filemanager_connector_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $core5_filemanager_connector_loc or croak $!;
 		    print $core5_filemanager_connector_fh $core5_filemanager_pl or croak $!;
 		    close $core5_filemanager_connector_fh or croak $!;
-		    # installer_chmod( $DADA::Config::FILE_CHMOD, $core5_filemanager_connector_loc );
+		     installer_chmod( $DADA::Config::DIR_CHMOD, $core5_filemanager_connector_loc );
 		    undef $config_fh;
 			
-		}
+			#}
 
         installer_chmod( $DADA::Config::DIR_CHMOD, $core5_filemanager_connector_loc );
 		# is this supposed to be $core5_filemanager_config_js_loc
