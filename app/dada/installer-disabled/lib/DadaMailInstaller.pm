@@ -4273,7 +4273,7 @@ sub install_and_configure_rich_filemanager {
     }
     
 
-    # pl config:
+    
     my $uploads_directory = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
     my $url_path          = $uploads_directory;
     my $doc_root          = $ENV{DOCUMENT_ROOT};
@@ -4290,7 +4290,14 @@ sub install_and_configure_rich_filemanager {
     my $rich_filemanager_config_loc =
       make_safer( $install_path . '/RichFilemanager/connectors/php/vendor/servocoder/richfilemanager-php/src/config/config.local.php' );
     
-	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $rich_filemanager_config_loc or croak ": " . $!;
+	  if(! -e $rich_filemanager_config_loc){ 
+	  	  warn "can't find, $rich_filemanager_config_loc?";
+	  }
+	  
+	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $rich_filemanager_config_loc 
+		or croak "can't open, $rich_filemanager_config_loc" . $!;
+		
+		
     print $config_fh $rich_filemanager_connector_config or croak $!;
     close $config_fh or croak $!;
     installer_chmod( $DADA::Config::FILE_CHMOD, $rich_filemanager_config_loc );
@@ -4582,8 +4589,8 @@ sub install_and_configure_core5_filemanager {
     # No Session Dir for Core5 Filemanager
 
     # pl config:
-    my $uploads_directory = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
-    my $url_path          = $ip->{-support_files_dir_url}  . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
+    my $uploads_directory = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir . '/';
+    my $url_path          = $ip->{-support_files_dir_url}  . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir . '/';
     my $core5_filemanager_config_pl = DADA::Template::Widgets::screen(
         {
             -screen => 'core5_filemanager_config_pl.tmpl',
@@ -4610,7 +4617,7 @@ sub install_and_configure_core5_filemanager {
         {
             -screen => 'core5_filemanager_config_js.tmpl',
             -vars   => {
-                fileRoot => $url_path . '/',                       # slash on the end, there.
+                fileRoot => '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir . '/',
                 lang     => $ip->{-core5_filemanager_connector},
             }
         }
