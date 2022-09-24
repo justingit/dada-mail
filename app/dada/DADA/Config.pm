@@ -1937,7 +1937,7 @@ $LIST_HEADERS //= {
 
 $GIVE_PROPS_IN_EMAIL //= 1;
 $GIVE_PROPS_IN_HTML //= 1;
-$GIVE_PROPS_IN_ADMIN //= 1;
+$GIVE_PROPS_IN_ADMIN //= 0;
 $GIVE_PROPS_IN_SUBSCRIBE_FORM //= 1;
 $PROGRAM_IMG_FILENAME //= 'dada_mail_logo.png';
 ##########################################
