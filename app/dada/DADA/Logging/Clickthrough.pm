@@ -16,6 +16,8 @@ use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT); 
 use DADA::App::Guts;
 
+use JSON; 
+my $json_object = JSON->new->allow_nonref;
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
 
 sub new {
@@ -947,8 +949,15 @@ sub message_history_json {
         my $first_date      = undef;
         my $last_date       = undef;
 
+		require JSON; 
+		my $json_object = JSON->new->allow_nonref;
+
         require Data::Google::Visualization::DataTable;
-        my $datatable = Data::Google::Visualization::DataTable->new();
+        my $datatable = Data::Google::Visualization::DataTable->new(
+        	{ 
+				json_object => $json_object,
+			}
+        );
 
         if ( $args->{-type} eq 'number' ) {
 
@@ -2649,7 +2658,11 @@ sub msg_basic_event_count_json {
 		my $report = $self->msg_basic_event_count($args->{-mid});	
 
 		require Data::Google::Visualization::DataTable; 
-		my $datatable = Data::Google::Visualization::DataTable->new();
+		my $datatable = Data::Google::Visualization::DataTable->new(
+        	{ 
+				json_object => $json_object,
+			}
+        );
 
 		$datatable->add_columns(
 		       { id => 'category',   label => "Category",      type => 'string',},
@@ -3182,7 +3195,11 @@ sub user_agent_json {
     my $json;
     
 	require Data::Google::Visualization::DataTable; 
-	my $datatable = Data::Google::Visualization::DataTable->new();
+	my $datatable = Data::Google::Visualization::DataTable->new(
+        	{ 
+				json_object => $json_object,
+			}
+        );
 	my $n_report  = {}; 
 	
 	$datatable->add_columns(
@@ -3355,7 +3372,11 @@ sub country_geoip_json {
 		my $report = $self->country_geoip_data($args);	
 	
 		require Data::Google::Visualization::DataTable; 
-		my $datatable = Data::Google::Visualization::DataTable->new();
+		my $datatable = Data::Google::Visualization::DataTable->new(
+        	{ 
+				json_object => $json_object,
+			}
+        );
 
 		$datatable->add_columns(
 		       { id => 'location',  label => "Location",       type => 'string'},
@@ -3524,7 +3545,11 @@ sub individual_country_geoip_json {
 		my $report = $self->individual_country_geoip($args);
 	
 		require Data::Google::Visualization::DataTable; 
-		my $datatable = Data::Google::Visualization::DataTable->new();
+		my $datatable = Data::Google::Visualization::DataTable->new(
+        	{ 
+				json_object => $json_object,
+			}
+        );
 
 
 		$datatable->add_columns(
@@ -3809,7 +3834,11 @@ sub data_over_time_json {
 		my $report = $self->data_over_time($args);
 	
 		require Data::Google::Visualization::DataTable; 
-		my $datatable = Data::Google::Visualization::DataTable->new();
+		my $datatable = Data::Google::Visualization::DataTable->new(
+        	{ 
+				json_object => $json_object,
+			}
+        );
 
 		$datatable->add_columns(
 			   { id => 'date',          label => 'Date',           type => 'string'}, 
@@ -4157,7 +4186,11 @@ sub email_stats_json {
 	 
 
 		require         Data::Google::Visualization::DataTable;
-		my $datatable = Data::Google::Visualization::DataTable->new();
+		my $datatable = Data::Google::Visualization::DataTable->new(
+        	{ 
+				json_object => $json_object,
+			}
+        );
 
 		$datatable->add_columns(
 		       { id => 'domain',     label => "Domain",        type => 'string',},

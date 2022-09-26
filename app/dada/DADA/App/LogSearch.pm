@@ -470,9 +470,17 @@ sub sub_unsub_trends_json {
 	if(!defined($json)){ 
 	
 		my $trends = $self->sub_unsub_trends($args);
-		require Data::Google::Visualization::DataTable; 
-		my $datatable = Data::Google::Visualization::DataTable->new();
-
+        
+		require JSON; 
+		my $json_object = JSON->new->allow_nonref;
+		
+		require Data::Google::Visualization::DataTable;
+        my $datatable = Data::Google::Visualization::DataTable->new(
+        	{ 
+				json_object => $json_object,
+			}
+        );
+		
 		$datatable->add_columns(
 			   { id => 'date',                    label => 'Date',                      type => 'string'}, 
 			   { id => 'cumulative_subscribed',   label => 'Cumulative Subscriptions',  type => 'number',},

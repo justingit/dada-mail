@@ -1386,8 +1386,15 @@ sub domain_stats_json {
         }
     );
 
+	require JSON; 
+	my $json_object = JSON->new->allow_nonref;
+	
     require Data::Google::Visualization::DataTable;
-    my $datatable = Data::Google::Visualization::DataTable->new();
+    my $datatable = Data::Google::Visualization::DataTable->new(
+    	{ 
+			json_object => $json_object,
+		}
+    );
 
     $datatable->add_columns(
         { id => 'domain', label => "Domain", type => 'string', },
