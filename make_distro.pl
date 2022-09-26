@@ -196,10 +196,15 @@ sub create_distro {
 		$v_args = '--verbose';
 	}
 	
-	$config =~ m/\$VERSION \= (\d+\.\d+\.\d+);/gsmi;
+	$config =~ m/\$VER \= \'(.*?)\';/gsmi;
+	
 	
 	my $ver = $1;
-	   $ver =~ s/\./_/gi;  
+	say 'ver: ' . $ver; 
+	
+	   $ver =~ s/\.|\s/_/gi;  
+   	say 'ver: ' . $ver; 
+	   
 	
 	chdir "./tmp";
 	
@@ -229,6 +234,15 @@ sub create_distro {
 		, 
 		'./distribution/uncompress_dada.cgi'
 	);
+	
+	my $ud = md_slurp('./distribution/uncompress_dada.cgi'); 
+	   $ud =~ s/my \$basic \= \'(.*?)\'\;/my \$basic = 'dada_mail-$ver.tar.gz';/gsmi;; 
+	
+	
+   open my $fh, '>:encoding(' . $HTML_CHARSET . ')', './distribution/uncompress_dada.cgi'  || croak $!;
+   print $fh $ud || croak $!;;
+   close($fh)    || croak $!;
+	
 	
 	if(-e './distribution/dada_mail-' . $ver . '.tar.gz'){ 
 		print './distribution/dada_mail-' . $ver . '.tar.gz' . "\n";
