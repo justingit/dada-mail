@@ -39,7 +39,7 @@ my $github_repos = {
 	perllib => {
 		remote         => 'https://github.com/justingit/',
 		repo           => 'dada-mail-perllib',
-		branch         => 'release-11_20_0', 
+		branch         => 'main', 
 		dir_name       => 'perllib',
 		local_dir_path => 'DADA/perllib', 
 
@@ -47,14 +47,14 @@ my $github_repos = {
 	ckeditor => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'ckeditor-for-dada-mail',
-		branch         => 'release-11_20_0', 
+		branch         => 'main', 
 		dir_name       => 'ckeditor',
 		local_dir_path => 'extras/packages/ckeditor', 
 	},
 	tinymce => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'tiny_mce-for-dada-mail',
-		branch         => 'release-11_20_0', 
+		branch         => 'main', 
 		dir_name       => 'tinymce',
 		local_dir_path => 'extras/packages/tinymce', 
 	},
