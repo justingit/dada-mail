@@ -690,11 +690,16 @@ sub switch_perl_interpreter {
 			'./templates/mail.cgi.tmpl', 
 			'./templates/app.psgi.tmpl',
 			'./templates/mail.fcgi.tmpl',
-			'./templates/core5_filemanager_filemanager_pl.tmpl',
+			'./templates/core5_filemanager-filemanager_pl.tmpl',
 		);
 		
 		
 		for my $ftc(@files_to_change){
+			
+			if(! -e $ftc){ 
+				warn "can't find, $ftc to modify perl shebang line - why?";
+				next; 
+			}
 			
 			open my $in_fh, '<', $ftc
 			  or die "Cannot open $ftc for reading: $!";
