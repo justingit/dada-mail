@@ -70,7 +70,7 @@ my $github_repos = {
 		repo           => 'RichFilemanager-for-dada-mail',
 		branch         => 'main', 
 		dir_name       => 'RichFileManager',
-		local_dir_path => 'extras/packages/RichFileManager', 
+		local_dir_path => 'extras/packages/RichFilemanager', 
 	},
 	
 };
