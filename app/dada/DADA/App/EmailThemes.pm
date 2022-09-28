@@ -110,7 +110,8 @@ sub _init {
 }
 
 sub fetch {
-    my $self = shift;
+    
+	my $self = shift;
     my $fn   = shift;
 
     if ( !defined($fn) ) {
@@ -175,6 +176,10 @@ sub fetch {
             warn '$html_file does not exist at, ' . $html_file
               if $t;
         }
+		
+		if(! -e $html_file && ! -e $pt_file){ 
+			warn 'Cannot find plaintext or HTML version of, ' . $fn; 
+		}
 
         my $vars = {};
         if ( length($pt) > 0 ) {
@@ -183,9 +188,12 @@ sub fetch {
 		foreach(keys %$vars){ 
 			$vars->{$_} = $vars->{$_};
 		}
+		
+		# What's up with this: 
 		$pt   = $pt;
 		$html = $html;
 
+		
         my $r = {
             html      => $html,
             plaintext => $pt,
@@ -248,6 +256,10 @@ sub filename {
     if ( $args->{-type} eq 'html' ) {
         $fe = 'html';
     }
+	
+	if(! -d $self->theme_dir){ 
+		warn '! Possible misconfiguration of app! Cannot find directory, ' . $self->theme_dir; 
+	}
 
     my $use_default = 0;
 
@@ -290,6 +302,10 @@ sub filename {
           . '/dist/'
           . $fn . '.'
           . $fe;
+		  
+		  if(! -e $d_file_path) { 
+			  warn '! Possible misconfiguration of app! Cannot find file, ' . $d_file_path;
+		  }
         return make_safer($d_file_path);
     }
 }
