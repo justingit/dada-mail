@@ -3732,10 +3732,15 @@ sub tmp_move_custom_themes {
       or croak "Can't open '" . $theme_source_package . "' to read because: $!";
     my $f;
     while ( defined( $f = readdir BUNDLED_THEMES ) ) {
-
+		
+		$f =~ s(^.*/)();
+		
         #don't read '.' or '..'
         next if $f =~ /^\.\.?$/;
-        $f =~ s(^.*/)();
+        
+		next if    $f eq '.DS_Store'; # guh. 
+		 next if -e $f && ! -d $f; 
+		
         $theme_names->{$f} = 1;
     }
     closedir(BUNDLED_THEMES);
@@ -3766,9 +3771,12 @@ sub tmp_move_custom_themes {
     my $f;
     while ( defined( $f = readdir INSTALLED_THEMES ) ) {
 
+		 $f =~ s(^.*/)();
+		 next if $f eq '.DS_Store';
+		 next if -e $f && ! -d $f; 
         #don't read '.' or '..'
         next if $f =~ /^\.\.?$/;
-        $f =~ s(^.*/)();
+       
 
         if ( exists( $theme_names->{$f} ) ) {
 
@@ -3815,6 +3823,8 @@ sub tmp_move_back_custom_themes {
         next if $f =~ /^\.\.?$/;
         $f =~ s(^.*/)();
 
+		next if $f eq '.DS_Store'; # These files are a v1ru$. 
+		# 
         warn 'moving back, ' . $f;
         installer_dircopy(
             make_safer( $dir . '/' . $f ),
@@ -5703,9 +5713,7 @@ sub installer_dircopy {
 	warn "installer_mv: source: '$source', target: '$target'\n"
 		if $t; 
 	
-	
-	
-    require File::Copy::Recursive;
+		require File::Copy::Recursive;
     File::Copy::Recursive::dircopy( $source, $target )
       or die "can't copy directory from, '$source' to, '$target' because: $!";
 }
