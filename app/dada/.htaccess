@@ -1,6 +1,13 @@
 
 DirectoryIndex mail.cgi index.php index.html
 
+# We do not need the RewriteEngine on, 
+# and sometimes enabling it mucks up Dada Mail functioning: 
+<IfModule mod_rewrite.c>
+    RewriteEngine Off
+</IfModule>
+
+
 # See: http://dadamailproject.com/d/features-restful_web_services.pod.html
 # The below line may need to be uncommented too allow Web Services to work:
 # SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0
