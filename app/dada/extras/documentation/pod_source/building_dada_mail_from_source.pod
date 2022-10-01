@@ -68,3 +68,16 @@ If you want to set an alternative to the sources used in Dada Mail for the vario
 
 Look for the variables named, C<$github_repos>, C<$github_releases>, and C<$maxmind_dbs> which should be self-explanitory. 
 
+=head3 make_distro.pl options 
+
+Run, 
+
+	make_distro --help 
+
+for various options available for the script. 
+
+=head3 See Also 
+
+The Dada Developers mailing list can help with technical questions, 
+
+L<https://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
