@@ -27,6 +27,10 @@ as well as the source of the build script,
 
 L<https://github.com/justingit/dada-mail/blob/main/make_distro.pl>
 
+as well as the new doc on how to build Dada Mail from source, 
+
+L<https://dadamailproject.com/d/building_dada_mail_from_source.pod.html>
+
 
 =head3 “Bounces” tab in the membership screen
 

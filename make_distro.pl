@@ -531,7 +531,9 @@ sub help {
 Make a Dada Mail Distribution 
 
 This script pulls down all the disparate resources needed to create a working Dada Mail distribution, 
-for you then to install. 
+for you then to install. See, 
+
+	https://dadamailproject.com/d/building_dada_mail_from_source.pod.html
 
 Once run, a copy of the, "uncompress_dada.cgi" script and a .tar.gz distribution of the app 
 will be located in the "distribution" directory. From there, you can follow the directions at, 
