@@ -1,0 +1,70 @@
+=pod
+
+=head1 Building Dada Mail from Source Repository 
+
+I<(intented for advanced users and/or developers)>
+
+
+Dada Mail's github repository is public, 
+and it is possible to build a working distribution of Dada Mail from it. 
+
+Dada Mail's Github repository is found here, 
+
+L<https://github.com/justingit/dada-mail/>
+
+Unless you know exactly what you're doing, you probably want to build a distribution from a known release. 
+Releases are found here: 
+
+L<https://github.com/justingit/dada-mail/releases> 
+
+Find the release you want to build your own distributon from, and download that release.
+The easiest way is to download the sourcecode under, B<Assets>.
+
+I<Note: In these examples, we'll be using "dada_mail.tar.gz" as the name of the download.> 
+
+Once you've downloaded the source, uncompress the download, 
+
+	tar -cvf dada_mail.tar.gz
+
+then, change into that directory, 
+
+	cd dada-mail
+
+Within that directory, you'll find a script called, C<make_distro.pl>. 
+This is the script that will do the heavy lifting.
+Simply run the script: 
+
+	 perl ./make_distro.pl
+
+This script will pull resources needed from all other repositories (this may take a few minutes), and create the actual distribution for Dada Mail. 
+Once done, the script will print out something like the following: 
+
+	./distribution/dada_mail.tar.gz
+	./distribution/uncompress_dada.cgi
+
+These two files, located in the, C<distribution> directory, are the complete build of Dada Mail. 
+
+You can now use these two files to install a copy of Dada Mail, using either of the two directions we have: 
+
+=head3 Install Dada Mail w/Dada Mail Installer
+
+L<https://dadamailproject.com/d/install_dada_mail.pod.html>
+
+=head3 Install Dada Mail, Command Line Interface
+
+L<https://dadamailproject.com/d/install_dada_mail_cl.pod.html>
+
+Use the just-created files in place of the resources listed in the docs. 
+
+=head2 Advanced
+
+Of course you don't have to use a release of ours as the source of your distribution. You can use any branch, tag, etc of git to build your distribution from. 
+You can also fork the Dada Mail github repository to create your own, 
+and do your own development and releases from there. 
+
+=head3 Changing the Source of the Other Github Assets
+
+If you want to set an alternative to the sources used in Dada Mail for the various repositories, you may do so in the source of the C<make_distro.pl> script. 
+
+Look for the variables named, C<$github_repos>, C<$github_releases>, and C<$maxmind_dbs> which should be self-explanitory. 
+
