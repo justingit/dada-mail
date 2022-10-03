@@ -195,10 +195,7 @@ sub create_distro {
     $config =~ m/\$VER \= \'(.*?)\';/gsmi;
 
     my $ver = $1;
-    say 'ver: ' . $ver;
-
-    $ver =~ s/\.|\s/_/gi;
-    say 'ver: ' . $ver;
+       $ver =~ s/\.|\s/_/gi;
 
     chdir "./tmp";
 
