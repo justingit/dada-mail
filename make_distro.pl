@@ -39,7 +39,7 @@ my $github_repos = {
 	perllib => {
 		remote         => 'https://github.com/justingit/',
 		repo           => 'dada-mail-perllib',
-		branch         => 'main', 
+		branch         => 'v11_20_0_stable_2022-10-03', 
 		dir_name       => 'perllib',
 		local_dir_path => 'DADA/perllib', 
 
@@ -47,28 +47,28 @@ my $github_repos = {
 	ckeditor => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'ckeditor-for-dada-mail',
-		branch         => 'main', 
+		branch         => 'v11_20_0_stable_2022-10-03', 
 		dir_name       => 'ckeditor',
 		local_dir_path => 'extras/packages/ckeditor', 
 	},
 	tinymce => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'tiny_mce-for-dada-mail',
-		branch         => 'main', 
+		branch         => 'v11_20_0_stable_2022-10-03', 
 		dir_name       => 'tinymce',
 		local_dir_path => 'extras/packages/tinymce', 
 	},
 	core5_filemanager => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'core5-filemanager-for-dada-mail',
-		branch         => 'main', 
+		branch         => 'v11_20_0_stable_2022-10-03', 
 		dir_name       => 'core5_filemanager',
 		local_dir_path => 'extras/packages/core5_filemanager', 
 	},
 	RichFilemanager => { 
 		remote         => 'https://github.com/justingit/',
 		repo           => 'RichFilemanager-for-dada-mail',
-		branch         => 'main', 
+		branch         => 'v11_20_0_stable_2022-10-03', 
 		dir_name       => 'RichFileManager',
 		local_dir_path => 'extras/packages/RichFilemanager', 
 	},
@@ -87,7 +87,7 @@ my $github_releases = {
 my $maxmind_dbs =  { 
 	remote         => 'https://github.com/justingit/',
 	repo           => 'MaxMind-GeoIP-for-dada-mail',
-	branch         => 'main', 
+	branch         => 'v11_20_0_stable_2022-10-03', 
 	country_db     => 'GeoIP.dat', 
 	city_db        => 'GeoLiteCity.dat',
 };
