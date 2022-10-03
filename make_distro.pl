@@ -1,40 +1,6 @@
 #!/usr/bin/perl -w
 use strict; 
 
-use Getopt::Long;
-my $help         = 0; 
-my $dry_run      = 0; 
-my $run_tests    = 0; 
-my $skip_perllib = 0; 
-my $remove_tests = 0; 
-my $v            = 0;
-
-Getopt::Long::GetOptions(
-	"remove_tests"  => \$remove_tests,
-	"help"          => \$help,
-#	"dry_run"       => \$dry_run, 
-	"skip_perllib"  => \$skip_perllib, 
-	"verbose"       => \$v,
-	
-);
-		
-
-my $HTML_CHARSET = 'utf-8';
-my $FILE_CHMOD   = 0644;
-my $DIR_CHMOD    = 0755;
-
-use 5.010;
-
-use Cwd qw(getcwd);
-use File::Path qw(remove_tree);
-use File::Copy; 
-use File::Copy::Recursive qw(rmove dircopy);
-use Carp qw(carp croak);
-use File::Find qw(finddepth);
-
-use LWP::Simple qw(getstore getprint); 
-
-
 my $github_repos = { 
 	perllib => {
 		remote         => 'https://github.com/justingit/',
@@ -92,6 +58,34 @@ my $maxmind_dbs =  {
 	city_db        => 'GeoLiteCity.dat',
 };
 
+use Getopt::Long;
+my $help         = 0; 
+my $run_tests    = 0; 
+my $skip_perllib = 0; 
+my $remove_tests = 0; 
+my $v            = 0;
+
+Getopt::Long::GetOptions(
+	"remove_tests"  => \$remove_tests,
+	"help"          => \$help,
+	"skip_perllib"  => \$skip_perllib, 
+	"verbose"       => \$v,
+	
+);
+
+my $HTML_CHARSET = 'utf-8';
+my $FILE_CHMOD   = 0644;
+my $DIR_CHMOD    = 0755;
+
+use 5.010;
+use Cwd qw(getcwd);
+use File::Path qw(remove_tree);
+use File::Copy; 
+use Carp qw(carp croak);
+use File::Find qw(finddepth);
+
+
+
 
 if($help){ 
 	
@@ -100,17 +94,39 @@ if($help){
 }
 else { 
 	
-	make_distro();
+	my ($status, $error_msg) = check_prereqs(); 
 	
-	if($remove_tests){ 
-		remove_tests(); 
+	if($status == 0){ 
+		print $error_msg; 
+	}
+	else { 
+		make_distro();
+		if($remove_tests){ 
+			remove_tests(); 
+		}
+		 	create_distro(); 
+		clean_up(); 
+	}
+}
+
+sub check_prereqs { 
+
+
+	my $checks_out = 1; 
+	my $errors     = ''; 
+	
+	eval { require File::Copy::Recursive; };
+	if($@){ 
+		$checks_out = 0; 
+		$errors = "\t * Filsadfae::Copy::Recursive will need to be installed for this script to run.\n";
+	}
+	eval { require LWP::Simple; };
+	if($@){ 
+		$checks_out = 0; 
+		$errors .= "\t * sadf::Simple will need to be installed for this script to run.\n";
 	}
 	
-	# if(!$dry_run){
-	 	create_distro(); 
-	# }
-	
-	clean_up(); 
+	return ($checks_out, $errors); 
 
 }
 
@@ -243,19 +259,21 @@ sub create_distro {
    print $fh $ud || croak $!;;
    close($fh)    || croak $!;
 	
-	
+    print "\n";
 	if(-e './distribution/dada_mail-' . $ver . '.tar.gz'){ 
-		print './distribution/dada_mail-' . $ver . '.tar.gz' . "\n";
+		print "\t" . './distribution/dada_mail-' . $ver . '.tar.gz' . "\n";
 	}
 	else { 
 		print 'could not create ' . './distribution/dada_mail-' . $ver . '.tar.gz' . "\n";
 	}
 	if('./distribution/uncompress_dada.cgi'){ 
-		print './distribution/uncompress_dada.cgi' . "\n";
+		print "\t" . './distribution/uncompress_dada.cgi' . "\n";
 	}
 	else { 
 		print 'could not create ' . './distribution/uncompress_dada.cgi' . "\n";
 	}
+    print "\n";
+	
 }
 
 sub zap_ds_store {
@@ -357,7 +375,7 @@ sub email_template {
 	
 	chdir "./tmp";
 	
-	getstore(
+	LWP::Simple::getstore(
 		$args->{url},
 		$args->{filename},
 	); 
@@ -444,7 +462,7 @@ sub md_mvdir {
 	warn "md_mv: source: '$source', dest: '$dest'\n"
 		if $v; 
 	
-    my $r = rmove( $source, $dest ) or croak "Copy failed from: '$source', to: '$dest': $!";
+    my $r = File::Copy::Recursive::rmove( $source, $dest ) or croak "Copy failed from: '$source', to: '$dest': $!";
     return $r;
 }
 
@@ -501,7 +519,7 @@ sub md_dircopy {
 	warn "md_mv: source: '$source', target: '$target'\n"
 		if $v; 
 		
-	dircopy( $source, $target )
+	File::Copy::Recursive::dircopy( $source, $target )
       or die "can't copy directory from, '$source' to, '$target' because: $!";
 }
 
