@@ -45,7 +45,7 @@ Then, run the bundled, C<make_distro.pl> script,
 	cd dada-mail
 	perl make_distro.pl 
 
-Once the script is done running, two files will be created in the B<distro> directory. 
+Once the script is done running, two files will be created in the B<distribution> directory. 
 
 Follow the directions at, L<https://dadamailproject.com/d/install_dada_mail.pod.html> to install the app using the two files created. 
 
