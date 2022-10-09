@@ -389,6 +389,29 @@ sub teardown {
 
 
 
+sub admin_login_rate_limit_check {
+    my $self = shift;
+    my $q    = $self->query();
+	
+
+	if ( $DADA::Config::RATE_LIMITING->{enabled} == 1
+	    && exists( $ENV{GATEWAY_INTERFACE} ) )
+	{
+
+	    my ( $admin_list, $root_login, $checksout, $error_msg ) =
+	      check_list_security(
+	        -cgi_obj  => $q,
+	        -Function => 'logout'
+	      );
+	    if ($checksout) {
+	        my $rate_limit = $self->rate_limit();
+	        $rate_limit->revoke_hit();
+	    }
+	}
+}
+
+
+
 sub run_pseudo_cron {
 
     my $self = shift;
@@ -11408,22 +11431,7 @@ sub unsubscribe {
     my $self = shift;
     my $q    = $self->query();
 	
-	if ( $DADA::Config::RATE_LIMITING->{enabled} == 1
-	    && exists( $ENV{GATEWAY_INTERFACE} ) )
-	{
-
-	    my ( $admin_list, $root_login, $checksout, $error_msg ) =
-	      check_list_security(
-	        -cgi_obj  => $q,
-	        -Function => 'logout'
-	      );
-	    if ($checksout) {
-	        my $rate_limit = $self->rate_limit();
-	        $rate_limit->revoke_hit();
-	    }
-	}
-	
-	
+	$self->admin_login_rate_limit_check();
 
     my %args = ( -html_output => 1, @_ );
     require DADA::App::Subscriptions;
@@ -11544,23 +11552,9 @@ sub token {
 
     my $self = shift;
     my $q    = $self->query();
-	
-	
-    ( $admin_list, $root_login, $checksout, $error_msg ) =
-      check_list_security(
-        -cgi_obj  => $q,
-        -Function => 'view_list'
-      );
-    if ( !$checksout ) {
-        return $error_msg;
-    }
-    else {
-        $admin_override_enabled = 1;
-    }
-	
-	
-	   
 
+	$self->admin_login_rate_limit_check();
+	
     my %args = ( -html_output => 1, @_ );
 
 	# I'm fine with this check, as the whole reason for this is to 
