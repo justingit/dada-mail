@@ -4,13 +4,17 @@
 
 =head2 In-Browser Error Messages
 
-B<In-Browser Error Messages> are error messages that you may receive in your  browser window when interacting with Dada Mail. 
+B<In-Browser Error Messages> are error messages that you may receive in your browser window when interacting with Dada Mail. 
 
 For security purposes, Dada Mail is I<not> set up to show verbose error messages within your browser window. You will need to consult your Server/Dada Mail error log to see the specific problem.
 
 In-browser error messages can also be vague or sometimes downright misleading (an error 404 File Not Found when clearly that's not the case!) - don't interpret in-browser error messages alone!
 
 If you do get an in-browser error message, please find the lines in the error log that correspond to your problem. Lines in the error log are usually B<time stamped>, facilitating your search.  
+
+=head2 Strange, Hard to Debug Errors
+
+One suggestion, if errors start to crop up strangely when the app has been running well for a while, is to simply check if the problem isn't because of a disk quota problem: you have run out of disk space, and the app can't create new files, append to existing files. Checking this early in your attempt to debug the problem may save you many hours of headaches. 
 
 =head2 Error Messages Because of Incorrect File Permissions
 
