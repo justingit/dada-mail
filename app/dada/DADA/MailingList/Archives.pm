@@ -1321,19 +1321,12 @@ sub _email_protect {
             my $pe = break_encode($fa); 
             my $le = quotemeta($fa); 
 			$body =~ s/$le/$pe/g;
-			
-		  
-		  # Say things were already encoded with spam-me-not, let's look for those: 
-		  
-		  warn 'spam_me_not_encode($fa): ' . spam_me_not_encode($fa); 
-		   
+		
+		  # Say things were already encoded with spam-me-not, let's look for those: 		   
 		  my $smn_email = quotemeta(spam_me_not_encode($fa)); 
             $body =~ s/$smn_email/$pe/g;
 			
-			
 		}
-		
-		
 		elsif($self->{ls}->param('archive_protect_email') eq 'spam_me_not'){ 		
             my $pe = spam_me_not_encode($fa);
             my $le = quotemeta($fa); 
