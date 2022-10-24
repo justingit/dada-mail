@@ -370,7 +370,7 @@ sub add_attachments {
 		$attachment_entity->head->mime_attr("content-type.name"            => undef);
 		$attachment_entity->head->mime_attr("content-disposition.filename" => undef);
 		
-		warn '$attachment_entity->as_string: ' . $attachment_entity->as_string; 
+		# warn '$attachment_entity->as_string: ' . $attachment_entity->as_string; 
 		
         push( @attachment_entities, $attachment_entity )
           if $attachment_entity;
