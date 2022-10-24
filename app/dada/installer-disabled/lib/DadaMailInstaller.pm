@@ -2612,7 +2612,7 @@ sub backup_current_config_file {
     my $new_loc = make_safer(
         $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config-backup-' . $timestamp );
     open my $config_backup, '>', $new_loc or croak $!;
-    print $config_backup $config_file;
+    print $config_backup $config_file or croak $!;
     close($config_backup) or croak $!;
     unlink($dot_configs_file_loc);
 
