@@ -151,7 +151,7 @@ Select this option to use B<Rich Filemanager> (L<https://github.com/servocoder/R
 
 We suggest running Rich Filemanager only if you have version 5.4 or higher of B<php> available. Otherswise, Rich Filemanager may not work correctly.  
 
-Install Core Five FileManager 	
+=head4 Install Core Five FileManager 	
 
 Select this option to use B<Core Five FileManager> (L<https://github.com/simogeo/Filemanager>). In Dada Mail, Filemanager uses the same sessioning system as Dada Mail itself, which can make for a smoother experience, if KCFinder is not working correctly. 
 
