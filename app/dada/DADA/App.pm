@@ -16712,7 +16712,7 @@ sub bridge_inject {
 # One problem with this is that we don't know the encoding of the message.
 # If it's 8bit, and ISO-whatever, we're in trouble
 # We could read the full msg in, and change the encoding, THEN Tag the message in that encoding.
-# Sounds message.
+# Sounds messy.
 
     require DADA::Security::Password;
     my $filename =
@@ -16735,7 +16735,7 @@ sub bridge_inject {
         #        $line = safely_decode($line);
         #        $line = safely_encode($line);
 
-        print $tmp_file $line;
+        print $tmp_file $line or die $!;
 
         #        print $tmp_file2 $line;
     }
@@ -16751,6 +16751,8 @@ sub bridge_inject {
             -list     => $run_list,
         }
     );
+	
+	return;
 
 }
 
