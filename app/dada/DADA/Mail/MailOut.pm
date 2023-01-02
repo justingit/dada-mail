@@ -500,7 +500,7 @@ sub batch_params {
             $bulk_sleep_amount = 1;
         }
 
-        carp 'batch settings (bulk_sleep_amount set weird): Enabled: '
+        carp 'batch settings: Enabled: '
           . $enable_bulk_batching
           . ' Batch Size: '
           . $mass_send_amount
