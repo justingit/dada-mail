@@ -1750,7 +1750,7 @@ sub unsubscribe {
 				&& $q->param('List-Unsubscribe') eq 'One-Click'
 			){
 				# do the thing.
-				$process = 1;  
+				$process                = 1;  
 				$skip_email_valid_check = 1; 
 			}
 		}
@@ -1788,7 +1788,7 @@ sub unsubscribe {
 			
 			$args->{-consent_vars}->{-source}          = $data->{data}->{source};
 
-			if($token_context){ 
+			if(defined($token_context)){ 
 				$args->{-consent_vars}->{-source} .= ' (' . $token_context . ')';
 			}
 			
@@ -1826,8 +1826,18 @@ sub unsubscribe {
         require DADA::MailingList::Settings;
         my $ls = DADA::MailingList::Settings->new( { -list => $data->{data}->{list} } );
 		
-		if(!defined($token_context) 
-			&& $ls->param('completing_the_unsubscription') eq 'one_click_unsubscribe_no_confirm_screen' 
+		
+		#warn 'one_click_unsubscribe_enabled: ' . $one_click_unsubscribe_enabled; 
+		#warn '$token_context: ' . $token_context; 
+		
+		if(
+			(
+				!defined($token_context) 
+				|| 
+				$token_context eq 'lus'
+			)
+			&& 
+			$ls->param('completing_the_unsubscription') eq 'one_click_unsubscribe_no_confirm_screen' 
 		){ 
 			$one_click_unsubscribe_enabled = 1;
 		}
@@ -1843,7 +1853,6 @@ sub unsubscribe {
 			$one_click_unsubscribe_enabled = 0; 
 		}
 	}
-	
 	
 	require DADA::Template::Widgets;
     my $r = DADA::Template::Widgets::wrap_screen(
