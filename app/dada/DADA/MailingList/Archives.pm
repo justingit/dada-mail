@@ -6,7 +6,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
 use DADA::MailingList::Settings; 
 
-use Carp qw(carp croak); 
+use Carp qw(carp croak cluck); 
 use Try::Tiny; 
 use DBI;
 use Fcntl qw(
@@ -824,6 +824,7 @@ sub get_header {
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($args{-key}, 1); 
 	my $entity = $self->_entity_from_raw_msg($raw_msg); 		
 	
+	# This usually happens if the key doesn't exist. 
 	if(! defined($entity)){ 
 		warn 'entity is undef';
 		return undef;
@@ -1685,7 +1686,13 @@ sub _entity_from_raw_msg {
 	
 	#warn '$human_size: ' . $human_size; 
 	#if(length($raw_msg) < 10000000){ 
-		try { $entity = $self->{parser}->parse_data(
+		
+		if(!$raw_msg){ 
+			cluck '$raw_msg is not defined';
+			return undef;
+		}
+		try { 
+				$entity = $self->{parser}->parse_data(
 				safely_encode( 
 					$raw_msg 
 				)
