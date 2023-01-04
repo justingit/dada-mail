@@ -1166,24 +1166,45 @@ sub html_to_plaintext {
 
 # Removing comments is a good thing, removing template tags that look like comments is a bad thing:
 
-    my ( $mask_beginning_comment, $mask_ending_comment, $tmp_str ) =
-      _hide_tmpl_tags( $args->{-str} );
+
+$args->{-str} =~ s/\<body style\=\"(.*?)\"\>/<body>\n/gi;
+$args->{-str}  =~ s/\<style\>(.*?)\<\/style\>/\n/gi;
+
+
+    my ( $mask_beginning_comment, $mask_ending_comment, $tmp_str ) = 
+		_hide_tmpl_tags( );
+		
+		
     my $mask_beginning_comment_qm = quotemeta($mask_beginning_comment);
     my $mask_ending_comment_qm    = quotemeta($mask_ending_comment);
     try {
 
 		my $f = undef; 
 		if($args->{-for_blurb} == 1){ 
-	        require HTML::FormatText; 
-			$f = HTML::FormatText->new( %{ $args->{-formatter_params} } );
+			
+		#	try { 
+		 #       require HTML::FormatText; 
+		#		$f = HTML::FormatText->new( %{ $args->{-formatter_params} } );
+		#		$formatted = $f->format_string($tmp_str) 
+		#	} catch { 
+		#		#warn $_; 
+				$formatted = undef; 
+		#	};
 		}
 		else { 
-			# This is a memory hog: 
-	       require HTML::FormatText::WithLinks;
-	   	    $f = HTML::FormatText::WithLinks->new( %{ $args->{-formatter_params} } );
+			
+			try { 
+				# This is a memory hog: 
+		       require HTML::FormatText::WithLinks;
+		   	    $f = HTML::FormatText::WithLinks->new( %{ $args->{-formatter_params} } );
+				$formatted = $f->parse($tmp_str) 
+			} catch { 
+				#warn $_; 
+				$formatted = undef; 
+			};
 		}
 		  
-        if ( $formatted = $f->parse($tmp_str) ) {
+        if ($formatted) {
 			
 			undef($f);
 			
