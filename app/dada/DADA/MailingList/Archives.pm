@@ -1614,7 +1614,7 @@ sub _highlight_quoted_text {
 
 	my $self        = shift; 
 	my $message     = shift; 
-	my @msg_lines   = split(/\n/, $message);
+	my @msg_lines   = split(/\n|\r|\./, $message);
 	my $new_message = undef; 
 	
 	for my $line(@msg_lines){
@@ -2245,18 +2245,25 @@ sub make_search_summary {
 				}
 			);
 		}else{ 
-			$message = html_to_plaintext({-str => $message}); 
+			$message = html_to_plaintext(
+				{
+					-str       => $message, 
+					-for_blurb => 1,
+				}
+			); 
 		}
 		
 	 	$message = $self->_email_protect( undef, $message); 
 		
 		
 
-		my @message_lines = split("\n", $message);
+		my @message_lines = split(/\n|\r|\./, $message);
 		my $line;
 		
 		for $line(@message_lines){ 
 			if($line =~ m/$keyword/io){ 
+				
+			#	$line = convert_to_ascii($line);
 				$line =~ s{$keyword}{<em class="dm_highlighted">$keyword</em>}gi;
 				$line = $self->massage($line); 
 				$search_summary{$key} .= "... $line ... <br />";
