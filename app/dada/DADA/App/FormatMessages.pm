@@ -2123,6 +2123,9 @@ sub change_charset {
 
 sub change_content_transfer_encoding {
 
+	warn 'in change_content_transfer_encoding'
+		if $t; 
+	
     my $self = shift;
 
     my ($args) = @_;
@@ -2171,6 +2174,9 @@ sub change_content_transfer_encoding {
               if $t;
         }
 
+
+#		warn '$args->{-entity}->head->mime_type: ' . $args->{-entity}->head->mime_type; 
+		
         if (
             (
                    ( $args->{-entity}->head->mime_type eq 'text/plain' )
@@ -2210,6 +2216,13 @@ sub change_content_transfer_encoding {
 
 sub change_content_transfer_encoding_in_body {
 
+
+	warn 'in change_content_transfer_encoding_in_body'
+		if $t; 
+	# Is there an optimization here to check if the current 
+	# Content Transder Encoding already matches what we want to 
+	# change it to? 
+	
     my $self     = shift;
     my $entity   = shift;
     my $encoding = shift || 'quoted-printable';
@@ -2218,10 +2231,14 @@ sub change_content_transfer_encoding_in_body {
     my $body    = $entity->bodyhandle;
     my $content = $entity->bodyhandle->as_string;
 
-    my $mime_charset =
-      $entity->head->mime_attr("content-type.charset") || $charset;
+    my $mime_charset = $entity->head->mime_attr("content-type.charset") || $charset;
     my $content_type = $entity->head->mime_attr("content-type");
-
+	
+	warn 'message $mime_charset: ' . $mime_charset
+		 if $t;
+	warn 'message $content_type: ' . $content_type
+		if $t;
+	
     $content = Encode::decode( $mime_charset, $content );
 
     for ( 'Content-Transfer-Encoding', 'Content-transfer-encoding' ) {
@@ -2229,6 +2246,12 @@ sub change_content_transfer_encoding_in_body {
             $entity->head->delete($_);
         }
     }
+	
+	warn 'adding Content-Transfer-Encoding: ' . $encoding
+		if $t;
+	warn 'adding Content-type.charset: '      . $charset
+		if $t;
+	
     $entity->head->add( 'Content-Transfer-Encoding', $encoding );
     $entity->head->mime_attr( "Content-type.charset" => $charset, );
 
@@ -2243,11 +2266,14 @@ sub change_content_transfer_encoding_in_body {
 
     my $io = $body->open('w');
     my $n_content =
-      safely_encode( safely_decode( $n_entity->bodyhandle->as_string ) );
+      safely_encode( 
+	  	safely_decode( 
+			$n_entity->bodyhandle->as_string 
+		) 
+	);
     $io->print($n_content);
     $io->close;
     $entity->sync_headers(
-
         #'Length'      => 'COMPUTE', #optimization
         'Length'      => 'ERASE',
         'Nonstandard' => 'ERASE'

@@ -6,3 +6,6 @@ Mime-Version: 1.0 (Apple Message framework v929.2)
 Subject: =?UTF-8?B?Q3JhenkhIMKh4oSiwqPCouKInsKnwrbigKLCqsK6?=
 
 Test.
+Though the volume will focus predominately on the 
+films, I also hope to see proposals on Ian Fleming’s novels
+

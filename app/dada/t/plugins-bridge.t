@@ -68,15 +68,24 @@ my $parser = new MIME::Parser;
 # [ 2136642 ] 3.0.0 - Check_List_Owner_Return_Path_Header fails with undef
 # http://sourceforge.net/tracker/index.php?func=detail&aid=2136642&group_id=13002&atid=113002
 
+
 $test_msg = q{To: you@example.com
 From: me@example.com
 Subject: Well, Heya
+Content-Type: text/plain
 
-Blah Blah Blah
+A bunch of mal encoded stuff; 
+Blah Blah Blah  Â¡â¢Â£Â¢âÂ§Â¶â¢ÂªÃ¸Ï¢§¶¨ˆøπ
 	
 };
 
-$entity = $parser->parse_data($test_msg);
+
+
+undef($entity);
+bridge::reset_globals(); 
+my $entity = $parser->parse_data(safely_encode($test_msg));
+
+ok(defined($entity), 'entity is defined');
 
 
 ($errors, $notice) = bridge::test_Check_List_Owner_Return_Path_Header($ls, $entity, $errors); 
@@ -84,6 +93,21 @@ $entity = $parser->parse_data($test_msg);
 
 ok($errors->{list_owner_return_path_set_funny} == 0, "list_owner_return_path_set_funny has been set to, 0");
 like($notice, qr/No Return Path Found/, '"No Return Path Found" notice reported.');
+
+
+
+diag 'inject 0';
+my ( $status, $errors, $r ) = bridge::inject(
+	{ 
+		-ls        => $ls, 
+		-msg       => $test_msg, 
+		-verbose   => 1, 
+		-test_mail => 1, 
+	}
+); 
+wait_for_msg_sending(); 
+
+
 
 $errors = {};
 undef $notice; 
@@ -101,6 +125,7 @@ my $status = undef;
 my $r;
 
 
+diag 'inject 1';
 ( $status, $errors, $r ) = bridge::inject(
 	{ 
 		-ls        => $ls, 
@@ -110,8 +135,8 @@ my $r;
 	}
 ); 
 
-ok($status == 0, "inject returning 0 - it's disabled, #1"); 
-ok($errors->{disabled} == 1, "inject returning 0 - it's disabled #2"); 
+ok($status == 0, "inject returning 0, #1"); 
+ok($errors->{disabled} == 1, "and it's disabled #2"); 
 
 
 $ls->param('disable_discussion_sending', 0);
@@ -128,6 +153,7 @@ $ls->param('rewrite_anounce_from_header', 0                     );
 $ls->param('enable_bulk_batching',        0                     ); 
 $ls->param('get_finished_notification',   0                     ); 
 
+diag 'inject 2';
 ( $status, $errors, $r ) = bridge::inject(
 	{ 
 		-ls        => $ls,
@@ -136,8 +162,6 @@ $ls->param('get_finished_notification',   0                     );
 		-test_mail => 1, 
 	}
 );
-
-
 
 ok($status == 0, "inject returning 0 - it's not disabled, but we've got an improper email message"); 
 #use Data::Dumper; 
@@ -163,7 +187,7 @@ bridge::reset_globals();
 
 #diag '$msg: ' . $msg; 
 
-
+diag 'inject 3';
 ( $status, $errors, $r ) = bridge::inject(
 	{ 
 		-msg       => $msg, 
@@ -190,22 +214,22 @@ my $mh = DADA::Mail::Send->new({-list => $list});
 
 #diag 'test_send_file: ' . $mh->test_send_file; 
 
-my $sent_msg =  slurp($mh->test_send_file); 
+my $sent_msg = slurp($mh->test_send_file); 
    $sent_msg = safely_decode($sent_msg); 
    
-#diag '$sent_msg ' . $sent_msg; 
+#diag '$sent_msg ' . safely_encode($sent_msg); 
 
 # This could be a lot more intricate, but we're just going to see if the 
 # To: and, Subject: Headers are the same and contain the mime encoded words strings, 
 # (for now) 
 
 
-my $orig_entity = $parser->parse_data($msg);
+my $orig_entity = $parser->parse_data(safely_encode($msg));
 #use Data::Dumper; 
 # diag 'og_entity: ' . Data::Dumper::Dumper($orig_entity); 
 my $sent_entity = undef; 
 #eval { 
-    $sent_entity = $parser->parse_data($sent_msg);
+    $sent_entity = $parser->parse_data(safely_encode($sent_msg));
 #};
 #if($@){ 
 #    diag "ACK!" . $@; 
@@ -234,6 +258,7 @@ unlink $mh->test_send_file;
 # Now, we gotta do it, with encoding explicatly on: 
 $ls->param('charset',                        "utf-8\tutf-8"        ); 
 
+diag 'inject 4';
 ( $status, $errors, $r ) = bridge::inject(
 	{ 
 		-msg       => $msg, 
@@ -253,8 +278,8 @@ wait_for_msg_sending();
 
 $sent_msg =  slurp($mh->test_send_file); 
 
-$orig_entity = $parser->parse_data($msg);
-$sent_entity = $parser->parse_data($sent_msg);
+$orig_entity = $parser->parse_data(safely_encode($msg));
+$sent_entity = $parser->parse_data(safely_encode($sent_msg));
 
 require MIME::EncWords; 
 
@@ -330,6 +355,7 @@ undef $test_msg;
 $ls->param('group_list', 1); 
 
 
+diag 'inject 5';
 ( $status, $errors, $r ) = bridge::inject(
 	{ 
 		-msg       => $msg, 
@@ -345,8 +371,8 @@ $ls->param('group_list', 1);
 wait_for_msg_sending(); 
 
 $sent_msg =  slurp($mh->test_send_file); 
-$orig_entity = $parser->parse_data($msg);
-$sent_entity = $parser->parse_data($sent_msg);
+$orig_entity = $parser->parse_data(safely_encode($msg));
+$sent_entity = $parser->parse_data(safely_encode($sent_msg));
 my $sent_sub = MIME::EncWords::decode_mimewords($sent_entity->head->get('Subject', 0), Charset => '_UNICODE_');
 
 my $qm_subject = quotemeta('[dadatest]'); 
@@ -373,6 +399,7 @@ diag Dumper($errors);
 
 ok($status == 1, "status returning 1"); 
 
+diag 'inject 6';
 ( $status, $errors, $r )= bridge::inject(
 	{ 
 		-msg       => $msg, 

@@ -16730,16 +16730,33 @@ sub bridge_inject {
 
     # binmode(STDIN,  ":utf8");
     # binmode STDIN;
+	
+	# commented out code is just an idea - 
+	# unicode chars in email messages should be something the app can 
+	# deal with. 
+	# But this could be useful for debugging, if the app cannot. 
+	#
+	
+	# my $has_unicode      = 0; 
+	# my $incoming_subject = ''; 
+	
     while ( my $line = <STDIN> ) {
-
-        #        $line = safely_decode($line);
-        #        $line = safely_encode($line);
+		# if($line =~ m/^Subject\:/){ 
+		# 	$incoming_subject .= $line . "\n";
+		# }
+		# if($line =~ m/[\N{U+0080}-\N{U+FFFF}]/g){ 
+		# 	warn 'incoming message has unicode characters: ' . safely_encode($line);
+		# 	$has_unicode = 1; 
+		# }
 
         print $tmp_file $line or die $!;
 
-        #        print $tmp_file2 $line;
     }
     close $tmp_file or die $!;
+	
+	# if($has_unicode == 1){
+	#	warn 'Subject(s): ' . $incoming_subject; 
+	# }
 
     #   close $tmp_file2 or die $!;
 

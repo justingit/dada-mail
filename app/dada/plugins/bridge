@@ -1032,14 +1032,19 @@ sub scheduled_task {
     return $b;  
 }
 
+
+
+
 sub start {
     
     my $list_to_run = shift;
-    reset_globals();
     
-    my $r;
+	reset_globals();
+    
+    my $r     = '';
     my @lists = ();
-    if ( ! defined($list_to_run) ) {
+    
+	if ( ! defined($list_to_run) ) {
         @lists = available_lists( -In_Random_Order => 1 );
     }
     else {
@@ -1187,6 +1192,8 @@ sub start {
             $r .= "\t* Message Size is below both Soft and Hard Max Sizes.\n\n";
 
 
+#			warn 'going to try to change  Content-Transfer-Encoding (0)';
+			
             try { 
                require DADA::App::FormatMessages;
                my $dfm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
@@ -1478,7 +1485,7 @@ sub inject_msg {
 	);
 	
     try { 
-        $msg = decode( 'UTF-8', $msg );
+        $msg = safely_decode( $msg );
     } catch {
         warn 'extra decoding did not work: ' . $_; 
     };
@@ -1839,7 +1846,11 @@ sub validate_msg {
 
     my $message_is_blank = 0;
 
+#	warn '$msg: ' . $msg; 
+	
     if ( !defined($msg) ) {
+	#	warn 'message is blank!';
+		
         $message_is_blank = 1;
     }
     elsif ( $msg eq '' ) {
@@ -1862,7 +1873,7 @@ sub validate_msg {
     
 	my $ntr = 0; 
     try {
-        $entity = $parser->parse_data($msg); 
+        $entity = $parser->parse_data($msg); #safely encoded above 
         #warn 'still here...'; 
     } catch { 
         $r .= "\t\tProblems with parsing message: $_\n";
@@ -2488,7 +2499,8 @@ sub send_msg_too_big {
     my $entity;
 
     try {
-        $entity = $parser->parse_data($$full_msg_ref);
+        $entity = $parser->parse_data(safely_encode($$full_msg_ref));
+		
         if ( !$entity ) {
             warn "couldn't create a new entity in send_msg_too_big, passing.";
         }
@@ -2549,7 +2561,7 @@ sub notify_of_delivery {
     # $msg is a scalarref
     my $msg = $args->{-msg};
 
-    my $entity = $parser->parse_data($msg);
+    my $entity = $parser->parse_data(safely_encode($msg));
 
     my $rough_from = $entity->head->get( 'From', 0 );
     chomp($rough_from);
@@ -2790,7 +2802,11 @@ sub strip_file_attachments {
     my $entity = undef;
 
     try { 
-		$entity = $parser->parse_data( ${$msg} ) 
+		$entity = $parser->parse_data(
+			safely_encode( 
+				${$msg} 
+			) 
+		);
 	} catch { 
 		warn $_; 
 	};
@@ -3004,7 +3020,11 @@ sub deliver {
 
     my $entity = undef;
     try { 
-		$entity = $parser->parse_data($msg); 
+		$entity = $parser->parse_data(
+			safely_encode(
+				$msg
+			)
+		); 
 	} catch { 
 		warn $_; 
 	};
@@ -3131,7 +3151,11 @@ sub archive {
 
         try {
             $msg    = safely_encode($msg);
-            $entity = $parser->parse_data($msg);
+            $entity = $parser->parse_data(
+				safely_encode(
+					$msg
+					)
+			);
         } catch {
 			warn $_; 
         };
@@ -3162,7 +3186,7 @@ sub send_msg_not_from_subscriber {
     my $msg = shift;
 
     $msg = safely_encode($msg);
-    my $entity = $parser->parse_data($msg);
+    my $entity = $parser->parse_data($msg); # done above
     my $original_subject = $entity->head->get( 'Subject', 0 );
    
    
@@ -3234,7 +3258,7 @@ sub send_spam_rejection_message {
     my $msg = shift;
 
     $msg = safely_encode($msg);
-    my $entity = $parser->parse_data($msg);
+    my $entity = $parser->parse_data($msg); #done above
 
     my $rough_from = $entity->head->get( 'From', 0 );
     my $from_address;
@@ -3288,7 +3312,7 @@ sub send_invalid_msgs_to_owner {
     my $msg = shift;
 
     $msg = safely_encode($msg);
-    my $entity = $parser->parse_data($msg);
+    my $entity = $parser->parse_data($msg); #done above
     my $rough_from = $entity->head->get( 'From', 0 );
     my $from_address;
     if ( defined($rough_from) ) {
@@ -3353,10 +3377,17 @@ sub handle_errors {
 
     $full_msg = safely_encode($full_msg);
 
+	unless(length($full_msg) > 0){ 
+		$r = '$full_msg is blank - cannot handle_errors';
+		warn $r; 
+		return $r; 
+	}
+	
+	
     try {
         $entity = $parser->parse_data(
             $full_msg
-        );
+        ); # done above
     } catch { 
         $r .= "Problems Handling Error: $_\n"; 
 #      warn 'length($full_msg):' . length($full_msg); 
@@ -3365,6 +3396,7 @@ sub handle_errors {
         $parser          = new MIME::Parser;
         $parser          = optimize_mime_parser($parser);
         
+#		warn $r; 
               
     };
     
@@ -3673,7 +3705,7 @@ sub find_return_path {
     try {
 
         $msg = safely_encode($msg);
-        my $entity = $parser->parse_data($msg);
+        my $entity = $parser->parse_data($msg); # done above
         $rp = $entity->head->get( 'Return-Path', 0 );
 		$entity->purge; 
     } catch { 
@@ -3720,19 +3752,20 @@ sub cgi_show_plugin_config {
 
 sub inject {
 
+
+	#
+	# init args: 
     my ($args) = @_;
-
-    my $r   = '';
-    my $msg = $args->{-msg};
-
 	
-    # We're taking a guess, on this one:
-    $msg = safely_decode($msg);	
-    my $send_test = 0;
-
+	my $msg       = undef; 
+	my $send_test = 0;
     my $test_mail = 0;
-
-    if ( exists( $args->{-send_test} ) ) {
+	
+	if ( exists($args->{-msg}) ) { 
+		# Why are we, safely_decode()ing this? 
+		$msg = safely_decode($args->{-msg});	
+	}
+	if( exists( $args->{-send_test} ) ) {
         $send_test = $args->{-send_test};
     }
     if ( exists( $args->{-verbose} ) ) {
@@ -3741,34 +3774,38 @@ sub inject {
     if ( exists( $args->{-test_mail} ) ) {
         $test_mail = $args->{-test_mail};
     }
-
     my $ls;
     if ( exists( $args->{-ls} ) ) {
         $ls = $args->{-ls};
-
     }
     else {
         require DADA::MailingList::Settings;
         $ls = DADA::MailingList::Settings->new( { -list => $ls->param('list') } );
     }
-
-    try { 
-       require DADA::App::FormatMessages;
-       my $dfm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
-        my $entity = $parser->parse_data(safely_encode($msg)); 
-           $entity = $dfm->change_content_transfer_encoding({-entity => $entity}); 
-           $msg    = safely_decode($entity->as_string); 
-		   $entity->purge;
-           undef $entity; 
-           # warn 'Hey Hey! $msg ' . safely_encode($msg); 
-    } catch { 
-        warn 'Couldn\'t change Content-Transfer-Encoding: ' . $_; 
-    };
+	
+	# /init args 
+	#
+	
+	#
+	# init return log string
+	my $r   = '';
+	
+	# Sanity checks - should we even be looking at the message? 
     
-    if ( $ls->param('disable_discussion_sending') == 1 ) {
+	if ( $ls->param('disable_discussion_sending') == 1 ) {
         $r .= "\tThis sending method has been disabled for " . $ls->param('list') . ", ignoring message... \n";
         return ( 0, { disabled => 1 }, $r );
 	}
+	
+	
+	if(! defined($msg)){ 
+		return ( 0, { blank_message => 1 }, $r );
+	}
+	if(length($msg) == 0){ 
+		return ( 0, { blank_message => 1 }, $r );
+	}
+	
+
 	
     if ( $ls->param('bridge_list_email_type') ne "mail_forward_pipe" ) {
         $r .= "\t* List Email is NOT set up as a Email Forward to Pipe to Bridge \n";
@@ -3790,7 +3827,70 @@ sub inject {
         $r .= "\t\t***Warning!*** Misconfiguration of plugin! The List Owner email cannot be the same address as the list email address!\n\t\tSkipping $list...\n";
 		return ( 0, { list_owner_same_as_list_email => 1 }, $r );
     }
+	#/ Sanity checks
+	#
 
+	#
+	#
+	# This is just to change the Content-Transfer-Encoding to 'quoted-printable' 
+	# (or whatever it is set in the preferences)
+	# Why is this done? 
+	# Unicode strings and (especially) the MIME parser don't play well, and a wrongly 
+	# encoded message - either received or because of something we did 
+	# can cause the app to die unexpectantly - which means the message does not get delivered
+	# Changing to quoted-printable means we're only dealing with ASCII strings (hopefully!)
+	# which are easily digested by the MIME Parser, this plugin, and Perl. 
+	# 
+	#
+	
+	require DADA::App::FormatMessages;
+	my $dfm    = DADA::App::FormatMessages->new(
+		-List => $ls->param('list') 
+	);
+	my $entity = undef; 
+   
+	try { 
+	    $entity = $parser->parse_data(
+			safely_encode(
+				$msg
+			)
+		); 
+		if($entity){ 	
+			
+			#
+			# This is very important - most likely we're changing to 
+			# quoted-printable, which means any unicode strings in the 
+			# message will be turned to ASCII, making things much easier for the 
+			# plugin to deal with, without hitting encoding issues. 
+			# 
+			$entity = $dfm->change_content_transfer_encoding(
+		   		{
+					-entity => $entity
+				}
+			); 
+			#
+			# I hate that I then just turn this back into a string! 
+			# Why not pass an HTML::Entity obj around? 
+			#
+	       $msg    = safely_decode(
+		   		$entity->as_string
+		 	); 
+		   $entity->purge;
+	       undef $entity; 
+		}
+		else { 
+			die 'entity is undefined? Was a valid email message passed?';
+		}
+    } catch { 
+        warn 'Couldn\'t change Content-Transfer-Encoding: ' . $_; 
+    };
+	#
+	# end Content-Transfer-Encoding 
+	# 
+	
+	#	  
+	# Sanity checks are done, but we still have to validate the message itself: 
+	#
     my ( $status, $errors );
 
     my $status;
@@ -3798,7 +3898,6 @@ sub inject {
     my $report;
      
     try {
-		# warn 'validate_msg';
         ( $status, $errors, $report ) = validate_msg( $ls, \$msg );
     } catch { 
         warn 'couldn\'t validate_msg?!'; 
@@ -3806,7 +3905,7 @@ sub inject {
     };
     
 	try { 
-        
+		
         if ($status == 1) {
             $r .= process(
                 {
@@ -3816,7 +3915,6 @@ sub inject {
                 }
             );
 
-			# warn 'append_message_to_file';
             my ( $amtf_status, $amtf_r ) = append_message_to_file( $ls, $msg );
             $r .= $amtf_r;
             return ( $status, $errors, $r );
@@ -3824,7 +3922,6 @@ sub inject {
         }
         else {
 
-			# warn 'handle_errors';
             $r .= "\tMessage did not pass verification.\n";
             $r .= handle_errors( $ls, $errors, $msg );
             
@@ -3846,7 +3943,6 @@ sub inject {
 		}
 		
         return ( 0, { irrecoverable_error => 1 }, $r );
-		# warn '$r' .  $r;
 
     }; 
     return ( $status, $errors, $r );
@@ -4260,7 +4356,6 @@ sub send_moderation_msg {
     try {
         $entity = $parser->parse_data(
             DADA::App::Guts::safely_encode(
-
                 $self->get_msg( { -msg_id => $args->{-msg_id} } )
             )
         );
