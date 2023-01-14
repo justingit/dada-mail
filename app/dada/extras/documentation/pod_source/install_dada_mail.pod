@@ -129,7 +129,7 @@ B<Continue Installing and Configuring Dada Mail!> to continue.
 
 <div class="alert-box info radius">
 
-<p>See, <a href="./FAQ-install_upgrade.pod.html#prepping_dada_mail_manually">Prepping Dada Mail Manually</a> if this doesn't happen and you get a message in your browser window, sort of like this: </p>
+<p>See, <a href="./FAQ-install_upgrade.pod.html#Prepping-Dada-Mail-Manually">Prepping Dada Mail Manually</a> if this doesn't happen and you get a message in your browser window, sort of like this: </p>
 
 <pre>Can't find dada-[VERSION_TAG].tar to uncompress! You may have to uncompress and prep Dada Mail manually.</pre> 
 

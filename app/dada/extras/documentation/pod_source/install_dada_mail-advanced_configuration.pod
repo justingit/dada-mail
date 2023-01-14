@@ -640,6 +640,9 @@ etc. A good way to make sure would be to append, "admin" to your value, like thi
 
 No checks will be made to make sure you don't have this value set to something already present, so do be careful setting this variable. 
 
+
+
+
 B<Global Variable:> C<$ADMIN_FLAVOR_NAME>
 
 =head3 Sign In Flavor Name
@@ -711,6 +714,19 @@ Max Hits are the amount of requests for a certain feature/function that may be d
 If more requests than the Max Hits happens within the Timeframe, the feature/function will be inaccessible, until the number of requests is below the Max Hits threshold. Any other feature mentioned will still be available to the user, and any other users of the app will not be affected (unless of course they're being tied to that same IP Address)
 
 B<Config Variable:> C<$RATE_LIMITING>. 
+
+
+=head3 File/Directory Permissions
+
+You can set what both the file and directory permissions are when Dada Mail creates either. 
+
+B<Great care must be made to make sure the permissions you set will work with your server environment.> 
+
+=head3 Cross-Site Request Forgery (CSRF) Protection
+
+"Cross-Site Request Forgery (CSRF) is an attack that forces an end user to execute unwanted actions on a web application in which they're currently authenticated. With a little help of social engineering (such as sending a link via email or chat), an attacker may trick the users of a web application into executing actions of the attacker's choosing. If the victim is a normal user, a successful CSRF attack can force the user to perform state changing requests like transferring funds, changing their email address, and so forth. If the victim is an administrative account, CSRF can compromise the entire web application." - https://owasp.org/www-community/attacks/csrf
+
+Dada Mail allows you to enable (default) or disable CSRF Protection. 
 
 =head2 Configure Google Maps 
 

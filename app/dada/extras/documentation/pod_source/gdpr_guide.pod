@@ -63,7 +63,7 @@ listed as checkboxes the subscription forms users use to add themselves to your 
 
 =over
 
-=item * I<Consent requires a positive opt-in.  Don’t use pre-ticked boxes or any other method of consent by default.>
+=item * I<Consent requires a positive opt-in.  Don't use pre-ticked boxes or any other method of consent by default.>
 
 =back
 
