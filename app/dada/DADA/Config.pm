@@ -1809,8 +1809,8 @@ $ATTACHMENT_TEMPFILE //= 0;
 $MAIL_VERP_SEPARATOR //= '-';
 
 
-$VERSION = 11.20.0;
-$VER = 'v11.20.0 stable 2022-10-03';
+$VERSION = 11.20.1;
+$VER = 'v11.20.1 beta1 2023-01-16';
 
 #
 #

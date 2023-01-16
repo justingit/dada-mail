@@ -3019,7 +3019,7 @@ sub lame_init(){
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2022 Justin Simoni 
+Copyright (c) 1999 - 2023 Justin Simoni 
 https://justinsimoni.com 
 All rights reserved. 
 
