@@ -3,6 +3,40 @@
 
 =encoding utf-8
 
+=head1 11.20.1
+
+This version of Dada Mail is a minor bug release. 
+
+Of note is a nasty bug in the Bridge plugin that affected some messages that are sent to it. These messages would fail to be sent, and a line in your error log may be found, 
+
+C<parse_data: unable to open in-memory file handle at...>
+
+See the following issue: 
+
+L<https://github.com/justingit/dada-mail/issues/1135>
+
+=head2 Bugfixes
+
+=head3  One-click unsubscription can't be enabled #1139 
+
+L<https://github.com/justingit/dada-mail/issues/1139>
+
+=head3 Mis-speling in, "Subscribed" Message #1140 
+
+L<https://github.com/justingit/dada-mail/issues/1140>
+
+=head3 bridge - irrecoverable error processing message #1135 
+
+L<https://github.com/justingit/dada-mail/issues/1135>
+
+=head3 Rate Limits should be ignored for logged in administrators when handling unsubscribe requests #1130 
+
+L<https://github.com/justingit/dada-mail/issues/1130>
+
+=head3  Searching a list's message archive in the public view may return 500 error #1141 
+
+L<https://github.com/justingit/dada-mail/issues/1141>
+
 =head1 11.20.0
 
 =head2 Focus 
