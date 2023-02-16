@@ -1459,12 +1459,13 @@ sub inject_msg {
     my $list     = $run_list;
     
 
-    if ( check_if_list_exists( -List => $list == 0 )) {
-		warn   'Passed non-existent list, ' . $list . ', bailing.';
-		return 'Passed non-existent list, ' . $list . ', bailing.';
+	# There should be more to this - we should send an email back to the og 
+	# sender, telling them the email address is set up incorrectly. 
+	#
+    if ( check_if_list_exists( -List => $list) == 0 ) {
+		die   'Passed non-existent list, ' . $list . ', bailing.';
+		# return 'Passed non-existent list, ' . $list . ', bailing.';
     }
-	
-	
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $r;
 
