@@ -12,7 +12,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::Security::Password;
 use DADA::MailingList::Settings;
 use DADA::App::Guts;
-use Carp qw(carp croak);
+use Carp qw(carp croak cluck);
 use Try::Tiny;
 
 my $dbi_obj;
@@ -602,6 +602,7 @@ sub check_session_list_security {
         -Admin_Password => $sess_args->{'Admin_Password'},
 		-ip_address     => $sess_args->{'ip_address'},
 		-csrf_token     => $sess_args->{'csrf_token'}, 
+		-check_csrf     => $args{-check_csrf},
 		-cgi_obj        => $q, 
         -Function       => $args{-Function},
     );
@@ -638,13 +639,14 @@ sub check_session_list_security {
 sub check_admin_cgi_security {
 
     my $self = shift;
-
     my %args = (
         -Admin_List     => undef,
         -Admin_Password => undef,
         -ip_address     => undef,
         -Function       => undef,
-		-cgi_obj        => undef, 
+		-cgi_obj        => undef,
+		-csrf_token     => undef, 
+		-check_csrf     => undef,  
         @_
     );
 
@@ -655,6 +657,11 @@ sub check_admin_cgi_security {
 
     my $problems = 0;
     my %flags    = ();
+
+	if(!defined($args{-check_csrf})){
+		$args{-check_csrf} = 1; 
+	}
+
 
     unless ( defined( $args{-Admin_List} )
         && defined( $args{-Admin_Password} ) )
@@ -782,31 +789,38 @@ sub check_admin_cgi_security {
       }
 	  
 
-	if($DADA::Config::ENABLE_CSRF_PROTECTION == 1){  	  
-		if($args{-cgi_obj}->request_method() =~ m/POST/i) {
-			my $passed_csrf_token = $args{-cgi_obj}->param('_csrf_token');
-			   $passed_csrf_token =~ s/^hmac //;
+  	if(
+  		$args{-check_csrf} == 1
+  	){ 
+		
+		if($DADA::Config::ENABLE_CSRF_PROTECTION == 1){  	  
+			if($args{-cgi_obj}->request_method() =~ m/POST/i) {
+				my $passed_csrf_token = $args{-cgi_obj}->param('_csrf_token');
+				   $passed_csrf_token =~ s/^hmac //;
 
-			my $d_status = $self->check_digest(
-				$passed_csrf_token, 
-				$args{-csrf_token},
-				$ls,
-			); 
+				my $d_status = $self->check_digest(
+					$passed_csrf_token, 
+					$args{-csrf_token},
+					$ls,
+				); 
 
-			if($d_status == 0){ 
-				$problems++;
+				if($d_status == 0){ 
+					$problems++;
 
-				warn 'invalid csrf for flavor, ' . $args{-cgi_obj}->param('flavor');
+					cluck 'invalid csrf for flavor, ' . $args{-cgi_obj}->param('flavor');
 
-				$flags{invalid_password} = 1;
-				return ( $problems, \%flags, 0 );
+					$flags{invalid_password} = 1;
+					return ( $problems, \%flags, 0 );
+				}
 			}
 		}
+		else { 
+			# warn 'CSRF Protection DISABLED (' . $args{-cgi_obj}->param('flavor') . ')';
+		}																		
 	}
-	else { 
-		# warn 'CSRF Protection DISABLED (' . $args{-cgi_obj}->param('flavor') . ')';
-	}																		
-
+	else {
+		warn '-check_csrf set to 0';
+	}
 
 
 	}

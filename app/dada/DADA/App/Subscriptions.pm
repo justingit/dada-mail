@@ -1753,13 +1753,30 @@ sub unsubscribe {
 				$process                = 1;  
 				$skip_email_valid_check = 1; 
 			}
+			elsif(
+				# This is a weird repeat: 
+				$ls->param('completing_the_unsubscription') eq 'click_link_on_confirm_screen'
+				&& $process == 1		
+			) { 
+				$skip_email_valid_check = 1; 
+			}
 		}
 		elsif(
 			$ls->param('completing_the_unsubscription') eq 'click_link_on_confirm_screen'
 			&& $process == 1
 			){ 
 				$skip_email_valid_check = 1; 
-		}	
+		}
+		#
+		#if(
+		#	$token_context eq 'from_email_header'
+		#	&& 
+		#){
+		#	$skip_email_valid_check = 1; 
+		#}
+		
+		
+			
 		undef $ls;
 	}			
 						

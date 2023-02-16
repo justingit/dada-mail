@@ -400,12 +400,13 @@ sub admin_login_rate_limit_check {
 
 	    my ( $admin_list, $root_login, $checksout, $error_msg ) =
 	      check_list_security(
-	        -cgi_obj  => $q,
-	        -Function => 'logout'
+	        -cgi_obj    => $q,
+	        -Function   => 'logout',
+			-check_csrf => 0,
 	      );
 	    if ($checksout) {
 	        my $rate_limit = $self->rate_limit();
-	        $rate_limit->revoke_hit();
+	           $rate_limit->revoke_hit();
 	    }
 	}
 }

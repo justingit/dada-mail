@@ -2168,6 +2168,7 @@ sub check_list_security {
     
 	my %args = (-Function        => undef, 
 				-cgi_obj         => undef, 
+				-check_csrf      => undef, 
 				@_);
 
     if($t == 1) { 
