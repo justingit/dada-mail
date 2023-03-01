@@ -95,6 +95,8 @@ my $run_list;
 my $check_deletions;
 my $root_login;
 my $checksums;
+my $tmp_msg_file;
+my $rm_tmp_msg_file;
 
 my $dont_test_age_of_messages = 0;
 sub dont_test_age_of_messages { 
@@ -103,17 +105,20 @@ sub dont_test_age_of_messages {
 
 init_vars();
 sub reset_globals {
-    $parser          = new MIME::Parser;
-    $parser          = optimize_mime_parser($parser);
-    $test            = undef;
-    $help            = undef;
-    $inject          = 0;
-    $verbose         = 0;
-    $list            = undef;
-    $run_list        = undef;
-    $check_deletions = 0;
-    $root_login      = 0;
-    $checksums       = {};
+    $parser           = new MIME::Parser;
+    $parser           = optimize_mime_parser($parser);
+    $test             = undef;
+    $help             = undef;
+    $inject           = 0;
+    $verbose          = 0;
+    $list             = undef;
+    $run_list         = undef;
+    $check_deletions  = 0;
+    $root_login       = 0;
+    $checksums        = {};
+	$tmp_msg_file     = undef; 
+	$rm_tmp_msg_file  = 0; 
+	
 }
 sub init_vars {
 
@@ -1450,6 +1455,8 @@ sub inject_msg {
     
     my $filename = $args->{-filename};
     
+	$tmp_msg_file = $filename; 
+		
     if(! -e $filename){ 
         $r .= "No file found at, $filename\n";  
         return $r; 
@@ -1491,12 +1498,6 @@ sub inject_msg {
         warn 'extra decoding did not work: ' . $_; 
     };
    
-    
-    my $n   = unlink($filename);
-    if ( $n != 1 ) {
-        warn "could not remove tmpfile at, $filename";
-    }
-
     if ( $ls->param('bridge_list_email_type') ne "mail_forward_pipe" ) {
 
         $r .= "\t* Bridge is not enabled to receive mail this way, for this list. \n";
@@ -1528,6 +1529,9 @@ sub inject_msg {
             $r .= $msg;
         }
     } 
+	
+	$rm_tmp_msg_file = 1; 
+	
     return $r;
 }
 
@@ -4009,6 +4013,27 @@ END {
     if ( defined($parser) ) {
         $parser->filer->purge;
     }
+		
+	if(defined($tmp_msg_file)){
+		if(-e $tmp_msg_file){ 
+			if($rm_tmp_msg_file == 1){
+				my $n   = unlink($tmp_msg_file);
+				if ( $n != 1 ) {
+				    warn "could not remove tmpfile at, $tmp_msg_file";
+			 	}
+				else { 
+					warn 'removing tmp msg file, ' . $tmp_msg_file; 
+				}
+			}
+			else { 
+				warn 'Problems processing incoming message? tmp msg file saved at, ' . $tmp_msg_file;
+			}
+		}
+		else { 
+			# Forked process may be running END, so if that happens, it's OK. 
+			warn 'tmp msg file already removed, ' . $tmp_msg_file; 
+		}
+	}
 }
 
 sub DESTROY {}
