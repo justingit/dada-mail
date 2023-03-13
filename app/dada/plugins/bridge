@@ -2566,7 +2566,8 @@ sub notify_of_delivery {
     # $msg is a scalarref
     my $msg = $args->{-msg};
 
-    my $entity = $parser->parse_data(safely_encode($msg));
+	my $nsr_msg = ${$msg}; 
+    my $entity = $parser->parse_data(safely_encode($nsr_msg));
 
     my $rough_from = $entity->head->get( 'From', 0 );
     chomp($rough_from);
