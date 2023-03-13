@@ -872,8 +872,11 @@ sub dada_mail_subscribe {
 	                $local_q->delete_all();
 	                $local_q->param( 'list',  $list );
 	                $local_q->param( 'email', $dm_email );
-	                $local_q->param( 'flavor',     's' );
+	                $local_q->param( 'f',     's' );
 
+	                foreach ( @{ $lh->subscriber_fields } ) {
+	                    $local_q->param( $_, $treq->param($_) );
+	                }
 
 	                require DADA::App::Subscriptions;
 	                my $das = DADA::App::Subscriptions->new;
@@ -888,12 +891,11 @@ sub dada_mail_subscribe {
 	                );
 	            }
 	        }
-	    }
-	} catch { 
-		warn "Problems with Dada Mail Subscription: '$_'"; 
-	};
+	    } catch { 
+			warn "Problems with Dada Mail Subscription: '$_'"; 
+		};
+	} 
 }
-
 # /Dada-ized
 
 
