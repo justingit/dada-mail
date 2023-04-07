@@ -1594,7 +1594,11 @@ sub drag_and_drop_file_upload {
 	);
 	
 	my $bad_fn = {}; 
-	for(@bad_fn){$bad_fn->{'.' . $_} = 1};
+	for(@bad_fn){
+		$bad_fn->{'.' . $_}     = 1;
+		$bad_fn->{'.' . uc($_)} = 1;
+	};
+
 	my ($ext) = $filename =~ /(\.[^.]+)$/;
 		
 	if(exists($bad_fn->{$ext})){ 
@@ -1602,7 +1606,7 @@ sub drag_and_drop_file_upload {
 	}
 
     my $subfolder = 'files';
-    if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/ ) {
+    if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/i ) {
         $subfolder = 'images';
     }
 	
@@ -1624,7 +1628,7 @@ sub drag_and_drop_file_upload {
 		or die $!;
     chmod( $DADA::Config::FILE_CHMOD, $save_fp );
 
-    if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/ ) {
+    if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/i ) {
 		if($ls->param('resize_drag_and_drop_images') == 1){
 			require DADA::App::ResizeImages; 				
 			my ($rs_status, $rs_path, $rs_width, $rs_height) = DADA::App::ResizeImages::resize_image(
