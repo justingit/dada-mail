@@ -3046,7 +3046,8 @@ sub safely_decode {
 
 	
 	if(utf8::is_utf8($str) == 1 && $force == 0){ 
-	#	warn 'utf8::is_utf8 is returning 1 - not decoding.'; 
+	#if ($str =~ /[^\x0-\x7f]/ && $force == 0){ 
+		#	warn 'utf8::is_utf8 is returning 1 - not decoding.'; 
 	}
 	else { 
 		eval { 
