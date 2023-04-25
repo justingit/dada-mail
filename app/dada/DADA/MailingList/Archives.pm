@@ -918,11 +918,16 @@ sub in_reply_to_info {
 
 	my $self = shift; 
 	my %args = (-key => undef, @_); 	
-	die "no key! " if !$args{-key}; 
+	
+	die "Please pass a key " 
+		if !$args{-key}; 
 
-	my $in_reply_to = $self->get_header(-header => 'In-Reply-To', -key => $args{-key});
+	my $in_reply_to = $self->get_header(
+		-header => 'In-Reply-To', 
+		-key    => $args{-key}
+	);
 		
-	if(!$in_reply_to){ #sigh...
+	if(!$in_reply_to){
 		my @refs = split(' ', $self->get_header(-header => 'References', -key => $args{-key})); 
 		$in_reply_to = $refs[-1];
 	}
