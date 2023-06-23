@@ -1714,6 +1714,8 @@ sub unsubscribe {
 		
 	
     if ( !$ct->exists($token) ) {
+		warn 'returning token_problem (1)'
+			if $t;
         return ({}, user_error(
             {
                 -error => 'token_problem',
@@ -1726,6 +1728,8 @@ sub unsubscribe {
 	
     # not sure how you got here, but, whatever:
     if ( $data->{data}->{flavor} ne 'unsub_confirm' ) {
+		warn 'returning token_problem (2)'
+			if $t;
         return ({}, user_error(
             {
                 -error => 'token_problem',
@@ -1797,7 +1801,8 @@ sub unsubscribe {
 	            $is_valid = 0;
 	        }
 		}
-        if ($is_valid) {
+        
+		if ($is_valid) {
             $args->{-cgi_obj}  = $q;
             $args->{-list}     = $data->{data}->{list};             
             $args->{-mid}      = $data->{data}->{mid};
