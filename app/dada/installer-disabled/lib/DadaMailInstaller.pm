@@ -2946,22 +2946,16 @@ sub create_dada_config_file {
         $security_params->{security_default_directory_permissions} = '0' . clean_up_var( $ip->{-security_default_directory_permissions} ) || undef;
 		
         if ( length( $ip->{-security_enable_csrf_protection } ) > 0 ) {
-			warn '$ip->{-security_enable_csrf_protection }: ' . $ip->{-security_enable_csrf_protection }; 
 			if($ip->{-security_enable_csrf_protection } == 1){
-				warn 'it 1';
 				$security_params->{security_enable_csrf_protection} = "1";
 			}
 			elsif($ip->{-security_enable_csrf_protection } == 0){ 
 				$security_params->{security_enable_csrf_protection} = "0";
-					warn 'it 0';
 			}
 			else { 
 				delete($security_params->{security_enable_csrf_protection});
-				warn 'it nothing';
 			}
         }
-		
-		
     }
 
     my $global_api_params = {};
