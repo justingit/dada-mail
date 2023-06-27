@@ -148,73 +148,83 @@ sub remove_old_archive_messages {
 
     if ( $self->{ls}->param('archive_auto_remove') == 1 ) {
 
-        my $translation_key = {
-            '1m',  => 1,
-            '2m',  => 2,
-            '3m',  => 3,
-            '4m',  => 4,
-            '5m',  => 5,
-            '6m',  => 6,
-            '7m',  => 7,
-            '8m',  => 8,
-            '9m',  => 9,
-            '10m', => 10,
-            '11m', => 11,
-            '1y',  => 12,
-            '2y',  => 24,
-            '3y',  => 36,
-            '4y',  => 48,
-            '5y'   => 60,
-        };
+        if ( can_use_DateTime() ) {
 
-        my $timespan;
-        if (
-            exists(
-                $translation_key->{ $self->{ls}
-                      ->param('archive_auto_remove_after_timespan') }
-            )
-          )
-        {
-            $timespan = $translation_key->{ $self->{ls}
-                  ->param('archive_auto_remove_after_timespan') };
-            require DateTime;
-            my $old_epoch =
-              DateTime->today->subtract(
-                months => $translation_key->{ $self->{ls}
-                      ->param('archive_auto_remove_after_timespan') } )->epoch;
+            my $translation_key = {
+                '1m',  => 1,
+                '2m',  => 2,
+                '3m',  => 3,
+                '4m',  => 4,
+                '5m',  => 5,
+                '6m',  => 6,
+                '7m',  => 7,
+                '8m',  => 8,
+                '9m',  => 9,
+                '10m', => 10,
+                '11m', => 11,
+                '1y',  => 12,
+                '2y',  => 24,
+                '3y',  => 36,
+                '4y',  => 48,
+                '5y'   => 60,
+            };
 
-            #$r .= "epoch: " . $old_epoch . "\n";
-            #$r .= "localtime: " . scalar localtime($old_epoch) . "\n";
+            my $timespan;
+            if (
+                exists(
+                    $translation_key->{
+                        $self->{ls}->param('archive_auto_remove_after_timespan')
+                    }
+                )
+              )
+            {
+                $timespan = $translation_key->{ $self->{ls}
+                      ->param('archive_auto_remove_after_timespan') };
+                require DateTime;
+                my $old_epoch = DateTime->today->subtract(
+                    months => $translation_key->{
+                        $self->{ls}->param('archive_auto_remove_after_timespan')
+                    }
+                )->epoch;
 
-            my $old_msg_id = DADA::App::Guts::message_id($old_epoch);
-            $r .= "\tRemoving archive messages older than, "
-              . scalar localtime($old_epoch) . "\n";
+                #$r .= "epoch: " . $old_epoch . "\n";
+                #$r .= "localtime: " . scalar localtime($old_epoch) . "\n";
 
-            #$r .= "message_id: " .  $old_msg_id;
+                my $old_msg_id = DADA::App::Guts::message_id($old_epoch);
+                $r .= "\tRemoving archive messages older than, "
+                  . scalar localtime($old_epoch) . "\n";
 
-            my $query =
-                'DELETE FROM '
-              . $self->{sql_params}->{archives_table}
-              . ' WHERE archive_id <= ? AND list = ?';
+                #$r .= "message_id: " .  $old_msg_id;
 
-            my $sth = $self->{dbh}->prepare($query);
-            my $c = $sth->execute( $old_msg_id, $self->{name} );
-            $sth->finish;
-            if ( $c eq '0E0' ) {
-                $c = 0;
+                my $query =
+                    'DELETE FROM '
+                  . $self->{sql_params}->{archives_table}
+                  . ' WHERE archive_id <= ? AND list = ?';
+
+                my $sth = $self->{dbh}->prepare($query);
+                my $c   = $sth->execute( $old_msg_id, $self->{name} );
+                $sth->finish;
+                if ( $c eq '0E0' ) {
+                    $c = 0;
+                }
+                $r .= "\tRemoved " . $c . " archived message(s)\n";
+                require DADA::App::ScreenCache;
+                my $c = DADA::App::ScreenCache->new;
+                $c->flush;
             }
-            $r .= "\tRemoved " . $c . " archived message(s)\n";
-            require DADA::App::ScreenCache;
-            my $c = DADA::App::ScreenCache->new;
-            $c->flush;
+            else {
+                $r .=
+                    "Unknown timespan: "
+                  . $self->{ls}->param('archive_auto_remove_after_timespan')
+                  . "\n";
+            }
         }
         else {
-            $r .= "Unknown timespan: "
-              . $self->{ls}->param('archive_auto_remove_after_timespan') . "\n";
+            $r .="\tDisabled. The DateTime CPAN module will need to be installed to enable this feature.\n";
         }
     }
     else {
-        $r .= "\tDisabled.\n";
+        $r .= "\tNot enabled.\n";
     }
 
     return $r . "\n";

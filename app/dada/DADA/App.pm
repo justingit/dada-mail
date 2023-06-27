@@ -1966,7 +1966,7 @@ sub mass_mailing_schedules_preview {
         $schedule_recurring_hms =
           display_hms_to_hms($schedule_recurring_display_hms);
 
-        if ( !( scalar DADA::App::Guts::can_use_datetime() ) ) {
+        if ( !( scalar DADA::App::Guts::can_use_DateTime_Event_Recurrences() ) ) {
             $status = 0;
             $errors->{datetime} = 1;
         }
@@ -9255,14 +9255,8 @@ sub adv_archive_options {
         };
 
         my $gravatar_img_url     = '';
-        my $can_use_gravatar_url = 1;
-        try {
-            require Gravatar::URL;
-        }
-        catch {
-            $can_use_gravatar_url = 0;
-        };
-
+        my $can_use_gravatar_url = can_use_Gravatar_URL();
+		my $can_use_DateTime     = can_use_DateTime(); 
         if ( $can_use_gravatar_url == 1 ) {
             $gravatar_img_url = gravatar_img_url(
                 {
@@ -9293,6 +9287,7 @@ sub adv_archive_options {
                     can_use_html_scrubber                   => $can_use_html_scrubber,
                     can_display_attachments                 => $la->can_display_attachments,
                     can_use_gravatar_url                    => $can_use_gravatar_url,
+					can_use_DateTime                        => $can_use_DateTime, 
                     gravatar_img_url                        => $gravatar_img_url,
 					archive_auto_remove_after_timespan_menu => $archive_auto_remove_after_timespan_menu, 
                 },
@@ -12734,46 +12729,31 @@ sub list_archive {
                     $orig_header_from = $header_from;
                 }
 
-                my $can_use_gravatar_url = 1;
+                my $can_use_gravatar_url = can_use_Gravatar_URL();
                 my $gravatar_img_url     = undef;
                 my $show_gravatar        = 0;
 
-                if ( $ls->param('enable_gravatars') ) {
-
-                    try {
-                        require Gravatar::URL
-                    }
-                    catch {
-                        $can_use_gravatar_url = 0;
-                    };
-
-                    if ( $can_use_gravatar_url == 1 ) {
-                        my $header_address = $archive->sender_address(
-                            {
-                                -id => $entries->[$i],
-                            }
-                        );
-                        $gravatar_img_url = gravatar_img_url(
-                            {
-                                -email => $header_address,
-                                -default_gravatar_url =>
-                                  $ls->param('default_gravatar_url'),
-                            }
-                        );
-
-                    }
-                    else {
-                        $can_use_gravatar_url = 0;
-                    }
-                    if (   $ls->param('enable_gravatars') == 1
-                        && $can_use_gravatar_url == 1
-                        && defined(gravatar_img_url) )
-                    {
+                if ( 
+					   $ls->param('enable_gravatars') == 1
+					&& $can_use_gravatar_url          == 1
+				) {
+                    my $header_address = $archive->sender_address(
+                        {
+                            -id => $entries->[$i],
+                        }
+                    );
+                    $gravatar_img_url = gravatar_img_url(
+                        {
+                            -email => $header_address,
+                            -default_gravatar_url =>
+                              $ls->param('default_gravatar_url'),
+                        }
+                    );
+                    if ( defined($gravatar_img_url) ) {
                         $show_gravatar = 1;
                     }
-
                 }
-
+				
                 my $entry = {
                     id                   => $entries->[$i],
                     date                 => $date,
@@ -12796,8 +12776,8 @@ sub list_archive {
 
                 push( @$th_entries, $entry );
 
-            }
-        }
+       	 	}
+		}
 
         my $ii;
         for ( $ii = 0 ; $ii <= $#archive_links ; $ii++ ) {
@@ -13008,15 +12988,10 @@ sub list_archive {
 
         my $show_gravatar        = 0;
         my $gravatar_img_url     = undef;
-        my $can_use_gravatar_url = 1;
+        my $can_use_gravatar_url = can_use_Gravatar_URL();
 
         if ( $ls->param('enable_gravatars') ) {
-            try {
-                require Gravatar::URL
-            }
-            catch {
-                $can_use_gravatar_url = 0;
-            };
+			
             if ( $can_use_gravatar_url == 1 ) {
                 my $header_address = $archive->sender_address(
                     {
@@ -13030,9 +13005,6 @@ sub list_archive {
                           $ls->param('default_gravatar_url'),
                     }
                 );
-            }
-            else {
-                $can_use_gravatar_url = 0;
             }
         }
         if (   $ls->param('enable_gravatars') == 1

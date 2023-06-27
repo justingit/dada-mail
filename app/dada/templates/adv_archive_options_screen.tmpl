@@ -87,11 +87,11 @@
 			<div class="alert-box info radius">
 				<!-- tmpl_if can_use_html_scrubber -->     
 				    <strong>
-						 Strongly recommended
+						Strongly recommended
 				    </strong>
 				    for security reasons.
 				<!--tmpl_else-->    
-				     Disabled. The HTML::Scrubber module needs to be installed 
+				     Disabled. The <strong>HTML::Scrubber</strong> CPAN module will need to be installed to enable this feature.
 				<!--/tmpl_if-->
 			</div>
 		</div> 
@@ -103,11 +103,6 @@
 		    <label for="display_attachments">
 				 Display message attachments
 		    </label>  
-			<!-- tmpl_unless can_display_attachments -->
-				<div class="alert-box alert radius">
-			    	Disabled. The current Archive backend does not support attachments.   
-				</div>
-			<!--/tmpl_unless-->
 		</div> 
 	</div>
    
@@ -281,6 +276,12 @@
  Auto-Removal
 </legend>
 
+	<!-- tmpl_unless can_use_DateTime --> 
+		<div class="alert-box info radius">
+		  Disabled. The <strong>DateTime</strong> CPAN module will need to be installed to enable this feature.
+		</div> 
+	<!-- /tmpl_unless -->
+
 	<div class="row">
 	   <div class="small-12 columns">    
 		   <label for="archive_auto_remove">   
@@ -351,8 +352,8 @@
 				</ul>
 			</div>
 		<!-- tmpl_else --> 
-			<div class="alert-box info radius">
-				Disabled, the XMLRPC::Lite module needs to be installed.
+			<div class="alert-box info radius">				
+				Disabled. The <strong>XMLRPC::Lite</strong> CPAN module will need to be installed to enable this feature.
 			</div> 
 		<!--/tmpl_if-->
 	</div>
@@ -389,10 +390,7 @@ Gravatars
 
 <!-- tmpl_unless can_use_gravatar_url --> 
 	<div class="alert-box info radius">
-	  Disabled, you will need to install the 
-	  <a href="http://search.cpan.org/~mschwern/Gravatar-URL/" target="_blank" >
-		  	Gravatar::URL CPAN module
-	  </a>
+		Disabled. The <strong>Gravatar::URL</strong> CPAN module will need to be installed to enable this feature.
 	</div> 
 <!-- /tmpl_unless -->
 <div class="row">

@@ -4620,7 +4620,7 @@ sub delete_msg_id_data {
 sub remove_old_tracker_data {
     my $self = shift;
     my $r;
-	my $total_count = 0; 
+    my $total_count = 0;
 
     $r .=
         "Mailing List: "
@@ -4629,109 +4629,120 @@ sub remove_old_tracker_data {
       . '-' x 72 . "\n";
 
     if ( $self->{ls}->param('tracker_data_auto_remove') == 1 ) {
+        if ( can_use_DateTime() ) {
 
-        my $translation_key = {
-            '1m',  => 1,
-            '2m',  => 2,
-            '3m',  => 3,
-            '4m',  => 4,
-            '5m',  => 5,
-            '6m',  => 6,
-            '7m',  => 7,
-            '8m',  => 8,
-            '9m',  => 9,
-            '10m', => 10,
-            '11m', => 11,
-            '1y',  => 12,
-            '2y',  => 24,
-            '3y',  => 36,
-            '4y',  => 48,
-            '5y'   => 60,
-        };
+            my $translation_key = {
+                '1m',  => 1,
+                '2m',  => 2,
+                '3m',  => 3,
+                '4m',  => 4,
+                '5m',  => 5,
+                '6m',  => 6,
+                '7m',  => 7,
+                '8m',  => 8,
+                '9m',  => 9,
+                '10m', => 10,
+                '11m', => 11,
+                '1y',  => 12,
+                '2y',  => 24,
+                '3y',  => 36,
+                '4y',  => 48,
+                '5y'   => 60,
+            };
 
-        my $timespan;
-        if (
-            exists(
-                $translation_key->{ $self->{ls}
-                      ->param('tracker_data_auto_remove_after_timespan') }
-            )
-          )
-        {
-            $timespan = $translation_key->{ $self->{ls}
-                  ->param('tracker_data_auto_remove_after_timespan') };
-            require DateTime;
-            my $old_epoch =
-              DateTime->today->subtract(
-                months => $translation_key->{ $self->{ls}
-                      ->param('tracker_data_auto_remove_after_timespan') } )->epoch;
+            my $timespan;
+            if (
+                exists(
+                    $translation_key->{
+                        $self->{ls}
+                          ->param('tracker_data_auto_remove_after_timespan')
+                    }
+                )
+              )
+            {
+                $timespan = $translation_key->{ $self->{ls}
+                      ->param('tracker_data_auto_remove_after_timespan') };
+                require DateTime;
+                my $old_epoch = DateTime->today->subtract(
+                    months => $translation_key->{
+                        $self->{ls}
+                          ->param('tracker_data_auto_remove_after_timespan')
+                    }
+                )->epoch;
 
-            #$r .= "epoch: " . $old_epoch . "\n";
-            #$r .= "localtime: " . scalar localtime($old_epoch) . "\n";
+                #$r .= "epoch: " . $old_epoch . "\n";
+                #$r .= "localtime: " . scalar localtime($old_epoch) . "\n";
 
-            my $old_msg_id = DADA::App::Guts::message_id($old_epoch);
-            $r .= "\tRemoving clickthrough data that's older than, "
-              . scalar localtime($old_epoch) . "\n";
+                my $old_msg_id = DADA::App::Guts::message_id($old_epoch);
+                $r .= "\tRemoving clickthrough data that's older than, "
+                  . scalar localtime($old_epoch) . "\n";
 
-            my $query =
-                'DELETE FROM '
-              . $self->{sql_params}->{clickthrough_url_log_table}
-              . ' WHERE msg_id <= ? AND list = ?';
+                my $query =
+                    'DELETE FROM '
+                  . $self->{sql_params}->{clickthrough_url_log_table}
+                  . ' WHERE msg_id <= ? AND list = ?';
 
-            my $sth = $self->{dbh}->prepare($query);
-            my $c = $sth->execute( $old_msg_id, $self->{name} )
-		 		or croak "cannot do statement! " . $self->{dbh}->errstr;
-            $sth->finish;
-            if ( $c eq '0E0' ) {
-                $c = 0;
+                my $sth = $self->{dbh}->prepare($query);
+                my $c   = $sth->execute( $old_msg_id, $self->{name} )
+                  or croak "cannot do statement! " . $self->{dbh}->errstr;
+                $sth->finish;
+                if ( $c eq '0E0' ) {
+                    $c = 0;
+                }
+
+                $total_count += $c;
+
+                $r .=
+                    "\tRemoved "
+                  . $c
+                  . " rows(s) in "
+                  . $self->{sql_params}->{clickthrough_url_log_table} . "\n";
+
+                undef $query;
+                undef $sth;
+                undef $c;
+
+                my $query =
+                    'DELETE FROM '
+                  . $self->{sql_params}->{mass_mailing_event_log_table}
+                  . ' WHERE msg_id <= ? AND list = ?';
+
+                my $sth = $self->{dbh}->prepare($query);
+                my $c   = $sth->execute( $old_msg_id, $self->{name} )
+                  or croak "cannot do statement! " . $self->{dbh}->errstr;
+                $sth->finish;
+                if ( $c eq '0E0' ) {
+                    $c = 0;
+                }
+
+                $total_count += $c;
+
+                $r .=
+                    "\tRemoved "
+                  . $c
+                  . " rows(s) in "
+                  . $self->{sql_params}->{mass_mailing_event_log_table} . "\n";
+
             }
-			
-			$total_count += $c; 
-			
-            $r .= "\tRemoved " 
-				. $c 
-				. " rows(s) in " 
-				. $self->{sql_params}->{clickthrough_url_log_table} 
-				. "\n";
-				
-			undef $query; 
-			undef $sth; 
-			undef $c; 
-			
-            my $query =
-                'DELETE FROM '
-              . $self->{sql_params}->{mass_mailing_event_log_table}
-              . ' WHERE msg_id <= ? AND list = ?';
-
-            my $sth = $self->{dbh}->prepare($query);
-            my $c = $sth->execute( $old_msg_id, $self->{name} )
-				or croak "cannot do statement! " . $self->{dbh}->errstr;
-            $sth->finish;
-            if ( $c eq '0E0' ) {
-                $c = 0;
+            else {
+                $r .=
+                  "Unknown timespan: "
+                  . $self->{ls}
+                  ->param('tracker_data_auto_remove_after_timespan') . "\n";
             }
-			
-			$total_count += $c; 
-			
-            $r .= 
-				"\tRemoved " 
-				. $c 
-				. " rows(s) in " 
-				. $self->{sql_params}->{mass_mailing_event_log_table} 
-				. "\n";
-			
         }
         else {
-            $r .= "Unknown timespan: "
-              . $self->{ls}->param('tracker_data_auto_remove_after_timespan') . "\n";
+            $r .= "\tDisabled. The DateTime CPAN module will need to be installed to enable this feature.\n";
         }
     }
     else {
-        $r .= "\tDisabled.\n";
+        $r .= "\tNot enabled.\n";
     }
 
-    return ($r . "\n", $total_count);
+    return ( $r . "\n", $total_count );
 
 }
+
 
 sub optimize_tracker_data { 
 
