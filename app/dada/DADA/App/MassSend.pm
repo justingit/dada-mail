@@ -1513,7 +1513,7 @@ sub send_email {
                     active_mailouts        => $active_mailouts,
                     
                     schedule_last_checked_frt => scalar formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
-                    can_use_datetime  => scalar DADA::App::Guts::can_use_datetime(), 
+                    can_use_datetime  => scalar DADA::App::Guts::can_use_DateTime_Event_Recurrence(), 
                     can_use_HTML_Tree => scalar DADA::App::Guts::can_use_HTML_Tree(), 
                     sched_flavor      => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor},
 					default_layout => $default_layout, 

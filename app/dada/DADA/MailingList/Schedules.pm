@@ -209,7 +209,7 @@ sub run_schedules {
 		#
 		#
         my $schedule_times = [];
-        my $can_use_datetime = DADA::App::Guts::can_use_datetime();
+        my $can_use_datetime = DADA::App::Guts::can_use_DateTime_Event_Recurrence();
         if ( $sched->{schedule_type} eq 'recurring' && $can_use_datetime == 0 )
         {
             $rb .=
