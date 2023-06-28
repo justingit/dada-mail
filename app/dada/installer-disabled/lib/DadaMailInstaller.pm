@@ -1516,6 +1516,10 @@ sub grab_former_config_vals {
             $opt->{'captcha_params_v3_score_threshold'} 
 				= $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{score_threshold};
         }		
+        if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{hide_badge} ) ) {
+            $opt->{'g-recaptcha-response'} 
+				= $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{hide_badge};
+        }			
     }
 	
 	# Google Maps API
@@ -1964,6 +1968,7 @@ sub query_params_to_install_params {
       captcha_params_v3_public_key
       captcha_params_v3_private_key	 
 	  captcha_params_v3_score_threshold 
+	  g-recaptcha-response
 	  
 	  configure_google_maps
 	  google_maps_api_key
@@ -2980,6 +2985,8 @@ sub create_dada_config_file {
 	    $captcha_params->{captcha_params_v3_public_key}      = clean_up_var( $ip->{-captcha_params_v3_public_key} );
         $captcha_params->{captcha_params_v3_private_key}     = clean_up_var( $ip->{-captcha_params_v3_private_key} );
         $captcha_params->{captcha_params_v3_score_threshold} = clean_up_var( $ip->{-captcha_params_v3_score_threshold} );
+        $captcha_params->{g-recaptcha-response}      = clean_up_var( $ip->{-g-recaptcha-response} );
+		
 	}
 
 

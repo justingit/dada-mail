@@ -90,10 +90,15 @@
 							<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->			
 								<input 
 									type="hidden"
-									id="g-recaptcha-response_reset_pass"
+									id="ww_reset_pass"
 									class="g-recaptcha-response"
 									name="g-recaptcha-response"
 								>
+								
+								<!-- tmpl_if captcha_params_v3_hide_badge -->
+									<!-- tmpl_include google_recaptcha_v3_branding_visibility.tmpl -->
+								<!-- /tmpl_if -->
+								
 							<!-- /tmpl_if -->
 								<div clas="row">
 									<div class="small-12 columns">

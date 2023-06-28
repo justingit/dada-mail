@@ -170,6 +170,7 @@ captcha_params_v2_public_key      => $DADA::Config::RECAPTCHA_PARAMS->{v2}->{pub
 captcha_params_v2_private_key     => $DADA::Config::RECAPTCHA_PARAMS->{v2}->{private_key},
 captcha_params_v3_public_key      => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{public_key},
 captcha_params_v3_private_key     => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key},
+captcha_params_v3_hide_badge      => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{hide_badge},
 
 can_use_Google_reCAPTCHA_v2       => scalar DADA::App::Guts::can_use_Google_reCAPTCHA_v2(), 
 can_use_Google_reCAPTCHA_v3       => scalar DADA::App::Guts::can_use_Google_reCAPTCHA_v3(), 

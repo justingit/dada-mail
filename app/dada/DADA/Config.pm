@@ -513,6 +513,8 @@ $RECAPTCHA_PARAMS //= {
 	v3 => {
 	    public_key        =>  undef,
 	    private_key       =>  undef,
+		hide_badge        =>  1,
+		
 	},
 };
 
