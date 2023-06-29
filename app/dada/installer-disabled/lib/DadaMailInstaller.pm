@@ -897,7 +897,6 @@ sub scrn_configure_dada_mail {
         {
             -screen => 'installer_configure_dada_mail_scrn.tmpl',
             -with   => 'list',
-            -expr   => 1,
             -wrapper_params => {
                 -Use_Custom => 0,
             },
@@ -5021,7 +5020,6 @@ sub cgi_test_user_template {
     my $r = DADA::Template::Widgets::screen(
         {
             -screen => 'test_user_template.tmpl',
-            -expr   => 1,
             -vars   => {
                 template_options_USER_TEMPLATE => $template_options_manual_template_url,
                 can_use_lwp_simple             => $can_use_lwp_simple,
@@ -5062,7 +5060,6 @@ sub cgi_test_amazon_ses_configuration {
     my $r = DADA::Template::Widgets::screen(
         {
             -screen => 'amazon_ses_get_stats_widget.tmpl',
-            -expr   => 1,
             -vars   => {
                 using_ses                        => 1,
                 has_ses_options                  => 1,
@@ -5109,7 +5106,6 @@ sub cgi_test_CAPTCHA_Google_reCAPTCHA {
     $r = DADA::Template::Widgets::screen(
         {
             -screen => 'captcha_google_recaptcha_test_widget.tmpl',
-            -expr   => 1,
             -vars   => {
                 errors                       => $errors,
                 Self_URL                     => $Self_URL,
@@ -5143,7 +5139,6 @@ sub cgi_test_FastCGI {
     $r = DADA::Template::Widgets::screen(
         {
             -screen => 'fast_cgi_test_widget.tmpl',
-            -expr   => 1,
             -vars   => {
                 errors   => $errors,
                 Self_URL => $Self_URL,
@@ -5170,7 +5165,6 @@ sub cgi_test_magic_template_diag_box {
     my $r = DADA::Template::Widgets::screen(
         {
             -screen => 'test_magic_template.tmpl',
-            -expr   => 1,
             -vars   => {
                 template_url         => scalar $q->param('template_options_template_url'),
                 status               => $t_status, 

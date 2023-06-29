@@ -1881,7 +1881,6 @@ sub unsubscribe {
         {
             -screen => 'list_unsubscribe.tmpl',
             -with   => 'list',
-            -expr   => 1,
             -vars   => {
                 token                         => $token,
                 token_context                 => $token_context,
@@ -3018,7 +3017,6 @@ sub _subscription_confirmation_success_msg {
             {
                 -data                     => \$s,
                 -with                     => 'list',
-                -expr                     => 1,
                 -vars                     => { chrome => $args->{-chrome}, },
                 -list_settings_vars_param => { -list => $ls->param('list'), -dot_it => 1, },
                 -subscriber_vars_param    => {
@@ -3033,7 +3031,6 @@ sub _subscription_confirmation_success_msg {
         $r = DADA::Template::Widgets::screen(
             {
                 -data                     => \$s,
-                -expr                     => 1,
                 -vars                     => { chrome => $args->{-chrome}, },
                 -list_settings_vars_param => { -list => $ls->param('list'), -dot_it => 1, },
                 -subscriber_vars_param    => {

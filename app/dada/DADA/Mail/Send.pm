@@ -3333,7 +3333,6 @@ sub _email_batched_finished_notification {
     my $mrt_scrn = DADA::Template::Widgets::screen(
         {
             -screen => 'plugins/tracker/message_report_table.tmpl',
-            -expr   => 1,
             -vars   => {
                 a_in_t => 0,
                 %$m_report,
@@ -3608,9 +3607,8 @@ sub _mail_merge {
                 message_id => $labeled_data{message_id},
 				%{$args->{-vars}},
                 %labeled_data,
-            },
-            -expr => $expr,
-        }
+            }
+		}
     );
 
 	

@@ -456,7 +456,6 @@ for(@expr_tmpls){
 	my ($status, $errors) = DADA::Template::Widgets::validate_screen(
 		{ 
 			-data => \$d, 
-			-expr => 1, 
 		}
 	); 
 	ok($status == 1); 

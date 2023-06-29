@@ -1137,7 +1137,6 @@ sub create_index_nav {
         {
             -screen => 'archive_index_nav_table_widget.tmpl',
             -list   => $self->{name},
-            -expr   => 1, 
             -vars   => {
                 url             => $url,
                 flavor_label    => $af,
@@ -2807,7 +2806,6 @@ sub _parse_in_list_info {
     return  DADA::Template::Widgets::screen(
         {
             -data                     => \$args{-data},
-			-expr => 1, 
             -vars                     => $self->{ls}->params,
             -list_settings_vars       => $self->{ls}->params,
             -list_settings_vars_param => {-dot_it => 1},

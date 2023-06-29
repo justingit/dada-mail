@@ -117,7 +117,6 @@ sub cgi_default {
          {
              -screen         => 'plugins/change_list_shortname/default.tmpl',
              -with           => 'admin',
-			 -expr           => 1, 
              -wrapper_params => {
                  -Root_Login => $root_login,
                  -List       => $list,
@@ -209,7 +208,6 @@ sub verify_change_list_shortname {
      my $scrn = DADA::Template::Widgets::screen(
          {
              -screen         => 'plugins/change_list_shortname/verify.tmpl',
-  			 -expr           => 1, 
              -vars => {
 				Plugin_URL => $Plugin_Config->{Plugin_URL}, 
 				errors     => $errors, 

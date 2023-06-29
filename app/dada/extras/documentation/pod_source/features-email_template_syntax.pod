@@ -407,33 +407,28 @@ More information:
 
 L<http://search.cpan.org/~samtregar/HTML-Template-Expr/Expr.pm>
 
-To enable, log into your list control panel and under, B<Manage Copy -&gt; Email Templates>, you should see an option, under, B<Advanced Options> titled, 
+Here's an example of using these expressions:
 
-B<Use the advanced templating syntax for email messages.>
-
-You'll want to enable this option and HTML::Template::Expr syntax should be enabled. 
-
-With this option enabled, you can make statements, such as this: 
-
- Hello <!-- tmpl_var subscriber.first_name -->, 
- 
- <!-- tmpl_if expr="subscriber.favorite_fruit eq 'apples'" -->
-	 I see you like apples!
- <!-- tmpl_else -->
-	 You don't like apples?!
- <!-- /tmpl_if -->
+	Hello <!-- tmpl_var subscriber.first_name -->, 
+	
+	<!-- tmpl_if expr="subscriber.favorite_fruit eq 'apples'" -->
+		I see you like apples!
+	<!-- tmpl_else -->
+		You don't like apples?!
+	<!-- /tmpl_if -->
 
 This will print: 
 
- Hello John,
+	Hello John,
  
- I see you like apples!
+	I see you like apples!
 
 If your subscriber has the field value, "first_name" set to, "John" and the, "favorite_fruit" set to, "Apples". If favorite fruit is
 set to something other than apples, this would be printed: 
 
- Hello John,
- 
- You don't like apples?!
+	Hello John,
+	
+	You don't like apples?!
+
 
 =cut

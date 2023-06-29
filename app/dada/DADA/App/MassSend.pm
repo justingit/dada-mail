@@ -1465,7 +1465,6 @@ sub send_email {
                     -Root_Login => $root_login,
                     -List       => $self->{list},
                 },
-                -expr => 1,
                 -vars => {
 
                     screen => 'send_email',
@@ -2267,11 +2266,6 @@ sub list_invite {
 
 	    $fm->use_header_info(1);
 	    $fm->use_email_templates(0);
-
-	    if ( $args->{-tmpl_params}->{-expr} == 1 ) {
-	        $fm->override_validation_type('expr');
-	    }
-
         $fm->Subject(
 			$subject
 		); 	
@@ -2785,7 +2779,6 @@ sub valid_template_markup_check {
     my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
         {
             -data => \$str,
-            -expr => $expr,
         }
     );
     if ( $valid == 0 ) {
@@ -2814,7 +2807,6 @@ sub valid_template_markup_check {
     my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
         {
             -data => \$new_data,
-            -expr => $expr,
         }
     );
     if ( $valid == 0 ) {
@@ -2874,7 +2866,6 @@ sub valid_template_markup_check {
 		    my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
 		        {
 		            -data => \$n_html,
-		            -expr => $expr,
 		        }
 		    );
 		    if ( $valid == 0 ) {

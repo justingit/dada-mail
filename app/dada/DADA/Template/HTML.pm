@@ -307,7 +307,6 @@ sub admin_template {
 	my $final_admin_template = DADA::Template::Widgets::screen( 
 									{
 										-data => \$admin_template,
-										-expr => 1,  
 										-vars => 
 											{
 												login_switch_widget            => $login_switch_widget, 

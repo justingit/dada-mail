@@ -224,7 +224,6 @@ sub make_admin_menu {
                 $subnav->{-Title} = DADA::Template::Widgets::screen(
                     {
                         -data => \$subnav->{-Title},
-                        -expr => 1, 
                         -vars => {
                             'list_settings.enable_mass_subscribe'                   => $ls->param('enable_mass_subscribe'),
                             'list_settings.enable_mass_subscribe_only_w_root_login' => $ls->param('enable_mass_subscribe_only_w_root_login'), 

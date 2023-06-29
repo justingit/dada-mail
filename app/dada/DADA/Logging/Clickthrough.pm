@@ -4004,7 +4004,6 @@ sub message_email_report_table {
 	    $html = DADA::Template::Widgets::screen(
 	        {
 	            -screen           => 'plugins/tracker/message_email_report_table.tmpl',
-				-expr => 1, 
 	            -vars => {
 					type          => $args->{-type},
 					report        => $report, 
@@ -4345,7 +4344,6 @@ sub message_email_activity_listing_table {
 	    $html = DADA::Template::Widgets::screen(
 	        {
 	            -screen           => 'plugins/tracker/message_email_report_table.tmpl',
-				-expr => 1, 
 	            -vars => {
 	#				type          => $args->{-type},
 					report        => $report, 
@@ -4535,7 +4533,6 @@ sub message_individual_email_activity_report_table {
 	    $html = DADA::Template::Widgets::screen(
 	        {
 	            -screen           => 'plugins/tracker/message_individual_email_activity_report_table.tmpl',
-				-expr => 1, 
 	            -vars => {
 					email         => $args->{-email}, 
 					mid           => $args->{-mid},
@@ -4936,7 +4933,6 @@ sub send_analytics_email_notification {
     my $scrn = DADA::Template::Widgets::screen(
         {
             -screen => 'plugins/tracker/message_report_table.tmpl',
-            -expr   => 1,
             -vars   => {
                 a_in_t => 0,
                 %$m_report,

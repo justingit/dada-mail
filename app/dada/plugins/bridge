@@ -391,7 +391,6 @@ sub cgi_awaiting_msgs {
   
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -expr           => 1,
             -screen         => 'plugins/bridge/awaiting_msgs.tmpl',
             -with           => 'admin',
             -wrapper_params => {
@@ -958,7 +957,6 @@ sub edit {
    
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -expr           => 1,
             -screen         => 'plugins/bridge/default.tmpl',
             -with           => 'admin',
             -wrapper_params => {

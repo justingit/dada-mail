@@ -142,7 +142,7 @@ sub cgi_user_error {
             $list_login_form = DADA::Template::Widgets::list_popup_login_form();
         }
         elsif ( $DADA::Config::LOGIN_WIDGET eq 'text_box' ) {
-            $list_login_form = DADA::Template::Widgets::screen( { -screen => 'text_box_login_form.tmpl', -expr => 1 } );
+            $list_login_form = DADA::Template::Widgets::screen( { -screen => 'text_box_login_form.tmpl' } );
         }
         else {
             warn "'$DADA::Config::LOGIN_WIDGET' misconfigured!";
@@ -238,7 +238,6 @@ sub cgi_user_error {
                 {
                     -screen                   => 'resend_conf_captcha_step.tmpl',
                     -with                     => 'list',
-                    -expr                     => 1,
                     -list_settings_vars_param => { -list => $ls->param('list') },
                     -subscriber_vars_param    => {
                         -list  => $list,

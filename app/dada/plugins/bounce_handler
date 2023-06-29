@@ -304,7 +304,6 @@ sub cgi_default {
         {
             -screen         => 'plugins/bounce_handler/default.tmpl',
             -with           => 'admin',
-            -expr           => 1,
             -wrapper_params => {
                 -Root_Login => $root_login,
                 -List       => $list,
