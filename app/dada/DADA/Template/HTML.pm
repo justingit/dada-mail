@@ -1,6 +1,11 @@
 package DADA::Template::HTML;
 
-use lib qw(../../../ ../../../DADA/perllib); 
+use lib "../../";
+use lib "../../DADA/perllib";
+use lib "../../DADA/App/Support";
+use lib './';
+use lib './DADA/perllib';
+use lib './DADA/App/Support';
 
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts; 
@@ -8,6 +13,7 @@ use Try::Tiny;
 
 use Carp qw(croak carp); 
 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_Template_HTML};
 
 BEGIN {
    if($] > 5.008){
@@ -15,7 +21,6 @@ BEGIN {
       require Config;
    }
 }
-
 
 my $q; 
 lame_init(); 
@@ -414,6 +419,27 @@ sub default_template {
             warn 'Unknown user template type: "' . $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} . '"';
         }
     }
+	
+	
+	# I'm guessing this is what gets hit, when there's no reasonable template to use: 
+	#
+    my $content_tag                = quotemeta('<!-- tmpl_var content -->');
+    # my $header_content_tag         = quotemeta('<!-- tmpl_var header_content -->');
+	# my $header_content_include_tag = quotemeta('<!-- tmpl_include list_template_header_code_block.tmpl -->');
+	
+	
+	unless($tmpl =~ m/$content_tag/){ 
+		warn 'cannot find content_tag in template, using default';
+		undef($tmpl);
+	}
+	#unless(
+	#	   $tmpl =~ m/$header_content_tag/
+	#	|| $tmpl =~ m/$header_content_include_tag/
+	#){
+	#	warn 'cannot find header_content_tag in template, using default';
+	#	undef($tmpl);
+	#}
+	
     if ( !defined($tmpl) ) {
         require DADA::Template::Widgets;
         $tmpl = DADA::Template::Widgets::_raw_screen(
@@ -422,7 +448,47 @@ sub default_template {
                 -encoding => 1,
             }
         );
+		
+		# warn '$tmpl: ' . $tmpl; 
+		
+		#Utter sanity check: 
+		unless($tmpl =~ m/$content_tag/){ 
+			warn 'cannot find content_tag in default template - using bare bones';
+			undef($tmpl);
+		}
+		#unless(
+		#	   $tmpl =~ m/$header_content_tag/
+		#	|| $tmpl =~ m/$header_content_include_tag/
+		#){
+		#	warn 'cannot find header_content_tag in default template, using bare bones';
+		#	undef($tmpl);
+		#}
+		
+	    if ( !defined($tmpl) ) {
+		
+			$tmpl = <<EOF
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+<!-- <!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var VER --> -->
+<!-- tmpl_include list_template_header_code_block.tmpl -->
+</head>
+<body>
+<!-- tmpl_var content --> 	
+</body>
+</html>
+
+EOF
+; 
+		
+		}
+		
+		
     }
+	
+	
+	
+	
     return $tmpl;
 }
 
@@ -738,26 +804,29 @@ sub open_template {
 sub list_template {
 
     require DADA::Template::Widgets;
+
     # DEV: Weird. I know.
     if ( $DADA::Config::PROGRAM_URL eq
         'https://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' )
     {
         $DADA::Config::PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
     }
+	
     my %args = (
         -List          => undef,
         -Part          => undef,
-        -Use_Custom    => 1,
+        -Use_Custom    => 1,		# Use Custom is set to, "0" for screens like, "admin"
         -Title         => undef,
         #-HTML_Header   => 1,
         -header_params => {},	 # this is used only when you delete a list. 
-        -data          => undef, # used in previewing a template.  
+        -data          => undef, # (only?) used in previewing a template.  
         -vars          => {},
 		-prof_sess_obj => undef,
         @_,
     );
+	
     my $list = undef;
-    if ( $args{ -List } ) {
+    if ( defined($args{ -List }) ) {
         $list = $args{ -List };
     }
 
@@ -767,65 +836,124 @@ sub list_template {
         $ls = DADA::MailingList::Settings->new( { -list => $list } );
     }
 
-    my $list_template = undef;
+    my $list_template          = undef;
+	
+	# are we using a custom or just the default template? 
     my $using_default_template = 1; 
     
     if ( defined( $args{ -data } ) ) {	
-        $list_template = ${ $args{ -data } };
+		
+		warn 'passing data' if $t; 
+		
+        $list_template          = ${ $args{ -data } };
+		# No, because the template is being passed in, -data.
         $using_default_template = 0; 
     }
-    elsif ($list) {
-        if ( $ls->param('get_template_data') eq "from_url"
-            && DADA::App::Guts::isa_url( $ls->param('url_template') ) == 1 )
-        {
-			# this is pretty bad, as there's no feedback of if the URL returned  any data that's useful: 
-            $list_template = open_template_from_url( -URL => $ls->param('url_template'), );
+	else { 
+	    if ($list) {
+			warn 'passed list' if $t; 
+		
+	        if ( 
+				   $ls->param('get_template_data') eq "from_url"
+	            && DADA::App::Guts::isa_url( $ls->param('url_template') ) == 1 
+			) {
+			
+				warn 'getting template drom url' if $t; 
+			
+				# this is pretty bad, as there's no feedback of if the URL returned  any data that's useful: 
+	            $list_template = open_template_from_url( -URL => $ls->param('url_template'), );
               
-			  # We can just go with, "is it defined, or not?"
-			  if(!defined($list_template)){
-				  $using_default_template = 1; 
-			  }
-			  else { 
-			  	 $using_default_template = 0; 
-			  }
-        }
-        elsif ( $ls->param('get_template_data') eq 'from_default_template' ) {
-
-            $list_template = default_template();
-            
-        }
-        elsif (
-            -e make_safer(
-                $DADA::Config::TEMPLATES . '/' . $list . '.template' ) )
-        {
-
-            $list_template = DADA::Template::Widgets::_slurp(
-                make_safer(
-                    $DADA::Config::TEMPLATES . '/' . $list . '.template'
-                )
-            );
-            $using_default_template = 0; 
-
-        }    # meaning, there's no list template
-		# This also means that none of the above methods were successful: 
-       
-	   
-	   
-	    if($using_default_template == 1){
-            $list_template = default_template();
-        }
-
-    }    # meaning, no list was passed:
-    else {
-        $list_template = default_template({-Use_Custom => $args{-Use_Custom}});
-    }
+				  # We can just go with, "is it defined, or not?"
+				  if(!defined($list_template)){
+					  # yes, because the URL returned nothing of interest
+					  $using_default_template = 1; 
+				  }
+				  else { 
+					 # This could be a good place to make sure the template is valid (has the tags we need).  
+				 
+					 # no, because the template we have is valid: 
+				  	 $using_default_template = 0; 
+				  }
+	        }
+	        elsif ( $ls->param('get_template_data') eq 'from_default_template' ) {
+			
+				warn 'from_default_template' if $t; 
+			
+				$using_default_template = 1; 
+	        }
+	        elsif($ls->param('get_template_data') eq 'from_template_file'){ 
+			
+				warn 'from_template_file' if $t; 
+		
+				if(
+					-e make_safer($DADA::Config::TEMPLATES . '/' . $list . '.template' ) 
+				){ 
+					
+					warn 'custom template file exists, so we\'ll usd that' if $t; 
+					
+					# no custom template, so we're not going to use nothing, right? 
+					$using_default_template = 0; 
+			        
+					$list_template = DADA::Template::Widgets::_slurp(
+		                make_safer(
+		                    $DADA::Config::TEMPLATES . '/' . $list . '.template'
+		                )
+	            	);
+					
+					if(defined($list_template)){ 
+						
+						warn 'defined($list_template)' if $t; 
+						$using_default_template = 0; 
+					}
+					else { 
+						$using_default_template = 1; 			
+					}
+					
+				}
+				else { 
+					warn '! defined($list_template)' if $t; 
+					$using_default_template = 1; 
+				}
+			}
+		
+			if($using_default_template == 1){
+				warn '$using_default_template == 1' if $t; 
+				$list_template = default_template();
+		    }
+		
+			if(! $list_template) { 
+				warn '! $list_template' if $t; 
+				$list_template = default_template();
+			}
+		
+		}
+		else {
+			$list_template = default_template({-Use_Custom => $args{-Use_Custom}});
+		}
+	}
+	
+	# let's check!
+    my $content_tag                = quotemeta('<!-- tmpl_var content -->');
+   # my $header_content_tag         = quotemeta('<!-- tmpl_var header_content -->');
+   # my $header_content_include_tag = quotemeta('<!-- tmpl_include list_template_header_code_block.tmpl -->');
+	
+	unless($list_template =~ m/$content_tag/){ 
+		warn 'cannot find content_tag in list template - using bare bones';
+		$list_template = default_template(); 
+	}
+	#unless(
+	#	   $list_template =~ m/$header_content_tag/
+	#	|| $list_template =~ m/$header_content_include_tag/
+	#){
+	#	warn 'cannot find header_content_tag in list template, using bare bones';
+	#	$list_template = default_template(); 
+	#}
 
     my $prof_email         = '';
     my $is_logged_in       = 0;
     my $subscribed_to_list = 0;
     my $prof_sess          = undef; 
     my $profile_widget     = undef;
-    
     
     my $header_options = {
         include_jquery_lib   => 1,
@@ -839,7 +967,7 @@ sub list_template {
 #    warn q{$using_default_template} . $using_default_template; 
     
     if(
-              $args{-Use_Custom} == 1
+          $args{-Use_Custom} == 1
            && $DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled} == 1 
            && $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} eq 'magic'
            && $using_default_template == 1
@@ -876,14 +1004,8 @@ sub list_template {
         carp "CAUGHT Error with Sessioning: $_";
     };
 	
-     my $content_tag = quotemeta('<!-- tmpl_var content -->');
-     if ( $list_template !~ m/$content_tag/ ) {
-          # warn 'can\'t find content tag in list template'; 
-     }
     
-    
-
-	 
+ 
 	 my $header_content = DADA::Template::Widgets::screen({
 	 		-screen => 'list_template_header_code_block.tmpl', 
 			-vars   => { 

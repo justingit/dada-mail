@@ -239,6 +239,7 @@ my @Debug_Option_Names = qw(
   DADA_Profile
   DADA_Profile_Fields
   DADA_Profile_Session
+  DADA_Template_HTML
   DBI
   HTML_TEMPLATE
   NET_POP3
@@ -1516,7 +1517,7 @@ sub grab_former_config_vals {
 				= $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{score_threshold};
         }		
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{hide_badge} ) ) {
-            $opt->{'g-recaptcha-response'} 
+            $opt->{'captcha_params_v3_hide_badge'} 
 				= $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{hide_badge};
         }			
     }
@@ -1967,7 +1968,7 @@ sub query_params_to_install_params {
       captcha_params_v3_public_key
       captcha_params_v3_private_key	 
 	  captcha_params_v3_score_threshold 
-	  g-recaptcha-response
+	  captcha_params_v3_hide_badge
 	  
 	  configure_google_maps
 	  google_maps_api_key
@@ -2891,12 +2892,12 @@ sub create_dada_config_file {
     }
 		
     my $debugging_options_params = {};
-	warn '`here.`';
+	# warn '`here.`';
     if ( $ip->{-configure_debugging} == 1 ) {
-			warn 'here.1';
+			# warn 'here.1';
         $debugging_options_params->{configure_debugging} = 1;
         for my $debug_option (@Debug_Option_Names) {
-			warn '$debug_option: ' . $debug_option;
+			# warn '$debug_option: ' . $debug_option;
             $debugging_options_params->{ 'debugging_options_' . $debug_option } =
               clean_up_var( $ip->{ '-debugging_options_' . $debug_option } ) || 0;
         }
@@ -2984,7 +2985,7 @@ sub create_dada_config_file {
 	    $captcha_params->{captcha_params_v3_public_key}      = clean_up_var( $ip->{-captcha_params_v3_public_key} );
         $captcha_params->{captcha_params_v3_private_key}     = clean_up_var( $ip->{-captcha_params_v3_private_key} );
         $captcha_params->{captcha_params_v3_score_threshold} = clean_up_var( $ip->{-captcha_params_v3_score_threshold} );
-        $captcha_params->{g-recaptcha-response}      = clean_up_var( $ip->{-g-recaptcha-response} );
+        $captcha_params->{captcha_params_v3_hide_badge}      = clean_up_var( $ip->{-hide_bage} );
 		
 	}
 

@@ -10226,8 +10226,9 @@ sub edit_template {
         my $header_content_tag_found_in_url_template     = 0;
         my $header_content_tag_found_in_default_template = 0;
 		
-        my $content_tag        = quotemeta('<!-- tmpl_var content -->');
-        my $header_content_tag = quotemeta('<!-- tmpl_var header_content -->');
+        my $content_tag                = quotemeta('<!-- tmpl_var content -->');
+        my $header_content_tag         = quotemeta('<!-- tmpl_var header_content -->');
+		my $header_content_include_tag = quotemeta('<!-- tmpl_include list_template_header_code_block.tmpl -->');
 
         if (   $DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled} == 1
             && $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} eq 'magic' )
@@ -10252,7 +10253,10 @@ sub edit_template {
             if ( $raw_template =~ m/$content_tag/ ) {
                 $content_tag_found_in_default_template = 1;
             }
-            if ( $raw_template =~ m/$header_content_tag/ ) {
+            if (
+				   $raw_template =~ m/$header_content_tag/ 
+				|| $raw_template =~ m/$header_content_include_tag/
+			) {
                 $header_content_tag_found_in_default_template = 1;
             }
         }
@@ -10267,7 +10271,10 @@ sub edit_template {
             $content_tag_found_in_template = 1;
         }
 		
-        if ( $edit_this_template =~ m/$header_content_tag/ ) {
+        if ( 
+			   $edit_this_template =~ m/$header_content_tag/
+			|| $edit_this_template =~ m/$header_content_include_tag/ 
+		) {
             $header_content_tag_found_in_template = 1;
         }
 
@@ -10309,19 +10316,19 @@ sub edit_template {
                         $content_tag_found_in_url_template = 1;
                     }
 					
-                    if ( $tmp_tmpl =~ m/$header_content_tag/ ) {
+                    if (
+					       $tmp_tmpl =~ m/$header_content_tag/ 
+						|| $tmp_tmpl =~ m/$header_content_include_tag/ 
+					) {
                         $header_content_tag_found_in_url_template = 1;
                     }
 					
                 }
                 else {
-
                     $template_url_check = 0;
-
                 }
             }
         }
-
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'edit_template_screen.tmpl',
@@ -10350,6 +10357,7 @@ sub edit_template {
                       $content_tag_found_in_url_template,
                     content_tag_found_in_default_template =>
                       $content_tag_found_in_default_template,
+					  header_content_tag_found_in_default_template => $header_content_tag_found_in_default_template,
 					  
 				  header_content_tag_found_in_template     => $header_content_tag_found_in_template,
 				  header_content_tag_found_in_url_template => $header_content_tag_found_in_url_template,
@@ -16451,14 +16459,13 @@ sub transform_to_pro {
             open my $config, '>>', $config_file or die $!;
             print $config $config_chunk or die $!;
             close $config or die;
-        }
-        catch {
+        } catch {
             $status = 0;
             $error  = $_;
             warn $_;
         };
+		
         if ( $status == 1 ) {
-
             $c->flush;
             $self->header_type('redirect');
             $self->header_props( -url => $DADA::Config::S_PROGRAM_URL

@@ -554,6 +554,7 @@ $DEBUG_TRACE //= {
 	DADA_App_HTMLtoMIMEMessage         => 0, 
     DADA_App_Subscriptions             => 0,
     DADA_App_WebServices               => 0,
+	DADA_Template_HTML                 => 0,
 	DADA_Logging_Clickthrough          => 0,
     DADA_Mail_MailOut                  => 0,
     DADA_Mail_Send                     => 0,
