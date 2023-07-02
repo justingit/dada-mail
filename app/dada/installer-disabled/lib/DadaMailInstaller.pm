@@ -1519,7 +1519,10 @@ sub grab_former_config_vals {
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{hide_badge} ) ) {
             $opt->{'captcha_params_v3_hide_badge'} 
 				= $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{hide_badge};
-        }			
+        }
+		else { 
+            $opt->{'captcha_params_v3_hide_badge'} = 0; 
+		}			
     }
 	
 	# Google Maps API
@@ -2985,7 +2988,7 @@ sub create_dada_config_file {
 	    $captcha_params->{captcha_params_v3_public_key}      = clean_up_var( $ip->{-captcha_params_v3_public_key} );
         $captcha_params->{captcha_params_v3_private_key}     = clean_up_var( $ip->{-captcha_params_v3_private_key} );
         $captcha_params->{captcha_params_v3_score_threshold} = clean_up_var( $ip->{-captcha_params_v3_score_threshold} );
-        $captcha_params->{captcha_params_v3_hide_badge}      = clean_up_var( $ip->{-hide_bage} );
+        $captcha_params->{captcha_params_v3_hide_badge}      = clean_up_var( $ip->{-captcha_params_v3_hide_badge} );
 		
 	}
 
