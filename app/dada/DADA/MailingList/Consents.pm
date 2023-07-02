@@ -98,7 +98,7 @@ sub thawish_for_reading {
 	
 	require YAML::Tiny; 
 	my $yaml = YAML::Tiny->read_string($setting);
-	
+
 	if($yaml->[0]){ 
 		return $yaml->[0]->{consent_ids};	
 	}
@@ -144,11 +144,18 @@ sub give_me_all_consents {
 	      or croak "cannot do statement (at add)! $DBI::errstr\n";
 
 	    my $d = $sth->fetchrow_hashref;
+		if(! defined($d->{consent_id})){ 
+			warn 'consent_id is undefined?';
+			next; 
+		}
+		if(! defined($d->{consent})){ 
+			warn 'consent is undefined?';
+			next; 
+		}
+		
 	  	  push(@$consent_data, {id => $d->{consent_id}, consent => $d->{consent}});
 		$sth->finish; 
 	}
-	
-
 	return $consent_data; 
 	 
 }
