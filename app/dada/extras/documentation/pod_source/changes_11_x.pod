@@ -3,6 +3,49 @@
 
 =encoding utf-8
 
+=head1 11.20.2
+
+This version of Dada Mail is a minor bug release. 
+
+=head2 Bugfixes
+
+=head3 Drag and Drop Image Upload does not support upper case filenames #1147 
+
+L<https://github.com/justingit/dada-mail/issues/1147>
+
+=head3 CSRF is set to "disable" in the "configure security options" section of the installer when installer is revisted #
+
+L<https://github.com/justingit/dada-mail/issues/1132>
+
+=head3 Mailing List:Options speling mistake, "nitch" should be, "niche" #1153 
+
+L<https://github.com/justingit/dada-mail/issues/1153>
+
+=head3 Consider an OPTIMIZE after removing old Tracker analytics #1149
+
+L<https://github.com/justingit/dada-mail/issues/1149>
+
+=head3 Mention IMAP support in Bounce Handler docs #1151 
+
+L<https://github.com/justingit/dada-mail/issues/1151>
+
+=head3 Perl CPAN Module DateTime.pm unable to located in schedule report
+
+L<https://github.com/justingit/dada-mail/issues/1136>
+
+=head3  Add option to hide reCAPTCHA v3 badge #1138 
+
+L<https://github.com/justingit/dada-mail/issues/1138>
+
+=head3 Doc Update: "Advanced Template Syntax" isn't a thing #1154 
+
+L<https://github.com/justingit/dada-mail/issues/1154>
+
+=head3 Check that custom template used in, Appearance Your Mailing List Template has all required tags #831 
+
+L<https://github.com/justingit/dada-mail/issues/831>
+
+
 =head1 11.20.1
 
 This version of Dada Mail is a minor bug release. 
