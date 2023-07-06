@@ -549,7 +549,6 @@ sub admin_remove_subscribers {
             $msg = DADA::Template::Widgets::screen(
                 {
                     -data => \$msg,
-                    -expr => 1,
                     -vars => {
                         addresses => $tmpl_addresses,
                     },
@@ -2173,7 +2172,6 @@ sub fancy_list {
                 show_timestamp_column => $show_timestamp_column, 
                 count                 => scalar @{$subscribers},
             }, 
-			-expr => 1, 
         }
     );
      

@@ -130,6 +130,13 @@
 
     <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css?v=<!-- tmpl_var VER escape=URL -->" type="text/css" media="screen" />
 	
+	<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->
+		<!-- tmpl_if captcha_params_v3_hide_badge -->
+			<style>.grecaptcha-badge { visibility: hidden; }</style>
+		<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
+	
+	
 </head>
 <body id="Dada"> 
 

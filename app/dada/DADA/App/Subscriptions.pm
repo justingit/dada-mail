@@ -1714,6 +1714,8 @@ sub unsubscribe {
 		
 	
     if ( !$ct->exists($token) ) {
+		warn 'returning token_problem (1)'
+			if $t;
         return ({}, user_error(
             {
                 -error => 'token_problem',
@@ -1726,6 +1728,8 @@ sub unsubscribe {
 	
     # not sure how you got here, but, whatever:
     if ( $data->{data}->{flavor} ne 'unsub_confirm' ) {
+		warn 'returning token_problem (2)'
+			if $t;
         return ({}, user_error(
             {
                 -error => 'token_problem',
@@ -1797,7 +1801,8 @@ sub unsubscribe {
 	            $is_valid = 0;
 	        }
 		}
-        if ($is_valid) {
+        
+		if ($is_valid) {
             $args->{-cgi_obj}  = $q;
             $args->{-list}     = $data->{data}->{list};             
             $args->{-mid}      = $data->{data}->{mid};
@@ -1876,7 +1881,6 @@ sub unsubscribe {
         {
             -screen => 'list_unsubscribe.tmpl',
             -with   => 'list',
-            -expr   => 1,
             -vars   => {
                 token                         => $token,
                 token_context                 => $token_context,
@@ -3013,7 +3017,6 @@ sub _subscription_confirmation_success_msg {
             {
                 -data                     => \$s,
                 -with                     => 'list',
-                -expr                     => 1,
                 -vars                     => { chrome => $args->{-chrome}, },
                 -list_settings_vars_param => { -list => $ls->param('list'), -dot_it => 1, },
                 -subscriber_vars_param    => {
@@ -3028,7 +3031,6 @@ sub _subscription_confirmation_success_msg {
         $r = DADA::Template::Widgets::screen(
             {
                 -data                     => \$s,
-                -expr                     => 1,
                 -vars                     => { chrome => $args->{-chrome}, },
                 -list_settings_vars_param => { -list => $ls->param('list'), -dot_it => 1, },
                 -subscriber_vars_param    => {

@@ -513,6 +513,8 @@ $RECAPTCHA_PARAMS //= {
 	v3 => {
 	    public_key        =>  undef,
 	    private_key       =>  undef,
+		hide_badge        =>  1,
+		
 	},
 };
 
@@ -552,6 +554,7 @@ $DEBUG_TRACE //= {
 	DADA_App_HTMLtoMIMEMessage         => 0, 
     DADA_App_Subscriptions             => 0,
     DADA_App_WebServices               => 0,
+	DADA_Template_HTML                 => 0,
 	DADA_Logging_Clickthrough          => 0,
     DADA_Mail_MailOut                  => 0,
     DADA_Mail_Send                     => 0,
@@ -1578,9 +1581,6 @@ $MIME_TOOLS_PARAMS //= {
 
     fallback_field_values => '',
 
-# from what I can tell, this is now always available. 	
-#    enable_email_template_expr                  => 1,
-
     # HTML Screen Templates
 
     html_confirmation_message         => undef,
@@ -1809,8 +1809,8 @@ $ATTACHMENT_TEMPFILE //= 0;
 $MAIL_VERP_SEPARATOR //= '-';
 
 
-$VERSION = 11.20.1;
-$VER = 'v11.20.1 stable 2023-01-18';
+$VERSION = 11.20.2;
+$VER = 'v11.20.2 stable 2023-07-06';
 
 #
 #

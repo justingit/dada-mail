@@ -1465,7 +1465,6 @@ sub send_email {
                     -Root_Login => $root_login,
                     -List       => $self->{list},
                 },
-                -expr => 1,
                 -vars => {
 
                     screen => 'send_email',
@@ -1513,7 +1512,7 @@ sub send_email {
                     active_mailouts        => $active_mailouts,
                     
                     schedule_last_checked_frt => scalar formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
-                    can_use_datetime  => scalar DADA::App::Guts::can_use_datetime(), 
+                    can_use_datetime  => scalar DADA::App::Guts::can_use_DateTime_Event_Recurrence(), 
                     can_use_HTML_Tree => scalar DADA::App::Guts::can_use_HTML_Tree(), 
                     sched_flavor      => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor},
 					default_layout => $default_layout, 
@@ -2267,11 +2266,6 @@ sub list_invite {
 
 	    $fm->use_header_info(1);
 	    $fm->use_email_templates(0);
-
-	    if ( $args->{-tmpl_params}->{-expr} == 1 ) {
-	        $fm->override_validation_type('expr');
-	    }
-
         $fm->Subject(
 			$subject
 		); 	
@@ -2785,7 +2779,6 @@ sub valid_template_markup_check {
     my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
         {
             -data => \$str,
-            -expr => $expr,
         }
     );
     if ( $valid == 0 ) {
@@ -2814,7 +2807,6 @@ sub valid_template_markup_check {
     my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
         {
             -data => \$new_data,
-            -expr => $expr,
         }
     );
     if ( $valid == 0 ) {
@@ -2874,7 +2866,6 @@ sub valid_template_markup_check {
 		    my ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
 		        {
 		            -data => \$n_html,
-		            -expr => $expr,
 		        }
 		    );
 		    if ( $valid == 0 ) {

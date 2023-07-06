@@ -1252,7 +1252,7 @@ sub _columns {
         my $sth = $self->{dbh}->prepare($query);
 
         $sth->execute()
-          or croak "cannot do statement (at: columns)! $DBI::errstr\n";
+          or croak "cannot do statement (at: columns)! " . $self->{dbh}->errstr;
         my $i;
         for ( $i = 1 ; $i <= $sth->{NUM_OF_FIELDS} ; $i++ ) {
             push( @cols, $sth->{NAME}->[ $i - 1 ] );
@@ -1299,7 +1299,7 @@ sub add {
 
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $key, $mid, $url, @values )
-      or croak "cannot do statement! (at: add) $DBI::errstr\n";
+      or croak "cannot do statement! (at: add) " . $self->{dbh}->errstr;
     return $key;
 
 }
@@ -1336,7 +1336,7 @@ sub reuse_key {
  		if $t;
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $mid, $url, @values )
-      or croak "cannot do statement! (at: reuse_key) $DBI::errstr\n";
+      or croak "cannot do statement! (at: reuse_key) " . $self->{dbh}->errstr;
     my $hashref;
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
         $sth->finish;
@@ -1370,7 +1370,7 @@ sub fetch {
 
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute($key)
-      or croak "cannot do statement! (at: fetch) $DBI::errstr\n";
+      or croak "cannot do statement! (at: fetch) " . $self->{dbh}->errstr;
     my $hashref;
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
         $sth->finish;
@@ -1400,7 +1400,7 @@ sub key_exists {
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $args->{-key} )
-      or croak "cannot do statement (at key_exists)! $DBI::errstr\n";
+      or croak "cannot do statement (at key_exists)! " . $self->{dbh}->errstr;
     my @row = $sth->fetchrow_array();
     $sth->finish;
     return $row[0];
@@ -1699,7 +1699,7 @@ sub logged_subscriber_count {
 
     my $sth = $self->{dbh}->prepare($query);
        $sth->execute( $self->{name}, $args->{-mid}, 'num_subscribers')
-      	or carp "cannot do statement! $DBI::errstr\n";
+      	or carp "cannot do statement! " . $self->{dbh}->errstr;
 
     my $count = $sth->fetchrow_array;
 
@@ -2084,7 +2084,7 @@ sub _recorded_open_recently {
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $self->{name}, $args->{-remote_addr}, $args->{-mid}, 'open' )
-      or croak "cannot do statement '$query'! $DBI::errstr\n";
+      or croak "cannot do statement '$query'! " . $self->{dbh}->errstr;
 
     my @row = $sth->fetchrow_array();
     $sth->finish;
@@ -2225,7 +2225,7 @@ sub update_sent_analytics {
 		$args->{-msg_id},
 		$self->{name},
 	) 
-	or croak "cannot do statement '$query'! $DBI::errstr\n";
+	or croak "cannot do statement '$query'! " . $self->{dbh}->errstr;
     
 	$sth->finish;	
 }
@@ -3786,11 +3786,11 @@ sub data_over_time {
     my $sth = $self->{dbh}->prepare($query);
 	if($mid){ 		
 	    $sth->execute($self->{name}, $mid)
-	      or croak "cannot do statement! $DBI::errstr\n";
+	      or croak "cannot do statement! " . $self->{dbh}->errstr;
 	}
 	else { 
 	    $sth->execute($self->{name})
-	      or croak "cannot do statement! $DBI::errstr\n";
+	      or croak "cannot do statement! " . $self->{dbh}->errstr;
 	}
 	
 	my $row; 
@@ -4004,7 +4004,6 @@ sub message_email_report_table {
 	    $html = DADA::Template::Widgets::screen(
 	        {
 	            -screen           => 'plugins/tracker/message_email_report_table.tmpl',
-				-expr => 1, 
 	            -vars => {
 					type          => $args->{-type},
 					report        => $report, 
@@ -4245,7 +4244,7 @@ sub message_email_activity_listing {
 	my $query = 'SELECT email, COUNT(email) as "count" FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND event != \'num_subscribers\' GROUP BY msg_id, email ORDER BY count DESC;'; 
 	my $sth = $self->{dbh}->prepare($query);
 	   $sth->execute( $self->{name}, $args->{-mid} )
-	      	or croak "cannot do statement! $DBI::errstr\n";
+	      	or croak "cannot do statement! " . $self->{dbh}->errstr;
 	my $r; 
 	my $emails_events = {}; 
 	while (my $row = $sth->fetchrow_hashref ) {		
@@ -4258,7 +4257,7 @@ sub message_email_activity_listing {
  	$query = 'SELECT details, COUNT(event) as "count" FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND (event = \'soft_bounce\' OR event = \'hard_bounce\') GROUP BY msg_id, details ORDER BY count DESC;'; 
 	my $sth = $self->{dbh}->prepare($query);
 	   $sth->execute( $self->{name}, $args->{-mid} )
-	      	or croak "cannot do statement! $DBI::errstr\n";
+	      	or croak "cannot do statement! " . $self->{dbh}->errstr;
 	my $r; 
 	my $emails_bounces = {}; 
 	while (my $row = $sth->fetchrow_hashref ) {
@@ -4275,7 +4274,7 @@ sub message_email_activity_listing {
 	   $query = 'SELECT email, COUNT(email) as "count" FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? AND msg_id = ?  GROUP BY msg_id, email ORDER BY count DESC;'; 
 	my $sth = $self->{dbh}->prepare($query);
 	   $sth->execute( $self->{name}, $args->{-mid} )
-	      	or croak "cannot do statement! $DBI::errstr\n";
+	      	or croak "cannot do statement! " . $self->{dbh}->errstr;
 	my $r; 
 	my $emails_clicks = {}; 
 	while (my $row = $sth->fetchrow_hashref ) {
@@ -4345,7 +4344,6 @@ sub message_email_activity_listing_table {
 	    $html = DADA::Template::Widgets::screen(
 	        {
 	            -screen           => 'plugins/tracker/message_email_report_table.tmpl',
-				-expr => 1, 
 	            -vars => {
 	#				type          => $args->{-type},
 					report        => $report, 
@@ -4535,7 +4533,6 @@ sub message_individual_email_activity_report_table {
 	    $html = DADA::Template::Widgets::screen(
 	        {
 	            -screen           => 'plugins/tracker/message_individual_email_activity_report_table.tmpl',
-				-expr => 1, 
 	            -vars => {
 					email         => $args->{-email}, 
 					mid           => $args->{-mid},
@@ -4573,8 +4570,8 @@ sub purge_log {
 		my $query1 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?'; 
 		my $query2 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?'; 
 		
-		$self->{dbh}->do($query1, {}, ($self->{name})) or die "cannot do statement $DBI::errstr\n"; 
-		$self->{dbh}->do($query2, {}, ($self->{name})) or die "cannot do statement $DBI::errstr\n";
+		$self->{dbh}->do($query1, {}, ($self->{name})) or die "cannot do statement " . $self->{dbh}->errstr;
+		$self->{dbh}->do($query2, {}, ($self->{name})) or die "cannot do statement " . $self->{dbh}->errstr;
 
 		require DADA::App::DataCache; 
 		my $dc = DADA::App::DataCache->new;
@@ -4599,8 +4596,8 @@ sub delete_msg_id_data {
 	my $query1 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}   . ' WHERE list = ? AND msg_id = ?'; 
 	my $query2 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ?';
 
-	$self->{dbh}->do($query1, {}, ($self->{name}, $mid)) or die "cannot do statement $DBI::errstr\n"; 
-	$self->{dbh}->do($query2, {}, ($self->{name}, $mid)) or die "cannot do statement $DBI::errstr\n";
+	$self->{dbh}->do($query1, {}, ($self->{name}, $mid)) or die "cannot do statement " . $self->{dbh}->errstr;
+	$self->{dbh}->do($query2, {}, ($self->{name}, $mid)) or die "cannot do statement " . $self->{dbh}->errstr;
 
 	require DADA::App::DataCache; 
 	my $dc = DADA::App::DataCache->new;
@@ -4620,6 +4617,7 @@ sub delete_msg_id_data {
 sub remove_old_tracker_data {
     my $self = shift;
     my $r;
+    my $total_count = 0;
 
     $r .=
         "Mailing List: "
@@ -4628,90 +4626,148 @@ sub remove_old_tracker_data {
       . '-' x 72 . "\n";
 
     if ( $self->{ls}->param('tracker_data_auto_remove') == 1 ) {
+        if ( can_use_DateTime() ) {
 
-        my $translation_key = {
-            '1m',  => 1,
-            '2m',  => 2,
-            '3m',  => 3,
-            '4m',  => 4,
-            '5m',  => 5,
-            '6m',  => 6,
-            '7m',  => 7,
-            '8m',  => 8,
-            '9m',  => 9,
-            '10m', => 10,
-            '11m', => 11,
-            '1y',  => 12,
-            '2y',  => 24,
-            '3y',  => 36,
-            '4y',  => 48,
-            '5y'   => 60,
-        };
+            my $translation_key = {
+                '1m',  => 1,
+                '2m',  => 2,
+                '3m',  => 3,
+                '4m',  => 4,
+                '5m',  => 5,
+                '6m',  => 6,
+                '7m',  => 7,
+                '8m',  => 8,
+                '9m',  => 9,
+                '10m', => 10,
+                '11m', => 11,
+                '1y',  => 12,
+                '2y',  => 24,
+                '3y',  => 36,
+                '4y',  => 48,
+                '5y'   => 60,
+            };
 
-        my $timespan;
-        if (
-            exists(
-                $translation_key->{ $self->{ls}
-                      ->param('tracker_data_auto_remove_after_timespan') }
-            )
-          )
-        {
-            $timespan = $translation_key->{ $self->{ls}
-                  ->param('tracker_data_auto_remove_after_timespan') };
-            require DateTime;
-            my $old_epoch =
-              DateTime->today->subtract(
-                months => $translation_key->{ $self->{ls}
-                      ->param('tracker_data_auto_remove_after_timespan') } )->epoch;
+            my $timespan;
+            if (
+                exists(
+                    $translation_key->{
+                        $self->{ls}
+                          ->param('tracker_data_auto_remove_after_timespan')
+                    }
+                )
+              )
+            {
+                $timespan = $translation_key->{ $self->{ls}
+                      ->param('tracker_data_auto_remove_after_timespan') };
+                require DateTime;
+                my $old_epoch = DateTime->today->subtract(
+                    months => $translation_key->{
+                        $self->{ls}
+                          ->param('tracker_data_auto_remove_after_timespan')
+                    }
+                )->epoch;
 
-            #$r .= "epoch: " . $old_epoch . "\n";
-            #$r .= "localtime: " . scalar localtime($old_epoch) . "\n";
+                #$r .= "epoch: " . $old_epoch . "\n";
+                #$r .= "localtime: " . scalar localtime($old_epoch) . "\n";
 
-            my $old_msg_id = DADA::App::Guts::message_id($old_epoch);
-            $r .= "\tRemoving clickthrough data that's older than, "
-              . scalar localtime($old_epoch) . "\n";
+                my $old_msg_id = DADA::App::Guts::message_id($old_epoch);
+                $r .= "\tRemoving clickthrough data that's older than, "
+                  . scalar localtime($old_epoch) . "\n";
 
-            my $query =
-                'DELETE FROM '
-              . $self->{sql_params}->{clickthrough_url_log_table}
-              . ' WHERE msg_id <= ? AND list = ?';
+                my $query =
+                    'DELETE FROM '
+                  . $self->{sql_params}->{clickthrough_url_log_table}
+                  . ' WHERE msg_id <= ? AND list = ?';
 
-            my $sth = $self->{dbh}->prepare($query);
-            my $c = $sth->execute( $old_msg_id, $self->{name} );
-            $sth->finish;
-            if ( $c eq '0E0' ) {
-                $c = 0;
+                my $sth = $self->{dbh}->prepare($query);
+                my $c   = $sth->execute( $old_msg_id, $self->{name} )
+                  or croak "cannot do statement! " . $self->{dbh}->errstr;
+                $sth->finish;
+                if ( $c eq '0E0' ) {
+                    $c = 0;
+                }
+
+                $total_count += $c;
+
+                $r .=
+                    "\tRemoved "
+                  . $c
+                  . " rows(s) in "
+                  . $self->{sql_params}->{clickthrough_url_log_table} . "\n";
+
+                undef $query;
+                undef $sth;
+                undef $c;
+
+                my $query =
+                    'DELETE FROM '
+                  . $self->{sql_params}->{mass_mailing_event_log_table}
+                  . ' WHERE msg_id <= ? AND list = ?';
+
+                my $sth = $self->{dbh}->prepare($query);
+                my $c   = $sth->execute( $old_msg_id, $self->{name} )
+                  or croak "cannot do statement! " . $self->{dbh}->errstr;
+                $sth->finish;
+                if ( $c eq '0E0' ) {
+                    $c = 0;
+                }
+
+                $total_count += $c;
+
+                $r .=
+                    "\tRemoved "
+                  . $c
+                  . " rows(s) in "
+                  . $self->{sql_params}->{mass_mailing_event_log_table} . "\n";
+
             }
-            $r .= "\tRemoved " . $c . " rows(s) in clickthrough_url_log_table\n";
-			undef $query; 
-			undef $sth; 
-			undef $c; 
-			
-            my $query =
-                'DELETE FROM '
-              . $self->{sql_params}->{mass_mailing_event_log_table}
-              . ' WHERE msg_id <= ? AND list = ?';
-
-            my $sth = $self->{dbh}->prepare($query);
-            my $c = $sth->execute( $old_msg_id, $self->{name} );
-            $sth->finish;
-            if ( $c eq '0E0' ) {
-                $c = 0;
+            else {
+                $r .=
+                  "Unknown timespan: "
+                  . $self->{ls}
+                  ->param('tracker_data_auto_remove_after_timespan') . "\n";
             }
-            $r .= "\tRemoved " . $c . " rows(s) in mass_mailing_event_log_table\n";
-			
         }
         else {
-            $r .= "Unknown timespan: "
-              . $self->{ls}->param('tracker_data_auto_remove_after_timespan') . "\n";
+            $r .= "\tDisabled. The DateTime CPAN module will need to be installed to enable this feature.\n";
         }
     }
     else {
-        $r .= "\tDisabled.\n";
+        $r .= "\tNot enabled.\n";
     }
 
-    return $r . "\n";
+    return ( $r . "\n", $total_count );
 
+}
+
+
+sub optimize_tracker_data { 
+
+	my $self = shift; 
+	my $r    = ''; 
+	
+	$r .= "Optimizing tracker data tables...\n";
+		
+	if($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql'){
+		 
+		$self->{dbh}->do('OPTIMIZE TABLE ' . $self->{sql_params}->{clickthrough_url_log_table})
+			or $r .= $self->{dbh}->errstr;
+	
+	    $r .= "\tOptimized " 
+			. $self->{sql_params}->{clickthrough_url_log_table} 
+			. "\n";
+
+		$self->{dbh}->do('OPTIMIZE TABLE ' . $self->{sql_params}->{mass_mailing_event_log_table})
+			or $r .= $self->{dbh}->errstr;
+
+		$r .= 
+			"\tOptimized "
+			. $self->{sql_params}->{mass_mailing_event_log_table}
+			. "\n";
+	}
+	
+	return $r; 
+	
 }
 
 
@@ -4877,7 +4933,6 @@ sub send_analytics_email_notification {
     my $scrn = DADA::Template::Widgets::screen(
         {
             -screen => 'plugins/tracker/message_report_table.tmpl',
-            -expr   => 1,
             -vars   => {
                 a_in_t => 0,
                 %$m_report,

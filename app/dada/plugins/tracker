@@ -291,7 +291,7 @@ sub default {
     );
 	
 	
-	
+	my $can_use_DateTime = can_use_DateTime(); 
 	
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -302,7 +302,6 @@ sub default {
                 -Root_Login => $root_login,
                 -List       => $ls->param('list'),
             },
-            -expr => 1,
             -vars => {
                 screen                           => 'using_tracker',
 				root_login                       => $root_login,
@@ -310,6 +309,7 @@ sub default {
                 Plugin_URL                       => $Plugin_Config->{Plugin_URL},
                 tracker_record_view_count_widget => $tracker_record_view_count_widget,
                 can_use_auto_redirect_tag        => $can_use_auto_redirect_tag,
+				can_use_DateTime                 => $can_use_DateTime, 
                 num_subscribers                  => commify( $lh->num_subscribers ),
                 field_names                      => $field_names,
 				
@@ -1017,7 +1017,6 @@ sub message_report {
         $scrn = DADA::Template::Widgets::screen(
             {
                 -screen => 'plugins/tracker/message_report.tmpl',
-                -expr   => 1,
                 -vars   => { %tmpl_vars, },
             },
             -list_settings_vars_param => {
@@ -1031,7 +1030,6 @@ sub message_report {
         $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'plugins/tracker/message_report.tmpl',
-                -expr           => 1,
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,

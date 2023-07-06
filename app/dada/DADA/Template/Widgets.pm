@@ -170,6 +170,7 @@ captcha_params_v2_public_key      => $DADA::Config::RECAPTCHA_PARAMS->{v2}->{pub
 captcha_params_v2_private_key     => $DADA::Config::RECAPTCHA_PARAMS->{v2}->{private_key},
 captcha_params_v3_public_key      => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{public_key},
 captcha_params_v3_private_key     => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{private_key},
+captcha_params_v3_hide_badge      => $DADA::Config::RECAPTCHA_PARAMS->{v3}->{hide_badge},
 
 can_use_Google_reCAPTCHA_v2       => scalar DADA::App::Guts::can_use_Google_reCAPTCHA_v2(), 
 can_use_Google_reCAPTCHA_v3       => scalar DADA::App::Guts::can_use_Google_reCAPTCHA_v3(), 
@@ -997,31 +998,20 @@ sub html_archive_list {
 	                    $orig_header_from = $header_from;
 	                }
 	
-					my $can_use_gravatar_url = 0;
-	                my $gravatar_img_url     = '';
+					my $can_use_gravatar_url = can_use_Gravatar_URL();
+	                my $gravatar_img_url     = ''; # should be, undef?
 
-	                if ( $ls->param('enable_gravatars') ) {
-
-	                    eval { require Gravatar::URL };
-	                    if ( !$@ ) {
-	                        $can_use_gravatar_url = 1;
-
-
-                                my $header_address = $archive->sender_address(
-                                 {
-                                        -id => $entries->[$i],
-                                    }
-                            ); 
-                            $gravatar_img_url = gravatar_img_url(
-                                {
-                                    -email                => $header_address,
-                                    -default_gravatar_url => $ls->param('default_gravatar_url'),
-                                }
-                            );
-	                    }
-	                    else {
-	                        $can_use_gravatar_url = 0;
-	                    }
+	                if ( 
+						   $ls->param('enable_gravatars') 
+						&& $can_use_gravatar_url
+					) {
+						my $header_address = $archive->sender_address({
+							-id => $entries->[$i],
+                        }); 
+                        $gravatar_img_url = gravatar_img_url({
+	                        -email                => $header_address,
+	                        -default_gravatar_url => $ls->param('default_gravatar_url'),
+                        });
 	                }
 		                	
 	                my $entry = { 				

@@ -91,6 +91,12 @@ address: </p>
 				class="g-recaptcha-response"
 				name="g-recaptcha-response"
 			>
+			
+			<!-- tmpl_if captcha_params_v3_hide_badge -->
+				<!-- tmpl_include google_recaptcha_v3_branding_visibility.tmpl -->
+			<!-- /tmpl_if -->
+			
+			
 		<!-- /tmpl_if -->
 	<!-- /tmpl_if --> 
 	

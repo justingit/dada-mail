@@ -289,7 +289,7 @@
 				</div>		
 				<div class="small-11 columns ">
 					<div class="alert-box info radius"> 
-						Disabled. You must have the HTML::LinkExtor and URI::Find CPAN modules installed. 
+						 Disabled. The <strong>HTML::LinkExtor</strong> and <strong>URI::Find</strong> CPAN modules will need to be installed to enable this feature.
 					</div> 
 				</div>
 			<!-- tmpl_else -->
@@ -459,17 +459,13 @@
 						<div class="small-1 columns ">
 						</div>
 						<div class="small-11 columns ">
-							
-						<!-- tmpl_unless GOOGLE_MAPS_API_PARAMS_api_key -->
-							<div class="alert-box info radius">
-								<strong>Disabled.</strong> A Google Maps API Key is required.
-							</div>
-						<!-- /tmpl_unless -->
-					
-							</div>
-						</div> 
-						
-					
+							<!-- tmpl_unless GOOGLE_MAPS_API_PARAMS_api_key -->
+								<div class="alert-box info radius">
+									Disabled. A <strong>Google Maps API Key</strong> is required to enable this feature.
+								</div>
+							<!-- /tmpl_unless -->
+						</div>
+					</div> 						
 				</div>
 			</div> 
 
@@ -532,6 +528,13 @@
    <legend>
     Auto-Removal
    </legend>
+   
+		<!-- tmpl_unless can_use_DateTime --> 
+			<div class="alert-box info radius">
+			  Disabled. The <strong>DateTime</strong> CPAN module will need to be installed to enable this feature.
+			</div> 
+		<!-- /tmpl_unless -->
+   
 
    	<div class="row">
    	   <div class="small-12 columns">    

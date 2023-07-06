@@ -136,7 +136,6 @@ sub cgi_default {
 
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -expr           => 1,
             -screen         => 'plugins/usage_log_to_consent_activity/default.tmpl',
             -with           => 'admin',
             -wrapper_params => {

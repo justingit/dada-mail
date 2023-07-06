@@ -65,6 +65,32 @@
 		</legend> 
 
 
+		<div class="row">
+			<div class="small-8 columns small-centered medium-centered large-centered">
+				
+				<!-- tmpl_if content_tag_found_in_default_template --> 
+					<div class="alert-box success radius">
+						<code>&lt;!-- tmpl_var content --&gt;</code> tag found in the default template.
+					</div>
+				<!-- tmpl_else --> 
+					<div class="alert-box alert radius">
+						Couldn't find, <code>&lt;!-- tmpl_var content --&gt;</code> in the default template! 
+					</div>
+				<!-- /tmpl_if -->
+				
+				<!-- tmpl_if header_content_tag_found_in_default_template --> 
+					<div class="alert-box success radius">
+						<code>&lt;!-- tmpl_var header_content --&gt;</code> tag found in the default template.
+					</div>
+				<!-- tmpl_else --> 
+				<div class="alert-box warning radius">
+					Couldn't find, <code>&lt;!-- tmpl_var header_content --&gt;</code> tag in the default template! 
+				</div>
+				<!-- /tmpl_if -->
+				
+			</div>
+		</div>
+
 
 		<div class="row">
 			<div class="small-12 columns">
@@ -81,24 +107,48 @@
 			</div>
 		</div>
 		
-		<div class="row">
-			<div class="small-1 columns">
-			</div>
-			<div class="small-11 columns">
 		
-				<!-- tmpl_if content_tag_found_in_default_template --> 
-					<div class="alert-box success radius">
-						<code>&lt;!-- tmpl_var content --&gt;</code> tag found in default template.
-					</div>
-				<!-- tmpl_else --> 
+		<hr>
+		
+		
+			<div class="row">
+				<div class="small-8 columns small-centered medium-centered large-centered">
+					
+					<!-- tmpl_if template_saved --> 
+						<div class="alert-box success radius">
+							Saved at: <em><!-- tmpl_var TEMPLATES -->/<!-- tmpl_var list_settings.list -->.template</em>
+						</div>
+					<!-- /tmpl_if --> 
+					
+					
+					<!-- tmpl_if content_tag_found_in_template --> 
+						<div class="alert-box success radius">
+							<code>&lt;!-- tmpl_var content --&gt;</code> tag found in custom template.
+						</div>
+					<!-- tmpl_else --> 
 					<div class="alert-box alert radius">
-						Couldn't find, <code>&lt;!-- tmpl_var content --&gt;</code> in your default template! 
+						Couldn't find, <code>&lt;!-- tmpl_var content --&gt;</code> tag in your custom template! 
 					</div>
-				<!-- /tmpl_if -->
+					<!-- /tmpl_if --> 
 				
 				
+					<!-- tmpl_if header_content_tag_found_in_template --> 
+						<div class="alert-box success radius">
+							<code>&lt;!-- tmpl_var header_content --&gt;</code> tag found in custom template.
+						</div>
+					<!-- tmpl_else --> 
+					<div class="alert-box warning radius">
+						Couldn't find, <code>&lt;!-- tmpl_var header_content --&gt;</code> tag in your custom template! 
+					</div>
+					<!-- /tmpl_if -->
+				
+
+				</div>
 			</div>
-		</div>
+		
+		
+		
+		
 		<div class="row">
 			<div class="small-12 columns">
 				<label for="from_template_file">
@@ -113,42 +163,53 @@
 				</label>
 			</div>
 		</div>
-		<div class="row">
-			<div class="small-1 columns">
-			</div>
-			<div class="small-11 columns">
+		
+
 				
 				<textarea name="template_info" cols="70" rows="20" wrap="off"><!-- tmpl_var edit_this_template --></textarea>
 				
-				<!-- tmpl_if content_tag_found_in_template --> 
-					<div class="alert-box success radius">
-						<code>&lt;!-- tmpl_var content --&gt;</code> tag found in custom template.
-					</div>
-				<!-- tmpl_else --> 
-				<div class="alert-box alert radius">
-					Couldn't find, <code>&lt;!-- tmpl_var content --&gt;</code> tag in your custom template! 
-				</div>
-				<!-- /tmpl_if --> 
-				
-				
-				<!-- tmpl_if header_content_tag_found_in_template --> 
-					<div class="alert-box success radius">
-						<code>&lt;!-- tmpl_var header_content --&gt;</code> tag found in custom template.
-					</div>
-				<!-- tmpl_else --> 
-				<div class="alert-box alert radius">
-					Couldn't find, <code>&lt;!-- tmpl_var header_content --&gt;</code> tag in your custom template! 
-				</div>
+	<hr>
+		
+		<div class="row">
+			<div class="small-8 columns small-centered medium-centered large-centered">
+				<!-- tmpl_if list_settings.url_template --> 
+					<!-- tmpl_if template_url_check --> 
+							<div class="alert-box success radius">
+								URL accessible.
+							</div>
+					<!-- tmpl_else --> 
+							<div class="alert-box alert radius">
+								Problems fetching the below URL. Please check the URL and try again:
+							</div>
+					<!-- /tmpl_if --> 
+								
+					<!-- tmpl_if content_tag_found_in_url_template --> 
+						<div class="alert-box success radius">
+							<code>&lt;!-- tmpl_var content --&gt;</code> tag found in custom template.
+						</div>
+					<!-- tmpl_else --> 
+						<div class="alert-box alert radius">
+							Couldn't find, <code>&lt;!-- tmpl_var content --&gt;</code> tag in your custom template! 
+						</div>
+					<!-- /tmpl_if -->
+					
+					<!-- tmpl_if header_content_tag_found_in_url_template --> 
+						<div class="alert-box success radius">
+							<code>&lt;!-- tmpl_var header_content --&gt;</code> tag found in custom template.
+						</div>
+					<!-- tmpl_else --> 
+						<div class="alert-box warning radius">
+							Couldn't find, <code>&lt;!-- tmpl_var header_content --&gt;</code> tag in your custom template! 
+						</div>
+					<!-- /tmpl_if -->
+					
+					
+					
 				<!-- /tmpl_if -->
-				
-
-				<!-- tmpl_if template_saved --> 
-					<div class="alert-box success radius">
-						Saved at: <em><!-- tmpl_var TEMPLATES -->/<!-- tmpl_var list_settings.list -->.template</em>
-					</div>
-				<!-- /tmpl_if --> 
 			</div>
 		</div>
+	
+				
 		<div class="row">
 			<div class="small-12 columns">
 				<!-- tmpl_if can_use_lwp_simple -->
@@ -175,42 +236,6 @@
 						name="url_template" 
 						value="<!-- tmpl_var list_settings.url_template ESCAPE="HTML"-->"
 					>
-					
-					<!-- tmpl_if list_settings.url_template --> 
-						<!-- tmpl_if template_url_check --> 
-								<div class="alert-box success radius">
-									URL accessible.
-								</div>
-							
-							
-							<!-- tmpl_if header_content_tag_found_in_url_template --> 
-								<div class="alert-box success radius">
-									<code>&lt;!-- tmpl_var header_content --&gt;</code> tag found in custom template.
-								</div>
-							<!-- tmpl_else --> 
-								<div class="alert-box alert radius">
-									Couldn't find, <code>&lt;!-- tmpl_var header_content --&gt;</code> tag in your custom template! 
-								</div>
-							<!-- /tmpl_if -->
-							
-							
-							<!-- tmpl_if content_tag_found_in_url_template --> 
-								<div class="alert-box success radius">
-									<code>&lt;!-- tmpl_var content --&gt;</code> tag found in custom template.
-								</div>
-							<!-- tmpl_else --> 
-								<div class="alert-box alert radius">
-									Couldn't find, <code>&lt;!-- tmpl_var content --&gt;</code> tag in your custom template! 
-								</div>
-							<!-- /tmpl_if -->
-							
-							
-						<!-- tmpl_else --> 
-								<div class="alert-box alert radius">
-									Problems fetching the below URL. Please check the URL and try again:
-								</div>
-						<!-- /tmpl_if --> 
-					<!-- /tmpl_if --> 
 
 				</div>
 			</div>
@@ -278,7 +303,7 @@
   </td>
   <td>
 
-The content of the screen. 
+The content of your template. 
 
 This tag is 
    <strong>required</strong>. Think of this tag as the content of 
@@ -287,6 +312,23 @@ This tag is
  </tr>
 
 
+
+ <tr>
+  <td>
+   <code>&lt;!-- tmpl_var header_content  --&gt;</code>
+  </td>
+  <td>
+
+The header content of your template
+
+This tag is 
+   <strong>required</strong>. It holds assets like stylesheets and JavaScript.
+  </td>
+ </tr>
+ 
+
+
+ 
  <tr>
   <td>
    <code>&lt;!-- tmpl_var title  --&gt;</code>
@@ -323,16 +365,18 @@ This tag is
   </td>
  </tr>
 
- <tr>
-  <td>
-   <code>&lt;!-- tmpl_var default_css --&gt;</code>  
-</td>
-  <td>
-   The Cascading Style Sheet used in <!-- tmpl_var PROGRAM_NAME -->.
-   (<a href="<!-- tmpl_var PROGRAM_URL -->/css" target="_blank">view</a>)
-  </td>
- </tr>
 
+<!-- tmpl_if comment -->
+	 <tr>
+	  <td>
+	   <code>&lt;!-- tmpl_var default_css --&gt;</code>  
+	</td>
+	  <td>
+	   The Cascading Style Sheet used in <!-- tmpl_var PROGRAM_NAME -->.
+	   (<a href="<!-- tmpl_var PROGRAM_URL -->/css" target="_blank">view</a>)
+	  </td>
+	 </tr>
+<!-- /tmpl_if -->
 
 
  <tr>

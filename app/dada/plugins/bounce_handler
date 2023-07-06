@@ -304,7 +304,6 @@ sub cgi_default {
         {
             -screen         => 'plugins/bounce_handler/default.tmpl',
             -with           => 'admin',
-            -expr           => 1,
             -wrapper_params => {
                 -Root_Login => $root_login,
                 -List       => $list,
@@ -897,9 +896,9 @@ Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mai
 
 =head1 Requirements
 
-=head2 POP3 Email Account
+=head2 POP3 or IMAP Email Account
 
-Bounce Handler works by checking a email address via POP3. (IMAP is not supported).  
+Bounce Handler works by checking a email address via POP3/IMAP.
 
 You will need to create a new email address account manually for Bounce Handler to utilize. 
 
@@ -929,9 +928,10 @@ Check to make sure that the POP3 server (usually, port 110) is not blocked from 
 
 This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. Under B<Plugins/Extensions  (Optional)> check the option, B<Bounce Handler>. 
 
-Below this option are form fields to put in the POP3 accounts login credentials, as well as a place to test those credentials out. 
+See the advanced configuration docs for more information: 
 
-Once Dada Mail installed, all new mailing lists will use the Bounce Handler's email address as the List Administrator. Any previous mailing lists may need to be manually set to have their List Administrator set to this address - this can be done in the List Control Panel under,  B<Your Mailing List - List Information>
+L<L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Bounce-Handler>>
+
 
 =head2 Cronjob
 

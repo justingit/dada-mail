@@ -95,10 +95,14 @@ require Exporter;
   can_use_Google_reCAPTCHA
   can_use_Google_reCAPTCHA_v2
   can_use_Google_reCAPTCHA_v3
+  
+  can_use_Gravatar_URL
+  
   validate_recaptcha
   can_use_XML_FeedPP
   can_use_JSON
-  can_use_datetime
+  can_use_DateTime
+  can_use_DateTime_Event_Recurrence
   can_use_HTML_Tree
   can_use_net_curl
   can_use_mozilla_ca
@@ -2787,14 +2791,7 @@ sub gravatar_img_url {
           ->{default_gravatar_url};
     }
 
-    my $can_use_gravatar_url = 1;
-    try {
-        require Gravatar::URL;
-    }
-    catch {
-        $can_use_gravatar_url = 0;
-    };
-	
+
 	if(
 		   ! exists ($args->{-email}) 
 		|| ! defined($args->{-email})
@@ -2802,6 +2799,9 @@ sub gravatar_img_url {
 	){ 
 		return undef; 
 	}
+	
+    my $can_use_gravatar_url = can_use_Gravatar_URL(); 
+	
     if ( $can_use_gravatar_url == 1 ) {
         if ( isa_url( $args->{-default_gravatar_url} ) ) {
             $url = Gravatar::URL::gravatar_url(
@@ -2820,6 +2820,21 @@ sub gravatar_img_url {
     return $url;
 
 }
+
+
+
+
+sub can_use_Gravatar_URL { 
+	
+    my $can_use_gravatar_url = 1;
+    try {
+        require Gravatar::URL;
+    } catch {
+        $can_use_gravatar_url = 0;
+    };
+	return $can_use_gravatar_url; 
+}
+
 
 
 
@@ -3046,7 +3061,8 @@ sub safely_decode {
 
 	
 	if(utf8::is_utf8($str) == 1 && $force == 0){ 
-	#	warn 'utf8::is_utf8 is returning 1 - not decoding.'; 
+	#if ($str =~ /[^\x0-\x7f]/ && $force == 0){ 
+		#	warn 'utf8::is_utf8 is returning 1 - not decoding.'; 
 	}
 	else { 
 		eval { 
@@ -3287,7 +3303,23 @@ sub can_use_compress_zlib {
     	return $can_use_compress_zlib;
 }
 
-sub can_use_datetime { 
+
+
+
+sub can_use_DateTime { 
+    my $can_use_datetime = 1; 
+   	try { 
+        require DateTime;
+    } catch { 
+        $can_use_datetime = 0; 
+    };
+    return $can_use_datetime; 
+}
+
+
+
+
+sub can_use_DateTime_Event_Recurrence { 
     my $can_use_datetime = 1; 
    	try { 
         require DateTime;

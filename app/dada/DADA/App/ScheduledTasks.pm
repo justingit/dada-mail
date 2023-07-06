@@ -188,9 +188,11 @@ sub remove_old_archive_messages {
 
 
 sub remove_old_tracker_data { 
-	my $self = shift;
-    my $list = shift; 
-    my $r; 
+	
+	my $self       = shift;
+    my $list       = shift; 
+    my $r          = ''; 
+	my $total_rows = 0; 
     
     my @lists = (); 
     if($list eq '_all') { 
@@ -202,9 +204,21 @@ sub remove_old_tracker_data {
     
     require DADA::Logging::Clickthrough; 
     foreach my $l (@lists){ 			
-		my $dlc = DADA::Logging::Clickthrough->new({-list => $l}); 
-		$r .= $dlc->remove_old_tracker_data();     
+		my $dlc  = DADA::Logging::Clickthrough->new({-list => $l}); 
+		my $log   = ''; 
+		my $rows  = 0; 
+		($log, $rows) = $dlc->remove_old_tracker_data();    
+		$r .= $log; 
+		$total_rows += $rows; 	 
+		undef($dlc);
     }
+	
+	if($total_rows > 0){ 
+		my $dlc  = DADA::Logging::Clickthrough->new({-list => $lists[0]}); 
+		$r .= $dlc->optimize_tracker_data(); 
+	}
+	
+	
     return $r; 
 }
 

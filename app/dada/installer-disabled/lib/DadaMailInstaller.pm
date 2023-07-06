@@ -239,6 +239,7 @@ my @Debug_Option_Names = qw(
   DADA_Profile
   DADA_Profile_Fields
   DADA_Profile_Session
+  DADA_Template_HTML
   DBI
   HTML_TEMPLATE
   NET_POP3
@@ -897,7 +898,6 @@ sub scrn_configure_dada_mail {
         {
             -screen => 'installer_configure_dada_mail_scrn.tmpl',
             -with   => 'list',
-            -expr   => 1,
             -wrapper_params => {
                 -Use_Custom => 0,
             },
@@ -1516,6 +1516,13 @@ sub grab_former_config_vals {
             $opt->{'captcha_params_v3_score_threshold'} 
 				= $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{score_threshold};
         }		
+        if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{hide_badge} ) ) {
+            $opt->{'captcha_params_v3_hide_badge'} 
+				= $BootstrapConfig::RECAPTCHA_PARAMS->{v3}->{hide_badge};
+        }
+		else { 
+            $opt->{'captcha_params_v3_hide_badge'} = 0; 
+		}			
     }
 	
 	# Google Maps API
@@ -1964,6 +1971,7 @@ sub query_params_to_install_params {
       captcha_params_v3_public_key
       captcha_params_v3_private_key	 
 	  captcha_params_v3_score_threshold 
+	  captcha_params_v3_hide_badge
 	  
 	  configure_google_maps
 	  google_maps_api_key
@@ -2887,12 +2895,12 @@ sub create_dada_config_file {
     }
 		
     my $debugging_options_params = {};
-	warn '`here.`';
+	# warn '`here.`';
     if ( $ip->{-configure_debugging} == 1 ) {
-			warn 'here.1';
+			# warn 'here.1';
         $debugging_options_params->{configure_debugging} = 1;
         for my $debug_option (@Debug_Option_Names) {
-			warn '$debug_option: ' . $debug_option;
+			# warn '$debug_option: ' . $debug_option;
             $debugging_options_params->{ 'debugging_options_' . $debug_option } =
               clean_up_var( $ip->{ '-debugging_options_' . $debug_option } ) || 0;
         }
@@ -2946,22 +2954,16 @@ sub create_dada_config_file {
         $security_params->{security_default_directory_permissions} = '0' . clean_up_var( $ip->{-security_default_directory_permissions} ) || undef;
 		
         if ( length( $ip->{-security_enable_csrf_protection } ) > 0 ) {
-			warn '$ip->{-security_enable_csrf_protection }: ' . $ip->{-security_enable_csrf_protection }; 
 			if($ip->{-security_enable_csrf_protection } == 1){
-				warn 'it 1';
 				$security_params->{security_enable_csrf_protection} = "1";
 			}
 			elsif($ip->{-security_enable_csrf_protection } == 0){ 
 				$security_params->{security_enable_csrf_protection} = "0";
-					warn 'it 0';
 			}
 			else { 
 				delete($security_params->{security_enable_csrf_protection});
-				warn 'it nothing';
 			}
         }
-		
-		
     }
 
     my $global_api_params = {};
@@ -2986,6 +2988,8 @@ sub create_dada_config_file {
 	    $captcha_params->{captcha_params_v3_public_key}      = clean_up_var( $ip->{-captcha_params_v3_public_key} );
         $captcha_params->{captcha_params_v3_private_key}     = clean_up_var( $ip->{-captcha_params_v3_private_key} );
         $captcha_params->{captcha_params_v3_score_threshold} = clean_up_var( $ip->{-captcha_params_v3_score_threshold} );
+        $captcha_params->{captcha_params_v3_hide_badge}      = clean_up_var( $ip->{-captcha_params_v3_hide_badge} );
+		
 	}
 
 
@@ -5020,7 +5024,6 @@ sub cgi_test_user_template {
     my $r = DADA::Template::Widgets::screen(
         {
             -screen => 'test_user_template.tmpl',
-            -expr   => 1,
             -vars   => {
                 template_options_USER_TEMPLATE => $template_options_manual_template_url,
                 can_use_lwp_simple             => $can_use_lwp_simple,
@@ -5061,7 +5064,6 @@ sub cgi_test_amazon_ses_configuration {
     my $r = DADA::Template::Widgets::screen(
         {
             -screen => 'amazon_ses_get_stats_widget.tmpl',
-            -expr   => 1,
             -vars   => {
                 using_ses                        => 1,
                 has_ses_options                  => 1,
@@ -5108,7 +5110,6 @@ sub cgi_test_CAPTCHA_Google_reCAPTCHA {
     $r = DADA::Template::Widgets::screen(
         {
             -screen => 'captcha_google_recaptcha_test_widget.tmpl',
-            -expr   => 1,
             -vars   => {
                 errors                       => $errors,
                 Self_URL                     => $Self_URL,
@@ -5142,7 +5143,6 @@ sub cgi_test_FastCGI {
     $r = DADA::Template::Widgets::screen(
         {
             -screen => 'fast_cgi_test_widget.tmpl',
-            -expr   => 1,
             -vars   => {
                 errors   => $errors,
                 Self_URL => $Self_URL,
@@ -5169,7 +5169,6 @@ sub cgi_test_magic_template_diag_box {
     my $r = DADA::Template::Widgets::screen(
         {
             -screen => 'test_magic_template.tmpl',
-            -expr   => 1,
             -vars   => {
                 template_url         => scalar $q->param('template_options_template_url'),
                 status               => $t_status, 

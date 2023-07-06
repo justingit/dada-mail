@@ -299,7 +299,6 @@ sub send_out_digest {
     my $subject_scr = DADA::Template::Widgets::screen(
         {
             -data                     => \$subject_tmpl,
-            -expr                     => 1,
             -vars                     => $vars,
             -list_settings_vars_param => { -list => $self->{list} },
         }
@@ -307,7 +306,6 @@ sub send_out_digest {
     my $pt_scrn = DADA::Template::Widgets::screen(
         {
             -data                     => \$pt_tmpl,
-            -expr                     => 1,
             -vars                     => $vars,
             -list_settings_vars_param => { -list => $self->{list} },
         }
@@ -317,7 +315,6 @@ sub send_out_digest {
     my $html_scrn = DADA::Template::Widgets::screen(
         {
             -data                     => \$html_tmpl,
-            -expr                     => 1,
             -vars                     => $vars,
             -list_settings_vars_param => { -list => $self->{list} },
         }

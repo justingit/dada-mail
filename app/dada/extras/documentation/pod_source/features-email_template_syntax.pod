@@ -231,7 +231,7 @@ Notice the dot, C<.> at the end.
 
 The tag will then be proceeded with the attribute you want to use and end with,
 
- -->
+	-->
 
 For example, if you want to have a tag to show the List's Name, you'd write: 
 
@@ -239,7 +239,7 @@ For example, if you want to have a tag to show the List's Name, you'd write:
 
 To have a tag to show the list ower's email address, you'd write: 
 
- <!-- tmpl_var list_settings.list_owner_email -->
+	<!-- tmpl_var list_settings.list_owner_email -->
 
 Here's a non-exhaustive list of available list-specific tags: 
 
@@ -287,7 +287,7 @@ attribute. Tags that deal with subscriber information start with: C<E<lt>!-- tmp
 
 For example, to use a subscriber's email address, you would use: 
 
- <!-- tmpl_var subscriber.email -->
+	<!-- tmpl_var subscriber.email -->
 
 A few subscriber-specific tags are usually always available to you. In these examples we'll use the email address, 
 C<user@example.com> as the subscriber email address. The subscriber-specific tags are: 
@@ -310,63 +310,63 @@ example.com
 
 You can also access the subscriber's saved field values. For example, if you have a field named, B<first_name>, you can use the following tag: 
 
- <!-- tmpl_var subscriber.first_name -->
+	<!-- tmpl_var subscriber.first_name -->
 
 =head2 Using Tags in Email Messages
 
 Once you understand how these tags are made, it's simple to use them in your message. For example, we can great our subscriber as such: 
 
- Hello,  <!-- tmpl_var subscriber.email -->
- 
- You are subscribed to my list, <!-- tmpl_var list_settings.list_name -->. 
+	Hello,  <!-- tmpl_var subscriber.email -->
 
- Hazzah!
+	You are subscribed to my list, <!-- tmpl_var list_settings.list_name -->. 
 
- -- <!-- tmpl_var list_settings.list_owner_email -->
+	Hazzah!
 
-This will print out something like: 
+	-- <!-- tmpl_var list_settings.list_owner_email -->
 
- Hello, user@example.com
- 
- You are subscribed to my list, My Awesome List. 
- 
- Hazzah!
- 
- -- listowner@example.com
+	This will print out something like: 
 
-And that's all there is to it. 
+	Hello, user@example.com
 
-If you have a subcriber field named, B<first_name>, we can change the example above to: 
+	You are subscribed to my list, My Awesome List. 
 
- Hello,  <!-- tmpl_var subscriber.first_name -->
- 
- You are subscribed to my list, <!-- tmpl_var list_settings.list_name -->. 
- 
- Hazzah!
- 
- -- <!-- tmpl_var list_settings.list_owner_email -->
+	Hazzah!
 
-This could print out something like: 
+	-- listowner@example.com
 
- Hello, John,
- 
- You are subscribed to my list, My Awesome List. 
- 
- Hazzah!
- 
- -- listowner@example.com
- 
+	And that's all there is to it. 
+
+	If you have a subcriber field named, B<first_name>, we can change the example above to: 
+
+	Hello,  <!-- tmpl_var subscriber.first_name -->
+
+	You are subscribed to my list, <!-- tmpl_var list_settings.list_name -->. 
+
+	Hazzah!
+
+	-- <!-- tmpl_var list_settings.list_owner_email -->
+
+	This could print out something like: 
+
+	Hello, John,
+
+	You are subscribed to my list, My Awesome List. 
+
+	Hazzah!
+
+	-- listowner@example.com
+
 =head2 Original Sender Tags
 
 If you use Bridge to send out your messages, you can use the, B<sender> tags within the mass mailing layout or in the message itself to pull in information about them. Similar to the, C<subscriber> tags, you can use the B<sender> tags. You'll see this implemented in the discussion list-specific mass mailing layout that ships with Dada Mail: 
 
-<!-- tmpl_unless list_settings.disable_discussion_sending -->
- <!-- tmpl_if list_settings.bridge_mention_original_sender -->
+	<!-- tmpl_unless list_settings.disable_discussion_sending -->
+	 <!-- tmpl_if list_settings.bridge_mention_original_sender -->
  
-     From: <!-- tmpl_var sender.email -->
+	     From: <!-- tmpl_var sender.email -->
  
- <!-- /tmpl_if -->
-<!-- /tmpl_unless -->
+	 <!-- /tmpl_if -->
+	<!-- /tmpl_unless -->
 
 In the above template code, we see if Bridge is enabled, and if this byline should be printed. If so, we print the sender's email address using the tag, 
 
@@ -378,17 +378,17 @@ Alongside tags that represent something, there's also tags that allow you to loo
 
 Currently, you can loop through all the B<subscriber> and B<list> specific information, using the, C<E<gt>!-- tmpl_loop --E<lt>> tag, like so: 
 
- <!-- tmpl_loop subscriber -->
- 	<!-- tmpl_var name -->: <!-- tmpl_var value -->
- <!-- /tmpl_loop -->
+	<!-- tmpl_loop subscriber -->
+		<!-- tmpl_var name -->: <!-- tmpl_var value -->
+	<!-- /tmpl_loop -->
 
 This will print out every attribute that's associated with the current email address. 
 
 Similarily, you can do this with the List Attributes: 
 
- <!-- tmpl_loop list_settings -->
- 	<!-- tmpl_var name -->: <!-- tmpl_var value --> 
- <!-- /tmpl_loop -->
+	<!-- tmpl_loop list_settings -->
+		<!-- tmpl_var name -->: <!-- tmpl_var value --> 
+	<!-- /tmpl_loop -->
 
 =head2 Advanced Templating Syntax
 
@@ -407,33 +407,28 @@ More information:
 
 L<http://search.cpan.org/~samtregar/HTML-Template-Expr/Expr.pm>
 
-To enable, log into your list control panel and under, B<Manage Copy -&gt; Email Templates>, you should see an option, under, B<Advanced Options> titled, 
+Here's an example of using these expressions:
 
-B<Use the advanced templating syntax for email messages.>
-
-You'll want to enable this option and HTML::Template::Expr syntax should be enabled. 
-
-With this option enabled, you can make statements, such as this: 
-
- Hello <!-- tmpl_var subscriber.first_name -->, 
- 
- <!-- tmpl_if expr="subscriber.favorite_fruit eq 'apples'" -->
-	 I see you like apples!
- <!-- tmpl_else -->
-	 You don't like apples?!
- <!-- /tmpl_if -->
+	Hello <!-- tmpl_var subscriber.first_name -->, 
+	
+	<!-- tmpl_if expr="subscriber.favorite_fruit eq 'apples'" -->
+		I see you like apples!
+	<!-- tmpl_else -->
+		You don't like apples?!
+	<!-- /tmpl_if -->
 
 This will print: 
 
- Hello John,
+	Hello John,
  
- I see you like apples!
+	I see you like apples!
 
 If your subscriber has the field value, "first_name" set to, "John" and the, "favorite_fruit" set to, "Apples". If favorite fruit is
 set to something other than apples, this would be printed: 
 
- Hello John,
- 
- You don't like apples?!
+	Hello John,
+	
+	You don't like apples?!
+
 
 =cut

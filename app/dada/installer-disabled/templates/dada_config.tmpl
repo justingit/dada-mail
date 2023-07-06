@@ -199,6 +199,7 @@ $DEBUG_TRACE = {
     DADA_Profile                    => <!-- tmpl_var debugging_options_DADA_Profile                    default="0" -->,
     DADA_Profile_Fields             => <!-- tmpl_var debugging_options_DADA_Profile_Fields             default="0" -->,
     DADA_Profile_Session            => <!-- tmpl_var debugging_options_DADA_Profile_Session            default="0" -->,
+    DADA_Template_HTML              => <!-- tmpl_var debugging_options_DADA_Template_HTML              default="0" -->,
 };
 
 %CPAN_DEBUG_SETTINGS = (
@@ -270,8 +271,7 @@ $DIR_CHMOD  = <!-- tmpl_var security_default_directory_permissions default="0755
 <!-- tmpl_if expr="(security_enable_csrf_protection eq '1')" -->
 $ENABLE_CSRF_PROTECTION = 1;
 <!-- /tmpl_if --><!-- tmpl_if expr="(security_enable_csrf_protection eq '0')" -->
-$ENABLE_CSRF_PROTECTION = 0;<!-- /tmpl_if --> 
-<!-- /tmpl_if -->
+$ENABLE_CSRF_PROTECTION = 0;<!-- /tmpl_if --><!-- /tmpl_if -->
 
 <!-- tmpl_if configure_www_engine -->
 $WWW_ENGINE_OPTIONS = {
@@ -298,7 +298,7 @@ $RECAPTCHA_PARAMS = {
 	    public_key        =>  '<!-- tmpl_var captcha_params_v3_public_key -->',
 	    private_key       =>  '<!-- tmpl_var captcha_params_v3_private_key -->',
 	    score_threshold   =>  '<!-- tmpl_var captcha_params_v3_score_threshold default=".5" -->',
-		
+		hide_badge        =>  '<!-- tmpl_var captcha_params_v3_hide_badge default="0" -->',
 	},
 };
 

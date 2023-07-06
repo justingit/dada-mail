@@ -125,7 +125,6 @@ sub cgi_default {
 	        {
 	            -screen         => 'plugins/global_config/default.tmpl',
 	            -with           => 'admin',
-	            -expr           => 1,
 	            -wrapper_params => {
 	                -Root_Login => $root_login,
 	                -List       => $list,
@@ -184,7 +183,6 @@ sub reconfigure {
 	        {
 	            -screen         => 'plugins/global_config/reconfigure.tmpl',
 	            -with           => 'admin',
-	            -expr           => 1,
 	            -wrapper_params => {
 	                -Root_Login => $root_login,
 	                -List       => $list,

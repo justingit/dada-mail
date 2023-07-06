@@ -312,7 +312,6 @@ sub create_multipart_email {
 	    $entity = $self->fm->email_template(
 	        {
 	            -entity => $entity,
-	            -expr   => $expr,
 	            %{ $args->{-tmpl_params} },
 	        }
 	    );

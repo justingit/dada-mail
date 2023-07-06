@@ -1809,8 +1809,6 @@
 						DADA::App::WebServices
 					</label>
 					
-					
-
 					<label for="debugging_options_DADA_Logging_Clickthrough">
 						<input type="checkbox" name="debugging_options_DADA_Logging_Clickthrough" id="debugging_options_DADA_Logging_Clickthrough" value="1">			
 						DADA::Logging::Clickthrough
@@ -1860,6 +1858,16 @@
 					<label for="debugging_options_DADA_Profile_Session">
 						<input type="checkbox" name="debugging_options_DADA_Profile_Session" id="debugging_options_DADA_Profile_Session" value="1">			
 						DADA::Profile::Session
+					</label>
+					
+					<label for="debugging_options_DADA_Template_HTML">
+						<input 
+							type="checkbox" 
+							name="debugging_options_DADA_Template_HTML" 
+							id="debugging_options_DADA_Template_HTML" 
+							value="1"
+						>			
+						DADA::Template::HTML
 					</label>
 
 					<label for="debugging_options_DBI">
@@ -2276,7 +2284,6 @@
 							name="security_enable_csrf_protection" 
 							  id="security_enable_csrf_protection_disabled" 
 							value="0"
-							checked="checked"
 						>			
 						Disabled
 					</label>
@@ -2473,6 +2480,18 @@
 									<div class="small-6 columns">
 									</div>
 								</div>
+
+								<label for="captcha_params_v3_hide_badge">
+									<input 
+										type="checkbox" 
+										name="captcha_params_v3_hide_badge" 
+										id="captcha_params_v3_hide_badge" 
+										value="1"
+										checked="checked"
+									>
+									Hide reCAPTCHA v3 Badge
+								</label>
+								
 							</div>
 						</div>
 					</div> 

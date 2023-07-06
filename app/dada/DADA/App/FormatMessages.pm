@@ -700,17 +700,6 @@ sub format_mlm {
 
     my $expr = 1;
 
-    #  it's always 1
-    #    if ( $self->no_list == 1 ) {
-    #        $expr = 1;
-    #    }
-    #    elsif ( $self->override_validation_type eq 'expr' ) {
-    #        $expr = 1;
-    #    }
-    #    else {
-    #        $expr = $self->{ls}->param('enable_email_template_expr');
-    #    }
-
     ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
         {
             -data => \$content,
@@ -1809,7 +1798,6 @@ sub _pp {
     my $new_phrase = DADA::Template::Widgets::screen(
         {
             -data => \$d,
-            -expr => 1,
             -vars => {
                 original_from_phrase      => $p,
                 'subscriber.email'        => $a,
@@ -1872,7 +1860,6 @@ sub _pp_announce {
     my $new_phrase = DADA::Template::Widgets::screen(
         {
             -data => \$d,
-            -expr => 1,
             -vars => {
                 original_from_phrase      => $p,
                 'subscriber.email'        => $a,

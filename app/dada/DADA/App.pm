@@ -890,7 +890,7 @@ sub list_privacy_policy {
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen         => 'list_privacy_policy.tmpl',
-            -expr           => 1,
+            
             -with           => 'list',
 			-vars           => {
 				privacy_policy_date  => $pp_data->{timestamp},
@@ -987,7 +987,7 @@ sub sign_in {
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen         => 'list_login_form.tmpl',
-                    -expr           => 1,
+                    
                     -with           => 'list',
                     -wrapper_params => {
                         -Use_Custom => 0,
@@ -1594,7 +1594,11 @@ sub drag_and_drop_file_upload {
 	);
 	
 	my $bad_fn = {}; 
-	for(@bad_fn){$bad_fn->{'.' . $_} = 1};
+	for(@bad_fn){
+		$bad_fn->{'.' . $_}     = 1;
+		$bad_fn->{'.' . uc($_)} = 1;
+	};
+
 	my ($ext) = $filename =~ /(\.[^.]+)$/;
 		
 	if(exists($bad_fn->{$ext})){ 
@@ -1602,7 +1606,7 @@ sub drag_and_drop_file_upload {
 	}
 
     my $subfolder = 'files';
-    if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/ ) {
+    if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/i ) {
         $subfolder = 'images';
     }
 	
@@ -1624,7 +1628,7 @@ sub drag_and_drop_file_upload {
 		or die $!;
     chmod( $DADA::Config::FILE_CHMOD, $save_fp );
 
-    if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/ ) {
+    if ( $filename =~ m/\.(jpg|jpeg|png|gif)$/i ) {
 		if($ls->param('resize_drag_and_drop_images') == 1){
 			require DADA::App::ResizeImages; 				
 			my ($rs_status, $rs_path, $rs_width, $rs_height) = DADA::App::ResizeImages::resize_image(
@@ -1790,7 +1794,7 @@ sub email_message_preview {
 	    $subject = DADA::Template::Widgets::screen(
 	        {
 	            -data                     => \$vs,
-	            -expr                     => 1,
+	            
 	            -vars                     => {%$fake_sub_info, %$fake_vars},
 	            -list_settings_vars_param => {
 	                -list   => $list,
@@ -1820,7 +1824,7 @@ sub email_message_preview {
 	    $scrn = DADA::Template::Widgets::screen(
 	        {
 	            -data                     => \$msg, 
-	            -expr                     => 1,
+	            
 	            -vars                     => {%$fake_sub_info, %$fake_vars},
 	            -list_settings_vars_param => {
 	                -list   => $list,
@@ -1871,7 +1875,7 @@ sub send_email_button_widget {
     my $scrn = DADA::Template::Widgets::screen(
         {
             -screen => 'send_email_button_widget.tmpl',
-            -expr   => 1,
+            
             -vars   => {
                 draft_role      => $draft_role,
                 archive_no_send => $archive_no_send,
@@ -1962,7 +1966,7 @@ sub mass_mailing_schedules_preview {
         $schedule_recurring_hms =
           display_hms_to_hms($schedule_recurring_display_hms);
 
-        if ( !( scalar DADA::App::Guts::can_use_datetime() ) ) {
+        if ( !( scalar DADA::App::Guts::can_use_DateTime_Event_Recurrences() ) ) {
             $status = 0;
             $errors->{datetime} = 1;
         }
@@ -2017,7 +2021,7 @@ sub mass_mailing_schedules_preview {
     my $scrn = DADA::Template::Widgets::screen(
         {
             -screen => 'mass_mailing_schedules_preview.tmpl',
-            -expr   => 1,
+            
             -vars   => {
                 status => $status,
 
@@ -2083,7 +2087,7 @@ sub mass_mailing_schedules_preview_calendar {
     my $scrn = DADA::Template::Widgets::screen(
         {
             -screen => 'mass_mailing_schedules_preview_calendar.tmpl',
-            -expr   => 1,
+            
             -vars   => {
                 draft_id => $draft_id,
             }
@@ -2318,7 +2322,7 @@ sub draft_saved_notification {
     my $scrn = DADA::Template::Widgets::screen(
         {
             -screen => 'draft_saved_notification_widget.tmpl',
-            -expr   => 1,
+            
             -vars   => {
                 role => $role,
             }
@@ -2375,7 +2379,6 @@ sub drafts {
                 -Root_Login => $root_login,
                 -List       => $list,
             },
-            -expr => 1,
             -vars => {
                 screen                  => 'drafts',
                 delete_draft            => $delete_draft,
@@ -3097,7 +3100,7 @@ sub sending_monitor {
 	    my $scrn = DADA::Template::Widgets::screen(
             {
                 -screen => 'sending_monitor_screen.tmpl',
-                -expr   => 1,
+                
                 -vars   => {
                     screen                 => 'sending_monitor',
                     mailout_exists         => $mailout_exists,
@@ -3373,7 +3376,7 @@ sub mass_mailing_options {
             {
                 -screen         => 'mass_mailing_options_screen.tmpl',
                 -with           => 'admin',
-                -expr           => 1,
+                
                 -wrapper_params => {
                     -Root_Login => $root_login,
                     -List       => $list,
@@ -3594,7 +3597,6 @@ sub change_info {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-                -expr => 1,
                 -vars => {
                     screen        => 'change_info',
                     done          => $done,
@@ -3718,7 +3720,6 @@ sub manage_privacy_policy {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-                -expr => 1,
                 -vars => {
                     screen        => 'manage_privacy_policy',
                     done          => $done,
@@ -3881,7 +3882,6 @@ sub manage_list_consent {
                 -Root_Login => $root_login,
                 -List       => $list,
             },
-            -expr => 1,
             -vars => {
 				consents => $consents, 
             },
@@ -4201,7 +4201,6 @@ sub list_options {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-                -expr => 1,
                 -list => $list,
                 -vars => {
                     screen                => 'list_options',
@@ -4345,7 +4344,7 @@ sub subscribe_landing {
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen         => 'subscribe_landing.tmpl',
-            -expr           => 1,
+            
             -with           => 'list',
 			-vars           => {
 				can_use_JSON      => scalar DADA::App::Guts::can_use_JSON(),
@@ -4392,7 +4391,7 @@ sub modal_subscribe_landing {
     my $scrn = DADA::Template::Widgets::screen(
         {
             -screen         => 'modal_subscribe_landing.tmpl',
-            -expr           => 1,
+            
            # -with           => 'list',
 			-vars           => {
 				can_use_JSON      => scalar DADA::App::Guts::can_use_JSON(),
@@ -4558,7 +4557,7 @@ sub web_services {
         {
             -screen         => 'web_services.tmpl',
             -with           => 'admin',
-            -expr           => 1,
+            
             -wrapper_params => {
                 -Root_Login => $root_login,
                 -List       => $list,
@@ -4671,7 +4670,7 @@ sub mail_sending_options {
             {
                 -screen         => 'mail_sending_options_screen.tmpl',
                 -with           => 'admin',
-                -expr           => 1,
+                
                 -wrapper_params => {
                     -Root_Login => $root_login,
                     -List       => $list,
@@ -4839,7 +4838,7 @@ sub mailing_sending_mass_mailing_options {
             {
                 -screen => 'mailing_sending_mass_mailing_options_screen.tmpl',
                 -with   => 'admin',
-                -expr   => 1,
+                
                 -wrapper_params => {
                     -Root_Login => $root_login,
                     -List       => $list,
@@ -4920,7 +4919,7 @@ sub amazon_ses_verify_email {
     my $body = DADA::Template::Widgets::screen(
         {
             -screen => 'amazon_ses_verify_email_widget.tmpl',
-            -expr   => 1,
+            
             -vars   => {
                 amazon_ses_verify_email => $amazon_ses_verify_email,
                 valid_email             => $valid_email,
@@ -4990,7 +4989,7 @@ sub amazon_ses_get_stats {
         my $body = DADA::Template::Widgets::screen(
             {
                 -screen => 'amazon_ses_get_stats_widget.tmpl',
-                -expr   => 1,
+                
                 -vars   => {
                     status          => $status,
                     has_ses_options => $ses->has_ses_options_set,
@@ -5292,7 +5291,7 @@ sub mail_sending_options_test {
     my $body = DADA::Template::Widgets::screen(
         {
             -screen => 'mail_sending_options_test_widget.tmpl',
-            -expr   => 1,
+            
             -vars   => {
                 report  => $ht_report,
                 raw_log => $results,
@@ -5363,7 +5362,6 @@ sub view_list {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-                -expr => 1,
                 -vars => {
                     screen          => 'view_list',
                     flavor          => 'view_list',
@@ -5560,7 +5558,7 @@ sub view_list {
             {
                 -list   => $list,
                 -screen => 'view_list_viewport_widget.tmpl',
-                -expr   => 1,
+                
                 -vars   => {
                     can_have_subscriber_fields => 1,
                     screen                     => 'view_list',
@@ -5832,7 +5830,6 @@ sub list_activity {
                 -Root_Login => $root_login,
                 -List       => $list,
             },
-            -expr => 1,
         }
     );
     return $body;
@@ -5922,7 +5919,6 @@ sub recent_subscription_activity {
             -vars => { 
 				history => $r, 
 			},
-            -expr => 1,
         }
     );
     return $body;
@@ -6658,7 +6654,6 @@ m/^(list|test_list|black_list|white_list|authorized_senders|moderators|requires_
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-                -expr => 1,
                 -vars => {
                     done              => $done,
                     email             => scalar $q->param('email'),
@@ -6859,7 +6854,7 @@ sub validate_update_email {
         my $scrn = DADA::Template::Widgets::screen(
             {
                 -screen => 'validate_update_email_widget.tmpl',
-                -expr   => 1,
+                
                 -vars   => {
                     email                  => $email,
                     updated_email          => $updated_email,
@@ -7146,7 +7141,7 @@ sub mailing_list_history {
         my $scrn = DADA::Template::Widgets::screen(
             {
                 -screen => 'filtered_list_consent_activity_widget.tmpl',
-                -expr   => 1,
+                
                 -vars   => {
                     consent_history => $consent_history,
                 },
@@ -7703,7 +7698,6 @@ sub add {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-                -expr => 1,
                 -vars => {
                     screen                     => 'add',
                     root_login                 => $root_login,
@@ -7959,7 +7953,7 @@ sub add_email {
 	                        -Root_Login => $root_login,
 	                        -List       => $list,
 	                    },
-	                    -expr                     => 1,
+	                    
 	                    -vars                     => { error => $error },
 	                    -list_settings_vars_param => {
 	                        -list   => $list,
@@ -7983,7 +7977,7 @@ sub add_email {
                             -Root_Login => $root_login,
                             -List       => $list,
                         },
-                        -expr                     => 1,
+                        
                         -vars                     => { error => $error },
                         -list_settings_vars_param => {
                             -list   => $list,
@@ -8013,7 +8007,7 @@ sub add_email {
                         -Root_Login => $root_login,
                         -List       => $list,
                     },
-                    -expr                     => 1,
+                    
                     -vars                     => { error => $error },
                     -list_settings_vars_param => {
                         -list   => $list,
@@ -8202,7 +8196,7 @@ sub add_email {
                         -Root_Login => $root_login,
                         -List       => $list,
                     },
-                    -expr                     => 1,
+                    
                     -vars                     => { %vars, },
                     -list_settings_vars_param => {
                         -list   => $list,
@@ -8215,7 +8209,7 @@ sub add_email {
             $scrn = DADA::Template::Widgets::screen(
                 {
                     -screen                   => 'add_email_screen.tmpl',
-                    -expr                     => 1,
+                    
                     -vars                     => { %vars, },
                     -list_settings_vars_param => {
                         -list   => $list,
@@ -8309,7 +8303,7 @@ sub add_email {
 	                            -Root_Login => $root_login,
 	                            -List       => $list,
 	                        },
-	                        -expr                     => 1,
+	                        
 	                        -vars                     => { error => $error },
 	                        -list_settings_vars_param => {
 	                            -list   => $list,
@@ -8406,7 +8400,6 @@ sub delete_email {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-                -expr => 1,
                 -vars => {
                     screen                    => 'delete_email',
                     title                     => 'Remove',
@@ -8883,7 +8876,6 @@ sub view_archive {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-                -expr => 1,
                 -list => $list,
                 -vars => {
                     can_use_JSON => scalar DADA::App::Guts::can_use_JSON(),
@@ -9093,8 +9085,6 @@ sub archive_options {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-
-                -expr => 1,
                 -vars => {
                     screen          => 'archive_options',
                     title           => 'Archive Options',
@@ -9251,14 +9241,8 @@ sub adv_archive_options {
         };
 
         my $gravatar_img_url     = '';
-        my $can_use_gravatar_url = 1;
-        try {
-            require Gravatar::URL;
-        }
-        catch {
-            $can_use_gravatar_url = 0;
-        };
-
+        my $can_use_gravatar_url = can_use_Gravatar_URL();
+		my $can_use_DateTime     = can_use_DateTime(); 
         if ( $can_use_gravatar_url == 1 ) {
             $gravatar_img_url = gravatar_img_url(
                 {
@@ -9272,7 +9256,7 @@ sub adv_archive_options {
             {
                 -screen         => 'adv_archive_options_screen.tmpl',
                 -with           => 'admin',
-                -expr           => 1,
+                
                 -wrapper_params => {
                     -Root_Login => $root_login,
                     -List       => $list,
@@ -9289,6 +9273,7 @@ sub adv_archive_options {
                     can_use_html_scrubber                   => $can_use_html_scrubber,
                     can_display_attachments                 => $la->can_display_attachments,
                     can_use_gravatar_url                    => $can_use_gravatar_url,
+					can_use_DateTime                        => $can_use_DateTime, 
                     gravatar_img_url                        => $gravatar_img_url,
 					archive_auto_remove_after_timespan_menu => $archive_auto_remove_after_timespan_menu, 
                 },
@@ -10241,8 +10226,9 @@ sub edit_template {
         my $header_content_tag_found_in_url_template     = 0;
         my $header_content_tag_found_in_default_template = 0;
 		
-        my $content_tag        = quotemeta('<!-- tmpl_var content -->');
-        my $header_content_tag = quotemeta('<!-- tmpl_var header_content -->');
+        my $content_tag                = quotemeta('<!-- tmpl_var content -->');
+        my $header_content_tag         = quotemeta('<!-- tmpl_var header_content -->');
+		my $header_content_include_tag = quotemeta('<!-- tmpl_include list_template_header_code_block.tmpl -->');
 
         if (   $DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled} == 1
             && $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} eq 'magic' )
@@ -10267,7 +10253,10 @@ sub edit_template {
             if ( $raw_template =~ m/$content_tag/ ) {
                 $content_tag_found_in_default_template = 1;
             }
-            if ( $raw_template =~ m/$header_content_tag/ ) {
+            if (
+				   $raw_template =~ m/$header_content_tag/ 
+				|| $raw_template =~ m/$header_content_include_tag/
+			) {
                 $header_content_tag_found_in_default_template = 1;
             }
         }
@@ -10282,7 +10271,10 @@ sub edit_template {
             $content_tag_found_in_template = 1;
         }
 		
-        if ( $edit_this_template =~ m/$header_content_tag/ ) {
+        if ( 
+			   $edit_this_template =~ m/$header_content_tag/
+			|| $edit_this_template =~ m/$header_content_include_tag/ 
+		) {
             $header_content_tag_found_in_template = 1;
         }
 
@@ -10324,19 +10316,19 @@ sub edit_template {
                         $content_tag_found_in_url_template = 1;
                     }
 					
-                    if ( $tmp_tmpl =~ m/$header_content_tag/ ) {
+                    if (
+					       $tmp_tmpl =~ m/$header_content_tag/ 
+						|| $tmp_tmpl =~ m/$header_content_include_tag/ 
+					) {
                         $header_content_tag_found_in_url_template = 1;
                     }
 					
                 }
                 else {
-
                     $template_url_check = 0;
-
                 }
             }
         }
-
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'edit_template_screen.tmpl',
@@ -10365,6 +10357,7 @@ sub edit_template {
                       $content_tag_found_in_url_template,
                     content_tag_found_in_default_template =>
                       $content_tag_found_in_default_template,
+					  header_content_tag_found_in_default_template => $header_content_tag_found_in_default_template,
 					  
 				  header_content_tag_found_in_template     => $header_content_tag_found_in_template,
 				  header_content_tag_found_in_url_template => $header_content_tag_found_in_url_template,
@@ -10881,7 +10874,7 @@ sub feature_set {
             {
                 -screen         => 'feature_set_screen.tmpl',
                 -with           => 'admin',
-                -expr           => 1,
+                
                 -wrapper_params => {
                     -Root_Login => $root_login,
                     -List       => $list,
@@ -11519,7 +11512,7 @@ sub outdated_subscription_urls {
             -screen => 'outdated_subscription_urls_screen.tmpl',
             -with   => 'list',
             -list   => $list,
-            -expr   => 1,
+            
 
 #		-list_settings_vars_param => {-list => $list,},
 #		-subscriber_vars_param    => {-list => $list, -email => $email, -type => 'list'},
@@ -12730,46 +12723,31 @@ sub list_archive {
                     $orig_header_from = $header_from;
                 }
 
-                my $can_use_gravatar_url = 1;
+                my $can_use_gravatar_url = can_use_Gravatar_URL();
                 my $gravatar_img_url     = undef;
                 my $show_gravatar        = 0;
 
-                if ( $ls->param('enable_gravatars') ) {
-
-                    try {
-                        require Gravatar::URL
-                    }
-                    catch {
-                        $can_use_gravatar_url = 0;
-                    };
-
-                    if ( $can_use_gravatar_url == 1 ) {
-                        my $header_address = $archive->sender_address(
-                            {
-                                -id => $entries->[$i],
-                            }
-                        );
-                        $gravatar_img_url = gravatar_img_url(
-                            {
-                                -email => $header_address,
-                                -default_gravatar_url =>
-                                  $ls->param('default_gravatar_url'),
-                            }
-                        );
-
-                    }
-                    else {
-                        $can_use_gravatar_url = 0;
-                    }
-                    if (   $ls->param('enable_gravatars') == 1
-                        && $can_use_gravatar_url == 1
-                        && defined(gravatar_img_url) )
-                    {
+                if ( 
+					   $ls->param('enable_gravatars') == 1
+					&& $can_use_gravatar_url          == 1
+				) {
+                    my $header_address = $archive->sender_address(
+                        {
+                            -id => $entries->[$i],
+                        }
+                    );
+                    $gravatar_img_url = gravatar_img_url(
+                        {
+                            -email => $header_address,
+                            -default_gravatar_url =>
+                              $ls->param('default_gravatar_url'),
+                        }
+                    );
+                    if ( defined($gravatar_img_url) ) {
                         $show_gravatar = 1;
                     }
-
                 }
-
+				
                 my $entry = {
                     id                   => $entries->[$i],
                     date                 => $date,
@@ -12792,8 +12770,8 @@ sub list_archive {
 
                 push( @$th_entries, $entry );
 
-            }
-        }
+       	 	}
+		}
 
         my $ii;
         for ( $ii = 0 ; $ii <= $#archive_links ; $ii++ ) {
@@ -13004,15 +12982,10 @@ sub list_archive {
 
         my $show_gravatar        = 0;
         my $gravatar_img_url     = undef;
-        my $can_use_gravatar_url = 1;
+        my $can_use_gravatar_url = can_use_Gravatar_URL();
 
         if ( $ls->param('enable_gravatars') ) {
-            try {
-                require Gravatar::URL
-            }
-            catch {
-                $can_use_gravatar_url = 0;
-            };
+			
             if ( $can_use_gravatar_url == 1 ) {
                 my $header_address = $archive->sender_address(
                     {
@@ -13026,9 +12999,6 @@ sub list_archive {
                           $ls->param('default_gravatar_url'),
                     }
                 );
-            }
-            else {
-                $can_use_gravatar_url = 0;
             }
         }
         if (   $ls->param('enable_gravatars') == 1
@@ -14396,7 +14366,7 @@ sub pass_gen {
             {
                 -screen => 'pass_gen_screen.tmpl',
                 -with   => 'list',
-                -expr   => 1,
+                
                 -vars   => {},
             }
         );
@@ -14410,7 +14380,7 @@ sub pass_gen {
             {
                 -screen => 'pass_gen_process_screen.tmpl',
                 -with   => 'list',
-                -expr   => 1,
+                
                 -vars   => {
                     encrypted_password =>
                       DADA::Security::Password::encrypt_passwd($pw),
@@ -15323,7 +15293,7 @@ sub profile_login {
                 {
                     -screen => 'profile_login.tmpl',
                     -with   => 'list',
-                    -expr   => 1,
+                    
                     -vars   => {
                         errors => $all_errors,
                         %$named_errs,
@@ -15931,7 +15901,7 @@ sub profile {
                 {
                     -screen => 'profile_home.tmpl',
                     -with   => 'list',
-                    -expr   => 1,
+                    
                     -vars   => {
                         errors => scalar $q->param('errors')
                           || 0,
@@ -16329,7 +16299,7 @@ sub also_save_for_settings {
         my $scrn = DADA::Template::Widgets::screen(
             {
                 -screen => 'also_save_for_settings.tmpl',
-                -expr   => 1,
+                
                 -vars   => {
                     current_list => $list,
                     lists        => $ht_lists,
@@ -16373,7 +16343,6 @@ sub transform_to_pro {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-                -expr => 1,
                 -vars => {
                     screen                     => 'transform_to_pro',
                     title                      => 'Transform into Pro Dada',
@@ -16411,7 +16380,7 @@ sub transform_to_pro {
         my $scrn = DADA::Template::Widgets::screen(
             {
                 -screen => 'transform_to_pro_verify.tmpl',
-                -expr   => 1,
+                
                 -vars   => {
                     list              => $list,
                     status            => $cstatus,
@@ -16490,14 +16459,13 @@ sub transform_to_pro {
             open my $config, '>>', $config_file or die $!;
             print $config $config_chunk or die $!;
             close $config or die;
-        }
-        catch {
+        } catch {
             $status = 0;
             $error  = $_;
             warn $_;
         };
+		
         if ( $status == 1 ) {
-
             $c->flush;
             $self->header_type('redirect');
             $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
@@ -16512,7 +16480,6 @@ sub transform_to_pro {
                         -Root_Login => $root_login,
                         -List       => $list,
                     },
-                    -expr => 1,
                     -vars => {
                         list => $list,
 
@@ -16538,7 +16505,6 @@ sub transform_to_pro {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-                -expr => 1,
                 -vars => {
                     list => $list,
 
@@ -16563,7 +16529,6 @@ sub transform_to_pro {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
-                -expr => 1,
                 -vars => {
                     list => $list,
 
@@ -17056,7 +17021,6 @@ sub scheduled_jobs {
                 -Root_Login => $root_login,
                 -List       => $admin_list,
             },
-            -expr => 1,
             -vars => {
                 scheduled_jobs_flavor => $DADA::Config::SCHEDULED_JOBS_OPTIONS
                   ->{scheduled_jobs_flavor},
