@@ -424,13 +424,19 @@ sub default_template {
 	# I'm guessing this is what gets hit, when there's no reasonable template to use: 
 	#
     my $content_tag                = quotemeta('<!-- tmpl_var content -->');
+	my $include_content_tag        = quotemeta('<!-- tmpl_include list_template_body_code_block.tmpl -->');
+	
     # my $header_content_tag         = quotemeta('<!-- tmpl_var header_content -->');
 	# my $header_content_include_tag = quotemeta('<!-- tmpl_include list_template_header_code_block.tmpl -->');
-	
-	
-	unless($tmpl =~ m/$content_tag/){ 
-		warn 'cannot find content_tag in template, using default';
-		undef($tmpl);
+
+	if ( defined($tmpl) ) {
+		if($tmpl =~ m/$content_tag/ || $tmpl =~ m/$include_content_tag/ ){ 
+			# ... 
+		}
+		else { 
+			warn 'cannot find content_tag in template, using default';
+			undef($tmpl);
+		}
 	}
 	#unless(
 	#	   $tmpl =~ m/$header_content_tag/
@@ -448,11 +454,12 @@ sub default_template {
                 -encoding => 1,
             }
         );
-		
-		# warn '$tmpl: ' . $tmpl; 
-		
+				
 		#Utter sanity check: 
-		unless($tmpl =~ m/$content_tag/){ 
+		if($tmpl =~ m/$content_tag/ || $tmpl =~ m/$include_content_tag/ ){ 
+			# ... 
+		}
+		else { 
 			warn 'cannot find content_tag in default template - using bare bones';
 			undef($tmpl);
 		}
@@ -934,10 +941,16 @@ sub list_template {
 	
 	# let's check!
     my $content_tag                = quotemeta('<!-- tmpl_var content -->');
+	my $include_content_tag        = quotemeta('<!-- tmpl_include list_template_body_code_block.tmpl -->');
+	
+	
    # my $header_content_tag         = quotemeta('<!-- tmpl_var header_content -->');
    # my $header_content_include_tag = quotemeta('<!-- tmpl_include list_template_header_code_block.tmpl -->');
 	
-	unless($list_template =~ m/$content_tag/){ 
+	if($list_template =~ m/$content_tag/ || $list_template =~ m/$include_content_tag/){ 
+		# ... 
+	}
+	else { 
 		warn 'cannot find content_tag in list template - using bare bones';
 		$list_template = default_template(); 
 	}
