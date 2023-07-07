@@ -5,7 +5,7 @@ my $github_repos = {
     perllib => {
         remote         => 'https://github.com/justingit/',
         repo           => 'dada-mail-perllib',
-        branch         => 'v11_20_02_stable_2023-07-06',
+        branch         => 'v11_20_2_stable_2023-07-06',
         dir_name       => 'perllib',
         local_dir_path => 'DADA/perllib',
 
