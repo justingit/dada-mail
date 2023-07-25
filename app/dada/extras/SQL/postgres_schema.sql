@@ -188,3 +188,10 @@ CREATE TABLE dada_consent_activity (
 	FOREIGN KEY(consent_id)        REFERENCES dada_consents(consent_id), 
 	FOREIGN KEY(privacy_policy_id) REFERENCES dada_privacy_policies(privacy_policy_id)	
 );
+
+CREATE TABLE IF NOT EXISTS dada_simple_auth_str (
+	id                       serial not null UNIQUE PRIMARY KEY,
+	timestamp                TIMESTAMP DEFAULT NOW(),
+	remote_addr              varchar(255),  
+	auth_str                 varchar(255) UNIQUE
+); 

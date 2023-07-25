@@ -2052,6 +2052,8 @@ sub _config_import {
 		consents_table                     => 'dada_consents',
 		consent_activity_table             => 'dada_consent_activity',
 		
+		simple_auth_str_table              => 'dada_simple_auth_str',
+		
 		dbtype => 'SQLite',
 		database => 'dadamail',
         

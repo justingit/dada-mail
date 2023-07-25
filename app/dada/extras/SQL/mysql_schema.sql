@@ -190,10 +190,20 @@ CREATE TABLE IF NOT EXISTS dada_consent_activity (
 
 
 
+CREATE TABLE IF NOT EXISTS dada_simple_auth_str (
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	timestamp                TIMESTAMP DEFAULT NOW(),
+	remote_addr              varchar(255),  
+	auth_str                 varchar(255),
+	CONSTRAINT UAS UNIQUE (auth_str)
+); 
+
+
 
 CREATE INDEX dada_settings_list_index ON dada_settings (list);
 
-CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(80), list, list_type, list_status, timestamp);
+CREATE INDEX 
+_all_index ON dada_subscribers (email(80), list, list_type, list_status, timestamp);
 
 CREATE INDEX dada_confirmation_tokens_index ON dada_confirmation_tokens (id, timestamp, token(80), email(80));
 
