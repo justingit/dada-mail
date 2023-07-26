@@ -46,23 +46,24 @@ Checks up on the status and health of any mass mailings currently going out. Thi
 
 =item * rate_limit_checks
 
-TODO
+
+When run, remove expires rate limit checks.
 
 =item * mime_cache
 
-TODO
+When run, removes old files in the mime cache. 
 
 =item * remove_old_archive_messages
 
-TODO
+When run, removes old archived messages. What archived messages is set in the archive options.
 
 =item * remove_old_tracker_data
 
-TODO
+When run, removes old Tracker plugin data. What data removed is set in the Tracker plugin options.
 
 =item * send_analytics_email_notification
 
-TODO
+When run, will send any analytics emails that need to be sent after a mass mailing. 
 
 =item * scheduled_mass_mailings
 
