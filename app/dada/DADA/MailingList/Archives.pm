@@ -2246,6 +2246,7 @@ sub make_search_summary {
 	my %search_summary;
 	
 	my $key;
+	
 	for $key(@$matches){ 
 	
 		my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($key);

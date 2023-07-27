@@ -4,38 +4,44 @@
 
 <!-- tmpl_include name="list_breadcrumbs_widget.tmpl" -->
 
+
+<!-- tmpl_include list_archive_search_form_widget.tmpl -->
+
 <!-- tmpl_if search_results -->
 	
 	<p>
 	 <em>
-	  Found <!-- tmpl_var count --> archived message<!-- tmpl_var ending --> 
+	  Found <!-- tmpl_var total_count --> archived message<!-- tmpl_var ending --> 
 	  when looking for &quot;<!-- tmpl_var keyword -->&quot;:
 	 </em>
 	</p>
-	<ol>
+		
+	<!-- tmpl_include search_archive_results_pagination.tmpl -->
+		
 	 
 	<!-- tmpl_loop summaries --> 
 		 
-		 <li>
-		  <p>
-		   <strong>
+		<h2>
+		 
 		    <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->/<!-- tmpl_var id -->/">
 		     <!-- tmpl_var subject -->
 		    </a>
-		   </strong>
-		   <br >
-		   <em>
+		</h2>
+
+		  <p><em>
 		    Sent <!-- tmpl_var date -->
 		   </em>
 		  </p>
+		 
 		  <p>
 		   <!-- tmpl_var summary -->
 		  </p>
-		 </li>
 		 
 	<!--/tmpl_loop-->
 	 
-	</ol>
+
+<!-- tmpl_include search_archive_results_pagination.tmpl -->
+
 	
 <!--tmpl_else-->
 	
@@ -45,10 +51,8 @@
 	
 <!--/tmpl_if-->
 
-<!-- tmpl_var search_form -->
-<hr >
-
-<!-- this... doesn't do anything: -->
+<!-- tmpl_include list_archive_search_form_widget.tmpl -->
+	
 
 <!-- tmpl_var subscription_form -->
 

@@ -13159,10 +13159,15 @@ sub archive_bare {
 
 sub search_archive {
 
-    my $self  = shift;
-    my $q     = $self->query();
-    my $list  = $q->param('list');
-    my $email = $q->param('email');
+    my $self            = shift;
+    my $q               = $self->query();
+    my $list            = $q->param('list');
+    my $email           = $q->param('email');
+	
+    my $page            = xss_filter( scalar $q->param('page') ) || 1;
+	   $page            = int($page);
+	
+	   
 
     if ( check_if_list_exists( -List => $list ) <= 0 ) {
         return user_error( { -list => $list, -error => "no_list" } );
@@ -13188,39 +13193,92 @@ sub search_archive {
     }
 
     my $keyword = $q->param('keyword');
-    $keyword = xss_filter($keyword);
+       $keyword = xss_filter($keyword);
 
+
+	
+	
     if ( $keyword =~ m/^[A-Za-z]+$/ ) {    # just words, basically.
-        if (  !$c->profile_on
-            && $c->is_cached( $list . '.search_archive.' . $keyword . '.scrn' )
+        if (  !$c->profile_on								
+            && $c->is_cached( $list . '.search_archive.' . $keyword . '.' . $page . '.scrn')
           )
         {
             return $c->cached(
-                $list . '.search_archive.' . $keyword . '.scrn' );
+                $list . '.search_archive.' . $keyword . '.' . $page . '.scrn');
         }
     }
-
+	
     require DADA::MailingList::Archives;
 
     my $archive      = DADA::MailingList::Archives->new( { -list => $list } );
-    my $entries      = $archive->get_archive_entries();
+  
+  
+  # what's this for? 
+  #   my $entries      = $archive->get_archive_entries();
+
     my $ending       = "";
     my $count        = 0;
     my $ht_summaries = [];
 
     my $search_results = $archive->search_entries($keyword);
+	my $num_a_at_once = $ls->param('archive_index_count'); 
 
-    if ( exists( $search_results->[0] ) && ( @$search_results[0] ne "" ) ) {
+	# Is "page" outside of the actual range? 
+	if($page == 0){ 
+		$page = 1;
+	}
+	if($#{$search_results} > 0){
+		if($page > (($#{$search_results} + 1) / $num_a_at_once)){ 
+			$page = 1; 
+		}
+	}
+	
+	
+	
+	my $start_i = ($page - 1)  * $num_a_at_once; 	
+	my $end_i   = ($start_i + $num_a_at_once) - 1;
+	my $search_results_in_page = []; 
 
-        $count  = $#{$search_results} + 1;
-        $ending = 's'
-          if exists( $search_results->[1] );
+	for(my $i = 0; $i <= $#{$search_results}; $i++){ 
+		if($i > $end_i){ 
+			last;
+		}
+		if($i >= $start_i){ 
+			push(@$search_results_in_page, $search_results->[$i]);
+		}
+	}
 
-        my $summaries =
-          $archive->make_search_summary( $keyword, $search_results );
+	require Data::Pageset; 
+    my $page_info = Data::Pageset->new(
+        {
+            total_entries    => $#{$search_results},
+            entries_per_page => $ls->param('archive_index_count'),
+            current_page     => $page,
+            mode             => 'slide',    # default fixed
+            pages_per_set    => 10,
+        }
+    );
+	
+	
+    my $pages_in_set = [];
+    foreach my $page_num ( @{ $page_info->pages_in_set() } ) {
+        if ( $page_num == $page_info->current_page() ) {
+            push( @$pages_in_set, { page => $page_num, on_current_page => 1 } );
+        }
+        else {
+            push( @$pages_in_set, { page => $page_num, on_current_page => undef } );
+        }
+    }
+		
+    $count  = $#{$search_results} + 1;
+    $ending = 's'
+      if exists( $search_results->[1] );
+	  
+    if ( exists( $search_results_in_page->[0] ) ) {
+		  my $summaries =
+          $archive->make_search_summary( $keyword, $search_results_in_page );
 
-        for (@$search_results) {
-
+        for (@$search_results_in_page) {
             my ( $subject, $message, $format ) = $archive->get_archive_info($_);
             my $date = date_this(
                 -Packed_Date   => $_,
@@ -13286,6 +13344,15 @@ sub search_archive {
                 summaries         => $ht_summaries,
                 search_results    => $ht_summaries->[0] ? 1 : 0,
                 subscription_form => $archive_subscribe_form,
+				
+	            first             => scalar($page_info->first),
+	            last              => scalar($page_info->last),
+	            first_page        => scalar($page_info->first_page),
+	            last_page         => scalar($page_info->last_page),
+	            next_page         => scalar($page_info->next_page),
+	            previous_page     => scalar($page_info->previous_page),
+	            page              => scalar($page_info->current_page),
+				pages_in_set      => $pages_in_set,  				
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -13294,10 +13361,12 @@ sub search_archive {
         }
     );
 
+		
     if ( !$c->profile_on && $keyword =~ m/^[A-Za-z]+$/ )
-    {    # just words, basically.
-        $c->cache( $list . '.search_archive.' . $keyword . '.scrn', \$scrn );
+    {    # just words, basically.			    
+        $c->cache( $list . '.search_archive.' . $keyword . '.' . $page . '.scrn', \$scrn );
     }
+	
     return $scrn;
 
 }
