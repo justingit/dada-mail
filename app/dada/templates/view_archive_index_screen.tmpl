@@ -24,125 +24,135 @@
 </div>
 
 
-<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
- <input type="hidden" name="flavor" value="delete_archive" > 
 
- <table style="width:100%" class="responsive">
- 
- 
-  <tr>
 
-	  <!-- tmpl_if PLUGINS_ENABLED_tracker -->
-		<th style="width:75px">
- 	   </th>
-	<!-- /tmpl_if -->
-	<th width="25">
-   </th>
-     <th>
-      From
-   </th>
-   <th>
-      Subject
-   </th>
-   
-   <th>
-      Sent
-   </th>
-  <th>
-  &nbsp;
-  </th>
-   
-  </tr>
-  
+<!-- tmpl_if index_list -->
+
+	<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	 <input type="hidden" name="flavor" value="delete_archive" > 
+
+	 <table style="width:100%" class="responsive">
  
-  <!-- tmpl_loop index_list --> 
-  
-	   <tr title="<!-- tmpl_var message_blurb -->">
-		   
-		<!-- tmpl_if PLUGINS_ENABLED_tracker -->
-			<td>
-				<span style="font-size: 2em; padding-bottom:0;padding-top:0" class="text-align:center">
-					<a href="<!-- tmpl_var S_PROGRAM_URL -->/plugins/tracker/?prm=m&mid=<!-- tmpl_var id -->" title="View Analytics">
-							<i class="fi-graph-pie"></i>
-							<i class="fi-graph-bar"></i>
-					</a>
-				</span>
-			</td>
+ 
+	  <tr>
+
+		  <!-- tmpl_if PLUGINS_ENABLED_tracker -->
+			<th style="width:75px">
+	 	   </th>
 		<!-- /tmpl_if -->
+		<th width="25">
+	   </th>
+	     <th>
+	      From
+	   </th>
+	   <th>
+	      Subject
+	   </th>
+   
+	   <th>
+	      Sent
+	   </th>
+	  <th>
+	  &nbsp;
+	  </th>
+   
+	  </tr>
+  
+ 
+	  <!-- tmpl_loop index_list --> 
+  
+		   <tr title="<!-- tmpl_var message_blurb -->">
+		   
+			<!-- tmpl_if PLUGINS_ENABLED_tracker -->
+				<td>
+					<span style="font-size: 2em; padding-bottom:0;padding-top:0" class="text-align:center">
+						<a href="<!-- tmpl_var S_PROGRAM_URL -->/plugins/tracker/?prm=m&mid=<!-- tmpl_var id -->" title="View Analytics">
+								<i class="fi-graph-pie"></i>
+								<i class="fi-graph-bar"></i>
+						</a>
+					</span>
+				</td>
+			<!-- /tmpl_if -->
 		
-	    <td width="25">
+		    <td width="25">
+				<input 
+					type="checkbox" 
+					name="address" 
+					class="address" 
+					value="<!-- tmpl_var id -->" 
+				>
+		    </td>
+		    <td> 
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&id=<!-- tmpl_var id -->">
+				<!-- tmpl_var name="from" ESCAPE="HTML" -->
+			</a>
+			</td>
+		    <td> 
+		     <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&id=<!-- tmpl_var id -->">
+				<!-- tmpl_var name="subject" ESCAPE="HTML" -->
+				</a>
+			</td>
+			<td>
+			  <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&id=<!-- tmpl_var id -->">
+			 <!-- tmpl_var date -->
+			</a>
+			</td> 
+			<td>
+		      <a 
+			  	href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=edit_archived_msg&id=<!-- tmpl_var id -->"
+				class="button small"
+				>
+					edit
+				</a>
+			 </td>
+			</tr>
+	<!-- /tmpl_loop -->
+
+	</table> 
+
+	 <table style="width:100%" class="responsive">
+	  <tr>
+	  
+		<!-- tmpl_if PLUGINS_ENABLED_tracker -->
+			   	<td style="width:75px">
+			      </td>	
+		<!-- /tmpl_if -->	  
+	  
+	   	<td width="25">
 			<input 
-				type="checkbox" 
-				name="address" 
-				class="address" 
-				value="<!-- tmpl_var id -->" 
+				type="checkbox"
+				class="toggleCheckboxes"
+				data-target_class="address" 
 			>
-	    </td>
-	    <td> 
-			<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&id=<!-- tmpl_var id -->">
-			<!-- tmpl_var name="from" ESCAPE="HTML" -->
-		</a>
-		</td>
-	    <td> 
-	     <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&id=<!-- tmpl_var id -->">
-			<!-- tmpl_var name="subject" ESCAPE="HTML" -->
-			</a>
-		</td>
+	   	</td>
 		<td>
-		  <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&id=<!-- tmpl_var id -->">
-		 <!-- tmpl_var date -->
-		</a>
-		</td> 
-		<td>
-	      <a 
-		  	href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=edit_archived_msg&id=<!-- tmpl_var id -->"
-			class="button small"
-			>
-				edit
-			</a>
+		 <button 
+		 	type="submit" 
+			class="button small alert" 
+		>
+			<i class="fi-x"></i> Delete Checked
+		</button>
+		</form>
+			<form action="<!-- tmpl_var S_PROGRAM_URL -->" style="display:inline;margin:0">  
+			   <input type="hidden" name="flavor" value="purge_all_archives" >  
+			   <button
+			    type="submit" 
+				class="button small purge_archives alert" 
+				>
+				<i class="fi-x"></i> Purge All Archive Messages
+				</button>
+		   </form> 
 		 </td>
 		</tr>
-<!-- /tmpl_loop -->
-
-</table> 
-
- <table style="width:100%" class="responsive">
-  <tr>
-	  
-	<!-- tmpl_if PLUGINS_ENABLED_tracker -->
-		   	<td style="width:75px">
-		      </td>	
-	<!-- /tmpl_if -->	  
-	  
-   	<td width="25">
-		<input 
-			type="checkbox"
-			class="toggleCheckboxes"
-			data-target_class="address" 
-		>
-   	</td>
-	<td>
-	 <button 
-	 	type="submit" 
-		class="button small alert" 
-	>
-		<i class="fi-x"></i> Delete Checked
-	</button>
-	</form>
-		<form action="<!-- tmpl_var S_PROGRAM_URL -->" style="display:inline;margin:0">  
-		   <input type="hidden" name="flavor" value="purge_all_archives" >  
-		   <button
-		    type="submit" 
-			class="button small purge_archives alert" 
-			>
-			<i class="fi-x"></i> Purge All Archive Messages
-			</button>
-	   </form> 
-	 </td>
-	</tr>
-</table>
+	</table>
 	
  
-<!-- tmpl_var index_nav --> 
+	<!-- tmpl_var index_nav --> 
+
+<!-- tmpl_else -->
+		<div class="alert-box info radius">
+			No archived messages are available.
+		</div>
+<!-- /tmpl_if -->
 
 <!-- end view_archive_index_screen.tmpl --> 
