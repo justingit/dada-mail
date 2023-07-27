@@ -5002,7 +5002,7 @@ sub send_analytics_email_notification {
 
 }
 
-sub DESTROUY {}
+sub DESTROY {}
 
 1;
 
