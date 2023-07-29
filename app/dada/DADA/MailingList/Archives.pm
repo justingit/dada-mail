@@ -322,6 +322,7 @@ sub get_archive_entries {
 
 
 
+
 sub get_archive_info { 
 
 	my $self  = shift; 
@@ -980,14 +981,43 @@ sub create_index {
 	my $entries = $self->get_archive_entries() || undef; 
 	
 	if($entries){ 
-
 		my ($start, $stop);    
-		
 		$start = $here;
 		$stop  = ($start + $amount)-1; 
 		return ($start, $stop);
 	}
 }
+
+
+sub archive_page_entries {
+	
+	my $self    = shift; 
+	
+	# UI uses 1 as the index, internally, we shift this to 0
+	my $page    = shift || 1; 
+   	   $page -= 1; 
+	   
+	my $amount  = $self->{ls}->param('archive_index_count') || 10;	   
+	my $entries   = $self->get_archive_entries() || undef; 
+	my $r_entries = [];
+	
+	
+	for(my $i = 0; $i < $amount; $i++){  
+		
+		my $i_i = $i + ($page * $amount);
+		if(defined($entries->[$i_i])){ 
+			push(@$r_entries, $entries->[$i_i]);
+		}
+		else {
+			# most likely a good idea: 
+			# last; 
+		}
+	}
+	
+	return $r_entries;
+	
+} 
+
 
 
 

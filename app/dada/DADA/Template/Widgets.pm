@@ -902,192 +902,221 @@ sub show_login_list_textbox {
 
 
 
-sub html_archive_list { 
+sub html_archive_list {
 
-	#  DEV: god, what a mess...
-	#
-	my $list = shift; 
-	my $t    = "";
+    #  DEV: god, what a mess...
+    #
+    my $list       = shift;
+    my $t          = "";
+    my $page       = 1;
+    my $th_entries = [];
 	
-	require DADA::MailingList::Archives; 
-	require DADA::MailingList::Settings;
+    require DADA::MailingList::Archives;
+    require DADA::MailingList::Settings;
 
-	
-	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-	
-	return '' 
-		if $ls->param('show_archives') != 1;
-	
-	require DADA::Profile; 
-	my $prof = DADA::Profile->new(
-		{
-			-from_session => 1, 
-		}
-	); 
-	my $allowed_to_view_archives = 1;
-	if($prof) { 
-		$allowed_to_view_archives = $prof->allowed_to_view_archives(
-			{
-				-list         => $list, 
-			}
-		);
-	}
-	if($allowed_to_view_archives == 1){ 
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+    return ''
+      if $ls->param('show_archives') != 1;
+
+
+  	my $num_a_at_once = $ls->param('archive_index_count'); 
 		
-		my $archive = DADA::MailingList::Archives->new({-list => $list}); 
-		my $entries = $archive->get_archive_entries(); 
-	
-	
-		if(defined($entries->[0])) { 
-	
 
-	        my ($begin, $stop) = $archive->create_index(0);
-	        my $i;
-	        my $stopped_at = $begin;
-	        my $num = $begin;
-        
-	        $num++; 
-	        my @archive_nums; 
-	        my @archive_links; 
-	        my $th_entries = []; 
-    
-        
-        
-	        # iterate and save
-	        for($i = $begin; $i <=$stop; $i++){ 
-	            my $link; 
-            
-	            if(defined($entries->[$i])){
-                
-	                my ($subject, $message, $format, $raw_msg) = $archive->get_archive_info($entries->[$i]); 
-                
-                
-	                 # THis is stupid: 
-	                 # DEV: This is stupid, and I don't think it's a great idea. 
-	                    $subject = DADA::Template::Widgets::screen(
-	                        {
-	                        -data                    => \$subject, 
-	                        -vars                     => $ls->get, 
-	                        -list_settings_vars       => $ls->get, 
-	                        -list_settings_vars_param => {-dot_it => 1},                    
-							-subscriber_vars_param    => {-use_fallback_vars => 1, -list => $ls->param('list')},
+    require DADA::Profile;
+    my $prof = DADA::Profile->new(
+        {
+            -from_session => 1,
+        }
+    );
+    my $allowed_to_view_archives = 1;
+    if ($prof) {
+        $allowed_to_view_archives = $prof->allowed_to_view_archives(
+            {
+                -list => $list,
+            }
+        );
+    }
+    if ( $allowed_to_view_archives == 1 ) {
 
-	                        }
-	                    ); 
-	                    # That. Sucked.
-                
-                
-	                # this is so atrocious.
-	                my $date = date_this(
-	                -Packed_Date   => $entries->[$i],
-	                -Write_Month   => $ls->param('archive_show_month'),
-	                -Write_Day     => $ls->param('archive_show_day'),
-	                -Write_Year    => $ls->param('archive_show_year'),
-	                -Write_H_And_M => $ls->param('archive_show_hour_and_minute'),
-	                -Write_Second  => $ls->param('archive_show_second')
-	                );
-					
-					my $header_from      = undef;
-	                my $orig_header_from = undef;
-
-	                if ($raw_msg) {
-	                    $header_from = $archive->get_header(
-	                        -header => 'From',
-	                        -key    => $entries->[$i]
-	                    );
-	                    $orig_header_from = $header_from;
-	                }
-	
-					my $can_use_gravatar_url = can_use_Gravatar_URL();
-	                my $gravatar_img_url     = ''; # should be, undef?
-
-	                if ( 
-						   $ls->param('enable_gravatars') 
-						&& $can_use_gravatar_url
-					) {
-						my $header_address = $archive->sender_address({
-							-id => $entries->[$i],
-                        }); 
-                        $gravatar_img_url = gravatar_img_url({
-	                        -email                => $header_address,
-	                        -default_gravatar_url => $ls->param('default_gravatar_url'),
-                        });
-	                }
-		                	
-	                my $entry = { 				
-	                        id               => $entries->[$i], 
-    
-	                        date             => $date, 
-	                        subject          => $subject,
-	                       'format'          => $format, 
-	                        list             => $list, 
-	                        uri_escaped_list => uriescape($list),
-	                        PROGRAM_URL      => $DADA::Config::PROGRAM_URL, 
-		                    'list_settings.enable_gravatars' =>
-		                      $ls->param('enable_gravatars'),
-		                    can_use_gravatar_url => $can_use_gravatar_url,
-		                    gravatar_img_url     => $gravatar_img_url,
-	
-	                        message_blurb    => $archive->message_blurb(-key => $entries->[$i]),
-	                    }; 
-                
-	                $stopped_at++;
-	                push(@archive_nums, $num); 
-	                push(@archive_links, $link); 
-	                $num++;
-    
-    
-	                push(@$th_entries, $entry); 
-                    
-	            }
-	        } 
-    
-	        my $ii; 
-        
-	        for($ii=0;$ii<=$#archive_links; $ii++){ 
-    
-	            my $bullet = $archive_nums[$ii];
-            
-	            #fix if we're doing reverse chronologic 
-	            $bullet = (($#{$entries}+1) - ($archive_nums[$ii]) +1) 
-	                if($ls->param('sort_archives_in_reverse') == 1);
-    
-	            # yeah, whatever. 
-	            $th_entries->[$ii]->{bullet} = $bullet; 
-            
-	        }
-    	
+        my $archive = DADA::MailingList::Archives->new( { -list => $list } );
+        my $entries = $archive->get_archive_entries();
 
 
-        $t .= screen({-screen => 'archive_list_widget.tmpl', 
-                     -vars => {
-                                entries              => $th_entries,
-                                list                 => $list, 
-                                list_name            => $ls->param('list_name'), 
-                                publish_archives_rss => ($ls->param('publish_archives_rss')) ? 1: 0, 
-                                index_nav            => $archive->create_index_nav($stopped_at), 
-                               allowed_to_view_archives => 1, 
-							}
-                    });  
- 
+		# Navigation 
+	    my $page = int( $q->param('page') ) || 0;
+		if($page == 0){ 
+			$page = 1;
+		}
+		if($#{$entries} > 0){
+			if($page > (($#{$entries} + 1) / $num_a_at_once)){ 
+				$page = 1; 
 			}
-	}
-	else { 
-		$t = screen({-screen => 'archive_list_widget.tmpl', 
-                     -vars => {
-                                entries              => [],
-                                list                 => $list, 
-                                list_name            => $ls->param('list_name'), 
-                                publish_archives_rss => 0,
-                                index_nav            => '', 
-                                search_form          => '', 
-								allowed_to_view_archives => 0, 
-                               }
-                    });  
-
-	}
+		}
+		my $start_i = ($page - 1)  * $num_a_at_once; 	
+		my $end_i   = ($start_i + $num_a_at_once) - 1;
 	
-	return $t; 
+		require Data::Pageset; 
+	    my $page_info = Data::Pageset->new(
+	        {
+	            total_entries    => $#{$entries},
+	            entries_per_page => $num_a_at_once,
+	            current_page     => $page,
+	            mode             => 'slide',    # default fixed
+	            pages_per_set    => 10,
+	        }
+	    );
+
+	    my $pages_in_set = [];
+	    foreach my $page_num ( @{ $page_info->pages_in_set() } ) {
+	        if ( $page_num == $page_info->current_page() ) {
+	            push( @$pages_in_set, { page => $page_num, on_current_page => 1 } );
+	        }
+	        else {
+	            push( @$pages_in_set, { page => $page_num, on_current_page => undef } );
+	        }
+	    }
+	
+		#/ Navigation 
+		
+		
+		
+        if ( defined( $entries->[0] ) ) {
+	
+            my $archive_page_entries = $archive->archive_page_entries($page);
+
+            foreach my $i_entry (@$archive_page_entries) {
+
+                my ( $subject, $message, $format, $raw_msg ) =
+                  $archive->get_archive_info($i_entry);
+
+                # THis is stupid:
+                # DEV: This is stupid, and I don't think it's a great idea.
+                $subject = DADA::Template::Widgets::screen(
+                    {
+                        -data                     => \$subject,
+                        -vars                     => $ls->get,
+                        -list_settings_vars       => $ls->get,
+                        -list_settings_vars_param => { -dot_it => 1 },
+                        -subscriber_vars_param    => {
+                            -use_fallback_vars => 1,
+                            -list              => $ls->param('list')
+                        },
+
+                    }
+                );
+
+                # That. Sucked.
+
+                # this is so atrocious.
+                my $date = date_this(
+                    -Packed_Date   => $i_entry,
+                    -Write_Month   => $ls->param('archive_show_month'),
+                    -Write_Day     => $ls->param('archive_show_day'),
+                    -Write_Year    => $ls->param('archive_show_year'),
+                    -Write_H_And_M =>
+                      $ls->param('archive_show_hour_and_minute'),
+                    -Write_Second => $ls->param('archive_show_second')
+                );
+
+                my $header_from      = undef;
+                my $orig_header_from = undef;
+
+                if ($raw_msg) {
+                    $header_from = $archive->get_header(
+                        -header => 'From',
+                        -key    => $i_entry
+                    );
+                    $orig_header_from = $header_from;
+                }
+
+                my $can_use_gravatar_url = can_use_Gravatar_URL();
+                my $gravatar_img_url     = '';    # should be, undef?
+
+                if (   $ls->param('enable_gravatars')
+                    && $can_use_gravatar_url )
+                {
+                    my $header_address = $archive->sender_address(
+                        {
+                            -id => $i_entry,
+                        }
+                    );
+                    $gravatar_img_url = gravatar_img_url(
+                        {
+                            -email                => $header_address,
+                            -default_gravatar_url =>
+                              $ls->param('default_gravatar_url'),
+                        }
+                    );
+                }
+
+                my $entry = {
+                    id => $i_entry,
+
+                    date             => $date,
+                    subject          => $subject,
+                    'format'         => $format,
+                    list             => $list,
+                    uri_escaped_list => uriescape($list),
+                    PROGRAM_URL      => $DADA::Config::PROGRAM_URL,
+                    'list_settings.enable_gravatars' =>
+                      $ls->param('enable_gravatars'),
+                    can_use_gravatar_url => $can_use_gravatar_url,
+                    gravatar_img_url     => $gravatar_img_url,
+
+                    message_blurb =>
+                      $archive->message_blurb( -key => $i_entry ),
+                };
+                push( @$th_entries, $entry );
+
+            }
+        }
+
+        $t .= screen(
+            {
+                -screen => 'archive_list_widget.tmpl',
+                -vars   => {
+                    entries              => $th_entries,
+                    list                 => $list,
+                    list_name            => $ls->param('list_name'),
+                    publish_archives_rss =>
+                      ( $ls->param('publish_archives_rss') ) ? 1 : 0,
+                    allowed_to_view_archives => 1,
+					
+		            first             => scalar($page_info->first),
+		            last              => scalar($page_info->last),
+		            first_page        => scalar($page_info->first_page),
+		            last_page         => scalar($page_info->last_page),
+		            next_page         => scalar($page_info->next_page),
+		            previous_page     => scalar($page_info->previous_page),
+		            page              => scalar($page_info->current_page),
+					pages_in_set      => $pages_in_set,  				
+					
+					
+					
+                }
+            }
+        );
+
+    }
+    else {
+        $t = screen(
+            {
+                -screen => 'archive_list_widget.tmpl',
+                -vars   => {
+                    entries                  => [],
+                    list                     => $list,
+                    list_name                => $ls->param('list_name'),
+                    publish_archives_rss     => 0,
+                    search_form              => '',
+                    allowed_to_view_archives => 0,
+                }
+            }
+        );
+
+    }
+
+    return $t;
 
 }
 
