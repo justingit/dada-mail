@@ -93,7 +93,6 @@ sub check_state {
     my $self  = shift;
     my $state = shift;
     my $auth  = 0;
-    $self->_open_db;
     if ( $self->has_auth_state($state) >= 1 ) {
         $auth = 1;
         $self->remove_state($state);
@@ -116,7 +115,8 @@ sub has_auth_state {
     warn 'QUERY: ' . $query
       if $t;
 
-	  warn '$auth_string: ' . $auth_string if $t; 
+	  warn '$auth_string: ' . $auth_string 
+	  	if $t; 
 	  
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute($auth_string)
@@ -124,7 +124,8 @@ sub has_auth_state {
 
     my $count = $sth->fetchrow_array;
 
-	warn '$count: ' . $count if $t; 
+	warn '$count: ' . $count 
+		if $t; 
 	
     $sth->finish;
 
