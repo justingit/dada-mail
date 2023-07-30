@@ -12660,12 +12660,19 @@ sub archive {
     if ( !$id ) {
 
 		# Navigation 
+	    require POSIX;
 	    my $page = int( $q->param('page') ) || 0;
 		if($page == 0){ 
 			$page = 1;
 		}
+		# warn '$page: ' . $page; 
+		# warn '$#{$entries}: ' . $#{$entries}; 
+		# warn '$num_a_at_once: ' . $num_a_at_once; 
+		
+		
+		
 		if($#{$entries} > 0){
-			if($page > (($#{$entries} + 1) / $num_a_at_once)){ 
+			if($page > POSIX::ceil((($#{$entries} + 1) / $num_a_at_once))){ 
 				$page = 1; 
 			}
 		}
@@ -13234,13 +13241,14 @@ sub search_archive {
 
     my $search_results = $archive->search_entries($keyword);
 	my $num_a_at_once = $ls->param('archive_index_count'); 
-
+	
+	require POSIX; 
 	# Is "page" outside of the actual range? 
 	if($page == 0){ 
 		$page = 1;
 	}
 	if($#{$search_results} > 0){
-		if($page > (($#{$search_results} + 1) / $num_a_at_once)){ 
+		if($page > POSIX::ceil((($#{$search_results} + 1) / $num_a_at_once))){ 
 			$page = 1; 
 		}
 	}

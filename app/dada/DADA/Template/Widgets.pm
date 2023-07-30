@@ -944,12 +944,13 @@ sub html_archive_list {
 
 
 		# Navigation 
+		require POSIX;
 	    my $page = int( $q->param('page') ) || 0;
 		if($page == 0){ 
 			$page = 1;
 		}
 		if($#{$entries} > 0){
-			if($page > (($#{$entries} + 1) / $num_a_at_once)){ 
+			if($page > POSIX::ceil((($#{$entries} + 1) / $num_a_at_once))){ 
 				$page = 1; 
 			}
 		}
