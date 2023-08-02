@@ -941,44 +941,15 @@ sub html_archive_list {
 
         my $archive = DADA::MailingList::Archives->new( { -list => $list } );
         my $entries = $archive->get_archive_entries();
-
-
+		
 		# Navigation 
-		require POSIX;
-	    my $page = int( $q->param('page') ) || 0;
-		if($page == 0){ 
-			$page = 1;
-		}
-		if($#{$entries} > 0){
-			if($page > POSIX::ceil((($#{$entries} + 1) / $num_a_at_once))){ 
-				$page = 1; 
-			}
-		}
-		my $start_i = ($page - 1)  * $num_a_at_once; 	
-		my $end_i   = ($start_i + $num_a_at_once) - 1;
-	
-		require Data::Pageset; 
-	    my $page_info = Data::Pageset->new(
-	        {
-	            total_entries    => $#{$entries},
-	            entries_per_page => $num_a_at_once,
-	            current_page     => $page,
-	            mode             => 'slide',    # default fixed
-	            pages_per_set    => 10,
-	        }
-	    );
-
-	    my $pages_in_set = [];
-	    foreach my $page_num ( @{ $page_info->pages_in_set() } ) {
-	        if ( $page_num == $page_info->current_page() ) {
-	            push( @$pages_in_set, { page => $page_num, on_current_page => 1 } );
-	        }
-	        else {
-	            push( @$pages_in_set, { page => $page_num, on_current_page => undef } );
-	        }
-	    }
-	
-		#/ Navigation 
+		my $page = int($q->param('page')) || 0; 
+		my $pagination = $archive->pagination_info({
+			-page    => 1,
+			-entries => $entries,	
+		});
+		my $archive_page_entries = $archive->archive_page_entries(1);
+		
 		
 		
 		
@@ -1053,7 +1024,6 @@ sub html_archive_list {
 
                 my $entry = {
                     id => $i_entry,
-
                     date             => $date,
                     subject          => $subject,
                     'format'         => $format,
@@ -1084,16 +1054,14 @@ sub html_archive_list {
                       ( $ls->param('publish_archives_rss') ) ? 1 : 0,
                     allowed_to_view_archives => 1,
 					
-		            first             => scalar($page_info->first),
-		            last              => scalar($page_info->last),
-		            first_page        => scalar($page_info->first_page),
-		            last_page         => scalar($page_info->last_page),
-		            next_page         => scalar($page_info->next_page),
-		            previous_page     => scalar($page_info->previous_page),
-		            page              => scalar($page_info->current_page),
-					pages_in_set      => $pages_in_set,  				
-					
-					
+		            first             => scalar($pagination->{dps_obj}->first),
+		            last              => scalar($pagination->{dps_obj}->last),
+		            first_page        => scalar($pagination->{dps_obj}->first_page),
+		            last_page         => scalar($pagination->{dps_obj}->last_page),
+		            next_page         => scalar($pagination->{dps_obj}->next_page),
+		            previous_page     => scalar($pagination->{dps_obj}->previous_page),
+		            page              => scalar($pagination->{dps_obj}->current_page),
+					pages_in_set      => $pagination->{pages_in_set},  				
 					
                 }
             }

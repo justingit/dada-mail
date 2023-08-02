@@ -8794,45 +8794,44 @@ sub view_archive {
 
     unless ( defined($id) ) {
 
-        my $start = int( $q->param('start') ) || 0;
 
-        if (
-            !$c->profile_on
-            && $c->is_cached(
-                $list . '.admin.view_archive.index.' . $start . '.scrn'
-            )
-          )
-        {
-            return $c->cached(
-                $list . '.admin.view_archive.index.' . $start . '.scrn' );
-        }
-
-        my $ht_entries = [];
-
-        my $th_entries = [];
-
-        my ( $begin, $stop ) = $archive->create_index($start);
-        my $i;
-        my $stopped_at = $begin;
-
+       # if (
+       #     !$c->profile_on
+       #     && $c->is_cached(
+       #         $list . '.admin.view_archive.index.' . $start . '.scrn'
+       #     )
+       #   )
+       # {
+       #     return $c->cached(
+       #         $list . '.admin.view_archive.index.' . $start . '.scrn' );
+       # }
+	   #
+	   
+	   
+		# Navigation 
+		my $page = int($q->param('page')) || 0; 
+		my $pagination = $archive->pagination_info({
+			-page    => $page, 
+			-entries => $entries,	
+		});
+		my $archive_page_entries = $archive->archive_page_entries($pagination->{page});
+		
         my @archive_nums;
         my @archive_links;
-
-        for ( $i = $begin ; $i <= $stop ; $i++ ) {
-
-            next if !defined( $entries->[$i] );
-
-            my $entry = $entries->[$i];
-
-            #for $entry (@$entries){
+		
+		my $th_entries = [];
+		
+		foreach my $i_entry(@$archive_page_entries){
             my ( $subject, $message, $format, $raw_msg ) =
-              $archive->get_archive_info($entry);
+              $archive->get_archive_info($i_entry);
 
             my $pretty_subject = pretty($subject);
 
             my $header_from = undef;
             if ($raw_msg) {
-                $header_from = $archive->get_header( -header => 'From', -key => $entry );
+                $header_from = $archive->get_header(
+					 -header => 'From',
+					  -key   => $i_entry );
 				  
                 # The SPAM ME NOT Encoding's a little fucked for this, anyways,
                 # We should only encode the actual address, anyways. Hmm...
@@ -8843,17 +8842,17 @@ sub view_archive {
             }
 
             my $date = date_this(
-                -Packed_Date => $entry,
+                -Packed_Date => $i_entry,
                 -All         => 1
             );
 
-           my $message_blurb = $archive->message_blurb( -key => $entry );
+           my $message_blurb = $archive->message_blurb( -key => $i_entry );
            $message_blurb =~ s/\n|\r/ /g;
 		    push(
-                @$ht_entries,
+                @$th_entries,
 
                 {
-                    id            => $entry,
+                    id            => $i_entry,
                     date          => $date,
                     S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL,
                     subject       => $pretty_subject,
@@ -8862,11 +8861,10 @@ sub view_archive {
                 }
             );
 
-            $stopped_at++;
+            # $stopped_at++;
 
         }
 
-        my $index_nav = $archive->create_index_nav( $stopped_at, 1 );
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -8878,22 +8876,32 @@ sub view_archive {
                 },
                 -list => $list,
                 -vars => {
-                    can_use_JSON => scalar DADA::App::Guts::can_use_JSON(),
-                    screen       => 'view_archive',
-                    title        => 'View Archive',
+                    
+					can_use_JSON            => scalar DADA::App::Guts::can_use_JSON(),
+                    screen                  => 'view_archive',
+                    title                   => 'View Archive',
+                    index_list              => $th_entries,
+                    list_name               => $ls->param('list_name'),
+					
 					PLUGINS_ENABLED_tracker => $DADA::Config::PLUGINS_ENABLED->{tracker},
-                    index_list   => $ht_entries,
-                    list_name    => $ls->param('list_name'),
-                    index_nav    => $index_nav,
-
+					
+		            first             => scalar($pagination->{dps_obj}->first),
+		            last              => scalar($pagination->{dps_obj}->last),
+		            first_page        => scalar($pagination->{dps_obj}->first_page),
+		            last_page         => scalar($pagination->{dps_obj}->last_page),
+		            next_page         => scalar($pagination->{dps_obj}->next_page),
+		            previous_page     => scalar($pagination->{dps_obj}->previous_page),
+		            page              => scalar($pagination->{dps_obj}->current_page),
+					pages_in_set      => $pagination->{pages_in_set},  				
+					
                 },
             }
         );
 
-        if ( !$c->profile_on ) {    # that's it?
-            $c->cache( $list . '.admin.view_archive.index.' . $start . '.scrn',
-                \$scrn );
-        }
+       # if ( !$c->profile_on ) {    # that's it?
+       #     $c->cache( $list . '.admin.view_archive.index.' . $page . '.scrn',
+       #         \$scrn );
+       # }
         return $scrn;
     }
     else {
@@ -12660,63 +12668,21 @@ sub archive {
     if ( !$id ) {
 
 		# Navigation 
-	    require POSIX;
-	    my $page = int( $q->param('page') ) || 0;
-		if($page == 0){ 
-			$page = 1;
-		}
-		# warn '$page: ' . $page; 
-		# warn '$#{$entries}: ' . $#{$entries}; 
-		# warn '$num_a_at_once: ' . $num_a_at_once; 
-		
-		
-		
-		if($#{$entries} > 0){
-			if($page > POSIX::ceil((($#{$entries} + 1) / $num_a_at_once))){ 
-				$page = 1; 
-			}
-		}
-		my $start_i = ($page - 1)  * $num_a_at_once; 	
-		my $end_i   = ($start_i + $num_a_at_once) - 1;
-		
-		require Data::Pageset; 
-	    my $page_info = Data::Pageset->new(
-	        {
-	            total_entries    => $#{$entries},
-	            entries_per_page => $num_a_at_once,
-	            current_page     => $page,
-	            mode             => 'slide',    # default fixed
-	            pages_per_set    => 10,
-	        }
-	    );
-
-	    my $pages_in_set = [];
-	    foreach my $page_num ( @{ $page_info->pages_in_set() } ) {
-	        if ( $page_num == $page_info->current_page() ) {
-	            push( @$pages_in_set, { page => $page_num, on_current_page => 1 } );
-	        }
-	        else {
-	            push( @$pages_in_set, { page => $page_num, on_current_page => undef } );
-	        }
-	    }
-		
-		#/ Navigation 
-		
+		my $page = int($q->param('page')) || 0; 
+		my $pagination = $archive->pagination_info({
+			-page    => $page, 
+			-entries => $entries,	
+		});
 		
         if (  !$c->profile_on
-           && $c->is_cached( 'archive/' . $list . '/' . $page . '.scrn' ) )
+           && $c->is_cached( 'archive/' . $list . '/' . $pagination->{page} . '.scrn' ) )
         {
-           return $c->cached( 'archive/' . $list . '/' . $page . '.scrn' );
+           return $c->cached( 'archive/' . $list . '/' . $pagination->{page} . '.scrn' );
 	 
         }
 		
-		
-		my $archive_page_entries = $archive->archive_page_entries($page);
+		my $archive_page_entries = $archive->archive_page_entries($pagination->{page});
 	
-
-
-
-
 	my $th_entries = [];
 	foreach my $i_entry(@$archive_page_entries){
 		my $link;
@@ -12798,8 +12764,6 @@ sub archive {
         push( @$th_entries, $entry );
 	}
 
-        # my $index_nav = $archive->create_index_nav($stopped_at);
-
         require DADA::Profile;
         my $prof = DADA::Profile->new( { -from_session => 1 } );
         my $allowed_to_view_archives = 1;
@@ -12825,18 +12789,15 @@ sub archive {
 
                     %$archive_widgets,
 					
+		            first             => scalar($pagination->{dps_obj}->first),
+		            last              => scalar($pagination->{dps_obj}->last),
+		            first_page        => scalar($pagination->{dps_obj}->first_page),
+		            last_page         => scalar($pagination->{dps_obj}->last_page),
+		            next_page         => scalar($pagination->{dps_obj}->next_page),
+		            previous_page     => scalar($pagination->{dps_obj}->previous_page),
+		            page              => scalar($pagination->{dps_obj}->current_page),
+					pages_in_set      => $pagination->{pages_in_set},  				
 					
-		            first             => scalar($page_info->first),
-		            last              => scalar($page_info->last),
-		            first_page        => scalar($page_info->first_page),
-		            last_page         => scalar($page_info->last_page),
-		            next_page         => scalar($page_info->next_page),
-		            previous_page     => scalar($page_info->previous_page),
-		            page              => scalar($page_info->current_page),
-					pages_in_set      => $pages_in_set,  				
-					
-					
-
                 },
 
                 -list_settings_vars       => $ls->get,
@@ -12848,7 +12809,7 @@ sub archive {
             }
         );
         if ( !$c->profile_on ) {
-            $c->cache( 'archive/' . $list . '/' . $page . '.scrn', \$scrn );
+            $c->cache( 'archive/' . $list . '/' . $pagination->{page} . '.scrn', \$scrn );
         }
         return $scrn;
 
@@ -13242,61 +13203,27 @@ sub search_archive {
     my $search_results = $archive->search_entries($keyword);
 	my $num_a_at_once = $ls->param('archive_index_count'); 
 	
-	require POSIX; 
-	# Is "page" outside of the actual range? 
-	if($page == 0){ 
-		$page = 1;
-	}
-	if($#{$search_results} > 0){
-		if($page > POSIX::ceil((($#{$search_results} + 1) / $num_a_at_once))){ 
-			$page = 1; 
-		}
-	}
-	
-	
-	
-	my $start_i = ($page - 1)  * $num_a_at_once; 	
-	my $end_i   = ($start_i + $num_a_at_once) - 1;
-	my $search_results_in_page = []; 
+	my $pagination = $archive->pagination_info({
+		-page    => $page,
+		-entries => $search_results,	
+	});
 
+	my $search_results_in_page = [];
 	for(my $i = 0; $i <= $#{$search_results}; $i++){ 
-		if($i > $end_i){ 
+		if($i > $pagination->{end_index}){ 
 			last;
 		}
-		if($i >= $start_i){ 
+		if($i >= $pagination->{start_index}){ 
 			push(@$search_results_in_page, $search_results->[$i]);
 		}
 	}
-
-	require Data::Pageset; 
-    my $page_info = Data::Pageset->new(
-        {
-            total_entries    => $#{$search_results},
-            entries_per_page => $num_a_at_once,
-            current_page     => $page,
-            mode             => 'slide',    # default fixed
-            pages_per_set    => 10,
-        }
-    );
-	
-	
-    my $pages_in_set = [];
-    foreach my $page_num ( @{ $page_info->pages_in_set() } ) {
-        if ( $page_num == $page_info->current_page() ) {
-            push( @$pages_in_set, { page => $page_num, on_current_page => 1 } );
-        }
-        else {
-            push( @$pages_in_set, { page => $page_num, on_current_page => undef } );
-        }
-    }
 		
     $count  = $#{$search_results} + 1;
     $ending = 's'
       if exists( $search_results->[1] );
 	  
     if ( exists( $search_results_in_page->[0] ) ) {
-		  my $summaries =
-          $archive->make_search_summary( $keyword, $search_results_in_page );
+		  my $summaries = $archive->make_search_summary( $keyword, $search_results_in_page );
 
         for (@$search_results_in_page) {
             my ( $subject, $message, $format ) = $archive->get_archive_info($_);
@@ -13365,14 +13292,15 @@ sub search_archive {
                 search_results    => $ht_summaries->[0] ? 1 : 0,
                 subscription_form => $archive_subscribe_form,
 				
-	            first             => scalar($page_info->first),
-	            last              => scalar($page_info->last),
-	            first_page        => scalar($page_info->first_page),
-	            last_page         => scalar($page_info->last_page),
-	            next_page         => scalar($page_info->next_page),
-	            previous_page     => scalar($page_info->previous_page),
-	            page              => scalar($page_info->current_page),
-				pages_in_set      => $pages_in_set,  				
+	            first             => scalar($pagination->{dps_obj}->first),
+	            last              => scalar($pagination->{dps_obj}->last),
+	            first_page        => scalar($pagination->{dps_obj}->first_page),
+	            last_page         => scalar($pagination->{dps_obj}->last_page),
+	            next_page         => scalar($pagination->{dps_obj}->next_page),
+	            previous_page     => scalar($pagination->{dps_obj}->previous_page),
+	            page              => scalar($pagination->{dps_obj}->current_page),
+				pages_in_set      => $pagination->{pages_in_set},  				
+			
             },
             -list_settings_vars_param => {
                 -list   => $list,

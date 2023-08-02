@@ -28,12 +28,14 @@
 
 <!-- tmpl_if index_list -->
 
+	<!-- tmpl_include view_archive_index_screen_pagination.tmpl --> 
+
+
+
 	<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 	 <input type="hidden" name="flavor" value="delete_archive" > 
 
 	 <table style="width:100%" class="responsive">
- 
- 
 	  <tr>
 
 		  <!-- tmpl_if PLUGINS_ENABLED_tracker -->
@@ -147,7 +149,7 @@
 	</table>
 	
  
-	<!-- tmpl_var index_nav --> 
+	<!-- tmpl_include view_archive_index_screen_pagination.tmpl --> 
 
 <!-- tmpl_else -->
 		<div class="alert-box info radius">

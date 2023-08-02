@@ -1074,6 +1074,68 @@ sub oldest_entry {
 
 
 
+sub pagination_info { 
+	
+	require Data::Pageset; 
+	require POSIX; 
+	
+	my $self = shift;
+	my ($args) = @_;
+
+	if(! exists($args->{-page})){ 
+		$args->{-page} = 1; 
+	}
+	if(! exists($args->{-entries})){ 
+		$args->{-entries} = []; 
+	}
+	if(! exists($args->{-entries_per_page})){ 
+		$args->{-entries_per_page} = $self->{ls}->param('archive_index_count');
+	}
+	if($#{$args->{-entries}} > 0){
+		if(
+			$args->{-page} > POSIX::ceil((($#{$args->{-entries}} + 1) / $args->{-entries_per_page}))
+		){ 
+			$args->{-page} = 1; 
+		}
+	}
+	
+	my $start_i = ($args->{-page} - 1)  * $args->{-entries_per_page}; 	
+	my $end_i   = ($start_i + $args->{-entries_per_page}) - 1;
+	
+	
+    my $dps = Data::Pageset->new(
+        {
+            total_entries    => $#{$args->{-entries}},
+            entries_per_page => $args->{-entries_per_page},
+            current_page     => $args->{-page},
+            mode             => 'slide',
+            pages_per_set    => 10,
+        }
+    );
+	
+    my $pages_in_set = [];
+    foreach my $page_num ( @{ $dps->pages_in_set() } ) {
+        if ( $page_num == $dps->current_page() ) {
+            push( @$pages_in_set, { page => $page_num, on_current_page => 1 } );
+        }
+        else {
+            push( @$pages_in_set, { page => $page_num, on_current_page => undef } );
+        }
+    }
+	
+	
+	return { 
+		start_index  => $start_i,
+		end_index    => $end_i, 
+		pages_in_set => $pages_in_set,
+		dps_obj      => $dps,
+		page         => $args->{-page}, 
+	}
+}
+
+
+
+
 
 
 =pod
