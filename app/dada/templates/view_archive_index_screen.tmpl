@@ -24,12 +24,21 @@
 </div>
 
 
-
+<!-- tmpl_include admin_search_archive_form_widget.tmpl -->
 
 <!-- tmpl_if index_list -->
 
 	<!-- tmpl_include view_archive_index_screen_pagination.tmpl --> 
 
+
+	<!-- tmpl_if keyword -->
+		<p>
+		 <em>
+		  Found <!-- tmpl_var count --> archived message<!-- tmpl_var ending --> 
+		  when looking for &quot;<!-- tmpl_var keyword escape="HTML"-->&quot;:
+		 </em>
+		</p>
+	<!-- /tmpl_if -->
 
 
 	<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
@@ -135,15 +144,19 @@
 			<i class="fi-x"></i> Delete Checked
 		</button>
 		</form>
-			<form action="<!-- tmpl_var S_PROGRAM_URL -->" style="display:inline;margin:0">  
-			   <input type="hidden" name="flavor" value="purge_all_archives" >  
-			   <button
-			    type="submit" 
-				class="button small purge_archives alert" 
-				>
-				<i class="fi-x"></i> Purge All Archive Messages
-				</button>
-		   </form> 
+		
+		 	<!-- tmpl_unless keyword -->
+				<form action="<!-- tmpl_var S_PROGRAM_URL -->" style="display:inline;margin:0">  
+				   <input type="hidden" name="flavor" value="purge_all_archives" >  
+				   <button
+				    type="submit" 
+					class="button small purge_archives alert" 
+					>
+					<i class="fi-x"></i> Purge All Archive Messages
+					</button>
+			   </form> 
+		   <!-- /tmpl_unless -->
+		
 		 </td>
 		</tr>
 	</table>
@@ -152,9 +165,17 @@
 	<!-- tmpl_include view_archive_index_screen_pagination.tmpl --> 
 
 <!-- tmpl_else -->
-		<div class="alert-box info radius">
-			No archived messages are available.
-		</div>
+	
+		<!-- tmpl_if keyword -->
+			<div class="alert-box info radius">
+				No archived messages were found for, &quot;<!-- tmpl_var keyword escape="HTML" -->&quot;
+			</div>		
+		<!-- tmpl_else -->
+			<div class="alert-box info radius">
+				No archived messages are available.
+			</div>
+		<!-- /tmpl_if -->
+
 <!-- /tmpl_if -->
 
 <!-- end view_archive_index_screen.tmpl --> 

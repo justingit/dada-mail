@@ -1085,6 +1085,9 @@ sub pagination_info {
 	if(! exists($args->{-page})){ 
 		$args->{-page} = 1; 
 	}
+	if($args->{-page} <= 0){ 
+		$args->{-page} = 1; 
+	}
 	if(! exists($args->{-entries})){ 
 		$args->{-entries} = []; 
 	}

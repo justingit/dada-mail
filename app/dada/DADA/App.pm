@@ -188,7 +188,7 @@ sub setup {
         'process_bouncing_addresses'      => \&process_bouncing_addresses,
         'edit_template'                   => \&edit_template,
         'view_archive'                    => \&view_archive,
-        'display_message_source'          => \&display_message_source,
+		'display_message_source'          => \&display_message_source,
         'purge_all_archives'              => \&purge_all_archives,
         'delete_archive'                  => \&delete_archive,
         'edit_archived_msg'               => \&edit_archived_msg,
@@ -8786,7 +8786,7 @@ sub view_archive {
     require DADA::MailingList::Archives;
 
     my $archive = DADA::MailingList::Archives->new( { -list => $list } );
-    my $entries = $archive->get_archive_entries();
+    #$archive->get_archive_entries();
 
     #if we don't have nothin, print the index,
 
@@ -8794,30 +8794,65 @@ sub view_archive {
 
     unless ( defined($id) ) {
 
-
-       # if (
-       #     !$c->profile_on
-       #     && $c->is_cached(
-       #         $list . '.admin.view_archive.index.' . $start . '.scrn'
-       #     )
-       #   )
-       # {
-       #     return $c->cached(
-       #         $list . '.admin.view_archive.index.' . $start . '.scrn' );
-       # }
-	   #
-	   
-	   
 		# Navigation 
-		my $page = int($q->param('page')) || 0; 
-		my $pagination = $archive->pagination_info({
-			-page    => $page, 
-			-entries => $entries,	
-		});
-		my $archive_page_entries = $archive->archive_page_entries($pagination->{page});
+		my $page    = int($q->param('page')) || 0; 
+	    my $keyword = $q->param('keyword') || undef;
+	       $keyword = xss_filter($keyword);
+		   
+		my $pagination           = {};
+		my $entries              = [];
+		my $archive_page_entries = [];
+		my $ending               = '';
+		my $count                = 0;
 		
-        my @archive_nums;
-        my @archive_links;
+		if(!$keyword){ 
+		    $entries              = $archive->get_archive_entries();
+			
+			$pagination = $archive->pagination_info({
+				-page    => $page, 
+				-entries => $entries,	
+			});
+			
+			$archive_page_entries = $archive->archive_page_entries($pagination->{page});
+		
+		}
+		else { 
+			
+			$entries = $archive->search_entries($keyword);
+			
+			$pagination = $archive->pagination_info({
+				-page    => $page, 
+				-entries => $entries,	
+			});
+			
+						
+			for(my $i = 0; $i <= $#{$entries}; $i++){ 
+				if($i > $pagination->{end_index}){ 
+					last;
+				}
+				if($i >= $pagination->{start_index}){ 
+					push(@$archive_page_entries, $entries->[$i]);
+				}
+			}
+			
+
+		    $count  = $#{$entries} + 1;
+		    $ending = 's'
+		      if exists( $entries->[1] );
+			  
+		}
+
+        #if (
+        #    !$c->profile_on
+        #    && $c->is_cached(
+        #        $list . '.admin.view_archive.index.' . $pagination->{page} . '.scrn'
+        #    )
+        #  )
+        #{
+         #   return $c->cached(
+         #       $list . '.admin.view_archive.index.' . $pagination->{page} . '.scrn' );
+      #  }
+	   
 		
 		my $th_entries = [];
 		
@@ -8892,16 +8927,21 @@ sub view_archive {
 		            next_page         => scalar($pagination->{dps_obj}->next_page),
 		            previous_page     => scalar($pagination->{dps_obj}->previous_page),
 		            page              => scalar($pagination->{dps_obj}->current_page),
-					pages_in_set      => $pagination->{pages_in_set},  				
+					pages_in_set      => $pagination->{pages_in_set},  	
+					
+					count             => $count, 
+					ending            => $ending,
+					keyword           => $keyword, 
+								
 					
                 },
             }
         );
 
-       # if ( !$c->profile_on ) {    # that's it?
-       #     $c->cache( $list . '.admin.view_archive.index.' . $page . '.scrn',
-       #         \$scrn );
-       # }
+        if ( !$c->profile_on ) {    # that's it?
+            $c->cache( $list . '.admin.view_archive.index.' . $pagination->{page} . '.scrn',
+                \$scrn );
+        }
         return $scrn;
     }
     else {
@@ -8957,6 +8997,9 @@ sub view_archive {
         return $scrn;
     }
 }
+
+
+
 
 sub display_message_source {
 
@@ -13178,9 +13221,6 @@ sub search_archive {
 
     my $keyword = $q->param('keyword');
        $keyword = xss_filter($keyword);
-
-
-	
 	
     if ( $keyword =~ m/^[A-Za-z]+$/ ) {    # just words, basically.
         if (  !$c->profile_on								
