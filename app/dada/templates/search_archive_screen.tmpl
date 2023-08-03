@@ -12,7 +12,7 @@
 	<p>
 	 <em>
 	  Found <!-- tmpl_var total_count --> archived message<!-- tmpl_var ending --> 
-	  when looking for &quot;<!-- tmpl_var keyword -->&quot;:
+	  when looking for &quot;<!-- tmpl_var q -->&quot;:
 	 </em>
 	</p>
 		
@@ -45,9 +45,9 @@
 	
 <!--tmpl_else-->
 	
-	<p class="error">
-	 No archived messages matched your search.
-	</p>
+	<div class="alert-box info radius">
+		 No archived messages matched your search.
+	</div>
 	
 <!--/tmpl_if-->
 

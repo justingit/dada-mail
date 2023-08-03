@@ -8779,84 +8779,90 @@ sub view_archive {
     my $list = $admin_list;
 
     require DADA::MailingList::Settings;
-
     my $ls = DADA::MailingList::Settings->new( { -list => $admin_list } );
 
-    # let's get some info on this archive, shall we?
     require DADA::MailingList::Archives;
-
     my $archive = DADA::MailingList::Archives->new( { -list => $list } );
-    #$archive->get_archive_entries();
-
-    #if we don't have nothin, print the index,
 
     my $id = $q->param('id') || undef;
 
     unless ( defined($id) ) {
 
-		# Navigation 
-		my $page    = int($q->param('page')) || 0; 
-	    my $keyword = $q->param('keyword') || undef;
-	       $keyword = xss_filter($keyword);
-		   
-		my $pagination           = {};
-		my $entries              = [];
-		my $archive_page_entries = [];
-		my $ending               = '';
-		my $count                = 0;
-		
-		if(!$keyword){ 
-		    $entries              = $archive->get_archive_entries();
-			
-			$pagination = $archive->pagination_info({
-				-page    => $page, 
-				-entries => $entries,	
-			});
-			
-			$archive_page_entries = $archive->archive_page_entries($pagination->{page});
-		
+        my $page  = int( $q->param('page') ) || 0;
+        my $query = $q->param('q')           || undef;
+		if(defined($query)){ 
+			$query = xss_filter($query);
 		}
-		else { 
-			
-			$entries = $archive->search_entries($keyword);
-			
-			$pagination = $archive->pagination_info({
-				-page    => $page, 
-				-entries => $entries,	
-			});
-			
-						
-			for(my $i = 0; $i <= $#{$entries}; $i++){ 
-				if($i > $pagination->{end_index}){ 
-					last;
-				}
-				if($i >= $pagination->{start_index}){ 
-					push(@$archive_page_entries, $entries->[$i]);
-				}
-			}
-			
 
-		    $count  = $#{$entries} + 1;
-		    $ending = 's'
-		      if exists( $entries->[1] );
+        my $pagination           = {};
+        my $entries              = [];
+        my $archive_page_entries = [];
+        my $ending               = '';
+        my $count                = 0;
+
+        if ( !$query ) {
+           
+		    $entries    = $archive->get_archive_entries();
+            $pagination = $archive->pagination_info(
+                {
+                    -page    => $page,
+                    -entries => $entries,
+                }
+            );
+
+            $archive_page_entries =
+              $archive->archive_page_entries( $pagination->{page}, $entries );
+
+        }
+        else {
+
+            $entries = $archive->search_entries($query);
+
+			
+            $pagination = $archive->pagination_info(
+                {
+                    -page    => $page,
+                    -entries => $entries,
+                }
+            );
+
+            $archive_page_entries =
+              $archive->archive_page_entries( $pagination->{page}, $entries );
+
 			  
-		}
+            $count  = $#{$entries} + 1;
+            $ending = 's'
+              if exists( $entries->[1] );
 
-        #if (
-        #    !$c->profile_on
-        #    && $c->is_cached(
-        #        $list . '.admin.view_archive.index.' . $pagination->{page} . '.scrn'
-        #    )
-        #  )
-        #{
-         #   return $c->cached(
-         #       $list . '.admin.view_archive.index.' . $pagination->{page} . '.scrn' );
-      #  }
-	   
+        }
+
 		
-		my $th_entries = [];
-		
-		foreach my $i_entry(@$archive_page_entries){
+        if (
+               !$c->profile_on
+            && $c->is_cached(
+				join('-', 
+					$list,
+					'admin.view_archive.index',
+					$query,
+					$pagination->{page},
+				) . '.scrn'
+            )
+          )
+        {
+            return $c->cached( 
+				join('-', 
+					$list,
+					'admin.view_archive.index',
+					$query,
+					$pagination->{page},
+				) . '.scrn'
+			);
+
+        }
+        
+        my $th_entries = [];
+
+        foreach my $i_entry (@$archive_page_entries) {
             my ( $subject, $message, $format, $raw_msg ) =
               $archive->get_archive_info($i_entry);
 
@@ -8865,9 +8871,10 @@ sub view_archive {
             my $header_from = undef;
             if ($raw_msg) {
                 $header_from = $archive->get_header(
-					 -header => 'From',
-					  -key   => $i_entry );
-				  
+                    -header => 'From',
+                    -key    => $i_entry
+                );
+
                 # The SPAM ME NOT Encoding's a little fucked for this, anyways,
                 # We should only encode the actual address, anyways. Hmm...
                 # $header_from    = spam_me_not_encode($header_from);
@@ -8881,9 +8888,9 @@ sub view_archive {
                 -All         => 1
             );
 
-           my $message_blurb = $archive->message_blurb( -key => $i_entry );
-           $message_blurb =~ s/\n|\r/ /g;
-		    push(
+            my $message_blurb = $archive->message_blurb( -key => $i_entry );
+            $message_blurb =~ s/\n|\r/ /g;
+            push(
                 @$th_entries,
 
                 {
@@ -8900,7 +8907,6 @@ sub view_archive {
 
         }
 
-
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'view_archive_index_screen.tmpl',
@@ -8911,37 +8917,49 @@ sub view_archive {
                 },
                 -list => $list,
                 -vars => {
-                    
-					can_use_JSON            => scalar DADA::App::Guts::can_use_JSON(),
-                    screen                  => 'view_archive',
-                    title                   => 'View Archive',
-                    index_list              => $th_entries,
-                    list_name               => $ls->param('list_name'),
-					
-					PLUGINS_ENABLED_tracker => $DADA::Config::PLUGINS_ENABLED->{tracker},
-					
-		            first             => scalar($pagination->{dps_obj}->first),
-		            last              => scalar($pagination->{dps_obj}->last),
-		            first_page        => scalar($pagination->{dps_obj}->first_page),
-		            last_page         => scalar($pagination->{dps_obj}->last_page),
-		            next_page         => scalar($pagination->{dps_obj}->next_page),
-		            previous_page     => scalar($pagination->{dps_obj}->previous_page),
-		            page              => scalar($pagination->{dps_obj}->current_page),
-					pages_in_set      => $pagination->{pages_in_set},  	
-					
-					count             => $count, 
-					ending            => $ending,
-					keyword           => $keyword, 
-								
-					
+
+                    can_use_JSON => scalar DADA::App::Guts::can_use_JSON(),
+                    screen       => 'view_archive',
+                    title        => 'View Archive',
+                    index_list   => $th_entries,
+                    list_name    => $ls->param('list_name'),
+
+                    PLUGINS_ENABLED_tracker =>
+                      $DADA::Config::PLUGINS_ENABLED->{tracker},
+
+                    first      => scalar( $pagination->{dps_obj}->first ),
+                    last       => scalar( $pagination->{dps_obj}->last ),
+                    first_page => scalar( $pagination->{dps_obj}->first_page ),
+                    last_page  => scalar( $pagination->{dps_obj}->last_page ),
+                    next_page  => scalar( $pagination->{dps_obj}->next_page ),
+                    previous_page =>
+                      scalar( $pagination->{dps_obj}->previous_page ),
+                    page => scalar( $pagination->{dps_obj}->current_page ),
+                    pages_in_set => $pagination->{pages_in_set},
+
+                    count  => $count,
+                    ending => $ending,
+                    q      => $query,
+
                 },
             }
         );
 
-        if ( !$c->profile_on ) {    # that's it?
-            $c->cache( $list . '.admin.view_archive.index.' . $pagination->{page} . '.scrn',
-                \$scrn );
+        if (   !$c->profile_on 
+			&& ($query =~ m/^[A-Za-z]+$/ || ! $query)
+		)
+        {
+            $c->cache(
+				join('-', 
+					$list,
+					'admin.view_archive.index',
+					$query,
+					$pagination->{page},
+				) . '.scrn',
+                \$scrn
+            );
         }
+   
         return $scrn;
     }
     else {
@@ -8979,14 +8997,15 @@ sub view_archive {
                 },
 
                 -vars => {
-                    id      => $id,
-                    subject => $subject,
-                    date    => $cal_date,
+                    id                         => $id,
+                    subject                    => $subject,
+                    date                       => $cal_date,
                     can_display_message_source =>
                       $archive->can_display_message_source,
-                    nav_table => $nav_table,
-					PLUGINS_ENABLED_tracker => $DADA::Config::PLUGINS_ENABLED->{tracker},
-					
+                    nav_table               => $nav_table,
+                    PLUGINS_ENABLED_tracker =>
+                      $DADA::Config::PLUGINS_ENABLED->{tracker},
+
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -12655,7 +12674,6 @@ sub archive {
     require DADA::MailingList::Archives;
     my $archive       = DADA::MailingList::Archives->new( { -list => $list } );
     my $entries       = $archive->get_archive_entries();
-	my $num_a_at_once = $ls->param('archive_index_count'); 
 
 ###### These are all little thingies.
 
@@ -12718,16 +12736,31 @@ sub archive {
 		});
 		
         if (  !$c->profile_on
-           && $c->is_cached( 'archive/' . $list . '/' . $pagination->{page} . '.scrn' ) )
+           && $c->is_cached( 
+			   	join('-', 
+					'archive',
+					$list,
+					$pagination->{page},
+					''
+				) . '.scrn'
+			)
+			)
         {
-           return $c->cached( 'archive/' . $list . '/' . $pagination->{page} . '.scrn' );
+           return $c->cached(
+		   		join('-', 
+					'archive',
+					$list,
+					$pagination->{page},
+					''
+				) . '.scrn'
+		    );
 	 
         }
 		
-		my $archive_page_entries = $archive->archive_page_entries($pagination->{page});
+		my $archive_page_entries = $archive->archive_page_entries($pagination->{page}, $entries);
 	
-	my $th_entries = [];
-	foreach my $i_entry(@$archive_page_entries){
+		my $th_entries = [];
+		foreach my $i_entry(@$archive_page_entries){
 		my $link;
         my ( $subject, $message, $format, $raw_msg ) = 
 			$archive->get_archive_info( $i_entry );
@@ -12851,10 +12884,20 @@ sub archive {
 
             }
         );
-        if ( !$c->profile_on ) {
-            $c->cache( 'archive/' . $list . '/' . $pagination->{page} . '.scrn', \$scrn );
+       
+	    if ( !$c->profile_on ) { 
+		    $c->cache( 
+			   	join('-', 
+					'archive',
+					$list,
+					$pagination->{page},
+					''
+					) . '.scrn',
+					\$scrn 
+			 );
         }
-        return $scrn;
+       
+	    return $scrn;
 
     }
     else {    # There's an id...
@@ -13218,19 +13261,31 @@ sub search_archive {
         return user_error(
             { -list => $list, -error => "not_allowed_to_view_archives" } );
     }
-
-    my $keyword = $q->param('keyword');
-       $keyword = xss_filter($keyword);
-	
-    if ( $keyword =~ m/^[A-Za-z]+$/ ) {    # just words, basically.
-        if (  !$c->profile_on								
-            && $c->is_cached( $list . '.search_archive.' . $keyword . '.' . $page . '.scrn')
-          )
+		
+    my $query = $q->param('q');
+       $query = xss_filter($query);
+		   
+        if (  !$c->profile_on	
+		    && $query =~ m/^[A-Za-z]+$/ 
+            && $c->is_cached(
+		   		join('-', 
+					'search_archive',
+					$list,
+					$page,
+					$query
+				) . '.scrn'
+          	)
+		  )
         {
             return $c->cached(
-                $list . '.search_archive.' . $keyword . '.' . $page . '.scrn');
+		   		join('-', 
+					'search_archive',
+					$list,
+					$page,
+					$query
+				) . '.scrn'
+			);
         }
-    }
 	
     require DADA::MailingList::Archives;
 
@@ -13240,30 +13295,22 @@ sub search_archive {
     my $count        = 0;
     my $ht_summaries = [];
 
-    my $search_results = $archive->search_entries($keyword);
-	my $num_a_at_once = $ls->param('archive_index_count'); 
-	
+    my $search_results = $archive->search_entries($query);
+		
 	my $pagination = $archive->pagination_info({
 		-page    => $page,
 		-entries => $search_results,	
 	});
 
-	my $search_results_in_page = [];
-	for(my $i = 0; $i <= $#{$search_results}; $i++){ 
-		if($i > $pagination->{end_index}){ 
-			last;
-		}
-		if($i >= $pagination->{start_index}){ 
-			push(@$search_results_in_page, $search_results->[$i]);
-		}
-	}
+	
+	my $search_results_in_page = $archive->archive_page_entries($pagination->{page}, $search_results);
 		
     $count  = $#{$search_results} + 1;
     $ending = 's'
       if exists( $search_results->[1] );
 	  
     if ( exists( $search_results_in_page->[0] ) ) {
-		  my $summaries = $archive->make_search_summary( $keyword, $search_results_in_page );
+		  my $summaries = $archive->make_search_summary( $query, $search_results_in_page );
 
         for (@$search_results_in_page) {
             my ( $subject, $message, $format ) = $archive->get_archive_info($_);
@@ -13327,7 +13374,7 @@ sub search_archive {
                 list              => $list,
                 total_count       => $count,
                 ending            => $ending,
-                keyword           => $keyword,
+                q                 => $query,
                 summaries         => $ht_summaries,
                 search_results    => $ht_summaries->[0] ? 1 : 0,
                 subscription_form => $archive_subscribe_form,
@@ -13350,10 +13397,20 @@ sub search_archive {
     );
 
 		
-    if ( !$c->profile_on && $keyword =~ m/^[A-Za-z]+$/ )
-    {    # just words, basically.			    
-        $c->cache( $list . '.search_archive.' . $keyword . '.' . $page . '.scrn', \$scrn );
-    }
+    if ( 
+		!$c->profile_on 
+		&& $query =~ m/^[A-Za-z]+$/ 
+		)
+	    {
+	        $c->cache(
+		   		join('-', 
+					'search_archive',
+					$list,
+					$page,
+					$query
+				) . '.scrn', 
+			\$scrn );
+	    }
 	
     return $scrn;
 

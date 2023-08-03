@@ -948,14 +948,14 @@ sub html_archive_list {
 			-page    => 1,
 			-entries => $entries,	
 		});
-		my $archive_page_entries = $archive->archive_page_entries(1);
 		
 		
 		
 		
         if ( defined( $entries->[0] ) ) {
 	
-            my $archive_page_entries = $archive->archive_page_entries($page);
+			my $archive_page_entries = $archive->archive_page_entries(1, $entries);
+            
 
             foreach my $i_entry (@$archive_page_entries) {
 

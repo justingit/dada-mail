@@ -463,9 +463,9 @@ sub set_archive_info {
 
 =head2 search_entries
 
- my $search_results = $archive->search_entries($keyword); 
+ my $search_results = $archive->search_entries($query); 
 
-Given a $keyword, will return a array ref of archive key/ids that contain the 
+Given a $query, will return a array ref of archive key/ids that contain the 
 keyword. 
 
 =cut
@@ -473,14 +473,15 @@ keyword.
 sub search_entries { 
 
 	my $self    = shift; 
-	my $keyword = shift; 
+	my $qy      = shift; 
+	
 	my @results; 
 
 	my $query  = 'SELECT archive_id FROM '. $self->{sql_params}->{archives_table} . 
 			     ' WHERE list = ? AND (raw_msg LIKE ? OR message LIKE ? OR subject LIKE ?) ORDER BY archive_id DESC';
 
 	my $sth = $self->{dbh}->prepare($query); 
-	   $sth->execute($self->{name}, '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%')
+	   $sth->execute($self->{name}, '%'.$qy.'%', '%'.$qy.'%', '%'.$qy.'%')
 			or croak "cannot do statement! $DBI::errstr";
 	while((my $archives_id) = $sth->fetchrow_array){		
 		push(@results, $archives_id); 
@@ -990,33 +991,32 @@ sub create_index {
 
 
 sub archive_page_entries {
-	
-	my $self    = shift; 
-	
-	# UI uses 1 as the index, internally, we shift this to 0
-	my $page    = shift || 1; 
-   	   $page -= 1; 
-	   
-	my $amount  = $self->{ls}->param('archive_index_count') || 10;	   
-	my $entries   = $self->get_archive_entries() || undef; 
-	my $r_entries = [];
-	
-	
-	for(my $i = 0; $i < $amount; $i++){  
-		
-		my $i_i = $i + ($page * $amount);
-		if(defined($entries->[$i_i])){ 
-			push(@$r_entries, $entries->[$i_i]);
-		}
-		else {
-			# most likely a good idea: 
-			# last; 
-		}
-	}
-	
-	return $r_entries;
-	
-} 
+
+    my $self    = shift;
+    my $page    = shift || 1;
+    my $entries = shift || undef;
+    if ( !defined($entries) ) {
+        $entries = $self->get_archive_entries();
+    }
+
+    # UI uses 1 as the index, internally, we shift this to 0
+    $page -= 1;
+
+    my $amount    = $self->{ls}->param('archive_index_count') || 10;
+    my $r_entries = [];
+
+    for ( my $i = 0 ; $i < $amount ; $i++ ) {
+        my $i_i = $i + ( $page * $amount );
+        if ( defined( $entries->[$i_i] ) ) {
+            push( @$r_entries, $entries->[$i_i] );
+        }
+        else {
+            # most likely a good idea:
+            # last;
+        }
+    }
+    return $r_entries;
+}
 
 
 
@@ -2324,9 +2324,9 @@ sub massage {
 
 =head2 make_search_summary
 
- my $summaries = $archive->make_search_summary($keyword, $search_results); 
+ my $summaries = $archive->make_search_summary($query, $search_results); 
 
-Given a $keyword (string) and $search_results (array ref of archive keys/ids) 
+Given a $query (string) and $search_results (array ref of archive keys/ids) 
 will return a hashref of each line the keyword appears in. 
 
 =cut
@@ -2334,7 +2334,7 @@ will return a hashref of each line the keyword appears in.
 sub make_search_summary { 
 
 	my $self    = shift; 
-	my $keyword = shift;
+	my $query   = shift;
 	my $matches = shift;  
 	
 	my $message_summary; 
@@ -2371,10 +2371,10 @@ sub make_search_summary {
 		my $line;
 		
 		for $line(@message_lines){ 
-			if($line =~ m/$keyword/io){ 
+			if($line =~ m/$query/io){ 
 				
 			#	$line = convert_to_ascii($line);
-				$line =~ s{$keyword}{<em class="dm_highlighted">$keyword</em>}gi;
+				$line =~ s{$query}{<em class="dm_highlighted">$query</em>}gi;
 				$line = $self->massage($line); 
 				$search_summary{$key} .= "... $line ... <br />";
 			}

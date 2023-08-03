@@ -31,11 +31,11 @@
 	<!-- tmpl_include view_archive_index_screen_pagination.tmpl --> 
 
 
-	<!-- tmpl_if keyword -->
+	<!-- tmpl_if q -->
 		<p>
 		 <em>
 		  Found <!-- tmpl_var count --> archived message<!-- tmpl_var ending --> 
-		  when looking for &quot;<!-- tmpl_var keyword escape="HTML"-->&quot;:
+		  when looking for &quot;<!-- tmpl_var q escape="HTML"-->&quot;:
 		 </em>
 		</p>
 	<!-- /tmpl_if -->
@@ -145,7 +145,7 @@
 		</button>
 		</form>
 		
-		 	<!-- tmpl_unless keyword -->
+		 	<!-- tmpl_unless q -->
 				<form action="<!-- tmpl_var S_PROGRAM_URL -->" style="display:inline;margin:0">  
 				   <input type="hidden" name="flavor" value="purge_all_archives" >  
 				   <button
@@ -166,9 +166,9 @@
 
 <!-- tmpl_else -->
 	
-		<!-- tmpl_if keyword -->
+		<!-- tmpl_if q -->
 			<div class="alert-box info radius">
-				No archived messages were found for, &quot;<!-- tmpl_var keyword escape="HTML" -->&quot;
+				No archived messages were found for, &quot;<!-- tmpl_var q escape="HTML" -->&quot;
 			</div>		
 		<!-- tmpl_else -->
 			<div class="alert-box info radius">
