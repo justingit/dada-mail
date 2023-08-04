@@ -17093,7 +17093,10 @@ sub schedules {
             {
                 -settings => {
                     scheduled_jobs_last_ran => time,
-                }
+                }, 
+				-screen_cache => { 
+					-clean_out => 0,
+				}
             }
         );
     }
