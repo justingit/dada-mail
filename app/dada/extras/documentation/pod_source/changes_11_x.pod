@@ -3,6 +3,54 @@
 
 =encoding utf-8
 
+=head1 11.21.0
+
+=head2 Bugfixes
+
+This version of Dada Mail is a feature release, with a few bug fixes. 
+
+=head2 Features
+
+=head3 Message Archive Search 
+
+Search for message archives has been added to the admin view of the archives in the list control panel. 
+
+=head3 Message Archive Pagination
+
+L<https://github.com/justingit/dada-mail/issues/1127>
+
+Pagination has been added to the user view of messages archives, including search. Along with pagination being a nice-to-have feature, 
+since search results were not pagination in past versions, queries could have been returned with an incredible amount of search results to be shown on the single screen. This realistically could have been a detriment to server performance if too many search queries were returned in a small amount of time. 
+
+Pagination has also been added to the admin view of the messag archives in the list control panel, including search. 
+
+=head3 reCAPTCHA protection on the Global Configuration plugin #1155 
+
+It seemed a good idea to protect the use of reconfiguring the entire app through this plugin by further protecting the form that allows you to do so with a CAPTCHA. This is now the case. 
+
+L<https://github.com/justingit/dada-mail/issues/1155>
+
+=head3 Change DADA::Security::SimpleAuthStringState to use an SQL table/database 
+
+The login forms are protected by a simple CSRF-like scheme. The backend using a DB File, rather than having the information needed for the protection saved in the SQL backend. In rare circumstances, the prerequisits to use these DB Files can be unavailable on the account. 
+
+This version changes this to have that info saved in a SQL table, and removes the need to use the DB Files. 
+
+Using the new backend should be transparent to the user - nothing extra is required. There will be a new table in the database named, C<dada_simple_auth_str>. 
+
+=head2 Bugfixes
+
+=head3  List Control Panel Archive Index Screen shows empty interface if no archived messages are available #1162 
+
+L<https://github.com/justingit/dada-mail/issues/1162>
+
+=head3  Scheduled Jobs (cronjobs) don't list all the individual jobs that can be run #1161 
+
+L<https://github.com/justingit/dada-mail/issues/1161>
+
+=head3 
+
+
 =head1 11.20.2
 
 This version of Dada Mail is a minor bug release. 
