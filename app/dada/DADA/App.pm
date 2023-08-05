@@ -12639,6 +12639,10 @@ sub archive {
     my $list  = $q->param('list');
     my $email = $q->param('email');
 
+	my $send_archive_errors  = $q->param('send_archive_errors')  || 0; 
+	my $send_archive_success = $q->param('send_archive_success') || 0; 
+	
+	
     # are we dealing with a real list?
     my $list_exists = check_if_list_exists( -List => $list, );
 
@@ -12942,14 +12946,15 @@ sub archive {
         }
 
         $id = $archive->_massaged_key($id);
-
-        if (   $ls->param('archive_send_form') != 1
-            && $ls->param('captcha_archive_send_form') != 1 )
-        {
-
-            if (  !$c->profile_on
-                && $c->is_cached( 'archive/' . $list . '/' . $id . '.scrn' ) )
-            {
+			
+		if ($c->profile_on == 0) { 
+			if(
+				$send_archive_errors == 0
+				&& 
+				$send_archive_success == 0
+				&&
+				$c->is_cached( 'archive/' . $list . '/' . $id . '.scrn' )
+			){ 
                 require DADA::Logging::Clickthrough;
                 my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
                 $r->view_archive_log( { -mid => $id, } );
@@ -13141,13 +13146,18 @@ sub archive {
         require DADA::Logging::Clickthrough;
         my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
         $r->view_archive_log( { -mid => $id, } );
-        if (  !$c->profile_on
-            && $ls->param('archive_send_form') != 1
-            && $ls->param('captcha_archive_send_form') != 1 )
-        {
-            $c->cache( 'archive/' . $list . '/' . $id . '.scrn', \$scrn );
+		
+		if ($c->profile_on == 0) { 
+			if(
+				$send_archive_errors == 0
+				&& 
+				$send_archive_success == 0
+			){ 
+		        $c->cache( 'archive/' . $list . '/' . $id . '.scrn', \$scrn );
+			}
+		}
+        
 
-        }
         return $scrn;
     }
 
