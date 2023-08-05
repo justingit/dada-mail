@@ -276,7 +276,7 @@ Subject: this is the subject!
 This is the message!},
     ); 
 }
-my $keys       = $dma->get_archive_entries('normal');
+my $keys       = $dma->get_archive_entries('ASC');
 #diag scalar(@$keys) . ' archives.'; 
 
 undef($digest); # this is to reload the D::M::Settings; 

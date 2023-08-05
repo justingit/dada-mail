@@ -300,10 +300,19 @@ sub get_archive_entries {
 	my $self  = shift;
 	my $order = shift || 'normal';
 	my @keys; 
-	my $in_reverse = $self->{ls}->param('sort_archives_in_reverse') || 0; #yeah, like what?
-		
+	my $order = shift || undef; 
+	
+	if(! $order){ 
+		if($self->{ls}->param('sort_archives_in_reverse') == 1){ 
+			$order = 'DESC';
+		}
+		else { 
+			$order = 'ASC'
+		}
+	}
+	
 	my $query  = 'SELECT archive_id FROM '. $self->{sql_params}->{archives_table} . 
-	             ' WHERE list = ? ORDER BY archive_id ASC';
+	             ' WHERE list = ? ORDER BY archive_id ' . $order;
 		
 	my $sth = $self->{dbh}->prepare($query); 
 	   $sth->execute($self->{name});
@@ -314,9 +323,6 @@ sub get_archive_entries {
 	
     $sth->finish;
     
-    if($order eq 'reverse' || $in_reverse == 1){ 
-		@keys = reverse @keys;
-	}	
 	return \@keys;
 }
 
@@ -474,12 +480,24 @@ sub search_entries {
 
 	my $self    = shift; 
 	my $qy      = shift; 
+	my $order   = shift || undef; 
+	
+	# $order should be 'normal' or, 'reverse'. Brilliant. 
+	
+	if(! $order){ 
+		if($self->{ls}->param('sort_archives_in_reverse') == 1){ 
+			$order = 'DESC';
+		}
+		else { 
+			$order = 'ASC'
+		}
+	}
 	
 	my @results; 
 
 	my $query  = 'SELECT archive_id FROM '. $self->{sql_params}->{archives_table} . 
-			     ' WHERE list = ? AND (raw_msg LIKE ? OR message LIKE ? OR subject LIKE ?) ORDER BY archive_id DESC';
-
+			     ' WHERE list = ? AND (raw_msg LIKE ? OR message LIKE ? OR subject LIKE ?) ORDER BY archive_id ' . $order;
+				 
 	my $sth = $self->{dbh}->prepare($query); 
 	   $sth->execute($self->{name}, '%'.$qy.'%', '%'.$qy.'%', '%'.$qy.'%')
 			or croak "cannot do statement! $DBI::errstr";

@@ -119,7 +119,7 @@ sub should_send_digest {
     my $self = shift;
 	
 	if($self->mock_run() == 1){
-		my $keys = $self->{a_obj}->get_archive_entries('normal');
+		my $keys = $self->{a_obj}->get_archive_entries('ASC');
 		if ( scalar( @{$keys} ) == 0 ) {
 			return 0; 
 		}
@@ -140,7 +140,7 @@ sub should_send_digest {
 sub archive_ids_for_digest {
 
     my $self = shift;
-    my $keys = $self->{a_obj}->get_archive_entries('normal');
+    my $keys = $self->{a_obj}->get_archive_entries('ASC');
     my $ids  = [];
     my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
  
