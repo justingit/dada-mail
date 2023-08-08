@@ -2,7 +2,7 @@ package DADA::Security::SimpleAuthStringState;
 
 use strict;
 
-my $t       = 1;
+my $t       = 0;
 my $dbi_obj = undef;
 
 use lib qw(../../ ../../DADA ../perllib ./ ../ ../perllib ../../ ../../perllib);
@@ -62,7 +62,8 @@ sub make_state {
       or die "cannot do statement $DBI::errstr\n";
     $sth->finish;
 
-	warn '$auth_str: ' . $auth_str if $t; 
+	warn '$auth_str: ' . $auth_str 
+		if $t; 
 	
     return $auth_str;
 
