@@ -2,6 +2,8 @@
 
 <!-- tmpl_if allowed_to_view_archives --> 
 
+	<!-- tmpl_include archive_index_pagination.tmpl -->
+	
 	<!-- tmpl_loop entries -->
 
 		<!-- Archive Id: <!-- tmpl_var id --> --> 
@@ -42,7 +44,7 @@
 		</div>
 	<!-- /tmpl_loop-->
 
-	<!-- tmpl_var index_nav --> 
+	<!-- tmpl_include archive_index_pagination.tmpl -->
 
 	<!-- tmpl_var search_form --> 
 

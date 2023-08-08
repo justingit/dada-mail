@@ -466,8 +466,6 @@ DESTROY {
     $self->_remove_expired_tokens;
 }
 
-1;
-
 sub token { 
 	
 	my $self = shift; 
@@ -589,7 +587,3 @@ DESTROY {
 }
 
 1;
-
-
-
-1; 

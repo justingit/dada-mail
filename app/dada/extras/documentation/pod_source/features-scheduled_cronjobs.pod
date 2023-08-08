@@ -44,6 +44,27 @@ You can also modify this to run a specific job. The following are also supported
 
 Checks up on the status and health of any mass mailings currently going out. This used to be the job (prior to v8) of the Mailing Monitor plugin
 
+=item * rate_limit_checks
+
+
+When run, remove expires rate limit checks.
+
+=item * mime_cache
+
+When run, removes old files in the mime cache. 
+
+=item * remove_old_archive_messages
+
+When run, removes old archived messages. What archived messages is set in the archive options.
+
+=item * remove_old_tracker_data
+
+When run, removes old Tracker plugin data. What data removed is set in the Tracker plugin options.
+
+=item * send_analytics_email_notification
+
+When run, will send any analytics emails that need to be sent after a mass mailing. 
+
 =item * scheduled_mass_mailings
 
 This job checks to see if any mass mailings that are run at a schedule time need to go out. 

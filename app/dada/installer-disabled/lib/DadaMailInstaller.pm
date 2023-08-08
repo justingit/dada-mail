@@ -2406,7 +2406,7 @@ sub remove_old_screen_cache {
     my $screen_cache_dir = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/_screen_cache';
 	my $data_cache_dir   = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/_data_cache';
 	
-	for my $cache_dir(qw($screen_cache_dir $data_cache_dir)){
+	for my $cache_dir($screen_cache_dir, $data_cache_dir){
 		if ( -d $cache_dir ) {
 	        my $f;
 	        opendir( CACHE, make_safer($cache_dir) )

@@ -300,10 +300,19 @@ sub get_archive_entries {
 	my $self  = shift;
 	my $order = shift || 'normal';
 	my @keys; 
-	my $in_reverse = $self->{ls}->param('sort_archives_in_reverse') || 0; #yeah, like what?
-		
+	my $order = shift || undef; 
+	
+	if(! $order){ 
+		if($self->{ls}->param('sort_archives_in_reverse') == 1){ 
+			$order = 'DESC';
+		}
+		else { 
+			$order = 'ASC'
+		}
+	}
+	
 	my $query  = 'SELECT archive_id FROM '. $self->{sql_params}->{archives_table} . 
-	             ' WHERE list = ? ORDER BY archive_id ASC';
+	             ' WHERE list = ? ORDER BY archive_id ' . $order;
 		
 	my $sth = $self->{dbh}->prepare($query); 
 	   $sth->execute($self->{name});
@@ -314,11 +323,9 @@ sub get_archive_entries {
 	
     $sth->finish;
     
-    if($order eq 'reverse' || $in_reverse == 1){ 
-		@keys = reverse @keys;
-	}	
 	return \@keys;
 }
+
 
 
 
@@ -462,9 +469,9 @@ sub set_archive_info {
 
 =head2 search_entries
 
- my $search_results = $archive->search_entries($keyword); 
+ my $search_results = $archive->search_entries($query); 
 
-Given a $keyword, will return a array ref of archive key/ids that contain the 
+Given a $query, will return a array ref of archive key/ids that contain the 
 keyword. 
 
 =cut
@@ -472,14 +479,27 @@ keyword.
 sub search_entries { 
 
 	my $self    = shift; 
-	my $keyword = shift; 
+	my $qy      = shift; 
+	my $order   = shift || undef; 
+	
+	# $order should be 'normal' or, 'reverse'. Brilliant. 
+	
+	if(! $order){ 
+		if($self->{ls}->param('sort_archives_in_reverse') == 1){ 
+			$order = 'DESC';
+		}
+		else { 
+			$order = 'ASC'
+		}
+	}
+	
 	my @results; 
 
 	my $query  = 'SELECT archive_id FROM '. $self->{sql_params}->{archives_table} . 
-			     ' WHERE list = ? AND (raw_msg LIKE ? OR message LIKE ? OR subject LIKE ?) ORDER BY archive_id DESC';
-
+			     ' WHERE list = ? AND (raw_msg LIKE ? OR message LIKE ? OR subject LIKE ?) ORDER BY archive_id ' . $order;
+				 
 	my $sth = $self->{dbh}->prepare($query); 
-	   $sth->execute($self->{name}, '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%')
+	   $sth->execute($self->{name}, '%'.$qy.'%', '%'.$qy.'%', '%'.$qy.'%')
 			or croak "cannot do statement! $DBI::errstr";
 	while((my $archives_id) = $sth->fetchrow_array){		
 		push(@results, $archives_id); 
@@ -980,14 +1000,42 @@ sub create_index {
 	my $entries = $self->get_archive_entries() || undef; 
 	
 	if($entries){ 
-
 		my ($start, $stop);    
-		
 		$start = $here;
 		$stop  = ($start + $amount)-1; 
 		return ($start, $stop);
 	}
 }
+
+
+sub archive_page_entries {
+
+    my $self    = shift;
+    my $page    = shift || 1;
+    my $entries = shift || undef;
+    if ( !defined($entries) ) {
+        $entries = $self->get_archive_entries();
+    }
+
+    # UI uses 1 as the index, internally, we shift this to 0
+    $page -= 1;
+
+    my $amount    = $self->{ls}->param('archive_index_count') || 10;
+    my $r_entries = [];
+
+    for ( my $i = 0 ; $i < $amount ; $i++ ) {
+        my $i_i = $i + ( $page * $amount );
+        if ( defined( $entries->[$i_i] ) ) {
+            push( @$r_entries, $entries->[$i_i] );
+        }
+        else {
+            # most likely a good idea:
+            # last;
+        }
+    }
+    return $r_entries;
+}
+
 
 
 
@@ -1039,6 +1087,71 @@ sub oldest_entry {
 	@$entries   = sort { $a <=> $b  } @$entries;
 	return $entries->[0];
 
+}
+
+
+
+
+sub pagination_info { 
+	
+	require Data::Pageset; 
+	require POSIX; 
+	
+	my $self = shift;
+	my ($args) = @_;
+
+	if(! exists($args->{-page})){ 
+		$args->{-page} = 1; 
+	}
+	if($args->{-page} <= 0){ 
+		$args->{-page} = 1; 
+	}
+	if(! exists($args->{-entries})){ 
+		$args->{-entries} = []; 
+	}
+	if(! exists($args->{-entries_per_page})){ 
+		$args->{-entries_per_page} = $self->{ls}->param('archive_index_count');
+	}
+	if($#{$args->{-entries}} > 0){
+		if(
+			$args->{-page} > POSIX::ceil((($#{$args->{-entries}} + 1) / $args->{-entries_per_page}))
+		){ 
+			$args->{-page} = 1; 
+		}
+	}
+	
+	my $start_i = ($args->{-page} - 1)  * $args->{-entries_per_page}; 	
+	my $end_i   = ($start_i + $args->{-entries_per_page}) - 1;
+	
+	
+    my $dps = Data::Pageset->new(
+        {
+            total_entries    => $#{$args->{-entries}},
+            entries_per_page => $args->{-entries_per_page},
+            current_page     => $args->{-page},
+            mode             => 'slide',
+            pages_per_set    => 10,
+        }
+    );
+	
+    my $pages_in_set = [];
+    foreach my $page_num ( @{ $dps->pages_in_set() } ) {
+        if ( $page_num == $dps->current_page() ) {
+            push( @$pages_in_set, { page => $page_num, on_current_page => 1 } );
+        }
+        else {
+            push( @$pages_in_set, { page => $page_num, on_current_page => undef } );
+        }
+    }
+	
+	
+	return { 
+		start_index  => $start_i,
+		end_index    => $end_i, 
+		pages_in_set => $pages_in_set,
+		dps_obj      => $dps,
+		page         => $args->{-page}, 
+	}
 }
 
 
@@ -2229,9 +2342,9 @@ sub massage {
 
 =head2 make_search_summary
 
- my $summaries = $archive->make_search_summary($keyword, $search_results); 
+ my $summaries = $archive->make_search_summary($query, $search_results); 
 
-Given a $keyword (string) and $search_results (array ref of archive keys/ids) 
+Given a $query (string) and $search_results (array ref of archive keys/ids) 
 will return a hashref of each line the keyword appears in. 
 
 =cut
@@ -2239,13 +2352,14 @@ will return a hashref of each line the keyword appears in.
 sub make_search_summary { 
 
 	my $self    = shift; 
-	my $keyword = shift;
+	my $query   = shift;
 	my $matches = shift;  
 	
 	my $message_summary; 
 	my %search_summary;
 	
 	my $key;
+	
 	for $key(@$matches){ 
 	
 		my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($key);
@@ -2275,10 +2389,10 @@ sub make_search_summary {
 		my $line;
 		
 		for $line(@message_lines){ 
-			if($line =~ m/$keyword/io){ 
+			if($line =~ m/$query/io){ 
 				
 			#	$line = convert_to_ascii($line);
-				$line =~ s{$keyword}{<em class="dm_highlighted">$keyword</em>}gi;
+				$line =~ s{$query}{<em class="dm_highlighted">$query</em>}gi;
 				$line = $self->massage($line); 
 				$search_summary{$key} .= "... $line ... <br />";
 			}

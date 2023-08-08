@@ -2372,12 +2372,12 @@ sub log {
        $file = make_safer($file);
 
     open( MO_LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
-      or carp $!;
+      or carp "cannot open log file at, '$file': " . $!;
     flock( MO_LOG, LOCK_SH );
     print MO_LOG "[$time]\t$log\n" 
-		or carp $!;
+		or carp 'cannot write to log file: ' . $!;
     close(MO_LOG) 
-		or carp $!;
+		or carp 'cannot close log file: ' . $!;
 
 }
 

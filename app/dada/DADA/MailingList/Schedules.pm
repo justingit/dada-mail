@@ -742,7 +742,10 @@ sub run_schedules {
         {
             -settings => {
                 schedule_last_checked_time => time
-            }
+            }, 
+			-screen_cache => { 
+				-clean_out => 0,
+			}
         }
     );
 

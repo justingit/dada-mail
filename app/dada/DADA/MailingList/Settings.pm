@@ -234,10 +234,27 @@ sub save {
 
         $self->{cached_settings} = undef;
 
-        require DADA::App::ScreenCache;
-        my $c = DADA::App::ScreenCache->new;
-        $c->flush;
-
+		if(!exists($args->{-screen_cache})){ 
+			$args->{-screen_cache} = {}; 
+			$args->{-screen_cache}->{-clean_out} = 1
+		}
+		if(!exists($args->{-screen_cache}->{-clean_out})){
+			$args->{-screen_cache}->{-clean_out} = 1
+		} 
+		
+		if($args->{-screen_cache}->{-clean_out} == 1){ 
+			warn 'removing screen cache'
+				if $t; 
+	        require DADA::App::ScreenCache;
+	        my $c = DADA::App::ScreenCache->new;
+	  	  	$c->flush;
+			undef $c;
+		} 
+		else { 
+			warn 'preserving screen cache'
+				if $t; 
+		}
+		
         $self->{RAW_DB_HASH} = undef;
 
 		for my $other_list(@$also_save_for){ 
@@ -246,6 +263,7 @@ sub save {
 				$other_ls->save({
 					-also_save_for => [],
 					-settings      => $orig_settings, 
+					-screen_cache  => $args->{-screen_cache}, 
 				}); 
 			} catch { 
 				warn 'problem saving settings for, ' . $other_list . ' because:' . $_; 

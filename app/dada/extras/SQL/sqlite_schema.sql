@@ -173,3 +173,9 @@ CREATE TABLE IF NOT EXISTS dada_consent_activity (
 	FOREIGN KEY(privacy_policy_id) REFERENCES dada_privacy_policies(privacy_policy_id)	
 );
 
+CREATE TABLE IF NOT EXISTS dada_simple_auth_str (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	timestamp                TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	remote_addr              varchar(255),  
+	auth_str                 varchar(255) UNIQUE
+); 

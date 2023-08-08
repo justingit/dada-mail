@@ -9,10 +9,10 @@
 
 <div class="row collapse">
 	<div class="small-6 columns">
-		<input type="text"   name="query" id="search_query" value="<!-- tmpl_var query default="" escape="HTML" -->" >
+		<input type="text"   name="q" id="search_q" value="<!-- tmpl_var q default="" escape="HTML" -->" >
 	</div>
 	<div class="small-6 columns">
-		<!-- tmpl_if query -->
+		<!-- tmpl_if q -->
 			<ul class="button-group even-3">
 		<!-- tmpl_else -->
 			<ul class="button-group even-2">
@@ -21,7 +21,7 @@
 			<li>
 				<input type="button" class="tiny button search_list" value="Search <!-- tmpl_var type_title escape="HTML" -->">
 			</li>
-			<!-- tmpl_if query --> 
+			<!-- tmpl_if q --> 
 				<li>
 					<input type="button" class="tiny button clear_search" value="Clear">
 				</li>

@@ -1809,8 +1809,8 @@ $ATTACHMENT_TEMPFILE //= 0;
 $MAIL_VERP_SEPARATOR //= '-';
 
 
-$VERSION = 11.20.2;
-$VER = 'v11.20.2 stable 2023-07-06';
+$VERSION = 11.21.0;
+$VER = 'v11.21.0 stable 2023-08-07';
 
 #
 #
@@ -2051,6 +2051,8 @@ sub _config_import {
 		privacy_policies_table             => 'dada_privacy_policies',
 		consents_table                     => 'dada_consents',
 		consent_activity_table             => 'dada_consent_activity',
+		
+		simple_auth_str_table              => 'dada_simple_auth_str',
 		
 		dbtype => 'SQLite',
 		database => 'dadamail',

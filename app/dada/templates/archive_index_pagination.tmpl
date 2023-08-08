@@ -1,0 +1,58 @@
+<!-- begin archive_index_pagination.tmpl --> 
+
+<div class="pagination-centered">
+	<ul class="pagination">
+	    <li class="arrow">
+	        <a href="<!-- tmpl_var PROGRAM_URL -->?list=<!-- tmpl_var list -->&flavor=archive&page=<!-- tmpl_var first_page escape="url" -->&q=<!-- tmpl_var q escape="url" -->">
+				&laquo;
+	        </a>
+	    </li>
+	    
+		<!-- tmpl_if previous_page --> 
+			<li>
+		        <a href="<!-- tmpl_var PROGRAM_URL -->?list=<!-- tmpl_var list -->&flavor=archive&page=<!-- tmpl_var previous_page escape="url" -->&q=<!-- tmpl_var q escape="url" -->">
+	                &lsaquo;
+	            </a>
+	        </li>
+	    <!-- tmpl_else --> 
+        
+	    <!-- /tmpl_if -->
+
+
+	        <!-- tmpl_loop pages_in_set --> 
+	            <!-- tmpl_if on_current_page --> 
+	                <li class="current">
+	                    <a href="#">
+	                        <!-- tmpl_var page -->
+	                    </a>
+	                </li>
+	            <!-- tmpl_else --> 
+	                <li>
+				        <a href="<!-- tmpl_var PROGRAM_URL -->?list=<!-- tmpl_var list -->&flavor=archive&page=<!-- tmpl_var page escape="url" -->&q=<!-- tmpl_var q escape="url" -->">
+	                    
+	                        <!-- tmpl_var page --> 
+	                    </a>
+	                </li>
+	            <!-- /tmpl_if --> 
+
+	        <!-- /tmpl_loop --> 
+			
+	        <!-- tmpl_if next_page -->
+	            <li>
+	   	       	 	<a href="<!-- tmpl_var PROGRAM_URL -->?list=<!-- tmpl_var list -->&flavor=archive&page=<!-- tmpl_var next_page escape="url" -->&q=<!-- tmpl_var q escape="url" -->">
+	                    &rsaquo;
+	                </a>
+	            </li>
+	        <!-- tmpl_else --> 
+            
+	        <!-- /tmpl_if --> 
+
+	      <li class="arrow">
+  	        <a href="<!-- tmpl_var PROGRAM_URL -->?list=<!-- tmpl_var list -->&flavor=archive&page=<!-- tmpl_var last_page escape="url" -->&q=<!-- tmpl_var q escape="url" -->">
+	          
+	              &raquo;
+	          </a>
+	       </li>
+		</ul>
+	</div>
+<!-- end archive_index_pagination.tmpl --> 

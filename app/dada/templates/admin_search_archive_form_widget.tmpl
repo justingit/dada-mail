@@ -1,0 +1,34 @@
+<!-- begin admin_search_archive_form_widget.tmpl -->
+
+<form action="<!-- tmpl_var name="PROGRAM_URL" -->" method="get" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+  <input type="hidden" name="flavor"    value="view_archive" >
+  	<div class="row collapse">
+	    <div class="large-7 medium-7 columns">
+			&nbsp;
+		</div>
+	    <div class="large-3 medium-3 columns">
+		    <input 
+				type="text" 
+				name="q" 
+				id="q" 
+				value="<!-- tmpl_var q escape="HTML" -->"
+			>
+		</div>
+	    
+		
+			<div class="large-2 medium-2 columns">			
+				<ul class="button-group even-2">
+					<li>
+						<input type="submit" class="button small postfix" value="Search" >
+					</li>
+					<li>
+						<a 
+							href="<!-- tmpl_var PROGRAM_URL -->?flavor=view_archive&page=1" 
+							class="button small postfix">Clear</a>
+					</li>
+				</ul>
+			</div>
+	</div>
+</form>
+
+<!-- end admin_search_archive_form_widget.tmpl -->
