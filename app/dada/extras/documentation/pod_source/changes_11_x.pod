@@ -40,16 +40,29 @@ Using the new backend should be transparent to the user - nothing extra is requi
 
 =head2 Bugfixes
 
-=head3  List Control Panel Archive Index Screen shows empty interface if no archived messages are available #1162 
-
-L<https://github.com/justingit/dada-mail/issues/1162>
-
-=head3  Scheduled Jobs (cronjobs) don't list all the individual jobs that can be run #1161 
+=head3 Scheduled Jobs (cronjobs) don't list all the individual jobs that can be run #1161 
 
 L<https://github.com/justingit/dada-mail/issues/1161>
 
-=head3 
+=head3 List Control Panel Archive Index Screen shows empty interface if no archived messages are available #1162 
 
+L<https://github.com/justingit/dada-mail/issues/1162>
+
+=head3 Screen Cache is cleaned out every time scheduled jobs (cronjob) is ran #1163 
+
+L<https://github.com/justingit/dada-mail/issues/1163>
+
+=head3 Individual archive message screens (public view) aren't always cached #1164
+
+L<https://github.com/justingit/dada-mail/issues/1164>
+
+=head3 "Forward to a Friend" form doesn't have any required fields #1165 
+
+L<https://github.com/justingit/dada-mail/issues/1165>
+
+=head3 Screen, Data Cache is not flushed when installer is run #1166 
+
+L<https://github.com/justingit/dada-mail/issues/1166>
 
 =head1 11.20.2
 
