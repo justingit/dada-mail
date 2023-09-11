@@ -6780,19 +6780,24 @@ sub validate_update_email {
             my $ls = DADA::MailingList::Settings->new(
                 { -list => $to_validate_list } );
 
-            for my $type (
-                @{
-                    $lh->member_of(
+				my $types = $lh->member_of(
                         {
                             -email => $email,
                             -types => [
                                 qw(list black_list test_list white_list authorized_senders moderators requires_moderation ignore_bounces_list)
                             ],
                         }
-                    )
-                }
+                    );
+			
+			# push(@$types, 'list');
+				
+            for my $type (
+                @$types
               )
             {
+				
+				# warn '$type: ' . $type; 
+				
                 my $sublists = [];
 
                 # new address
@@ -6817,10 +6822,16 @@ sub validate_update_email {
                         ],
                     }
                 );
-
-                if ( $sub_status == 1 && $none_validated == 1 ) {
+				
+				#use Data::Dumper;
+				#warn '$sub_errors: ' . Dumper($sub_errors);
+				#warn '$sub_status: ' . $sub_status; 
+				#warn '$none_validated: ' . $none_validated; 
+				
+				# So, why do I have this: 
+                #if ( $sub_status == 1 && $none_validated == 1 ) {
                     $none_validated = 0;
-                }
+					#}
                 my $errors = [];
                 for ( keys %$sub_errors ) {
                     push( @$errors,
@@ -6848,6 +6859,8 @@ sub validate_update_email {
             );
 
         }
+		
+		#warn '$list_validations: ' . Dumper($list_validations);
 
         require Data::Dumper;
 
