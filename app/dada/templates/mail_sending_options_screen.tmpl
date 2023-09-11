@@ -393,7 +393,15 @@
 		</div>
 	</div>
 	<div id="mailgun_preferences"  class="panel">
-		mailgun_preferences!
+		<!-- tmpl_if mailgun_setup_check -->
+			<div class="alert-box info radius"> 
+				Mailgun Domain and API Key set in app configuration.
+			</div>
+		<!-- tmpl_else -->
+			<div class="alert-box warning radius"> 
+				Mailgun sending requires that the Mailgun Domain and API Key is set up during app configuration!
+			</div>
+		<!-- /tmpl_if -->
 	</div>
 	
 

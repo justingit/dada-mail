@@ -4668,6 +4668,22 @@ sub mail_sending_options {
         {
             $no_smtp_server_set = 1;
         }
+		
+		my $mailgun_setup_check = 0; 
+		if(
+			exists($DADA::Config::MAILGUN_OPTIONS->{api_key})
+			&& exists($DADA::Config::MAILGUN_OPTIONS->{domain})
+		){ 
+			if(
+			defined($DADA::Config::MAILGUN_OPTIONS->{api_key})
+			&& defined($DADA::Config::MAILGUN_OPTIONS->{domain})
+			
+			){ 
+				$mailgun_setup_check = 1; 
+			}
+		}
+		
+		
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -4707,6 +4723,8 @@ sub mail_sending_options {
                     amazon_ses_requirements_widget =>
                       DADA::Template::Widgets::amazon_ses_requirements_widget(),
                     %$ses_params,
+					
+					mailgun_setup_check => $mailgun_setup_check, 
 
                 },
                 -list_settings_vars_param => {
