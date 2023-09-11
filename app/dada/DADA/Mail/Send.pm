@@ -932,9 +932,10 @@ sub send {
         $msg .= $fields{Body} . "\n";    # DEV: Why the last, "\n"?
 		
 		
-		use WebService::Mailgun;
- 
-		my $mailgun = WebService::Mailgun->new(
+		#use WebService::Mailgun;
+		use DADA::App::Support::WebServiceDDMMailGun; 
+		
+		my $mailgun = DADA::App::Support::WebServiceDDMMailGun->new(
 		    api_key => $DADA::Config::MAILGUN_OPTIONS->{api_key},
 		    domain  => $DADA::Config::MAILGUN_OPTIONS->{domain},
 		);
@@ -944,8 +945,14 @@ sub send {
 			message  => $msg,
 		});
 		
-		use Data::Dumper; 
-		warn Dumper($res);
+		if(!defined($res)){ 
+			require Data::Dumper; 
+			carp "Problems sending via Mailgun: " . Data::Dumper::Dumper($res);
+            return -1;
+		}
+		
+		#use Data::Dumper; 
+		#warn Dumper($res);
  
         
 		#my ( $response_code, $response_content ) = $ses_obj->send_msg(
