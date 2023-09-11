@@ -3627,7 +3627,7 @@ sub can_use_Amazon_SES {
 sub can_use_WebService_Mailgun { 
     my $can_use_WebService_Mailgun = 1; 
     try { 
-        require WebService::Mailgun;
+       # require WebService::Mailgun;
 		require DADA::App::Support::WebServiceDDMMailGun;         
     } catch { 
 		carp 'WebService::Mailgun is not supported:' . $_
