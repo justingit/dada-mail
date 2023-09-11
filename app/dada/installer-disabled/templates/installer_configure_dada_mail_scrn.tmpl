@@ -2702,16 +2702,29 @@
 		</label>
 		<div id="mailgun_options">
 			
-			<p>
-				You will need to sign up for a Mailgun account, create an API Key, and set up/verify a domain to use 
-				Mailgun with <!-- tmpl_var PROGRAM_NAME -->. See: 
-			</p>
-				
+			<!-- tmpl_if can_use_WebService_Mailgun -->
+				<div class="alert-box info radius"> 
+					WebService::Mailgun installed.
+				</div>			
+			<!-- tmpl_else -->
+				<div class="alert-box warning radius">
+					The WebService::Mailgun CPAN Perl module needs to be installed for you to be able to 
+					utilize sending via Mailgun.
+				</div>
+			<!-- /tmpl_if -->
+			
+			<div class="alert-box info radius"> 
 				<p>
-					<a href="https://documentation.mailgun.com/en/latest/quickstart-sending.html" target="_blank">
-						https://documentation.mailgun.com/en/latest/quickstart-sending.html
-					</a>
+					You will need to sign up for a Mailgun account, create an API Key, and set up/verify a domain to use 
+					Mailgun with <!-- tmpl_var PROGRAM_NAME -->. See: 
 				</p>
+				
+					<p>
+						<a href="https://documentation.mailgun.com/en/latest/quickstart-sending.html" target="_blank">
+							https://documentation.mailgun.com/en/latest/quickstart-sending.html
+						</a>
+					</p>
+			</div>
 		
 			<label for="mailgun_api_key">API Key</label>
 			<input

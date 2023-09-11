@@ -393,6 +393,18 @@
 		</div>
 	</div>
 	<div id="mailgun_preferences"  class="panel">
+		
+		<!-- tmpl_if can_use_WebService_Mailgun -->
+			<div class="alert-box info radius"> 
+				WebService::Mailgun installed.
+			</div>			
+		<!-- tmpl_else -->
+			<div class="alert-box warning radius">
+				The WebService::Mailgun CPAN Perl module needs to be installed for you to be able to 
+				utilize sending via Mailgun.
+			</div>
+		<!-- /tmpl_if -->
+		
 		<!-- tmpl_if mailgun_setup_check -->
 			<div class="alert-box info radius"> 
 				Mailgun Domain and API Key set in app configuration.

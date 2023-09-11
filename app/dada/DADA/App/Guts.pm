@@ -106,6 +106,8 @@ require Exporter;
   can_use_HTML_Tree
   can_use_net_curl
   can_use_mozilla_ca
+  can_use_Amazon_SES
+  can_use_WebService_Mailgun
   can_use_StopForumSpam
   can_use_Image_Scale
   can_use_Image_Resize
@@ -3620,6 +3622,19 @@ sub can_use_Amazon_SES {
         $can_use_Amazon_SES = 0;
     };
     return $can_use_Amazon_SES;
+}
+
+sub can_use_WebService_Mailgun { 
+    my $can_use_WebService_Mailgun = 1; 
+    try { 
+        require DADA::App::Support::Net::Amazon::SES;        
+    } catch { 
+		carp 'WebService::Mailgun is not supported:' . $_
+			if $t; 
+        $can_use_WebService_Mailgun = 0;
+    };
+    return $can_use_WebService_Mailgun;
+
 }
 
 sub can_use_StopForumSpam { 

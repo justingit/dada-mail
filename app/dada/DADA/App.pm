@@ -4725,7 +4725,7 @@ sub mail_sending_options {
                     %$ses_params,
 					
 					mailgun_setup_check => $mailgun_setup_check, 
-
+					can_use_WebService_Mailgun = scalar can_use_WebService_Mailgun(); 
                 },
                 -list_settings_vars_param => {
                     -list   => $list,

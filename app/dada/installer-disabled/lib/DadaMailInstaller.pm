@@ -920,6 +920,7 @@ sub scrn_configure_dada_mail {
                 can_use_HTML_Tree                     => scalar can_use_HTML_Tree(), 
 				can_use_net_curl                      => scalar can_use_net_curl(),
 				can_use_mozilla_ca                    => scalar can_use_mozilla_ca(),
+				can_use_WebService_Mailgun            => scalar can_use_WebService_Mailgun(),
 				can_use_LWP_Protocol_https            => scalar can_use_LWP_Protocol_https(),
                 error_cant_read_config_dot_pm         => scalar $self->test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm        => scalar $self->test_can_write_config_dot_pm(),
