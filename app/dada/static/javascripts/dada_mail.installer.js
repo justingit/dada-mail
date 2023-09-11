@@ -143,6 +143,7 @@ jQuery(document).ready(function($){
 			"global_mailing_list", 
 			"mass_mailing", 
 			"confirmation_token", 
+			"mailgun"
 		];
 		$.each(o, function(index, value) {			
 			$("body").on('click', "#configure_" + value, function(event) {

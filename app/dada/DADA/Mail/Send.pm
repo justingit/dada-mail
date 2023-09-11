@@ -850,6 +850,122 @@ sub send {
             return -1;
         }
     }
+    elsif ( $self->{ls}->param('sending_method') eq 'mailgun' ) {
+
+        # rewriting the To: header...
+        if (
+               $self->{ls}->param('group_list') == 1
+            && $fields{from_mass_send} == 1
+            && defined(
+                $self->{ls}->param('discussion_pop_email') )    # safegaurd?
+          )
+        {           
+            # rewriting  Reply-To:
+            if ( $self->{ls}->param('set_to_header_to_list_address') == 1 ) {
+
+                # ... Nothin' more needed
+            }
+            else {
+				
+	            require Email::Address;
+	            require DADA::App::FormatMessages;
+	            my $fm = DADA::App::FormatMessages->new(
+	                -List   => $self->{list},
+	                -ls_obj => $self->{ls},
+	            );
+	            my $formatted_disc_email = $fm->_encode_header(
+	                'To',
+	                $fm->format_phrase_address(
+	                    $self->{ls}->param('list_name'),
+	                    $self->{ls}->param('discussion_pop_email')
+	                )
+	            );
+			
+                # This is against RFC
+                $fields{'Reply-To'} = $formatted_disc_email;
+            }
+        }
+
+        %fields = $self->_massage_fields_for_amazon_ses(
+            {
+                -fields      => {%fields},
+                -admin_email => $self->{ls}->param('admin_email'),
+            }
+        );
+		
+        #my $ses_obj = undef;
+        #require DADA::App::Support::Net::Amazon::SES;
+
+        #if ( defined( $self->ses_obj )
+        #    && $self->im_mass_sending == 1 )
+        #{
+        #    #carp "reusing ses_obj";
+        #    $ses_obj = $self->ses_obj;
+		#
+        #}
+        #else {
+        #    warn 'creating a new  DADA::App::Support::Net::Amazon::SES ses_obj'
+		#		if $t;
+        #    $ses_obj = DADA::App::Support::Net::Amazon::SES->new($DADA::Config::AMAZON_SES_OPTIONS);
+        #     $self->ses_obj($ses_obj);
+        #}
+        my $msg = '';
+
+        for my $field (@default_headers) {
+            if (   exists( $fields{$field} )
+                && defined $fields{$field}
+                && $fields{$field} ne "" )
+            {	
+				
+				if($self->{ls}->param('mass_mailing_use_list_headers') == 0){ 
+					if(exists($DADA::Config::LIST_HEADERS->{$field})){ 
+						next; 
+					}
+				}
+			
+			
+                $msg .= "$field: $fields{$field}\n";
+			}
+        }
+
+        $msg .= "\n";
+        $msg .= $fields{Body} . "\n";    # DEV: Why the last, "\n"?
+		
+		
+		use WebService::Mailgun;
+ 
+		my $mailgun = WebService::Mailgun->new(
+		    api_key => $DADA::Config::MAILGUN_OPTIONS->{api_key},
+		    domain  => $DADA::Config::MAILGUN_OPTIONS->{domain},
+		);
+		
+		my $res = $mailgun->mime({
+			to       => $fields{To},
+			message  => $msg,
+		});
+		
+		use Data::Dumper; 
+		warn Dumper($res);
+ 
+        
+		#my ( $response_code, $response_content ) = $ses_obj->send_msg(
+        #    {
+        #        -msg => $msg,
+        #    }
+        #);
+		#
+        #if ( $response_code == 200 ) {
+		#	# warn "NO Problems sending via SES: " . $response_content;
+        #    # my($sesMessageId, $sesRequestId) = split("\n", $response_content);
+            # do something here about the message id
+			#}
+        #else {
+		#	carp "Problems sending via SES: " . $response_content;
+        #    return -1;
+        #}
+    }
+	
+	
     else {
         die 'Unknown Sending Method: "'
           . $self->{ls}->param('sending_method') . '"';

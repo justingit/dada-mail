@@ -1593,6 +1593,16 @@ sub grab_former_config_vals {
         }
     }
 	
+    # $MAILGUN_OPTIONS
+    if (   defined( $BootstrapConfig::MAILGUN_OPTIONS->{api_key} )
+        && defined( $BootstrapConfig::MAILGUN_OPTIONS->{domain} ) )
+    {
+        $opt->{'configure_mailgun'}      = 1;
+        $opt->{'mailgun_api_key'} = $BootstrapConfig::MAILGUN_OPTIONS->{api_key};
+        $opt->{'mailgun_domain'}  = $BootstrapConfig::MAILGUN_OPTIONS->{domain};
+    }
+	
+	
 	if(keys %$BootstrapConfig::WWW_ENGINE_OPTIONS){ 
 		
 		$opt->{'configure_www_engine'} = 1; 
@@ -2002,6 +2012,11 @@ sub query_params_to_install_params {
       amazon_ses_AWSAccessKeyId
       amazon_ses_AWSSecretKey
       amazon_ses_Allowed_Sending_Quota_Percentage
+	  
+	  configure_mailgun
+	  mailgun_domain
+	  mailgun_api_key
+	  
     );
 	#       s_program_url_S_PROGRAM_URL
 
@@ -3062,6 +3077,14 @@ sub create_dada_config_file {
         $amazon_ses_params->{Allowed_Sending_Quota_Percentage} =
           strip( $ip->{-amazon_ses_Allowed_Sending_Quota_Percentage} );
     }
+
+    my $mailgun_params = {};
+    if ( $ip->{-configure_mailgun} == 1 ) {
+        $mailgun_params->{configure_mailgun} = 1;
+        $mailgun_params->{mailgun_api_key} = strip( $ip->{-mailgun_api_key} );
+        $mailgun_params->{mailgun_domain}  = strip( $ip->{-mailgun_domain} );
+    }
+
     my $bounce_handler_params = {};
     if ( $ip->{-install_bounce_handler} == 1 ) {
         $cut_tag_params->{cut_list_settings_default} = 0;
@@ -3128,6 +3151,7 @@ sub create_dada_config_file {
                 %{$confirmation_token_params},
                 %{$program_name_params},
                 %{$amazon_ses_params},
+				%{$mailgun_params},
                 %{$bounce_handler_params},
                 %{$bridge_params},
 				

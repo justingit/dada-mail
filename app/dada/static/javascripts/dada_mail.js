@@ -3526,17 +3526,22 @@ function sending_prefs_setup() {
 	var visible = [];
 
 	if ($("#sending_method_sendmail").prop("checked") === true) {
-		hidden = ['smtp_preferences', 'amazon_ses_preferences'];
+		hidden = ['smtp_preferences', 'amazon_ses_preferences', 'mailgun_preferences'];
 		visible = ['sendmail_options'];
 	}
 	if ($("#sending_method_smtp").prop("checked") === true) {
-		hidden = ['sendmail_options', 'amazon_ses_preferences'];
+		hidden = ['sendmail_options', 'amazon_ses_preferences', 'mailgun_preferences'];
 		visible = ['smtp_preferences'];
 	}
 	if ($("#sending_method_amazon_ses").prop("checked") === true) {
-		hidden = ['sendmail_options', 'smtp_preferences'];
+		hidden = ['sendmail_options', 'smtp_preferences', 'mailgun_preferences'];
 		visible = ['amazon_ses_preferences'];
 	}
+	if ($("#sending_method_mailgun").prop("checked") === true) {
+		hidden = ['sendmail_options', 'amazon_ses_preferences', 'smtp_preferences'];
+		visible = ['mailgun_preferences'];
+	}
+	
 
 	var i;
 	for (i = 0; i < hidden.length; i += 1) {

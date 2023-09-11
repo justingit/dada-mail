@@ -375,6 +375,27 @@
 			</div>
 
 	</div>
+	
+	
+    <div class="row">
+        <div class="small-12 columns">	
+		   <input 
+		   		type="radio" 
+				class="sending_prefs_radio" 
+				name="sending_method" 
+				id="sending_method_mailgun" 
+				value="mailgun"
+				<!-- tmpl_if expr="(list_settings.sending_method eq 'mailgun')" -->checked="checked"<!--/tmpl_if --> 
+			>
+		    <label for="sending_method_mailgun">
+		    	Mailgun
+		    </label>
+		</div>
+	</div>
+	<div id="mailgun_preferences"  class="panel">
+		mailgun_preferences!
+	</div>
+	
 
 	<ul class="button-group right">    
 	    <li><input type="reset"  class="warning button" value="Clear Changes" ></li>

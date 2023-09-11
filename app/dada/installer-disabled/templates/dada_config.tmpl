@@ -399,6 +399,18 @@ $AMAZON_SES_OPTIONS = {
 };
 <!-- /tmpl_if -->
 
+<!-- tmpl_if configure_mailgun --> 
+#---------------------------------------------------------------------#
+# Mailgun Options
+
+$MAILGUN_OPTIONS = { 
+    domain  => '<!-- tmpl_var mailgun_domain -->', 
+    api_key => '<!-- tmpl_var mailgun_api_key -->', 
+	
+};
+<!-- /tmpl_if -->
+
+
 <!-- tmpl_if cut_list_settings_default -->
 # start cut for list settings defaults
 =cut

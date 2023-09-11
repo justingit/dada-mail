@@ -1233,6 +1233,9 @@ sub admin_menu_mail_sending_options_notification {
             elsif ( $ls->param('sending_method') eq 'amazon_ses' ) {
                 $rs = 'Amazon SES';
             }
+            elsif ( $ls->param('sending_method') eq 'mailgun' ) {
+                $rs = 'Mailgun';
+            }
         }
         return $rs;
     }
