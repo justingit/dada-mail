@@ -7,7 +7,6 @@ my $dbi_obj = undef;
 
 use lib qw(../../ ../../DADA ../perllib ./ ../ ../perllib ../../ ../../perllib);
 
-use AnyDBM_File;
 use Fcntl qw(
   O_WRONLY
   O_TRUNC
