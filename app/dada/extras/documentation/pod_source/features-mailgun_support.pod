@@ -1,0 +1,27 @@
+
+=pod
+
+=head1 Mailgun API Support (Experimental)
+
+=head2 Mailgun
+
+L<https://mailgun.com> 
+
+=head2 Pricing
+
+L<https://www.mailgun.com/pricing/>
+
+
+Initial support for the Mailgun API has been added to Dada Mail. Only mail sending is support at this time.
+
+Configure the Mailgun region, api key, and domain in Dada Mail's global configuration via the included installer: 
+
+L<https://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html>
+
+Mailgun also has an SMTP Gateway you can use, provided that Dada Mail can make outbound connections on a SMTP port. 
+
+=head2 See also: Third Party Email Services
+
+L<https://dadamailproject.com/d/third_party_email_services.pod.html>
+
+=cut

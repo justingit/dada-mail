@@ -12,7 +12,7 @@ If a mail server is added to a RBL, it's possible mail delivery will be impacted
 
 Being blocked can happen for a variety of reasons - none of which may actually be because of any action of your own. In many instances, a mail server can be added to a RBL when a compromised web app (like, Wordpress) is used to send out unsolicited messages. Since the mail server is shared by many other users, it affects everyone using the mail server. The bottom line is mail doesn't get delivered when using this mail server at a respectable deliverability rate. What to do. 
 
-Some people will try to use the SMTP server that's available on their web host, thinking that sending a message, perhaps using SMTP authentication, will get around the problem of a shared webserver. Most of the time, this won't make a difference, as the SMTP server will, in the end, send messages out using the I<same> web server as the default (for Dada Mail) sendmail command does. SMTP, in this scenario, makes no difference - it's just a more complicated, slower, and more error-prone way of doing what you were already doing.
+Some people will try to use the SMTP server that's available on their web host, thinking that sending a message, perhaps using SMTP authentication, will get around the problem of a shared webserver. Most of the time, this won't make a difference, as the SMTP server will, in the end, send messages out using the I<same> mail server as the default (for Dada Mail) sendmail command does. SMTP in this scenario makes no difference - it's just a more complicated, slower, and more error-prone way of doing what you were already doing.
 
 At this point, some people opt to go for a virtual private server, or dedicated server, moving their entire website infrastructure over. Be careful with a virtual private server (do your research) - the mail server itself may still be shared! even if you are web hosting is on a dedicared IP. A dedicated server, where the mail server is running on this same phyiscal/virtual box may work well, but then you're burdened with the additional task of administrating the mail server. It usually not something you want to deal with.
 
@@ -66,28 +66,55 @@ L<https://dadamailproject.com/installation/request.html>
 
 Starting mail sending limits. For reasons that are lost on me personally, you can only start sending with the service at a rate of 10,000 messages/day. This limit can be raised, but only after the SES system sees that you are using the service up to its limit. Some of my clients now how daily quotes of 500,000 messages and above, but it won't be something you will have right off the bat. 
 
+=head2 Mailgun
+
+L<https://mailgun.com>
+
+=head3 Pricing
+
+L<https://www.mailgun.com/pricing/>
+
+Mailgun is another third party email sending service. Since v11.22.0, Dada Mail does have experimental support for its API for mail sending. Only sending is supported, so additional features like tracking bounces/complaints aren't done from within Dada Mail, although these are tracked by Mailgun, and addresses that continually bounce (for example) will be suppressed from being sent to. 
+
+To configure Dada Mail to use the Mailgun API, you'll want to fill in the region, API Key, and Domain in Dada Mail's global configuration via the included Dada Mail installer, then select "Mailgun" as your sending method for each list in the control panel under: B<Sending: Options>. 
+
+Mailgun also has a SMTP gateway if you want to try Mailgun with any version of the app. Just make sure port port 25, 2525, 587, or 465  are open to the outside world, or you won't be able to connect. 
+
+See: L<https://documentation.mailgun.com/en/latest/user_manual.html?highlight=SMTP#sending-via-api>
+
+
+=head2 Sendgrid
+
+L<https://sendgrid.com>
+
+=head3 Pricing
+
+See: L<https://sendgrid.com/pricing/>
+
+Sendgrid is another third party email sending service. You will want to use their SMTP gateway, as Dada Mail does not have API support. Dada Mail most likely won't ever have API support, until a time where they support sending raw MIME messages through the API - I wouldn't hold your breath. Here's their docs on using the SMTP gateway: 
+
+L<https://docs.sendgrid.com/for-developers/sending-email/integrating-with-the-smtp-api>
+
+Like Mailgun, you'll want to make sure that port 25, 2525, 587, or 465 is open for outgoing connections to use the service. 
+
+
 =head2 Other Services
+We do not have as much knowledge of these services: 
 
-We don't have as much experience with other third party email services (Amazon SES works that well), but there are a variety out there. 
+=head3 Messagebird/SparkPost
 
-These services may have their own API for mail sending, but will not be supported by Dada Mail. All these services also have support for receiving messages via SMTP, which Dada Mail does have support for and this method would be the method you would use to send a message out using one the below services. 
+L<https://messagebird.com/email/cloud-sending>
 
-Before setting up an account with any of these services, double-check their docs on SMTP setup. Note the port you need to connect to, and double-check that that same port is open for outgoing connections on your own hosting account. In many shared hosting accounts, the most common SMTP port, port 25 is closed to outgoing connections. 
+=head4 Pricing
+
+L<https://messagebird.com/pricing/email-sending>
 
 
-=head3 SparkPost
-
-L<https://www.sparkpost.com/> 
-
-We've written up a small intro on SparkPost on our blog: 
+We've written up a small intro on SparkPost on our blog, since then the product seems to have gone through a name change :
 
 B<Getting Started with SparkPost Email Delivery Service and Dada Mail>
 
 L<http://blog.dadamailproject.com/2017/07/11/getting-started-with-sparkpost-email-delivery-service-and-dada-mail/>
-
-=head3 MailGun
-
-L<http://mailgun.com>
 
 =head3 Elastic Email
 
@@ -101,8 +128,5 @@ L<http://www.socketlabs.com/>
 
 L<http://www.serversmtp.com/en/smtp-mailing-list-distributors>
 
-=head3 Unified eMail
-
-L<http://www.unifiedemail.net> 
 
 =cut

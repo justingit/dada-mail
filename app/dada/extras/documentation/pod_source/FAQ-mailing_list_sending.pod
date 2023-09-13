@@ -2,6 +2,12 @@
 
 =head1 Mass Mailing FAQ
 
+=head2 Third Party Email Sending Services
+
+Working within the confines of a shared hosting company's email sending limits can be difficult to do when running a mailing list. Mail servers provided to you when using a shared hosting account also end up on realtime block lists often. 
+
+One solution is to use a third party email sending service. See: L<https://dadamailproject.com/d/third_party_email_services.pod.html>
+
 =head2 General Advice
 
 For hosting accounts with Dada Mail installed that have sending limits imposed by the hosting company, you'll want to follow the below advice closely. The majority of the problems people experience with sending out a mass mailing with Dada Mail can be avoided by simply sending messages at a rate slightly lower than the server-imposed limit.
