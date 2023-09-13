@@ -936,6 +936,7 @@ sub send {
 		use DADA::App::Support::WebServiceDDMMailGun; 
 		
 		my $mailgun = DADA::App::Support::WebServiceDDMMailGun->new(
+			region  => $DADA::Config::MAILGUN_OPTIONS->{region},
 		    api_key => $DADA::Config::MAILGUN_OPTIONS->{api_key},
 		    domain  => $DADA::Config::MAILGUN_OPTIONS->{domain},
 		);

@@ -454,6 +454,7 @@ $AMAZON_SES_OPTIONS //= {
 };
 
 $MAILGUN_OPTIONS //= { 
+	region  => 'us',
 	api_key => undef, 
 	domain  => undef,
 };

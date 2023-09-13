@@ -1601,6 +1601,7 @@ sub grab_former_config_vals {
         $opt->{'configure_mailgun'}      = 1;
         $opt->{'mailgun_api_key'} = $BootstrapConfig::MAILGUN_OPTIONS->{api_key};
         $opt->{'mailgun_domain'}  = $BootstrapConfig::MAILGUN_OPTIONS->{domain};
+        $opt->{'mailgun_region'}  = $BootstrapConfig::MAILGUN_OPTIONS->{region};
     }
 	
 	
@@ -2017,6 +2018,7 @@ sub query_params_to_install_params {
 	  configure_mailgun
 	  mailgun_domain
 	  mailgun_api_key
+	  mailgun_region
 	  
     );
 	#       s_program_url_S_PROGRAM_URL
@@ -3084,6 +3086,7 @@ sub create_dada_config_file {
         $mailgun_params->{configure_mailgun} = 1;
         $mailgun_params->{mailgun_api_key} = strip( $ip->{-mailgun_api_key} );
         $mailgun_params->{mailgun_domain}  = strip( $ip->{-mailgun_domain} );
+        $mailgun_params->{mailgun_region}  = strip( $ip->{-mailgun_region} );
     }
 
     my $bounce_handler_params = {};
