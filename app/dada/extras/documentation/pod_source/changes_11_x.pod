@@ -1,11 +1,38 @@
-
 =pod
 
 =encoding utf-8
 
-=head1 11.21.0
+=head1 11.22.0
+
+=head2 Focus
+
+This version of Dada Mail includes experiemental support for the Mailgun API, along with a few bug fixes. 
+
+=head2 Features
+
+=head3 Mailgun API Support (Experimental)
+
+Mailgun is a third party email sending service, like Amazon SES. For an overview of third party email sending services, see: 
+
+L<https://dadamailproject.com/d/third_party_email_services.pod.html>
+
+Additional information on Mailgun support:
+
+L<https://dadamailproject.com/d/features-mailgun_support.pod.html>
 
 =head2 Bugfixes
+
+=head3  Searching members is broken in v11.21.0 #1171 
+
+L<https://github.com/justingit/dada-mail/issues/1171>
+
+=head3  Plugin: Change List Shortname outdated - does not update many tables #1168 
+
+L<https://github.com/justingit/dada-mail/issues/1168>
+
+=head1 11.21.0
+
+=head2 Focus
 
 This version of Dada Mail is a feature release, with a few bug fixes. 
 
