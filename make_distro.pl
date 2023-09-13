@@ -5,10 +5,9 @@ my $github_repos = {
     perllib => {
         remote         => 'https://github.com/justingit/',
         repo           => 'dada-mail-perllib',
-        branch         => 'v11_20_2_stable_2023-07-06',
+        branch         => 'v11_22_0_stable_2023-09-18',
         dir_name       => 'perllib',
         local_dir_path => 'DADA/perllib',
-
     },
     ckeditor => {
         remote         => 'https://github.com/justingit/',
