@@ -1,5 +1,7 @@
 =pod
 
+=encoding utf-8
+
 =head1 Dada Mail
 
 =head1 Introduction
@@ -82,7 +84,7 @@ Dada Mail is developed openly at:
 
 L<https://github.com/justingit/dada-mail>
 	
-"master" - always stable
+"main" - always stable
 
 Mailing List: 
 
@@ -105,3 +107,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
+
+=cut
+
