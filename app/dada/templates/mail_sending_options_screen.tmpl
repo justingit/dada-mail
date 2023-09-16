@@ -396,21 +396,21 @@
 		
 		<!-- tmpl_if can_use_WebService_Mailgun -->
 			<div class="alert-box info radius"> 
-				WebService::Mailgun supported.
+				Mailgun sending via API supported.
 			</div>			
 		<!-- tmpl_else -->
 			<div class="alert-box warning radius">
-				WebService::Mailgun unsupported.
+				Mailgun sending via API not supported.
 			</div>
 		<!-- /tmpl_if -->
 		
 		<!-- tmpl_if mailgun_setup_check -->
 			<div class="alert-box info radius"> 
-				Mailgun Domain and API Key set in app configuration.
+				Mailgun domain, region, and API key has been set in the app configuration.
 			</div>
 		<!-- tmpl_else -->
 			<div class="alert-box warning radius"> 
-				Mailgun sending requires that the Mailgun Domain and API Key is set up during app configuration!
+				Mailgun sending via API requires that the Mailgun domain, region, and API key is set up during app configuration!
 			</div>
 		<!-- /tmpl_if -->
 	</div>
