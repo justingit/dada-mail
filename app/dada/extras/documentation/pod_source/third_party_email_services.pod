@@ -76,7 +76,11 @@ L<https://www.mailgun.com/pricing/>
 
 Mailgun is another third party email sending service. Since v11.22.0, Dada Mail does have experimental support for its API for mail sending. Only sending is supported, so additional features like tracking bounces/complaints aren't done from within Dada Mail, although these are tracked by Mailgun, and addresses that continually bounce (for example) will be suppressed from being sent to. 
 
-To configure Dada Mail to use the Mailgun API, you'll want to fill in the region, API Key, and Domain in Dada Mail's global configuration via the included Dada Mail installer, then select "Mailgun" as your sending method for each list in the control panel under: B<Sending: Options>. 
+To configure Dada Mail to use the Mailgun API, you'll want to fill in the region, API Key, and Domain in Dada Mail's global configuration via the included Dada Mail installer: 
+
+L<https://dadamailproject.com/support/documentation-11_22_0/install_dada_mail-advanced_configuration.pod.html#Configure-Mailgun-EXPERIMENTAL>
+
+Then select "Mailgun" as your sending method for each list in the control panel under: B<Sending: Options>. 
 
 Mailgun also has a SMTP gateway if you want to try Mailgun with any version of the app. Just make sure port port 25, 2525, 587, or 465  are open to the outside world, or you won't be able to connect. 
 
