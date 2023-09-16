@@ -933,7 +933,7 @@ sub send {
 		
 		
 		#use WebService::Mailgun;
-		use DADA::App::Support::WebServiceDDMMailGun; 
+		require DADA::App::Support::WebServiceDDMMailGun; 
 		
 		my $mailgun = DADA::App::Support::WebServiceDDMMailGun->new(
 			region  => $DADA::Config::MAILGUN_OPTIONS->{region},
