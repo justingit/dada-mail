@@ -697,6 +697,10 @@ sub switch_perl_interpreter {
 		
 		for my $ftc(@files_to_change){
 			
+			
+			
+			
+			
 			if(! -e $ftc){ 
 				warn "can't find, $ftc to modify perl shebang line - why?";
 				next; 
@@ -713,7 +717,7 @@ sub switch_perl_interpreter {
 			my $new_first = '#!' . $alt_perl_interpreter . "\n";
 			$content =~ s{$first_line}{$new_first};
 			
-			open my $out_fh, '>', $ftc or die $!; 
+			open my $out_fh, '>', $ftc or die "can't open, " . $ftc . ' because: ' .  $!; 
 
 			print $out_fh $content; 
 
