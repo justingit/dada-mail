@@ -1969,7 +1969,7 @@ sub mass_mailing_schedules_preview {
         $schedule_recurring_hms =
           display_hms_to_hms($schedule_recurring_display_hms);
 
-        if ( !( scalar DADA::App::Guts::can_use_DateTime_Event_Recurrences() ) ) {
+        if ( !( scalar DADA::App::Guts::can_use_DateTime_Event_Recurrence() ) ) {
             $status = 0;
             $errors->{datetime} = 1;
         }
