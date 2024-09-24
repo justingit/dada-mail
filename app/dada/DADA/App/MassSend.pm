@@ -1497,6 +1497,8 @@ sub send_email {
 					rich_filemanager_url        => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{url},
                     rich_filemanager_upload_dir => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{upload_dir},
                     rich_filemanager_upload_url => $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{upload_url},
+                    
+                    fileselect_enabled 			=> $DADA::Config::FILE_BROWSER_OPTIONS->{fileselect}->{enabled},
 
 					can_use_www_engine         => $can_use_www_engine, 
                     www_engine_error           => $www_engine_error,
@@ -2455,6 +2457,9 @@ sub has_attachments {
     elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ) {
         $filemanager = 'rich_filemanager';
     }
+    elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{fileselect}->{enabled} == 1 ) {
+        $filemanager = 'fileselect';
+    }
 
     my @ive_got = ();
 
@@ -2513,6 +2518,9 @@ sub make_attachment {
     }
 	elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{rich_filemanager}->{enabled} == 1 ) {
         $filemanager = 'rich_filemanager';
+    }
+    elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{fileselect}->{enabled} == 1 ) {
+        $filemanager = 'fileselect';
     }
 
     if ( !$name ) {

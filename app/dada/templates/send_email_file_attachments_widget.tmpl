@@ -1,8 +1,176 @@
 <!-- begin send_email_file_attachments_widget.tmpl --> 
 
-<!-- tmpl_if expr="((core5_filemanager_enabled == 1) || (rich_filemanager_enabled == 1))" -->
+<!-- tmpl_if expr="((core5_filemanager_enabled == 1) || (rich_filemanager_enabled == 1) || (fileselect_enabled == 1))" -->
 
 	<div id="attachment_widgets"> 
+		
+		<!-- tmpl_if fileselect_enabled -->
+
+<p class="row fselect">
+<label for="attachment1">attachment 1</label>
+<input type="text" class="fselect" id="attachment1" name="attachment1" value="">
+<button class="fbrowse" data-dir="" data-id="attachment1-browser" data-target="attachment1">Select File</button>
+</p>
+<div id="attachment1-browser" class="fbrowser_placeholder">
+</div>
+
+<p class="row fselect">
+<label for="attachment2">attachment 2</label>
+<input type="text" class="fselect" id="attachment2" name="attachment2" value="">
+<button class="fbrowse" data-dir="" data-id="attachment2-browser" data-target="attachment2">Select File</button>
+</p>
+<div id="attachment2-browser" class="fbrowser_placeholder">
+</div>
+
+<p class="row fselect">
+<label for="attachment3">attachment 3</label>
+<input type="text" class="fselect" id="attachment3" name="attachment3" value="">
+<button class="fbrowse" data-dir="" data-id="attachment3-browser" data-target="attachment3">Select File</button>
+</p>
+<div id="attachment3-browser" class="fbrowser_placeholder">
+</div>
+
+<p class="row fselect">
+<label for="attachment4">attachment 4</label>
+<input type="text" class="fselect" id="attachment1" name="attachment4" value="">
+<button class="fbrowse" data-dir="" data-id="attachment1-browser" data-target="attachment4">Select File</button>
+</p>
+<div id="attachment4-browser" class="fbrowser_placeholder">
+</div>
+
+<p class="row fselect">
+<label for="attachment5">attachment 5</label>
+<input type="text" class="fselect" id="attachment5" name="attachment5" value="">
+<button class="fbrowse" data-dir="" data-id="attachment5-browser" data-target="attachment5">Select File</button>
+</p>
+<div id="attachment5-browser" class="fbrowser_placeholder">
+</div>
+
+<p class="row fselect">
+<label for="attachment6">attachment 6</label>
+<input type="text" class="fselect" id="attachment6" name="attachment6" value="">
+<button class="fbrowse" data-dir="" data-id="attachment6-browser" data-target="attachment6">Select File</button>
+</p>
+<div id="attachment6-browser" class="fbrowser_placeholder">
+</div>
+
+<p class="row fselect">
+<label for="attachment7">attachment 7</label>
+<input type="text" class="fselect" id="attachment7" name="attachment7" value="">
+<button class="fbrowse" data-dir="" data-id="attachment7-browser" data-target="attachment7">Select File</button>
+</p>
+<div id="attachment7-browser" class="fbrowser_placeholder">
+</div>
+
+<p class="row fselect">
+<label for="attachment8">attachment 8</label>
+<input type="text" class="fselect" id="attachment8" name="attachment8" value="">
+<button class="fbrowse" data-dir="" data-id="attachment8-browser" data-target="attachment8">Select File</button>
+</p>
+<div id="attachment8-browser" class="fbrowser_placeholder">
+</div>
+
+<p class="row fselect">
+<label for="attachment9">attachment 9</label>
+<input type="text" class="fselect" id="attachment9" name="attachment9" value="">
+<button class="fbrowse" data-dir="" data-id="attachment9-browser" data-target="attachment9">Select File</button>
+</p>
+<div id="attachment9-browser" class="fbrowser_placeholder">
+</div>
+
+<p class="row fselect">
+<label for="attachment10">attachment 10</label>
+<input type="text" class="fselect" id="attachment10" name="attachment10" value="">
+<button class="fbrowse" data-dir="" data-id="attachment10-browser" data-target="attachment10">Select File</button>
+</p>
+<div id="attachment1-browser" class="fbrowser_placeholder">
+</div>
+
+<script defer="defer">
+let registerEvents = function () {
+    let links = document.querySelectorAll("a.fbrowse");
+    for (let l of Array.from(links)) {
+        l.addEventListener('click', event => { 
+            event.preventDefault();
+            SendRequest(event.target)
+        });
+    }
+    
+    let select_buttons = document.querySelectorAll("button.fselect");
+    for (let b of Array.from(select_buttons) ) {
+        b.addEventListener('click', event => { 
+            event.preventDefault();
+            insertFilename(event.target)
+        });
+    }
+    
+    let close_buttons = document.querySelectorAll("button.fclose");
+    for (let cb of Array.from(close_buttons) ) {
+        cb.addEventListener('click', event => {
+            event.preventDefault();
+            hideBrowser(event.target);
+        });
+    }
+    
+};
+
+let hideBrowser = function (target) {
+    let id = target.getAttribute('data-id');
+    let element = document.getElementById(id);
+    element.innerHTML = '';
+    element.className = 'fbrowser invisible';
+    
+}
+
+let insertFilename = function (target) {
+    let id = target.getAttribute('data-target');
+    let filename = target.getAttribute('data-value');
+    let element = document.getElementById(id);
+    element.setAttribute('value',filename);
+}
+
+let SendRequest = function (target) {
+    let dir = target.getAttribute("data-dir") || '';
+    let tar = target.getAttribute('data-target') || '';
+    let id = target.getAttribute('data-id') || '';
+    
+    let url = `?flavor=dir&data-dir=${dir}&data-target=${tar}&data-id=${id}`;
+    
+    if (http != null) {
+        http.open("GET",url, true);
+        http.onreadystatechange = function () {ausgeben(target);};
+        http.send();
+    }
+    
+}
+
+let ausgeben = function (target) {
+    if (http.readyState == 4) {
+            let text = http.responseText;
+            let id = target.getAttribute('data-id');
+            let element = document.getElementById(id);
+            element.innerHTML = text;
+            element.className = 'fbrowser';
+            registerEvents();
+    }
+}
+
+let http = null;
+if (window.XMLHttpRequest) {
+   http = new XMLHttpRequest();
+} else if (window.ActiveXObject) {
+   http = new ActiveXObject("Microsoft.XMLHTTP");
+}
+let buttons = document.querySelectorAll("button.fbrowse");
+for (let b of Array.from(buttons)) {
+    b.addEventListener('click', event => { 
+        event.preventDefault();
+        SendRequest(event.target)
+    });
+}
+</script>
+
+<!-- /tmpl_if -->
 		
 		<!-- tmpl_if core5_filemanager_enabled --> 		
 		
@@ -19,6 +187,7 @@
 			<input type="hidden" id="rich_filemanager_upload_url" name="rich_filemanager_upload_url" value="<!-- tmpl_var rich_filemanager_upload_url -->"          >
 		<!-- /tmpl_if --> 
 		
+		<!-- tmpl_unless fileselect_enabled -->
 		<input type="hidden" id="SUPPORT_FILES_URL"   name="SUPPORT_FILES_URL"   value="<!-- tmpl_var SUPPORT_FILES_URL -->"   > 
 
 		<div class="row">
@@ -125,10 +294,10 @@
 			</div>
 		</div>
 		
-
-
+    <!-- /tmpl_unless -->
 	
 	</div> 
+
 <!-- tmpL_else --> 
 	<div class="alert-box info radius">
 		

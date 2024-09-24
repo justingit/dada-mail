@@ -255,7 +255,8 @@ sub setup {
         'transform_to_pro'              => \&transform_to_pro,
         'yikes'                         => \&yikes,
         'rate_limit_reached'            => \&rate_limit_reached,
-		'status_405'                    => \&status_405, 
+		'status_405'                    => \&status_405,
+		'dir' 							=> \&dir,
 
 # These handled the oldstyle confirmation. For some backwards compat, I've changed
 # them so that there's at least a shim to the new system,
@@ -17190,6 +17191,81 @@ sub scheduled_jobs {
             },
         }
     );
+}
+
+
+sub decontaminate_path {
+    my ($path) = @_;
+    
+    $path =~ s/[^\w\d\s._\-\/]//g;
+    $path =~ s/\.\.//g;
+    $path =~ /([\w\d\s._\-\/]+)/;
+    $path = $1;
+    return $path;
+}
+
+
+sub dir {
+	my $self = shift;
+	
+	my $q = $self->query;
+	
+	my $root = $DADA::Config::SUPPORT_FILES->{dir} . '/' . 'file_uploads';
+	my $dir = $q->param('data-dir') || '';
+	$dir = decontaminate_path($dir);
+	# delete the / at the beginning
+	$dir =~ s/^\///;
+	
+	my $path = $dir ? "$root/$dir" : $root;
+	
+	my $dataId = $q->param('data-id');
+	my $dataTarget = $q->param('data-target');
+	
+	my $ret = qq(<p class="fbrowser_head">\n);
+	$ret .= qq(<span class="fbrowser"><i>Select a file ...</i></span>);
+    $ret .= qq(<button class="btn_small fclose" data-id="$dataId">Close File Selector</button>);
+	$ret .= qq(</p>);
+	if ($dir) {
+        my ($parentDir) = $dir =~ m/(.+)\/.*/;
+        $ret .= qq(<p>\n);
+        $ret .= qq(<span class="fbrowser"><a class="fbrowse" data-id="$dataId" data-dir="$parentDir" data-target="$dataTarget" href="">..</a></span>);
+        $ret .= qq(</p>);
+	}
+	
+	
+	my @dirs; my @files;
+	while (my $file = <$path/*>) {
+        
+        my $rel_path = $file;
+        $rel_path =~ s/$root\///;
+        
+        if (-d $file) {
+            push @dirs, $rel_path;
+        }
+        else {
+            push @files, $rel_path;
+        }
+	}
+	
+	foreach my $dir (@dirs) {
+        my $value = $dir;
+        
+        $ret .= qq(<p>\n);
+        $ret .= qq(<span class="fbrowser"><a class="fbrowse" data-id="$dataId" data-dir="$dir" data-target="$dataTarget" href="">$dir</a></span>);
+        $ret .= qq(<button class="btn_small fselect" data-target="$dataTarget" data-value="$value">Select</button>);
+        $ret .= qq(</p>);
+    }
+    
+    foreach my $file (@files) {
+        my $value = $file;
+        $ret .= qq(<p>\n);
+        $ret .= qq(<span class="fbrowser">$file</span>);
+        $ret .= qq(<button class="btn_small fselect" data-target="$dataTarget" data-value="$value">Select</button>);
+        $ret .= qq(</p>);
+	}
+	
+	$self->header_add(-type => 'text/html');
+	return $ret;
 }
 
 sub DESTROY {

@@ -22,7 +22,7 @@ use vars qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM
 #
 #
 
-$PROGRAM_CONFIG_FILE_DIR = 'auto';
+$PROGRAM_CONFIG_FILE_DIR = '/home/maximilian/dada/.dada_files/.configs';
 
 #
 #
@@ -47,7 +47,7 @@ BEGIN {
 #
 #
 
-$PROGRAM_ERROR_LOG = undef;
+$PROGRAM_ERROR_LOG = '/home/maximilian/dada/.dada_files/.logs/errors.txt';
 
 #
 #
@@ -128,6 +128,10 @@ $FILE_BROWSER_OPTIONS //= {
 		upload_dir   => '', 
 		upload_url   => '',
 		connector    => '', 
+	},
+	fileselect => {
+		enabled => 0,
+		upload_dir => '',
 	},
 	none => { 
 		enabled      => 1,
@@ -1069,8 +1073,8 @@ $ADMIN_MENU //= [
 
 ];
 
-$LIST_QUOTA            //= undef;
-$SUBSCRIPTION_QUOTA    //= undef;
+$LIST_QUOTA //= 3;
+$SUBSCRIPTION_QUOTA //= 100;
 $MAILOUT_AT_ONCE_LIMIT //= 1;
 $MAILOUT_STALE_AFTER   //= 86400;
 
@@ -1945,7 +1949,7 @@ $LIST_HEADERS //= {
 
 $GIVE_PROPS_IN_EMAIL //= 1;
 $GIVE_PROPS_IN_HTML //= 1;
-$GIVE_PROPS_IN_ADMIN //= 0;
+$GIVE_PROPS_IN_ADMIN //= 1;
 $GIVE_PROPS_IN_SUBSCRIBE_FORM //= 1;
 $PROGRAM_IMG_FILENAME //= 'dada_mail_logo.png';
 ##########################################
