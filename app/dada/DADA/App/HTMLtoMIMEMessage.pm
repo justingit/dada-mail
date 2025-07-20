@@ -1005,7 +1005,10 @@ sub create_image_part {
 		else { 
 			# "Yeah, OK successful: ";; 
 			#$buff1 = $res2->decoded_content;
-			$buff1 = $res2->content;
+			# $buff1 = $res2->content;
+			# $content2 should already be correctly decoded by our URL fetcher (and no way to turn that off 10/3/24)
+			$buff1 = $content2; 
+			
 		}
     }
 	
