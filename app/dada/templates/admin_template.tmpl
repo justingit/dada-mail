@@ -13,8 +13,8 @@
   <title><!-- tmpl_var title --> - <!-- tmpl_var list_settings.list_name --> - <!-- tmpl_var PROGRAM_NAME --></title>
 
 
-  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/app.css?v=<!-- tmpl_var VER escape=URL -->" />
-  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/foundation-icons/foundation-icons.css?v=<!-- tmpl_var VER escape=URL -->" />
+  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/app.css<!-- tmpl_var D_CACHE -->" />
+  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/foundation-icons/foundation-icons.css<!-- tmpl_var D_CACHE -->" />
 
 
  
@@ -25,21 +25,21 @@
 
 <!-- jQuery -->
 <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery-3.6.0.min.js"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.tablesorter.js?v=<!-- tmpl_var VER escape=URL -->"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.tablesorter.widgets.js?v=<!-- tmpl_var VER escape=URL -->"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.cookie.js?v=<!-- tmpl_var VER escape=URL -->"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery-url.min.js?v=<!-- tmpl_var VER escape=URL -->"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.tablesorter.js<!-- tmpl_var D_CACHE -->"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.tablesorter.widgets.js<!-- tmpl_var D_CACHE -->"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.cookie.js<!-- tmpl_var D_CACHE -->"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery-url.min.js<!-- tmpl_var D_CACHE -->"></script>
 
 
 
 
 
 
-<link rel="stylesheet" type="text/css" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/jquery/tablesorter/theme.default.css?v=<!-- tmpl_var VER escape=URL -->"/ >
+<link rel="stylesheet" type="text/css" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/jquery/tablesorter/theme.default.css<!-- tmpl_var D_CACHE -->"/ >
 
 
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/clipboard.min.js?v=<!-- tmpl_var VER escape=URL -->"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/spin.min.js?v=<!-- tmpl_var VER escape=URL -->"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/clipboard.min.js<!-- tmpl_var D_CACHE -->"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/spin.min.js<!-- tmpl_var D_CACHE -->"></script>
 
 
 <!-- tmpl_if load_google_viz --> 
@@ -50,33 +50,33 @@
 <!-- /tmpl_if -->
 
 <!-- tmpl_if load_jquery_validate --> 
-	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.validate.js?v=<!-- tmpl_var VER escape=URL -->"></script>
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.validate.js<!-- tmpl_var D_CACHE -->"></script>
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if load_datetimepicker --> 
-    <link rel="stylesheet" type="text/css" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/jquery/jquery.datetimepicker.css?v=<!-- tmpl_var VER escape=URL -->"/ >
-    <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.datetimepicker.full.min.js?v=<!-- tmpl_var VER escape=URL -->"></script>
+    <link rel="stylesheet" type="text/css" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/jquery/jquery.datetimepicker.css<!-- tmpl_var D_CACHE -->"/ >
+    <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.datetimepicker.full.min.js<!-- tmpl_var D_CACHE -->"></script>
     <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/unserialize.jquery.1.0.2.js"></script>
     
 <!-- /tmpl_if -->
 
 <!-- Dada Mail's Admin Javascript -->
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/dada_mail.js?v=<!-- tmpl_var VER escape=URL -->" type="text/javascript"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/dada_mail.js<!-- tmpl_var D_CACHE -->" type="text/javascript"></script>
 
 <!-- tmpl_if load_wysiwyg_editor --> 
 	<!-- WYSIWYG Editor to load: '<!-- tmpl_var list_settings.use_wysiwyg_editor -->' -->
 	<!-- WYSIWYG Editors --> 
 	<!-- tmpl_if using_ckeditor --> 
 		<!-- CKeditor is being used. -->
-		<script src="<!-- tmpl_var CKEDITOR_URL -->/ckeditor.js?v=<!-- tmpl_var VER escape=URL -->"         type="text/javascript" ></script>
-		<script src="<!-- tmpl_var CKEDITOR_URL -->/adapters/jquery.js?v=<!-- tmpl_var VER escape=URL -->"  type="text/javascript"></script>
+		<script src="<!-- tmpl_var CKEDITOR_URL -->/ckeditor.js<!-- tmpl_var D_CACHE -->"         type="text/javascript" ></script>
+		<script src="<!-- tmpl_var CKEDITOR_URL -->/adapters/jquery.js<!-- tmpl_var D_CACHE -->"  type="text/javascript"></script>
 	<!-- tmpl_else -->
 		<!-- CKeditor is NOT being used. -->
 	<!-- /tmpl_if --> 
 	<!-- tmpl_if using_tiny_mce --> 
 		<!-- TinyMCE is being used. -->
-		<script src="<!-- tmpl_var TINY_MCE_URL -->/tinymce.min.js?v=<!-- tmpl_var VER escape=URL -->"         type="text/javascript"></script>
-		<script src="<!-- tmpl_var TINY_MCE_URL -->/dada_mail_config.js?v=<!-- tmpl_var VER escape=URL -->" type="text/javascript"></script>
+		<script src="<!-- tmpl_var TINY_MCE_URL -->/tinymce.min.js<!-- tmpl_var D_CACHE -->"         type="text/javascript"></script>
+		<script src="<!-- tmpl_var TINY_MCE_URL -->/dada_mail_config.js<!-- tmpl_var D_CACHE -->" type="text/javascript"></script>
 	<!-- tmpl_else -->
 		<!-- TinyMCE is NOT being used. -->
 	<!-- /tmpl_if -->
@@ -121,14 +121,14 @@
 	<!-- /tmpl_if -->
 	
 
-	<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/colorbox/colorbox.css?v=<!-- tmpl_var VER escape=URL -->">
-	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/colorbox/jquery.colorbox-min.js?v=<!-- tmpl_var VER escape=URL -->"></script>    	
-	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/modernizr.js?v=<!-- tmpl_var VER escape=URL -->"></script>
+	<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/colorbox/colorbox.css<!-- tmpl_var D_CACHE -->">
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/colorbox/jquery.colorbox-min.js<!-- tmpl_var D_CACHE -->"></script>    	
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/modernizr.js<!-- tmpl_var D_CACHE -->"></script>
     
-	<link type="text/css" media="screen" rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/responsive-tables.css?v=<!-- tmpl_var VER escape=URL -->" >
-	<script type="text/javascript" src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/responsive-tables.js?v=<!-- tmpl_var VER escape=URL -->"></script>
+	<link type="text/css" media="screen" rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/responsive-tables.css<!-- tmpl_var D_CACHE -->" >
+	<script type="text/javascript" src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/responsive-tables.js<!-- tmpl_var D_CACHE -->"></script>
 
-    <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css?v=<!-- tmpl_var VER escape=URL -->" type="text/css" media="screen" />
+    <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css<!-- tmpl_var D_CACHE -->" type="text/css" media="screen" />
 	
 	<!-- tmpl_if can_use_Google_reCAPTCHA_v3 -->
 		<!-- tmpl_if captcha_params_v3_hide_badge -->
@@ -307,9 +307,9 @@
 	<!-- /tmpl_if -->
 
 
-	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation.min.js?v=<!-- tmpl_var VER escape=URL -->"></script>
-	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/foundation.offcanvas.js?v=<!-- tmpl_var VER escape=URL -->"></script>
-	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/foundation.magellan.js?v=<!-- tmpl_var VER escape=URL -->"></script>
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation.min.js<!-- tmpl_var D_CACHE -->"></script>
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/foundation.offcanvas.js<!-- tmpl_var D_CACHE -->"></script>
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/foundation.magellan.js<!-- tmpl_var D_CACHE -->"></script>
 	<script>
 		$(document).foundation();
 	</script>

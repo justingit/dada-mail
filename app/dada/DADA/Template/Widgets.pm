@@ -160,6 +160,8 @@ MAILPROG               => $DADA::Config::MAILPROG,
 FILES                  => $DADA::Config::FILES, 
 TEMPLATES              => $DADA::Config::TEMPLATES,
 VER                    => $DADA::Config::VER, 
+D_CACHE                => '?v=' . uriescape($DADA::Config::VER),
+
 
 DATA_CACHE             => $DADA::Config::DATA_CACHE, 
 
