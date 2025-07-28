@@ -128,7 +128,7 @@ sub run_schedules {
         $args->{-verbose} = 0;
     }
 	
-	
+	my $log_error = 0; 
     my $time = time;
     my $tz = strftime("%Z", localtime()); 
 	
@@ -197,6 +197,7 @@ sub run_schedules {
 		# We'll say something of that effect (in an elsif)
         if ( $sched->{schedule_activated} != 1 ) {
             $rb .= "\t* Schedule is NOT Activated.\n";
+			$log_error = 1;
             next SCHEDULES;
         }
         else {
@@ -214,6 +215,7 @@ sub run_schedules {
         {
             $rb .=
 "Recurring schedule set, but the DateTime CPAN Perl module will need to be installed.\n";
+			$log_error = 1; 
             next SCHEDULES;
         }
         elsif ($sched->{schedule_type} eq 'recurring'
@@ -230,7 +232,8 @@ sub run_schedules {
                 $rb .=
                   "\t*DateTime information is missing from this schedule\n";
                 $rb .= "SKIPPING...\n";
-
+				
+				
                 $self->send_schedule_notification(
                     {
                         -type    => 'failure',
@@ -238,7 +241,8 @@ sub run_schedules {
                         -sched   => $sched,
                     }
                 );
-
+				
+				$log_error = 1;
                 next SCHEDULES;
             }
 
@@ -317,9 +321,22 @@ sub run_schedules {
 						-screen => $sched->{screen},
 					}
 				);
+				$log_error = 1;
 				next SCHEDULES;
 			}
 
+
+			if(exists($sched->{schedule_recurring_last_sent})){ 
+				if(length($sched->{schedule_recurring_last_sent}) >= 1){
+					$rb .= "\t* Recurring schedule last sent: " .  scalar localtime($sched->{schedule_recurring_last_sent}) . ' ' . $tz . "\n";
+					if(exists($sched->{schedule_html_body_checksum})){
+						if(length($sched->{schedule_html_body_checksum}) > 1){ 
+							$rb .= "\t* Message Checksum: " . $sched->{schedule_html_body_checksum} . "\n";
+						}
+					}
+				}
+			}
+			
             my ( $status, $errors, $recurring_scheds ) =
               $self->recurring_schedule_times(
                 {
@@ -334,13 +351,8 @@ sub run_schedules {
             if ( $status == 0 ) {
                 $rb .= "Problems calculating recurring schedules - skipping schedule: "
                   . $errors . "\n";
-
-
-                 warn "Problems calculating recurring schedules - skipping schedule: "
-                    . $errors . "\n";
-
-
-                #$r  .= $rb;
+  				
+	            #$r  .= $rb;
                 # Send a failure notification
 				
 				
@@ -351,7 +363,8 @@ sub run_schedules {
                         -sched   => $sched,
                     }
                 );
-
+	
+				$log_error = 1;
                 next SCHEDULES;
             }
 
@@ -370,8 +383,6 @@ sub run_schedules {
 
             if ( scalar @$schedule_times <= 0 ) {
                 $rb .= "\t* No Scheduled Mailing needs to be sent out.\n";
-
-                #$r .= $rb;
                 next SCHEDULES;
             }
             else {
@@ -410,6 +421,7 @@ sub run_schedules {
                 if ( length($specific_time) == 0 ) {
                     $rc .= "\t* Date and Time is blank for this schedule\n";
                     $rc .= "SKIPPING\n";
+					$log_error = 1;
 					next SPECIFIC_SCHEDULES;
                 }
                 else {
@@ -437,6 +449,7 @@ sub run_schedules {
                         -screen => $sched->{screen},
                     }
                 );
+				$log_error = 1;
                 next SPECIFIC_SCHEDULES;
             }
             else {
@@ -463,10 +476,15 @@ sub run_schedules {
 				# ... 
             }
 
+#			$rc .= '$specific_time: ' . $specific_time . "\n";
+#			$rc .= '$time: ' . $time . "\n";
+			
 			
 			if ( $specific_time >=
                 $self->{ls_obj}->param('schedule_last_checked_time') )
             {
+				
+				$rc .= "\t* Message is schedule to be sent at this date and time\n"; 
 				#
 				# I want to bypass this too - good change a sched didn't go out because of this issue, 
 				# And someone wants to force it out, anyways: 
@@ -497,13 +515,6 @@ sub run_schedules {
 
                         $is_feed = 1;
                     }
-
-#warn '$sched->{screen}'                     . $sched->{screen};
-#warn '$sched->{content_from}'               . $sched->{content_from};
-#warn '$sched->{feed_url_most_recent_entry}' . $sched->{feed_url_most_recent_entry};
-#warn '$c_r->{vars}->{most_recent_entry}'    . $c_r->{vars}->{most_recent_entry};
-#warn '$is_feed' . $is_feed;
-
 
                     if ( $is_feed == 1 ) {
 
@@ -550,31 +561,35 @@ sub run_schedules {
                         }
                     }
 
+					# $r .= '$c_r->{md5}: ' . $c_r->{md5} . "\n";
+					# $r .= '$sched->{schedule_html_body_checksum}' . $sched->{schedule_html_body_checksum} . "\n";
+					
                     if ( $is_feed != 1 ) {
                         if (
-                               defined( $c_r->{md5} )
-                            && defined( $sched->{schedule_html_body_checksum} )
-                            && $c_r->{md5} eq
-                            $sched->{schedule_html_body_checksum}
+							exists( $c_r->{md5} )
+						 && exists( $sched->{schedule_html_body_checksum} ) 
+						){ 
+							if(
+								$c_r->{md5} eq $sched->{schedule_html_body_checksum}
+							) { 
 
-                          )
-                        {
-                            $rc .=
-"\t\t* Primary Content same as previously sent scheduled mass mailing.\n";
-                            $rc .=
-"\t\t* Skipping sending scheduled mass mailing.\n\n";
-                            undef($c_r);
-							
-                            next SPECIFIC_SCHEDULES;
-                        
-						}
+	                            $rc .= "\t\t* Primary Content same as previously sent scheduled mass mailing.\n";
+	   	 						$rc .= "\t\t* Previous Checksum: " . $sched->{schedule_html_body_checksum} . "\n"; 
+	 						   	$rc .= "\t\t* Current Checksum: "  . $c_r->{md5} . "\n"; 
+	                            $rc .= "\t\t* Skipping sending scheduled mass mailing.\n\n";
+								
+	                            undef($c_r);
+								$log_error = 1;
+	                            next SPECIFIC_SCHEDULES;
+							}
                         else {
-                            $rc .=
-"\t* Looks good! Primary content is different than last scheduled mass mailing (checksum check).\n";
+                            $rc .= "\t* Looks good! Primary content is different than last scheduled mass mailing (checksum check).\n";
                             undef($c_r);
                         }
                     }
-                    undef($c_r);
+				}
+                
+				undef($c_r);
 					
                 }				
                 $rc .= "\t\t* Running schedule now!\n";
@@ -582,6 +597,7 @@ sub run_schedules {
 
                 if ( $sched->{schedule_test_mode} == 1 ) {
                     $rc .= "\t\t* TEST MODE enabled.\n";
+					$log_error = 1;
 
                     my $test_list_type_label =
                       $self->create_tmp_test_list(
@@ -623,9 +639,12 @@ sub run_schedules {
                    );
                 }
                 # oh, there it is.
-                
-				if ( $c_r->{status} == 1 ) {
-
+           		if ( $c_r->{status} == 1 ) {
+					
+					
+				#	$rc .= '$sched->{schedule_type}: ' . $sched->{schedule_type} . "\n";
+				#	$rc .= '$c_r->{md5}: ' . $c_r->{md5} . "\n";
+					
 					if ( $sched->{schedule_type} eq 'recurring' ) {
 					   $rc .= $self->update_schedule(
 	                       {
@@ -633,9 +652,9 @@ sub run_schedules {
 	                           -role   => $sched->{role},
 	                           -screen => $sched->{screen},
 	                           -vars   => {
-	                               schedule_html_body_checksum => $c_r->{md5},
-	                               feed_url_most_recent_entry =>
-	                                 $c_r->{vars}->{most_recent_entry},
+	                               schedule_html_body_checksum  => $c_r->{md5}, 
+								   feed_url_most_recent_entry   => $c_r->{vars}->{most_recent_entry},
+								   schedule_recurring_last_sent => $time,
 	                           },
 	                       }
 	                   );
@@ -659,8 +678,7 @@ sub run_schedules {
                     # Send a failure notification
                     $rc .= "\t\t* Scheduled Mass Mailing not sent, reasons:\n"
                       . $c_r->{errors} . "\n";
-                    warn "Scheduled Mass Mailing not sent, reasons:\n"
-                      . $c_r->{errors} . "\n";
+                    $log_error = 1;  
 
                     $self->send_schedule_notification(
                         {
@@ -709,6 +727,7 @@ sub run_schedules {
             
 			        $rc .= "\t* Deactivating Schedule...\n";
 
+					
                     $rc .= $self->deactivate_schedule(
                         {
                             -id     => $sched->{id},
@@ -716,7 +735,9 @@ sub run_schedules {
                             -screen => $sched->{screen},
                         }
                     );
-
+					
+					$log_error = 1; 
+					
                     $self->send_schedule_notification(
                         {
                             -type    => 'failure',
@@ -754,6 +775,9 @@ sub run_schedules {
     if ( $args->{-verbose} == 1 ) {
         print $r;
     }
+	if($log_error == 1){ 
+		warn $r; 
+	}
     return $r;
 
 }

@@ -353,7 +353,7 @@ sub parse {
     else {
         $html_ver = $url_page;
         $rootPage = $url1;
-        $html_md5 = md5_checksum( \$html_ver );
+        $html_md5 = DADA::App::Guts::md5_checksum( \$html_ver );
     }
 
     # Get content of $url_txt with LWP if needed
@@ -1064,33 +1064,15 @@ sub cid (\%$) {
 	$filename =~ s/%20/\-/g;
 	if($filename =~ m/%/){ 
 		my ($ext1) = $filename =~ /((\.[^.\s]+)+)$/;
-		$r = $self->md5_checksum($url) . $ext1; 
+		$r = DADA::App::Guts::md5_checksum(\$url) . $ext1; 
 	}
 	else {
-		$r = $self->md5_checksum($url) . '_' . $filename; 
+		$r = DADA::App::Guts::md5_checksum(\$url) . '_' . $filename; 
 	}
 	warn 'cid returning: ' . $r
 		if $t; 
 	 return $r; 
 }
-
-
-sub md5_checksum {
-
-	my $self = shift; 
-    my $data = shift;
-
-    try {
-        require Digest::MD5;
-    }
-    catch {
-        carp "Can't use Digest::MD5?" . substr($_, 0, 100) . '...';
-        return undef;
-    };
-    return Digest::MD5::md5_hex( $data );
-}
-
-
 
 #------------------------------------------------------------------------------
 # link_form

@@ -734,8 +734,9 @@ sub count {
 #    warn 'QUERY: ' . $query
 #      if $t;
 
-    my $count = $self->{dbh}->selectrow_array( $query, undef, $self->{list}, $args->{-role} );
-    return $count;
+    my $count = $self->{dbh}->selectrow_arrayref( $query, undef, $self->{list}, $args->{-role} );
+#	warn 'count: ' . $count->[0];
+    return $count->[0];
 }
 
 sub remove {
@@ -839,6 +840,8 @@ sub draft_index {
             
 			content_from                   => scalar $q->param('content_from'),
 			feed_url_most_recent_entry     => scalar $q->param('feed_url_most_recent_entry'), 
+			schedule_recurring_last_sent   => scalar $q->param('schedule_recurring_last_sent'),
+			
 			
             schedule_recurring_only_mass_mail_if_primary_diff => scalar $q->param('schedule_recurring_only_mass_mail_if_primary_diff'), 
             
@@ -1083,6 +1086,7 @@ sub params_to_save {
 	$params->{feed_url_post_html}     = 1; 
 	
 	$params->{feed_url_most_recent_entry} = 1; 
+	$params->{schedule_recurring_last_sent} =1;
     
     $params->{crop_html_content}                = 1;
     $params->{crop_html_content_selector_type}  = 1;

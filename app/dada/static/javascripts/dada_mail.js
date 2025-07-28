@@ -2457,7 +2457,8 @@ function manually_run_all_scheduled_mass_mailings() {
 }
 
 function schedule_send_as_mass_mailing() { 
-	alert('draft_id!' + $("#draft_id").val());
+	
+	// alert('draft_id!' + $("#draft_id").val());
 	
 	$.ajax({
 		url: $("#s_program_url").val(),
@@ -2470,7 +2471,7 @@ function schedule_send_as_mass_mailing() {
 		dataType: "json",
 		async: false,
 		success: function(content) {
-			alert('status: ' + content.status);
+			// alert('status: ' + content.status);
 						
 			if (content.status === 0){ 
 				alert('Problems sending mass mailing: ' + content.errors);
@@ -2503,7 +2504,7 @@ function update_scheduled_mass_mailings_options() {
 
 			$("#schedule_html_body_checksum").val(content.schedule_html_body_checksum);
 			$("#feed_url_most_recent_entry").val(content.feed_url_most_recent_entry);
-			
+			$("#schedule_recurring_last_sent").val(content.schedule_recurring_last_sent);
 			
 			if(content.schedule_activated == "1"){
 				if ($("#schedule_activated").prop("checked") === false) {

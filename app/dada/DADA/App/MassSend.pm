@@ -157,6 +157,7 @@ sub construct_and_send {
 			-process  => $process,
         }
     );
+	
 
 
 
@@ -303,7 +304,6 @@ sub construct_and_send {
 	                $mh->saved_message );
 	        }		
 		}
-		
         return {
         	status       => 1, 
 			errors       => undef, 
@@ -564,9 +564,15 @@ sub construct_from_url {
 			 
 			 # We don't actualy use this, we use 
 			 #$feed_r->{vars}->{most_recent_entry}
+			 
+			 
+			 # This will get overwritten: 
 			 $md5 = $feed_r->{md5};
 			 
 			 $feed_url_vars = $feed_r->{vars};
+			 # Overwritten, so we do this stupid thing: 
+			 # dumb dumb dumb
+			 $feed_url_vars->{md5} = $feed_r->{md5};
 			 
 			 if(!defined($html_message)){
 		 		return { 
@@ -754,46 +760,45 @@ sub construct_from_url {
 	if(
 		length($html_message) <= 0
 		&& length($text_message) > 0
-		&& $ls->param('mass_mailing_convert_plaintext_to_html') == 1){ 
-			$html_message = markdown_to_html( { -str => $text_message } );	
+		&& $ls->param('mass_mailing_convert_plaintext_to_html') == 1
+	){ 
+		
+		$html_message = markdown_to_html( { -str => $text_message } );	
 
-			# I hate this, but we have to format again (for the first time)
-			
-			$html_message = $fm->format_mlm( 
-				{
-					-content => $html_message, 
-					-type  => 'text/html', 
-					-crop_html_options => {	
-				        enabled                          => scalar $draft_q->param('crop_html_content'),
-				        crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
-				        crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
-					}, 
-					-remove_html_options => { 
-						enabled                              => scalar $draft_q->param('remove_html_content'),
-						remove_html_content_selector_type    => scalar $draft_q->param('remove_html_content_selector_type'),
-						remove_html_content_selector_label   => scalar $draft_q->param('remove_html_content_selector_label'),
-					},
-					-rel_to_abs_options => { 
-						enabled => 1, 
-						base    => $base, 
-					},
-					-layout => scalar $draft_q->param('layout'),
-					-utm_options   => { 
-						-enabled    => scalar $draft_q->param('mass_mailing_utm_params_add'),
-						-domains    => scalar $draft_q->param('mass_mailing_utm_domains'),
-						-utm => {
-							source  => scalar $draft_q->param('mass_mailing_utm_source'),
-							medium  => scalar $draft_q->param('mass_mailing_utm_medium'),
-							term    => scalar $draft_q->param('mass_mailing_utm_term'),
-							content => scalar $draft_q->param('mass_mailing_utm_content'),
-							name    => scalar $draft_q->param('mass_mailing_utm_name'),						
-						}
+		# I hate this, but we have to format again (for the first time)
+		
+		$html_message = $fm->format_mlm( 
+			{
+				-content => $html_message, 
+				-type  => 'text/html', 
+				-crop_html_options => {	
+			        enabled                          => scalar $draft_q->param('crop_html_content'),
+			        crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
+			        crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
+				}, 
+				-remove_html_options => { 
+					enabled                              => scalar $draft_q->param('remove_html_content'),
+					remove_html_content_selector_type    => scalar $draft_q->param('remove_html_content_selector_type'),
+					remove_html_content_selector_label   => scalar $draft_q->param('remove_html_content_selector_label'),
+				},
+				-rel_to_abs_options => { 
+					enabled => 1, 
+					base    => $base, 
+				},
+				-layout => scalar $draft_q->param('layout'),
+				-utm_options   => { 
+					-enabled    => scalar $draft_q->param('mass_mailing_utm_params_add'),
+					-domains    => scalar $draft_q->param('mass_mailing_utm_domains'),
+					-utm => {
+						source  => scalar $draft_q->param('mass_mailing_utm_source'),
+						medium  => scalar $draft_q->param('mass_mailing_utm_medium'),
+						term    => scalar $draft_q->param('mass_mailing_utm_term'),
+						content => scalar $draft_q->param('mass_mailing_utm_content'),
+						name    => scalar $draft_q->param('mass_mailing_utm_name'),						
 					}
 				}
-			);	
-			
-			
-
+			}
+		);	
 	}
 	
 	
@@ -835,6 +840,9 @@ sub construct_from_url {
 				safely_encode($text_message),
 				$base
 			); 
+			
+			
+			
 			#warn '$MIME_Entity->as_string' . $MIME_Entity->as_string;
     } catch { 
         my $errors = "Problems sending HTML! \n
@@ -898,6 +906,21 @@ sub construct_from_url {
 	}
 	
 	my $decoded_subject = $fm->_decode_header( $headers{Subject} ); 
+	
+	# This is a weird hack: we wan the md5 from a feed, if there is a feed, not 
+	# from the created message, so this does that: 
+	#
+	#
+	if($content_from eq 'feed_url'){
+		if(keys %$feed_url_vars){ 
+			if(exists($feed_url_vars->{md5})){ 
+				if(length($feed_url_vars->{md5}) > 0){
+					$md5 = $feed_url_vars->{md5};
+				}
+			}
+		}
+	}
+	
 	return { 
 		status       => 1, 
 		errors       => undef, 
@@ -1037,6 +1060,7 @@ sub content_from_feed_url {
 	my $error  = {};
 	
 	my ( $rtc, $res, $md5, $e_m ) = grab_url({-url => $feed_url });
+	
 	
 	if($res->is_error){
 		return { 
@@ -1220,7 +1244,7 @@ sub content_from_feed_url {
 		errors => undef, 
 		html   => $scrn, 
 		md5    => $md5, 
-		vars   => $tmpl_vars
+		vars   => $tmpl_vars,
 	};
 }
 
